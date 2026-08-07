@@ -1,0 +1,43 @@
+# Codex/local working data
+.codex-tmp/
+
+# Local build/runtime outputs
+fault20_fast_validation/runtime/
+*.so
+*.o
+__pycache__/
+*.pyc
+
+# Raw runtime traces are preserved on the experiment host but intentionally
+# excluded from normal Git history. Structured response/evidence JSON is also
+# kept local; the public repository tracks source code and Markdown reports.
+fault20_fast_validation/reports/*.jsonl
+fault20_fast_validation/reports/*.txt
+fault20_fast_validation/reports/*.json
+fault20_fast_validation/reports/**/*.json
+
+# The public package intentionally keeps only the final runtime, adapter and
+# four summary documents. Historical probes, fixtures and validation assets
+# remain available in the local working copy.
+/fault20_fast_validation/reports/*
+!/fault20_fast_validation/reports/fault20_final_architecture.md
+!/fault20_fast_validation/reports/fault20_capability_matrix_final.md
+!/fault20_fast_validation/reports/fault20_fault_primitive_design.md
+!/fault20_fast_validation/reports/fault20_injection_capability_inventory_20260807.md
+
+/fault20_fast_validation/source/*
+!/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/
+!/fault20_fast_validation/source/l4_metadata_lifecycle_proxy/
+
+/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/*
+!/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp
+!/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_control.cpp
+!/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/fault20_buffer_api.h
+!/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/int_equivalent_transform.h
+!/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/mantissa_truncate.h
+!/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/build.sh
+!/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/create_allhit_container_v2.sh
+
+/fault20_fast_validation/source/l4_metadata_lifecycle_proxy/*
+!/fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp
+!/fault20_fast_validation/source/l4_metadata_lifecycle_proxy/build.sh
