@@ -13,8 +13,44 @@
 | INT2-equivalent / INT4-equivalent primitive | `PROVEN_E2E` |
 | BF16 mantissa truncate | `PROVEN_E2E` |
 | single/multi-hit、dual-rank、all-hit selector | `PROVEN_E2E` |
+| QMM x1 extreme-value single/progressive/all-hit | `PROVEN_E2E`（CANN 8.5.1，最大 12,160 hits） |
+| QMM x2/weight runtime slot 与 NZ storage metadata | `PROVEN_E2E_READ_ONLY`（CANN 8.5.1） |
+| QMM x1+x2 双 temporary buffer（lossless / 127 extreme） | `PROVEN_E2E`（CANN 8.5.1，rank0 single-hit） |
+| QMM x2_scale formal tensor、runtime slot 与 FP32 metadata | `PROVEN_E2E_READ_ONLY`（formal ordinal 3，`addresses[2]`） |
+| QMM x2_scale temporary buffer（lossless / finite ×2） | `PROVEN_E2E`（CANN 8.5.1，rank0 decode single-hit） |
+| `aclnnMatmul` BF16/ND slot mapping 与 self/mat2/dual lossless temporary buffer | `PROVEN_E2E`（CANN 8.5.1，rank0 decode single-hit） |
+| `aclnnMatmul` 有限 BF16 双输入到真实 `+Inf` 输出 | `MATMUL_FINITE_INPUT_NONFINITE_REPRODUCED`（`2^58` 首次 non-finite） |
+| `aclnnMatmul` 有限 BF16 正负抵消、数学结果为零的排列对照 | `MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED`（half non-finite；block/alternating 全零） |
+| `aclnnMatmul` post-Run output `+Inf/-Inf/qNaN` proxy | `PROVEN_E2E`（1/5/51/512 elements，readback exact） |
 
 结论严格限定于已验证环境和算子，不代表任意模型、任意算子或跨版本生产能力。详细统计见[当前注入能力统计](fault20_fast_validation/reports/fault20_injection_capability_inventory_20260807.md)。
+
+## Fault39 current capability
+
+| 路线 | 已验证内容 | 结论 |
+|---|---|---|
+| QMM extreme | x1 single/progressive/all-hit；x1+x2 dual extreme | 输入替换与模型传播已闭环，真实 QMM output 全 finite |
+| QMM x2_scale | formal ordinal 3、Run slot 2、lossless、有限 `×2` | scale 扰动传播已闭环，真实 QMM output 全 finite |
+| Floating MatMul finite dual | self/mat2 temporary 均为有限 BF16 | `MATMUL_FINITE_INPUT_NONFINITE_REPRODUCED` |
+| Floating MatMul cancellation | 理论结果为 0；half 与 block/alternating 排列对照 | `MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED` |
+| MatMul output proxy | post-Run `+Inf/-Inf/qNaN`，1/5/51/512 elements | 三种 `MATMUL_OUTPUT_*_PROXY_PROVEN` |
+
+当前证据层级：
+
+```text
+Root-cause approximation
+  finite dual BF16 -> real aclnnMatmul natural +Inf
+  cancellation     -> theoretical zero, layout-dependent natural +/-Inf
+
+Outcome proxy
+  real finite output -> direct +Inf / -Inf / qNaN -> downstream anomaly
+```
+
+最强 A2 判定是 `MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED`。它证明真实
+`aclnnMatmul` 对 K 轴正负排列表现出不同的 non-finite 行为，但没有定位 kernel 内
+accumulator 的类型、位置或首次 overflow 时刻，因此不能写成
+`ACCUMULATOR_OVERFLOW_PROVEN`。完整证据见
+[Fault39 A2 复现总结](fault20_fast_validation/reports/fault39_matmul_fault_reproduction_summary.md)。
 
 ## 仓库内容
 
@@ -43,6 +79,17 @@ C++ ABI     _GLIBCXX_USE_CXX11_ABI=0
 execution   TP=2, eager, repeat executor cache
 ```
 
+CANN 8.5.1 / vLLM 0.18.0 / torch_npu 2.9.0.post1 已完成独立编译、
+`libnnopbase.so` ABI smoke 和 Qwen3-32B TP=2 模型级 E2E。3/16/64/all-hit extreme
+均已验证；all-hit 的 12,160 次真实 QMM output 全部 finite。随后已证明 x2/weight 为
+`addresses[1]`，并完成 x1+x2 无损门禁及单次双极值 E2E。双极值将真实 QMM BF16 output
+放大到 `max_abs=872`，但仍全部 finite，因此不构成 accumulator overflow 证据。
+当前还证明了真实 QMM 的 `x2_scale` 为 formal ordinal 3、compact Run slot
+`addresses[2]`、连续 FP32 `[5120]` storage。无损 temporary substitution 与模型响应/token
+精确等价；有限 `×2` 令 5,120 个 scale 全部改变，并使生成 token 从 0-based index 4 开始
+分叉，但真实 QMM BF16 output 仍全部 finite。该结论命名为 scale amplification，不命名为
+accumulator overflow。
+
 ## 构建
 
 必须在与推理服务相同的 vLLM-Ascend/CANN 镜像内构建：
@@ -54,6 +101,19 @@ export FAULT20_BUFFER_OUTPUT_DIR=/fault20/runtime/l4_allhit_v1
 bash /fault20/source/l4_buffer_substitute_allhit_v1/build.sh
 
 export FAULT20_METADATA_PROXY_OUTPUT_DIR=/fault20/runtime/l4_metadata_lifecycle_proxy
+bash /fault20/source/l4_metadata_lifecycle_proxy/build.sh
+```
+
+CANN 8.5.1 独立构建必须显式锁定 toolkit 与真实库路径片段：
+
+```bash
+export FAULT20_BUFFER_OUTPUT_DIR=/fault20/runtime/cann851_validation_v1
+export FAULT20_ASCEND_TOOLKIT=/usr/local/Ascend/cann-8.5.1/aarch64-linux
+export FAULT20_EXPECTED_LIBRARY_PATH_FRAGMENT=/cann-8.5.1/
+bash /fault20/source/l4_buffer_substitute_allhit_v1/build.sh
+
+export FAULT20_METADATA_PROXY_OUTPUT_DIR=/fault20/runtime/cann851_metadata_proxy
+export FAULT20_REAL_LIBOPAPI=/usr/local/Ascend/cann-8.5.1/opp/built-in/op_impl/ai_core/tbe/op_api/lib/linux/aarch64/libopapi.so
 bash /fault20/source/l4_metadata_lifecycle_proxy/build.sh
 ```
 
@@ -82,17 +142,18 @@ export LD_LIBRARY_PATH=/fault20/runtime/l4_metadata_lifecycle_proxy:$LD_LIBRARY_
 export LD_PRELOAD=/fault20/runtime/l4_allhit_v1/libfault20_buffer_substitute_abi0.so
 ```
 
-control v5：
+control v13：
 
 ```text
-magic   0x4632304255463035
-version 5
-SHM     /fault20_l4_buffer_substitute_ctl_v5
+magic   0x4632304255463133
+version 13
+SHM     /fault20_l4_buffer_substitute_ctl_v13
 ```
 
 ## 控制命令
 
-默认必须保持 disabled。示例中的 device mask `3` 表示已验证的两个逻辑设备 0/1。
+默认必须保持 disabled。所有 `arm-*` 命令及实际 runtime substitution 都要求进程环境中
+`VLLM_SERVER_DEV_MODE=1`；否则 fail closed。示例中的 device mask `3` 表示已验证的两个逻辑设备 0/1。
 
 ```bash
 fault20_buffer_ctl status
@@ -104,6 +165,63 @@ fault20_buffer_ctl arm-all-qmm-lossless 3 1 5120 5120
 fault20_buffer_ctl arm-all-qmm-int2     3 1 5120 5120
 fault20_buffer_ctl arm-all-qmm-int4     3 1 5120 5120
 
+# QMM extreme x1 bounded single-hit
+# DEVICE M K CALL_INDEX MAX_BYTES VALUE RATIO_BPS PATTERN
+fault20_buffer_ctl arm-extreme 0 1 5120 1 5120 127 100 positive_max
+
+# QMM extreme x1 progressive（2..64 hits）
+# DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES VALUE RATIO_BPS PATTERN
+fault20_buffer_ctl arm-progressive-extreme 0 1 5120 1 16 5120 127 10000 positive_max
+
+# QMM extreme x1 all-hit；mask=1 只命中 rank0/device0
+# DEVICE_MASK M K MAX_BYTES VALUE RATIO_BPS PATTERN
+fault20_buffer_ctl arm-all-qmm-extreme 1 1 5120 5120 127 10000 positive_max
+
+# QMM x2/weight 只读槽位观察
+# DEVICE M K CALL_INDEX MAX_WEIGHT_BYTES
+fault20_buffer_ctl arm-observe-x2 0 1 5120 1 268435456
+
+# QMM x1+x2 双 temporary buffer；已验证 x2=[5120,5120]、26,214,400 bytes
+# DEVICE M K X2_N CALL_INDEX X1_BYTES WEIGHT_BYTES
+fault20_buffer_ctl arm-lossless-x1-x2 0 1 5120 5120 1 5120 26214400
+
+# DEVICE M K X2_N CALL_INDEX X1_BYTES WEIGHT_BYTES VALUE PATTERN
+fault20_buffer_ctl arm-extreme-x1-x2 0 1 5120 5120 1 5120 26214400 127 positive_max
+
+# QMM x2_scale 只读证明、无损替换与有限倍率放大
+# DEVICE M K SCALE_ELEMENTS CALL_INDEX MAX_SCALE_BYTES
+fault20_buffer_ctl arm-observe-x2-scale 0 1 5120 5120 1 20480
+fault20_buffer_ctl arm-lossless-x2-scale 0 1 5120 5120 1 20480
+
+# DEVICE M K SCALE_ELEMENTS CALL_INDEX MAX_SCALE_BYTES FACTOR
+# FACTOR 仅允许 2、10、100、1000；已完成模型 E2E 的档位为 2
+fault20_buffer_ctl arm-amplify-x2-scale 0 1 5120 5120 1 20480 2
+
+# aclnnMatmul 精确 decode projection：
+# self=[1,12800]、mat2=[12800,5120]、out=[1,5120]
+# 仅支持 device/rank0 single-hit 的已验证路径
+fault20_buffer_ctl arm-float-matmul-observe 0 1
+fault20_buffer_ctl arm-float-matmul-lossless self 0 1
+fault20_buffer_ctl arm-float-matmul-lossless mat2 0 1
+fault20_buffer_ctl arm-float-matmul-lossless dual 0 1
+
+# 有限 BF16 双输入幅值；EXPONENT 仅允许 48、56、57、58、59
+# 首个 non-finite 会自动 disarm；已验证在 2^58 首次得到全 +Inf
+fault20_buffer_ctl arm-float-matmul-finite 0 1 58
+
+# A=2^58 正负抵消；每个 pattern 都保证 6400 正项和 6400 负项
+# 仅支持 device/rank0、exact decode shape、single-hit
+fault20_buffer_ctl arm-float-matmul-cancel half        0 1
+fault20_buffer_ctl arm-float-matmul-cancel block256   0 1
+fault20_buffer_ctl arm-float-matmul-cancel block512   0 1
+fault20_buffer_ctl arm-float-matmul-cancel block1024  0 1
+fault20_buffer_ctl arm-float-matmul-cancel alternating 0 1
+
+# 真实 MatMul 正常执行后写回原 output storage；COUNT 仅允许 1/5/51/512
+fault20_buffer_ctl arm-float-matmul-output-proxy pos_inf 0 1 1
+fault20_buffer_ctl arm-float-matmul-output-proxy neg_inf 0 1 5
+fault20_buffer_ctl arm-float-matmul-output-proxy qnan    0 1 51
+
 # MatmulWeightNz all-hit
 fault20_buffer_ctl arm-all-matmul-lossless 3 1 12800 25600
 fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
@@ -111,11 +229,17 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 
 完整 bounded/multi-rank 命令见 `fault20_buffer_ctl` usage 和[能力矩阵](fault20_fast_validation/reports/fault20_capability_matrix_final.md)。
 
+控制器必须在 worker 所在 Docker IPC namespace 内执行，例如
+`docker exec -e VLLM_SERVER_DEV_MODE=1 CONTAINER fault20_buffer_ctl ...`；宿主机与容器内的
+同名 POSIX SHM 不是同一个控制块。progressive/all-hit 每次命中后扫描真实 QMM output，
+首次发现 non-finite 或 observer/runtime 失败即自动 disarm。
+
 ## Fail-closed 边界
 
 以下条件任一失败时，runtime 应原样调用真实 Run：
 
 - exact API/cache/adapter 不匹配；
+- `VLLM_SERVER_DEV_MODE` 不等于 `1`；
 - device/dtype/format/shape/stride/offset/bytes 不匹配；
 - producer address 或 Matmul storage guard 失败；
 - ABI/runtime API/分配/拷贝/同步条件不满足；
@@ -129,6 +253,14 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 - [最终能力矩阵](fault20_fast_validation/reports/fault20_capability_matrix_final.md)
 - [最终架构](fault20_fast_validation/reports/fault20_final_architecture.md)
 - [Primitive 设计](fault20_fast_validation/reports/fault20_fault_primitive_design.md)
+- [CANN 8.5.1 使用说明](FAULT20_CANN851_USAGE.md)
+- [Fault39 QMM 验证报告](fault20_fast_validation/reports/fault39_qmm_overflow_validation.md)
+- [Fault39 Floating MatMul 路径清点](fault20_fast_validation/reports/fault39_float_matmul_path_inventory.md)
+- [Fault39 Floating MatMul 有限输入到 Non-finite 输出验证](fault20_fast_validation/reports/fault39_float_matmul_finite_nonfinite_validation.md)
+- [Fault39 Floating MatMul 正负抵消与中间数值范围验证](fault20_fast_validation/reports/fault39_float_matmul_cancellation_validation.md)
+- [Fault39 Floating MatMul Output Inf/NaN Proxy 验证](fault20_fast_validation/reports/fault39_float_matmul_output_nonfinite_proxy_validation.md)
+- [Fault39 A2 MatMul 故障复现总结](fault20_fast_validation/reports/fault39_matmul_fault_reproduction_summary.md)
+- [Fault39 A3 验证交接](fault20_fast_validation/reports/fault39_a3_validation_handoff.md)
 
 ## 当前不支持
 
@@ -139,4 +271,5 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 - 并发、soak、异步 buffer pool、性能 SLA；
 - 跨 CANN/torch_npu/vLLM 版本和其他架构；
 - MoE、GroupedMatmul、MatmulAllReduce；
+- QMM post-Run output Inf/NaN proxy（当前只完成了 floating `aclnnMatmul`）；
 - 外部故障框架集成。

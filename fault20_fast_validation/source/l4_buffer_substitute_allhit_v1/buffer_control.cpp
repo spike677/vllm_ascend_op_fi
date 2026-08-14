@@ -45,8 +45,17 @@ Fault20Control *map_control(int *fd_out) {
         control->max_hits = 1;
         control->quant_step = 16;
         control->keep_mantissa_bits = 3;
+        control->extreme_value = 127;
+        control->extreme_ratio_bps = 10000;
+        control->extreme_pattern = FAULT20_EXTREME_POSITIVE_MAX;
         control->target_dtype = 27;
         control->max_bytes = 5120;
+        control->max_output_bytes = 65536;
+        control->max_weight_bytes = 268435456;
+        control->target_x2_n = 0;
+        control->max_scale_bytes = 1048576;
+        control->target_scale_elements = 0;
+        control->scale_factor = 1.0;
         control->target_device_mask = 1;
         control->max_hits_per_device = 1;
         control->selection_mode = FAULT20_SELECTION_BOUNDED;
@@ -62,9 +71,15 @@ void print_status(const Fault20Control *control) {
         "\"mode\":%u,\"target_device\":%d,\"target_m\":%d,\"target_k\":%d,"
         "\"target_call_index\":%u,\"max_hits\":%u,\"hit_count\":%u,"
         "\"candidate_count\":%u,\"quant_step\":%u,"
-        "\"keep_mantissa_bits\":%u,\"target_dtype\":%d,\"last_status\":%d,"
+        "\"keep_mantissa_bits\":%u,\"extreme_value\":%d,"
+        "\"extreme_ratio_bps\":%u,\"extreme_pattern\":%u,"
+        "\"target_dtype\":%d,\"last_status\":%d,"
         "\"selection_mode\":%u,\"target_api\":%u,"
-        "\"max_bytes\":%" PRIu64 ",\"generation\":%" PRIu64
+        "\"max_bytes\":%" PRIu64 ",\"max_output_bytes\":%" PRIu64
+        ",\"max_weight_bytes\":%" PRIu64 ",\"target_x2_n\":%d"
+        ",\"max_scale_bytes\":%" PRIu64 ",\"target_scale_elements\":%d"
+        ",\"scale_factor\":%.17g"
+        ",\"generation\":%" PRIu64
         ",\"target_device_mask\":\"0x%016" PRIx64
         "\",\"max_hits_per_device\":%u,"
         "\"candidate_count_per_device\":[%u,%u],"
@@ -76,10 +91,15 @@ void print_status(const Fault20Control *control) {
         control->target_call_index, control->max_hits,
         __atomic_load_n(&control->hit_count, __ATOMIC_ACQUIRE),
         __atomic_load_n(&control->candidate_count, __ATOMIC_ACQUIRE), control->quant_step,
-        control->keep_mantissa_bits, control->target_dtype,
+        control->keep_mantissa_bits, control->extreme_value,
+        control->extreme_ratio_bps, control->extreme_pattern, control->target_dtype,
         __atomic_load_n(&control->last_status, __ATOMIC_ACQUIRE),
         control->selection_mode, control->target_api, control->max_bytes,
-        control->generation, control->target_device_mask, control->max_hits_per_device,
+        control->max_output_bytes, control->max_weight_bytes, control->target_x2_n,
+        control->max_scale_bytes, control->target_scale_elements,
+        control->scale_factor,
+        control->generation, control->target_device_mask,
+        control->max_hits_per_device,
         __atomic_load_n(&control->candidate_count_per_device[0], __ATOMIC_ACQUIRE),
         __atomic_load_n(&control->candidate_count_per_device[1], __ATOMIC_ACQUIRE),
         __atomic_load_n(&control->hit_count_per_device[0], __ATOMIC_ACQUIRE),
@@ -110,6 +130,24 @@ void reset_device_counters(Fault20Control *control) {
     }
 }
 
+bool developer_mode_enabled() {
+    const char *value = std::getenv("VLLM_SERVER_DEV_MODE");
+    return value != nullptr && std::strcmp(value, "1") == 0;
+}
+
+uint32_t parse_extreme_pattern(const char *text) {
+    if (std::strcmp(text, "positive_max") == 0) {
+        return FAULT20_EXTREME_POSITIVE_MAX;
+    }
+    if (std::strcmp(text, "negative_max") == 0) {
+        return FAULT20_EXTREME_NEGATIVE_MAX;
+    }
+    if (std::strcmp(text, "alternating") == 0) {
+        return FAULT20_EXTREME_ALTERNATING;
+    }
+    return 0;
+}
+
 }  // namespace
 
 int main(int argc, char **argv) {
@@ -119,7 +157,12 @@ int main(int argc, char **argv) {
         return 1;
     }
     int result = 0;
-    if (argc == 2 && std::strcmp(argv[1], "status") == 0) {
+    const bool arm_requested = argc >= 2 && std::strncmp(argv[1], "arm-", 4) == 0;
+    if (arm_requested && !developer_mode_enabled()) {
+        std::fprintf(stderr,
+                     "refusing to arm: VLLM_SERVER_DEV_MODE must equal 1\n");
+        result = 3;
+    } else if (argc == 2 && std::strcmp(argv[1], "status") == 0) {
         print_status(control);
     } else if (argc == 2 && std::strcmp(argv[1], "disarm") == 0) {
         __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
@@ -134,8 +177,600 @@ int main(int argc, char **argv) {
         control->mode = FAULT20_MODE_DISABLED;
         control->selection_mode = FAULT20_SELECTION_BOUNDED;
         control->target_api = FAULT20_TARGET_API_NONE;
+        control->extreme_value = 127;
+        control->extreme_ratio_bps = 10000;
+        control->extreme_pattern = FAULT20_EXTREME_POSITIVE_MAX;
+        control->max_output_bytes = 65536;
+        control->max_weight_bytes = 268435456;
+        control->target_x2_n = 0;
+        control->max_scale_bytes = 1048576;
+        control->target_scale_elements = 0;
+        control->scale_factor = 1.0;
         ++control->generation;
         print_status(control);
+    } else if (argc == 5 &&
+               std::strcmp(argv[1], "arm-float-matmul-finite") == 0) {
+        long long device = 0;
+        long long call_index = 0;
+        long long exponent = 0;
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &call_index) ||
+            !parse_int(argv[4], 48, 59, &exponent) ||
+            (exponent != 48 && exponent != 56 && exponent != 57 &&
+             exponent != 58 && exponent != 59)) {
+            std::fprintf(stderr,
+                         "invalid arm-float-matmul-finite arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_FLOAT_MATMUL_FINITE_DUAL;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = 1;
+            control->target_k = 12800;
+            control->target_x2_n = 5120;
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->extreme_value = static_cast<int32_t>(exponent);
+            control->target_dtype = 27;
+            control->max_bytes = 25600;
+            control->max_weight_bytes = 131072000;
+            control->max_output_bytes = 10240;
+            control->target_device_mask =
+                1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_FLOAT_MATMUL;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U,
+                             __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 5 &&
+               std::strcmp(argv[1], "arm-float-matmul-cancel") == 0) {
+        long long device = 0;
+        long long call_index = 0;
+        uint32_t pattern = 0;
+        uint32_t block_size = 0;
+        if (std::strcmp(argv[2], "half") == 0) {
+            pattern = FAULT20_CANCELLATION_HALF;
+        } else if (std::strcmp(argv[2], "block256") == 0) {
+            pattern = FAULT20_CANCELLATION_BLOCK;
+            block_size = 256;
+        } else if (std::strcmp(argv[2], "block512") == 0) {
+            pattern = FAULT20_CANCELLATION_BLOCK;
+            block_size = 512;
+        } else if (std::strcmp(argv[2], "block1024") == 0) {
+            pattern = FAULT20_CANCELLATION_BLOCK;
+            block_size = 1024;
+        } else if (std::strcmp(argv[2], "alternating") == 0) {
+            pattern = FAULT20_CANCELLATION_ALTERNATING;
+            block_size = 1;
+        }
+        if (pattern == 0 || !parse_int(argv[3], 0, 63, &device) ||
+            !parse_int(argv[4], 1, 1048576, &call_index)) {
+            std::fprintf(stderr,
+                         "invalid arm-float-matmul-cancel arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_FLOAT_MATMUL_CANCELLATION;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = 1;
+            control->target_k = 12800;
+            control->target_x2_n = 5120;
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = block_size;
+            control->keep_mantissa_bits = 0;
+            control->extreme_value = 58;
+            control->extreme_ratio_bps = 10000;
+            control->extreme_pattern = pattern;
+            control->target_dtype = 27;
+            control->max_bytes = 25600;
+            control->max_weight_bytes = 131072000;
+            control->max_output_bytes = 10240;
+            control->target_device_mask =
+                1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_FLOAT_MATMUL;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U,
+                             __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 6 &&
+               std::strcmp(argv[1], "arm-float-matmul-output-proxy") == 0) {
+        long long device = 0;
+        long long call_index = 0;
+        long long element_count = 0;
+        uint32_t proxy_kind = 0;
+        if (std::strcmp(argv[2], "pos_inf") == 0) {
+            proxy_kind = FAULT20_OUTPUT_PROXY_POS_INF;
+        } else if (std::strcmp(argv[2], "neg_inf") == 0) {
+            proxy_kind = FAULT20_OUTPUT_PROXY_NEG_INF;
+        } else if (std::strcmp(argv[2], "qnan") == 0) {
+            proxy_kind = FAULT20_OUTPUT_PROXY_QNAN;
+        }
+        if (proxy_kind == 0 || !parse_int(argv[3], 0, 63, &device) ||
+            !parse_int(argv[4], 1, 1048576, &call_index) ||
+            !parse_int(argv[5], 1, 512, &element_count) ||
+            (element_count != 1 && element_count != 5 &&
+             element_count != 51 && element_count != 512)) {
+            std::fprintf(stderr,
+                         "invalid arm-float-matmul-output-proxy arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_FLOAT_MATMUL_OUTPUT_PROXY;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = 1;
+            control->target_k = 12800;
+            control->target_x2_n = 5120;
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = static_cast<uint32_t>(element_count);
+            control->keep_mantissa_bits = 0;
+            control->extreme_value = 0;
+            control->extreme_ratio_bps = static_cast<uint32_t>(
+                (element_count * 10000 + 2560) / 5120);
+            control->extreme_pattern = proxy_kind;
+            control->target_dtype = 27;
+            control->max_bytes = 25600;
+            control->max_weight_bytes = 131072000;
+            control->max_output_bytes = 10240;
+            control->target_device_mask =
+                1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_FLOAT_MATMUL;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U,
+                             __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 4 &&
+               std::strcmp(argv[1], "arm-float-matmul-observe") == 0) {
+        long long device = 0;
+        long long call_index = 0;
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &call_index)) {
+            std::fprintf(stderr,
+                         "invalid arm-float-matmul-observe arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_FLOAT_MATMUL_OUTPUT_OBSERVE;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = 1;
+            control->target_k = 12800;
+            control->target_x2_n = 5120;
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->target_dtype = 27;
+            control->max_bytes = 25600;
+            control->max_weight_bytes = 131072000;
+            control->max_output_bytes = 10240;
+            control->target_device_mask =
+                1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_FLOAT_MATMUL;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U,
+                             __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 5 &&
+               std::strcmp(argv[1], "arm-float-matmul-lossless") == 0) {
+        long long device = 0;
+        long long call_index = 0;
+        uint32_t mode = FAULT20_MODE_DISABLED;
+        if (std::strcmp(argv[2], "self") == 0) {
+            mode = FAULT20_MODE_FLOAT_MATMUL_LOSSLESS_SELF;
+        } else if (std::strcmp(argv[2], "mat2") == 0) {
+            mode = FAULT20_MODE_FLOAT_MATMUL_LOSSLESS_MAT2;
+        } else if (std::strcmp(argv[2], "dual") == 0) {
+            mode = FAULT20_MODE_FLOAT_MATMUL_LOSSLESS_DUAL;
+        }
+        if (mode == FAULT20_MODE_DISABLED ||
+            !parse_int(argv[3], 0, 63, &device) ||
+            !parse_int(argv[4], 1, 1048576, &call_index)) {
+            std::fprintf(stderr,
+                         "invalid arm-float-matmul-lossless arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = mode;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = 1;
+            control->target_k = 12800;
+            control->target_x2_n = 5120;
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->target_dtype = 27;
+            control->max_bytes = 25600;
+            control->max_weight_bytes = 131072000;
+            control->max_output_bytes = 10240;
+            control->target_device_mask =
+                1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_FLOAT_MATMUL;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U,
+                             __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 7 && std::strcmp(argv[1], "arm-observe") == 0) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long call_index = 0;
+        long long output_bytes = 0;
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &call_index) ||
+            !parse_int(argv[6], 2, 1048576, &output_bytes) ||
+            static_cast<unsigned long long>(m) *
+                    static_cast<unsigned long long>(k) >
+                65536ULL) {
+            std::fprintf(stderr, "invalid arm-observe arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_OUTPUT_OBSERVE;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->target_dtype = 2;
+            control->max_bytes = static_cast<uint64_t>(m * k);
+            control->max_output_bytes = static_cast<uint64_t>(output_bytes);
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 7 && std::strcmp(argv[1], "arm-observe-x2") == 0) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long call_index = 0;
+        long long weight_bytes = 0;
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &call_index) ||
+            !parse_int(argv[6], 1, 1073741824, &weight_bytes) ||
+            static_cast<unsigned long long>(m) *
+                    static_cast<unsigned long long>(k) >
+                65536ULL) {
+            std::fprintf(stderr, "invalid arm-observe-x2 arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_WEIGHT_OBSERVE;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->target_dtype = 2;
+            control->max_bytes = static_cast<uint64_t>(m * k);
+            control->max_output_bytes = 65536;
+            control->max_weight_bytes = static_cast<uint64_t>(weight_bytes);
+            control->target_x2_n = 0;
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 8 &&
+               std::strcmp(argv[1], "arm-observe-x2-scale") == 0) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long scale_elements = 0;
+        long long call_index = 0;
+        long long scale_bytes = 0;
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &scale_elements) ||
+            !parse_int(argv[6], 1, 1048576, &call_index) ||
+            !parse_int(argv[7], 4, 4194304, &scale_bytes) ||
+            static_cast<unsigned long long>(m) *
+                    static_cast<unsigned long long>(k) >
+                65536ULL ||
+            static_cast<unsigned long long>(scale_elements) * 4ULL !=
+                static_cast<unsigned long long>(scale_bytes)) {
+            std::fprintf(stderr, "invalid arm-observe-x2-scale arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_X2_SCALE_OBSERVE;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_scale_elements = static_cast<int32_t>(scale_elements);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->target_dtype = 0;
+            control->max_bytes = static_cast<uint64_t>(m * k);
+            control->max_output_bytes = 65536;
+            control->max_scale_bytes = static_cast<uint64_t>(scale_bytes);
+            control->scale_factor = 1.0;
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 8 &&
+               std::strcmp(argv[1], "arm-lossless-x2-scale") == 0) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long scale_elements = 0;
+        long long call_index = 0;
+        long long scale_bytes = 0;
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &scale_elements) ||
+            !parse_int(argv[6], 1, 1048576, &call_index) ||
+            !parse_int(argv[7], 4, 4194304, &scale_bytes) ||
+            static_cast<unsigned long long>(m) *
+                    static_cast<unsigned long long>(k) >
+                65536ULL ||
+            static_cast<unsigned long long>(scale_elements) * 4ULL !=
+                static_cast<unsigned long long>(scale_bytes)) {
+            std::fprintf(stderr, "invalid arm-lossless-x2-scale arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_X2_SCALE_LOSSLESS;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_scale_elements = static_cast<int32_t>(scale_elements);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->target_dtype = 0;
+            control->max_bytes = static_cast<uint64_t>(m * k);
+            control->max_output_bytes = 65536;
+            control->max_scale_bytes = static_cast<uint64_t>(scale_bytes);
+            control->scale_factor = 1.0;
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 9 &&
+               std::strcmp(argv[1], "arm-amplify-x2-scale") == 0) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long scale_elements = 0;
+        long long call_index = 0;
+        long long scale_bytes = 0;
+        long long factor = 0;
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &scale_elements) ||
+            !parse_int(argv[6], 1, 1048576, &call_index) ||
+            !parse_int(argv[7], 4, 4194304, &scale_bytes) ||
+            !parse_int(argv[8], 2, 1000, &factor) ||
+            (factor != 2 && factor != 10 && factor != 100 && factor != 1000) ||
+            static_cast<unsigned long long>(m) *
+                    static_cast<unsigned long long>(k) >
+                65536ULL ||
+            static_cast<unsigned long long>(scale_elements) * 4ULL !=
+                static_cast<unsigned long long>(scale_bytes)) {
+            std::fprintf(stderr, "invalid arm-amplify-x2-scale arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_X2_SCALE_AMPLIFY;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_scale_elements = static_cast<int32_t>(scale_elements);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->target_dtype = 0;
+            control->max_bytes = static_cast<uint64_t>(m * k);
+            control->max_output_bytes = 65536;
+            control->max_scale_bytes = static_cast<uint64_t>(scale_bytes);
+            control->scale_factor = static_cast<double>(factor);
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 9 &&
+               std::strcmp(argv[1], "arm-lossless-x1-x2") == 0) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long x2_n = 0;
+        long long call_index = 0;
+        long long x1_bytes = 0;
+        long long weight_bytes = 0;
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &x2_n) ||
+            !parse_int(argv[6], 1, 1048576, &call_index) ||
+            !parse_int(argv[7], 1, 65536, &x1_bytes) ||
+            !parse_int(argv[8], 1, 1073741824, &weight_bytes) ||
+            static_cast<unsigned long long>(m) *
+                    static_cast<unsigned long long>(k) !=
+                static_cast<unsigned long long>(x1_bytes) ||
+            static_cast<unsigned long long>(k) *
+                    static_cast<unsigned long long>(x2_n) !=
+                static_cast<unsigned long long>(weight_bytes)) {
+            std::fprintf(stderr, "invalid arm-lossless-x1-x2 arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_LOSSLESS_X1_X2;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_x2_n = static_cast<int32_t>(x2_n);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->target_dtype = 2;
+            control->max_bytes = static_cast<uint64_t>(x1_bytes);
+            control->max_output_bytes = 65536;
+            control->max_weight_bytes = static_cast<uint64_t>(weight_bytes);
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 11 &&
+               std::strcmp(argv[1], "arm-extreme-x1-x2") == 0) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long x2_n = 0;
+        long long call_index = 0;
+        long long x1_bytes = 0;
+        long long weight_bytes = 0;
+        long long value = 0;
+        const uint32_t pattern = parse_extreme_pattern(argv[10]);
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &x2_n) ||
+            !parse_int(argv[6], 1, 1048576, &call_index) ||
+            !parse_int(argv[7], 1, 65536, &x1_bytes) ||
+            !parse_int(argv[8], 1, 1073741824, &weight_bytes) ||
+            !parse_int(argv[9], -128, 127, &value) ||
+            pattern != FAULT20_EXTREME_POSITIVE_MAX || value != 127 ||
+            static_cast<unsigned long long>(m) *
+                    static_cast<unsigned long long>(k) !=
+                static_cast<unsigned long long>(x1_bytes) ||
+            static_cast<unsigned long long>(k) *
+                    static_cast<unsigned long long>(x2_n) !=
+                static_cast<unsigned long long>(weight_bytes)) {
+            std::fprintf(stderr, "invalid arm-extreme-x1-x2 arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_EXTREME_X1_X2;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_x2_n = static_cast<int32_t>(x2_n);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->extreme_value = static_cast<int32_t>(value);
+            control->extreme_ratio_bps = 10000;
+            control->extreme_pattern = pattern;
+            control->target_dtype = 2;
+            control->max_bytes = static_cast<uint64_t>(x1_bytes);
+            control->max_output_bytes = 65536;
+            control->max_weight_bytes = static_cast<uint64_t>(weight_bytes);
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
     } else if (argc == 6 && std::strcmp(argv[1], "arm-lossless") == 0) {
         long long device = 0;
         long long k = 0;
@@ -196,6 +831,7 @@ int main(int argc, char **argv) {
             control->keep_mantissa_bits = 0;
             control->target_dtype = 2;
             control->max_bytes = static_cast<uint64_t>(bytes);
+            control->max_output_bytes = 65536;
             control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
             control->max_hits_per_device = static_cast<uint32_t>(hits);
             control->selection_mode = FAULT20_SELECTION_BOUNDED;
@@ -235,9 +871,162 @@ int main(int argc, char **argv) {
             control->keep_mantissa_bits = 0;
             control->target_dtype = 2;
             control->max_bytes = static_cast<uint64_t>(bytes);
+            control->max_output_bytes = 65536;
             control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
             control->max_hits_per_device = static_cast<uint32_t>(hits);
             control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 10 && std::strcmp(argv[1], "arm-extreme") == 0) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long call_index = 0;
+        long long bytes = 0;
+        long long value = 0;
+        long long ratio_bps = 0;
+        const uint32_t pattern = parse_extreme_pattern(argv[9]);
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &call_index) ||
+            !parse_int(argv[6], 1, 65536, &bytes) ||
+            !parse_int(argv[7], -128, 127, &value) ||
+            !parse_int(argv[8], 1, 10000, &ratio_bps) || pattern == 0 ||
+            (pattern == FAULT20_EXTREME_POSITIVE_MAX && value != 127) ||
+            (pattern == FAULT20_EXTREME_NEGATIVE_MAX && value != -128) ||
+            (pattern == FAULT20_EXTREME_ALTERNATING && value != 127 && value != -128)) {
+            std::fprintf(stderr, "invalid arm-extreme arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_EXTREME_X1;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = 1;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->extreme_value = static_cast<int32_t>(value);
+            control->extreme_ratio_bps = static_cast<uint32_t>(ratio_bps);
+            control->extreme_pattern = pattern;
+            control->target_dtype = 2;
+            control->max_bytes = static_cast<uint64_t>(bytes);
+            control->max_output_bytes = 65536;
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = 1;
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 11 &&
+               std::strcmp(argv[1], "arm-progressive-extreme") == 0) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long call_index = 0;
+        long long hits = 0;
+        long long bytes = 0;
+        long long value = 0;
+        long long ratio_bps = 0;
+        const uint32_t pattern = parse_extreme_pattern(argv[10]);
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &call_index) ||
+            !parse_int(argv[6], 2, 64, &hits) ||
+            !parse_int(argv[7], 1, 65536, &bytes) ||
+            !parse_int(argv[8], -128, 127, &value) ||
+            !parse_int(argv[9], 1, 10000, &ratio_bps) || pattern == 0 ||
+            (pattern == FAULT20_EXTREME_POSITIVE_MAX && value != 127) ||
+            (pattern == FAULT20_EXTREME_NEGATIVE_MAX && value != -128) ||
+            (pattern == FAULT20_EXTREME_ALTERNATING && value != 127 &&
+             value != -128)) {
+            std::fprintf(stderr, "invalid arm-progressive-extreme arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_EXTREME_X1;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = static_cast<uint32_t>(hits);
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->extreme_value = static_cast<int32_t>(value);
+            control->extreme_ratio_bps = static_cast<uint32_t>(ratio_bps);
+            control->extreme_pattern = pattern;
+            control->target_dtype = 2;
+            control->max_bytes = static_cast<uint64_t>(bytes);
+            control->max_output_bytes = 65536;
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = static_cast<uint32_t>(hits);
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if (argc == 9 &&
+               std::strcmp(argv[1], "arm-all-qmm-extreme") == 0) {
+        long long device_mask = 0;
+        long long m = 0;
+        long long k = 0;
+        long long bytes = 0;
+        long long value = 0;
+        long long ratio_bps = 0;
+        const uint32_t pattern = parse_extreme_pattern(argv[8]);
+        if (!parse_int(argv[2], 1, 0x7FFFFFFFFFFFFFFFLL, &device_mask) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 65536, &bytes) ||
+            !parse_int(argv[6], -128, 127, &value) ||
+            !parse_int(argv[7], 1, 10000, &ratio_bps) || pattern == 0 ||
+            (pattern == FAULT20_EXTREME_POSITIVE_MAX && value != 127) ||
+            (pattern == FAULT20_EXTREME_NEGATIVE_MAX && value != -128) ||
+            (pattern == FAULT20_EXTREME_ALTERNATING && value != 127 &&
+             value != -128)) {
+            std::fprintf(stderr, "invalid arm-all-qmm-extreme arguments\n");
+            result = 2;
+        } else {
+            const uint64_t mask = static_cast<uint64_t>(device_mask);
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = FAULT20_MODE_QMM_EXTREME_X1;
+            control->target_device = -1;
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_call_index = 1;
+            control->max_hits = FAULT20_ALL_HITS_LIMIT;
+            control->quant_step = 0;
+            control->keep_mantissa_bits = 0;
+            control->extreme_value = static_cast<int32_t>(value);
+            control->extreme_ratio_bps = static_cast<uint32_t>(ratio_bps);
+            control->extreme_pattern = pattern;
+            control->target_dtype = 2;
+            control->max_bytes = static_cast<uint64_t>(bytes);
+            control->max_output_bytes = 65536;
+            control->target_device_mask = mask;
+            control->max_hits_per_device = FAULT20_ALL_HITS_LIMIT;
+            control->selection_mode = FAULT20_SELECTION_ALL_HITS;
             control->target_api = FAULT20_TARGET_API_QMM;
             __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
             __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
@@ -425,9 +1214,24 @@ int main(int argc, char **argv) {
         std::fprintf(stderr,
                      "usage:\n"
                      "  fault20_buffer_ctl status\n"
+                     "  fault20_buffer_ctl arm-float-matmul-output-proxy pos_inf|neg_inf|qnan DEVICE CALL_INDEX ELEMENT_COUNT(1|5|51|512)\n"
+                     "  fault20_buffer_ctl arm-float-matmul-cancel half|block256|block512|block1024|alternating DEVICE CALL_INDEX\n"
+                     "  fault20_buffer_ctl arm-float-matmul-finite DEVICE CALL_INDEX EXPONENT(48|56|57|58|59)\n"
+                     "  fault20_buffer_ctl arm-float-matmul-observe DEVICE CALL_INDEX\n"
+                     "  fault20_buffer_ctl arm-float-matmul-lossless self|mat2|dual DEVICE CALL_INDEX\n"
+                     "  fault20_buffer_ctl arm-observe DEVICE M K CALL_INDEX MAX_OUTPUT_BYTES\n"
+                     "  fault20_buffer_ctl arm-observe-x2 DEVICE M K CALL_INDEX MAX_WEIGHT_BYTES\n"
+                     "  fault20_buffer_ctl arm-observe-x2-scale DEVICE M K SCALE_ELEMENTS CALL_INDEX MAX_SCALE_BYTES\n"
+                     "  fault20_buffer_ctl arm-lossless-x2-scale DEVICE M K SCALE_ELEMENTS CALL_INDEX MAX_SCALE_BYTES\n"
+                     "  fault20_buffer_ctl arm-amplify-x2-scale DEVICE M K SCALE_ELEMENTS CALL_INDEX MAX_SCALE_BYTES FACTOR(2|10|100|1000)\n"
+                     "  fault20_buffer_ctl arm-lossless-x1-x2 DEVICE M K X2_N CALL_INDEX X1_BYTES WEIGHT_BYTES\n"
+                     "  fault20_buffer_ctl arm-extreme-x1-x2 DEVICE M K X2_N CALL_INDEX X1_BYTES WEIGHT_BYTES VALUE positive_max\n"
                      "  fault20_buffer_ctl arm-lossless DEVICE K MAX_HITS MAX_BYTES\n"
                      "  fault20_buffer_ctl arm-int4 DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES\n"
                      "  fault20_buffer_ctl arm-int2 DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES\n"
+                     "  fault20_buffer_ctl arm-extreme DEVICE M K CALL_INDEX MAX_BYTES VALUE RATIO_BPS positive_max|negative_max|alternating\n"
+                     "  fault20_buffer_ctl arm-progressive-extreme DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES VALUE RATIO_BPS positive_max|negative_max|alternating\n"
+                     "  fault20_buffer_ctl arm-all-qmm-extreme DEVICE_MASK M K MAX_BYTES VALUE RATIO_BPS positive_max|negative_max|alternating\n"
                      "  fault20_buffer_ctl arm-mantissa DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES bf16|fp16 KEEP_BITS\n"
                      "  fault20_buffer_ctl arm-multirank-lossless DEVICE_MASK M K CALL_INDEX MAX_HITS_PER_DEVICE MAX_BYTES\n"
                      "  fault20_buffer_ctl arm-multirank-int4 DEVICE_MASK M K CALL_INDEX MAX_HITS_PER_DEVICE MAX_BYTES\n"

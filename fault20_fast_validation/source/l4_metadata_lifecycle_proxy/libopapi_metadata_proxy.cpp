@@ -8,6 +8,7 @@
 #include "../l4_buffer_substitute_allhit_v1/fault20_buffer_api.h"
 
 #include <atomic>
+#include <cmath>
 #include <cinttypes>
 #include <cstdio>
 #include <cstdlib>
@@ -39,7 +40,7 @@ using MatmulWeightNzGetWorkspaceSizeFn = aclnnStatus (*)(
     aclOpExecutor **);
 using ExecuteFn = aclnnStatus (*)(void *, uint64_t, aclOpExecutor *, aclrtStream);
 using Fault20GwsBeginFn = void (*)();
-using Fault20GwsCommitFn = bool (*)(const Fault20X1Metadata *);
+using Fault20GwsCommitFn = bool (*)(const Fault20QmmMetadata *);
 using Fault20MatmulGwsCommitFn = bool (*)(const Fault20MatmulMetadata *);
 using Fault20GwsAbortFn = void (*)();
 
@@ -47,15 +48,20 @@ pthread_once_t g_resolve_once = PTHREAD_ONCE_INIT;
 QuantMatmulGetWorkspaceSizeFn g_real_qmm_getws = nullptr;
 AscendQuantGetWorkspaceSizeFn g_real_quant_getws = nullptr;
 MatmulWeightNzGetWorkspaceSizeFn g_real_matmul_getws = nullptr;
+MatmulWeightNzGetWorkspaceSizeFn g_real_float_matmul_getws = nullptr;
 ExecuteFn g_real_qmm_execute = nullptr;
 ExecuteFn g_real_quant_execute = nullptr;
 ExecuteFn g_real_matmul_execute = nullptr;
+ExecuteFn g_real_float_matmul_execute = nullptr;
 Fault20GwsBeginFn g_fault20_gws_begin = nullptr;
 Fault20GwsCommitFn g_fault20_gws_commit = nullptr;
 Fault20GwsAbortFn g_fault20_gws_abort = nullptr;
 Fault20GwsBeginFn g_fault20_matmul_gws_begin = nullptr;
 Fault20MatmulGwsCommitFn g_fault20_matmul_gws_commit = nullptr;
 Fault20GwsAbortFn g_fault20_matmul_gws_abort = nullptr;
+Fault20GwsBeginFn g_fault20_float_matmul_gws_begin = nullptr;
+Fault20MatmulGwsCommitFn g_fault20_float_matmul_gws_commit = nullptr;
+Fault20GwsAbortFn g_fault20_float_matmul_gws_abort = nullptr;
 std::atomic<uint64_t> g_sequence{0};
 
 uint64_t monotonic_ns() {
@@ -76,7 +82,8 @@ void write_line(const char *line, size_t size) {
     }
     char newline = '\n';
     iovec parts[2] = {{const_cast<char *>(line), size}, {&newline, 1}};
-    (void)writev(fd, parts, 2);
+    const ssize_t written = writev(fd, parts, 2);
+    (void)written;
     (void)close(fd);
 }
 
@@ -93,6 +100,10 @@ void resolve_real() {
         dlsym(RTLD_NEXT, "aclnnMatmulWeightNzGetWorkspaceSize"));
     g_real_matmul_execute =
         reinterpret_cast<ExecuteFn>(dlsym(RTLD_NEXT, "aclnnMatmulWeightNz"));
+    g_real_float_matmul_getws = reinterpret_cast<MatmulWeightNzGetWorkspaceSizeFn>(
+        dlsym(RTLD_NEXT, "aclnnMatmulGetWorkspaceSize"));
+    g_real_float_matmul_execute =
+        reinterpret_cast<ExecuteFn>(dlsym(RTLD_NEXT, "aclnnMatmul"));
     g_fault20_gws_begin = reinterpret_cast<Fault20GwsBeginFn>(
         dlsym(RTLD_DEFAULT, "fault20_qmm_gws_begin"));
     g_fault20_gws_commit = reinterpret_cast<Fault20GwsCommitFn>(
@@ -105,6 +116,13 @@ void resolve_real() {
         dlsym(RTLD_DEFAULT, "fault20_matmul_gws_commit"));
     g_fault20_matmul_gws_abort = reinterpret_cast<Fault20GwsAbortFn>(
         dlsym(RTLD_DEFAULT, "fault20_matmul_gws_abort"));
+    g_fault20_float_matmul_gws_begin = reinterpret_cast<Fault20GwsBeginFn>(
+        dlsym(RTLD_DEFAULT, "fault20_float_matmul_gws_begin"));
+    g_fault20_float_matmul_gws_commit =
+        reinterpret_cast<Fault20MatmulGwsCommitFn>(
+            dlsym(RTLD_DEFAULT, "fault20_float_matmul_gws_commit"));
+    g_fault20_float_matmul_gws_abort = reinterpret_cast<Fault20GwsAbortFn>(
+        dlsym(RTLD_DEFAULT, "fault20_float_matmul_gws_abort"));
 }
 
 uint64_t checked_bytes(int64_t elements, size_t element_size);
@@ -253,7 +271,7 @@ bool capture_tensor_metadata(const aclTensor *tensor, Fault20TensorMetadata *met
     const size_t element_size = aclDataTypeSize(dtype);
     const uint64_t view_bytes = checked_bytes(numel, element_size);
     const uint64_t storage_bytes = checked_bytes(storage_elements, element_size);
-    if (element_size == 0 || view_bytes == 0 || storage_bytes == 0) {
+    if (element_size == 0) {
         return false;
     }
     Fault20TensorMetadata value{};
@@ -284,6 +302,67 @@ bool capture_tensor_metadata(const aclTensor *tensor, Fault20TensorMetadata *met
     value.raw_addr = reinterpret_cast<uintptr_t>(raw_addr);
     value.storage_addr = reinterpret_cast<uintptr_t>(tensor->GetStorageAddr());
     value.data_addr = reinterpret_cast<uintptr_t>(tensor->GetData());
+    *metadata = value;
+    return true;
+}
+
+bool capture_optional_tensor_metadata(const aclTensor *tensor,
+                                      Fault20TensorMetadata *metadata) {
+    if (metadata == nullptr) {
+        return false;
+    }
+    *metadata = Fault20TensorMetadata{};
+    return tensor == nullptr || capture_tensor_metadata(tensor, metadata);
+}
+
+bool capture_qmm_metadata(
+    const aclTensor *x1, const aclTensor *x2, const aclTensor *x1_scale,
+    const aclTensor *x2_scale, const aclTensor *y_scale, const aclTensor *x1_offset,
+    const aclTensor *x2_offset, const aclTensor *y_offset, const aclTensor *bias,
+    bool transpose_x1, bool transpose_x2, int64_t group_size, aclTensor *out,
+    Fault20QmmMetadata *metadata) {
+    if (x1 == nullptr || x2 == nullptr || out == nullptr || metadata == nullptr) {
+        return false;
+    }
+    Fault20QmmMetadata value{};
+    if (!capture_x1_metadata(x1, out, transpose_x1, transpose_x2, group_size,
+                             &value.x1_legacy) ||
+        !capture_tensor_metadata(x1, &value.x1) ||
+        !capture_tensor_metadata(x2, &value.x2) ||
+        !capture_optional_tensor_metadata(x1_scale, &value.x1_scale) ||
+        !capture_optional_tensor_metadata(x2_scale, &value.x2_scale) ||
+        !capture_optional_tensor_metadata(y_scale, &value.y_scale) ||
+        !capture_optional_tensor_metadata(x1_offset, &value.x1_offset) ||
+        !capture_optional_tensor_metadata(x2_offset, &value.x2_offset) ||
+        !capture_optional_tensor_metadata(y_offset, &value.y_offset) ||
+        !capture_optional_tensor_metadata(bias, &value.bias) ||
+        !capture_tensor_metadata(out, &value.out)) {
+        return false;
+    }
+    value.group_size = group_size;
+    value.transpose_x1 = transpose_x1 ? 1U : 0U;
+    value.transpose_x2 = transpose_x2 ? 1U : 0U;
+    const Fault20TensorMetadata *tensors[] = {
+        &value.x1,       &value.x2,        &value.x1_scale, &value.x2_scale,
+        &value.y_scale,  &value.x1_offset, &value.x2_offset,
+        &value.y_offset, &value.bias,      &value.out,
+    };
+    for (size_t i = 0; i < sizeof(tensors) / sizeof(tensors[0]); ++i) {
+        const Fault20TensorMetadata &current = *tensors[i];
+        if (current.present == 0) {
+            continue;
+        }
+        ++value.present_count;
+        value.any_empty_storage |=
+            current.storage_bytes == 0 || current.storage_addr == 0 ? 1U : 0U;
+        for (size_t j = i + 1; j < sizeof(tensors) / sizeof(tensors[0]); ++j) {
+            const Fault20TensorMetadata &other = *tensors[j];
+            if (other.present != 0 && current.storage_ptr != 0 &&
+                current.storage_ptr == other.storage_ptr) {
+                value.any_shared_storage = 1;
+            }
+        }
+    }
     *metadata = value;
     return true;
 }
@@ -327,6 +406,134 @@ void log_call(const char *event, uint64_t invocation, aclnnStatus status, aclOpE
     if (written > 0 && static_cast<size_t>(written) < sizeof(line)) {
         write_line(line, static_cast<size_t>(written));
     }
+}
+
+void log_quant_parameters(uint64_t invocation, aclnnStatus status, aclOpExecutor *executor,
+                          bool sqrt_mode, const char *round_mode, int32_t dst_type, int32_t axis) {
+    char line[1024];
+    const char *mode = round_mode == nullptr ? "" : round_mode;
+    const int written = std::snprintf(
+        line, sizeof(line),
+        "{\"event\":\"quant_parameters\",\"api\":\"aclnnAscendQuantV3\","
+        "\"pid\":%ld,\"tid\":%ld,\"ts_ns\":%" PRIu64
+        ",\"sequence\":%" PRIu64 ",\"invocation\":%" PRIu64
+        ",\"status\":%d,\"executor\":\"%p\",\"sqrt_mode\":%s,"
+        "\"round_mode\":\"%s\",\"dst_type\":%d,\"axis\":%d}",
+        static_cast<long>(getpid()), static_cast<long>(syscall(SYS_gettid)), monotonic_ns(),
+        g_sequence.fetch_add(1, std::memory_order_relaxed) + 1, invocation,
+        static_cast<int>(status), executor, sqrt_mode ? "true" : "false", mode, dst_type, axis);
+    if (written > 0 && static_cast<size_t>(written) < sizeof(line)) {
+        write_line(line, static_cast<size_t>(written));
+    }
+}
+
+bool snapshot_enabled() {
+    const char *value = std::getenv("FAULT15_CAPTURE_SCALE_VALUES");
+    return value != nullptr && std::strcmp(value, "1") == 0;
+}
+
+float bf16_to_float(uint16_t value) {
+    const uint32_t bits = static_cast<uint32_t>(value) << 16U;
+    float result = 0.0F;
+    std::memcpy(&result, &bits, sizeof(result));
+    return result;
+}
+
+void log_tensor_value_summary(const char *role, uint64_t invocation, aclOpExecutor *executor,
+                              const aclTensor *tensor) {
+    if (!snapshot_enabled() || tensor == nullptr) {
+        return;
+    }
+
+    aclDataType dtype = ACL_DT_UNDEFINED;
+    int64_t view_offset = 0;
+    void *raw_addr = nullptr;
+    if (aclGetDataType(tensor, &dtype) != ACL_SUCCESS ||
+        aclGetViewOffset(tensor, &view_offset) != ACL_SUCCESS || view_offset != 0 ||
+        aclGetRawTensorAddr(tensor, &raw_addr) != ACL_SUCCESS || raw_addr == nullptr) {
+        return;
+    }
+    const int64_t numel = tensor->Numel();
+    const size_t element_size = aclDataTypeSize(dtype);
+    const uint64_t bytes = checked_bytes(numel, element_size);
+    constexpr uint64_t kMaxSnapshotBytes = 1024U * 1024U;
+    if (numel <= 0 || element_size == 0 || bytes == 0 || bytes > kMaxSnapshotBytes) {
+        return;
+    }
+
+    void *host = std::malloc(static_cast<size_t>(bytes));
+    if (host == nullptr) {
+        return;
+    }
+    const aclError copy_status = aclrtMemcpy(host, bytes, raw_addr, bytes, ACL_MEMCPY_DEVICE_TO_HOST);
+
+    uint64_t hash = 1469598103934665603ULL;
+    const auto *raw = static_cast<const uint8_t *>(host);
+    if (copy_status == ACL_SUCCESS) {
+        for (uint64_t i = 0; i < bytes; ++i) {
+            hash ^= raw[i];
+            hash *= 1099511628211ULL;
+        }
+    }
+
+    const int dtype_value = static_cast<int>(dtype);
+    const bool numeric_supported = dtype_value == 0 || dtype_value == 27;
+    double minimum = std::numeric_limits<double>::infinity();
+    double maximum = -std::numeric_limits<double>::infinity();
+    double total = 0.0;
+    uint64_t finite_count = 0;
+    uint64_t nonfinite_count = 0;
+    if (copy_status == ACL_SUCCESS && numeric_supported) {
+        for (int64_t i = 0; i < numel; ++i) {
+            float value = 0.0F;
+            if (dtype_value == 27) {
+                uint16_t bits = 0;
+                std::memcpy(&bits, raw + static_cast<size_t>(i) * sizeof(bits), sizeof(bits));
+                value = bf16_to_float(bits);
+            } else {
+                std::memcpy(&value, raw + static_cast<size_t>(i) * sizeof(value), sizeof(value));
+            }
+            if (std::isfinite(value)) {
+                minimum = std::fmin(minimum, static_cast<double>(value));
+                maximum = std::fmax(maximum, static_cast<double>(value));
+                total += static_cast<double>(value);
+                ++finite_count;
+            } else {
+                ++nonfinite_count;
+            }
+        }
+    }
+
+    char line[2048];
+    int written = std::snprintf(
+        line, sizeof(line),
+        "{\"event\":\"tensor_value_summary\",\"api\":\"aclnnAscendQuantV3\","
+        "\"role\":\"%s\",\"pid\":%ld,\"tid\":%ld,\"ts_ns\":%" PRIu64
+        ",\"sequence\":%" PRIu64 ",\"invocation\":%" PRIu64
+        ",\"executor\":\"%p\",\"dtype\":%d,\"numel\":%" PRId64
+        ",\"bytes\":%" PRIu64 ",\"copy_status\":%d,\"fnv1a64\":\"%016" PRIx64
+        "\",\"numeric_supported\":%s,\"finite_count\":%" PRIu64
+        ",\"nonfinite_count\":%" PRIu64,
+        role, static_cast<long>(getpid()), static_cast<long>(syscall(SYS_gettid)), monotonic_ns(),
+        g_sequence.fetch_add(1, std::memory_order_relaxed) + 1, invocation, executor, dtype_value,
+        numel, bytes, static_cast<int>(copy_status), hash,
+        numeric_supported ? "true" : "false", finite_count, nonfinite_count);
+    if (written > 0 && static_cast<size_t>(written) < sizeof(line)) {
+        size_t used = static_cast<size_t>(written);
+        if (copy_status == ACL_SUCCESS && numeric_supported && finite_count > 0) {
+            written = std::snprintf(line + used, sizeof(line) - used,
+                                    ",\"min\":%.9g,\"max\":%.9g,\"mean\":%.9g}",
+                                    minimum, maximum, total / static_cast<double>(finite_count));
+        } else {
+            written = std::snprintf(line + used, sizeof(line) - used,
+                                    ",\"min\":null,\"max\":null,\"mean\":null}");
+        }
+        if (written > 0 && static_cast<size_t>(written) < sizeof(line) - used) {
+            used += static_cast<size_t>(written);
+            write_line(line, used);
+        }
+    }
+    std::free(host);
 }
 
 void log_tensor(const char *api, const char *role, uint64_t invocation, aclOpExecutor *executor,
@@ -429,12 +636,13 @@ void log_tensor(const char *api, const char *role, uint64_t invocation, aclOpExe
     write_line(line, used);
 }
 
-void log_matmul_summary(uint64_t invocation, aclOpExecutor *executor,
+void log_matmul_summary(const char *event, uint64_t invocation,
+                        aclOpExecutor *executor,
                         const Fault20MatmulMetadata &metadata) {
     char line[2048];
     const int written = std::snprintf(
         line, sizeof(line),
-        "{\"event\":\"matmulweightnz_gws_summary\",\"pid\":%ld,\"tid\":%ld,"
+        "{\"event\":\"%s\",\"pid\":%ld,\"tid\":%ld,"
         "\"ts_ns\":%" PRIu64 ",\"sequence\":%" PRIu64
         ",\"invocation\":%" PRIu64 ",\"executor\":\"%p\","
         "\"cube_math_type\":%d,\"all_present\":%s,\"any_empty_storage\":%s,"
@@ -443,7 +651,7 @@ void log_matmul_summary(uint64_t invocation, aclOpExecutor *executor,
         "\",\"self_storage_addr\":\"0x%" PRIx64
         "\",\"mat2_storage_addr\":\"0x%" PRIx64
         "\",\"out_storage_addr\":\"0x%" PRIx64 "\"}",
-        static_cast<long>(getpid()), static_cast<long>(syscall(SYS_gettid)), monotonic_ns(),
+        event, static_cast<long>(getpid()), static_cast<long>(syscall(SYS_gettid)), monotonic_ns(),
         g_sequence.fetch_add(1, std::memory_order_relaxed) + 1, invocation, executor,
         metadata.cube_math_type, metadata.all_present ? "true" : "false",
         metadata.any_empty_storage ? "true" : "false",
@@ -478,9 +686,11 @@ extern "C" aclnnStatus aclnnQuantMatmulWeightNzGetWorkspaceSize(
         x1, x2, x1_scale, x2_scale, y_scale, x1_offset, x2_offset, y_offset, bias,
         transpose_x1, transpose_x2, group_size, out, workspace_size, executor);
     if (registry_hooks_ready) {
-        Fault20X1Metadata metadata{};
-        if (status == ACL_SUCCESS && capture_x1_metadata(x1, out, transpose_x1, transpose_x2,
-                                                         group_size, &metadata)) {
+        Fault20QmmMetadata metadata{};
+        if (status == ACL_SUCCESS &&
+            capture_qmm_metadata(x1, x2, x1_scale, x2_scale, y_scale, x1_offset,
+                                 x2_offset, y_offset, bias, transpose_x1,
+                                 transpose_x2, group_size, out, &metadata)) {
             (void)g_fault20_gws_commit(&metadata);
         } else {
             g_fault20_gws_abort();
@@ -574,7 +784,8 @@ extern "C" aclnnStatus aclnnMatmulWeightNzGetWorkspaceSize(
     log_tensor("aclnnMatmulWeightNz", "mat2", invocation, resolved_executor, mat2);
     log_tensor("aclnnMatmulWeightNz", "out", invocation, resolved_executor, out);
     if (metadata_ok) {
-        log_matmul_summary(invocation, resolved_executor, metadata);
+        log_matmul_summary("matmulweightnz_gws_summary", invocation,
+                           resolved_executor, metadata);
     }
     return status;
 }
@@ -597,6 +808,94 @@ extern "C" aclnnStatus aclnnMatmulWeightNz(void *workspace, uint64_t workspace_s
     return status;
 }
 
+extern "C" aclnnStatus aclnnMatmulGetWorkspaceSize(
+    const aclTensor *self, const aclTensor *mat2, aclTensor *out,
+    int8_t cube_math_type, uint64_t *workspace_size,
+    aclOpExecutor **executor) {
+    pthread_once(&g_resolve_once, resolve_real);
+    const uint64_t invocation =
+        g_sequence.fetch_add(1, std::memory_order_relaxed) + 1;
+    if (g_real_float_matmul_getws == nullptr) {
+        log_call("matmul_getws_resolve_failed", invocation, 1, nullptr,
+                 nullptr, 0, nullptr);
+        return 1;
+    }
+    const bool registry_hooks_ready =
+        g_fault20_float_matmul_gws_begin != nullptr &&
+        g_fault20_float_matmul_gws_commit != nullptr &&
+        g_fault20_float_matmul_gws_abort != nullptr;
+    if (registry_hooks_ready) {
+        g_fault20_float_matmul_gws_begin();
+    }
+    const aclnnStatus status = g_real_float_matmul_getws(
+        self, mat2, out, cube_math_type, workspace_size, executor);
+    Fault20MatmulMetadata metadata{};
+    const bool metadata_ok =
+        status == ACL_SUCCESS &&
+        capture_tensor_metadata(self, &metadata.self) &&
+        capture_tensor_metadata(mat2, &metadata.mat2) &&
+        capture_tensor_metadata(out, &metadata.out);
+    if (metadata_ok) {
+        metadata.cube_math_type = static_cast<int32_t>(cube_math_type);
+        metadata.all_present = 1;
+        metadata.any_empty_storage =
+            metadata.self.storage_ptr == 0 || metadata.mat2.storage_ptr == 0 ||
+                    metadata.out.storage_ptr == 0 ||
+                    metadata.self.storage_addr == 0 ||
+                    metadata.mat2.storage_addr == 0 ||
+                    metadata.out.storage_addr == 0
+                ? 1U
+                : 0U;
+        metadata.any_shared_storage =
+            (metadata.self.storage_ptr != 0 &&
+             metadata.self.storage_ptr == metadata.mat2.storage_ptr) ||
+                    (metadata.self.storage_ptr != 0 &&
+                     metadata.self.storage_ptr == metadata.out.storage_ptr) ||
+                    (metadata.mat2.storage_ptr != 0 &&
+                     metadata.mat2.storage_ptr == metadata.out.storage_ptr)
+                ? 1U
+                : 0U;
+    }
+    if (registry_hooks_ready) {
+        if (metadata_ok) {
+            (void)g_fault20_float_matmul_gws_commit(&metadata);
+        } else {
+            g_fault20_float_matmul_gws_abort();
+        }
+    }
+    aclOpExecutor *resolved_executor = executor == nullptr ? nullptr : *executor;
+    log_call("matmul_getws", invocation, status, resolved_executor, nullptr,
+             workspace_size == nullptr ? 0 : *workspace_size, nullptr);
+    log_tensor("aclnnMatmul", "self", invocation, resolved_executor, self);
+    log_tensor("aclnnMatmul", "mat2", invocation, resolved_executor, mat2);
+    log_tensor("aclnnMatmul", "out", invocation, resolved_executor, out);
+    if (metadata_ok) {
+        log_matmul_summary("matmul_gws_summary", invocation,
+                           resolved_executor, metadata);
+    }
+    return status;
+}
+
+extern "C" aclnnStatus aclnnMatmul(void *workspace, uint64_t workspace_size,
+                                     aclOpExecutor *executor,
+                                     aclrtStream stream) {
+    pthread_once(&g_resolve_once, resolve_real);
+    const uint64_t invocation =
+        g_sequence.fetch_add(1, std::memory_order_relaxed) + 1;
+    log_call("matmul_execute_enter", invocation, 0, executor, workspace,
+             workspace_size, stream);
+    if (g_real_float_matmul_execute == nullptr) {
+        log_call("matmul_execute_resolve_failed", invocation, 1, executor,
+                 workspace, workspace_size, stream);
+        return 1;
+    }
+    const aclnnStatus status = g_real_float_matmul_execute(
+        workspace, workspace_size, executor, stream);
+    log_call("matmul_execute_exit", invocation, status, executor, workspace,
+             workspace_size, stream);
+    return status;
+}
+
 extern "C" aclnnStatus aclnnAscendQuantV3GetWorkspaceSize(
     const aclTensor *x, const aclTensor *scale, const aclTensor *offset, bool sqrt_mode,
     const char *round_mode, int32_t dst_type, int32_t axis, const aclTensor *y,
@@ -612,10 +911,14 @@ extern "C" aclnnStatus aclnnAscendQuantV3GetWorkspaceSize(
     aclOpExecutor *resolved_executor = executor == nullptr ? nullptr : *executor;
     log_call("quant_getws", invocation, status, resolved_executor, nullptr,
              workspace_size == nullptr ? 0 : *workspace_size, nullptr);
+    log_quant_parameters(invocation, status, resolved_executor, sqrt_mode, round_mode, dst_type,
+                         axis);
     log_tensor("aclnnAscendQuantV3", "x", invocation, resolved_executor, x);
     log_tensor("aclnnAscendQuantV3", "scale", invocation, resolved_executor, scale);
     log_tensor("aclnnAscendQuantV3", "offset", invocation, resolved_executor, offset);
     log_tensor("aclnnAscendQuantV3", "y", invocation, resolved_executor, y);
+    log_tensor_value_summary("scale", invocation, resolved_executor, scale);
+    log_tensor_value_summary("offset", invocation, resolved_executor, offset);
     return status;
 }
 

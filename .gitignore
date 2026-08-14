@@ -1,5 +1,7 @@
 # Codex/local working data
 .codex-tmp/
+**/*.jsonl
+**/logs/**
 
 # Local build/runtime outputs
 fault20_fast_validation/runtime/
@@ -17,8 +19,8 @@ fault20_fast_validation/reports/*.json
 fault20_fast_validation/reports/**/*.json
 
 # The public package intentionally keeps only the final runtime, adapter and
-# four summary documents. Historical probes, fixtures and validation assets
-# remain available in the local working copy.
+# selected handoff/summary documents. Historical probes, fixtures and validation
+# assets remain available in the local working copy.
 /fault20_fast_validation/reports/*
 !/fault20_fast_validation/reports/fault20_final_architecture.md
 !/fault20_fast_validation/reports/fault20_capability_matrix_final.md
@@ -35,8 +37,17 @@ fault20_fast_validation/reports/**/*.json
 !/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/fault20_buffer_api.h
 !/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/int_equivalent_transform.h
 !/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/mantissa_truncate.h
+!/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/extreme_transform.h
 !/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/build.sh
 !/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/create_allhit_container_v2.sh
+!/fault20_fast_validation/reports/fault39_qmm_overflow_design.md
+!/fault20_fast_validation/reports/fault39_qmm_overflow_validation.md
+!/fault20_fast_validation/reports/fault39_float_matmul_path_inventory.md
+!/fault20_fast_validation/reports/fault39_float_matmul_finite_nonfinite_validation.md
+!/fault20_fast_validation/reports/fault39_float_matmul_cancellation_validation.md
+!/fault20_fast_validation/reports/fault39_float_matmul_output_nonfinite_proxy_validation.md
+!/fault20_fast_validation/reports/fault39_matmul_fault_reproduction_summary.md
+!/fault20_fast_validation/reports/fault39_a3_validation_handoff.md
 
 /fault20_fast_validation/source/l4_metadata_lifecycle_proxy/*
 !/fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp
