@@ -2,10 +2,12 @@
 #include <aclnn/acl_meta.h>
 #include <aclnn/opdev/common_types.h>
 #include <aclnnop/aclnn_ascend_quant_v3.h>
+#include <aclnnop/aclnn_copy.h>
 #include <aclnnop/aclnn_matmul.h>
 #include <aclnnop/aclnn_quant_matmul_weight_nz.h>
 
 #include "../l4_buffer_substitute_allhit_v1/fault20_buffer_api.h"
+#include "../fault26_readonly_trace_v1/fault26_trace_shared.h"
 
 #include <atomic>
 #include <cmath>
@@ -38,21 +40,31 @@ using AscendQuantGetWorkspaceSizeFn = aclnnStatus (*)(
 using MatmulWeightNzGetWorkspaceSizeFn = aclnnStatus (*)(
     const aclTensor *, const aclTensor *, aclTensor *, int8_t, uint64_t *,
     aclOpExecutor **);
+using InplaceCopyGetWorkspaceSizeFn = aclnnStatus (*)(
+    aclTensor *, const aclTensor *, uint64_t *, aclOpExecutor **);
 using ExecuteFn = aclnnStatus (*)(void *, uint64_t, aclOpExecutor *, aclrtStream);
 using Fault20GwsBeginFn = void (*)();
 using Fault20GwsCommitFn = bool (*)(const Fault20QmmMetadata *);
 using Fault20MatmulGwsCommitFn = bool (*)(const Fault20MatmulMetadata *);
 using Fault20GwsAbortFn = void (*)();
+using Fault26TraceBeginFn = void (*)(uint32_t, const char *, void *, uint64_t,
+                                     aclOpExecutor *, aclrtStream);
+using Fault26TraceEndFn = void (*)(uint32_t, const char *, aclnnStatus);
+using Fault26TraceWriterGwsFn = void (*)(
+    const char *, const char *, const aclTensor *, uint64_t, aclOpExecutor *,
+    aclnnStatus);
 
 pthread_once_t g_resolve_once = PTHREAD_ONCE_INIT;
 QuantMatmulGetWorkspaceSizeFn g_real_qmm_getws = nullptr;
 AscendQuantGetWorkspaceSizeFn g_real_quant_getws = nullptr;
 MatmulWeightNzGetWorkspaceSizeFn g_real_matmul_getws = nullptr;
 MatmulWeightNzGetWorkspaceSizeFn g_real_float_matmul_getws = nullptr;
+InplaceCopyGetWorkspaceSizeFn g_real_inplace_copy_getws = nullptr;
 ExecuteFn g_real_qmm_execute = nullptr;
 ExecuteFn g_real_quant_execute = nullptr;
 ExecuteFn g_real_matmul_execute = nullptr;
 ExecuteFn g_real_float_matmul_execute = nullptr;
+ExecuteFn g_real_inplace_copy_execute = nullptr;
 Fault20GwsBeginFn g_fault20_gws_begin = nullptr;
 Fault20GwsCommitFn g_fault20_gws_commit = nullptr;
 Fault20GwsAbortFn g_fault20_gws_abort = nullptr;
@@ -62,6 +74,9 @@ Fault20GwsAbortFn g_fault20_matmul_gws_abort = nullptr;
 Fault20GwsBeginFn g_fault20_float_matmul_gws_begin = nullptr;
 Fault20MatmulGwsCommitFn g_fault20_float_matmul_gws_commit = nullptr;
 Fault20GwsAbortFn g_fault20_float_matmul_gws_abort = nullptr;
+Fault26TraceBeginFn g_fault26_trace_begin = nullptr;
+Fault26TraceEndFn g_fault26_trace_end = nullptr;
+Fault26TraceWriterGwsFn g_fault26_trace_writer_gws = nullptr;
 std::atomic<uint64_t> g_sequence{0};
 
 uint64_t monotonic_ns() {
@@ -104,6 +119,10 @@ void resolve_real() {
         dlsym(RTLD_NEXT, "aclnnMatmulGetWorkspaceSize"));
     g_real_float_matmul_execute =
         reinterpret_cast<ExecuteFn>(dlsym(RTLD_NEXT, "aclnnMatmul"));
+    g_real_inplace_copy_getws = reinterpret_cast<InplaceCopyGetWorkspaceSizeFn>(
+        dlsym(RTLD_NEXT, "aclnnInplaceCopyGetWorkspaceSize"));
+    g_real_inplace_copy_execute =
+        reinterpret_cast<ExecuteFn>(dlsym(RTLD_NEXT, "aclnnInplaceCopy"));
     g_fault20_gws_begin = reinterpret_cast<Fault20GwsBeginFn>(
         dlsym(RTLD_DEFAULT, "fault20_qmm_gws_begin"));
     g_fault20_gws_commit = reinterpret_cast<Fault20GwsCommitFn>(
@@ -123,6 +142,23 @@ void resolve_real() {
             dlsym(RTLD_DEFAULT, "fault20_float_matmul_gws_commit"));
     g_fault20_float_matmul_gws_abort = reinterpret_cast<Fault20GwsAbortFn>(
         dlsym(RTLD_DEFAULT, "fault20_float_matmul_gws_abort"));
+    g_fault26_trace_begin = reinterpret_cast<Fault26TraceBeginFn>(
+        dlsym(RTLD_DEFAULT, "fault26_trace_execute_begin"));
+    g_fault26_trace_end = reinterpret_cast<Fault26TraceEndFn>(
+        dlsym(RTLD_DEFAULT, "fault26_trace_execute_end"));
+    g_fault26_trace_writer_gws = reinterpret_cast<Fault26TraceWriterGwsFn>(
+        dlsym(RTLD_DEFAULT, "fault26_trace_writer_gws"));
+}
+
+void notify_fault26_writer_gws(const char *api, const char *role,
+                               const aclTensor *writable,
+                               uint64_t workspace_size,
+                               aclOpExecutor *executor,
+                               aclnnStatus status) {
+    if (g_fault26_trace_writer_gws != nullptr) {
+        g_fault26_trace_writer_gws(api, role, writable, workspace_size,
+                                   executor, status);
+    }
 }
 
 uint64_t checked_bytes(int64_t elements, size_t element_size);
@@ -697,6 +733,10 @@ extern "C" aclnnStatus aclnnQuantMatmulWeightNzGetWorkspaceSize(
         }
     }
     aclOpExecutor *resolved_executor = executor == nullptr ? nullptr : *executor;
+    notify_fault26_writer_gws(
+        "aclnnQuantMatmulWeightNz", "out", out,
+        workspace_size == nullptr ? 0 : *workspace_size, resolved_executor,
+        status);
     log_call("qmm_getws", invocation, status, resolved_executor, nullptr,
              workspace_size == nullptr ? 0 : *workspace_size, nullptr);
     log_tensor("aclnnQuantMatmulWeightNz", "x1", invocation, resolved_executor, x1);
@@ -722,7 +762,16 @@ extern "C" aclnnStatus aclnnQuantMatmulWeightNz(void *workspace, uint64_t worksp
                  workspace_size, stream);
         return 1;
     }
+    if (g_fault26_trace_begin != nullptr) {
+        g_fault26_trace_begin(FAULT26_EXECUTE_QMM,
+                              "aclnnQuantMatmulWeightNz", workspace,
+                              workspace_size, executor, stream);
+    }
     const aclnnStatus status = g_real_qmm_execute(workspace, workspace_size, executor, stream);
+    if (g_fault26_trace_end != nullptr) {
+        g_fault26_trace_end(FAULT26_EXECUTE_QMM,
+                            "aclnnQuantMatmulWeightNz", status);
+    }
     log_call("qmm_execute_exit", invocation, status, executor, workspace, workspace_size,
              stream);
     return status;
@@ -778,6 +827,10 @@ extern "C" aclnnStatus aclnnMatmulWeightNzGetWorkspaceSize(
         }
     }
     aclOpExecutor *resolved_executor = executor == nullptr ? nullptr : *executor;
+    notify_fault26_writer_gws(
+        "aclnnMatmulWeightNz", "out", out,
+        workspace_size == nullptr ? 0 : *workspace_size, resolved_executor,
+        status);
     log_call("matmulweightnz_getws", invocation, status, resolved_executor, nullptr,
              workspace_size == nullptr ? 0 : *workspace_size, nullptr);
     log_tensor("aclnnMatmulWeightNz", "self", invocation, resolved_executor, self);
@@ -801,8 +854,17 @@ extern "C" aclnnStatus aclnnMatmulWeightNz(void *workspace, uint64_t workspace_s
                  workspace_size, stream);
         return 1;
     }
+    if (g_fault26_trace_begin != nullptr) {
+        g_fault26_trace_begin(FAULT26_EXECUTE_MATMUL,
+                              "aclnnMatmulWeightNz", workspace,
+                              workspace_size, executor, stream);
+    }
     const aclnnStatus status =
         g_real_matmul_execute(workspace, workspace_size, executor, stream);
+    if (g_fault26_trace_end != nullptr) {
+        g_fault26_trace_end(FAULT26_EXECUTE_MATMUL,
+                            "aclnnMatmulWeightNz", status);
+    }
     log_call("matmulweightnz_execute_exit", invocation, status, executor, workspace,
              workspace_size, stream);
     return status;
@@ -864,6 +926,10 @@ extern "C" aclnnStatus aclnnMatmulGetWorkspaceSize(
         }
     }
     aclOpExecutor *resolved_executor = executor == nullptr ? nullptr : *executor;
+    notify_fault26_writer_gws(
+        "aclnnMatmul", "out", out,
+        workspace_size == nullptr ? 0 : *workspace_size, resolved_executor,
+        status);
     log_call("matmul_getws", invocation, status, resolved_executor, nullptr,
              workspace_size == nullptr ? 0 : *workspace_size, nullptr);
     log_tensor("aclnnMatmul", "self", invocation, resolved_executor, self);
@@ -889,8 +955,15 @@ extern "C" aclnnStatus aclnnMatmul(void *workspace, uint64_t workspace_size,
                  workspace, workspace_size, stream);
         return 1;
     }
+    if (g_fault26_trace_begin != nullptr) {
+        g_fault26_trace_begin(FAULT26_EXECUTE_MATMUL, "aclnnMatmul",
+                              workspace, workspace_size, executor, stream);
+    }
     const aclnnStatus status = g_real_float_matmul_execute(
         workspace, workspace_size, executor, stream);
+    if (g_fault26_trace_end != nullptr) {
+        g_fault26_trace_end(FAULT26_EXECUTE_MATMUL, "aclnnMatmul", status);
+    }
     log_call("matmul_execute_exit", invocation, status, executor, workspace,
              workspace_size, stream);
     return status;
@@ -909,6 +982,10 @@ extern "C" aclnnStatus aclnnAscendQuantV3GetWorkspaceSize(
     const aclnnStatus status = g_real_quant_getws(x, scale, offset, sqrt_mode, round_mode, dst_type,
                                                    axis, y, workspace_size, executor);
     aclOpExecutor *resolved_executor = executor == nullptr ? nullptr : *executor;
+    notify_fault26_writer_gws(
+        "aclnnAscendQuantV3", "y", y,
+        workspace_size == nullptr ? 0 : *workspace_size, resolved_executor,
+        status);
     log_call("quant_getws", invocation, status, resolved_executor, nullptr,
              workspace_size == nullptr ? 0 : *workspace_size, nullptr);
     log_quant_parameters(invocation, status, resolved_executor, sqrt_mode, round_mode, dst_type,
@@ -932,8 +1009,74 @@ extern "C" aclnnStatus aclnnAscendQuantV3(void *workspace, uint64_t workspace_si
                  workspace_size, stream);
         return 1;
     }
+    if (g_fault26_trace_begin != nullptr) {
+        g_fault26_trace_begin(FAULT26_EXECUTE_ASCEND_QUANT_V3,
+                              "aclnnAscendQuantV3", workspace,
+                              workspace_size, executor, stream);
+    }
     const aclnnStatus status = g_real_quant_execute(workspace, workspace_size, executor, stream);
+    if (g_fault26_trace_end != nullptr) {
+        g_fault26_trace_end(FAULT26_EXECUTE_ASCEND_QUANT_V3,
+                            "aclnnAscendQuantV3", status);
+    }
     log_call("quant_execute_exit", invocation, status, executor, workspace, workspace_size,
              stream);
+    return status;
+}
+
+extern "C" aclnnStatus aclnnInplaceCopyGetWorkspaceSize(
+    aclTensor *self_ref, const aclTensor *src, uint64_t *workspace_size,
+    aclOpExecutor **executor) {
+    pthread_once(&g_resolve_once, resolve_real);
+    const uint64_t invocation =
+        g_sequence.fetch_add(1, std::memory_order_relaxed) + 1;
+    if (g_real_inplace_copy_getws == nullptr) {
+        log_call("inplace_copy_getws_resolve_failed", invocation, 1, nullptr,
+                 nullptr, 0, nullptr);
+        return 1;
+    }
+    const aclnnStatus status = g_real_inplace_copy_getws(
+        self_ref, src, workspace_size, executor);
+    aclOpExecutor *resolved_executor = executor == nullptr ? nullptr : *executor;
+    notify_fault26_writer_gws(
+        "aclnnInplaceCopy", "selfRef", self_ref,
+        workspace_size == nullptr ? 0 : *workspace_size, resolved_executor,
+        status);
+    log_call("inplace_copy_getws", invocation, status, resolved_executor,
+             nullptr, workspace_size == nullptr ? 0 : *workspace_size,
+             nullptr);
+    log_tensor("aclnnInplaceCopy", "selfRef", invocation,
+               resolved_executor, self_ref);
+    log_tensor("aclnnInplaceCopy", "src", invocation, resolved_executor,
+               src);
+    return status;
+}
+
+extern "C" aclnnStatus aclnnInplaceCopy(
+    void *workspace, uint64_t workspace_size, aclOpExecutor *executor,
+    aclrtStream stream) {
+    pthread_once(&g_resolve_once, resolve_real);
+    const uint64_t invocation =
+        g_sequence.fetch_add(1, std::memory_order_relaxed) + 1;
+    log_call("inplace_copy_execute_enter", invocation, 0, executor,
+             workspace, workspace_size, stream);
+    if (g_real_inplace_copy_execute == nullptr) {
+        log_call("inplace_copy_execute_resolve_failed", invocation, 1,
+                 executor, workspace, workspace_size, stream);
+        return 1;
+    }
+    if (g_fault26_trace_begin != nullptr) {
+        g_fault26_trace_begin(FAULT26_EXECUTE_INPLACE_COPY,
+                              "aclnnInplaceCopy", workspace,
+                              workspace_size, executor, stream);
+    }
+    const aclnnStatus status = g_real_inplace_copy_execute(
+        workspace, workspace_size, executor, stream);
+    if (g_fault26_trace_end != nullptr) {
+        g_fault26_trace_end(FAULT26_EXECUTE_INPLACE_COPY,
+                            "aclnnInplaceCopy", status);
+    }
+    log_call("inplace_copy_execute_exit", invocation, status, executor,
+             workspace, workspace_size, stream);
     return status;
 }

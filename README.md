@@ -1,6 +1,6 @@
 # vLLM Ascend Operator Fault Injection
 
-这是一个面向 vLLM-Ascend/CANN 的原生算子输入精度故障注入原型。当前实现位于 CANN repeat executor-cache replay 边界，通过精确 `LD_PRELOAD` interpose、typed operator adapter 和 temporary device buffer 替换，实现可审计的输入数值退化。
+这是一个面向 vLLM-Ascend/CANN 的开发者模式原生算子故障注入原型。实现覆盖 CANN repeat executor-cache replay 边界、typed operator adapter 和 temporary device buffer 替换，并提供受控、可审计的输入数值退化、非有限输出代理与 allocation-boundary 写错地址代理。
 
 本仓库仅包含最终运行源码、构建/容器脚本和能力说明。请求响应、token 对比、trace、结构化 evidence、离线测试程序和历史探针不上传。
 
@@ -22,6 +22,8 @@
 | `aclnnMatmul` 有限 BF16 双输入到真实 `+Inf` 输出 | `MATMUL_FINITE_INPUT_NONFINITE_REPRODUCED`（`2^58` 首次 non-finite） |
 | `aclnnMatmul` 有限 BF16 正负抵消、数学结果为零的排列对照 | `MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED`（half non-finite；block/alternating 全零） |
 | `aclnnMatmul` post-Run output `+Inf/-Inf/qNaN` proxy | `PROVEN_E2E`（1/5/51/512 elements，readback exact） |
+| Fault26 QMM output-base underflow → live residual stomp proxy | `PROVEN_E2E`（rank0，allocation-boundary，231 all-eligible hits） |
+| Fault26 fault request 输出分叉与 disarm 后精确恢复 | `PROVEN_E2E`（token 7 首次分叉，post-fault exact recovery） |
 
 结论严格限定于已验证环境和算子，不代表任意模型、任意算子或跨版本生产能力。详细统计见[当前注入能力统计](fault20_fast_validation/reports/fault20_injection_capability_inventory_20260807.md)。
 
@@ -52,13 +54,49 @@ accumulator 的类型、位置或首次 overflow 时刻，因此不能写成
 `ACCUMULATOR_OVERFLOW_PROVEN`。完整证据见
 [Fault39 A2 复现总结](fault20_fast_validation/reports/fault39_matmul_fault_reproduction_summary.md)。
 
+## Fault26 current capability
+
+Fault26 的当前最强能力不是“直接改坏 residual”，而是在已由运行时 allocator
+只读证明的相邻 allocation pair 上，把真实 QMM output base 向后偏移，使真实
+`aclnnQuantMatmulWeightNz` 写入跨过 allocation boundary 并覆盖 live residual；
+随后恢复 padding 与正常 output，让精确的下一次 `aclnnAddRmsNormBias` 消费受控破坏，
+并在 consumer 完成后恢复 residual。
+
+```text
+live residual allocation end == QMM output allocation begin
+  -> real QMM Run with bounded backward-shifted output base
+  -> allocation boundary crossed
+  -> next exact AddRms consumes corrupted residual
+  -> padding/output/residual byte-exact recovery
+```
+
+Phase 30 在 rank0 的三个精确、live-proven 地址对上完成一次请求内 231 次
+all-eligible hit（`7 + 7 + 217`），失败/中止为 0；模型响应在 completion token 7
+首次分叉，显式 disarm 后下一请求精确回到 baseline。`all eligible` 只表示命中控制面
+列出的、已证明相邻且仍存活的地址对，不表示对未审计 QMM 地址做无条件写入。
+
+该能力应准确命名为：
+
+```text
+QMM_OUTPUT_BASE_UNDERFLOW_RESIDUAL_STOMP_PROXY_PROVEN
+ALL_ELIGIBLE_QMM_HITS_PROVEN
+MODEL_RESPONSE_DIVERGENCE_PROVEN
+POST_FAULT_EXACT_RECOVERY_PROVEN
+```
+
+它是本地开发者模式下用于诊断工具验证的受控算子故障代理，不证明健康 QMM kernel
+会自然发生 OOB，也不证明历史 FIA workspace 缺陷的物理根因。
+
 ## 仓库内容
 
 ```text
 fault20_fast_validation/
+├── evidence/                            # 完整 Fault26 验证证据压缩包与校验说明
 ├── source/
 │   ├── l4_buffer_substitute_allhit_v1/   # 最终 runtime、控制面和容器脚本
-│   └── l4_metadata_lifecycle_proxy/      # typed GWS metadata adapter
+│   ├── l4_metadata_lifecycle_proxy/      # typed GWS metadata adapter
+│   ├── fault26_readonly_trace_v1/        # residual/QMM trace、underflow runtime 与 worker 控制面
+│   └── fault26_fia_writer_proxy_v1/      # FIA actual-writer / wrong-destination 分阶段代理
 └── reports/
     ├── fault20_final_architecture.md
     ├── fault20_capability_matrix_final.md
@@ -261,6 +299,9 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 - [Fault39 Floating MatMul Output Inf/NaN Proxy 验证](fault20_fast_validation/reports/fault39_float_matmul_output_nonfinite_proxy_validation.md)
 - [Fault39 A2 MatMul 故障复现总结](fault20_fast_validation/reports/fault39_matmul_fault_reproduction_summary.md)
 - [Fault39 A3 验证交接](fault20_fast_validation/reports/fault39_a3_validation_handoff.md)
+- [Fault26 allocation topology 与 single-hit underflow](fault20_fast_validation/reports/fault26_writer_allocation_topology_and_qmm_underflow_20260818.md)
+- [Fault26 bounded multi-hit](fault20_fast_validation/reports/fault26_qmm_underflow_bounded_multihit_20260818.md)
+- [Fault26 all-eligible-hit 与模型响应分叉](fault20_fast_validation/reports/fault26_qmm_underflow_all_eligible_20260818.md)
 
 ## 当前不支持
 
