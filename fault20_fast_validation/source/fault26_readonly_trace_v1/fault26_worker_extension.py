@@ -57,28 +57,61 @@ def _process_getenv(name: str) -> str | None:
     return None if value is None else value.decode("utf-8")
 
 
+def _env_value(name: str, default: str = "") -> str:
+    """Prefer Python's env view, but recover values kept only in native env."""
+    value = os.environ.get(name)
+    if value is not None:
+        return value
+    native_value = _process_getenv(name)
+    if native_value is not None:
+        os.environ[name] = native_value
+        return native_value
+    return default
+
+
+def _ensure_writer_log_path() -> str:
+    """Derive the native writer log path when worker env propagation is partial."""
+    existing = _env_value("FAULT26_FIA_WRITER_LOG_PATH")
+    if existing:
+        return existing
+    for source_name, prefix in (
+        ("FAULT26_TYPED_LOG_PATH", "typed_"),
+        ("FAULT26_INVENTORY_LOG_PATH", "inventory_"),
+    ):
+        source_path = _env_value(source_name)
+        if not source_path:
+            continue
+        directory, filename = os.path.split(source_path)
+        if not filename.startswith(prefix):
+            continue
+        writer_path = os.path.join(directory, f"fia_writer_{filename[len(prefix):]}")
+        os.environ["FAULT26_FIA_WRITER_LOG_PATH"] = writer_path
+        return writer_path
+    return ""
+
+
 def _developer_mode_enabled() -> bool:
-    return os.environ.get("VLLM_SERVER_DEV_MODE") == "1"
+    return _env_value("VLLM_SERVER_DEV_MODE") == "1"
 
 
 def _probe_enabled() -> bool:
-    return os.environ.get("FAULT26_TYPED_PROBE_ALLOWED") == "1"
+    return _env_value("FAULT26_TYPED_PROBE_ALLOWED") == "1"
 
 
 def _writer_audit_allowed() -> bool:
-    return os.environ.get("FAULT26_WRITER_AUDIT_ALLOWED") == "1"
+    return _env_value("FAULT26_WRITER_AUDIT_ALLOWED") == "1"
 
 
 def _fia_writer_proxy_allowed() -> bool:
-    return os.environ.get("FAULT26_FIA_WRITER_PROXY_ALLOWED") == "1"
+    return _env_value("FAULT26_FIA_WRITER_PROXY_ALLOWED") == "1"
 
 
 def _allocator_audit_allowed() -> bool:
-    return os.environ.get("FAULT26_ALLOCATOR_AUDIT_ALLOWED") == "1"
+    return _env_value("FAULT26_ALLOCATOR_AUDIT_ALLOWED") == "1"
 
 
 def _log_path() -> str:
-    return os.environ.get("FAULT26_TYPED_LOG_PATH", "")
+    return _env_value("FAULT26_TYPED_LOG_PATH")
 
 
 def _append_event(event: dict[str, Any]) -> None:
@@ -803,6 +836,7 @@ class Fault26ReadOnlyWorkerExtension:
         global _ADD_RMS_NORM_PROXY, _REAL_ADD_RMS_NORM_BIAS
         global _ADD_RMS_NORM_BIAS_PROXY, _CALL_INDEX, _RESIDUAL_CALL_INDEX
         global _RESIDUAL_BIAS_CALL_INDEX
+        _ensure_writer_log_path()
         if not _developer_mode_enabled() or not _probe_enabled():
             return {
                 "installed": False,
@@ -930,6 +964,7 @@ class Fault26ReadOnlyWorkerExtension:
         }
 
     def fault26_query_typed_fia_probe(self) -> dict[str, Any]:
+        _ensure_writer_log_path()
         return {
             "installed": _PROXY is not None,
             "pid": os.getpid(),
@@ -1645,6 +1680,7 @@ class Fault26ReadOnlyWorkerExtension:
         max_bytes: int = 4194304,
     ) -> dict[str, Any]:
         """Arm one FIA output-to-temporary lossless substitution."""
+        writer_log_path = _ensure_writer_log_path()
         if not _developer_mode_enabled() or not _fia_writer_proxy_allowed():
             return {
                 "armed": False,
@@ -1687,6 +1723,8 @@ class Fault26ReadOnlyWorkerExtension:
                 target_occurrence
             )
             os.environ["FAULT26_FIA_WRITER_PROXY_MAX_BYTES"] = str(max_bytes)
+            if writer_log_path:
+                os.environ["FAULT26_FIA_WRITER_LOG_PATH"] = writer_log_path
             os.environ["FAULT26_FIA_WRITER_PROXY_ENABLED"] = "1"
         return {
             "armed": True,
@@ -1699,6 +1737,7 @@ class Fault26ReadOnlyWorkerExtension:
             "max_bytes": max_bytes,
             "max_hits": 1,
             "residual_target_supported": False,
+            "writer_log_path": writer_log_path,
         }
 
     def fault26_arm_fia_wrong_destination_residual_stomp(
@@ -1712,6 +1751,7 @@ class Fault26ReadOnlyWorkerExtension:
         max_bytes: int = 4194304,
     ) -> dict[str, Any]:
         """Arm one bounded FIA output binding to a proven live residual."""
+        writer_log_path = _ensure_writer_log_path()
         if not _developer_mode_enabled() or not _fia_writer_proxy_allowed():
             return {
                 "armed": False,
@@ -1787,6 +1827,8 @@ class Fault26ReadOnlyWorkerExtension:
                 victim_offset_bytes
             )
             os.environ["FAULT26_FIA_WRITER_PROXY_MAX_BYTES"] = str(max_bytes)
+            if writer_log_path:
+                os.environ["FAULT26_FIA_WRITER_LOG_PATH"] = writer_log_path
             os.environ["FAULT26_FIA_WRITER_PROXY_ENABLED"] = "1"
         return {
             "armed": True,
@@ -1801,6 +1843,7 @@ class Fault26ReadOnlyWorkerExtension:
             "max_bytes": max_bytes,
             "max_hits": 1,
             "writer": "real_aclnnFusedInferAttentionScoreV3_kernel",
+            "writer_log_path": writer_log_path,
         }
 
     def fault26_disarm_fia_lossless_output_substitution(self) -> dict[str, Any]:
@@ -1816,6 +1859,7 @@ class Fault26ReadOnlyWorkerExtension:
         }
 
     def fault26_query_fia_lossless_output_substitution(self) -> dict[str, Any]:
+        writer_log_path = _ensure_writer_log_path()
         mode = os.environ.get(
             "FAULT26_FIA_WRITER_PROXY_MODE", "lossless_output_substitution"
         )
@@ -1852,4 +1896,5 @@ class Fault26ReadOnlyWorkerExtension:
                     "FAULT26_FIA_WRITER_PROXY_VICTIM_OFFSET_BYTES", "0"
                 )
             ),
+            "writer_log_path": writer_log_path,
         }

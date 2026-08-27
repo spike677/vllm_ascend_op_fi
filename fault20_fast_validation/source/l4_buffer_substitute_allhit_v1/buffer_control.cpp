@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fcntl.h>
+#include <sched.h>
 #include <sys/file.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -60,9 +61,23 @@ Fault20Control *map_control(int *fd_out) {
         control->max_hits_per_device = 1;
         control->selection_mode = FAULT20_SELECTION_BOUNDED;
         control->target_api = FAULT20_TARGET_API_NONE;
+        control->proof_mode = FAULT20_PROOF_MODE_STRICT_PRODUCER;
+        control->proof_reserved = 0;
+        control->hit_scope = FAULT20_HIT_SCOPE_ARM_LIFETIME;
+        control->max_hits_total = 0;
     }
     *fd_out = fd;
     return control;
+}
+
+const char *proof_mode_name(uint32_t proof_mode) {
+    if (proof_mode == FAULT20_PROOF_MODE_STRICT_PRODUCER) {
+        return "STRICT_PRODUCER";
+    }
+    if (proof_mode == FAULT20_PROOF_MODE_SEMANTIC_SLOT) {
+        return "SEMANTIC_SLOT";
+    }
+    return "UNKNOWN";
 }
 
 void print_status(const Fault20Control *control) {
@@ -74,16 +89,20 @@ void print_status(const Fault20Control *control) {
         "\"keep_mantissa_bits\":%u,\"extreme_value\":%d,"
         "\"extreme_ratio_bps\":%u,\"extreme_pattern\":%u,"
         "\"target_dtype\":%d,\"last_status\":%d,"
-        "\"selection_mode\":%u,\"target_api\":%u,"
+        "\"selection_mode\":%u,\"hit_scope\":%u,\"target_api\":%u,"
+        "\"proof_mode\":%u,\"proof_mode_name\":\"%s\","
         "\"max_bytes\":%" PRIu64 ",\"max_output_bytes\":%" PRIu64
         ",\"max_weight_bytes\":%" PRIu64 ",\"target_x2_n\":%d"
         ",\"max_scale_bytes\":%" PRIu64 ",\"target_scale_elements\":%d"
         ",\"scale_factor\":%.17g"
-        ",\"generation\":%" PRIu64
+        ",\"generation\":%" PRIu64 ",\"request_generation\":%" PRIu64
         ",\"target_device_mask\":\"0x%016" PRIx64
-        "\",\"max_hits_per_device\":%u,"
+        "\",\"max_hits_per_device\":%u,\"max_hits_total\":%u,"
+        "\"total_hit_count\":%u,"
         "\"candidate_count_per_device\":[%u,%u],"
         "\"hit_count_per_device\":[%u,%u],"
+        "\"request_candidate_count_per_device\":[%u,%u],"
+        "\"request_hit_count_per_device\":[%u,%u],"
         "\"last_status_per_device\":[%d,%d]}\n",
         control->magic, control->version,
         __atomic_load_n(&control->enabled, __ATOMIC_ACQUIRE), control->mode,
@@ -94,16 +113,28 @@ void print_status(const Fault20Control *control) {
         control->keep_mantissa_bits, control->extreme_value,
         control->extreme_ratio_bps, control->extreme_pattern, control->target_dtype,
         __atomic_load_n(&control->last_status, __ATOMIC_ACQUIRE),
-        control->selection_mode, control->target_api, control->max_bytes,
+        control->selection_mode, control->hit_scope, control->target_api,
+        control->proof_mode, proof_mode_name(control->proof_mode), control->max_bytes,
         control->max_output_bytes, control->max_weight_bytes, control->target_x2_n,
         control->max_scale_bytes, control->target_scale_elements,
         control->scale_factor,
-        control->generation, control->target_device_mask,
-        control->max_hits_per_device,
+        control->generation,
+        __atomic_load_n(&control->request_generation, __ATOMIC_ACQUIRE),
+        control->target_device_mask, control->max_hits_per_device,
+        control->max_hits_total,
+        __atomic_load_n(&control->hit_count, __ATOMIC_ACQUIRE),
         __atomic_load_n(&control->candidate_count_per_device[0], __ATOMIC_ACQUIRE),
         __atomic_load_n(&control->candidate_count_per_device[1], __ATOMIC_ACQUIRE),
         __atomic_load_n(&control->hit_count_per_device[0], __ATOMIC_ACQUIRE),
         __atomic_load_n(&control->hit_count_per_device[1], __ATOMIC_ACQUIRE),
+        __atomic_load_n(&control->request_candidate_count_per_device[0],
+                        __ATOMIC_ACQUIRE),
+        __atomic_load_n(&control->request_candidate_count_per_device[1],
+                        __ATOMIC_ACQUIRE),
+        __atomic_load_n(&control->request_hit_count_per_device[0],
+                        __ATOMIC_ACQUIRE),
+        __atomic_load_n(&control->request_hit_count_per_device[1],
+                        __ATOMIC_ACQUIRE),
         __atomic_load_n(&control->last_status_per_device[0], __ATOMIC_ACQUIRE),
         __atomic_load_n(&control->last_status_per_device[1], __ATOMIC_ACQUIRE));
 }
@@ -119,6 +150,15 @@ bool parse_int(const char *text, long long min_value, long long max_value, long 
     return true;
 }
 
+void reset_request_counters(Fault20Control *control) {
+    for (size_t device = 0; device < FAULT20_MAX_DEVICES; ++device) {
+        __atomic_store_n(&control->request_candidate_count_per_device[device], 0U,
+                         __ATOMIC_RELEASE);
+        __atomic_store_n(&control->request_hit_count_per_device[device], 0U,
+                         __ATOMIC_RELEASE);
+    }
+}
+
 void reset_device_counters(Fault20Control *control) {
     for (size_t device = 0; device < FAULT20_MAX_DEVICES; ++device) {
         __atomic_store_n(&control->candidate_count_per_device[device], 0U,
@@ -128,6 +168,27 @@ void reset_device_counters(Fault20Control *control) {
         __atomic_store_n(&control->last_status_per_device[device], 0,
                          __ATOMIC_RELEASE);
     }
+    reset_request_counters(control);
+    __atomic_store_n(&control->request_generation, 0ULL, __ATOMIC_RELEASE);
+    __atomic_store_n(&control->request_reservation_lock, 0U, __ATOMIC_RELEASE);
+    control->hit_scope = FAULT20_HIT_SCOPE_ARM_LIFETIME;
+    control->max_hits_total = 0;
+    control->proof_mode = FAULT20_PROOF_MODE_STRICT_PRODUCER;
+    control->proof_reserved = 0;
+}
+
+void lock_request_reservation(Fault20Control *control) {
+    uint32_t expected = 0;
+    while (!__atomic_compare_exchange_n(&control->request_reservation_lock, &expected,
+                                        1U, false, __ATOMIC_ACQUIRE,
+                                        __ATOMIC_RELAXED)) {
+        expected = 0;
+        sched_yield();
+    }
+}
+
+void unlock_request_reservation(Fault20Control *control) {
+    __atomic_store_n(&control->request_reservation_lock, 0U, __ATOMIC_RELEASE);
 }
 
 bool developer_mode_enabled() {
@@ -157,13 +218,46 @@ int main(int argc, char **argv) {
         return 1;
     }
     int result = 0;
-    const bool arm_requested = argc >= 2 && std::strncmp(argv[1], "arm-", 4) == 0;
-    if (arm_requested && !developer_mode_enabled()) {
+    const bool developer_operation =
+        argc >= 2 && (std::strncmp(argv[1], "arm-", 4) == 0 ||
+                      std::strcmp(argv[1], "request-begin") == 0);
+    if (developer_operation && !developer_mode_enabled()) {
         std::fprintf(stderr,
-                     "refusing to arm: VLLM_SERVER_DEV_MODE must equal 1\n");
+                     "refusing developer control operation: VLLM_SERVER_DEV_MODE must equal 1\n");
         result = 3;
     } else if (argc == 2 && std::strcmp(argv[1], "status") == 0) {
         print_status(control);
+    } else if (argc == 3 && std::strcmp(argv[1], "request-begin") == 0) {
+        long long request_id = 0;
+        if (!parse_int(argv[2], 1, 0x7FFFFFFFFFFFFFFFLL, &request_id) ||
+            control->hit_scope != FAULT20_HIT_SCOPE_REQUEST ||
+            __atomic_load_n(&control->enabled, __ATOMIC_ACQUIRE) == 0) {
+            std::fprintf(stderr,
+                         "request-begin requires an armed request-scoped control and a positive monotonic request id\n");
+            result = 2;
+        } else {
+            const uint64_t requested = static_cast<uint64_t>(request_id);
+            const uint64_t current =
+                __atomic_load_n(&control->request_generation, __ATOMIC_ACQUIRE);
+            if (requested < current) {
+                std::fprintf(stderr, "request-begin request id is stale\n");
+                result = 2;
+            } else if (requested == current) {
+                print_status(control);
+            } else {
+                // A controller must advance this only at a completed request
+                // boundary. Disabling first prevents a concurrent reservation
+                // from being attributed to the new request while counters reset.
+                __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+                lock_request_reservation(control);
+                reset_request_counters(control);
+                __atomic_store_n(&control->request_generation, requested,
+                                 __ATOMIC_RELEASE);
+                unlock_request_reservation(control);
+                __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+                print_status(control);
+            }
+        }
     } else if (argc == 2 && std::strcmp(argv[1], "disarm") == 0) {
         __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
         ++control->generation;
@@ -177,6 +271,8 @@ int main(int argc, char **argv) {
         control->mode = FAULT20_MODE_DISABLED;
         control->selection_mode = FAULT20_SELECTION_BOUNDED;
         control->target_api = FAULT20_TARGET_API_NONE;
+        control->proof_mode = FAULT20_PROOF_MODE_STRICT_PRODUCER;
+        control->proof_reserved = 0;
         control->extreme_value = 127;
         control->extreme_ratio_bps = 10000;
         control->extreme_pattern = FAULT20_EXTREME_POSITIVE_MAX;
@@ -804,24 +900,36 @@ int main(int argc, char **argv) {
             __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
             print_status(control);
         }
-    } else if (argc == 8 && std::strcmp(argv[1], "arm-int4") == 0) {
+    } else if ((argc == 8 || argc == 9) &&
+               (std::strcmp(argv[1], "arm-int4") == 0 ||
+                std::strcmp(argv[1], "arm-int4-observe") == 0 ||
+                std::strcmp(argv[1], "arm-int4-slotproof") == 0)) {
         long long device = 0;
         long long m = 0;
         long long k = 0;
         long long call_index = 0;
         long long hits = 0;
         long long bytes = 0;
+        long long output_bytes = 65536;
+        const bool observe =
+            std::strcmp(argv[1], "arm-int4-observe") == 0;
+        const bool slotproof =
+            std::strcmp(argv[1], "arm-int4-slotproof") == 0;
         if (!parse_int(argv[2], 0, 63, &device) ||
             !parse_int(argv[3], 1, 1048576, &m) ||
             !parse_int(argv[4], 1, 1048576, &k) ||
             !parse_int(argv[5], 1, 1048576, &call_index) ||
             !parse_int(argv[6], 1, 1024, &hits) ||
-            !parse_int(argv[7], 1, 65536, &bytes)) {
-            std::fprintf(stderr, "invalid arm-int4 arguments\n");
+            !parse_int(argv[7], 1, 65536, &bytes) ||
+            (!observe && argc != 8) ||
+            (observe && argc == 9 &&
+             !parse_int(argv[8], 1, 268435456, &output_bytes))) {
+            std::fprintf(stderr, "invalid arm-int4 numeric arguments\n");
             result = 2;
         } else {
             __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
-            control->mode = FAULT20_MODE_INT4_EQUIVALENT;
+            control->mode = observe ? FAULT20_MODE_INT4_EQUIVALENT_OBSERVE
+                                    : FAULT20_MODE_INT4_EQUIVALENT;
             control->target_device = static_cast<int32_t>(device);
             control->target_m = static_cast<int32_t>(m);
             control->target_k = static_cast<int32_t>(k);
@@ -831,7 +939,58 @@ int main(int argc, char **argv) {
             control->keep_mantissa_bits = 0;
             control->target_dtype = 2;
             control->max_bytes = static_cast<uint64_t>(bytes);
-            control->max_output_bytes = 65536;
+            control->max_output_bytes = static_cast<uint64_t>(output_bytes);
+            control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
+            control->max_hits_per_device = static_cast<uint32_t>(hits);
+            control->selection_mode = FAULT20_SELECTION_BOUNDED;
+            control->target_api = FAULT20_TARGET_API_QMM;
+            __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
+            __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
+            reset_device_counters(control);
+            control->proof_mode = slotproof ? FAULT20_PROOF_MODE_SEMANTIC_SLOT
+                                            : FAULT20_PROOF_MODE_STRICT_PRODUCER;
+            ++control->generation;
+            __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
+            print_status(control);
+        }
+    } else if ((argc == 8 || argc == 9) &&
+               (std::strcmp(argv[1], "arm-int2") == 0 ||
+                std::strcmp(argv[1], "arm-int2-observe") == 0)) {
+        long long device = 0;
+        long long m = 0;
+        long long k = 0;
+        long long call_index = 0;
+        long long hits = 0;
+        long long bytes = 0;
+        long long output_bytes = 65536;
+        const bool observe =
+            std::strcmp(argv[1], "arm-int2-observe") == 0;
+        if (!parse_int(argv[2], 0, 63, &device) ||
+            !parse_int(argv[3], 1, 1048576, &m) ||
+            !parse_int(argv[4], 1, 1048576, &k) ||
+            !parse_int(argv[5], 1, 1048576, &call_index) ||
+            !parse_int(argv[6], 1, 1024, &hits) ||
+            !parse_int(argv[7], 1, 65536, &bytes) ||
+            (!observe && argc != 8) ||
+            (observe && argc == 9 &&
+             !parse_int(argv[8], 1, 268435456, &output_bytes))) {
+            std::fprintf(stderr, "invalid arm-int2 numeric arguments\n");
+            result = 2;
+        } else {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
+            control->mode = observe ? FAULT20_MODE_INT2_EQUIVALENT_OBSERVE
+                                    : FAULT20_MODE_INT2_EQUIVALENT;
+            control->target_device = static_cast<int32_t>(device);
+            control->target_m = static_cast<int32_t>(m);
+            control->target_k = static_cast<int32_t>(k);
+            control->target_call_index = static_cast<uint32_t>(call_index);
+            control->max_hits = static_cast<uint32_t>(hits);
+            control->quant_step = 64;
+            control->keep_mantissa_bits = 0;
+            control->target_dtype = 2;
+            control->max_bytes = static_cast<uint64_t>(bytes);
+            control->max_output_bytes = static_cast<uint64_t>(output_bytes);
             control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
             control->max_hits_per_device = static_cast<uint32_t>(hits);
             control->selection_mode = FAULT20_SELECTION_BOUNDED;
@@ -844,42 +1003,59 @@ int main(int argc, char **argv) {
             __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
             print_status(control);
         }
-    } else if (argc == 8 && std::strcmp(argv[1], "arm-int2") == 0) {
+    } else if ((argc == 9 || argc == 10) &&
+               (std::strcmp(argv[1], "arm-int4-request") == 0 ||
+                std::strcmp(argv[1], "arm-int2-request") == 0 ||
+                std::strcmp(argv[1], "arm-int4-observe-request") == 0 ||
+                std::strcmp(argv[1], "arm-int2-observe-request") == 0)) {
         long long device = 0;
         long long m = 0;
         long long k = 0;
         long long call_index = 0;
-        long long hits = 0;
+        long long hits_per_request = 0;
+        long long max_hits_total = 0;
         long long bytes = 0;
+        long long output_bytes = 65536;
+        const bool observe = std::strstr(argv[1], "-observe-") != nullptr;
         if (!parse_int(argv[2], 0, 63, &device) ||
             !parse_int(argv[3], 1, 1048576, &m) ||
             !parse_int(argv[4], 1, 1048576, &k) ||
             !parse_int(argv[5], 1, 1048576, &call_index) ||
-            !parse_int(argv[6], 1, 1024, &hits) ||
-            !parse_int(argv[7], 1, 65536, &bytes)) {
-            std::fprintf(stderr, "invalid arm-int2 arguments\n");
+            !parse_int(argv[6], 1, 1024, &hits_per_request) ||
+            !parse_int(argv[7], hits_per_request, 1048576, &max_hits_total) ||
+            !parse_int(argv[8], 1, 65536, &bytes) ||
+            (!observe && argc != 9) ||
+            (observe && argc == 10 &&
+             !parse_int(argv[9], 1, 268435456, &output_bytes))) {
+            std::fprintf(stderr, "invalid request-scoped numeric arguments\n");
             result = 2;
         } else {
+            const bool int4 = std::strncmp(argv[1], "arm-int4", 8) == 0;
             __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
-            control->mode = FAULT20_MODE_INT2_EQUIVALENT;
+            control->mode = int4 ? (observe ? FAULT20_MODE_INT4_EQUIVALENT_OBSERVE
+                                            : FAULT20_MODE_INT4_EQUIVALENT)
+                                 : (observe ? FAULT20_MODE_INT2_EQUIVALENT_OBSERVE
+                                            : FAULT20_MODE_INT2_EQUIVALENT);
             control->target_device = static_cast<int32_t>(device);
             control->target_m = static_cast<int32_t>(m);
             control->target_k = static_cast<int32_t>(k);
             control->target_call_index = static_cast<uint32_t>(call_index);
-            control->max_hits = static_cast<uint32_t>(hits);
-            control->quant_step = 64;
+            control->max_hits = static_cast<uint32_t>(hits_per_request);
+            control->quant_step = int4 ? 16U : 64U;
             control->keep_mantissa_bits = 0;
             control->target_dtype = 2;
             control->max_bytes = static_cast<uint64_t>(bytes);
-            control->max_output_bytes = 65536;
+            control->max_output_bytes = static_cast<uint64_t>(output_bytes);
             control->target_device_mask = 1ULL << static_cast<uint32_t>(device);
-            control->max_hits_per_device = static_cast<uint32_t>(hits);
+            control->max_hits_per_device = static_cast<uint32_t>(hits_per_request);
             control->selection_mode = FAULT20_SELECTION_BOUNDED;
             control->target_api = FAULT20_TARGET_API_QMM;
             __atomic_store_n(&control->hit_count, 0U, __ATOMIC_RELEASE);
             __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
             __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
             reset_device_counters(control);
+            control->hit_scope = FAULT20_HIT_SCOPE_REQUEST;
+            control->max_hits_total = static_cast<uint32_t>(max_hits_total);
             ++control->generation;
             __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
             print_status(control);
@@ -1226,9 +1402,17 @@ int main(int argc, char **argv) {
                      "  fault20_buffer_ctl arm-amplify-x2-scale DEVICE M K SCALE_ELEMENTS CALL_INDEX MAX_SCALE_BYTES FACTOR(2|10|100|1000)\n"
                      "  fault20_buffer_ctl arm-lossless-x1-x2 DEVICE M K X2_N CALL_INDEX X1_BYTES WEIGHT_BYTES\n"
                      "  fault20_buffer_ctl arm-extreme-x1-x2 DEVICE M K X2_N CALL_INDEX X1_BYTES WEIGHT_BYTES VALUE positive_max\n"
-                     "  fault20_buffer_ctl arm-lossless DEVICE K MAX_HITS MAX_BYTES\n"
-                     "  fault20_buffer_ctl arm-int4 DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES\n"
-                     "  fault20_buffer_ctl arm-int2 DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES\n"
+                      "  fault20_buffer_ctl arm-lossless DEVICE K MAX_HITS MAX_BYTES\n"
+                      "  fault20_buffer_ctl arm-int4 DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES\n"
+                      "  fault20_buffer_ctl arm-int4-slotproof DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES\n"
+                      "  fault20_buffer_ctl arm-int2 DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES\n"
+                      "  fault20_buffer_ctl arm-int4-observe DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES [MAX_OUTPUT_BYTES]\n"
+                      "  fault20_buffer_ctl arm-int2-observe DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES [MAX_OUTPUT_BYTES]\n"
+                      "  fault20_buffer_ctl arm-int4-request DEVICE M K CALL_INDEX MAX_HITS_PER_REQUEST MAX_HITS_TOTAL MAX_BYTES\n"
+                      "  fault20_buffer_ctl arm-int2-request DEVICE M K CALL_INDEX MAX_HITS_PER_REQUEST MAX_HITS_TOTAL MAX_BYTES\n"
+                      "  fault20_buffer_ctl arm-int4-observe-request DEVICE M K CALL_INDEX MAX_HITS_PER_REQUEST MAX_HITS_TOTAL MAX_BYTES [MAX_OUTPUT_BYTES]\n"
+                      "  fault20_buffer_ctl arm-int2-observe-request DEVICE M K CALL_INDEX MAX_HITS_PER_REQUEST MAX_HITS_TOTAL MAX_BYTES [MAX_OUTPUT_BYTES]\n"
+                      "  fault20_buffer_ctl request-begin MONOTONIC_REQUEST_ID\n"
                      "  fault20_buffer_ctl arm-extreme DEVICE M K CALL_INDEX MAX_BYTES VALUE RATIO_BPS positive_max|negative_max|alternating\n"
                      "  fault20_buffer_ctl arm-progressive-extreme DEVICE M K CALL_INDEX MAX_HITS MAX_BYTES VALUE RATIO_BPS positive_max|negative_max|alternating\n"
                      "  fault20_buffer_ctl arm-all-qmm-extreme DEVICE_MASK M K MAX_BYTES VALUE RATIO_BPS positive_max|negative_max|alternating\n"

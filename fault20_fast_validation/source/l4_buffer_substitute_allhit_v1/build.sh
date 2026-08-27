@@ -37,6 +37,10 @@ nm -D -C "$library" | grep -F 'op::internal::AddParamToBuf(aclTensor const*)'
 nm -D -C "$library" | grep -F 'op::internal::AddParamToBuf(aclTensor*)'
 nm -D "$library" | grep -E 'fault20_qmm_gws_(begin|commit|abort)'
 nm -D "$library" | grep -E 'fault20_(float_)?matmul_gws_(begin|commit|abort)'
+nm -D "$library" | grep -F 'fault20_metadata_runtime_abi_v17'
+nm -D "$library" | grep -F 'fault20_qmm_gws_commit_v17'
+nm -D "$library" | grep -F 'fault20_matmul_gws_commit_v17'
+nm -D "$library" | grep -F 'fault20_float_matmul_gws_commit_v17'
 LD_BIND_NOW=1 python3 -c 'import ctypes, os, sys; ctypes.CDLL(sys.argv[1], mode=os.RTLD_LOCAL)' "$library"
 "$control" reset
 

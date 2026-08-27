@@ -27,6 +27,7 @@ g++ -std=c++17 -O2 -fPIC -shared \
 
 readelf -d "$output_dir/libopapi.so" | grep -E 'SONAME|NEEDED|RUNPATH'
 nm -D "$output_dir/libopapi.so" | grep -E 'aclnn(QuantMatmulWeightNz|MatmulWeightNz|Matmul|AscendQuantV3)(GetWorkspaceSize)?$'
+nm -D "$output_dir/libopapi.so" | grep -F 'fault20_metadata_proxy_abi_v17'
 if nm -D -C "$output_dir/libopapi.so" | grep -Fq 'aclOpExecutor::GetOpExecCache()'; then
   echo 'REFUSE: proxy must not depend on aclOpExecutor::GetOpExecCache()' >&2
   exit 1

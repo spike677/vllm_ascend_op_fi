@@ -24,6 +24,7 @@
 | `aclnnMatmul` post-Run output `+Inf/-Inf/qNaN` proxy | `PROVEN_E2E`（1/5/51/512 elements，readback exact） |
 | Fault26 QMM output-base underflow → live residual stomp proxy | `PROVEN_E2E`（rank0，allocation-boundary，231 all-eligible hits） |
 | Fault26 fault request 输出分叉与 disarm 后精确恢复 | `PROVEN_E2E`（token 7 首次分叉，post-fault exact recovery） |
+| Fault20 v17 metadata ABI handshake + immutable bundle | `PROVEN_E2E`（CANN 8.5.1，TP=2，C1/C2/C3/recovery） |
 
 结论严格限定于已验证环境和算子，不代表任意模型、任意算子或跨版本生产能力。详细统计见[当前注入能力统计](fault20_fast_validation/reports/fault20_injection_capability_inventory_20260807.md)。
 
@@ -128,6 +129,15 @@ CANN 8.5.1 / vLLM 0.18.0 / torch_npu 2.9.0.post1 已完成独立编译、
 分叉，但真实 QMM BF16 output 仍全部 finite。该结论命名为 scale amplification，不命名为
 accumulator overflow。
 
+Fault20 v17 的最终 msprobe 交接版本增加了显式 metadata ABI descriptor 和 fail-closed
+握手，并将 preload、control、proxy、真实 `libopapi`、manifest、校验器与参数化 rootfs
+launcher 固定为只读 bundle。远端 bundle 是
+`/home/haoran/fault20_fast_validation/runtime/cann851_semantic_slot_bundle_v17_hs2`，模型级
+证据是 `/home/haoran/f20runs/v17h2`。交接前必须运行 bundle 内
+`harness/verify_v17_bundle.sh` 并得到 `FAULT20_V17_BUNDLE_VERIFY_PASS`；不得把其中任一
+`.so` 与旧版本混用。详细 hash、设备映射、C1/C2/C3 和 Dump-ON 交接步骤见
+[CANN 8.5.1 使用说明](FAULT20_CANN851_USAGE.md)。
+
 ## 构建
 
 必须在与推理服务相同的 vLLM-Ascend/CANN 镜像内构建：
@@ -142,7 +152,8 @@ export FAULT20_METADATA_PROXY_OUTPUT_DIR=/fault20/runtime/l4_metadata_lifecycle_
 bash /fault20/source/l4_metadata_lifecycle_proxy/build.sh
 ```
 
-CANN 8.5.1 独立构建必须显式锁定 toolkit 与真实库路径片段：
+CANN 8.5.1 独立构建必须显式锁定 toolkit 与真实库路径片段，并为每次构建使用新的
+`OUTPUT_DIR`。构建只写入该目录内同名二进制，不会清理其他 runtime、logs 或 evidence：
 
 ```bash
 export FAULT20_BUFFER_OUTPUT_DIR=/fault20/runtime/cann851_validation_v1
@@ -150,7 +161,7 @@ export FAULT20_ASCEND_TOOLKIT=/usr/local/Ascend/cann-8.5.1/aarch64-linux
 export FAULT20_EXPECTED_LIBRARY_PATH_FRAGMENT=/cann-8.5.1/
 bash /fault20/source/l4_buffer_substitute_allhit_v1/build.sh
 
-export FAULT20_METADATA_PROXY_OUTPUT_DIR=/fault20/runtime/cann851_metadata_proxy
+export FAULT20_METADATA_PROXY_OUTPUT_DIR=/fault20/runtime/cann851_metadata_proxy_v17
 export FAULT20_REAL_LIBOPAPI=/usr/local/Ascend/cann-8.5.1/opp/built-in/op_impl/ai_core/tbe/op_api/lib/linux/aarch64/libopapi.so
 bash /fault20/source/l4_metadata_lifecycle_proxy/build.sh
 ```
@@ -180,13 +191,61 @@ export LD_LIBRARY_PATH=/fault20/runtime/l4_metadata_lifecycle_proxy:$LD_LIBRARY_
 export LD_PRELOAD=/fault20/runtime/l4_allhit_v1/libfault20_buffer_substitute_abi0.so
 ```
 
-control v13：
+control v17：
 
 ```text
-magic   0x4632304255463133
-version 13
-SHM     /fault20_l4_buffer_substitute_ctl_v13
+magic   0x4632304255463137
+version 17
+SHM     /fault20_l4_buffer_substitute_ctl_v17
 ```
+
+## 命中范围
+
+v17 保留历史 `arm-int4` / `arm-int2` 的 arm-lifetime bounded 语义：`MAX_HITS`
+是一次 arm 生命周期内的累计预算，候选窗口也跨请求累计。该行为用于可复现实验，未改变。
+
+v17 继续支持 `arm-int4-observe` / `arm-int2-observe` 组合模式：先执行 QMM x1
+数值退化，再在同一次 `OpExecCache::Run` 后同步并扫描真实 QMM output，输出
+`qmm_output_observation` 事件。这样 Fault20 的 INT4/INT2 路径可以获得与 Fault39
+cancellation 类似的 “fault + post-Run observe” 证据链。
+
+在 CANN 8.5.1 的 `aclnnQuantMatmulWeightNz` 路径上，`OpExecCache::Run`
+的 `addresses[]` 可能只包含输入/scale/bias 等 storage，不包含 output storage。v17 继续把
+GWS 阶段捕获到的 formal output metadata 复制到 legacy metadata 头部；post-Run observe
+优先使用已证明的 `addresses[out]`，否则使用 GWS formal `out.data_addr` 做只读 D2H
+扫描。若两者都不可用则 fail-closed。
+
+v17 新增 QMM x1 的 proof policy，但不改变历史命令语义：
+
+```text
+arm-int4
+  -> proof_mode=STRICT_PRODUCER
+  -> 仍要求前驱 AscendQuantV3 output 与 QMM Run slot 0 地址一致
+
+arm-int4-slotproof
+  -> proof_mode=SEMANTIC_SLOT
+  -> 不要求前驱 producer 地址守卫
+  -> 必须证明 formal tensor ordinal=0、compact Run slot=0、参数顺序/地址数/空槽规则精确、无共享 storage、x1 storage 唯一
+```
+
+两种策略都使用同一个 `ResolveSemanticTarget(QMM_X1)` 和同一个 INT4 transform/substitution 核心。候选计数只在目标 shape/dtype/layout/bytes 与所选 proof policy 全部通过后递增。GWS metadata 中的 `data_addr/storage_addr` 与 Run address 的直接匹配只写入日志作诊断，不能单独作为注入依据。未知 proof mode、槽位歧义、共享 storage、参数顺序或地址数量不一致均 fail-closed。
+
+新增的 request-scoped 模式是独立功能，适用于本地开发者模式中的重复在线实验：
+
+```text
+arm-int[24]-request
+  -> 每请求最多 MAX_HITS_PER_REQUEST 次
+  -> 所有请求累计最多 MAX_HITS_TOTAL 次；到达后自动 disarm
+request-begin REQUEST_ID
+  -> 用单调 request id 开启下一请求并清空请求内 candidate/hit 计数
+disarm
+  -> 立即停止后续请求的注入
+```
+
+`request-begin` 必须在同一 Docker IPC namespace 中、且在目标 HTTP 请求进入模型前调用。
+同一个 request id 可幂等重复提交；较小 id 被拒绝。TP worker 不得各自递增 id：控制端应为
+同一 HTTP 请求写入同一个单调 id。native `OpExecCache::Run` 本身无法推断 HTTP 请求边界，
+因此自动化接入需由 worker/controller 在请求边界调用该命令或等价控制 RPC。
 
 ## 控制命令
 
@@ -198,10 +257,32 @@ fault20_buffer_ctl status
 fault20_buffer_ctl reset
 fault20_buffer_ctl disarm
 
+# 历史兼容：STRICT_PRODUCER，参数语义不变
+fault20_buffer_ctl arm-int4 0 1 5120 1 1 5120
+
+# 新模式：SEMANTIC_SLOT；只在完整 formal-slot proof 通过后命中
+fault20_buffer_ctl arm-int4-slotproof 0 1 5120 1 1 5120
+
 # QMM all-hit
 fault20_buffer_ctl arm-all-qmm-lossless 3 1 5120 5120
 fault20_buffer_ctl arm-all-qmm-int2     3 1 5120 5120
 fault20_buffer_ctl arm-all-qmm-int4     3 1 5120 5120
+
+# 可重复在线 QMM 数值退化：每个请求 3 hit，所有请求共最多 96 hit。
+# 首次 request-begin 后才会命中；REQUEST_ID 必须单调递增。
+fault20_buffer_ctl arm-int4-request 0 1 5120 1 3 96 5120
+fault20_buffer_ctl request-begin 1001
+# 发送一次 HTTP 推理请求
+fault20_buffer_ctl request-begin 1002
+# 发送下一次 HTTP 推理请求；本请求的 candidate/hit 重新从 1 开始
+fault20_buffer_ctl disarm
+
+# QMM INT4 + post-Run output observe；最后一个 MAX_OUTPUT_BYTES 可省略，默认 65536。
+fault20_buffer_ctl arm-int4-observe 0 1 5120 1 1 5120 65536
+
+# request-scoped 版本：每请求最多 3 hit，所有请求共最多 96 hit，并记录每次 output stats。
+fault20_buffer_ctl arm-int4-observe-request 0 1 5120 1 3 96 5120 65536
+fault20_buffer_ctl request-begin 2001
 
 # QMM extreme x1 bounded single-hit
 # DEVICE M K CALL_INDEX MAX_BYTES VALUE RATIO_BPS PATTERN

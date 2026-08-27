@@ -46,6 +46,8 @@ using ExecuteFn = aclnnStatus (*)(void *, uint64_t, aclOpExecutor *, aclrtStream
 using Fault20GwsBeginFn = void (*)();
 using Fault20GwsCommitFn = bool (*)(const Fault20QmmMetadata *);
 using Fault20MatmulGwsCommitFn = bool (*)(const Fault20MatmulMetadata *);
+using Fault20VersionedGwsCommitFn = bool (*)(
+    const Fault20MetadataAbiDescriptor *);
 using Fault20GwsAbortFn = void (*)();
 using Fault26TraceBeginFn = void (*)(uint32_t, const char *, void *, uint64_t,
                                      aclOpExecutor *, aclrtStream);
@@ -66,12 +68,15 @@ ExecuteFn g_real_matmul_execute = nullptr;
 ExecuteFn g_real_float_matmul_execute = nullptr;
 ExecuteFn g_real_inplace_copy_execute = nullptr;
 Fault20GwsBeginFn g_fault20_gws_begin = nullptr;
+Fault20VersionedGwsCommitFn g_fault20_gws_commit_v17 = nullptr;
 Fault20GwsCommitFn g_fault20_gws_commit = nullptr;
 Fault20GwsAbortFn g_fault20_gws_abort = nullptr;
 Fault20GwsBeginFn g_fault20_matmul_gws_begin = nullptr;
+Fault20VersionedGwsCommitFn g_fault20_matmul_gws_commit_v17 = nullptr;
 Fault20MatmulGwsCommitFn g_fault20_matmul_gws_commit = nullptr;
 Fault20GwsAbortFn g_fault20_matmul_gws_abort = nullptr;
 Fault20GwsBeginFn g_fault20_float_matmul_gws_begin = nullptr;
+Fault20VersionedGwsCommitFn g_fault20_float_matmul_gws_commit_v17 = nullptr;
 Fault20MatmulGwsCommitFn g_fault20_float_matmul_gws_commit = nullptr;
 Fault20GwsAbortFn g_fault20_float_matmul_gws_abort = nullptr;
 Fault26TraceBeginFn g_fault26_trace_begin = nullptr;
@@ -125,18 +130,26 @@ void resolve_real() {
         reinterpret_cast<ExecuteFn>(dlsym(RTLD_NEXT, "aclnnInplaceCopy"));
     g_fault20_gws_begin = reinterpret_cast<Fault20GwsBeginFn>(
         dlsym(RTLD_DEFAULT, "fault20_qmm_gws_begin"));
+    g_fault20_gws_commit_v17 = reinterpret_cast<Fault20VersionedGwsCommitFn>(
+        dlsym(RTLD_DEFAULT, "fault20_qmm_gws_commit_v17"));
     g_fault20_gws_commit = reinterpret_cast<Fault20GwsCommitFn>(
         dlsym(RTLD_DEFAULT, "fault20_qmm_gws_commit"));
     g_fault20_gws_abort = reinterpret_cast<Fault20GwsAbortFn>(
         dlsym(RTLD_DEFAULT, "fault20_qmm_gws_abort"));
     g_fault20_matmul_gws_begin = reinterpret_cast<Fault20GwsBeginFn>(
         dlsym(RTLD_DEFAULT, "fault20_matmul_gws_begin"));
+    g_fault20_matmul_gws_commit_v17 =
+        reinterpret_cast<Fault20VersionedGwsCommitFn>(
+            dlsym(RTLD_DEFAULT, "fault20_matmul_gws_commit_v17"));
     g_fault20_matmul_gws_commit = reinterpret_cast<Fault20MatmulGwsCommitFn>(
         dlsym(RTLD_DEFAULT, "fault20_matmul_gws_commit"));
     g_fault20_matmul_gws_abort = reinterpret_cast<Fault20GwsAbortFn>(
         dlsym(RTLD_DEFAULT, "fault20_matmul_gws_abort"));
     g_fault20_float_matmul_gws_begin = reinterpret_cast<Fault20GwsBeginFn>(
         dlsym(RTLD_DEFAULT, "fault20_float_matmul_gws_begin"));
+    g_fault20_float_matmul_gws_commit_v17 =
+        reinterpret_cast<Fault20VersionedGwsCommitFn>(
+            dlsym(RTLD_DEFAULT, "fault20_float_matmul_gws_commit_v17"));
     g_fault20_float_matmul_gws_commit =
         reinterpret_cast<Fault20MatmulGwsCommitFn>(
             dlsym(RTLD_DEFAULT, "fault20_float_matmul_gws_commit"));
@@ -148,6 +161,47 @@ void resolve_real() {
         dlsym(RTLD_DEFAULT, "fault26_trace_execute_end"));
     g_fault26_trace_writer_gws = reinterpret_cast<Fault26TraceWriterGwsFn>(
         dlsym(RTLD_DEFAULT, "fault26_trace_writer_gws"));
+}
+
+Fault20MetadataAbiDescriptor make_metadata_descriptor(uint32_t payload_kind,
+                                                      uint32_t payload_size,
+                                                      const void *payload) {
+    Fault20MetadataAbiDescriptor descriptor{};
+    descriptor.magic = FAULT20_METADATA_ABI_MAGIC;
+    descriptor.version = FAULT20_METADATA_ABI_VERSION;
+    descriptor.descriptor_size = sizeof(Fault20MetadataAbiDescriptor);
+    descriptor.payload_kind = payload_kind;
+    descriptor.payload_size = payload_size;
+    descriptor.payload_address = reinterpret_cast<uint64_t>(payload);
+    return descriptor;
+}
+
+bool commit_qmm_metadata(const Fault20QmmMetadata &metadata) {
+    if (g_fault20_gws_commit_v17 != nullptr) {
+        const Fault20MetadataAbiDescriptor descriptor = make_metadata_descriptor(
+            FAULT20_METADATA_PAYLOAD_QMM, sizeof(metadata), &metadata);
+        return g_fault20_gws_commit_v17(&descriptor);
+    }
+    return g_fault20_gws_commit != nullptr && g_fault20_gws_commit(&metadata);
+}
+
+bool commit_matmul_metadata(const Fault20MatmulMetadata &metadata,
+                            bool floating_api) {
+    Fault20VersionedGwsCommitFn versioned =
+        floating_api ? g_fault20_float_matmul_gws_commit_v17
+                     : g_fault20_matmul_gws_commit_v17;
+    if (versioned != nullptr) {
+        const uint32_t kind = floating_api
+                                  ? FAULT20_METADATA_PAYLOAD_FLOAT_MATMUL
+                                  : FAULT20_METADATA_PAYLOAD_MATMUL_WEIGHT_NZ;
+        const Fault20MetadataAbiDescriptor descriptor =
+            make_metadata_descriptor(kind, sizeof(metadata), &metadata);
+        return versioned(&descriptor);
+    }
+    Fault20MatmulGwsCommitFn legacy =
+        floating_api ? g_fault20_float_matmul_gws_commit
+                     : g_fault20_matmul_gws_commit;
+    return legacy != nullptr && legacy(&metadata);
 }
 
 void notify_fault26_writer_gws(const char *api, const char *role,
@@ -351,6 +405,35 @@ bool capture_optional_tensor_metadata(const aclTensor *tensor,
     return tensor == nullptr || capture_tensor_metadata(tensor, metadata);
 }
 
+void copy_output_metadata_to_legacy(const Fault20TensorMetadata &out,
+                                    Fault20X1Metadata *legacy) {
+    if (legacy == nullptr || out.present == 0) {
+        return;
+    }
+    legacy->output_dtype = out.dtype;
+    legacy->output_format = out.format;
+    legacy->output_view_rank = out.view_rank;
+    legacy->output_storage_rank = out.storage_rank;
+    legacy->output_stride_rank = out.stride_rank;
+    legacy->output_contiguous = out.contiguous;
+    for (size_t i = 0; i < FAULT20_MAX_DIMS; ++i) {
+        legacy->output_view_shape[i] = out.view_shape[i];
+        legacy->output_storage_shape[i] = out.storage_shape[i];
+        legacy->output_strides[i] = out.strides[i];
+    }
+    legacy->output_view_offset = out.view_offset;
+    legacy->output_numel = out.numel;
+    legacy->output_storage_elements = out.storage_elements;
+    legacy->output_element_size = out.element_size;
+    legacy->output_view_bytes = out.view_bytes;
+    legacy->output_storage_bytes = out.storage_bytes;
+    legacy->output_tensor_ptr = out.tensor_ptr;
+    legacy->output_storage_ptr = out.storage_ptr;
+    legacy->output_raw_addr = out.raw_addr;
+    legacy->output_storage_addr = out.storage_addr;
+    legacy->output_data_addr = out.data_addr;
+}
+
 bool capture_qmm_metadata(
     const aclTensor *x1, const aclTensor *x2, const aclTensor *x1_scale,
     const aclTensor *x2_scale, const aclTensor *y_scale, const aclTensor *x1_offset,
@@ -375,6 +458,7 @@ bool capture_qmm_metadata(
         !capture_tensor_metadata(out, &value.out)) {
         return false;
     }
+    copy_output_metadata_to_legacy(value.out, &value.x1_legacy);
     value.group_size = group_size;
     value.transpose_x1 = transpose_x1 ? 1U : 0U;
     value.transpose_x2 = transpose_x2 ? 1U : 0U;
@@ -701,6 +785,10 @@ void log_matmul_summary(const char *event, uint64_t invocation,
 
 }  // namespace
 
+extern "C" uint32_t fault20_metadata_proxy_abi_v17() {
+    return FAULT20_METADATA_ABI_VERSION;
+}
+
 extern "C" aclnnStatus aclnnQuantMatmulWeightNzGetWorkspaceSize(
     const aclTensor *x1, const aclTensor *x2, const aclTensor *x1_scale, const aclTensor *x2_scale,
     const aclTensor *y_scale, const aclTensor *x1_offset, const aclTensor *x2_offset,
@@ -713,8 +801,9 @@ extern "C" aclnnStatus aclnnQuantMatmulWeightNzGetWorkspaceSize(
         return 1;
     }
     const bool registry_hooks_ready = g_fault20_gws_begin != nullptr &&
-                                      g_fault20_gws_commit != nullptr &&
-                                      g_fault20_gws_abort != nullptr;
+                                       (g_fault20_gws_commit_v17 != nullptr ||
+                                        g_fault20_gws_commit != nullptr) &&
+                                       g_fault20_gws_abort != nullptr;
     if (registry_hooks_ready) {
         g_fault20_gws_begin();
     }
@@ -727,7 +816,7 @@ extern "C" aclnnStatus aclnnQuantMatmulWeightNzGetWorkspaceSize(
             capture_qmm_metadata(x1, x2, x1_scale, x2_scale, y_scale, x1_offset,
                                  x2_offset, y_offset, bias, transpose_x1,
                                  transpose_x2, group_size, out, &metadata)) {
-            (void)g_fault20_gws_commit(&metadata);
+            (void)commit_qmm_metadata(metadata);
         } else {
             g_fault20_gws_abort();
         }
@@ -788,7 +877,8 @@ extern "C" aclnnStatus aclnnMatmulWeightNzGetWorkspaceSize(
         return 1;
     }
     const bool registry_hooks_ready = g_fault20_matmul_gws_begin != nullptr &&
-                                      g_fault20_matmul_gws_commit != nullptr &&
+                                      (g_fault20_matmul_gws_commit_v17 != nullptr ||
+                                       g_fault20_matmul_gws_commit != nullptr) &&
                                       g_fault20_matmul_gws_abort != nullptr;
     if (registry_hooks_ready) {
         g_fault20_matmul_gws_begin();
@@ -821,7 +911,7 @@ extern "C" aclnnStatus aclnnMatmulWeightNzGetWorkspaceSize(
     }
     if (registry_hooks_ready) {
         if (metadata_ok) {
-            (void)g_fault20_matmul_gws_commit(&metadata);
+            (void)commit_matmul_metadata(metadata, false);
         } else {
             g_fault20_matmul_gws_abort();
         }
@@ -884,7 +974,8 @@ extern "C" aclnnStatus aclnnMatmulGetWorkspaceSize(
     }
     const bool registry_hooks_ready =
         g_fault20_float_matmul_gws_begin != nullptr &&
-        g_fault20_float_matmul_gws_commit != nullptr &&
+        (g_fault20_float_matmul_gws_commit_v17 != nullptr ||
+         g_fault20_float_matmul_gws_commit != nullptr) &&
         g_fault20_float_matmul_gws_abort != nullptr;
     if (registry_hooks_ready) {
         g_fault20_float_matmul_gws_begin();
@@ -920,7 +1011,7 @@ extern "C" aclnnStatus aclnnMatmulGetWorkspaceSize(
     }
     if (registry_hooks_ready) {
         if (metadata_ok) {
-            (void)g_fault20_float_matmul_gws_commit(&metadata);
+            (void)commit_matmul_metadata(metadata, true);
         } else {
             g_fault20_float_matmul_gws_abort();
         }

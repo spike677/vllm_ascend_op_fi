@@ -20,6 +20,7 @@
 #include <new>
 #include <limits>
 #include <pthread.h>
+#include <sched.h>
 #include <string>
 #include <sys/file.h>
 #include <sys/mman.h>
@@ -142,6 +143,28 @@ constexpr int32_t kNotCalled = -2147483647;
 struct Int4Attempt {
     uint32_t hit_index{0};
     uint32_t candidate_index{0};
+    uint32_t proof_mode{FAULT20_PROOF_MODE_STRICT_PRODUCER};
+    uint32_t target_role{0};
+    int32_t formal_ordinal{-1};
+    int32_t run_slot{-1};
+    int32_t direct_gws_address_match{-1};
+    bool semantic_slot_proven{false};
+    bool producer_match{false};
+    bool last_quant_valid{false};
+    bool param_order_exact{false};
+    bool address_count_exact{false};
+    bool empty_slots_are_null{false};
+    bool nonempty_slots_are_nonnull{false};
+    bool no_shared_storage{false};
+    bool x1_storage_unique{false};
+    int32_t target_dtype{0};
+    int32_t target_format{0};
+    int64_t target_shape0{0};
+    int64_t target_shape1{0};
+    int64_t target_stride0{0};
+    int64_t target_stride1{0};
+    int64_t target_view_offset{0};
+    uint64_t target_bytes{0};
     uint32_t quant_step{16};
     int32_t extreme_value{0};
     uint32_t extreme_ratio_bps{0};
@@ -196,6 +219,9 @@ struct QmmOutputObservation {
     int32_t host_free_status{kNotCalled};
     void *out_address{nullptr};
     void *host_buffer{nullptr};
+    Fault20TensorMetadata out_metadata{};
+    bool output_slot_proven{false};
+    bool used_legacy_output_metadata{false};
     bool host_freed{false};
     bool stats_valid{false};
     bool auto_disarmed_on_nonfinite{false};
@@ -402,6 +428,7 @@ bool g_abi_ok = false;
 bool g_developer_mode_ok = false;
 bool g_runtime_resolution_logged = false;
 bool g_api_inventory_enabled = false;
+std::atomic<uint32_t> g_metadata_abi_success_mask{0};
 thread_local CaptureState g_capture;
 thread_local QuantProducerState g_last_quant;
 thread_local bool g_add_param_forwarding{false};
@@ -458,6 +485,74 @@ void log_simple(const char *event, const char *reason) {
     if (written > 0 && static_cast<size_t>(written) < sizeof(line)) {
         write_line(line, static_cast<size_t>(written));
     }
+}
+
+void log_metadata_abi(const char *event, const char *reason,
+                      const Fault20MetadataAbiDescriptor *descriptor,
+                      uint32_t expected_kind, uint32_t expected_payload_size) {
+    const uint64_t actual_magic = descriptor == nullptr ? 0 : descriptor->magic;
+    const uint32_t actual_version = descriptor == nullptr ? 0 : descriptor->version;
+    const uint32_t actual_descriptor_size =
+        descriptor == nullptr ? 0 : descriptor->descriptor_size;
+    const uint32_t actual_kind = descriptor == nullptr ? 0 : descriptor->payload_kind;
+    const uint32_t actual_payload_size =
+        descriptor == nullptr ? 0 : descriptor->payload_size;
+    char line[1536];
+    const int written = std::snprintf(
+        line, sizeof(line),
+        "{\"event\":\"%s\",\"pid\":%ld,\"tid\":%ld,\"ts_ns\":%" PRIu64
+        ",\"reason\":\"%s\",\"expected\":{\"magic\":\"0x%016" PRIx64
+        "\",\"version\":%u,\"descriptor_size\":%zu,\"payload_kind\":%u,"
+        "\"payload_size\":%u},\"actual\":{\"magic\":\"0x%016" PRIx64
+        "\",\"version\":%u,\"descriptor_size\":%u,\"payload_kind\":%u,"
+        "\"payload_size\":%u}}",
+        event, static_cast<long>(getpid()), static_cast<long>(syscall(SYS_gettid)),
+        monotonic_ns(), reason == nullptr ? "" : reason, FAULT20_METADATA_ABI_MAGIC,
+        FAULT20_METADATA_ABI_VERSION, sizeof(Fault20MetadataAbiDescriptor), expected_kind,
+        expected_payload_size, actual_magic, actual_version, actual_descriptor_size,
+        actual_kind, actual_payload_size);
+    if (written > 0 && static_cast<size_t>(written) < sizeof(line)) {
+        write_line(line, static_cast<size_t>(written));
+    }
+}
+
+template <typename T>
+const T *validated_metadata_payload(
+    const Fault20MetadataAbiDescriptor *descriptor, uint32_t expected_kind) {
+    const char *reason = nullptr;
+    if (descriptor == nullptr) {
+        reason = "descriptor_null";
+    } else if (descriptor->magic != FAULT20_METADATA_ABI_MAGIC) {
+        reason = "magic_mismatch";
+    } else if (descriptor->version != FAULT20_METADATA_ABI_VERSION) {
+        reason = "version_mismatch";
+    } else if (descriptor->descriptor_size != sizeof(Fault20MetadataAbiDescriptor)) {
+        reason = "descriptor_size_mismatch";
+    } else if (descriptor->payload_kind != expected_kind) {
+        reason = "payload_kind_mismatch";
+    } else if (descriptor->payload_size != sizeof(T)) {
+        reason = "payload_size_mismatch";
+    } else if (descriptor->payload_address == 0) {
+        reason = "payload_address_null";
+    }
+    if (reason != nullptr) {
+        log_metadata_abi("metadata_abi_mismatch", reason, descriptor, expected_kind,
+                         static_cast<uint32_t>(sizeof(T)));
+        return nullptr;
+    }
+    const uint32_t bit = expected_kind < 32 ? 1U << expected_kind : 0;
+    if (bit == 0 || (g_metadata_abi_success_mask.fetch_or(bit) & bit) == 0) {
+        log_metadata_abi("metadata_abi_handshake", "accepted", descriptor,
+                         expected_kind, static_cast<uint32_t>(sizeof(T)));
+    }
+    return reinterpret_cast<const T *>(descriptor->payload_address);
+}
+
+void reject_legacy_metadata_commit(uint32_t expected_kind,
+                                   uint32_t expected_payload_size) {
+    log_metadata_abi("metadata_abi_mismatch", "legacy_unversioned_commit_rejected",
+                     nullptr, expected_kind, expected_payload_size);
+    g_capture = CaptureState{};
 }
 
 void log_op_exec_api_inventory(op::internal::OpExecCache *cache,
@@ -527,6 +622,10 @@ void initialize_control() {
             control->max_hits_per_device = 1;
             control->selection_mode = FAULT20_SELECTION_BOUNDED;
             control->target_api = FAULT20_TARGET_API_NONE;
+            control->proof_mode = FAULT20_PROOF_MODE_STRICT_PRODUCER;
+            control->proof_reserved = 0;
+            control->hit_scope = FAULT20_HIT_SCOPE_ARM_LIFETIME;
+            control->max_hits_total = 0;
         }
         g_control = control;
     }
@@ -653,39 +752,113 @@ bool starts_with(const std::string &value, const char *prefix) {
     return value.size() >= length && value.compare(0, length, prefix) == 0;
 }
 
-bool reserve_hit(Fault20Control *control, uint32_t *hit_index) {
-    uint32_t current = __atomic_load_n(&control->hit_count, __ATOMIC_ACQUIRE);
-    const uint32_t limit = __atomic_load_n(&control->max_hits, __ATOMIC_RELAXED);
-    while (current < limit) {
-        uint32_t desired = current + 1;
-        if (__atomic_compare_exchange_n(&control->hit_count, &current, desired, false,
-                                        __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE)) {
-            *hit_index = desired;
-            return true;
-        }
+void lock_request_reservation(Fault20Control *control) {
+    uint32_t expected = 0;
+    while (!__atomic_compare_exchange_n(&control->request_reservation_lock, &expected,
+                                        1U, false, __ATOMIC_ACQUIRE,
+                                        __ATOMIC_RELAXED)) {
+        expected = 0;
+        sched_yield();
     }
-    return false;
 }
 
-bool reserve_hit_per_device(Fault20Control *control, int32_t device,
-                            uint32_t *hit_index) {
+void unlock_request_reservation(Fault20Control *control) {
+    __atomic_store_n(&control->request_reservation_lock, 0U, __ATOMIC_RELEASE);
+}
+
+bool reserve_candidate_per_device(Fault20Control *control, int32_t device,
+                                  uint32_t *candidate_index,
+                                  uint64_t *request_generation) {
     if (device < 0 || static_cast<size_t>(device) >= FAULT20_MAX_DEVICES) {
         return false;
     }
-    uint32_t *counter = &control->hit_count_per_device[device];
-    uint32_t current = __atomic_load_n(counter, __ATOMIC_ACQUIRE);
-    const uint32_t limit =
+    const uint32_t hit_scope =
+        __atomic_load_n(&control->hit_scope, __ATOMIC_RELAXED);
+    if (hit_scope == FAULT20_HIT_SCOPE_ARM_LIFETIME) {
+        *candidate_index = __atomic_add_fetch(
+            &control->candidate_count_per_device[device], 1U, __ATOMIC_ACQ_REL);
+        __atomic_add_fetch(&control->candidate_count, 1U, __ATOMIC_ACQ_REL);
+        *request_generation = 0;
+        return true;
+    }
+    if (hit_scope != FAULT20_HIT_SCOPE_REQUEST) {
+        return false;
+    }
+
+    lock_request_reservation(control);
+    const uint64_t current_generation =
+        __atomic_load_n(&control->request_generation, __ATOMIC_ACQUIRE);
+    const bool ready =
+        __atomic_load_n(&control->enabled, __ATOMIC_ACQUIRE) != 0 &&
+        current_generation != 0;
+    if (ready) {
+        *candidate_index = __atomic_add_fetch(
+            &control->request_candidate_count_per_device[device], 1U,
+            __ATOMIC_ACQ_REL);
+        __atomic_add_fetch(&control->candidate_count, 1U, __ATOMIC_ACQ_REL);
+        *request_generation = current_generation;
+    }
+    unlock_request_reservation(control);
+    return ready;
+}
+
+bool reserve_hit_per_device(Fault20Control *control, int32_t device,
+                            uint64_t request_generation, uint32_t *hit_index) {
+    if (device < 0 || static_cast<size_t>(device) >= FAULT20_MAX_DEVICES) {
+        return false;
+    }
+    const uint32_t hit_scope =
+        __atomic_load_n(&control->hit_scope, __ATOMIC_RELAXED);
+    if (hit_scope == FAULT20_HIT_SCOPE_ARM_LIFETIME) {
+        uint32_t *counter = &control->hit_count_per_device[device];
+        uint32_t current = __atomic_load_n(counter, __ATOMIC_ACQUIRE);
+        const uint32_t limit =
+            __atomic_load_n(&control->max_hits_per_device, __ATOMIC_RELAXED);
+        while (current < limit) {
+            const uint32_t desired = current + 1;
+            if (__atomic_compare_exchange_n(counter, &current, desired, false,
+                                            __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE)) {
+                __atomic_add_fetch(&control->hit_count, 1U, __ATOMIC_ACQ_REL);
+                *hit_index = desired;
+                return true;
+            }
+        }
+        return false;
+    }
+    if (hit_scope != FAULT20_HIT_SCOPE_REQUEST || request_generation == 0) {
+        return false;
+    }
+
+    lock_request_reservation(control);
+    const uint64_t current_generation =
+        __atomic_load_n(&control->request_generation, __ATOMIC_ACQUIRE);
+    const uint32_t per_request_limit =
         __atomic_load_n(&control->max_hits_per_device, __ATOMIC_RELAXED);
-    while (current < limit) {
-        const uint32_t desired = current + 1;
-        if (__atomic_compare_exchange_n(counter, &current, desired, false,
-                                        __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE)) {
-            __atomic_add_fetch(&control->hit_count, 1U, __ATOMIC_ACQ_REL);
-            *hit_index = desired;
-            return true;
+    const uint32_t total_limit =
+        __atomic_load_n(&control->max_hits_total, __ATOMIC_RELAXED);
+    uint32_t request_hits = __atomic_load_n(
+        &control->request_hit_count_per_device[device], __ATOMIC_ACQUIRE);
+    uint32_t total_hits =
+        __atomic_load_n(&control->hit_count, __ATOMIC_ACQUIRE);
+    const bool permitted =
+        __atomic_load_n(&control->enabled, __ATOMIC_ACQUIRE) != 0 &&
+        current_generation == request_generation && per_request_limit != 0 &&
+        total_limit != 0 && request_hits < per_request_limit && total_hits < total_limit;
+    if (permitted) {
+        ++request_hits;
+        ++total_hits;
+        __atomic_store_n(&control->request_hit_count_per_device[device], request_hits,
+                         __ATOMIC_RELEASE);
+        __atomic_add_fetch(&control->hit_count_per_device[device], 1U,
+                           __ATOMIC_ACQ_REL);
+        __atomic_store_n(&control->hit_count, total_hits, __ATOMIC_RELEASE);
+        *hit_index = request_hits;
+        if (total_hits == total_limit) {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
         }
     }
-    return false;
+    unlock_request_reservation(control);
+    return permitted;
 }
 
 bool lookup_metadata(op::internal::OpExecCache *cache, RegisteredMetadata *metadata,
@@ -990,8 +1163,10 @@ struct QmmStorageOrderProof {
     bool nonempty_slots_are_nonnull{false};
     bool no_shared_storage{false};
     bool out_is_last_storage{false};
+    bool x1_storage_unique{false};
     bool x2_storage_unique{false};
     bool x2_scale_storage_unique{false};
+    bool x1_slot_proven{false};
     bool weight_slot_proven{false};
     bool x2_scale_slot_proven{false};
     bool output_slot_proven{false};
@@ -1037,6 +1212,8 @@ QmmStorageOrderProof prove_qmm_storage_order(
     proof.out_is_last_storage =
         proof.slots[9] >= 0 &&
         static_cast<size_t>(proof.slots[9] + 1) == addresses.size();
+    const int32_t x1_param_ordinal = find_unique_tensor_ordinal(
+        registered.tensor_params, registered.tensor_param_count, m.x1.tensor_ptr);
     const int32_t out_param_ordinal = find_unique_tensor_ordinal(
         registered.tensor_params, registered.tensor_param_count, m.out.tensor_ptr);
     const int32_t x2_param_ordinal = find_unique_tensor_ordinal(
@@ -1044,9 +1221,17 @@ QmmStorageOrderProof prove_qmm_storage_order(
     const int32_t x2_scale_param_ordinal = find_unique_tensor_ordinal(
         registered.tensor_params, registered.tensor_param_count,
         m.x2_scale.tensor_ptr);
+    proof.x1_storage_unique = qmm_tensor_storage_is_unique(m, m.x1);
     proof.x2_storage_unique = qmm_tensor_storage_is_unique(m, m.x2);
     proof.x2_scale_storage_unique =
         qmm_tensor_storage_is_unique(m, m.x2_scale);
+    proof.x1_slot_proven =
+        proof.param_order_exact && proof.address_count_exact &&
+        proof.empty_slots_are_null && proof.nonempty_slots_are_nonnull &&
+        proof.no_shared_storage && x1_param_ordinal == 0 && proof.slots[0] == 0 &&
+        !addresses.empty() && addresses[0] != nullptr && m.x1.present != 0 &&
+        m.x1.storage_bytes != 0 && m.x1.storage_ptr != 0 &&
+        proof.x1_storage_unique;
     proof.weight_slot_proven =
         proof.param_order_exact && proof.address_count_exact &&
         proof.empty_slots_are_null && proof.nonempty_slots_are_nonnull &&
@@ -1070,6 +1255,169 @@ QmmStorageOrderProof prove_qmm_storage_order(
         m.out.storage_bytes != 0 && m.out.storage_ptr != 0 &&
         qmm_output_storage_is_unique(m);
     return proof;
+}
+
+enum class TensorRole : uint32_t {
+    kUnknown = 0,
+    kQmmX1 = 1,
+};
+
+struct SemanticTarget {
+    uint32_t api{FAULT20_TARGET_API_NONE};
+    TensorRole role{TensorRole::kUnknown};
+    int32_t m{0};
+    int32_t k{0};
+    uint64_t max_bytes{0};
+};
+
+struct ResolvedTarget {
+    bool eligible{false};
+    uint32_t proof_mode{FAULT20_PROOF_MODE_STRICT_PRODUCER};
+    TensorRole role{TensorRole::kUnknown};
+    Fault20TensorMetadata metadata{};
+    bool metadata_valid{false};
+    int32_t formal_ordinal{-1};
+    int32_t run_slot{-1};
+    int32_t direct_gws_address_match{-1};
+    void *runtime_address{nullptr};
+    bool semantic_slot_proven{false};
+    bool producer_match{false};
+    bool last_quant_valid{false};
+    bool param_order_exact{false};
+    bool address_count_exact{false};
+    bool empty_slots_are_null{false};
+    bool nonempty_slots_are_nonnull{false};
+    bool no_shared_storage{false};
+    bool x1_storage_unique{false};
+};
+
+const char *tensor_role_name(TensorRole role) {
+    return role == TensorRole::kQmmX1 ? "QMM_X1" : "UNKNOWN";
+}
+
+const char *runtime_proof_mode_name(uint32_t proof_mode) {
+    if (proof_mode == FAULT20_PROOF_MODE_STRICT_PRODUCER) {
+        return "STRICT_PRODUCER";
+    }
+    if (proof_mode == FAULT20_PROOF_MODE_SEMANTIC_SLOT) {
+        return "SEMANTIC_SLOT";
+    }
+    return "UNKNOWN";
+}
+
+bool proof_mode_supported(uint32_t proof_mode) {
+    return proof_mode == FAULT20_PROOF_MODE_STRICT_PRODUCER ||
+           proof_mode == FAULT20_PROOF_MODE_SEMANTIC_SLOT;
+}
+
+Fault20TensorMetadata normalize_legacy_x1(const Fault20X1Metadata &legacy) {
+    Fault20TensorMetadata normalized{};
+    normalized.dtype = legacy.dtype;
+    normalized.format = legacy.format;
+    normalized.present = 1;
+    normalized.contiguous = legacy.contiguous;
+    normalized.view_rank = legacy.view_rank;
+    normalized.storage_rank = legacy.storage_rank;
+    normalized.stride_rank = legacy.stride_rank;
+    for (size_t i = 0; i < FAULT20_MAX_DIMS; ++i) {
+        normalized.view_shape[i] = legacy.view_shape[i];
+        normalized.storage_shape[i] = legacy.storage_shape[i];
+        normalized.strides[i] = legacy.strides[i];
+    }
+    normalized.view_offset = legacy.view_offset;
+    normalized.numel = legacy.numel;
+    normalized.storage_elements = legacy.storage_elements;
+    normalized.element_size = legacy.element_size;
+    normalized.view_bytes = legacy.view_bytes;
+    normalized.storage_bytes = legacy.storage_bytes;
+    return normalized;
+}
+
+bool qmm_x1_metadata_matches(const Fault20TensorMetadata &x1, int32_t m,
+                             int32_t k, uint64_t max_bytes) {
+    if (m <= 0 || k <= 0 || max_bytes == 0) {
+        return false;
+    }
+    const int64_t expected_numel = static_cast<int64_t>(m) * k;
+    return x1.present != 0 && x1.dtype == ACL_INT8 &&
+           x1.format == ACL_FORMAT_ND && x1.view_rank == 2 &&
+           x1.storage_rank == 1 && x1.stride_rank == 2 &&
+           x1.contiguous != 0 && x1.view_offset == 0 &&
+           x1.view_shape[0] == m && x1.view_shape[1] == k &&
+           x1.storage_shape[0] == expected_numel && x1.strides[0] == k &&
+           x1.strides[1] == 1 && x1.numel == expected_numel &&
+           x1.storage_elements == expected_numel && x1.element_size == 1 &&
+           x1.view_bytes == x1.storage_bytes &&
+           x1.storage_bytes == static_cast<uint64_t>(expected_numel) &&
+           x1.storage_bytes <= max_bytes && x1.storage_bytes <= 65536;
+}
+
+ResolvedTarget ResolveSemanticTarget(
+    const SemanticTarget &target, const RegisteredMetadata &registered,
+    const std::vector<void *> &addresses, const QmmStorageOrderProof &proof,
+    uint32_t proof_mode, bool last_quant_valid, bool producer_match) {
+    ResolvedTarget resolved{};
+    resolved.proof_mode = proof_mode;
+    resolved.role = target.role;
+    resolved.producer_match = producer_match;
+    resolved.last_quant_valid = last_quant_valid;
+    resolved.param_order_exact = proof.param_order_exact;
+    resolved.address_count_exact = proof.address_count_exact;
+    resolved.empty_slots_are_null = proof.empty_slots_are_null;
+    resolved.nonempty_slots_are_nonnull = proof.nonempty_slots_are_nonnull;
+    resolved.no_shared_storage = proof.no_shared_storage;
+    resolved.x1_storage_unique = proof.x1_storage_unique;
+    if (!proof_mode_supported(proof_mode) ||
+        target.api != FAULT20_TARGET_API_QMM ||
+        target.role != TensorRole::kQmmX1 || addresses.empty()) {
+        return resolved;
+    }
+
+    if (proof_mode == FAULT20_PROOF_MODE_STRICT_PRODUCER) {
+        // Compatibility policy: preserve the historical arm-int4 contract.
+        // The immediately preceding QuantV3 output proves addresses[0], and the
+        // legacy QMM x1 metadata supplies the exact dtype/layout/byte guard.
+        resolved.metadata = normalize_legacy_x1(registered.x1);
+        resolved.metadata_valid = true;
+        resolved.formal_ordinal = find_unique_tensor_ordinal(
+            registered.tensor_params, registered.tensor_param_count,
+            registered.tensors.x1.tensor_ptr);
+        resolved.run_slot = 0;
+        resolved.direct_gws_address_match =
+            find_unique_address_slot(addresses, registered.tensors.x1);
+        resolved.semantic_slot_proven = proof.x1_slot_proven;
+        if (!producer_match || addresses[0] == nullptr ||
+            !qmm_x1_metadata_matches(resolved.metadata, target.m, target.k,
+                                     target.max_bytes)) {
+            return resolved;
+        }
+        resolved.runtime_address = addresses[0];
+        resolved.eligible = true;
+        return resolved;
+    }
+
+    // New policy: resolve QMM.x1 from the formal GWS tensor list and prove its
+    // compact OpExecCache::Run storage slot without relying on a producer.
+    const Fault20TensorMetadata &x1 = registered.tensors.x1;
+    resolved.metadata = x1;
+    resolved.metadata_valid = true;
+    resolved.formal_ordinal = find_unique_tensor_ordinal(
+        registered.tensor_params, registered.tensor_param_count, x1.tensor_ptr);
+    resolved.run_slot = proof.slots[0];
+    resolved.direct_gws_address_match = find_unique_address_slot(addresses, x1);
+    resolved.semantic_slot_proven = proof.x1_slot_proven &&
+                                    resolved.formal_ordinal == 0 &&
+                                    resolved.run_slot == 0;
+    if (!resolved.semantic_slot_proven ||
+        !qmm_x1_metadata_matches(x1, target.m, target.k, target.max_bytes) ||
+        resolved.run_slot < 0 ||
+        static_cast<size_t>(resolved.run_slot) >= addresses.size() ||
+        addresses[static_cast<size_t>(resolved.run_slot)] == nullptr) {
+        return resolved;
+    }
+    resolved.runtime_address = addresses[static_cast<size_t>(resolved.run_slot)];
+    resolved.eligible = true;
+    return resolved;
 }
 
 void log_qmm_param_collection(op::internal::OpExecCache *cache,
@@ -1119,16 +1467,24 @@ bool log_qmm_run_trace(op::internal::OpExecCache *cache,
                        const std::vector<void *> &addresses, uint64_t run_index) {
     const Fault20QmmMetadata &m = registered.tensors;
     const QmmStorageOrderProof proof = prove_qmm_storage_order(registered, addresses);
+    const int32_t direct_x1_address_match = find_unique_address_slot(addresses, m.x1);
     const int32_t direct_out_address_match = find_unique_address_slot(addresses, m.out);
+    const int32_t x1_slot = proof.slots[0];
     const int32_t out_slot = proof.slots[9];
+    const int32_t x1_param_ordinal = find_unique_tensor_ordinal(
+        registered.tensor_params, registered.tensor_param_count, m.x1.tensor_ptr);
     const int32_t out_param_ordinal = find_unique_tensor_ordinal(
         registered.tensor_params, registered.tensor_param_count, m.out.tensor_ptr);
     const bool out_storage_unique = qmm_output_storage_is_unique(m);
+    const void *x1_runtime_address =
+        x1_slot >= 0 && static_cast<size_t>(x1_slot) < addresses.size()
+            ? addresses[static_cast<size_t>(x1_slot)]
+            : nullptr;
     const void *out_runtime_address =
         out_slot >= 0 && static_cast<size_t>(out_slot) < addresses.size()
             ? addresses[static_cast<size_t>(out_slot)]
             : nullptr;
-    char line[8192];
+    char line[12288];
     const int written = std::snprintf(
         line, sizeof(line),
         "{\"event\":\"qmm_run_trace\",\"pid\":%ld,\"tid\":%ld,"
@@ -1138,37 +1494,59 @@ bool log_qmm_run_trace(op::internal::OpExecCache *cache,
         "\"storage_order_slots\":{\"x1\":%d,\"x2\":%d,"
         "\"x1_scale\":%d,\"x2_scale\":%d,\"y_scale\":%d,"
         "\"x1_offset\":%d,\"x2_offset\":%d,\"y_offset\":%d,"
-        "\"bias\":%d,\"out\":%d},\"out_param_ordinal\":%d,"
+        "\"bias\":%d,\"out\":%d},\"x1_param_ordinal\":%d,"
+        "\"out_param_ordinal\":%d,"
         "\"proof\":{\"param_order_exact\":%s,\"address_count_exact\":%s,"
         "\"empty_slots_are_null\":%s,\"nonempty_slots_are_nonnull\":%s,"
-        "\"no_shared_storage\":%s,\"out_is_last_storage\":%s,"
-        "\"direct_gws_address_match\":%d},"
-        "\"out_runtime_address\":\"%p\",\"out_raw_addr\":\"0x%" PRIx64
-        "\",\"out_storage_addr\":\"0x%" PRIx64
-        "\",\"out_data_addr\":\"0x%" PRIx64 "\","
-        "\"out_storage_unique\":%s,\"output_slot_proven\":%s,"
-        "\"out\":{\"dtype\":%d,\"format\":%d,\"view_rank\":%u,"
+        "\"no_shared_storage\":%s,\"x1_storage_unique\":%s,"
+        "\"x1_slot_proven\":%s,\"out_is_last_storage\":%s,"
+        "\"output_slot_proven\":%s},"
+        "\"direct_gws_address_match\":{\"x1\":%d,\"out\":%d},"
+        "\"direct_gws_address_match_is_diagnostic_only\":true,"
+        "\"x1_runtime_address\":\"%p\",\"x1_raw_addr\":\"0x%" PRIx64
+        "\",\"x1_storage_addr\":\"0x%" PRIx64
+        "\",\"x1_data_addr\":\"0x%" PRIx64 "\","
+        "\"x1\":{\"dtype\":%d,\"format\":%d,\"view_rank\":%u,"
         "\"storage_rank\":%u,\"stride_rank\":%u,\"contiguous\":%s,"
         "\"shape\":[%" PRId64 ",%" PRId64 "],\"storage_shape\":[%" PRId64
         ",%" PRId64 "],\"strides\":[%" PRId64 ",%" PRId64 "],"
         "\"view_offset\":%" PRId64 ",\"numel\":%" PRId64
         ",\"element_size\":%" PRIu64 ",\"view_bytes\":%" PRIu64
-        ",\"storage_bytes\":%" PRIu64 "}}",
+        ",\"storage_bytes\":%" PRIu64 "},"
+        "\"out_runtime_address\":\"%p\",\"out_raw_addr\":\"0x%" PRIx64
+        "\",\"out_storage_addr\":\"0x%" PRIx64
+        "\",\"out_data_addr\":\"0x%" PRIx64 "\","
+        "\"out_storage_unique\":%s,\"out\":{\"dtype\":%d,\"format\":%d,"
+        "\"view_rank\":%u,\"storage_rank\":%u,\"stride_rank\":%u,"
+        "\"contiguous\":%s,\"shape\":[%" PRId64 ",%" PRId64
+        "],\"storage_shape\":[%" PRId64 ",%" PRId64 "],"
+        "\"strides\":[%" PRId64 ",%" PRId64 "],\"view_offset\":%" PRId64
+        ",\"numel\":%" PRId64 ",\"element_size\":%" PRIu64
+        ",\"view_bytes\":%" PRIu64 ",\"storage_bytes\":%" PRIu64 "}}",
         static_cast<long>(getpid()), static_cast<long>(syscall(SYS_gettid)),
         monotonic_ns(), registered.device, cache, run_index, api_info.c_str(),
         addresses.size(), proof.compact_storage_count, proof.slots[0],
         proof.slots[1], proof.slots[2], proof.slots[3], proof.slots[4],
         proof.slots[5], proof.slots[6], proof.slots[7], proof.slots[8],
-        proof.slots[9], out_param_ordinal,
+        proof.slots[9], x1_param_ordinal, out_param_ordinal,
         proof.param_order_exact ? "true" : "false",
         proof.address_count_exact ? "true" : "false",
         proof.empty_slots_are_null ? "true" : "false",
         proof.nonempty_slots_are_nonnull ? "true" : "false",
         proof.no_shared_storage ? "true" : "false",
-        proof.out_is_last_storage ? "true" : "false", direct_out_address_match,
-        out_runtime_address, m.out.raw_addr,
-        m.out.storage_addr, m.out.data_addr, out_storage_unique ? "true" : "false",
-        proof.output_slot_proven ? "true" : "false", m.out.dtype, m.out.format,
+        proof.x1_storage_unique ? "true" : "false",
+        proof.x1_slot_proven ? "true" : "false",
+        proof.out_is_last_storage ? "true" : "false",
+        proof.output_slot_proven ? "true" : "false", direct_x1_address_match,
+        direct_out_address_match, x1_runtime_address, m.x1.raw_addr,
+        m.x1.storage_addr, m.x1.data_addr, m.x1.dtype, m.x1.format,
+        m.x1.view_rank, m.x1.storage_rank, m.x1.stride_rank,
+        m.x1.contiguous ? "true" : "false", m.x1.view_shape[0],
+        m.x1.view_shape[1], m.x1.storage_shape[0], m.x1.storage_shape[1],
+        m.x1.strides[0], m.x1.strides[1], m.x1.view_offset, m.x1.numel,
+        m.x1.element_size, m.x1.view_bytes, m.x1.storage_bytes,
+        out_runtime_address, m.out.raw_addr, m.out.storage_addr, m.out.data_addr,
+        out_storage_unique ? "true" : "false", m.out.dtype, m.out.format,
         m.out.view_rank, m.out.storage_rank, m.out.stride_rank,
         m.out.contiguous ? "true" : "false", m.out.view_shape[0],
         m.out.view_shape[1], m.out.storage_shape[0], m.out.storage_shape[1],
@@ -1179,7 +1557,6 @@ bool log_qmm_run_trace(op::internal::OpExecCache *cache,
     }
     return proof.output_slot_proven;
 }
-
 bool matmul_tensor_storage_is_unique(const Fault20MatmulMetadata &metadata,
                                      const Fault20TensorMetadata &target) {
     if (target.present == 0 || target.storage_ptr == 0) {
@@ -1834,6 +2211,39 @@ aclnnStatus run_float_matmul_lossless(
     return run_status;
 }
 
+bool is_int4_equivalent_mode(uint32_t mode) {
+    return mode == FAULT20_MODE_INT4_EQUIVALENT ||
+           mode == FAULT20_MODE_INT4_EQUIVALENT_OBSERVE;
+}
+
+bool is_int2_equivalent_mode(uint32_t mode) {
+    return mode == FAULT20_MODE_INT2_EQUIVALENT ||
+           mode == FAULT20_MODE_INT2_EQUIVALENT_OBSERVE;
+}
+
+bool is_numeric_equivalent_mode(uint32_t mode) {
+    return is_int4_equivalent_mode(mode) || is_int2_equivalent_mode(mode);
+}
+
+bool is_numeric_observe_mode(uint32_t mode) {
+    return mode == FAULT20_MODE_INT4_EQUIVALENT_OBSERVE ||
+           mode == FAULT20_MODE_INT2_EQUIVALENT_OBSERVE;
+}
+
+const char *numeric_observe_source_mode(uint32_t mode, uint32_t selection_mode,
+                                        uint32_t max_hits_per_device) {
+    if (mode == FAULT20_MODE_INT2_EQUIVALENT_OBSERVE) {
+        return selection_mode == FAULT20_SELECTION_ALL_HITS
+                   ? "all_hit_int2_observe"
+                   : (max_hits_per_device > 1 ? "multi_hit_int2_observe"
+                                              : "int2_observe");
+    }
+    return selection_mode == FAULT20_SELECTION_ALL_HITS
+               ? "all_hit_int4_observe"
+               : (max_hits_per_device > 1 ? "multi_hit_int4_observe"
+                                          : "int4_observe");
+}
+
 void log_numeric_attempt(uint32_t mode, const char *outcome, const std::string &api_info,
                          op::internal::OpExecCache *cache,
                          const RegisteredMetadata &metadata, const Int4Attempt &attempt) {
@@ -1841,12 +2251,12 @@ void log_numeric_attempt(uint32_t mode, const char *outcome, const std::string &
     const bool extreme = mode == FAULT20_MODE_QMM_EXTREME_X1;
     const char *event_name = extreme
                                  ? "qmm_extreme_x1_substitution"
-                                 : (mode == FAULT20_MODE_INT2_EQUIVALENT
+                                 : (is_int2_equivalent_mode(mode)
                                         ? "int2_equivalent_substitution"
                                         : "int4_equivalent_substitution");
     const char *rule = extreme
                            ? "deterministic_uniform_selection"
-                           : (mode == FAULT20_MODE_INT2_EQUIVALENT
+                           : (is_int2_equivalent_mode(mode)
                                   ? "round_away_from_zero(x/64),clamp[-2,1],x64"
                                   : "round_away_from_zero(x/16),clamp[-8,7],x16");
     const char *pattern = attempt.extreme_pattern == FAULT20_EXTREME_POSITIVE_MAX
@@ -1856,20 +2266,30 @@ void log_numeric_attempt(uint32_t mode, const char *outcome, const std::string &
                                      : (attempt.extreme_pattern == FAULT20_EXTREME_ALTERNATING
                                             ? "alternating"
                                             : "none"));
-    char line[6144];
+    const TensorRole target_role = static_cast<TensorRole>(attempt.target_role);
+    char line[8192];
     const int written = std::snprintf(
         line, sizeof(line),
         "{\"event\":\"%s\",\"outcome\":\"%s\","
         "\"pid\":%ld,\"tid\":%ld,\"ts_ns\":%" PRIu64 ",\"device\":%d,"
         "\"rank\":%d,\"hit\":%u,\"candidate\":%u,\"cache\":\"%p\","
-        "\"api_info\":\"%s\",\"shape\":[%" PRId64 ",%" PRId64 "],"
+        "\"api_info\":\"%s\",\"proof_mode\":%u,\"proof_mode_name\":\"%s\","
+        "\"target_role\":%u,\"target_role_name\":\"%s\","
+        "\"formal_ordinal\":%d,\"run_slot\":%d,"
+        "\"semantic_slot_proven\":%s,\"producer_match\":%s,"
+        "\"last_quant_valid\":%s,\"proof\":{"
+        "\"param_order_exact\":%s,\"address_count_exact\":%s,"
+        "\"empty_slots_are_null\":%s,\"nonempty_slots_are_nonnull\":%s,"
+        "\"no_shared_storage\":%s,\"x1_storage_unique\":%s},"
+        "\"direct_gws_address_match\":%d,"
+        "\"direct_gws_address_match_is_diagnostic_only\":true,"
+        "\"shape\":[%" PRId64 ",%" PRId64 "],"
         "\"strides\":[%" PRId64 ",%" PRId64 "],\"dtype\":%d,\"format\":%d,"
         "\"view_offset\":%" PRId64 ",\"bytes\":%" PRIu64 ","
         "\"original\":\"%p\",\"temporary\":\"%p\",\"host_buffer\":\"%p\","
-        "\"producer_match\":true,\"temporary_used\":%s,\"quant_step\":%u,"
-        "\"rule\":\"%s\",\"extreme_value\":%d,"
-        "\"extreme_ratio_bps\":%u,\"extreme_pattern\":\"%s\","
-        "\"selected_elements\":%" PRIu64 ","
+        "\"temporary_used\":%s,\"quant_step\":%u,\"rule\":\"%s\","
+        "\"extreme_value\":%d,\"extreme_ratio_bps\":%u,"
+        "\"extreme_pattern\":\"%s\",\"selected_elements\":%" PRIu64 ","
         "\"stats_valid\":%s,\"changed_elements\":%" PRIu64 ","
         "\"unchanged_elements\":%" PRIu64 ",\"min_before\":%d,"
         "\"max_before\":%d,\"min_after\":%d,\"max_after\":%d,"
@@ -1888,26 +2308,39 @@ void log_numeric_attempt(uint32_t mode, const char *outcome, const std::string &
         "\"real_run_ns\":%" PRIu64 ",\"post_sync_ns\":%" PRIu64 ","
         "\"total_ns\":%" PRIu64 "}",
         event_name, outcome, static_cast<long>(getpid()),
-        static_cast<long>(syscall(SYS_gettid)),
-        attempt.begin_ns, metadata.device, metadata.device, attempt.hit_index,
-        attempt.candidate_index, cache, api_info.c_str(), metadata.x1.view_shape[0],
-        metadata.x1.view_shape[1], metadata.x1.strides[0], metadata.x1.strides[1],
-        metadata.x1.dtype, metadata.x1.format, metadata.x1.view_offset,
-        metadata.x1.storage_bytes, attempt.original, attempt.temporary, attempt.host_buffer,
+        static_cast<long>(syscall(SYS_gettid)), attempt.begin_ns, metadata.device,
+        metadata.device, attempt.hit_index, attempt.candidate_index, cache,
+        api_info.c_str(), attempt.proof_mode,
+        runtime_proof_mode_name(attempt.proof_mode), attempt.target_role,
+        tensor_role_name(target_role), attempt.formal_ordinal, attempt.run_slot,
+        attempt.semantic_slot_proven ? "true" : "false",
+        attempt.producer_match ? "true" : "false",
+        attempt.last_quant_valid ? "true" : "false",
+        attempt.param_order_exact ? "true" : "false",
+        attempt.address_count_exact ? "true" : "false",
+        attempt.empty_slots_are_null ? "true" : "false",
+        attempt.nonempty_slots_are_nonnull ? "true" : "false",
+        attempt.no_shared_storage ? "true" : "false",
+        attempt.x1_storage_unique ? "true" : "false",
+        attempt.direct_gws_address_match, attempt.target_shape0, attempt.target_shape1,
+        attempt.target_stride0, attempt.target_stride1, attempt.target_dtype,
+        attempt.target_format, attempt.target_view_offset, attempt.target_bytes,
+        attempt.original, attempt.temporary, attempt.host_buffer,
         attempt.temporary_used ? "true" : "false", attempt.quant_step, rule,
         attempt.extreme_value, attempt.extreme_ratio_bps, pattern,
         attempt.selected_elements, attempt.stats_valid ? "true" : "false",
-        attempt.changed_elements,
-        attempt.unchanged_elements, attempt.min_before, attempt.max_before, attempt.min_after,
-        attempt.max_after, attempt.zero_before, attempt.zero_after,
-        attempt.int2_histogram[0], attempt.int2_histogram[1],
+        attempt.changed_elements, attempt.unchanged_elements, attempt.min_before,
+        attempt.max_before, attempt.min_after, attempt.max_after, attempt.zero_before,
+        attempt.zero_after, attempt.int2_histogram[0], attempt.int2_histogram[1],
         attempt.int2_histogram[2], attempt.int2_histogram[3], attempt.result_status,
         attempt.pre_sync_status, attempt.host_malloc_status, attempt.d2h_status,
         attempt.device_malloc_status, attempt.h2d_status, attempt.run_status,
         attempt.post_sync_status, attempt.device_free_status, attempt.host_free_status,
-        attempt.temporary_freed ? "true" : "false", attempt.host_freed ? "true" : "false",
+        attempt.temporary_freed ? "true" : "false",
+        attempt.host_freed ? "true" : "false",
         (reinterpret_cast<uintptr_t>(attempt.original) % 64U) == 0 ? "true" : "false",
-        (attempt.temporary != nullptr && reinterpret_cast<uintptr_t>(attempt.temporary) % 64U == 0)
+        (attempt.temporary != nullptr &&
+         reinterpret_cast<uintptr_t>(attempt.temporary) % 64U == 0)
             ? "true"
             : "false",
         attempt.pre_sync_ns, attempt.host_alloc_ns, attempt.d2h_ns,
@@ -1917,7 +2350,6 @@ void log_numeric_attempt(uint32_t mode, const char *outcome, const std::string &
         write_line(line, static_cast<size_t>(written));
     }
 }
-
 void transform_numeric_equivalent(void *host_buffer, uint64_t bytes, uint32_t mode,
                                   Int4Attempt *attempt) {
     auto *values = static_cast<int8_t *>(host_buffer);
@@ -1955,7 +2387,7 @@ void transform_numeric_equivalent(void *host_buffer, uint64_t bytes, uint32_t mo
     for (uint64_t index = 0; index < bytes; ++index) {
         const int before = static_cast<int>(values[index]);
         const int after = static_cast<int>(
-            mode == FAULT20_MODE_INT2_EQUIVALENT
+            is_int2_equivalent_mode(mode)
                 ? fault20_int2_equivalent_value(values[index])
                 : fault20_int4_equivalent_value(values[index]));
         values[index] = static_cast<int8_t>(after);
@@ -1966,7 +2398,7 @@ void transform_numeric_equivalent(void *host_buffer, uint64_t bytes, uint32_t mo
         attempt->zero_before += before == 0 ? 1U : 0U;
         attempt->zero_after += after == 0 ? 1U : 0U;
         attempt->changed_elements += before != after ? 1U : 0U;
-        if (mode == FAULT20_MODE_INT2_EQUIVALENT) {
+        if (is_int2_equivalent_mode(mode)) {
             if (after == -128) {
                 ++attempt->int2_histogram[0];
             } else if (after == -64) {
@@ -2082,6 +2514,60 @@ bool qmm_output_metadata_valid(const Fault20TensorMetadata &out,
     const uint64_t elements = static_cast<uint64_t>(out.numel);
     return elements <= std::numeric_limits<uint64_t>::max() / out.element_size &&
            elements * out.element_size == out.storage_bytes;
+}
+
+Fault20TensorMetadata qmm_output_metadata_from_legacy(
+    const Fault20X1Metadata &legacy) {
+    Fault20TensorMetadata out{};
+    if (legacy.output_data_addr == 0 && legacy.output_raw_addr == 0 &&
+        legacy.output_storage_addr == 0) {
+        return out;
+    }
+    out.present = 1;
+    out.dtype = legacy.output_dtype;
+    out.format = legacy.output_format;
+    out.contiguous = legacy.output_contiguous;
+    out.view_rank = legacy.output_view_rank;
+    out.storage_rank = legacy.output_storage_rank;
+    out.stride_rank = legacy.output_stride_rank;
+    for (size_t i = 0; i < FAULT20_MAX_DIMS; ++i) {
+        out.view_shape[i] = legacy.output_view_shape[i];
+        out.storage_shape[i] = legacy.output_storage_shape[i];
+        out.strides[i] = legacy.output_strides[i];
+    }
+    out.view_offset = legacy.output_view_offset;
+    out.numel = legacy.output_numel;
+    out.storage_elements = legacy.output_storage_elements;
+    out.element_size = legacy.output_element_size;
+    out.view_bytes = legacy.output_view_bytes;
+    out.storage_bytes = legacy.output_storage_bytes;
+    out.tensor_ptr = legacy.output_tensor_ptr;
+    out.storage_ptr = legacy.output_storage_ptr;
+    out.raw_addr = legacy.output_raw_addr;
+    out.storage_addr = legacy.output_storage_addr;
+    out.data_addr = legacy.output_data_addr;
+    return out;
+}
+
+void *device_address_from_metadata(const Fault20TensorMetadata &metadata) {
+    const uint64_t address = metadata.data_addr != 0
+                                 ? metadata.data_addr
+                                 : (metadata.raw_addr != 0 ? metadata.raw_addr
+                                                           : metadata.storage_addr);
+    return reinterpret_cast<void *>(static_cast<uintptr_t>(address));
+}
+
+bool qmm_output_observer_metadata_ready(const RegisteredMetadata &metadata,
+                                        const QmmStorageOrderProof &proof,
+                                        uint64_t max_output_bytes) {
+    if (proof.output_slot_proven &&
+        qmm_output_metadata_valid(metadata.tensors.out, max_output_bytes)) {
+        return true;
+    }
+    const Fault20TensorMetadata legacy_out =
+        qmm_output_metadata_from_legacy(metadata.x1);
+    return device_address_from_metadata(legacy_out) != nullptr &&
+           qmm_output_metadata_valid(legacy_out, max_output_bytes);
 }
 
 bool qmm_weight_metadata_valid(const Fault20TensorMetadata &x2, int32_t target_k,
@@ -3131,7 +3617,9 @@ void log_qmm_output_observation(const char *source_mode,
                                 const RegisteredMetadata &metadata,
                                 const std::string &api_info,
                                 const QmmOutputObservation &observation) {
-    const auto &out = metadata.tensors.out;
+    const auto &out =
+        observation.out_metadata.present != 0 ? observation.out_metadata
+                                              : metadata.tensors.out;
     const char *outcome = observation.result_status == kStatusSuccess
                               ? "success"
                               : "failed_closed";
@@ -3142,7 +3630,9 @@ void log_qmm_output_observation(const char *source_mode,
         "\"ts_ns\":%" PRIu64 ",\"outcome\":\"%s\","
         "\"source_mode\":\"%s\",\"device\":%d,\"hit\":%u,"
         "\"candidate\":%u,\"cache\":\"%p\",\"api_info\":\"%s\","
-        "\"out_slot\":%d,\"out_address\":\"%p\",\"dtype\":%d,"
+        "\"out_slot\":%d,\"out_address\":\"%p\","
+        "\"output_slot_proven\":%s,\"used_legacy_output_metadata\":%s,"
+        "\"dtype\":%d,"
         "\"format\":%d,\"shape\":[%" PRId64 ",%" PRId64 "],"
         "\"strides\":[%" PRId64 ",%" PRId64 "],\"offset\":%" PRId64
         ",\"bytes\":%" PRIu64 ",\"stats_valid\":%s,"
@@ -3160,7 +3650,10 @@ void log_qmm_output_observation(const char *source_mode,
         static_cast<long>(getpid()), static_cast<long>(syscall(SYS_gettid)),
         observation.begin_ns, outcome, source_mode, metadata.device,
         observation.hit_index, observation.candidate_index, cache, api_info.c_str(),
-        observation.out_slot, observation.out_address, out.dtype, out.format,
+        observation.out_slot, observation.out_address,
+        observation.output_slot_proven ? "true" : "false",
+        observation.used_legacy_output_metadata ? "true" : "false",
+        out.dtype, out.format,
         out.view_shape[0], out.view_shape[1], out.strides[0], out.strides[1],
         out.view_offset, out.storage_bytes,
         observation.stats_valid ? "true" : "false", observation.finite_count,
@@ -3730,18 +4223,29 @@ void observe_qmm_output_after_run(
     observation.real_run_ns = real_run_ns;
     const QmmStorageOrderProof proof = prove_qmm_storage_order(metadata, addresses);
     observation.out_slot = proof.slots[9];
-    if (!proof.output_slot_proven || observation.out_slot < 0 ||
-        static_cast<size_t>(observation.out_slot) >= addresses.size()) {
+    observation.output_slot_proven = proof.output_slot_proven;
+    const uint64_t max_output_bytes =
+        __atomic_load_n(&control->max_output_bytes, __ATOMIC_RELAXED);
+    Fault20TensorMetadata selected_out{};
+    if (proof.output_slot_proven && observation.out_slot >= 0 &&
+        static_cast<size_t>(observation.out_slot) < addresses.size()) {
+        selected_out = metadata.tensors.out;
+        observation.out_address =
+            addresses[static_cast<size_t>(observation.out_slot)];
+    } else {
+        selected_out = qmm_output_metadata_from_legacy(metadata.x1);
+        observation.out_address = device_address_from_metadata(selected_out);
+        observation.used_legacy_output_metadata = true;
+    }
+    observation.out_metadata = selected_out;
+    if (observation.out_address == nullptr) {
         observation.result_status = kStatusOutputSlotUnproven;
         set_device_last_status(control, metadata.device, observation.result_status);
         log_qmm_output_observation(source_mode, cache, metadata, api_info, observation);
         return;
     }
-    observation.out_address = addresses[static_cast<size_t>(observation.out_slot)];
-    const uint64_t max_output_bytes =
-        __atomic_load_n(&control->max_output_bytes, __ATOMIC_RELAXED);
     if (run_status != ACL_SUCCESS || observation.out_address == nullptr ||
-        !qmm_output_metadata_valid(metadata.tensors.out, max_output_bytes)) {
+        !qmm_output_metadata_valid(selected_out, max_output_bytes)) {
         observation.result_status = run_status == ACL_SUCCESS
                                         ? kStatusOutputMetadataRejected
                                         : kStatusRunFailed;
@@ -3762,7 +4266,7 @@ void observe_qmm_output_after_run(
         log_qmm_output_observation(source_mode, cache, metadata, api_info, observation);
         return;
     }
-    const size_t bytes = static_cast<size_t>(metadata.tensors.out.storage_bytes);
+    const size_t bytes = static_cast<size_t>(selected_out.storage_bytes);
     uint64_t begin = monotonic_ns();
     observation.host_malloc_status = g_malloc_host(&observation.host_buffer, bytes);
     observation.host_alloc_ns = monotonic_ns() - begin;
@@ -3780,7 +4284,7 @@ void observe_qmm_output_after_run(
     observation.d2h_ns = monotonic_ns() - begin;
     if (observation.d2h_status == ACL_SUCCESS) {
         begin = monotonic_ns();
-        scan_qmm_output(observation.host_buffer, metadata.tensors.out, &observation);
+        scan_qmm_output(observation.host_buffer, selected_out, &observation);
         observation.scan_ns = monotonic_ns() - begin;
         const uint64_t nonfinite_count =
             observation.nan_count + observation.positive_inf_count +
@@ -3888,18 +4392,43 @@ aclnnStatus run_numeric_equivalent(op::internal::OpExecCache *cache, void *works
                                    const std::vector<void *> &addresses,
                                    Fault20Control *control,
                                    const RegisteredMetadata &metadata,
+                                   const ResolvedTarget &target,
                                    const std::string &api_info, uint32_t mode,
                                    uint32_t hit_index, uint32_t candidate_index) {
     Int4Attempt attempt{};
     attempt.hit_index = hit_index;
     attempt.candidate_index = candidate_index;
+    attempt.proof_mode = target.proof_mode;
+    attempt.target_role = static_cast<uint32_t>(target.role);
+    attempt.formal_ordinal = target.formal_ordinal;
+    attempt.run_slot = target.run_slot;
+    attempt.direct_gws_address_match = target.direct_gws_address_match;
+    attempt.semantic_slot_proven = target.semantic_slot_proven;
+    attempt.producer_match = target.producer_match;
+    attempt.last_quant_valid = target.last_quant_valid;
+    attempt.param_order_exact = target.param_order_exact;
+    attempt.address_count_exact = target.address_count_exact;
+    attempt.empty_slots_are_null = target.empty_slots_are_null;
+    attempt.nonempty_slots_are_nonnull = target.nonempty_slots_are_nonnull;
+    attempt.no_shared_storage = target.no_shared_storage;
+    attempt.x1_storage_unique = target.x1_storage_unique;
+    const Fault20TensorMetadata &target_metadata = target.metadata;
+    const uint64_t target_bytes = target_metadata.storage_bytes;
+    attempt.target_dtype = target_metadata.dtype;
+    attempt.target_format = target_metadata.format;
+    attempt.target_shape0 = target_metadata.view_shape[0];
+    attempt.target_shape1 = target_metadata.view_shape[1];
+    attempt.target_stride0 = target_metadata.strides[0];
+    attempt.target_stride1 = target_metadata.strides[1];
+    attempt.target_view_offset = target_metadata.view_offset;
+    attempt.target_bytes = target_bytes;
     attempt.quant_step = __atomic_load_n(&control->quant_step, __ATOMIC_RELAXED);
     attempt.extreme_value = __atomic_load_n(&control->extreme_value, __ATOMIC_RELAXED);
     attempt.extreme_ratio_bps =
         __atomic_load_n(&control->extreme_ratio_bps, __ATOMIC_RELAXED);
     attempt.extreme_pattern =
         __atomic_load_n(&control->extreme_pattern, __ATOMIC_RELAXED);
-    attempt.original = addresses[0];
+    attempt.original = target.runtime_address;
     attempt.begin_ns = monotonic_ns();
 
     std::vector<void *> addresses_copy;
@@ -3923,7 +4452,7 @@ aclnnStatus run_numeric_equivalent(op::internal::OpExecCache *cache, void *works
 
     operation_begin_ns = monotonic_ns();
     attempt.host_malloc_status = static_cast<int32_t>(
-        g_malloc_host(&attempt.host_buffer, static_cast<size_t>(metadata.x1.storage_bytes)));
+        g_malloc_host(&attempt.host_buffer, static_cast<size_t>(target_bytes)));
     attempt.host_alloc_ns = monotonic_ns() - operation_begin_ns;
     if (attempt.host_malloc_status != ACL_SUCCESS || attempt.host_buffer == nullptr) {
         attempt.result_status = kStatusHostAllocFailed;
@@ -3933,8 +4462,8 @@ aclnnStatus run_numeric_equivalent(op::internal::OpExecCache *cache, void *works
 
     operation_begin_ns = monotonic_ns();
     attempt.d2h_status = static_cast<int32_t>(g_memcpy(
-        attempt.host_buffer, static_cast<size_t>(metadata.x1.storage_bytes), addresses[0],
-        static_cast<size_t>(metadata.x1.storage_bytes), ACL_MEMCPY_DEVICE_TO_HOST));
+        attempt.host_buffer, static_cast<size_t>(target_bytes), target.runtime_address,
+        static_cast<size_t>(target_bytes), ACL_MEMCPY_DEVICE_TO_HOST));
     attempt.d2h_ns = monotonic_ns() - operation_begin_ns;
     if (attempt.d2h_status != ACL_SUCCESS) {
         attempt.host_free_status = static_cast<int32_t>(g_free_host(attempt.host_buffer));
@@ -3945,7 +4474,7 @@ aclnnStatus run_numeric_equivalent(op::internal::OpExecCache *cache, void *works
     }
 
     operation_begin_ns = monotonic_ns();
-    transform_numeric_equivalent(attempt.host_buffer, metadata.x1.storage_bytes, mode,
+    transform_numeric_equivalent(attempt.host_buffer, target_bytes, mode,
                                  &attempt);
     attempt.cpu_transform_ns = monotonic_ns() - operation_begin_ns;
     if (attempt.changed_elements == 0) {
@@ -3959,7 +4488,7 @@ aclnnStatus run_numeric_equivalent(op::internal::OpExecCache *cache, void *works
 
     operation_begin_ns = monotonic_ns();
     attempt.device_malloc_status = static_cast<int32_t>(
-        g_malloc(&attempt.temporary, static_cast<size_t>(metadata.x1.storage_bytes),
+        g_malloc(&attempt.temporary, static_cast<size_t>(target_bytes),
                  ACL_MEM_MALLOC_HUGE_FIRST));
     attempt.device_alloc_ns = monotonic_ns() - operation_begin_ns;
     if (attempt.device_malloc_status != ACL_SUCCESS || attempt.temporary == nullptr) {
@@ -3973,8 +4502,8 @@ aclnnStatus run_numeric_equivalent(op::internal::OpExecCache *cache, void *works
 
     operation_begin_ns = monotonic_ns();
     attempt.h2d_status = static_cast<int32_t>(g_memcpy_async(
-        attempt.temporary, static_cast<size_t>(metadata.x1.storage_bytes), attempt.host_buffer,
-        static_cast<size_t>(metadata.x1.storage_bytes), ACL_MEMCPY_HOST_TO_DEVICE, stream));
+        attempt.temporary, static_cast<size_t>(target_bytes), attempt.host_buffer,
+        static_cast<size_t>(target_bytes), ACL_MEMCPY_HOST_TO_DEVICE, stream));
     attempt.h2d_enqueue_ns = monotonic_ns() - operation_begin_ns;
     if (attempt.h2d_status != ACL_SUCCESS) {
         operation_begin_ns = monotonic_ns();
@@ -3991,7 +4520,7 @@ aclnnStatus run_numeric_equivalent(op::internal::OpExecCache *cache, void *works
                                     metadata, api_info, mode, "h2d_failed", &attempt);
     }
 
-    addresses_copy[0] = attempt.temporary;
+    addresses_copy[static_cast<size_t>(target.run_slot)] = attempt.temporary;
     attempt.temporary_used = true;
     operation_begin_ns = monotonic_ns();
     const aclnnStatus run_status = run_original(cache, workspace, stream, addresses_copy);
@@ -4734,15 +5263,18 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
             addresses[1] == nullptr || addresses[2] == nullptr) {
             return run_original(cache, workspace, stream, addresses);
         }
-        const uint32_t candidate_index = __atomic_add_fetch(
-            &control->candidate_count_per_device[metadata.device], 1U,
-            __ATOMIC_ACQ_REL);
-        __atomic_add_fetch(&control->candidate_count, 1U, __ATOMIC_ACQ_REL);
+        uint32_t candidate_index = 0;
+        uint64_t request_generation = 0;
+        if (!reserve_candidate_per_device(control, metadata.device, &candidate_index,
+                                          &request_generation)) {
+            return run_original(cache, workspace, stream, addresses);
+        }
         if (candidate_index != target_call_index) {
             return run_original(cache, workspace, stream, addresses);
         }
         uint32_t hit_index = 0;
-        if (!reserve_hit_per_device(control, metadata.device, &hit_index)) {
+        if (!reserve_hit_per_device(control, metadata.device, request_generation,
+                                    &hit_index)) {
             return run_original(cache, workspace, stream, addresses);
         }
         if (observer_mode) {
@@ -4872,10 +5404,12 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
             return run_original(cache, workspace, stream, addresses);
         }
 
-        const uint32_t candidate_index = __atomic_add_fetch(
-            &control->candidate_count_per_device[metadata.device], 1U,
-            __ATOMIC_ACQ_REL);
-        __atomic_add_fetch(&control->candidate_count, 1U, __ATOMIC_ACQ_REL);
+        uint32_t candidate_index = 0;
+        uint64_t request_generation = 0;
+        if (!reserve_candidate_per_device(control, metadata.device, &candidate_index,
+                                          &request_generation)) {
+            return run_original(cache, workspace, stream, addresses);
+        }
         const uint64_t target_end =
             static_cast<uint64_t>(target_call_index) + max_hits_per_device - 1U;
         if (selection_mode == FAULT20_SELECTION_BOUNDED &&
@@ -4884,7 +5418,8 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
             return run_original(cache, workspace, stream, addresses);
         }
         uint32_t hit_index = 0;
-        if (!reserve_hit_per_device(control, metadata.device, &hit_index)) {
+        if (!reserve_hit_per_device(control, metadata.device, request_generation,
+                                    &hit_index)) {
             return run_original(cache, workspace, stream, addresses);
         }
         g_matmul_substitution_active = true;
@@ -4906,7 +5441,8 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
         return run_original(cache, workspace, stream, addresses);
     }
 
-    const bool producer_matches = g_last_quant.valid && !addresses.empty() &&
+    const bool last_quant_valid = g_last_quant.valid;
+    const bool producer_matches = last_quant_valid && !addresses.empty() &&
                                   g_last_quant.output == addresses[0];
     g_last_quant.valid = false;
     g_last_quant.output = nullptr;
@@ -4914,8 +5450,7 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
     RegisteredMetadata metadata{};
     uint64_t qmm_run_index = 0;
     if (!g_abi_ok || !g_developer_mode_ok || g_control == nullptr ||
-        !lookup_metadata(cache, &metadata, &qmm_run_index) ||
-        addresses.empty() || addresses[0] == nullptr || !producer_matches) {
+        !lookup_metadata(cache, &metadata, &qmm_run_index) || addresses.empty()) {
         return run_original(cache, workspace, stream, addresses);
     }
     (void)log_qmm_run_trace(cache, metadata, api_info, addresses, qmm_run_index);
@@ -4926,8 +5461,7 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
         return run_original(cache, workspace, stream, addresses);
     }
     const uint32_t mode = __atomic_load_n(&control->mode, __ATOMIC_RELAXED);
-    if (mode != FAULT20_MODE_LOSSLESS_D2D && mode != FAULT20_MODE_INT4_EQUIVALENT &&
-        mode != FAULT20_MODE_INT2_EQUIVALENT &&
+    if (mode != FAULT20_MODE_LOSSLESS_D2D && !is_numeric_equivalent_mode(mode) &&
         mode != FAULT20_MODE_QMM_EXTREME_X1 &&
         mode != FAULT20_MODE_QMM_OUTPUT_OBSERVE &&
         mode != FAULT20_MODE_QMM_WEIGHT_OBSERVE &&
@@ -4950,6 +5484,8 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
         __atomic_load_n(&control->selection_mode, __ATOMIC_RELAXED);
     const uint32_t target_api =
         __atomic_load_n(&control->target_api, __ATOMIC_RELAXED);
+    const uint32_t proof_mode =
+        __atomic_load_n(&control->proof_mode, __ATOMIC_RELAXED);
     const uint64_t max_bytes = __atomic_load_n(&control->max_bytes, __ATOMIC_RELAXED);
     const uint64_t max_output_bytes =
         __atomic_load_n(&control->max_output_bytes, __ATOMIC_RELAXED);
@@ -4967,7 +5503,6 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
     // read normally here. GCC's scalar __atomic_load_n does not accept double
     // on this aarch64 toolchain.
     const double scale_factor = control->scale_factor;
-    const int64_t expected_numel = static_cast<int64_t>(target_m) * target_k;
     const bool common_runtime_ready = g_malloc != nullptr && g_free != nullptr &&
                                       g_memcpy_async != nullptr &&
                                       g_synchronize_stream != nullptr;
@@ -4986,9 +5521,14 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
         (target_device_mask & (1ULL << static_cast<uint32_t>(metadata.device))) != 0;
     const QmmStorageOrderProof qmm_proof =
         prove_qmm_storage_order(metadata, addresses);
+    const SemanticTarget semantic_target{
+        FAULT20_TARGET_API_QMM, TensorRole::kQmmX1, target_m, target_k, max_bytes};
+    const ResolvedTarget resolved_target = ResolveSemanticTarget(
+        semantic_target, metadata, addresses, qmm_proof, proof_mode,
+        last_quant_valid, producer_matches);
     const bool output_observer_ready =
-        qmm_proof.output_slot_proven && numeric_runtime_ready &&
-        qmm_output_metadata_valid(metadata.tensors.out, max_output_bytes);
+        numeric_runtime_ready &&
+        qmm_output_observer_metadata_ready(metadata, qmm_proof, max_output_bytes);
     const bool weight_observer_ready =
         qmm_proof.weight_slot_proven &&
         qmm_weight_metadata_valid(metadata.tensors.x2, target_k,
@@ -4999,24 +5539,12 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
                                     target_scale_elements,
                                     max_scale_bytes);
     if (target_api != FAULT20_TARGET_API_QMM || !target_device ||
-        metadata.x1.dtype != ACL_INT8 ||
-        metadata.x1.format != ACL_FORMAT_ND || metadata.x1.view_rank != 2 ||
-        metadata.x1.storage_rank != 1 || metadata.x1.stride_rank != 2 ||
-        metadata.x1.contiguous == 0 || metadata.x1.view_offset != 0 ||
-        metadata.x1.view_shape[0] != target_m || metadata.x1.view_shape[1] != target_k ||
-        metadata.x1.storage_shape[0] != expected_numel ||
-        metadata.x1.strides[0] != target_k || metadata.x1.strides[1] != 1 ||
-        metadata.x1.numel != expected_numel || metadata.x1.storage_elements != expected_numel ||
-        metadata.x1.element_size != 1 || metadata.x1.view_bytes != metadata.x1.storage_bytes ||
-        metadata.x1.storage_bytes != static_cast<uint64_t>(expected_numel) ||
-        metadata.x1.storage_bytes == 0 || metadata.x1.storage_bytes > max_bytes ||
-        metadata.x1.storage_bytes > 65536 || target_call_index == 0 ||
+        !resolved_target.eligible || target_call_index == 0 ||
         max_hits_per_device == 0 ||
         (selection_mode != FAULT20_SELECTION_BOUNDED &&
          selection_mode != FAULT20_SELECTION_ALL_HITS) ||
         !common_runtime_ready ||
-        ((mode == FAULT20_MODE_INT4_EQUIVALENT ||
-          mode == FAULT20_MODE_INT2_EQUIVALENT ||
+        ((is_numeric_equivalent_mode(mode) ||
           mode == FAULT20_MODE_QMM_EXTREME_X1 ||
           mode == FAULT20_MODE_QMM_OUTPUT_OBSERVE ||
           mode == FAULT20_MODE_QMM_X2_SCALE_LOSSLESS ||
@@ -5024,8 +5552,8 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
           mode == FAULT20_MODE_QMM_EXTREME_X1_X2 ||
           mode == FAULT20_MODE_QMM_LOSSLESS_X1_X2) &&
          (!numeric_runtime_ready ||
-          (mode == FAULT20_MODE_INT4_EQUIVALENT && quant_step != 16) ||
-          (mode == FAULT20_MODE_INT2_EQUIVALENT && quant_step != 64) ||
+          (is_int4_equivalent_mode(mode) && quant_step != 16) ||
+          (is_int2_equivalent_mode(mode) && quant_step != 64) ||
           (mode == FAULT20_MODE_QMM_EXTREME_X1 &&
            (!fault20_valid_extreme_configuration(extreme_value, extreme_ratio_bps,
                                                  extreme_pattern) ||
@@ -5038,6 +5566,7 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
             max_hits_per_device != 1)) ||
            ((mode == FAULT20_MODE_QMM_EXTREME_X1 ||
              mode == FAULT20_MODE_QMM_OUTPUT_OBSERVE ||
+             is_numeric_observe_mode(mode) ||
              mode == FAULT20_MODE_QMM_X2_SCALE_LOSSLESS ||
              mode == FAULT20_MODE_QMM_X2_SCALE_AMPLIFY ||
              mode == FAULT20_MODE_QMM_EXTREME_X1_X2 ||
@@ -5062,16 +5591,19 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
           max_hits_per_device != 1 || !weight_observer_ready ||
           target_x2_n <= 0 || metadata.tensors.x2.view_shape[1] != target_x2_n ||
           metadata.tensors.x2.storage_bytes != max_weight_bytes ||
-          metadata.x1.storage_bytes != max_bytes)) ||
+          metadata.tensors.x1.storage_bytes != max_bytes)) ||
         (mode == FAULT20_MODE_QMM_EXTREME_X1_X2 &&
          (extreme_value != 127 || extreme_ratio_bps != 10000 ||
           extreme_pattern != FAULT20_EXTREME_POSITIVE_MAX))) {
         return run_original(cache, workspace, stream, addresses);
     }
 
-    const uint32_t candidate_index = __atomic_add_fetch(
-        &control->candidate_count_per_device[metadata.device], 1U, __ATOMIC_ACQ_REL);
-    __atomic_add_fetch(&control->candidate_count, 1U, __ATOMIC_ACQ_REL);
+    uint32_t candidate_index = 0;
+    uint64_t request_generation = 0;
+    if (!reserve_candidate_per_device(control, metadata.device, &candidate_index,
+                                      &request_generation)) {
+        return run_original(cache, workspace, stream, addresses);
+    }
     const uint64_t target_end =
         static_cast<uint64_t>(target_call_index) + max_hits_per_device - 1U;
     if (selection_mode == FAULT20_SELECTION_BOUNDED &&
@@ -5081,7 +5613,8 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
     }
 
     uint32_t hit_index = 0;
-    if (!reserve_hit_per_device(control, metadata.device, &hit_index)) {
+    if (!reserve_hit_per_device(control, metadata.device, request_generation,
+                                &hit_index)) {
         return run_original(cache, workspace, stream, addresses);
     }
 
@@ -5161,12 +5694,11 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
         return status;
     }
 
-    if (mode == FAULT20_MODE_INT4_EQUIVALENT ||
-        mode == FAULT20_MODE_INT2_EQUIVALENT ||
+    if (is_numeric_equivalent_mode(mode) ||
         mode == FAULT20_MODE_QMM_EXTREME_X1) {
         const aclnnStatus status = run_numeric_equivalent(
-            cache, workspace, stream, addresses, control, metadata, api_info, mode,
-            hit_index, candidate_index);
+            cache, workspace, stream, addresses, control, metadata, resolved_target,
+            api_info, mode, hit_index, candidate_index);
         const int32_t injection_status =
             __atomic_load_n(&control->last_status_per_device[metadata.device],
                             __ATOMIC_ACQUIRE);
@@ -5180,6 +5712,15 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
             observe_qmm_output_after_run(
                 source_mode, cache, stream, addresses, control, metadata,
                 api_info, hit_index, candidate_index, status, true, 0);
+        } else if (is_numeric_observe_mode(mode) &&
+                   injection_status == kStatusSuccess) {
+            observe_qmm_output_after_run(
+                numeric_observe_source_mode(mode, selection_mode,
+                                            max_hits_per_device),
+                cache, stream, addresses, control, metadata, api_info,
+                hit_index, candidate_index, status, true, 0);
+        } else if (is_numeric_observe_mode(mode)) {
+            __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
         } else if (mode == FAULT20_MODE_QMM_EXTREME_X1) {
             __atomic_store_n(&control->enabled, 0U, __ATOMIC_RELEASE);
         }
@@ -5285,6 +5826,10 @@ bool add_and_capture(op::internal::OpExecCache *cache) {
 
 }  // namespace
 
+extern "C" uint32_t fault20_metadata_runtime_abi_v17() {
+    return FAULT20_METADATA_ABI_VERSION;
+}
+
 extern "C" void fault20_qmm_gws_begin() {
     g_capture = CaptureState{};
     g_capture.active = true;
@@ -5293,7 +5838,15 @@ extern "C" void fault20_qmm_gws_begin() {
     g_capture.cache = nullptr;
 }
 
-extern "C" bool fault20_qmm_gws_commit(const Fault20QmmMetadata *metadata) {
+extern "C" bool fault20_qmm_gws_commit_v17(
+    const Fault20MetadataAbiDescriptor *descriptor) {
+    const Fault20QmmMetadata *metadata =
+        validated_metadata_payload<Fault20QmmMetadata>(
+            descriptor, FAULT20_METADATA_PAYLOAD_QMM);
+    if (metadata == nullptr) {
+        g_capture = CaptureState{};
+        return false;
+    }
     pthread_once(&g_resolve_once, resolve_real);
     resolve_runtime_api();
     const uint32_t add_count = g_capture.add_count;
@@ -5336,6 +5889,12 @@ extern "C" bool fault20_qmm_gws_commit(const Fault20QmmMetadata *metadata) {
     return true;
 }
 
+extern "C" bool fault20_qmm_gws_commit(const Fault20QmmMetadata *) {
+    reject_legacy_metadata_commit(FAULT20_METADATA_PAYLOAD_QMM,
+                                  static_cast<uint32_t>(sizeof(Fault20QmmMetadata)));
+    return false;
+}
+
 extern "C" void fault20_qmm_gws_abort() {
     g_capture = CaptureState{};
 }
@@ -5348,7 +5907,15 @@ extern "C" void fault20_matmul_gws_begin() {
     g_capture.cache = nullptr;
 }
 
-extern "C" bool fault20_matmul_gws_commit(const Fault20MatmulMetadata *metadata) {
+extern "C" bool fault20_matmul_gws_commit_v17(
+    const Fault20MetadataAbiDescriptor *descriptor) {
+    const Fault20MatmulMetadata *metadata =
+        validated_metadata_payload<Fault20MatmulMetadata>(
+            descriptor, FAULT20_METADATA_PAYLOAD_MATMUL_WEIGHT_NZ);
+    if (metadata == nullptr) {
+        g_capture = CaptureState{};
+        return false;
+    }
     pthread_once(&g_resolve_once, resolve_real);
     resolve_runtime_api();
     const uint32_t add_count = g_capture.add_count;
@@ -5396,6 +5963,13 @@ extern "C" bool fault20_matmul_gws_commit(const Fault20MatmulMetadata *metadata)
     return true;
 }
 
+extern "C" bool fault20_matmul_gws_commit(const Fault20MatmulMetadata *) {
+    reject_legacy_metadata_commit(
+        FAULT20_METADATA_PAYLOAD_MATMUL_WEIGHT_NZ,
+        static_cast<uint32_t>(sizeof(Fault20MatmulMetadata)));
+    return false;
+}
+
 extern "C" void fault20_matmul_gws_abort() {
     g_capture = CaptureState{};
 }
@@ -5408,8 +5982,15 @@ extern "C" void fault20_float_matmul_gws_begin() {
     g_capture.cache = nullptr;
 }
 
-extern "C" bool fault20_float_matmul_gws_commit(
-    const Fault20MatmulMetadata *metadata) {
+extern "C" bool fault20_float_matmul_gws_commit_v17(
+    const Fault20MetadataAbiDescriptor *descriptor) {
+    const Fault20MatmulMetadata *metadata =
+        validated_metadata_payload<Fault20MatmulMetadata>(
+            descriptor, FAULT20_METADATA_PAYLOAD_FLOAT_MATMUL);
+    if (metadata == nullptr) {
+        g_capture = CaptureState{};
+        return false;
+    }
     pthread_once(&g_resolve_once, resolve_real);
     resolve_runtime_api();
     const uint32_t add_count = g_capture.add_count;
@@ -5455,6 +6036,14 @@ extern "C" bool fault20_float_matmul_gws_commit(
     log_matmul_registration("float_matmul_cache_registered", cache, metadata,
                             device, add_count);
     return true;
+}
+
+extern "C" bool fault20_float_matmul_gws_commit(
+    const Fault20MatmulMetadata *) {
+    reject_legacy_metadata_commit(
+        FAULT20_METADATA_PAYLOAD_FLOAT_MATMUL,
+        static_cast<uint32_t>(sizeof(Fault20MatmulMetadata)));
+    return false;
 }
 
 extern "C" void fault20_float_matmul_gws_abort() {
