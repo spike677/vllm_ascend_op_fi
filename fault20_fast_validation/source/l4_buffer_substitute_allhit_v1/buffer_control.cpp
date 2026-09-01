@@ -1342,6 +1342,8 @@ int main(int argc, char **argv) {
             __atomic_store_n(&control->candidate_count, 0U, __ATOMIC_RELEASE);
             __atomic_store_n(&control->last_status, 0, __ATOMIC_RELEASE);
             reset_device_counters(control);
+            control->proof_mode = matmul ? FAULT20_PROOF_MODE_STRICT_PRODUCER
+                                         : FAULT20_PROOF_MODE_SEMANTIC_SLOT;
             ++control->generation;
             __atomic_store_n(&control->enabled, 1U, __ATOMIC_RELEASE);
             print_status(control);
