@@ -1,4 +1,14 @@
-# Fault26 validation evidence
+# Validation Evidence
+
+This directory stores curated evidence packages for the local developer-mode
+fault-validation work. It may contain selected raw dumps or archives when those
+artifacts are intentionally frozen for audit.
+
+Do not place compiled runtime libraries, service logs, container logs, or
+unbounded native JSONL traces here unless they are explicitly selected as a
+curated evidence artifact.
+
+## Fault26 validation archive
 
 This directory carries the validation material needed to audit the Fault26
 developer-mode implementation without committing hundreds of megabytes of raw
@@ -37,3 +47,16 @@ The directly reviewable Markdown reports remain under
 `fault20_fast_validation/reports/`. In particular, the Phase 27, Phase 28/29,
 and Phase 30 reports link each conclusion to the corresponding path inside this
 archive.
+
+## Fault26 sustained dump evidence
+
+`fault26_sustained_dump_20260902/` contains selected raw msprobe statistics
+dumps for the sustained no-hit/all-hit comparison:
+
+- `nohit_dumpon`
+- `allhit1024_dumpon`
+- `allhit4096_dumpon`
+
+This evidence set is intentionally similar in style to the Fault20 v17 msprobe
+dump submission: curated dump data is committed, while runtime `.so` artifacts
+and temporary service logs remain excluded.
