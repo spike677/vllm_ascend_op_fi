@@ -82,26 +82,41 @@ Boundary:
 - Fault39 reports distinguish real numerical non-finite behavior from explicit
   output non-finite proxy modes.
 
-## Fault41 — KV cache / tail-column poison exploration
+## Fault41 — state/cache tail corruption
 
-Status: BLOCKED / EXPERIMENTAL
+Status: DESIGN FEASIBLE / IMPLEMENTATION BLOCKED / EXPERIMENTAL
+
+Fault family:
+
+- `state/cache tail corruption`
+
+Planned proxy names:
+
+- `OP_TRIGGERED_STATE_CACHE_TAIL_CORRUPTION_PROXY`
+- `KV_CACHE_POST_WRITE_TAIL_CORRUPTION_PROXY` after a concrete KV-cache slot is
+  proven.
 
 Source:
 
 - No Fault41 source directory is present in this GitHub worktree as of this
   manifest update.
 
-Report:
+Reports:
 
 - `reports/fault41/fault41_tail_column_poison_smoke_20260901.md`
+- `reports/fault41/fault41_state_cache_tail_corruption_roadmap.md`
 
 Core label:
 
 - `FAULT41_LD_PRELOAD_SYMBOL_LOADED_BUT_NOT_INTERPOSED`
 
-Boundary:
+Current boundary:
 
 - The exploratory LD_PRELOAD library was loaded in the worker, but the same-name
   symbol did not interpose the torch_npu/ATB dispatcher path.
-- Fault41 must not be marked PASS until a working observation/injection route is
-  demonstrated.
+- Fault41 should reuse the common L4 framework, but keep an independent adapter,
+  control command, report, and evidence directory.
+- The next milestone is read-only proof of the real cache writer, cache
+  storage/slot metadata, and later attention consumer relation.
+- Fault41 must not be marked PASS until cache identity, writer-consumer relation,
+  lossless writeback, and model-level E2E are demonstrated.
