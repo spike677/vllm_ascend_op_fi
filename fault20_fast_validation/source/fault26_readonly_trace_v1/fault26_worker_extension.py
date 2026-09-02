@@ -45,6 +45,9 @@ _LIVE_ALLOCATOR_MIN_RESIDUAL_GENERATION = 0
 _LIVE_ALLOCATOR_TARGET_WRITER = "FIA"
 _LIVE_ALLOCATOR_TARGET_OUTPUT_BYTES = 0
 _LIVE_ALLOCATOR_TARGET_RESIDUAL_BYTES = 0
+_MSPROBE_DEBUGGER: Any = None
+_MSPROBE_CONFIG_PATH = ""
+_MSPROBE_STARTED = False
 
 _LIBC = ctypes.CDLL(None)
 _LIBC.getenv.argtypes = [ctypes.c_char_p]
@@ -112,6 +115,32 @@ def _allocator_audit_allowed() -> bool:
 
 def _log_path() -> str:
     return _env_value("FAULT26_TYPED_LOG_PATH")
+
+
+def _msprobe_allowed() -> bool:
+    return _env_value("FAULT26_MSPROBE_ALLOWED") == "1"
+
+
+def _find_worker_model(worker: Any) -> Any:
+    """Return the loaded worker model for MindStudio Probe start(model=...)."""
+    candidates = (
+        ("model_runner", "model"),
+        ("model_runner", "model_executor", "model"),
+        ("runner", "model"),
+        ("model",),
+    )
+    for chain in candidates:
+        obj: Any = worker
+        for attr in chain:
+            obj = getattr(obj, attr, None)
+            if obj is None:
+                break
+        if obj is not None:
+            return obj
+    raise RuntimeError(
+        "Unable to locate worker model for msprobe; tried "
+        "model_runner.model, model_runner.model_executor.model, runner.model, model"
+    )
 
 
 def _append_event(event: dict[str, Any]) -> None:
@@ -829,6 +858,82 @@ class _AddRmsNormBiasProxy:
 
 class Fault26ReadOnlyWorkerExtension:
     """Methods exposed only through vLLM's developer-mode collective RPC."""
+
+
+    def fault26_start_msprobe_dump(
+        self, config_path: str | None = None
+    ) -> dict[str, Any]:
+        """Start MindStudio Probe after the vLLM worker model is loaded."""
+        global _MSPROBE_DEBUGGER, _MSPROBE_CONFIG_PATH, _MSPROBE_STARTED
+        if not _developer_mode_enabled() or not _msprobe_allowed():
+            return {
+                "started": False,
+                "reason": "developer mode or FAULT26_MSPROBE_ALLOWED gate is disabled",
+                "pid": os.getpid(),
+            }
+        cfg = config_path or _env_value("FAULT26_MSPROBE_CONFIG_PATH")
+        if not cfg:
+            return {"started": False, "reason": "msprobe config path is empty", "pid": os.getpid()}
+        with _STATE_LOCK:
+            if _MSPROBE_STARTED and _MSPROBE_DEBUGGER is not None:
+                return {
+                    "started": True,
+                    "already_started": True,
+                    "pid": os.getpid(),
+                    "config_path": _MSPROBE_CONFIG_PATH,
+                }
+            model = _find_worker_model(self)
+            from msprobe.pytorch import PrecisionDebugger
+
+            debugger = PrecisionDebugger(config_path=cfg)
+            debugger.start(model=model)
+            _MSPROBE_DEBUGGER = debugger
+            _MSPROBE_CONFIG_PATH = cfg
+            _MSPROBE_STARTED = True
+        _append_event(
+            {
+                "event": "msprobe_dump_started",
+                "pid": os.getpid(),
+                "tid": threading.get_native_id(),
+                "monotonic_ns": time.monotonic_ns(),
+                "config_path": cfg,
+                "model_type": type(model).__name__,
+            }
+        )
+        return {
+            "started": True,
+            "already_started": False,
+            "pid": os.getpid(),
+            "config_path": cfg,
+            "model_type": type(model).__name__,
+        }
+
+    def fault26_query_msprobe_dump(self) -> dict[str, Any]:
+        return {
+            "started": _MSPROBE_STARTED,
+            "allowed": _msprobe_allowed(),
+            "developer_mode": _developer_mode_enabled(),
+            "pid": os.getpid(),
+            "config_path": _MSPROBE_CONFIG_PATH or _env_value("FAULT26_MSPROBE_CONFIG_PATH"),
+        }
+
+    def fault26_stop_msprobe_dump(self) -> dict[str, Any]:
+        global _MSPROBE_DEBUGGER, _MSPROBE_STARTED
+        with _STATE_LOCK:
+            if _MSPROBE_DEBUGGER is None:
+                return {"stopped": False, "reason": "not started", "pid": os.getpid()}
+            _MSPROBE_DEBUGGER.stop()
+            _MSPROBE_DEBUGGER = None
+            _MSPROBE_STARTED = False
+        _append_event(
+            {
+                "event": "msprobe_dump_stopped",
+                "pid": os.getpid(),
+                "tid": threading.get_native_id(),
+                "monotonic_ns": time.monotonic_ns(),
+            }
+        )
+        return {"stopped": True, "pid": os.getpid()}
 
     def fault26_install_typed_fia_probe(self) -> dict[str, Any]:
         global _REAL_PACKET, _PROXY, _REAL_QMM, _QMM_PROXY, _QMM_CALL_INDEX
@@ -1723,6 +1828,8 @@ class Fault26ReadOnlyWorkerExtension:
                 target_occurrence
             )
             os.environ["FAULT26_FIA_WRITER_PROXY_MAX_BYTES"] = str(max_bytes)
+            os.environ["FAULT26_FIA_WRITER_PROXY_ALL_HITS"] = "0"
+            os.environ["FAULT26_FIA_WRITER_PROXY_MAX_HITS"] = "1"
             if writer_log_path:
                 os.environ["FAULT26_FIA_WRITER_LOG_PATH"] = writer_log_path
             os.environ["FAULT26_FIA_WRITER_PROXY_ENABLED"] = "1"
@@ -1735,6 +1842,7 @@ class Fault26ReadOnlyWorkerExtension:
             "target_bytes": target_bytes,
             "target_occurrence": target_occurrence,
             "max_bytes": max_bytes,
+            "all_hits": False,
             "max_hits": 1,
             "residual_target_supported": False,
             "writer_log_path": writer_log_path,
@@ -1749,6 +1857,8 @@ class Fault26ReadOnlyWorkerExtension:
         target_occurrence: int = 1,
         victim_offset_bytes: int = 0,
         max_bytes: int = 4194304,
+        all_hits: bool = False,
+        max_hits: int = 1,
     ) -> dict[str, Any]:
         """Arm one bounded FIA output binding to a proven live residual."""
         writer_log_path = _ensure_writer_log_path()
@@ -1789,6 +1899,14 @@ class Fault26ReadOnlyWorkerExtension:
                 "max_bytes must be in [1, 1073741824]",
             ),
             (
+                isinstance(all_hits, bool),
+                "all_hits must be a bool",
+            ),
+            (
+                isinstance(max_hits, int) and 1 <= max_hits <= 1_000_000,
+                "max_hits must be in [1, 1000000]",
+            ),
+            (
                 isinstance(target_output_bytes, int)
                 and isinstance(target_residual_bytes, int)
                 and isinstance(victim_offset_bytes, int)
@@ -1827,6 +1945,10 @@ class Fault26ReadOnlyWorkerExtension:
                 victim_offset_bytes
             )
             os.environ["FAULT26_FIA_WRITER_PROXY_MAX_BYTES"] = str(max_bytes)
+            os.environ["FAULT26_FIA_WRITER_PROXY_ALL_HITS"] = (
+                "1" if all_hits else "0"
+            )
+            os.environ["FAULT26_FIA_WRITER_PROXY_MAX_HITS"] = str(max_hits)
             if writer_log_path:
                 os.environ["FAULT26_FIA_WRITER_LOG_PATH"] = writer_log_path
             os.environ["FAULT26_FIA_WRITER_PROXY_ENABLED"] = "1"
@@ -1841,7 +1963,8 @@ class Fault26ReadOnlyWorkerExtension:
             "target_occurrence": target_occurrence,
             "victim_offset_bytes": victim_offset_bytes,
             "max_bytes": max_bytes,
-            "max_hits": 1,
+            "all_hits": all_hits,
+            "max_hits": max_hits,
             "writer": "real_aclnnFusedInferAttentionScoreV3_kernel",
             "writer_log_path": writer_log_path,
         }
@@ -1850,6 +1973,7 @@ class Fault26ReadOnlyWorkerExtension:
         with _STATE_LOCK:
             was_armed = os.environ.get("FAULT26_FIA_WRITER_PROXY_ENABLED") == "1"
             os.environ["FAULT26_FIA_WRITER_PROXY_ENABLED"] = "0"
+            os.environ["FAULT26_FIA_WRITER_PROXY_ALL_HITS"] = "0"
             session = int(os.environ.get("FAULT26_FIA_WRITER_PROXY_SESSION", "0"))
         return {
             "disarmed": True,
@@ -1882,7 +2006,10 @@ class Fault26ReadOnlyWorkerExtension:
             "max_bytes": int(
                 os.environ.get("FAULT26_FIA_WRITER_PROXY_MAX_BYTES", "4194304")
             ),
-            "max_hits": 1,
+            "all_hits": os.environ.get("FAULT26_FIA_WRITER_PROXY_ALL_HITS") == "1",
+            "max_hits": int(
+                os.environ.get("FAULT26_FIA_WRITER_PROXY_MAX_HITS", "1")
+            ),
             "residual_target_supported": (
                 mode == "wrong_destination_residual_stomp"
             ),

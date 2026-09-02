@@ -155,6 +155,7 @@ bool g_runtime_ready = false;
 std::mutex g_control_mutex;
 uint64_t g_session = 0;
 uint64_t g_matching_count = 0;
+uint64_t g_hit_count = 0;
 bool g_hit_claimed = false;
 uint64_t g_min_residual_sequence = 0;
 std::mutex g_records_mutex;
@@ -594,6 +595,9 @@ extern "C" const aclTensor *fault26_fia_writer_prepare_output(
         std::numeric_limits<uint64_t>::max());
     const uint64_t target_occurrence = env_u64(
         "FAULT26_FIA_WRITER_PROXY_TARGET_OCCURRENCE", 1, 1, 1000000);
+    const bool all_hits = env_is_one("FAULT26_FIA_WRITER_PROXY_ALL_HITS");
+    const uint64_t max_hits = env_u64(
+        "FAULT26_FIA_WRITER_PROXY_MAX_HITS", 1, 1, 1000000);
     const uint64_t max_bytes = env_u64(
         "FAULT26_FIA_WRITER_PROXY_MAX_BYTES", kDefaultMaxBytes, 1,
         1073741824ULL);
@@ -620,6 +624,7 @@ extern "C" const aclTensor *fault26_fia_writer_prepare_output(
         if (g_session != session) {
             g_session = session;
             g_matching_count = 0;
+            g_hit_count = 0;
             g_hit_claimed = false;
             g_min_residual_sequence = 0;
         }
@@ -627,6 +632,7 @@ extern "C" const aclTensor *fault26_fia_writer_prepare_output(
     if (mode == WriterMode::kWrongDestinationResidualStomp) {
         ResidualRecord residual{};
         bool has_residual = false;
+        bool has_pending_stomp = false;
         {
             std::lock_guard<std::mutex> lock(g_lifecycle_mutex);
             const auto found = g_current_residuals.find(device);
@@ -634,6 +640,8 @@ extern "C" const aclTensor *fault26_fia_writer_prepare_output(
                 residual = found->second;
                 has_residual = true;
             }
+            has_pending_stomp =
+                g_pending_stomps.find(device) != g_pending_stomps.end();
         }
         const uint64_t target_residual_bytes = env_u64(
             "FAULT26_FIA_WRITER_PROXY_TARGET_RESIDUAL_BYTES", 0, 1,
@@ -647,13 +655,15 @@ extern "C" const aclTensor *fault26_fia_writer_prepare_output(
             if (g_session != session) {
                 g_session = session;
                 g_matching_count = 0;
+                g_hit_count = 0;
                 g_hit_claimed = false;
                 g_min_residual_sequence =
                     has_residual ? residual.producer_sequence : 0;
                 new_session = true;
             }
         }
-        if (new_session || !has_residual || !residual.tensor.ok ||
+        if (new_session || has_pending_stomp || !has_residual ||
+            !residual.tensor.ok ||
             residual.producer_sequence <= g_min_residual_sequence ||
             residual.tensor.bytes != target_residual_bytes ||
             residual.tensor.dtype != metadata.dtype ||
@@ -684,17 +694,21 @@ extern "C" const aclTensor *fault26_fia_writer_prepare_output(
     }
     {
         std::lock_guard<std::mutex> lock(g_control_mutex);
-        if (g_session != session || g_hit_claimed) {
+        if (g_session != session || (!all_hits && g_hit_claimed) ||
+            (all_hits && g_hit_count >= max_hits)) {
             cleanup_record(&record);
             return attention_out;
         }
         record.matching_index = ++g_matching_count;
-        if (record.matching_index != target_occurrence) {
+        if (!all_hits && record.matching_index != target_occurrence) {
             cleanup_record(&record);
             return attention_out;
         }
-        g_hit_claimed = true;
-        (void)setenv("FAULT26_FIA_WRITER_PROXY_ENABLED", "0", 1);
+        ++g_hit_count;
+        if (!all_hits || g_hit_count >= max_hits) {
+            g_hit_claimed = true;
+            (void)setenv("FAULT26_FIA_WRITER_PROXY_ENABLED", "0", 1);
+        }
     }
     record.replacement_tensor = g_create_tensor(
         metadata.view_dims.data(), metadata.view_dims.size(), metadata.dtype,

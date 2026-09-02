@@ -600,3 +600,36 @@ See:
 fault20_fast_validation/reports/
   fault26_qmm_underflow_all_eligible_20260818.md
 ```
+
+## Sustained all-hit dump validation, 2026-09-02
+
+This validation records controlled Fault26 sustained all-hit behavior on the local A2 / Ascend 910B4 Qwen3-32B-w8a8-nopdmix environment. Raw dump and runtime evidence are intentionally kept outside Git under `/home/haoran/fault_evidence`.
+
+Developer-mode msprobe control was added through vLLM `/collective_rpc`:
+
+- `fault26_start_msprobe_dump(config_path=None)`
+- `fault26_query_msprobe_dump()`
+- `fault26_stop_msprobe_dump()`
+
+The debugger is started after the worker model is loaded by calling `PrecisionDebugger.start(model=<worker model>)`. This avoids the invalid early-start path where `level=mix` fails because msprobe has not received a model object. This is a dump-control path only; it does not change the Fault26 Phase D arm ABI and does not add a Python dispatcher fault hook.
+
+Evidence roots:
+
+```text
+/home/haoran/fault_evidence/fault26_sustained_20260902
+fault20_fast_validation/evidence/fault26_sustained_dump_20260902
+/home/haoran/fault_evidence/fault26_sustained_dump_20260902_v4
+/home/haoran/fault_evidence/fault26_sustained_dump_20260902_v6_applied
+```
+
+Dump matrix:
+
+| Case | Fault mode | Request | Dump status | Writer status | Response status |
+| --- | --- | --- | --- | --- | --- |
+| `nohit_dumpon` | disarmed | 1 token | `step0/rank0`, `step0/rank1`, 6 files | initialized only | text: `' The'` |
+| `allhit1024_dumpon` | all-hit, `max_hits=1024` | 64-token request, manually stopped after dump/applied proof | `step0/rank0`, `step0/rank1`, 6 files | `applied=703`, `restored=703` | response text not used as evidence |
+| `allhit4096_dumpon` | all-hit, `max_hits=4096` | 128-token request | `step0/rank0`, `step0/rank1`, 6 files | `applied=191`, `restored=191` | early EOS: text `' The '` |
+
+The 1024 case proves that dump collection and actual Phase D writer application can coexist, but its response text is not used because the run was manually stopped after dump and writer evidence had already landed. The 4096 case reproduces the sustained all-hit early-EOS collapse while dump is enabled.
+
+Boundary: this validates the controlled `aclnnFusedInferAttentionScoreV3` wrong-destination residual stomp proxy under developer mode. It does not claim that the healthy vendor kernel naturally performs an out-of-bounds write.
