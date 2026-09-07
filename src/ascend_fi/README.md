@@ -46,6 +46,7 @@ ascend_fi/
 ├── discovery/      # logical candidate to physical binding discovery
 ├── validation/     # independent lossless target gate
 ├── evaluation/     # baseline/fault/recovery measurement
+├── profiles/       # validated portable model capability output
 └── contracts/      # JSON-serializable capability, candidate, validation, evaluation DTOs
 ```
 
