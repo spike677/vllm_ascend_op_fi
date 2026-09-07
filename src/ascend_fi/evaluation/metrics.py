@@ -9,6 +9,11 @@ from typing import Any
 
 
 _NUMBER = re.compile(r"[-+]?(?:\d[\d,]*\.?\d*|\.\d+)")
+_EXPLICIT_FINAL_ANSWER = re.compile(
+    r"(?:####|FINAL_ANSWER\s*[:=]?|final\s+answer\s*(?:is|:|=))\s*[$¥€£]?\s*"
+    + "(" + _NUMBER.pattern + r")",
+    flags=re.IGNORECASE,
+)
 
 
 def safe_ratio(numerator: float | int | None, denominator: float | int | None) -> float | None:
@@ -46,6 +51,8 @@ def normalize_numeric_answer(value: str | None) -> str | None:
     if value is None:
         return None
     normalized = value.replace(",", "").strip()
+    if normalized[:1] in {"$", "¥", "€", "£"}:
+        normalized = normalized[1:].strip()
     try:
         number = float(normalized)
     except ValueError:
@@ -65,6 +72,58 @@ def extract_gsm8k_answer(text: str | None) -> str | None:
     marked = re.findall(r"####\s*(" + _NUMBER.pattern + r")", text)
     candidates = marked or _NUMBER.findall(text)
     return normalize_numeric_answer(candidates[-1]) if candidates else None
+
+
+def extract_explicit_final_numeric_answer(text: str | None) -> str | None:
+    """Return an answer only when the model explicitly marked it as final.
+
+    This deliberately does *not* fall back to arbitrary numbers in reasoning.
+    It is the conservative basis for the separately reported answer-accuracy
+    denominator: a truncated chain of thought is unresolved rather than wrong.
+    """
+
+    if not text:
+        return None
+    candidates = _EXPLICIT_FINAL_ANSWER.findall(text)
+    return normalize_numeric_answer(candidates[-1]) if candidates else None
+
+
+def generation_hit_limit(
+    finish_reason: str | None, generation_length: int | None, max_tokens: int | None
+) -> bool:
+    """Detect the unambiguous completion-limit condition exposed by the API."""
+
+    return (
+        finish_reason == "length"
+        and isinstance(generation_length, int)
+        and isinstance(max_tokens, int)
+        and generation_length >= max_tokens
+    )
+
+
+def resolved_answer_accuracy(
+    references: Sequence[str | None], predictions: Sequence[str | None]
+) -> dict[str, int | float | None]:
+    """Score only explicit, deterministically resolvable final answers.
+
+    The returned ``accuracy`` is ``None`` when no response is resolvable; it
+    never silently treats unresolved/truncated outputs as mathematical errors.
+    """
+
+    if len(references) != len(predictions):
+        raise ValueError("references and predictions must have equal length")
+    resolved = [
+        (normalize_numeric_answer(reference), normalize_numeric_answer(prediction))
+        for reference, prediction in zip(references, predictions)
+        if prediction is not None
+    ]
+    correct = sum(reference is not None and reference == prediction for reference, prediction in resolved)
+    return {
+        "accuracy": correct / len(resolved) if resolved else None,
+        "resolved_count": len(resolved),
+        "correct_count": correct,
+        "unresolved_count": len(references) - len(resolved),
+    }
 
 
 def gsm8k_accuracy(

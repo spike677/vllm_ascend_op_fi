@@ -1,0 +1,97 @@
+{
+  "comparison_version": 1,
+  "conclusion": "The score differs, but a protocol-level root cause cannot be assigned without the historical artifact.",
+  "current_protocol": {
+    "api_style": "POST /v1/completions; no client-side chat template",
+    "assistant_prefix": "Answer:",
+    "dataset_subset": "first 10 rows of the recorded GSM8K test input",
+    "max_tokens": 128,
+    "observed_strict_score": "4/10",
+    "prompt": "completion prompt with concise reasoning plus exact #### <number> instruction",
+    "seed": 1234,
+    "stop_tokens": null,
+    "strict_parser": "last #### marker, otherwise last numeric token",
+    "system_prompt": null,
+    "temperature": 0.0
+  },
+  "differences": [
+    {
+      "comparison": "DIFFERENT",
+      "current": "4/10",
+      "evidence": "No corresponding historical result artifact was found in the audited worktree or host paths.",
+      "field": "observed_strict_score",
+      "historical": "8/10 (reported observation only)"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": "first 10 rows of the recorded GSM8K test input",
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "dataset_subset",
+      "historical": "UNKNOWN"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": "completion prompt with concise reasoning plus exact #### <number> instruction",
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "prompt",
+      "historical": "UNKNOWN"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": null,
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "system_prompt",
+      "historical": "UNKNOWN"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": "POST /v1/completions; no client-side chat template",
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "api_style",
+      "historical": "UNKNOWN"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": "Answer:",
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "assistant_prefix",
+      "historical": "UNKNOWN"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": 0.0,
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "temperature",
+      "historical": "UNKNOWN"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": 1234,
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "seed",
+      "historical": "UNKNOWN"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": 128,
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "max_tokens",
+      "historical": "UNKNOWN"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": null,
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "stop_tokens",
+      "historical": "UNKNOWN"
+    },
+    {
+      "comparison": "UNKNOWN",
+      "current": "last #### marker, otherwise last numeric token",
+      "evidence": "The historical 8/10 claim has no recoverable prompt/config/result artifact in the audited paths.",
+      "field": "strict_parser",
+      "historical": "UNKNOWN"
+    }
+  ],
+  "historical_reference_status": "UNVERIFIED_OBSERVATION_ONLY"
+}

@@ -32,11 +32,14 @@ from .live import (
 )
 from .metrics import (
     aggregate_repeatability,
+    extract_explicit_final_numeric_answer,
     extract_gsm8k_answer,
+    resolved_answer_accuracy,
     safe_ratio,
     token_divergence,
     word_perplexity,
 )
+from .audit import gsm8k_prompt, summarize_smoke_phenotypes
 from .runner import RunOutcome
 from .signals import obvious_gibberish, punctuation_spam_rate, repetition_rate
 
@@ -173,7 +176,7 @@ def _mode_for_m(mode: LiveFaultMode, m: int) -> LiveFaultMode:
 
 def _outcome_dict(sample: EvaluationSample | dict[str, Any], outcome: RunOutcome) -> dict[str, Any]:
     sample_id = sample.sample_id if isinstance(sample, EvaluationSample) else str(sample["id"])
-    return {
+    record = {
         "sample_id": sample_id,
         "http_status": outcome.http_status,
         "response_text": outcome.response_text,
@@ -185,6 +188,17 @@ def _outcome_dict(sample: EvaluationSample | dict[str, Any], outcome: RunOutcome
         "finish_reason": outcome.finish_reason,
         "error": outcome.error,
     }
+    if isinstance(sample, EvaluationSample):
+        record.update(
+            {
+                "prompt": sample.prompt,
+                "max_tokens": sample.max_tokens,
+                "temperature": sample.temperature,
+                "seed": sample.seed,
+                "metadata": dict(sample.metadata),
+            }
+        )
+    return record
 
 
 def _run_gsm8k(
@@ -192,19 +206,30 @@ def _run_gsm8k(
 ) -> list[dict[str, Any]]:
     results = []
     for sample in samples:
-        prompt = (
-            "Solve the grade-school math problem. Show concise reasoning, then end with exactly "
-            "'#### <number>'.\n\nQuestion: " + sample["question"] + "\nAnswer:"
+        request = EvaluationSample(
+            str(sample["id"]),
+            gsm8k_prompt(str(sample["question"])),
+            128,
+            metadata={"task": "gsm8k", "api": "completion", "system_prompt": None},
         )
-        outcome = executor.run_sample(
-            EvaluationSample(str(sample["id"]), prompt, 128, metadata={"task": "gsm8k"})
-        )
-        record = _outcome_dict(sample, outcome)
+        outcome = executor.run_sample(request)
+        record = _outcome_dict(request, outcome)
         record.update(
             {
                 "index": sample["index"],
+                "question": sample["question"],
                 "reference_answer": extract_gsm8k_answer(sample["reference"]),
                 "predicted_answer": extract_gsm8k_answer(outcome.response_text),
+                "strict_parser_result": extract_gsm8k_answer(outcome.response_text),
+                "independent_answer": extract_explicit_final_numeric_answer(outcome.response_text),
+                "independent_extractor": "explicit-final-marker-only",
+                "chat_template_metadata": {
+                    "api": "POST /v1/completions",
+                    "client_side_chat_template": None,
+                    "assistant_prefix": "Answer:",
+                    "stop_tokens": None,
+                    "server_side_template_visibility": "not exposed by completion response",
+                },
             }
         )
         record["correct"] = (
@@ -374,6 +399,14 @@ def _smoke_metrics(baseline: dict[str, Any], phase: dict[str, Any]) -> dict[str,
     base_length = sum(row["generation_length"] or 0 for row in base_rows)
     phase_length = sum(row["generation_length"] or 0 for row in rows)
     first_values = [value for value in first_by_sample.values() if value is not None]
+    smoke_samples = [
+        {
+            "id": row["sample_id"],
+            "max_tokens": row.get("max_tokens"),
+            "metadata": row.get("metadata", {}),
+        }
+        for row in base_rows
+    ]
     return {
         "sample_count": len(rows),
         "http_success_rate": sum(row["http_status"] == 200 for row in rows) / len(rows),
@@ -396,6 +429,7 @@ def _smoke_metrics(baseline: dict[str, Any], phase: dict[str, Any]) -> dict[str,
         "early_stop_rate": early / len(rows),
         "crash_error_rate": crashes / len(rows),
         "obvious_gibberish_rate": gibberish / len(rows),
+        "phenotype": summarize_smoke_phenotypes(base_rows, rows, smoke_samples),
     }
 
 
@@ -406,9 +440,33 @@ def _gsm_metrics(baseline: dict[str, Any], phase: dict[str, Any]) -> dict[str, A
         sum(row["correct"] for row in base_rows) / len(base_rows) if base_rows else None
     )
     accuracy = sum(row["correct"] for row in rows) / len(rows) if rows else None
+    base_answers = resolved_answer_accuracy(
+        [row.get("reference_answer") for row in base_rows],
+        [row.get("independent_answer") or extract_explicit_final_numeric_answer(row.get("response_text")) for row in base_rows],
+    )
+    answers = resolved_answer_accuracy(
+        [row.get("reference_answer") for row in rows],
+        [row.get("independent_answer") or extract_explicit_final_numeric_answer(row.get("response_text")) for row in rows],
+    )
     return {
         "sample_count": len(rows),
         "sample_ids": [row["sample_id"] for row in rows],
+        "strict_accuracy": accuracy,
+        "strict_accuracy_delta_pp": (
+            None if accuracy is None or baseline_accuracy is None else (accuracy - baseline_accuracy) * 100
+        ),
+        "strict_accuracy_retention": safe_ratio(accuracy, baseline_accuracy),
+        "answer_accuracy": answers["accuracy"],
+        "answer_correct_count": answers["correct_count"],
+        "answer_resolved_count": answers["resolved_count"],
+        "answer_unresolved_count": answers["unresolved_count"],
+        "answer_accuracy_delta_pp": (
+            None
+            if answers["accuracy"] is None or base_answers["accuracy"] is None
+            else (float(answers["accuracy"]) - float(base_answers["accuracy"])) * 100
+        ),
+        "answer_accuracy_retention": safe_ratio(answers["accuracy"], base_answers["accuracy"]),
+        # Compatibility aliases for existing V1 consumers.
         "accuracy": accuracy,
         "accuracy_delta_pp": (
             None if accuracy is None or baseline_accuracy is None else (accuracy - baseline_accuracy) * 100
@@ -522,8 +580,10 @@ def _summary_markdown(result: EvaluationResult) -> str:
     labels = ("Baseline", "Lossless", "Mild", "Strong", "Recovery")
     rows = [
         ("HTTP success", lambda p: p["smoke"]["http_success_rate"]),
-        ("GSM8K Accuracy", lambda p: p["gsm8k"]["accuracy"]),
-        ("Accuracy Retention", lambda p: p["gsm8k"]["accuracy_retention"]),
+        ("GSM8K Strict Accuracy", lambda p: p["gsm8k"]["strict_accuracy"]),
+        ("Strict Accuracy Retention", lambda p: p["gsm8k"]["strict_accuracy_retention"]),
+        ("GSM8K Answer Accuracy (resolved only)", lambda p: p["gsm8k"]["answer_accuracy"]),
+        ("GSM8K Answer Resolved Count", lambda p: p["gsm8k"]["answer_resolved_count"]),
         ("WikiText PPL", lambda p: p["wikitext"]["word_perplexity"]),
         ("PPL Ratio", lambda p: p["wikitext"]["ppl_ratio"]),
         ("Token divergence rate", lambda p: p["smoke"]["token_divergence_rate"]),
@@ -571,8 +631,9 @@ def _summary_markdown(result: EvaluationResult) -> str:
             "## Evidence boundary",
             "",
             "INT4/INT2-equivalent modes preserve INT8 storage and use existing native transforms. "
-            "WikiText scoring uses overlapping fixed 128-token teacher-forced echo windows so the "
-            "existing QMM selector can target prefill M=128 without adding a new native mechanism.",
+            "WikiText quality is reference-token likelihood / PPL from OpenAI-compatible echo logprobs "
+            "over fixed overlapping 8-token teacher-forced windows. It is not hidden-state tensor PPL "
+            "or a score of free-generation text.",
         ]
     )
     return "\n".join(lines) + "\n"
@@ -615,18 +676,18 @@ def run_qwen_fault_effect_suite(
         raw_phases["baseline"]["ppl"]["nll"] is not None
         and raw_phases["baseline"]["ppl"]["nll"] == raw_phases["lossless"]["ppl"]["nll"]
     )
-    lossless_m128 = raw_phases["lossless"]["runtime"]["ppl"]
+    lossless_window = raw_phases["lossless"]["runtime"]["ppl"]
     if not all(
         (
             lossless_preflight["smoke"]["response_equal"] is True,
             ppl_nll_equal,
-            lossless_m128["resolved"] is True,
-            lossless_m128["temporary_freed"] is True,
-            lossless_m128["service_health"] is True,
+            lossless_window["resolved"] is True,
+            lossless_window["temporary_freed"] is True,
+            lossless_window["service_health"] is True,
             raw_phases["lossless"]["disarm_success"] is True,
         )
     ):
-        raise RuntimeError("lossless M=1/M=128 preflight failed; destructive phases not started")
+        raise RuntimeError("lossless M=1/M=8 preflight failed; destructive phases not started")
     raw_phases["mild"] = _run_phase(
         executor, "mild", MILD_INT4_QMM_RANK0, smoke_samples, gsm8k_samples, wikitext, output
     )
@@ -666,8 +727,8 @@ def run_qwen_fault_effect_suite(
         "restore_exact": validation.restore_exact,
         "phase_response_equal": lossless["smoke"]["response_equal"],
         "ppl_nll_equal": ppl_nll_equal,
-        "ppl_window_hit": lossless_m128["resolved"],
-        "ppl_window_temporary_freed": lossless_m128["temporary_freed"],
+        "ppl_window_hit": lossless_window["resolved"],
+        "ppl_window_temporary_freed": lossless_window["temporary_freed"],
     }
     acceptance = {
         "two_workers_alive": strong["mechanism"]["per_rank"]["observed_worker_count"] == 2
@@ -754,7 +815,11 @@ def run_qwen_fault_effect_suite(
             ppl_ratio=strong["wikitext"]["ppl_ratio"],
             accuracy=strong["gsm8k"]["accuracy"],
             accuracy_retention=strong["gsm8k"]["accuracy_retention"],
-            extra={"gsm8k_accuracy_delta_pp": strong["gsm8k"]["accuracy_delta_pp"]},
+            extra={
+                "gsm8k_strict_accuracy_delta_pp": strong["gsm8k"]["strict_accuracy_delta_pp"],
+                "gsm8k_answer_accuracy": strong["gsm8k"]["answer_accuracy"],
+                "gsm8k_answer_accuracy_delta_pp": strong["gsm8k"]["answer_accuracy_delta_pp"],
+            },
         ),
         status=EvaluationStatus.PASS if passed else EvaluationStatus.FAIL,
         reason=(

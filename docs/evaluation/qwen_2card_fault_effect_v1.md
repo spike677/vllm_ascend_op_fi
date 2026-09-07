@@ -34,9 +34,14 @@ punctuation-sensitive output.
 
 The V1 suite also supports:
 
-- a fixed indexed subset of the official GSM8K test JSONL with deterministic
-  numeric parsing (the `####` answer marker takes precedence);
-- WikiText-2 raw text scored with OpenAI-compatible `echo` prompt logprobs;
+- a fixed indexed subset of the official GSM8K test JSONL with two explicit
+  accuracy views: `strict_accuracy` (the protocol parser) and
+  `answer_accuracy` (only responses with a deterministic explicit final-number
+  marker; unresolved/truncated responses are reported separately);
+- WikiText-2 raw text scored as reference-token likelihood / PPL using
+  OpenAI-compatible `echo` prompt logprobs. This is teacher-forced scoring of
+  the real reference tokens, not hidden-state-tensor PPL and not a score of
+  free-generation output;
 - overlapping fixed 8-token windows. The one-token overlap means all tokens
   except the first document token receive a teacher-forced score while every
   targeted QMM has the same `M=8` selector. `8 × 5120 = 40960` bytes remains
@@ -44,12 +49,37 @@ The V1 suite also supports:
   native limit or mechanism is changed;
 - response equality/hash, token-piece comparison when integer IDs are absent,
   first/token divergence, output length ratio, repetition, punctuation spam,
-  early-stop, crash/error, accuracy retention, NLL, and PPL ratio;
+  early-stop, crash/error, strict/answer accuracy retention, NLL, and PPL ratio;
 - three complete representative `arm -> fault -> disarm -> recovery` repeats.
 
 Token pieces are never stored as token IDs. When the API does not expose integer
 IDs, `token_ids` remains `null` and the comparison basis is recorded separately.
 No LLM judge participates in PASS/FAIL.
+
+### Baseline validity and phenotype audit
+
+Before freezing a report, run the no-rerun audit against the recorded baseline
+and strong raw phase JSON. It writes a per-miss GSM8K attribution, a read-only
+historical-protocol comparison, and a short/long output phenotype summary.
+
+```bash
+PYTHONPATH=src python3 tools/audit_qwen_baseline_validity.py \
+  --baseline-phase /path/to/output/baseline/raw_phase_result.json \
+  --strong-phase /path/to/output/strong/raw_phase_result.json \
+  --evaluation-result /path/to/output/evaluation_result.json \
+  --gsm8k /data/gsm8k/test.jsonl \
+  --smoke eval_data/smoke_v1.jsonl \
+  --output /path/to/output
+```
+
+`eval_data/smoke_v1.jsonl` declares a `phenotype_class` independently of its
+prompt text. The short classes are `short_exact`, `short_format`,
+`short_reasoning`, `repetition_sensitive`, `punctuation_sensitive`, and
+`newline_sensitive`; long classes are `long_reasoning` and `long_generation`.
+The deterministic thresholds are: a periodic loop is a 1–8 token period repeated
+three times; repetitive collapse is such a loop or a repeated-token run of six;
+punctuation spam is a punctuation fraction of at least 0.35 or a run of eight;
+runaway generation means a capped response at least 1.5× the baseline length.
 
 ## Rank-aware evidence
 
@@ -92,6 +122,11 @@ The outputs are:
 - `repeatability.json`;
 - unified `evaluation_result.json`;
 - `effect_evaluation_summary.md`.
+- `baseline_gsm8k_failure_audit.json/.md`, `baseline_protocol_diff.json`, and
+  `smoke_phenotype_summary.json` after the offline validity audit;
+- `effect_evaluation_summary_audited.md` when the audit receives the recorded
+  `evaluation_result.json`; this derived report never overwrites the raw V1
+  summary.
 
 ## Evidence boundary
 

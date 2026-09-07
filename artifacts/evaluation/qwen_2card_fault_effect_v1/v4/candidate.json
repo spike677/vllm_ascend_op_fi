@@ -1,0 +1,92 @@
+{
+  "binding": {
+    "address_metadata": {
+      "data_addr": "0x12c1c1d78a00",
+      "direct_gws_address_match": 0,
+      "raw_addr": "0x12c1c1d78a00",
+      "runtime_address": "0x12c1c1d78a00",
+      "storage_addr": "0x12c1c1d78a00"
+    },
+    "contiguous": true,
+    "formal_ordinal": 0,
+    "format": 2,
+    "runtime_slot": 0,
+    "storage_bytes": 5120,
+    "storage_role": "x1",
+    "strides": [
+      5120,
+      1
+    ],
+    "tensor_role": "input_activation",
+    "view_bytes": 5120,
+    "view_offset": 0
+  },
+  "candidate_id": "candidate-d1fb224cbdf8cbff1708",
+  "capability_id": "op_api.quant_matmul.input_buffer_transform",
+  "matching_reasons": [
+    "execution_plane=op_api",
+    "symbol=aclnnQuantMatmulWeightNz",
+    "model=Qwen3-32B-w8a8-nopdmix"
+  ],
+  "observed": {
+    "call_fingerprint": "1cbd3cbb351f103686e25e2d07f1f8cddbd4ee182424a833bdfbf117d9bd9f6a",
+    "call_index": 749311,
+    "dtype": "int8",
+    "environment": {
+      "model": "Qwen3-32B-w8a8-nopdmix",
+      "topology": "tensor_parallel_2"
+    },
+    "execution_plane": "op_api",
+    "phase": "decode",
+    "rank": 0,
+    "runtime_proof": {
+      "address_count_exact": true,
+      "empty_slots_are_null": true,
+      "no_shared_storage": true,
+      "nonempty_slots_are_nonnull": true,
+      "out_is_last_storage": true,
+      "output_slot_proven": true,
+      "param_order_exact": true,
+      "semantic_slot_proven": true,
+      "x1_slot_proven": true,
+      "x1_storage_unique": true
+    },
+    "shape": [
+      1,
+      5120
+    ],
+    "stream": null,
+    "symbol": "aclnnQuantMatmulWeightNz"
+  },
+  "proof": {
+    "evidence_refs": [
+      "/home/haoran/qwen_eval_v1_20260907/service/buffer.jsonl"
+    ],
+    "level": "SEMANTIC_SLOT_PROVEN",
+    "matching_reasons": [
+      "execution_plane=op_api",
+      "symbol=aclnnQuantMatmulWeightNz",
+      "model=Qwen3-32B-w8a8-nopdmix"
+    ]
+  },
+  "recommended": {
+    "params": {
+      "dtype": "int8",
+      "phase": "decode",
+      "proof_mode": "SEMANTIC_SLOT_PROVEN",
+      "runtime_slot": 0,
+      "shape": [
+        1,
+        5120
+      ],
+      "symbol": "aclnnQuantMatmulWeightNz",
+      "tensor_role": "input_activation"
+    },
+    "strategy": "lossless_substitution"
+  },
+  "rejection_reasons": [],
+  "validation": {
+    "reason": "execution_plane=op_api; symbol=aclnnQuantMatmulWeightNz; model=Qwen3-32B-w8a8-nopdmix",
+    "status": "ACCEPTED"
+  }
+}

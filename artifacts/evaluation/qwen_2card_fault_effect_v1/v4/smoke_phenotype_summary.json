@@ -1,0 +1,153 @@
+{
+  "long_output": {
+    "answer_correct_count": 0,
+    "answer_correct_rate": null,
+    "answer_scored_count": 0,
+    "early_stop_count": 0,
+    "empty_output_count": 0,
+    "exact_divergence_count": 1,
+    "exact_divergence_rate": 1.0,
+    "format_scored_count": 0,
+    "format_violation_count": 0,
+    "format_violation_rate": null,
+    "generation_length_delta": 0,
+    "longest_punctuation_run": 0,
+    "longest_repeated_run": 10,
+    "mean_output_length_ratio": 1.0,
+    "median_first_divergent_token": 1,
+    "newline_whitespace_scored_count": 0,
+    "newline_whitespace_violation_count": 0,
+    "obvious_garbage_count": 0,
+    "overall_phenotype_labels": {
+      "long-generation": [
+        "REPETITIVE_COLLAPSE"
+      ]
+    },
+    "periodic_loop_count": 1,
+    "punctuation_spam_count": 0,
+    "runaway_generation_count": 0,
+    "sample_count": 1,
+    "sample_ids": [
+      "long-generation"
+    ],
+    "token_divergence_count": 47,
+    "token_divergence_rate": 0.9791666666666666,
+    "token_ngram_repetition": 0.8936170212765957,
+    "unexpected_extra_output_count": 0
+  },
+  "short_output": {
+    "answer_correct_count": 0,
+    "answer_correct_rate": 0.0,
+    "answer_scored_count": 18,
+    "early_stop_count": 0,
+    "empty_output_count": 0,
+    "exact_divergence_count": 19,
+    "exact_divergence_rate": 1.0,
+    "format_scored_count": 18,
+    "format_violation_count": 18,
+    "format_violation_rate": 1.0,
+    "generation_length_delta": 0,
+    "longest_punctuation_run": 0,
+    "longest_repeated_run": 0,
+    "mean_output_length_ratio": 1.0,
+    "median_first_divergent_token": 1,
+    "newline_whitespace_scored_count": 2,
+    "newline_whitespace_violation_count": 2,
+    "obvious_garbage_count": 0,
+    "overall_phenotype_labels": {
+      "code-sensitive": [
+        "FLUENT_WRONG"
+      ],
+      "fact-capital": [
+        "FLUENT_WRONG"
+      ],
+      "fact-planet": [
+        "FLUENT_WRONG"
+      ],
+      "fact-water": [
+        "FLUENT_WRONG"
+      ],
+      "format-case": [
+        "FLUENT_WRONG"
+      ],
+      "format-json": [
+        "FLUENT_WRONG"
+      ],
+      "format-symbols": [
+        "FLUENT_WRONG"
+      ],
+      "list-colors": [
+        "FLUENT_WRONG"
+      ],
+      "list-days": [
+        "FLUENT_WRONG"
+      ],
+      "math-add": [
+        "FLUENT_WRONG"
+      ],
+      "math-fraction": [
+        "FLUENT_WRONG"
+      ],
+      "math-multiply": [
+        "FLUENT_WRONG"
+      ],
+      "newline-sensitive": [
+        "FLUENT_WRONG"
+      ],
+      "punctuation-sensitive": [
+        "FLUENT_WRONG"
+      ],
+      "reason-order": [
+        "FLUENT_WRONG"
+      ],
+      "reason-parity": [
+        "FLUENT_WRONG"
+      ],
+      "reason-sequence": [
+        "FLUENT_WRONG"
+      ],
+      "repeat-sensitive": [
+        "FLUENT_WRONG"
+      ],
+      "short-summary": [
+        "FLUENT_WRONG"
+      ]
+    },
+    "periodic_loop_count": 0,
+    "punctuation_spam_count": 0,
+    "runaway_generation_count": 0,
+    "sample_count": 19,
+    "sample_ids": [
+      "math-add",
+      "math-multiply",
+      "math-fraction",
+      "fact-capital",
+      "fact-planet",
+      "fact-water",
+      "reason-order",
+      "reason-parity",
+      "reason-sequence",
+      "list-colors",
+      "list-days",
+      "format-json",
+      "format-symbols",
+      "format-case",
+      "repeat-sensitive",
+      "punctuation-sensitive",
+      "short-summary",
+      "code-sensitive",
+      "newline-sensitive"
+    ],
+    "token_divergence_count": 193,
+    "token_divergence_rate": 0.9013157894736842,
+    "token_ngram_repetition": 0.6589616333323427,
+    "unexpected_extra_output_count": 18
+  },
+  "thresholds": {
+    "periodic_loop": "a lexical period of 1..8 tokens repeated at least 3 times contiguously",
+    "punctuation_spam": "punctuation fraction >= 0.35 or punctuation run >= 8",
+    "repetitive_collapse": "periodic loop or repeated-token run >= 6",
+    "runaway_generation": "at max_tokens and >= 1.5x baseline output length"
+  },
+  "version": 1
+}
