@@ -1,0 +1,58 @@
+{
+  "schema_version": 0,
+  "id": "op_api.float_matmul.output_nonfinite_proxy",
+  "kind": "proxy",
+  "maturity": "validated",
+  "execution_plane": "op_api",
+  "mechanism": "op_api_interpose",
+  "summary": "Post-Run assignment of controlled BF16 non-finite values to a proven MatMul output.",
+  "semantic_mapping": {
+    "candidate_positions": ["operation"]
+  },
+  "supports": {
+    "observe": true,
+    "lossless_validate": true,
+    "inject": true,
+    "restore": true
+  },
+  "canonical": {
+    "source": [
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp",
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/fault20_buffer_api.h",
+      "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp"
+    ],
+    "build": [
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/build.sh",
+      "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/build.sh"
+    ],
+    "evidence": [
+      "fault20_fast_validation/reports/fault39_float_matmul_output_nonfinite_proxy_validation.md",
+      "fault20_fast_validation/reports/fault39_matmul_fault_reproduction_summary.md"
+    ]
+  },
+  "compatibility": {
+    "models": ["Qwen3-32B-w8a8-nopdmix"],
+    "developer_mode_only": true
+  },
+  "selectors": [
+    "symbol",
+    "rank",
+    "phase",
+    "shape",
+    "output_slot",
+    "occurrence",
+    "element_count"
+  ],
+  "strategies": ["assign_pos_inf", "assign_neg_inf", "assign_qnan"],
+  "downstream": {
+    "framework": "cann",
+    "symbols": ["aclnnMatmul"]
+  },
+  "limitations": [
+    "This is an outcome proxy and does not prove natural accumulator overflow.",
+    "Only formally proven output storage may be modified."
+  ],
+  "integration": {
+    "demoncat_role": "runtime_backend"
+  }
+}

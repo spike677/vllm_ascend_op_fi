@@ -395,3 +395,14 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 - MoE、GroupedMatmul、MatmulAllReduce；
 - QMM post-Run output Inf/NaN proxy（当前只完成了 floating `aclnnMatmul`）；
 - 外部故障框架集成。
+
+## 项目边界与过渡结构
+
+本仓库定位为 Ascend/NPU 底层故障能力的研发与验证仓；隔离的 DemonCAT 项目继续拥有产品级 `position + primitive + target + params`、`PrimitiveSpec`、`RuntimeBinding`、controller 和统一 CLI。这里不创建第二套产品 registry 或控制面。
+
+当前采用渐进式重组：已验证 native 源码仍以原路径作为唯一实现来源，不批量移动；`src/ascend_fi/` 是产品化集成骨架，`profiles/capabilities/` 描述 `execution_plane` 与已验证能力，`experiments/` 冻结历史案例索引。
+
+- [仓库分层与迁移门禁](docs/architecture/repository_layers.md)
+- [DemonCAT 合并合同](docs/integration/demoncat_merge_contract.md)
+- [Capability manifest 说明](profiles/capabilities/README.md)
+- [历史实验索引](experiments/README.md)

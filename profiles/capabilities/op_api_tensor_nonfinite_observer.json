@@ -1,0 +1,58 @@
+{
+  "schema_version": 0,
+  "id": "op_api.tensor_nonfinite_observer",
+  "kind": "observer",
+  "maturity": "validated",
+  "execution_plane": "op_api",
+  "mechanism": "op_api_interpose",
+  "summary": "Post-operator finite, NaN, infinity, zero, and numeric-range statistics without full tensor logging.",
+  "semantic_mapping": {
+    "candidate_positions": ["operation"]
+  },
+  "supports": {
+    "observe": true,
+    "lossless_validate": false,
+    "inject": false,
+    "restore": false
+  },
+  "canonical": {
+    "source": [
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp",
+      "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp"
+    ],
+    "build": [
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/build.sh",
+      "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/build.sh"
+    ],
+    "evidence": [
+      "fault20_fast_validation/reports/fault39_qmm_overflow_validation.md",
+      "fault20_fast_validation/reports/fault39_float_matmul_finite_nonfinite_validation.md"
+    ]
+  },
+  "compatibility": {
+    "models": ["Qwen3-32B-w8a8-nopdmix"],
+    "developer_mode_only": true
+  },
+  "selectors": ["symbol", "rank", "phase", "shape", "tensor_semantic"],
+  "observations": [
+    "finite_count",
+    "nan_count",
+    "pos_inf_count",
+    "neg_inf_count",
+    "zero_count",
+    "min_max",
+    "max_abs",
+    "mean_abs"
+  ],
+  "downstream": {
+    "framework": "cann",
+    "symbols": ["aclnnQuantMatmulWeightNz", "aclnnMatmul"]
+  },
+  "limitations": [
+    "Full tensor contents are intentionally not part of the observer contract.",
+    "Output visibility depends on a proven runtime or formal-output address."
+  ],
+  "integration": {
+    "demoncat_role": "observer"
+  }
+}

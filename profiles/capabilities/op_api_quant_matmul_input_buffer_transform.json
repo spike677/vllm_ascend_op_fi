@@ -1,0 +1,67 @@
+{
+  "schema_version": 0,
+  "id": "op_api.quant_matmul.input_buffer_transform",
+  "kind": "injector",
+  "maturity": "validated",
+  "execution_plane": "op_api",
+  "mechanism": "op_api_interpose",
+  "summary": "Temporary device-buffer substitution and finite precision/value transforms for QuantMatmul inputs.",
+  "semantic_mapping": {
+    "candidate_positions": ["operation"]
+  },
+  "supports": {
+    "observe": true,
+    "lossless_validate": true,
+    "inject": true,
+    "restore": true
+  },
+  "canonical": {
+    "source": [
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp",
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/fault20_buffer_api.h",
+      "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp"
+    ],
+    "build": [
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/build.sh",
+      "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/build.sh"
+    ],
+    "evidence": [
+      "fault20_fast_validation/reports/fault20_capability_matrix_final.md",
+      "fault20_fast_validation/reports/fault20_injection_capability_inventory_20260807.md"
+    ]
+  },
+  "compatibility": {
+    "models": ["Qwen3-32B-w8a8-nopdmix"],
+    "topologies": ["tensor_parallel_2"],
+    "developer_mode_only": true
+  },
+  "selectors": [
+    "symbol",
+    "rank",
+    "phase",
+    "shape",
+    "tensor_semantic",
+    "proof_mode",
+    "request_generation",
+    "hit_budget"
+  ],
+  "strategies": [
+    "lossless_substitution",
+    "int4_equivalent",
+    "int2_equivalent",
+    "finite_extreme_value",
+    "scale_amplification"
+  ],
+  "downstream": {
+    "framework": "cann",
+    "symbols": ["aclnnQuantMatmulWeightNz"]
+  },
+  "limitations": [
+    "Version- and ABI-gated; not a cross-version arbitrary-operator backend.",
+    "Physical tensor slots are runtime bindings, not stable DemonCAT target ABI.",
+    "INT4/INT2-equivalent modes keep INT8 storage and are not packed low-bit kernels."
+  ],
+  "integration": {
+    "demoncat_role": "runtime_backend"
+  }
+}

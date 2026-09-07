@@ -1,0 +1,60 @@
+{
+  "schema_version": 0,
+  "id": "op_api.operator_trace",
+  "kind": "observer",
+  "maturity": "validated",
+  "execution_plane": "op_api",
+  "mechanism": "op_api_interpose",
+  "summary": "Read-only L4 operator, workspace, tensor-address, stream, and cache timeline observation.",
+  "semantic_mapping": {
+    "candidate_positions": ["operation"]
+  },
+  "supports": {
+    "observe": true,
+    "lossless_validate": false,
+    "inject": false,
+    "restore": false
+  },
+  "canonical": {
+    "source": [
+      "fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_trace_preload.cpp",
+      "fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_opapi_trace_proxy.cpp",
+      "fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_trace_shared.h"
+    ],
+    "build": [
+      "fault20_fast_validation/source/fault26_readonly_trace_v1/build.sh"
+    ],
+    "evidence": [
+      "fault20_fast_validation/reports/fault26_residual_writer_timeline_audit_20260818.md",
+      "fault20_fast_validation/reports/fault26_residual_lifetime_visible_api_audit_20260818.md"
+    ]
+  },
+  "compatibility": {
+    "models": ["Qwen3-32B-w8a8-nopdmix"],
+    "developer_mode_only": true
+  },
+  "selectors": ["symbol", "rank", "stream", "shape", "call_fingerprint", "tensor_slot"],
+  "observations": [
+    "api_timeline",
+    "workspace_interval",
+    "tensor_metadata",
+    "storage_relation",
+    "producer_consumer_relation"
+  ],
+  "downstream": {
+    "framework": "cann",
+    "symbols": [
+      "aclnnFusedInferAttentionScoreV3",
+      "aclnnReduceSum",
+      "aclnnAddRmsNormBias",
+      "aclnnQuantMatmulWeightNz"
+    ]
+  },
+  "limitations": [
+    "Absence of an observed write in one request does not prove absence of all OOB faults.",
+    "Visible tensor intervals do not describe allocator padding or kernel-internal temporaries."
+  ],
+  "integration": {
+    "demoncat_role": "observer_and_discovery"
+  }
+}
