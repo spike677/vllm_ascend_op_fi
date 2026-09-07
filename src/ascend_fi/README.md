@@ -1,8 +1,8 @@
 # ascend_fi product-facing integration scaffold
 
 This directory establishes the product-facing boundary for reusable Ascend fault-injection
-backends, strategies, observers, discovery helpers, and evaluation helpers. It is
-an integration scaffold; no native implementation has been migrated here yet.
+backends, strategies, observers, discovery helpers, evaluation helpers, and shared
+handoff contracts. It is an integration scaffold; no native implementation has been migrated here yet.
 
 It intentionally contains no `Fault20`, `Fault26`, `Fault39`, or `Fault41`
 package names. Fault numbers identify validation cases; they are not product
@@ -44,9 +44,15 @@ ascend_fi/
 ├── strategies/     # data/value mutation primitives
 ├── observers/      # read-only evidence collection
 ├── discovery/      # logical candidate to physical binding discovery
-└── evaluation/     # baseline/fault/recovery measurement
+├── evaluation/     # baseline/fault/recovery measurement
+└── contracts/      # JSON-serializable capability, candidate, validation, evaluation DTOs
 ```
 
 `execution_plane` describes where an implementation binds (`aclnn`,
 `torch_npu`, `vllm_ascend_backend`, `atb`, `hccl`, or `state`). It does not
 replace DemonCAT's semantic `position`.
+
+`contracts/` is a shared data boundary, not a runtime registry or dispatcher.
+It carries evidence between discovery and evaluation while DemonCAT retains
+ownership of product policy, binding selection, controller lifecycle, and the
+production CLI.

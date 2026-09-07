@@ -122,3 +122,14 @@ experiments/fault41_state_cache_corruption/
 This keeps the historical case under `experiments/` instead of reintroducing a
 Fault-number directory at repository root. Nested worktrees and temporary
 scripts remain external/local state until explicitly curated.
+
+## Shared contracts v0
+
+`src/ascend_fi/contracts/` defines JSON-serializable DTOs for capability
+metadata, discovered candidates, lossless validation, and baseline/fault/recovery
+evaluation. They preserve unknown fields for additive evolution and are safe to
+exchange between the evaluation/discovery and capability-research branches.
+
+These DTOs are evidence handoff objects only. They do not register primitives,
+select a `RuntimeBinding`, arm a backend, or establish a second controller
+lifecycle. The product boundary remains owned by DemonCAT.

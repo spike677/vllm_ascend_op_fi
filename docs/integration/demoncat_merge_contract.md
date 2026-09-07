@@ -123,3 +123,12 @@ Before registering a backend in DemonCAT:
 7. model, device, CANN, vLLM, topology, and request limitations are recorded;
 8. the integration adds no second production CLI, primitive registry, or
    controller lifecycle.
+
+## Shared DTO boundary v0
+
+`src/ascend_fi/contracts/` supplies the companion v0 data transfer objects:
+`Capability`, `Candidate`, `ValidationResult`, and `EvaluationResult`. They
+carry unknown fields forward for additive schema evolution and explicitly model
+the lossless validation gate before destructive injection. They are not a
+replacement for DemonCAT's `PrimitiveSpec`, `RuntimeBinding`, product registry,
+or controller API.
