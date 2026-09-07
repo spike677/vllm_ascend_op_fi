@@ -1,0 +1,52 @@
+{
+  "schema": "recorded_evaluation.v0",
+  "baseline": {
+    "http_status": 200,
+    "response_text": " Paris. The capital of France is Paris. Paris. The capital of France is",
+    "response_hash": "46c7dc050ee650788ed800f030c7fd7ca18e2d123a6ae8e8159324163344fb89",
+    "token_ids": null,
+    "token_pieces": [" Paris", ".", " The", " capital", " of", " France", " is", " Paris", ".", " Paris", ".", " The", " capital", " of", " France", " is"],
+    "generation_length": 16,
+    "finish_reason": "length",
+    "worker_alive": true
+  },
+  "fault": {
+    "http_status": 200,
+    "response_text": " Paris的城市琮 견s情节精选ATUSمين圩ALES皆inks ië",
+    "response_hash": "e6759c97835742c29edd535279de6c1a32c882437c4ac7cbf7b1af8ad72b9505",
+    "token_ids": null,
+    "token_pieces": [" Paris", "的城市", "琮", " ", "견", "s", "情节", "精选", "ATUS", "مين", "圩", "ALES", "皆", "inks", " ", "ië"],
+    "generation_length": 16,
+    "finish_reason": "length",
+    "worker_alive": true,
+    "mechanism": {
+      "resolved": true,
+      "candidate_count": null,
+      "hit_count": 1,
+      "reject_count": 0,
+      "reject_reasons": {},
+      "changed_elements": null,
+      "restore_exact": true,
+      "auto_disarmed": false
+    }
+  },
+  "disarm_success": true,
+  "recovery": {
+    "http_status": 200,
+    "response_text": " Paris. The capital of France is Paris. Paris. The capital of France is",
+    "response_hash": "46c7dc050ee650788ed800f030c7fd7ca18e2d123a6ae8e8159324163344fb89",
+    "token_ids": null,
+    "token_pieces": [" Paris", ".", " The", " capital", " of", " France", " is", " Paris", ".", " Paris", ".", " The", " capital", " of", " France", " is"],
+    "generation_length": 16,
+    "finish_reason": "length",
+    "worker_alive": true
+  },
+  "evidence_refs": [
+    "fault20_fast_validation/evidence/fault20_v17_msprobe_response_summary.md"
+  ],
+  "fixture_limitations": [
+    "Raw native run_trace.jsonl is intentionally excluded from Git.",
+    "hit_count=1 asserts only that at least one recorded-schema hit is represented; it is not the canonical all-hit total.",
+    "Token IDs are unavailable in committed evidence, so token_pieces are used for divergence and token_ids remain null."
+  ]
+}
