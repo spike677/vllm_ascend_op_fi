@@ -44,6 +44,7 @@ ascend_fi/
 ├── strategies/     # data/value mutation primitives
 ├── observers/      # read-only evidence collection
 ├── discovery/      # logical candidate to physical binding discovery
+├── validation/     # independent lossless target gate
 ├── evaluation/     # baseline/fault/recovery measurement
 └── contracts/      # JSON-serializable capability, candidate, validation, evaluation DTOs
 ```
