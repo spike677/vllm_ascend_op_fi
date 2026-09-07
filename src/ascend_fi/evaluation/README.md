@@ -12,3 +12,7 @@ V0 requires a passed lossless `ValidationResult`, then enforces
 effects in the shared `EvaluationResult`. Missing token IDs and quality or
 performance metrics remain `null`; token pieces may be used as an explicitly
 labelled fallback for deterministic divergence analysis.
+
+The live Qwen V1 adapter and phase suite are documented in
+`docs/evaluation/qwen_2card_fault_effect_v1.md`. They reuse this contract and
+runner boundary; native injection logic is not duplicated in Python.
