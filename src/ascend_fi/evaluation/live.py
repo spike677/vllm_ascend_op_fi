@@ -412,7 +412,9 @@ class LiveQwenFaultExecutor:
             evidence_refs=(str(self.config.trace_path),),
         )
 
-    def runtime_snapshot(self, offset: int, mode: LiveFaultMode) -> dict[str, Any]:
+    def runtime_snapshot(
+        self, offset: int, mode: LiveFaultMode, *, target_m: int | None = None
+    ) -> dict[str, Any]:
         status = self.status()
         worker_pids: dict[int, int] = {}
         matching_calls: dict[int, int] = {}
@@ -426,11 +428,12 @@ class LiveQwenFaultExecutor:
         all_freed = True
         changed_total = 0
         changed_seen = False
-        target_m = (
-            int(mode.arm_args[2])
-            if len(mode.arm_args) == 5 and mode.arm_args[2].isdigit()
-            else 1
-        )
+        if target_m is None:
+            target_m = (
+                int(mode.arm_args[2])
+                if len(mode.arm_args) == 5 and mode.arm_args[2].isdigit()
+                else 1
+            )
         for event in self.iter_trace_events(offset):
             rank = event.get("rank", event.get("device"))
             x1 = event.get("x1") if isinstance(event.get("x1"), dict) else {}
@@ -467,6 +470,7 @@ class LiveQwenFaultExecutor:
             worker_alive,
             expected_workers=self.config.expected_worker_count,
             target_device_mask=mode.target_device_mask,
+            injection_active=bool(mode.arm_args),
         )
         rejects = sum(
             rank.get("reject_count") or 0 for rank in multirank["ranks"].values()

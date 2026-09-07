@@ -124,6 +124,7 @@ def aggregate_per_rank(
     *,
     expected_workers: int,
     target_device_mask: int,
+    injection_active: bool = True,
 ) -> dict[str, Any]:
     """Normalize Fault20 v17 status into explicit rank-aware evidence.
 
@@ -140,10 +141,22 @@ def aggregate_per_rank(
     last = last if isinstance(last, list) else []
     ranks: dict[str, Any] = {}
     for rank in range(expected_workers):
-        candidate_count = int(candidates[rank]) if rank < len(candidates) else None
-        hit_count = int(hits[rank]) if rank < len(hits) else None
+        candidate_count = (
+            0
+            if not injection_active
+            else (int(candidates[rank]) if rank < len(candidates) else None)
+        )
+        hit_count = (
+            0
+            if not injection_active
+            else (int(hits[rank]) if rank < len(hits) else None)
+        )
         calls = matching_calls.get(rank, 0)
-        inferred_reject = None if candidate_count is None else max(0, calls - candidate_count)
+        inferred_reject = (
+            None
+            if not injection_active or candidate_count is None
+            else max(0, calls - candidate_count)
+        )
         targeted = bool(target_device_mask & (1 << rank))
         reasons: dict[str, int] = {}
         if inferred_reject:
@@ -158,7 +171,7 @@ def aggregate_per_rank(
             "reject_count": inferred_reject,
             "reject_count_source": "evaluator_inference",
             "reject_reasons": reasons,
-            "expected_reject": not targeted,
+            "expected_reject": (not targeted) if injection_active else None,
             "last_status": int(last[rank]) if rank < len(last) else None,
         }
     observed = sum(value is not None for value in worker_pids.values())

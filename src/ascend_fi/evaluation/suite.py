@@ -280,7 +280,7 @@ def _run_phase(
             raise RuntimeError(f"{name}: could not establish disarmed state")
         smoke_rows = [_outcome_dict(sample, executor.run_sample(sample)) for sample in smoke]
         gsm_rows = _run_gsm8k(executor, gsm8k)
-        decode_snapshot = executor.runtime_snapshot(decode_offset, mode)
+        decode_snapshot = executor.runtime_snapshot(decode_offset, mode, target_m=1)
     finally:
         # Always disarm, including the case where the native arm succeeded but
         # the following status/readback raised before ``arm()`` returned.
@@ -294,7 +294,9 @@ def _run_phase(
         elif not executor.disarm(None):
             raise RuntimeError(f"{name} PPL: could not establish disarmed state")
         ppl = _run_ppl(executor, wikitext)
-        ppl_snapshot = executor.runtime_snapshot(ppl_offset, ppl_mode)
+        ppl_snapshot = executor.runtime_snapshot(
+            ppl_offset, ppl_mode, target_m=int(wikitext["window_tokens"])
+        )
     finally:
         ppl_disarm = executor.disarm(None)
 
@@ -420,6 +422,7 @@ def _mechanism_summary(phase: dict[str, Any]) -> dict[str, Any]:
     ranks: dict[str, Any] = {}
     for rank in ("0", "1"):
         values = [snapshot["multirank"]["ranks"][rank] for snapshot in snapshots]
+        expected_reject_values = [value["expected_reject"] for value in values]
         ranks[rank] = {
             "pid": values[-1]["pid"] or values[0]["pid"],
             "alive": all(value["alive"] is True for value in values),
@@ -429,7 +432,11 @@ def _mechanism_summary(phase: dict[str, Any]) -> dict[str, Any]:
             "hit_count": sum(value["hit_count"] or 0 for value in values),
             "reject_count": sum(value["reject_count"] or 0 for value in values),
             "reject_reasons": {},
-            "expected_reject": all(value["expected_reject"] for value in values),
+            "expected_reject": (
+                None
+                if all(value is None for value in expected_reject_values)
+                else all(value is True for value in expected_reject_values)
+            ),
         }
         for value in values:
             for reason, count in value["reject_reasons"].items():
@@ -659,8 +666,8 @@ def run_qwen_fault_effect_suite(
         "restore_exact": validation.restore_exact,
         "phase_response_equal": lossless["smoke"]["response_equal"],
         "ppl_nll_equal": ppl_nll_equal,
-        "ppl_m128_hit": lossless_m128["resolved"],
-        "ppl_m128_temporary_freed": lossless_m128["temporary_freed"],
+        "ppl_window_hit": lossless_m128["resolved"],
+        "ppl_window_temporary_freed": lossless_m128["temporary_freed"],
     }
     acceptance = {
         "two_workers_alive": strong["mechanism"]["per_rank"]["observed_worker_count"] == 2
@@ -672,8 +679,8 @@ def run_qwen_fault_effect_suite(
                 lossless_gate["phase_response_equal"] is True,
                 lossless_gate["temporary_freed"] is True,
                 lossless_gate["ppl_nll_equal"] is True,
-                lossless_gate["ppl_m128_hit"] is True,
-                lossless_gate["ppl_m128_temporary_freed"] is True,
+                lossless_gate["ppl_window_hit"] is True,
+                lossless_gate["ppl_window_temporary_freed"] is True,
             )
         ),
         "fault_hit_rank_aware": isinstance(rank0_hit, int) and rank0_hit > 0 and rank1_hit == 0,

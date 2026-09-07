@@ -194,6 +194,8 @@ class LiveSuiteTests(unittest.TestCase):
             )
             self.assertEqual(result.mechanism.extra["per_rank"]["ranks"]["0"]["hit_count"], 3)
             self.assertEqual(result.mechanism.extra["per_rank"]["ranks"]["1"]["hit_count"], 0)
+            self.assertEqual(result.extra["phase_matrix"]["baseline"]["mechanism"]["per_rank"]["ranks"]["0"]["hit_count"], 0)
+            self.assertIsNone(result.extra["phase_matrix"]["recovery"]["mechanism"]["per_rank"]["ranks"]["1"]["expected_reject"])
             self.assertEqual(result.reliability.effect_repeatability, 1.0)
             self.assertEqual(result.reliability.recovery_rate, 1.0)
             self.assertGreater(result.quality_performance.ppl_ratio, 1.0)
