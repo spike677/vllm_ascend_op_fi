@@ -1,0 +1,1244 @@
+{
+  "candidate_id": "qwen.mlp.down_proj.rank0",
+  "capability_id": "python.fake_requant.activation",
+  "effect_stage": "L4_REPEATABLE_TASK_DAMAGE",
+  "evaluation_id": "fake_requant.effect_evaluation_v1_complete_20260908T074102Z",
+  "evidence_refs": [
+    "/home/haoran/demoncat_overnight_20260907/evaluation/fake_requant_effect_evaluation_v1_complete_20260908T074102Z/live_validation"
+  ],
+  "limitations": [],
+  "mechanism": {
+    "candidate_count": null,
+    "changed_elements": null,
+    "hit_count": 229632,
+    "pass": true,
+    "rank_conformity": null,
+    "reject_reasons": {},
+    "resolved": true,
+    "restore_exact": false
+  },
+  "metric_records": [
+    {
+      "direction": "required",
+      "evidence_level": "OBSERVED",
+      "name": "mechanism_pass",
+      "sample_count": null,
+      "threshold": null,
+      "triggered": null,
+      "unit": "boolean",
+      "value": true
+    },
+    {
+      "direction": "higher_is_worse",
+      "evidence_level": "OBSERVED",
+      "name": "visible_degradation_rate",
+      "sample_count": 57,
+      "threshold": 0.1,
+      "triggered": false,
+      "unit": "fraction",
+      "value": 0.05263157894736842
+    },
+    {
+      "direction": "higher_is_worse",
+      "evidence_level": "OBSERVED",
+      "name": "response_divergence_rate",
+      "sample_count": 57,
+      "threshold": 0.5,
+      "triggered": true,
+      "unit": "fraction",
+      "value": 0.9473684210526315
+    },
+    {
+      "direction": "higher_is_worse",
+      "evidence_level": "OBSERVED",
+      "name": "paired_damage_rate",
+      "sample_count": 28,
+      "threshold": null,
+      "triggered": null,
+      "unit": "fraction",
+      "value": 0.10714285714285714
+    },
+    {
+      "direction": "higher_is_worse",
+      "evidence_level": "OBSERVED",
+      "name": "ppl_ratio",
+      "sample_count": 189,
+      "threshold": 1.05,
+      "triggered": true,
+      "unit": "ratio",
+      "value": 1.0655228418807177
+    },
+    {
+      "direction": "higher_is_worse",
+      "evidence_level": "OBSERVED",
+      "name": "nll_delta",
+      "sample_count": 189,
+      "threshold": null,
+      "triggered": null,
+      "unit": "nats",
+      "value": 11.995000297072238
+    }
+  ],
+  "output_effect": {
+    "response_divergence_count": 54,
+    "response_divergence_rate": 0.9473684210526315
+  },
+  "paired_requests": {
+    "by_scope": {
+      "gsm8k": {
+        "baseline_correct_count": 28,
+        "invalid_pair_count": 0,
+        "pair_count": 30,
+        "paired_damage_count": 3,
+        "paired_damage_rate": 0.10714285714285714,
+        "pathological_count": 0,
+        "pathological_rate": 0.0,
+        "phenotype_counts": {
+          "DIVERGED_BUT_VALID": 27,
+          "EARLY_TERMINATION": 0,
+          "FORMAT_DEGRADATION": 0,
+          "GARBAGE_OUTPUT": 0,
+          "PUNCTUATION_SPAM": 0,
+          "REPETITION_LOOP": 0,
+          "REQUEST_ERROR": 0,
+          "RUNAWAY_GENERATION": 0,
+          "SERVICE_CRASH": 0,
+          "UNCHANGED": 0,
+          "UNRESOLVED_ANSWER": 3,
+          "WRONG_ANSWER": 0
+        },
+        "response_divergence_count": 30,
+        "response_divergence_rate": 1.0,
+        "valid_pair_count": 30,
+        "visible_degradation_count": 3,
+        "visible_degradation_rate": 0.1
+      },
+      "long": {
+        "baseline_correct_count": 0,
+        "invalid_pair_count": 0,
+        "pair_count": 15,
+        "paired_damage_count": 0,
+        "paired_damage_rate": null,
+        "pathological_count": 0,
+        "pathological_rate": 0.0,
+        "phenotype_counts": {
+          "DIVERGED_BUT_VALID": 15,
+          "EARLY_TERMINATION": 0,
+          "FORMAT_DEGRADATION": 0,
+          "GARBAGE_OUTPUT": 0,
+          "PUNCTUATION_SPAM": 0,
+          "REPETITION_LOOP": 0,
+          "REQUEST_ERROR": 0,
+          "RUNAWAY_GENERATION": 0,
+          "SERVICE_CRASH": 0,
+          "UNCHANGED": 0,
+          "UNRESOLVED_ANSWER": 0,
+          "WRONG_ANSWER": 0
+        },
+        "response_divergence_count": 15,
+        "response_divergence_rate": 1.0,
+        "valid_pair_count": 15,
+        "visible_degradation_count": 0,
+        "visible_degradation_rate": 0.0
+      },
+      "short": {
+        "baseline_correct_count": 0,
+        "invalid_pair_count": 0,
+        "pair_count": 12,
+        "paired_damage_count": 0,
+        "paired_damage_rate": null,
+        "pathological_count": 0,
+        "pathological_rate": 0.0,
+        "phenotype_counts": {
+          "DIVERGED_BUT_VALID": 9,
+          "EARLY_TERMINATION": 0,
+          "FORMAT_DEGRADATION": 0,
+          "GARBAGE_OUTPUT": 0,
+          "PUNCTUATION_SPAM": 0,
+          "REPETITION_LOOP": 0,
+          "REQUEST_ERROR": 0,
+          "RUNAWAY_GENERATION": 0,
+          "SERVICE_CRASH": 0,
+          "UNCHANGED": 3,
+          "UNRESOLVED_ANSWER": 0,
+          "WRONG_ANSWER": 0
+        },
+        "response_divergence_count": 9,
+        "response_divergence_rate": 0.75,
+        "valid_pair_count": 12,
+        "visible_degradation_count": 0,
+        "visible_degradation_rate": 0.0
+      }
+    },
+    "overall": {
+      "baseline_correct_count": 28,
+      "invalid_pair_count": 0,
+      "pair_count": 57,
+      "paired_damage_count": 3,
+      "paired_damage_rate": 0.10714285714285714,
+      "pathological_count": 0,
+      "pathological_rate": 0.0,
+      "phenotype_counts": {
+        "DIVERGED_BUT_VALID": 51,
+        "EARLY_TERMINATION": 0,
+        "FORMAT_DEGRADATION": 0,
+        "GARBAGE_OUTPUT": 0,
+        "PUNCTUATION_SPAM": 0,
+        "REPETITION_LOOP": 0,
+        "REQUEST_ERROR": 0,
+        "RUNAWAY_GENERATION": 0,
+        "SERVICE_CRASH": 0,
+        "UNCHANGED": 3,
+        "UNRESOLVED_ANSWER": 3,
+        "WRONG_ANSWER": 0
+      },
+      "response_divergence_count": 54,
+      "response_divergence_rate": 0.9473684210526315,
+      "valid_pair_count": 57,
+      "visible_degradation_count": 3,
+      "visible_degradation_rate": 0.05263157894736842
+    },
+    "requests": [
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0000",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0001",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": false,
+        "fault_resolved": false,
+        "pathological": false,
+        "primary_phenotype": "UNRESOLVED_ANSWER",
+        "reason": "resolved baseline became unresolved",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0002",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "baseline_correct_to_fault_wrong",
+          "baseline_resolved_to_fault_unresolved",
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": true
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0003",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0004",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0005",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0006",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0007",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0008",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:gsm8k-test-0009",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:short_exact",
+        "scope": "short",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:short_format",
+        "scope": "short",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "UNCHANGED",
+        "reason": "no deterministic baseline-relative change",
+        "response_diverged": false,
+        "sample_id": "cycle_01:short_reasoning",
+        "scope": "short",
+        "secondary_flags": [],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:newline_sensitive",
+        "scope": "short",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:long_reasoning",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:long_explanation",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:numbered_long_list",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:repetition_sensitive",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_01:punctuation_sensitive",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0000",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0001",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": false,
+        "fault_resolved": false,
+        "pathological": false,
+        "primary_phenotype": "UNRESOLVED_ANSWER",
+        "reason": "resolved baseline became unresolved",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0002",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "baseline_correct_to_fault_wrong",
+          "baseline_resolved_to_fault_unresolved",
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": true
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0003",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0004",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0005",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0006",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0007",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": false,
+        "baseline_resolved": false,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0008",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:gsm8k-test-0009",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:short_exact",
+        "scope": "short",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:short_format",
+        "scope": "short",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "UNCHANGED",
+        "reason": "no deterministic baseline-relative change",
+        "response_diverged": false,
+        "sample_id": "cycle_02:short_reasoning",
+        "scope": "short",
+        "secondary_flags": [],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:newline_sensitive",
+        "scope": "short",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:long_reasoning",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:long_explanation",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:numbered_long_list",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:repetition_sensitive",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_02:punctuation_sensitive",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0000",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0001",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": false,
+        "fault_resolved": false,
+        "pathological": false,
+        "primary_phenotype": "UNRESOLVED_ANSWER",
+        "reason": "resolved baseline became unresolved",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0002",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "baseline_correct_to_fault_wrong",
+          "baseline_resolved_to_fault_unresolved",
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": true
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0003",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0004",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0005",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0006",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0007",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": false,
+        "baseline_resolved": false,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0008",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": true,
+        "baseline_resolved": true,
+        "fault_correct": true,
+        "fault_resolved": true,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:gsm8k-test-0009",
+        "scope": "gsm8k",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:short_exact",
+        "scope": "short",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:short_format",
+        "scope": "short",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "UNCHANGED",
+        "reason": "no deterministic baseline-relative change",
+        "response_diverged": false,
+        "sample_id": "cycle_03:short_reasoning",
+        "scope": "short",
+        "secondary_flags": [],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:newline_sensitive",
+        "scope": "short",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:long_reasoning",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:long_explanation",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:numbered_long_list",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:repetition_sensitive",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      },
+      {
+        "baseline_correct": null,
+        "baseline_resolved": null,
+        "fault_correct": null,
+        "fault_resolved": null,
+        "pathological": false,
+        "primary_phenotype": "DIVERGED_BUT_VALID",
+        "reason": "trajectory diverged without a visible fault signal",
+        "response_diverged": true,
+        "sample_id": "cycle_03:punctuation_sensitive",
+        "scope": "long",
+        "secondary_flags": [
+          "response_diverged"
+        ],
+        "valid_pair": true,
+        "visible_degradation": false
+      }
+    ]
+  },
+  "phenotype": {
+    "counts": {
+      "DIVERGED_BUT_VALID": 51,
+      "EARLY_TERMINATION": 0,
+      "FORMAT_DEGRADATION": 0,
+      "GARBAGE_OUTPUT": 0,
+      "PUNCTUATION_SPAM": 0,
+      "REPETITION_LOOP": 0,
+      "REQUEST_ERROR": 0,
+      "RUNAWAY_GENERATION": 0,
+      "SERVICE_CRASH": 0,
+      "UNCHANGED": 3,
+      "UNRESOLVED_ANSWER": 3,
+      "WRONG_ANSWER": 0
+    },
+    "pathological_count": 0,
+    "pathological_rate": 0.0
+  },
+  "policy": {
+    "minimum_repeatable_damage_cycles": 2,
+    "pathological_rate": 0.5,
+    "probability_ppl_ratio": 1.05,
+    "trajectory_divergence_rate": 0.5,
+    "visible_degradation_rate": 0.1
+  },
+  "probability_effect": {
+    "baseline_nll": 544.7058697030811,
+    "baseline_ppl": 17.8506806408841,
+    "fault_nll": 556.7008700001534,
+    "fault_ppl": 19.020307965979935,
+    "nll_delta": 11.995000297072238,
+    "ppl_ratio": 1.0655228418807177,
+    "recovery_nll": 544.7058697030811,
+    "recovery_ppl": 17.8506806408841,
+    "scored_token_count": 189
+  },
+  "recovery_gate": {
+    "recovery_rate": 0.6666666666666666,
+    "restore_exact": false
+  },
+  "reliability": {
+    "cycle_count": 3,
+    "effect_repeatability": 1.0,
+    "injection_hit_rate": 1.0,
+    "recovery_exact": false,
+    "recovery_exact_cycle_count": 2,
+    "recovery_rate": 0.6666666666666666,
+    "repeatable_task_damage_cycles": 3,
+    "target_resolve_rate": 1.0
+  },
+  "replay": {
+    "cycle_count": 3,
+    "mode": "OFFLINE_READ_ONLY_SANITIZED_FACT_RECONSTRUCTION",
+    "raw_prompts_or_responses_included": false,
+    "source_facts": [
+      "cycle summaries",
+      "sanitized GSM8K correctness/resolution/hash comparisons",
+      "sanitized short/long response-equality and feature comparisons"
+    ],
+    "source_root": "/home/haoran/demoncat_overnight_20260907/evaluation/fake_requant_effect_evaluation_v1_complete_20260908T074102Z/live_validation"
+  },
+  "schema_version": "FAULT_EFFECT_PROFILE_V1",
+  "task_effect": {
+    "baseline_correct_count": 28,
+    "paired_damage_count": 3,
+    "paired_damage_rate": 0.10714285714285714
+  },
+  "visible_degradation": {
+    "count": 3,
+    "rate": 0.05263157894736842
+  }
+}
