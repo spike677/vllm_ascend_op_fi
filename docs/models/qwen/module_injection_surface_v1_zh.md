@@ -31,8 +31,11 @@ RMSNorm 可注册 pre-hook，但 identity scan 没观察到首个浮点实参，
 schema 已定义 DSV4 的融合/拆分 QKV、MoE router、FusedMoE experts、compressor、indexer 与 state cache 角色；实际 DSV4 使用前必须重新进行 observe-only discovery，不能复用 Qwen 的 module name、层数、shape 或地址。
 
 ```text
-本地 profile: profiles/discovery/qwen_2card_injection_surface_v1.json
 原始 live capture: artifacts/evaluation/qwen_2card_module_surface_live_capture_v1.json
 远端 capture: /home/haoran/demoncat_overnight_20260907/evaluation/
 module_injection_surface_discovery_v1_20260909T020000Z/module_surface_live_capture.json
 ```
+
+已复制并 SHA-256 校验的机器可读 profile 位于
+[profiles/discovery/qwen_2card_injection_surface_v1.json](../../../profiles/discovery/qwen_2card_injection_surface_v1.json)。它是
+observe-only discovery 的汇总 manifest，不含原始 NPU trace、模型响应或 dump。
