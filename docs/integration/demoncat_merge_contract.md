@@ -1,3 +1,7 @@
+# 已迁移：DemonCAT 合并合同
+
+> 此路径为兼容旧链接保留。中文 canonical 文档已迁移至 [docs/overview/demoncat_merge_contract.md](../overview/demoncat_merge_contract.md)。本页不再作为独立的正式版本维护。
+
 # DemonCAT merge contract
 
 ## Purpose

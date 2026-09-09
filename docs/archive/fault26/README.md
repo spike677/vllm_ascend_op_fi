@@ -1,0 +1,19 @@
+# Fault26 历史探查与阶段报告
+
+Fault26 的原始审计按“语义生命周期、物理地址关系、lossless gate、proxy execution、恢复”分阶段保留：
+
+```text
+fault26_reproduction_progress_20260817.md
+fault26_qmm_triggered_residual_stomp_20260817.md
+fault26_residual_lifetime_visible_api_audit_20260818.md
+fault26_residual_writer_timeline_audit_20260818.md
+fault26_qmm_residual_physical_adjacency_audit_20260818.md
+fault26_writer_allocation_topology_and_qmm_underflow_20260818.md
+fault26_workspace_stomp_readonly_probe_plan.md
+fault26_fia_writer_lossless_phase_c_20260818.md
+fault26_fia_wrong_destination_residual_stomp_20260818.md
+fault26_qmm_underflow_bounded_multihit_20260818.md
+fault26_qmm_underflow_all_eligible_20260818.md
+```
+
+所有文件仍在 `fault20_fast_validation/reports/`。当前语义与限制见 [Fault26](../../faults/fault26/README.md)。

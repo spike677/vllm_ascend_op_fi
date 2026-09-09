@@ -1,3 +1,7 @@
+# 已迁移：仓库分层
+
+> 此路径为兼容旧链接保留。中文 canonical 文档已迁移至 [docs/overview/repository_layers.md](../overview/repository_layers.md)。本页不再作为独立的正式版本维护。
+
 # Repository layer transition
 
 ## Decision
