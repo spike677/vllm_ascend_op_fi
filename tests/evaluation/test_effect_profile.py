@@ -47,7 +47,7 @@ def evaluation(*, ppl_ratio: float | None = None) -> EvaluationResult:
 
 
 def pair(sample_id: str, baseline: dict, fault: dict, **extra: object) -> dict:
-    return {"sample_id": sample_id, "scope": "gsm8k", "baseline": baseline, "fault": fault, **extra}
+    return {"sample_id": sample_id, "scope": "gsm8k", "baseline": baseline, "fault": fault, "mechanism_valid": True, **extra}
 
 
 class EffectProfileTests(unittest.TestCase):
@@ -178,8 +178,10 @@ class EffectProfileTests(unittest.TestCase):
                 (cycle / phase / "gsm8k_responses.jsonl").write_text(json.dumps(row) + "\n", encoding="utf-8")
             output = Path(temporary) / "derived"
             result = replay_completed_effect_cycles(root, output)
-            self.assertEqual(EffectStage.L3_VISIBLE_DEGRADATION.value, result["profile"]["effect_stage"])
-            self.assertEqual(1, result["profile"]["visible_degradation"]["count"])
+            # This fixture contains summary counters only, not raw numeric/rank
+            # evidence. It stays readable but must no longer claim valid L3.
+            self.assertEqual(EffectStage.UNCLASSIFIED.value, result["profile"]["effect_stage"])
+            self.assertEqual(0, result["profile"]["visible_degradation"]["count"])
             self.assertTrue((output / "effect_card.json").exists())
             self.assertTrue((output / "replay_manifest.json").exists())
 

@@ -1,0 +1,406 @@
+{
+  "version": "DISTORTION_PROBE_SUITE_V1",
+  "hash": "abfc3c9a26597e3eefc7204306553dd381353c45dfe5b3d135632bbd8856d502",
+  "probe_count": 16,
+  "thresholds": {
+    "repetition_min_tokens": 16,
+    "periodic_max_period": 8,
+    "periodic_min_repetitions": 3,
+    "repeated_run_min": 6,
+    "seq_rep_4_min": 0.3,
+    "seq_rep_4_delta": 0.2,
+    "lexical_min_tokens": 32,
+    "distinct_ratio_max": 0.5,
+    "dominance_delta": 0.15,
+    "punctuation_rate_min": 0.35,
+    "punctuation_rate_delta": 0.2,
+    "punctuation_run_min": 8,
+    "punctuation_run_delta": 4,
+    "early_stop_min_baseline_tokens": 32,
+    "early_stop_length_ratio_max": 0.35,
+    "runaway_min_tokens": 64,
+    "runaway_length_ratio_min": 1.5,
+    "bad_character_min": 2
+  },
+  "robust_gate": {
+    "min_complete_cycles": 3,
+    "min_distorted_per_cycle": 4,
+    "min_stable_probes": 3,
+    "min_stable_families": 2,
+    "max_crashes": 0
+  },
+  "notes": [
+    "Frozen before Distortion replay; no strength or probe search.",
+    "Distortion V1 uses early ratio 0.35 and periodic window 1-8. Legacy Analysis thresholds remain unchanged.",
+    "Garbage is a deterministic character heuristic, not a semantic judge. Unknown is not healthy."
+  ],
+  "probes": [
+    {
+      "probe_id": "exact_math",
+      "category": "exact_short",
+      "prompt": "Compute 17 + 25. Output only FINAL_ANSWER=<number>.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 64
+      },
+      "expected": {
+        "answer": "42",
+        "answer_type": "number"
+      },
+      "applicable_detectors": [
+        "task_answer",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "exact_fact",
+      "category": "exact_short",
+      "prompt": "What is the chemical symbol for gold? Reply with only the symbol.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 64
+      },
+      "expected": {
+        "answer": "Au",
+        "answer_type": "text"
+      },
+      "applicable_detectors": [
+        "task_answer",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "exact_logic",
+      "category": "exact_short",
+      "prompt": "All squares are rectangles. Is every square a rectangle? Reply only yes or no.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 64
+      },
+      "expected": {
+        "answer": "yes",
+        "answer_type": "text"
+      },
+      "applicable_detectors": [
+        "task_answer",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "exact_copy",
+      "category": "exact_short",
+      "prompt": "Reply with exactly the word READY and nothing else.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 64
+      },
+      "expected": {
+        "answer": "READY",
+        "answer_type": "text"
+      },
+      "applicable_detectors": [
+        "task_answer",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "structure_numbers",
+      "category": "structured",
+      "prompt": "Write the integers 1 through 30 in ascending order, exactly one integer per line. No heading or explanation.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 256
+      },
+      "expected": {
+        "structure": "number_sequence",
+        "items": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30
+        ],
+        "one_per_line": true
+      },
+      "applicable_detectors": [
+        "structure",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "structure_json",
+      "category": "structured",
+      "prompt": "Return only a JSON object with three fields: name is a string, count is an integer, and active is a boolean. Use name=sample, count=3, active=true. No markdown fences or extra fields.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 128
+      },
+      "expected": {
+        "structure": "json",
+        "schema": {
+          "type": "object",
+          "required": [
+            "name",
+            "count",
+            "active"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "count": {
+              "type": "integer"
+            },
+            "active": {
+              "type": "boolean"
+            }
+          }
+        }
+      },
+      "applicable_detectors": [
+        "structure",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "structure_list",
+      "category": "structured",
+      "prompt": "Output these four words in this order, one per line: alpha, beta, gamma, delta. No heading or commentary.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 128
+      },
+      "expected": {
+        "structure": "line_list",
+        "items": [
+          "alpha",
+          "beta",
+          "gamma",
+          "delta"
+        ],
+        "one_per_line": true
+      },
+      "applicable_detectors": [
+        "structure",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "structure_table",
+      "category": "structured",
+      "prompt": "Return exactly this comma-separated table, keeping the header and all rows on separate lines:\nitem,count\napple,2\npear,3\nplum,4\nDo not add markdown or commentary.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 128
+      },
+      "expected": {
+        "structure": "table",
+        "items": [
+          "item,count",
+          "apple,2",
+          "pear,3",
+          "plum,4"
+        ],
+        "one_per_line": true
+      },
+      "applicable_detectors": [
+        "structure",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "reasoning_bridge",
+      "category": "long_reasoning",
+      "prompt": "Explain step by step how to compare two bridge designs for the same river crossing. Discuss loads, materials, maintenance and uncertainty in about 400 words, without repeating the same explanation.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 768
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "repetition",
+        "lexical_collapse",
+        "punctuation",
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "reasoning_experiment",
+      "category": "long_reasoning",
+      "prompt": "Explain how to design a fair experiment comparing two plant fertilizers. Discuss control variables, randomization, measurement and interpretation in about 400 words.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 768
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "repetition",
+        "lexical_collapse",
+        "punctuation",
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "reasoning_schedule",
+      "category": "long_reasoning",
+      "prompt": "A team must review requirements, implement software and test it before release. Explain a detailed planning approach, dependencies and how to handle a one-week delay. Give a coherent explanation of about 400 words.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 768
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "repetition",
+        "lexical_collapse",
+        "punctuation",
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "reasoning_energy",
+      "category": "long_reasoning",
+      "prompt": "Compare improving home insulation with installing more efficient heating. Explain the causal reasoning, tradeoffs and information needed to decide in about 400 words.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 768
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "repetition",
+        "lexical_collapse",
+        "punctuation",
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "open_technical",
+      "category": "open_generation",
+      "prompt": "Write a clear 400-word introduction to database indexes for a new software developer, including an example and limitations.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 768
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "repetition",
+        "lexical_collapse",
+        "punctuation",
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "open_causal",
+      "category": "open_generation",
+      "prompt": "Explain the water cycle and how forests affect it in about 400 words. Use connected paragraphs and concrete examples.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 768
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "repetition",
+        "lexical_collapse",
+        "punctuation",
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "open_summary",
+      "category": "open_generation",
+      "prompt": "A town library extended its hours, added quiet rooms and began free computer classes. Attendance rose, but energy and staffing costs also increased. Residents praised access and requested a trial review after six months. Write a 350-word briefing summarizing benefits, costs and what data the review should collect. Do not invent numerical results.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 768
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "repetition",
+        "lexical_collapse",
+        "punctuation",
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "open_narrative",
+      "category": "open_generation",
+      "prompt": "Write a coherent short story of about 400 words about a traveler who helps repair a village clock. Include a beginning, a practical difficulty and a resolution.",
+      "generation_config": {
+        "temperature": 0,
+        "seed": 7,
+        "max_tokens": 768
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "repetition",
+        "lexical_collapse",
+        "punctuation",
+        "length",
+        "garbage",
+        "crash"
+      ]
+    }
+  ]
+}

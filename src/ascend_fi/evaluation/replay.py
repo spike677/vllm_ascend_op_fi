@@ -48,10 +48,10 @@ def _response_fact(row: Mapping[str, Any]) -> dict[str, Any]:
 
     return {
         "correct": row.get("correct"),
-        "resolved": row.get("predicted_answer") is not None,
+        "resolved": row.get("predicted_answer") is not None if "predicted_answer" in row else None,
         "http_status": row.get("http_status"),
         "response_hash": row.get("response_sha256"),
-        "worker_alive": row.get("worker_alive", True),
+        "worker_alive": row.get("worker_alive"),
     }
 
 
@@ -141,6 +141,7 @@ def replay_completed_effect_cycles(
     cycle_rows: list[dict[str, Any]] = []
     probabilities: list[Mapping[str, Any]] = []
     all_hits: list[int] = []
+    raw_gates: list[dict[str, Any]] = []
     recovery_exact: list[bool] = []
     repeatable_damage_cycles = 0
 
@@ -150,10 +151,23 @@ def replay_completed_effect_cycles(
         mechanism = _read_json(cycle_dir / "mechanism.json")
         rank0_hits = [int(value) for value in mechanism.get("rank0_measurement_hits", [])]
         rank1_hits = [int(value) for value in mechanism.get("rank1_measurement_hits", [])]
-        mechanism_valid = bool(rank0_hits) and all(value > 0 for value in rank0_hits) and all(
-            value == 0 for value in rank1_hits
-        )
-        all_hits.extend(rank0_hits)
+        # Summary-only legacy files remain readable but cannot assert a verified
+        # fault. Recheck actual worker/changed-elements/reject evidence.
+        from .distortion.replay import configuration_from_raw
+        from .distortion.mechanism import rpc_workers, validate_mechanism
+        cycle_raw_gates = []
+        for category in ("gsm8k", "short", "long", "wikitext"):
+            raw_path = cycle_dir / "fault" / f"{category}_responses.jsonl"
+            if not raw_path.is_file():
+                cycle_raw_gates.append({"status": "UNKNOWN", "reason": f"missing {category} raw records"})
+                continue
+            for raw in _read_jsonl(raw_path).values():
+                workers = rpc_workers(raw.get("fault_transaction", {}).get("measurement_query"))
+                config = configuration_from_raw(manifest, workers[0] if workers else {})
+                cycle_raw_gates.append(validate_mechanism(raw, config, summary.get("service_health")))
+        raw_gates.extend(cycle_raw_gates)
+        mechanism_valid = bool(cycle_raw_gates) and all(g["status"] == "PASS" for g in cycle_raw_gates)
+        all_hits.extend(g["measurement_hit_count"] for g in cycle_raw_gates if g["status"] == "PASS")
         gsm_pairs, gsm_recovery_exact = _gsm_pairs(
             cycle_dir, cycle_id, mechanism_valid=mechanism_valid
         )
@@ -226,7 +240,7 @@ def replay_completed_effect_cycles(
             resolved=all(row["mechanism_valid"] for row in cycle_rows),
             candidate_count=None,
             hit_count=sum(all_hits),
-            changed_elements=None,
+            changed_elements=sum(g.get("changed_elements") or 0 for g in raw_gates) if all(g["status"] == "PASS" for g in raw_gates) else None,
             restore_exact=all(recovery_exact),
             extra={
                 "rank_policy": "rank0 targeted; rank1 expected reject",
@@ -234,7 +248,7 @@ def replay_completed_effect_cycles(
                 "rank1_zero_hit": all(row["rank1_hit_max"] == 0 for row in cycle_rows),
             },
         ),
-        model_effect=ModelEffectMetrics(response_equal=False, token_equal=False, worker_alive=True),
+        model_effect=ModelEffectMetrics(response_equal=None, token_equal=None, worker_alive=None),
         reliability=ReliabilityMetrics(
             target_resolve_rate=sum(row["mechanism_valid"] for row in cycle_rows) / len(cycle_rows),
             injection_hit_rate=sum(row["mechanism_valid"] for row in cycle_rows) / len(cycle_rows),
@@ -246,7 +260,7 @@ def replay_completed_effect_cycles(
             ppl=probability["fault_ppl"],
             ppl_ratio=probability["ppl_ratio"],
         ),
-        status=EvaluationStatus.PASS,
+        status=EvaluationStatus.PASS if all(row["mechanism_valid"] for row in cycle_rows) else EvaluationStatus.UNKNOWN,
         reason="read-only replay of completed baseline/fault/recovery cycles",
         evidence_refs=(str(root),),
     )
@@ -267,6 +281,8 @@ def replay_completed_effect_cycles(
         "source_root": str(root),
         "cycles": cycle_rows,
         "raw_responses_included": False,
+        "mechanism_verification": "raw transaction gate; missing evidence is UNKNOWN",
+        "raw_gate_results": raw_gates,
     }
     output = Path(output_dir)
     paths = write_effect_card(output, profile)

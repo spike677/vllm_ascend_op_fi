@@ -140,7 +140,7 @@ def _baseline_is_usable(baseline: Mapping[str, Any]) -> bool:
 
 def _mechanism_is_valid(pair: Mapping[str, Any]) -> bool:
     value = _as_bool(pair, "mechanism_valid", "fault_valid", "injection_valid")
-    return value is not False
+    return value is True
 
 
 def classify_paired_request(pair: Mapping[str, Any]) -> dict[str, Any]:
@@ -320,7 +320,8 @@ def _mechanism_summary(evaluation: EvaluationResult) -> dict[str, Any]:
         mechanism.resolved is True
         and mechanism.hit_count is not None
         and mechanism.hit_count > 0
-        and (mechanism.changed_elements is None or mechanism.changed_elements > 0)
+        and mechanism.changed_elements is not None
+        and mechanism.changed_elements > 0
     )
     return {
         "pass": passed,
@@ -362,6 +363,8 @@ def _choose_stage(
     reliability: Mapping[str, Any],
     policy: EffectProfilePolicy,
 ) -> EffectStage:
+    if not mechanism_pass:
+        return EffectStage.UNCLASSIFIED
     if overall["phenotype_counts"][PrimaryPhenotype.SERVICE_CRASH.value] > 0:
         return EffectStage.L6_SERVICE_FAILURE
     if overall["pathological_rate"] is not None and overall["pathological_rate"] >= policy.pathological_rate:
