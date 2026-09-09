@@ -1,5 +1,11 @@
 # 文档迁移映射 V1
 
+## V2 增补（未搬迁 evidence）
+
+- 新 canonical：[Distortion Evaluation V1](evaluation/distortion_evaluation_v1.md)，来源为本轮 `feature/distortion-evaluation-v1`。
+- 新审计：[文档清理 V2](document_cleanup_v2.md)；跨 worktree 镜像保留，同一 tracked tree 内 exact duplicate=0。
+- JSON 中保留 `v1_canonical_sha256` 并更新已改文档的当前 hash；旧 inventory 原样保留。
+
 > 本表记录本轮 canonical 文档入口如何从既有 source/report 归位。它不表示原 source 被删除；evidence-linked report 保持原路径。
 
 | 旧路径 | 来源 | 新 canonical 路径 | Source SHA-256（前 12 位） | Action | 原因 |

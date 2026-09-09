@@ -99,9 +99,10 @@
       "new_canonical_path": "profiles/discovery/qwen_2card_injection_surface_v1.json",
       "relative_link": "../profiles/discovery/qwen_2card_injection_surface_v1.json",
       "source_sha256": null,
-      "canonical_sha256": "6b455a60eb28679e181a73a49b10a6cd1dff0e6721eba76aa1392f6b03c6d5d7",
+      "canonical_sha256": "48947ca539ef870692854dc191a495503f613380f64ac1ac49f6d234495533eb",
       "action": "COPY_FROM_BRANCH",
-      "reason": "机器可读 profile 原样复制并校验 SHA-256，供 evaluation/discovery 直接读取。"
+      "reason": "机器可读 profile 原样复制并校验 SHA-256，供 evaluation/discovery 直接读取。",
+      "v1_canonical_sha256": "6b455a60eb28679e181a73a49b10a6cd1dff0e6721eba76aa1392f6b03c6d5d7"
     },
     {
       "old_path": "fault20_fast_validation/reports/fault20_final_architecture.md",
@@ -209,9 +210,10 @@
       "new_canonical_path": "docs/README.md",
       "relative_link": "README.md",
       "source_sha256": "992c48bb51e2b4620da8158aa65db7722043d0f7a73bdcc9f91ba218b5f0eb7f",
-      "canonical_sha256": "201cca01651dc0f766e191745308d8c0d6699017c942655ecf51459382c368ac",
+      "canonical_sha256": "e9d68d48ca9a29e0630bf6171fe37eea74a08dcee8e02b3802b5e478093ea6e6",
       "action": "KEEP_CANONICAL",
-      "reason": "docs 只建立 evidence pointer，不迁入 evidence。"
+      "reason": "docs 只建立 evidence pointer，不迁入 evidence。",
+      "v1_canonical_sha256": "201cca01651dc0f766e191745308d8c0d6699017c942655ecf51459382c368ac"
     },
     {
       "old_path": null,
@@ -219,9 +221,10 @@
       "new_canonical_path": "docs/evaluation/fault_effect_evaluation_core_metrics_zh.md",
       "relative_link": "evaluation/fault_effect_evaluation_core_metrics_zh.md",
       "source_sha256": null,
-      "canonical_sha256": "114ab8c94b073488f0b682b649e9a61470839d550f1a4896677782700bf9869a",
+      "canonical_sha256": "ab33ecda4fade9cb95aa95e7c64c02945c96a4ed407bc8a0f1288d691f869b0b",
       "action": "KEEP_CANONICAL",
-      "reason": "本轮新增的一级评估逻辑文档。"
+      "reason": "本轮新增的一级评估逻辑文档。",
+      "v1_canonical_sha256": "114ab8c94b073488f0b682b649e9a61470839d550f1a4896677782700bf9869a"
     },
     {
       "old_path": null,
@@ -232,6 +235,23 @@
       "canonical_sha256": "7ab0aa43ddac1cc35626ba7d78ef62c7456bcf974f743c8e7d0edbfaa0d7fbf9",
       "action": "KEEP_CANONICAL",
       "reason": "本轮只固化已知 MSProbe 观察限制，不导入 runtime/evidence。"
+    },
+    {
+      "old_path": null,
+      "source_branch_or_worktree": "feature/distortion-evaluation-v1",
+      "new_canonical_path": "docs/evaluation/distortion_evaluation_v1.md",
+      "canonical_sha256": "e76a3d05bcf5a722bf3224e2222cf50c833fc307eb7fe08add424817118fb5d6",
+      "action": "KEEP_CANONICAL",
+      "reason": "V2 addition; no historical evidence move"
+    },
+    {
+      "old_path": null,
+      "source_branch_or_worktree": "feature/distortion-evaluation-v1",
+      "new_canonical_path": "docs/document_cleanup_v2.md",
+      "canonical_sha256": "7509c75a8c04c9dbd79ca1b6fd9bb14e3c6df0755e9b9c8494f666e0c10db512",
+      "action": "KEEP_CANONICAL",
+      "reason": "V2 addition; no historical evidence move"
     }
-  ]
+  ],
+  "v2_cleanup_audit": "docs/document_cleanup_v2.json"
 }

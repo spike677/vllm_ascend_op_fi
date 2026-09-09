@@ -1,5 +1,9 @@
 # 故障效果评估：核心逻辑与指标
 
+> **Primary Product View：Fault Configuration + Visible Effect，中间由 Mechanism Gate 把关。**
+> 当前主目标是交付在正常输入下稳定产生用户可见推理异常的 fault use case，不只是证明不可见概率扰动。
+> [Distortion Evaluation V1](distortion_evaluation_v1.md) 是主模式；下文 Task / PPL / RDR / VDR 等多维逻辑完整保留为 Secondary Analysis。Recovery 始终是有效性 Gate。
+
 > 面向汇报、PPT、新开发者与技术评审。本文只说明：给定一个已经通过绑定与无损门禁的 Fault，DemonCATPFI 如何判断它是否真正发生、造成何种影响、是否稳定，以及解除后能否恢复。
 
 ## 一句话概括

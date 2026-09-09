@@ -7,6 +7,7 @@
 1. [项目概览](overview/project_overview.md)：仓库定位、边界和当前状态。
 2. [术语](overview/terminology.md)：统一区分语义故障、执行平面、能力、证据与代理。
 3. [故障效果评估核心指标](evaluation/fault_effect_evaluation_core_metrics_zh.md)：如何解释一个已验证 Fault 的实际效果。
+   主模式入口：[Distortion Evaluation V1](evaluation/distortion_evaluation_v1.md)，查看稳定可见异常与恢复；Analysis 为二级解释。
 4. [故障效果评估设计 V1](evaluation/fault_effect_evaluation_design_v1.md)：baseline/fault/recovery 的工程协议和证据要求。
 5. [Fault 索引](faults/README.md)：Fault15、20、26、39、41 的 canonical 文档入口。
 6. [模型索引](models/README.md)：当前模型的注入面与效果报告。
@@ -26,5 +27,6 @@ JSONL、msprobe dump、raw response、trace、gzip/binary、模型权重、容�
 
 - [文档盘点 V1](document_inventory_v1.md)：四个来源的只读 Markdown 清单与 SHA-256 去重信息。
 - [迁移映射](document_migration_manifest.md)：本轮新增/重定位 canonical 文档的旧路径、来源和理由。
+- [文档清理 V2](document_cleanup_v2.md)：区分跨 worktree 镜像与同一仓库内冗余，不删除历史证据。
 
 `C:\Users\admin\Documents\demoncatpfi` 仅是 `LEGACY_READONLY_SOURCE`。它可用于历史查阅，不是 canonical 文档依赖或开发入口。
