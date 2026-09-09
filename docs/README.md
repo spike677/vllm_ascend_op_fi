@@ -11,6 +11,7 @@
 4. [故障效果评估设计 V1](evaluation/fault_effect_evaluation_design_v1.md)：baseline/fault/recovery 的工程协议和证据要求。
 5. [Fault 索引](faults/README.md)：Fault15、20、26、39、41 的 canonical 文档入口。
 6. [模型索引](models/README.md)：当前模型的注入面与效果报告。
+   [交互 Inspect 使用指南](inspect/README.md)：列层、参数观察、候选选择、DRAFT 导出与显式无损验证；当前 live 延后。
 7. [历史归档](archive/README.md)：阶段审计、探查与失败/替代路线的定位目录。
 
 ## 证据与文档的边界
