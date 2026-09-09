@@ -320,6 +320,13 @@ class DistortionTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):
                 write_report(folder, result, {})
 
+    def test_dashboard_preserves_newline_without_git_trailing_space(self):
+        inputs = cycles()
+        inputs[0]["pairs"]["exact_math"]["fault"]["response_text"] = "with space \nnext line"
+        page = render_dashboard(evaluate_cycles(SUITE, config(), inputs))
+        self.assertIn("with space &#10;next line", page)
+        self.assertTrue(all(line.rstrip() == line for line in page.splitlines()))
+
     def test_live_adapter_cleanup_on_fault_exception(self):
         class Owner:
             cleanups = 0

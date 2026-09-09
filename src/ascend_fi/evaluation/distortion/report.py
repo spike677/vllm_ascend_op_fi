@@ -14,7 +14,9 @@ def _pretty(value):
 def render_dashboard(result, *, mode="distortion"):
     data = result.to_dict()
     d, config = data["distortion"], data["fault_configuration"]
-    esc = lambda v: html.escape(str(v), quote=True)
+    # Preserve raw newline/trailing-space evidence in the DOM without placing
+    # evidence whitespace at physical Git line endings in the generated HTML.
+    esc = lambda v: html.escape(str(v), quote=True).replace("\r", "&#13;").replace("\n", "&#10;")
     n, p = d["total_cycles"], d["probe_count"]
     cards = f"""<section class="cards"><article><h2>HOW MUCH DID WE INJECT?</h2>
 <p>故障配置 · 不等于退化严重度</p><dl>
