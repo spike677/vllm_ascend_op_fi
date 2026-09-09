@@ -4,31 +4,73 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import replace
+import hashlib
+from pathlib import Path
 
 from ...contracts.evaluation import EvaluationResult
 from .contracts import DistortionProbe, FaultConfigurationRecord, V1_FROZEN_SHA256, V2_FROZEN_SHA256, content_hash
-from .detectors import DETECTORS, text, tokens
+from .detectors import DETECTORS, text, tokens, task_fact, structure_fact, punctuation_fact
 from .mechanism import cleanup_gate, validate_mechanism
 
 
 VISIBLE = {"TASK_OR_STRUCTURE_FAILURE", "DEGENERATION", "GARBAGE_INCOHERENT"}
 PRIORITY = ["CRASH", "GARBAGE_INCOHERENT", "DEGENERATION", "TASK_OR_STRUCTURE_FAILURE"]
+SCORER_VERSION = 'DISTORTION_SCORER_V2_TASK_TERMINATION_PATHOLOGY'
+
+
+def task_outcome(probe, row):
+    fact = task_fact(probe, row)
+    structure = structure_fact(probe, row)
+    if fact is not None:
+        status = ('CORRECT' if fact['correct'] else 'WRONG_ANSWER' if fact['resolved'] else
+                  'ANSWER_UNDELIVERED_WITHIN_BUDGET' if row.get('finish_reason') == 'length' else 'UNRESOLVED_ANSWER')
+        return {'status': status, 'validator_kind': 'answer', **fact,
+                'mathematical_error_localized': False}
+    if structure is not None:
+        return {'status': 'STRUCTURE_VALID' if structure['valid'] else 'STRUCTURE_INVALID',
+                'validator_kind': 'structure', **structure}
+    return {'status': 'NOT_EVALUATED', 'validator_kind': None}
+
+
+def validator_restored(before, after):
+    if before['validator_kind'] is None:
+        return None
+    keys = ('validator_kind', 'answer', 'resolved', 'correct', 'valid', 'errors')
+    return all(before.get(k) == after.get(k) for k in keys)
+
+
+def detector_routes(probe, baseline, response, thresholds):
+    # Answer validation is category-specific. Generic output pathology is not.
+    names = list(probe.applicable_detectors)
+    lengths = [len(tokens(row)[0] or []) for row in (baseline, response)]
+    added = []
+    if max(lengths) >= thresholds['repetition_min_tokens']:
+        added.append('repetition')
+    if max(lengths) >= thresholds['lexical_min_tokens']:
+        added.append('lexical_collapse')
+    if max(lengths) >= thresholds['repetition_min_tokens'] or any(
+            (punctuation_fact(row) or {}).get('max_run', 0) >= thresholds['punctuation_run_min'] for row in (baseline, response)):
+        added.append('punctuation')
+    return names + [d for d in added if d not in names], [d for d in added if d not in names]
 
 
 def compare(probe, baseline, response, thresholds, calibration=None):
-    results = [DETECTORS[name].evaluate(probe, baseline, response, {"thresholds": thresholds})
-               for name in probe.applicable_detectors]
+    names, added = detector_routes(probe, baseline, response, thresholds)
+    results = [DETECTORS[name].evaluate(probe, baseline, response, {"thresholds": thresholds}) for name in names]
     if calibration is not None:
         results = [replace(r, triggered=None, severity='UNKNOWN', phenotype=None,
                            reason='pre-fault calibration: ' + calibration.get(r.detector, {}).get('status', 'MISSING'),
                            evidence={**r.evidence, 'uncalibrated_result': r.to_dict()})
-                   if calibration.get(r.detector, {}).get('status') != 'ELIGIBLE' else r for r in results]
+                   if r.detector not in added and calibration.get(r.detector, {}).get('status') != 'ELIGIBLE' else r for r in results]
     triggered = [r for r in results if r.triggered is True]
     unknown = [r.detector for r in results if r.triggered is None]
     baseline_failures = [r.detector for r in results if r.baseline_failed is True]
     btext, ftext = text(baseline), text(response)
     divergence = btext != ftext if btext is not None and ftext is not None else None
-    verdict = next((p for p in PRIORITY if any(r.severity == p for r in triggered)), None)
+    # Task completion failure is still measured, but is not by itself pathology.
+    visible_triggers = [r for r in triggered if r.phenotype != 'UNRESOLVED']
+    pathology = [r for r in triggered if r.detector not in ('task_answer',)]
+    verdict = next((p for p in PRIORITY if any(r.severity == p for r in visible_triggers)), None)
     observation = "OBSERVED" if not unknown and not baseline_failures else "INCOMPLETE"
     if verdict is None and observation == "OBSERVED" and divergence is not None:
         verdict = "DIVERGED_VALID" if divergence else "HEALTHY"
@@ -41,8 +83,19 @@ def compare(probe, baseline, response, thresholds, calibration=None):
         if first is None and len(bt) != len(ft):
             first = min(len(bt), len(ft))
     return {"verdict": verdict, "observation_status": observation,
+            'scorer_version': SCORER_VERSION,
+            'task_outcome': task_outcome(probe, response),
+            'generation_termination': {'finish_reason': response.get('finish_reason'),
+                'budget_exhausted': response.get('finish_reason') == 'length',
+                'generated_tokens': response.get('generation_length'), 'max_tokens': probe.generation_config.get('max_tokens')},
+            'output_pathology': {'confirmed': bool(pathology), 'families': sorted({r.phenotype for r in pathology if r.phenotype}),
+                'semantic_incoherence': 'NOT_PROVEN', 'detectors_executed': names},
+            'detector_routing': {'added_by_actual_output': added,
+                'calibration_scope': 'added generic detectors use full same-cycle baseline-relative checks; old calibration NOT_APPLICABLE was category routing, not proof of absence'},
+            'display_status': ('OBSERVED_OUTPUT_PATHOLOGY' if pathology else 'TASK_ANSWER_MISMATCH' if any(r.phenotype == 'WRONG_ANSWER' for r in triggered)
+                               else 'NO_COVERED_PATHOLOGY_DETECTED' if not unknown else 'INCOMPLETE_OBSERVATION'),
             "semantic_status": 'VALIDATOR_SCOPED' if probe.expected else 'SEMANTIC_REVIEW_REQUIRED',
-            "families": sorted({r.phenotype for r in triggered if r.phenotype}),
+            "families": sorted({r.phenotype for r in visible_triggers if r.phenotype}),
             "detectors": [r.to_dict() for r in results], "unknown_detectors": unknown,
             "baseline_failed_detectors": baseline_failures, "response_diverged": divergence,
             "first_divergence": first, "comparison_basis": bb if comparable else None,
@@ -71,6 +124,8 @@ def pairing(probe, rows, official, protocol=None):
 def excerpt(row):
     value = text(row)
     return {"text": value[:600] if value is not None else None,
+            'full_text': value, 'character_count': len(value) if value is not None else None,
+            'generation_length': row.get('generation_length'), 'max_tokens': row.get('request', {}).get('max_tokens'),
             "truncated_excerpt": value is not None and len(value) > 600,
             "http_status": row.get("http_status"), "finish_reason": row.get("finish_reason"),
             "source_ref": row.get("source_ref"), "response_sha256": row.get("response_sha256"),
@@ -79,6 +134,8 @@ def excerpt(row):
 
 
 def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluation_id="distortion-v1", analysis=None):
+    scorer_files = {name: hashlib.sha256(Path(__file__).with_name(name).read_bytes()).hexdigest()
+                    for name in ('evaluator.py', 'detectors.py', 'contracts.py', 'mechanism.py')}
     official = suite.get("version") in ("DISTORTION_PROBE_SUITE_V1", "NORMAL_DIAGNOSTIC_SUITE_V2")
     hash_valid = suite.get("hash") == content_hash(suite)
     probes = [DistortionProbe.from_dict(p) for p in suite["probes"]]
@@ -108,6 +165,8 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
             calibration = cycle.get('calibration', {}).get('matrix', {}).get(probe.probe_id)
             effect = compare(probe, b, f, suite["thresholds"], calibration)
             recovery = compare(probe, b, r, suite["thresholds"], calibration)
+            baseline_task = task_outcome(probe, b)
+            task_recovered = validator_restored(baseline_task, recovery['task_outcome'])
             eligible = gate["status"] == "PASS" and pair_gate["status"] == "PASS" and before["status"] == "PASS" and hash_valid
             visible = eligible and effect["verdict"] in VISIBLE
             equivalent = text(b) is not None and text(b) == text(r)
@@ -120,6 +179,8 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
                            "effect": effect, "recovery_effect": recovery, "recovery_restored": restored,
                            "recovery_exact": equivalent, "pairing": pair_gate, "eligible": eligible,
                            "calibration": calibration,
+                           'task_outcomes': {'baseline': baseline_task, 'fault': effect['task_outcome'], 'recovery': recovery['task_outcome']},
+                           'task_validator_recovered': task_recovered,
                            "visible_distortion": visible, "mechanism": gate,
                            "attribution": "VALID_FAULT_RUN" if eligible else "INVALID_FAULT_RUN"})
         # Probability requests are not visible probes, but their mechanism must
@@ -141,6 +202,18 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
                         "recovery_gate": "PASS" if clean["status"] == "PASS" and all(
                             x["recovery_restored"] is True for x in matrix if x["visible_distortion"])
                         else "FAIL"})
+        scoped = {'fault_induced_phenotype': {'recovered': sum(x['recovery_restored'] is True for x in matrix),
+                    'denominator': sum(x['visible_distortion'] for x in matrix)},
+                  'all_text_exact': {'matched': sum(x['recovery_exact'] for x in matrix), 'denominator': len(probes)},
+                  'all_task_validator': {'matched': sum(x['task_validator_recovered'] is True for x in matrix),
+                    'denominator': sum(x['task_validator_recovered'] is not None for x in matrix),
+                    'mismatch_ids': [x['probe_id'] for x in matrix if x['task_validator_recovered'] is False],
+                    'not_applicable_ids': [x['probe_id'] for x in matrix if x['task_validator_recovered'] is None]},
+                  'runtime_clean_health': clean, 'same_process': same_process}
+        results[-1]['recovery_scopes'] = scoped
+        results[-1]['full_recovery_gate'] = 'PASS' if (complete and clean['status'] == 'PASS' and same_process
+             and not scoped['all_task_validator']['mismatch_ids'] and all(x['recovery'].get('http_status') == 200 for x in matrix)
+             and results[-1]['recovery_gate'] == 'PASS') else 'FAIL'
     n = len(results)
     stable, family_probes, repeatability = [], {}, {}
     enough = n >= suite["robust_gate"]["min_complete_cycles"] and all(c["complete"] for c in results)
@@ -157,7 +230,7 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
     crashed = sum(c["crash_count"] for c in results)
     recovered = sum(x["recovery_restored"] is True for c in results for x in c["matrix"])
     affected = sum(c["visible_count"] for c in results)
-    recovery_pass = bool(results) and all(c["recovery_gate"] == "PASS" and c["complete"] for c in results)
+    recovery_pass = bool(results) and all(c['full_recovery_gate'] == 'PASS' for c in results)
     rule = suite["robust_gate"]
     conditions = {
         "mechanism": mechanism_pass,
@@ -171,6 +244,7 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
     }
     robust = all(conditions.values())
     distortion = {"schema_version": "DISTORTION_EVALUATION_V1", "probe_suite": suite["version"],
+                  'scorer_version': SCORER_VERSION,
                   "suite_hash": suite.get("hash"), "suite_hash_valid": hash_valid,
                   "probe_count": len(probes), "complete_cycles": sum(c["complete"] for c in results),
                   "total_cycles": n, "mechanism_gate": "PASS" if mechanism_pass else "INVALID",
@@ -181,7 +255,9 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
                   "stable_phenotype_families": family_probes, "same_probe_repeatability": repeatability,
                   "crash_count": crashed, "crash_classification": "TOO_SEVERE_UNSUITABLE_PROFILE" if crashed else None,
                   "recovery": {"gate": "PASS" if recovery_pass else "FAIL", "restored_pairs": recovered,
-                               "fault_induced_pairs": affected, "definition": "only fault-induced visible pairs; clean state and health required",
+                               "fault_induced_pairs": affected, "definition": "gate includes ALL task/validator states + runtime health; phenotype fraction remains explicitly scoped",
+                               'phenotype_recovery_gate': 'PASS' if all(c['recovery_gate'] == 'PASS' for c in results) and results else 'FAIL',
+                               'per_cycle_scopes': {c['cycle_id']: c['recovery_scopes'] for c in results},
                                "stable_probes_restored": [pid for pid in stable if all(next(x for x in c["matrix"] if x["probe_id"] == pid)["recovery_restored"] is True for c in results)]},
                   "robust_gate": "ROBUST_VISIBLE_DISTORTION_PASS" if robust else "ROBUST_VISIBLE_DISTORTION_FAIL",
                   "robust_conditions": conditions, "cycles": results,
@@ -205,6 +281,7 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
         "quality_performance": {}, "status": "PASS" if robust else "FAIL",
         "reason": distortion["robust_gate"], "evidence_refs": [],
         "fault_configuration": config.to_dict(), "distortion": distortion,
+        'scorer': {'version': SCORER_VERSION, 'sha256': content_hash(scorer_files), 'source_files': scorer_files},
         "normal_diagnostic_delivery": delivery,
         "analysis_details": analysis or {"status": "NOT_REQUESTED"},
     })

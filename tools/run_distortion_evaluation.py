@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from ascend_fi.evaluation.distortion.contracts import load_suite, FaultConfigurationRecord
 from ascend_fi.evaluation.distortion.evaluator import evaluate_cycles
-from ascend_fi.evaluation.distortion.replay import load_legacy
+from ascend_fi.evaluation.distortion.replay import load_legacy, load_live_snapshot
 from ascend_fi.evaluation.distortion.report import write_report
 
 
@@ -42,6 +42,8 @@ def main():
             suite, config, cycles = raw['suite'], FaultConfigurationRecord.from_dict(raw['config']), raw['cycles']
             analysis, provenance = {'status': 'NOT_REQUESTED'}, {**raw['provenance'],
                 'raw_sha256': hashlib.sha256(raw_path.read_bytes()).hexdigest(), 'source': str(raw_path)}
+        elif args.replay.is_dir() and (args.replay / 'fault_configuration.json').is_file() and (args.replay / 'suite.json').is_file():
+            suite, config, cycles, analysis, provenance = load_live_snapshot(args.replay, frozen)
         else:
             suite, config, cycles, analysis, provenance = load_legacy(args.replay, frozen)
     else:

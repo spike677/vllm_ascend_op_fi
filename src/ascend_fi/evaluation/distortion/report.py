@@ -29,7 +29,8 @@ def render_dashboard(result, *, mode="distortion"):
 <div class="headline">{len(d['stable_distorted_probes'])} / {p}<span>stable distorted probes</span></div>
 <p>{d['complete_cycles']}/{n} 个周期完整；稳定性要求同一道题，而非不同题数量相同。</p>
 <dl><dt>Stable families</dt><dd>{esc({k: len(v) for k,v in d['stable_phenotype_families'].items()})}</dd>
-<dt>Crash</dt><dd>{d['crash_count']}</dd><dt>Recovery</dt><dd>{d['recovery']['restored_pairs']} / {d['recovery']['fault_induced_pairs']} pairs · {d['recovery']['gate']}</dd></dl>
+<dt>Crash</dt><dd>{d['crash_count']}</dd><dt>失常样本恢复</dt><dd>{d['recovery']['restored_pairs']} / {d['recovery']['fault_induced_pairs']} pairs · {esc(d['recovery'].get('phenotype_recovery_gate','UNKNOWN'))}</dd>
+<dt>全量恢复 Gate</dt><dd>{d['recovery']['gate']}（含全用例任务状态与 runtime，不用局部比例代替）</dd></dl>
 <p class="badge">{esc(d['robust_gate'])}</p></article></section>"""
     rows = []
     for cycle in d["cycles"]:
@@ -43,10 +44,19 @@ def render_dashboard(result, *, mode="distortion"):
             cells = []
             for phase in ("baseline", "fault", "recovery"):
                 evidence = row[phase]
-                verdict = row["effect"]["verdict"] if phase == "fault" else row["recovery_effect"]["verdict"] if phase == "recovery" else "BASELINE_FAILURE" if row["effect"]["baseline_failed_detectors"] else "REFERENCE"
+                comparison = row['effect'] if phase != 'recovery' else row['recovery_effect']
+                verdict = comparison.get('display_status', '未检测到已覆盖的异常') if phase != 'baseline' else '正常对照（不等于已验证语义正确）'
                 text = evidence["text"] if evidence["text"] is not None else "UNKNOWN: raw output missing"
                 reason = "; ".join(x["reason"] for x in row["effect"]["detectors"] if x["triggered"] is True) if phase == "fault" else ""
-                cells.append(f'<td><span class="badge">{esc(verdict or "UNKNOWN")}</span><pre>{esc(text)}</pre><p>{esc(reason)}</p><details><summary>证据</summary><pre>{esc(_pretty(evidence))}</pre></details></td>')
+                task = row.get('task_outcomes', {}).get(phase, {})
+                repeated = next((x.get('baseline_value' if phase == 'baseline' else 'fault_value') for x in comparison['detectors'] if x['detector'] == 'repetition'), None) or {}
+                details = {'task_outcome': task, 'repeated_fragment': repeated.get('repeated_fragment'),
+                           'semantic_incoherence': 'NOT_PROVEN', 'source_ref': evidence.get('source_ref')}
+                trimmed = '是，仅缩短展示，非模型停止位置' if evidence.get('truncated_excerpt') else '否'
+                facts = (f"任务：{task.get('status','NOT_EVALUATED')}；终止：{evidence.get('finish_reason')}；"
+                         f"原生成 {evidence.get('generation_length')} tokens / {evidence.get('max_tokens')} 预算；"
+                         f"全文 {evidence.get('character_count')} 字符；展示截短：{trimmed}。")
+                cells.append(f'<td><span class="badge">{esc(verdict or "UNKNOWN")}</span><p class="generation-facts">{esc(facts)}</p><pre>{esc(text)}</pre><p>{esc(reason)}</p><p>答案匹配：{esc(task.get("matched_text"))}；字符位置：{esc(task.get("answer_span"))}</p><details><summary>答案与重复片段/位置证据</summary><pre>{esc(_pretty(details))}</pre></details><details class="full-response"><summary>展开完整原始回答（非 600 字符摘录）</summary><pre>{esc(evidence.get("full_text", "未加载完整原文"))}</pre></details></td>')
             details = {'mechanism': row['mechanism'], 'calibration': row.get('calibration'),
                        'semantic_status': row['effect'].get('semantic_status'), 'pairing': row['pairing']}
             rows.append(f'<tr data-tags="{esc(tags)}"><th scope="row">{esc(row["probe_id"])}<small>{esc(cycle["cycle_id"])} · {esc(row["attribution"])}</small><p>{esc(", ".join(families))}</p><details><summary>本请求命中/校准</summary><pre>{esc(_pretty(details))}</pre></details></th>{"".join(cells)}</tr>')
@@ -63,9 +73,10 @@ def render_dashboard(result, *, mode="distortion"):
 <details><summary>补充任务的三项独立结论</summary><pre>{esc(_pretty(data.get('normal_diagnostic_delivery', {})))}</pre></details>
 {cards}<label for="filter">按故障表现筛选</label><select id="filter">{options}</select><span id="count" aria-live="polite"></span>
 <div class="matrix"><table><thead><tr><th>Probe / cycle</th><th>Baseline</th><th>Fault</th><th>Recovery</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
+<section><h2>恢复范围（必须同时阅读）</h2><pre>{esc(_pretty(d['recovery'].get('per_cycle_scopes', {})))}</pre></section>
 <details><summary>稳定性与验收门禁</summary><pre>{esc(_pretty({'same_probe': d['same_probe_repeatability'], 'conditions': d['robust_conditions']}))}</pre></details>
 {analysis if mode in ('analysis','both','distortion') else ''}
-<p>文字摘录最多 600 字符；完整记录见单元格 source_ref。输出中的文本均经过 HTML 转义；本页不访问网络或控制模型。</p>
+<p>默认摘录最多 600 字符；可展开完整回答。展示截短与 finish_reason=length 是两个独立事实。答案未交付不自动证明语义错乱；正确答案也不遮蔽后续循环。所有文本均经过 HTML 转义；本页不访问网络或控制模型。</p>
 </main><script>const select=document.getElementById('filter');const rows=Array.from(document.querySelectorAll('tbody tr'));function filter(){{let n=0;for(const row of rows){{row.hidden=select.value!=='all'&&!row.dataset.tags.includes(select.value);if(!row.hidden)n++;}}document.getElementById('count').textContent=n+' / '+rows.length+' rows';}}select.addEventListener('change',filter);filter();</script></body></html>"""
 
 
@@ -100,7 +111,8 @@ def write_report(output, result, provenance, *, mode="distortion"):
 - 稳定失常：**{len(d['stable_distorted_probes'])}/{d['probe_count']}**；样本：`{d['stable_distorted_probes']}`。
 - 稳定 phenotype：`{ {k: len(v) for k,v in d['stable_phenotype_families'].items()} }`。
 - Crash：{d['crash_count']}。
-- Recovery：{d['recovery']['restored_pairs']}/{d['recovery']['fault_induced_pairs']} 个故障引起的失常 pair 恢复；gate={d['recovery']['gate']}。
+- 失常表型恢复：{d['recovery']['restored_pairs']}/{d['recovery']['fault_induced_pairs']}；该分母不是全测试集。
+- 全量恢复 Gate：{d['recovery']['gate']}，同时核对全用例任务/validator 状态及 runtime。
 - **{d['robust_gate']}**；未通过条件：`{[k for k,v in d['robust_conditions'].items() if not v]}`。
 
 ## 补充任务的独立结论
@@ -108,6 +120,14 @@ def write_report(output, result, provenance, *, mode="distortion"):
 `{data.get('normal_diagnostic_delivery', {})}`
 
 旧 robust breadth gate 仍保留；本轮可交付用例不要求产生两种病态。未命中、无数值变化和证据未知保留在完整矩阵，不伪装为“无效果”。
+
+## 各周期恢复范围
+
+```json
+{_pretty(d['recovery'].get('per_cycle_scopes', {}))}
+```
+
+Scorer：`{d.get('scorer_version')}`。任务结果、生成终止、输出病态和机制归因分别记录；仅 unresolved 不计为明显病态。
 
 输出轨迹变化不等于病态退化。N 个周期必须是同一道题稳定失常；不将不同题的数量相同视为可重复。
 本结果是固定 smoke 集与规则证据，不是统计显著性或总体模型性能结论。只检测字符级乱码；不推断语义不连贯。

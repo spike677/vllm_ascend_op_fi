@@ -70,16 +70,21 @@ def task_fact(probe, row):
         return None
     if expected.get("answer_type") == "number":
         answer = None
+        span, matched_text, extraction = None, None, None
         for pattern in (rf"(?im)^\s*FINAL_ANSWER\s*=\s*({_NUM})",
                         rf"(?m)####\s*({_NUM})",
                         rf"(?i)\b(?:final answer|answer|result)\s*(?:is|:|=)\s*[$]?({_NUM})"):
             match = re.search(pattern, value)
             if match:
                 answer = numeric_answer(match.group(1))
+                span, matched_text, extraction = list(match.span(1)), match.group(0), pattern
                 break
         if answer is None and re.fullmatch(rf"\s*{_NUM}\s*[.!]?\s*", value):
             answer = numeric_answer(value.strip().rstrip(".!"))
+            match = re.search(_NUM, value)
+            span, matched_text, extraction = list(match.span()), match.group(), 'bare_number'
         return {"answer": answer, "resolved": answer is not None,
+                "answer_span": span, "matched_text": matched_text, "extraction_rule": extraction,
                 "correct": answer is not None and answer == numeric_answer(expected["answer"])}
     answer = value.strip().casefold().rstrip(".! ")
     # Finite approved aliases; do not interpret arbitrary free text with a judge.
@@ -97,7 +102,10 @@ class TaskAnswerDetector:
         phenotype = "UNRESOLVED" if not f["resolved"] else "WRONG_ANSWER"
         return outcome("task_answer", b, f, trigger, "TASK_OR_STRUCTURE_FAILURE",
                        "baseline correct -> " + phenotype if trigger else "no new task failure",
-                       phenotype=phenotype, baseline_failed=not b["correct"])
+                       phenotype=phenotype, baseline_failed=not b["correct"],
+                       baseline_answer_span=b.get('answer_span'), fault_answer_span=f.get('answer_span'),
+                       baseline_answer_match=b.get('matched_text'), fault_answer_match=f.get('matched_text'),
+                       unresolved_is_not_output_pathology=True)
 
 
 def _schema_errors(value, schema, path="$"):
@@ -170,6 +178,28 @@ class StructureIntegrityDetector:
                        baseline_failed=not b["valid"])
 
 
+def _repeat_evidence(row, seq, basis, width, starts):
+    """Actual token positions; character offsets only where alignment is proven."""
+    value = text(row) or ''
+    spans = None
+    if basis == 'token_pieces' and all(isinstance(x, str) for x in seq) and ''.join(seq) == value:
+        spans, offset = [], 0
+        for piece in seq:
+            spans.append((offset, offset+len(piece))); offset += len(piece)
+    elif basis == 'lexical_tokens':
+        spans = [m.span() for m in re.finditer(r'\w+|[^\w\s]', value)]
+    positions = []
+    for start in starts[:12]:
+        end = min(start+width, len(seq))
+        char = [spans[start][0], spans[end-1][1]] if spans and end > start else None
+        positions.append({'token_span': [start, end], 'character_span': char})
+    first = positions[0].get('character_span') if positions else None
+    return {'comparison_basis': basis, 'period_or_ngram_tokens': width,
+            'occurrence_count': len(starts), 'positions': positions,
+            'fragment': value[first[0]:first[1]] if first else ' '.join(map(str, seq[starts[0]:starts[0]+width])) if starts else None,
+            'fragment_is_exact_text': first is not None}
+
+
 def repetition_fact(row, thresholds):
     seq, basis = tokens(row)
     if seq is None:
@@ -182,15 +212,26 @@ def repetition_fact(row, thresholds):
     for token in seq:
         run = run + 1 if token == previous else 1
         longest, previous = max(longest, run), token
-    loop = False
+    loop, evidence = False, None
     repeat = thresholds["periodic_min_repetitions"]
     for p in range(1, thresholds["periodic_max_period"]+1):
-        if any(seq[i:i+p] * repeat == seq[i:i+p*repeat] for i in range(max(0, n-p*repeat+1))):
-            loop = True
+        for i in range(max(0, n-p*repeat+1)):
+            if seq[i:i+p] * repeat == seq[i:i+p*repeat]:
+                starts, j = [], i
+                while seq[j:j+p] == seq[i:i+p] and j+p <= n:
+                    starts.append(j); j += p
+                evidence = _repeat_evidence(row, seq, basis, p, starts)
+                loop = True
+                break
+        if loop:
             break
+    if evidence is None and grams:
+        gram, count = Counter(grams).most_common(1)[0]
+        if count > 1:
+            evidence = _repeat_evidence(row, seq, basis, 4, [i for i, g in enumerate(grams) if g == gram])
     return {"seq_rep_4": rep4, "same_token_max_run": longest, "periodic_loop": loop,
             "dominant_token_ratio": max(Counter(seq).values())/n if n else 0,
-            "token_count": n, "comparison_basis": basis}
+            "token_count": n, "comparison_basis": basis, 'repeated_fragment': evidence}
 
 
 class RepetitionDetector:
@@ -208,7 +249,7 @@ class RepetitionDetector:
             or (f["same_token_max_run"] >= t["repeated_run_min"] > b["same_token_max_run"])
             or (f["seq_rep_4"] >= t["seq_rep_4_min"] and f["seq_rep_4"]-b["seq_rep_4"] >= t["seq_rep_4_delta"]))
         return outcome("repetition", b, f, trigger, "DEGENERATION", "baseline-relative repeated 4-gram/run/periodic pattern",
-                       phenotype="REPETITION")
+                       phenotype="REPETITION", baseline_fragment=b['repeated_fragment'], fault_fragment=f['repeated_fragment'])
 
 
 def lexical_fact(row):
@@ -218,6 +259,7 @@ def lexical_fact(row):
     seq = [x for x in seq if not isinstance(x, str) or x.strip()]
     n = len(seq)
     return {"distinct_1": len(set(seq))/n if n else 0,
+            'most_common_tokens': [{'token': token, 'count': count} for token, count in Counter(seq).most_common(3)],
             "distinct_2": len(set(zip(seq, seq[1:])))/(n-1) if n>1 else 0,
             "dominant_token_ratio": max(Counter(seq).values())/n if n else 0,
             "token_count": n, "comparison_basis": basis}
@@ -233,7 +275,8 @@ class LexicalCollapseDetector:
             f["distinct_1"] < b["distinct_1"] * t["distinct_ratio_max"] and
             f["distinct_2"] < b["distinct_2"] * t["distinct_ratio_max"] and
             f["dominant_token_ratio"] - b["dominant_token_ratio"] >= t["dominance_delta"])
-        return outcome("lexical_collapse", b, f, trigger, "DEGENERATION", "Distinct-1/2 collapse and token concentration relative to baseline", phenotype="LEXICAL_COLLAPSE")
+        return outcome("lexical_collapse", b, f, trigger, "DEGENERATION", "Distinct-1/2 collapse and token concentration relative to baseline", phenotype="LEXICAL_COLLAPSE",
+                       baseline_dominant_tokens=b['most_common_tokens'], fault_dominant_tokens=f['most_common_tokens'])
 
 
 def punctuation_fact(row):
@@ -242,12 +285,17 @@ def punctuation_fact(row):
         return None
     visible = [c for c in value if not c.isspace()]
     count = run = longest = 0
-    for c in value:
+    longest_span = None
+    for index, c in enumerate(value):
         p = unicodedata.category(c).startswith("P")
         count += p
         run = run+1 if p else 0
-        longest = max(longest, run)
-    return {"ratio": count/len(visible) if visible else 0, "max_run": longest}
+        if run > longest:
+            longest, longest_span = run, [index-run+1, index+1]
+    return {"ratio": count/len(visible) if visible else 0, "max_run": longest,
+            'punctuation_count': count, 'visible_character_count': len(visible),
+            'longest_run_character_span': longest_span,
+            'longest_run_fragment': value[slice(*longest_span)] if longest_span else None}
 
 
 class PunctuationCollapseDetector:
@@ -262,7 +310,8 @@ class PunctuationCollapseDetector:
             return unknown("punctuation")
         trigger = ((f["ratio"] >= t["punctuation_rate_min"] and f["ratio"]-b["ratio"] >= t["punctuation_rate_delta"])
                    or (f["max_run"] >= t["punctuation_run_min"] and f["max_run"]-b["max_run"] >= t["punctuation_run_delta"]))
-        return outcome("punctuation", b, f, trigger, "DEGENERATION", "punctuation ratio/run exceeds frozen baseline-relative bounds", phenotype="PUNCTUATION_SPAM")
+        return outcome("punctuation", b, f, trigger, "DEGENERATION", "punctuation ratio/run exceeds frozen baseline-relative bounds", phenotype="PUNCTUATION_SPAM",
+                       baseline_punctuation=b, fault_punctuation=f)
 
 
 class LengthCollapseDetector:

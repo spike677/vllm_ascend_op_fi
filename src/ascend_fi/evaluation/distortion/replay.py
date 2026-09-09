@@ -12,6 +12,28 @@ from .contracts import FaultConfigurationRecord, content_hash
 from .mechanism import rpc_workers
 
 
+def load_live_snapshot(path, frozen_suite):
+    """Read completed cycle checkpoints without touching the live collector.
+
+    Partial request directories are never counted as complete cycles. A new
+    output directory per snapshot preserves every earlier scorer result.
+    """
+    root = Path(path)
+    suite = json.loads((root / 'suite.json').read_text(encoding='utf-8'))
+    if suite != frozen_suite:
+        raise ValueError('frozen live suite differs; never retune during replay')
+    config = FaultConfigurationRecord.from_dict(json.loads((root / 'fault_configuration.json').read_text(encoding='utf-8')))
+    files = sorted((root / 'cycles').glob('cycle_*/cycle.json'))
+    if not files:
+        raise ValueError('no COMPLETE cycle checkpoint; ongoing requests are not cycles')
+    cycles = [json.loads(p.read_text(encoding='utf-8')) for p in files]
+    provenance = {'mode': 'READONLY_COMPLETED_CYCLE_SNAPSHOT', 'source_root': str(root.resolve()),
+                  'files_read': [{'path': str(p), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()} for p in files],
+                  'collector_modified': False, 'no_npu_used': True,
+                  'interpretation': 'scorer revision differs from frozen collector; compare revised replays, not equality to old scorer labels'}
+    return suite, config, cycles, {'status': 'NOT_REQUESTED'}, provenance
+
+
 class RawSource:
     def __init__(self, path):
         self.path = Path(path).resolve()

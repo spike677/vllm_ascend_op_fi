@@ -100,3 +100,6 @@ tmp_*.txt
 # Distortion replay raw inputs, generated large profiles and local validation.
 /artifacts/distortion/private/
 !/artifacts/distortion/legacy_replay_v1/distortion_hits.jsonl
+# Preserve intermediate scoring audit locally; publish only the final versioned replay.
+/artifacts/distortion/legacy_replay_scoring_v2/
+!/artifacts/distortion/legacy_replay_scoring_v2_final/distortion_hits.jsonl
