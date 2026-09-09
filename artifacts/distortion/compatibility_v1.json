@@ -1,0 +1,34 @@
+{
+  "status": "COMPATIBILITY_PASS",
+  "implementation_head": "e94e17d51ffba316cda534f465d5b606b1b9b2bc",
+  "evaluation": {
+    "base": "1fd19955d8f0c397c2f1ceb459533d362e51dffa",
+    "verified_head": "873835f2bde72308b77c47c8914b91604fad578a",
+    "method": "temporary branch; cherry-pick absorbed documentation/profile and current implementation commits",
+    "tests": 79,
+    "all_pass": true,
+    "protected_paths_unchanged": true,
+    "output": "EVALUATION_PHASE_START name=baseline mode=disarmed\r\nEVALUATION_PHASE_COMPLETE name=baseline\r\nEVALUATION_PHASE_START name=lossless mode=lossless\r\nEVALUATION_PHASE_COMPLETE name=lossless\r\nEVALUATION_PHASE_START name=mild mode=mild_int4_equivalent\r\nEVALUATION_PHASE_COMPLETE name=mild\r\nEVALUATION_PHASE_START name=strong mode=strong_int2_equivalent\r\nEVALUATION_PHASE_COMPLETE name=strong\r\nEVALUATION_PHASE_START name=recovery mode=disarmed\r\nEVALUATION_PHASE_COMPLETE name=recovery\r\nEVALUATION_PHASE_START name=strong mode=strong_int2_equivalent\r\n----------------------------------------------------------------------\r\nRan 79 tests in 0.693s\r\n\r\nOK\r\n873835f2bde72308b77c47c8914b91604fad578a\n"
+  },
+  "research": {
+    "base": "165774bbdd7aa122f16df533f2680534741c7240",
+    "verified_head": "d4fcc99f43b0659cfaf25905f55462a8c846412b",
+    "method": "temporary branch from real research ref; merge evaluation foundation plus current changes; research manifests retained",
+    "tests": 79,
+    "all_pass": true,
+    "protected_paths_unchanged": true,
+    "output": "EVALUATION_PHASE_START name=baseline mode=disarmed\r\nEVALUATION_PHASE_COMPLETE name=baseline\r\nEVALUATION_PHASE_START name=lossless mode=lossless\r\nEVALUATION_PHASE_COMPLETE name=lossless\r\nEVALUATION_PHASE_START name=mild mode=mild_int4_equivalent\r\nEVALUATION_PHASE_COMPLETE name=mild\r\nEVALUATION_PHASE_START name=strong mode=strong_int2_equivalent\r\nEVALUATION_PHASE_COMPLETE name=strong\r\nEVALUATION_PHASE_START name=recovery mode=disarmed\r\nEVALUATION_PHASE_COMPLETE name=recovery\r\nEVALUATION_PHASE_START name=strong mode=strong_int2_equivalent\r\n----------------------------------------------------------------------\r\nRan 79 tests in 0.692s\r\n\r\nOK\r\nd4fcc99f43b0659cfaf25905f55462a8c846412b\n"
+  },
+  "protected_paths": [
+    "src/ascend_fi/contracts",
+    "capabilities",
+    "fault20_fast_validation/source"
+  ],
+  "real_development_refs_modified": false,
+  "notes": [
+    "Only temporary verification refs receive changes.",
+    "Historical summary-only replay fixture now asserts UNKNOWN/UNCLASSIFIED instead of an unsupported L3. Other prior assertions remain tested.",
+    "Browser smoke: 57 matrix rows, filters work, 1365/390 widths, no page errors."
+  ],
+  "temporary_worktrees_removed": true
+}

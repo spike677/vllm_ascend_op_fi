@@ -1,0 +1,25 @@
+{
+  "checked_utc": "2026-09-09T08:30:14.263752+00:00",
+  "mode": "READONLY_PREFLIGHT",
+  "server": "123.60.231.86:2125",
+  "npu": {"devices": [2,5], "model": "910B4", "health": "OK", "running_processes": 0},
+  "disk": {"home_available_gb": 46, "home_use_percent": 96, "root_available_gb": 30},
+  "lock": {
+    "path": "/home/haoran/demoncat_overnight_20260907/coordination/NPU_LOCK",
+    "directory_exists": true,
+    "owner": null,
+    "status": "RELEASED",
+    "owner_record_updated": "2026-09-09T02:57:21.794074+00:00",
+    "interpretation": "released tombstone; not claimed to be occupied by another task",
+    "acquired_or_modified_by_this_task": false
+  },
+  "service": {"port": 18031, "health": "CONNECTION_REFUSED", "models": "CONNECTION_REFUSED", "initial_state": "STOPPED"},
+  "existing_artifacts": ["/home/haoran/fev_20260908_074102", "/home/haoran/demoncat_overnight_20260907/final/restored_original_service"],
+  "live_validation": "BLOCKED",
+  "reason": "PREEXISTING_VALIDATED_SERVICE_UNAVAILABLE: no running healthy R1-capable endpoint or active validated lifecycle owner; recreating its launch/restore wiring was not performed in this offline-first integration.",
+  "not_a_resource_contention_claim": true,
+  "fault_armed_by_this_task": false,
+  "service_changed_by_this_task": false,
+  "final_state": "UNCHANGED_PREEXISTING_SERVICE_STOPPED; NPU lock not acquired; no new armed state",
+  "next_step": "Restore a verified R1-capable service and supply its existing lifecycle-owner adapter; run the frozen 16 probes for three full cycles without strength changes."
+}
