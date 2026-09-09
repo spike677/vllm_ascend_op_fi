@@ -85,7 +85,9 @@ def cycles(distort=("exact_math", "exact_fact", "structure_json", "structure_lis
         pairs = {}
         for p in SUITE["probes"]:
             baseline = response(base_for(p))
-            baseline.update(sample_id=p["probe_id"], request={"prompt": p["prompt"], **p["generation_config"]})
+            baseline.update(sample_id=p["probe_id"], request={
+                'messages': [{'role': 'user', 'content': p['prompt']}], **p['generation_config'],
+                'chat_template_kwargs': {'enable_thinking': False}, 'logprobs': True, 'top_logprobs': 1})
             f = copy.deepcopy(baseline)
             if p["probe_id"] in distort:
                 f.update(response("FINAL_ANSWER=0" if "answer" in p["expected"] else "broken"))
@@ -115,7 +117,7 @@ class DistortionTests(unittest.TestCase):
                 load_suite(path)
 
     def test_suite_frozen(self):
-        self.assertEqual(SUITE["hash"], "abfc3c9a26597e3eefc7204306553dd381353c45dfe5b3d135632bbd8856d502")
+        self.assertEqual(SUITE["hash"], "e5d853bfb947a4082b77392a55d0c5eb9435ce265f3eade94780ee536ac8bf86")
         self.assertEqual(16, len(SUITE["probes"]))
         self.assertEqual(4, sum(p["category"] == "structured" for p in SUITE["probes"]))
 
@@ -221,7 +223,10 @@ class DistortionTests(unittest.TestCase):
 
     def test_early_stop_detector(self):
         d = DETECTORS["length"]
-        self.assertEqual("EARLY_TERMINATION", d.evaluate(probe(), response("text", count=100), response("text", count=30), {"thresholds": SUITE["thresholds"]}).phenotype)
+        result = d.evaluate(probe(), response("text", count=100), response("text", count=30), {"thresholds": SUITE["thresholds"]})
+        self.assertFalse(result.triggered)
+        self.assertTrue(result.evidence['length_change_requires_review'])
+        self.assertEqual("EARLY_TERMINATION", d.evaluate(probe(), response("text", count=100), response("", count=0), {"thresholds": SUITE["thresholds"]}).phenotype)
 
     def test_runaway_detector(self):
         d = DETECTORS["length"]

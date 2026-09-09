@@ -172,18 +172,31 @@ def validate_mechanism(row, config: FaultConfigurationRecord, service_healthy=No
             rank = next(iter(r))
             final_counts.append({"rank": rank, "hit_count": w.get("hit_count")})
             expected = budget if rank in config.targeted_ranks else 0
-            if w.get("hit_count") != expected:
+            if config.hit_policy.get("budget_semantics") == "AT_MOST_NO_PADDING":
+                measured = next((r['hit_count'] for r in ranks if r['rank'] == rank), None)
+                okay = w.get('hit_count') == measured and _integer(measured) and measured <= budget
+            else:
+                okay = w.get("hit_count") == expected
+            if not okay:
                 failures.append(f"rank{rank}: complete transaction budget mismatch")
         if {r["rank"] for r in final_counts} != seen_ranks or len(final_counts) != len(seen_ranks):
             failures.append("complete transaction ranks missing/duplicate")
         if {w.get("pid") for w in complete} != seen_pids:
             failures.append("complete transaction worker mismatch")
     status = "INVALID" if failures else "UNKNOWN" if unknowns else "PASS"
+    measurement_hits = sum(r['hit_count'] for r in ranks if _integer(r['hit_count']))
+    numerical = sum(r['changed_elements'] or 0 for r in ranks)
+    observed = ('MECHANISM_UNKNOWN' if unknowns or not ranks else
+                'NOT_HIT' if measurement_hits == 0 else
+                'HIT_NO_NUMERICAL_CHANGE' if numerical == 0 else
+                'MUTATION_CONFIRMED' if status == 'PASS' else 'MECHANISM_UNKNOWN')
     return {"status": status, "classification": "VALID_FAULT_RUN" if status == "PASS" else "INVALID_FAULT_RUN",
+            "measurement_classification": observed,
             "failures": failures, "unknowns": unknowns, "ranks": ranks,
             "request_generation": next(iter(generations)) if len(generations) == 1 else None,
             "measurement_hit_count": sum(r["hit_count"] for r in ranks if _integer(r["hit_count"])),
             "changed_elements": sum(r["changed_elements"] for r in ranks if r["changed_elements"] is not None) if not unknowns else None,
             "source": "raw fault_transaction.measurement_query; raw tensor_effect_history",
             "transaction_query_budget_required": budget,
+            "budget_semantics": config.hit_policy.get('budget_semantics', 'LEGACY_FULL_TRANSACTION'),
             "padding_is_not_scored_response": True}

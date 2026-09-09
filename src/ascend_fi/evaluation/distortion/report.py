@@ -47,7 +47,9 @@ def render_dashboard(result, *, mode="distortion"):
                 text = evidence["text"] if evidence["text"] is not None else "UNKNOWN: raw output missing"
                 reason = "; ".join(x["reason"] for x in row["effect"]["detectors"] if x["triggered"] is True) if phase == "fault" else ""
                 cells.append(f'<td><span class="badge">{esc(verdict or "UNKNOWN")}</span><pre>{esc(text)}</pre><p>{esc(reason)}</p><details><summary>证据</summary><pre>{esc(_pretty(evidence))}</pre></details></td>')
-            rows.append(f'<tr data-tags="{esc(tags)}"><th scope="row">{esc(row["probe_id"])}<small>{esc(cycle["cycle_id"])} · {esc(row["attribution"])}</small><p>{esc(", ".join(families))}</p></th>{"".join(cells)}</tr>')
+            details = {'mechanism': row['mechanism'], 'calibration': row.get('calibration'),
+                       'semantic_status': row['effect'].get('semantic_status'), 'pairing': row['pairing']}
+            rows.append(f'<tr data-tags="{esc(tags)}"><th scope="row">{esc(row["probe_id"])}<small>{esc(cycle["cycle_id"])} · {esc(row["attribution"])}</small><p>{esc(", ".join(families))}</p><details><summary>本请求命中/校准</summary><pre>{esc(_pretty(details))}</pre></details></th>{"".join(cells)}</tr>')
     analysis = f'<details id="analysis" {"open" if mode == "analysis" else ""}><summary>Analysis Details · PPL / NLL / task / legacy classification</summary><pre>{esc(_pretty(data.get("analysis_details", {})))}</pre><p>仅作二级分析；PPL、RDR、VDR、L0–L6 不驱动 Distortion PASS。</p></details>'
     filters = [("all", "全部"), ("distorted", "只看失常"), ("repetition", "重复"), ("structure", "结构"), ("garbage", "乱码"), ("unresolved", "答案未解"), ("crash", "错误/崩溃"), ("recovery_failure", "恢复失败")]
     options = "".join(f'<option value="{k}">{v}</option>' for k,v in filters)
@@ -57,7 +59,8 @@ def render_dashboard(result, *, mode="distortion"):
 @media(prefers-color-scheme:dark){{:root{{--bg:#101923;--fg:#e0e9f4;--card:#192634;--line:#334459;--accent:#8bc9e6}}}}
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 system-ui,sans-serif}}main{{max-width:1500px;margin:auto;padding:28px}}h1{{font-size:28px}}h2{{font-size:16px;letter-spacing:.03em}}.cards{{display:grid;grid-template-columns:1fr 1fr;gap:20px}}article{{background:var(--card);padding:24px;border:1px solid var(--line);border-radius:10px}}dl{{display:grid;grid-template-columns:130px 1fr;gap:9px}}dt{{font-weight:600}}dd{{margin:0;overflow-wrap:anywhere}}.headline{{font-size:42px;font-weight:700;color:var(--accent)}}.headline span{{font-size:15px;display:block}}.badge{{display:inline-block;border:1px solid var(--line);padding:3px 7px;border-radius:4px;font-size:12px}}.matrix{{overflow:auto;margin-top:16px}}table{{border-collapse:collapse;width:100%;min-width:760px;table-layout:fixed}}th,td{{border:1px solid var(--line);vertical-align:top;text-align:left;padding:14px;background:var(--card)}}th:first-child{{width:17%}}pre{{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.6 ui-monospace,monospace}}small{{display:block;font-size:12px;font-weight:400;overflow-wrap:anywhere}}label{{display:block;margin:20px 0 8px}}select{{padding:8px;font:inherit}}details{{margin-top:12px}}summary{{cursor:pointer}}#count{{margin-left:16px}}[hidden]{{display:none!important}}@media(max-width:760px){{main{{padding:15px}}.cards{{grid-template-columns:1fr}}dl{{grid-template-columns:110px 1fr}}}}
 </style></head><body><main><h1>DemonCATPFI · 故障可见效果</h1>
-<p>{esc(d['probe_suite'])} · 固定检测器，无总分；UNKNOWN 不代表健康。历史集合不是新 16-probe suite。</p>
+<p>{esc(d['probe_suite'])} · 固定检测器，无总分；UNKNOWN 不代表健康；未触发规则不代表语义正确。</p>
+<details><summary>补充任务的三项独立结论</summary><pre>{esc(_pretty(data.get('normal_diagnostic_delivery', {})))}</pre></details>
 {cards}<label for="filter">按故障表现筛选</label><select id="filter">{options}</select><span id="count" aria-live="polite"></span>
 <div class="matrix"><table><thead><tr><th>Probe / cycle</th><th>Baseline</th><th>Fault</th><th>Recovery</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
 <details><summary>稳定性与验收门禁</summary><pre>{esc(_pretty({'same_probe': d['same_probe_repeatability'], 'conditions': d['robust_conditions']}))}</pre></details>
@@ -75,6 +78,7 @@ def write_report(output, result, provenance, *, mode="distortion"):
     data = result.to_dict()
     d = data["distortion"]
     card = {"fault_configuration": data["fault_configuration"], "mechanism_gate": d["mechanism_gate"],
+            "normal_diagnostic_delivery": data.get('normal_diagnostic_delivery'),
             "visible_effect": {key: d[key] for key in ("probe_suite", "probe_count", "complete_cycles", "stable_distorted_probes", "stable_phenotype_families", "same_probe_repeatability", "crash_count", "recovery", "robust_gate", "robust_conditions")}}
     for name, value in ((names[0], data), (names[1], d), (names[2], card), (names[6], provenance)):
         (output / name).write_text(_pretty(value)+"\n", encoding="utf-8")
@@ -91,13 +95,19 @@ def write_report(output, result, provenance, *, mode="distortion"):
 
 ## 用户实际看到了什么
 
-- 数据集：`{d['probe_suite']}`，不是伪装的新 16 条探针。
+- 数据集：`{d['probe_suite']}`；版本/hash 见 manifest。
 - 完整周期：{d['complete_cycles']}。
 - 稳定失常：**{len(d['stable_distorted_probes'])}/{d['probe_count']}**；样本：`{d['stable_distorted_probes']}`。
 - 稳定 phenotype：`{ {k: len(v) for k,v in d['stable_phenotype_families'].items()} }`。
 - Crash：{d['crash_count']}。
 - Recovery：{d['recovery']['restored_pairs']}/{d['recovery']['fault_induced_pairs']} 个故障引起的失常 pair 恢复；gate={d['recovery']['gate']}。
 - **{d['robust_gate']}**；未通过条件：`{[k for k,v in d['robust_conditions'].items() if not v]}`。
+
+## 补充任务的独立结论
+
+`{data.get('normal_diagnostic_delivery', {})}`
+
+旧 robust breadth gate 仍保留；本轮可交付用例不要求产生两种病态。未命中、无数值变化和证据未知保留在完整矩阵，不伪装为“无效果”。
 
 输出轨迹变化不等于病态退化。N 个周期必须是同一道题稳定失常；不将不同题的数量相同视为可重复。
 本结果是固定 smoke 集与规则证据，不是统计显著性或总体模型性能结论。只检测字符级乱码；不推断语义不连贯。

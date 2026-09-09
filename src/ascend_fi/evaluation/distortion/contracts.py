@@ -11,6 +11,7 @@ from typing import Any, Mapping
 from ...contracts._base import JsonContract, extra_fields
 
 V1_FROZEN_SHA256 = "abfc3c9a26597e3eefc7204306553dd381353c45dfe5b3d135632bbd8856d502"
+V2_FROZEN_SHA256 = "e5d853bfb947a4082b77392a55d0c5eb9435ce265f3eade94780ee536ac8bf86"
 
 
 def content_hash(data: Mapping[str, Any]) -> str:
@@ -88,12 +89,12 @@ class DetectorResult(JsonContract):
 
 def load_suite(path: str | Path) -> dict[str, Any]:
     data = json.loads(Path(path).read_text(encoding="utf-8-sig"))
-    if data.get("hash") != content_hash(data) or data.get("hash") != V1_FROZEN_SHA256:
+    if data.get("hash") != content_hash(data) or data.get("hash") not in (V1_FROZEN_SHA256, V2_FROZEN_SHA256):
         raise ValueError("probe suite hash mismatch: frozen probes cannot be retuned during evaluation")
     probes = [DistortionProbe.from_dict(p) for p in data["probes"]]
     if len(probes) != 16 or len({p.probe_id for p in probes}) != 16:
         raise ValueError("DISTORTION_PROBE_SUITE_V1 requires 16 unique probes")
-    if data.get("probe_count") != 16 or data.get("version") != "DISTORTION_PROBE_SUITE_V1":
+    if data.get("probe_count") != 16 or data.get("version") not in ("DISTORTION_PROBE_SUITE_V1", "NORMAL_DIAGNOSTIC_SUITE_V2"):
         raise ValueError("unsupported probe suite")
     from .detectors import DETECTORS
     if any(set(p.applicable_detectors) - set(DETECTORS) for p in probes):

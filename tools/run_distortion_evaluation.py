@@ -10,7 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from ascend_fi.evaluation.distortion.contracts import load_suite
+from ascend_fi.evaluation.distortion.contracts import load_suite, FaultConfigurationRecord
 from ascend_fi.evaluation.distortion.evaluator import evaluate_cycles
 from ascend_fi.evaluation.distortion.replay import load_legacy
 from ascend_fi.evaluation.distortion.report import write_report
@@ -34,7 +34,16 @@ def main():
             parser.error("replay must not contact the live service")
         if args.output.resolve() == args.replay.resolve() or args.replay.resolve() in args.output.resolve().parents:
             parser.error("derived output must be outside the original evidence tree")
-        suite, config, cycles, analysis, provenance = load_legacy(args.replay, frozen)
+        if args.replay.is_dir() and (args.replay / 'live_raw.json').is_file():
+            raw_path = args.replay / 'live_raw.json'
+            raw = json.loads(raw_path.read_text(encoding='utf-8'))
+            if raw.get('schema') != 'NORMAL_DIAGNOSTIC_LIVE_V1' or raw['suite'] != frozen:
+                raise ValueError('live replay schema/frozen suite mismatch')
+            suite, config, cycles = raw['suite'], FaultConfigurationRecord.from_dict(raw['config']), raw['cycles']
+            analysis, provenance = {'status': 'NOT_REQUESTED'}, {**raw['provenance'],
+                'raw_sha256': hashlib.sha256(raw_path.read_bytes()).hexdigest(), 'source': str(raw_path)}
+        else:
+            suite, config, cycles, analysis, provenance = load_legacy(args.replay, frozen)
     else:
         from ascend_fi.evaluation.distortion.live import run_existing_lifecycle
         if not args.live_adapter or not args.fault_config or not args.base_url or not args.model:

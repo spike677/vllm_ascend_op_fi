@@ -1,7 +1,8 @@
 """Thin adapter consumer for an EXISTING fault lifecycle owner.
 
 The adapter owns NPU lock, endpoint authentication, frozen R1 install/arm/query,
-per-request try/finally disarm, labelled padding and final service restoration.
+per-request try/finally disarm and final service restoration. The live R1
+measurement policy uses an upper budget with no supplemental padding.
 This module only schedules fixed probes. It contains no RPC/controller binding.
 """
 
@@ -63,6 +64,8 @@ def collect_cycles(owner, suite, config, count):
                 cycles.append({"cycle_id": f"cycle_{index:02d}", "pairs": pairs,
                                "before_baseline": before, "service_healthy_before": before_health,
                                "after_remove": after, "service_healthy": lifecycle.service_healthy()})
+                if hasattr(lifecycle, 'save_cycle'):
+                    lifecycle.save_cycle(cycles[-1])
                 if content_hash(config.to_dict()) != config_before:
                     raise RuntimeError("frozen configuration mutated by adapter")
         finally:

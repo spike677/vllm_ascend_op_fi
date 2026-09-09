@@ -195,6 +195,10 @@ def repetition_fact(row, thresholds):
 
 class RepetitionDetector:
     def evaluate(self, probe, baseline_response, fault_response, metadata):
+        structural = structure_fact(probe, fault_response)
+        if structural is not None and structural['valid']:
+            return outcome('repetition', None, None, False, 'DEGENERATION',
+                           'valid declared structure: repeated fields/items are not pathological loops')
         t = metadata["thresholds"]
         b, f = repetition_fact(baseline_response, t), repetition_fact(fault_response, t)
         if b is None or f is None or b["comparison_basis"] != f["comparison_basis"]:
@@ -248,6 +252,10 @@ def punctuation_fact(row):
 
 class PunctuationCollapseDetector:
     def evaluate(self, probe, baseline_response, fault_response, metadata):
+        structural = structure_fact(probe, fault_response)
+        if structural is not None and structural['valid']:
+            return outcome('punctuation', None, None, False, 'DEGENERATION',
+                           'valid declared structure: punctuation is structural, not spam')
         t = metadata["thresholds"]
         b, f = punctuation_fact(baseline_response), punctuation_fact(fault_response)
         if b is None or f is None:
@@ -267,9 +275,19 @@ class LengthCollapseDetector:
         maximum = probe.generation_config.get("max_tokens")
         reached = fault_response.get("finish_reason") == "length" or isinstance(maximum, int) and f >= maximum
         early = b >= t["early_stop_min_baseline_tokens"] and ratio <= t["early_stop_length_ratio_max"]
+        task, structure = task_fact(probe, fault_response), structure_fact(probe, fault_response)
+        complete = (task is not None and task['correct']) or (structure is not None and structure['valid'])
+        # An independently validated concise answer is not early termination.
+        early = early and not complete
+        incomplete = (not (text(fault_response) or '').strip() or
+                      task is not None and not task['resolved'] or
+                      structure is not None and not structure['valid'])
+        requires_review = early and not incomplete
+        early = early and incomplete
         runaway = f >= t["runaway_min_tokens"] and ratio >= t["runaway_length_ratio_min"] and reached
-        return outcome("length", b, f, early or runaway, "DEGENERATION", "baseline-relative length change",
+        return outcome("length", b, f, early or runaway, "DEGENERATION", "length change requires semantic review; no independent incompleteness proof" if requires_review else "baseline-relative length change",
                        phenotype="EARLY_TERMINATION" if early else "RUNAWAY", ratio=ratio,
+                       length_change_requires_review=requires_review,
                        baseline_finish_reason=baseline_response.get("finish_reason"), finish_reason=fault_response.get("finish_reason"), max_tokens_reached=reached)
 
 

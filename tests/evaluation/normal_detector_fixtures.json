@@ -1,0 +1,14 @@
+{
+  "purpose": "DETECTOR_ONLY_NOT_LIVE_EVIDENCE",
+  "cases": [
+    {"id": "concise_free_answer", "baseline": "A detailed explanation of how to save a file.", "response": "Choose File, then Save.", "baseline_count": 100, "detectors": ["length"], "expected_trigger": false},
+    {"id": "normal_paraphrase", "baseline": "Careful evaluation helps identify regression errors.", "response": "Testing carefully can expose regressions.", "detectors": ["garbage", "crash"], "expected_trigger": false, "semantic_review": true},
+    {"id": "fluent_irrelevant", "baseline": "The train departs at nine.", "response": "The garden contains several flowering trees.", "detectors": ["garbage", "crash"], "expected_trigger": false, "semantic_review": true},
+    {"id": "normal_json_repeated_fields", "baseline": "{\"items\":[{\"name\":\"one\"}]}", "response": "{\"items\":[{\"name\":\"one\"},{\"name\":\"two\"},{\"name\":\"three\"},{\"name\":\"four\"}]}", "expected": {"structure": "json", "schema": {"type": "object", "required": ["items"], "properties": {"items": {"type": "array", "items": {"type": "object", "required": ["name"]}}}}}, "detectors": ["structure", "repetition", "punctuation"], "expected_trigger": false},
+    {"id": "normal_list", "baseline": "alpha\nbeta\ngamma", "response": "- alpha\n- beta\n- gamma", "expected": {"structure": "line_list", "items": ["alpha", "beta", "gamma"]}, "detectors": ["structure", "repetition", "punctuation"], "expected_trigger": false},
+    {"id": "concise_complete_answer", "baseline": "Explanation and more explanation. FINAL_ANSWER=42", "response": "42", "baseline_count": 100, "expected": {"answer": "42", "answer_type": "number"}, "detectors": ["length"], "expected_trigger": false},
+    {"id": "real_loop", "baseline": "one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen", "response": "red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue", "detectors": ["repetition"], "expected_trigger": true},
+    {"id": "real_spam", "baseline": "An ordinary complete sentence.", "response": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "detectors": ["punctuation"], "expected_trigger": true},
+    {"id": "real_structure_damage", "baseline": "{\"count\":3}", "response": "{\"count\":", "expected": {"structure": "json", "schema": {"type": "object", "required": ["count"]}}, "detectors": ["structure"], "expected_trigger": true}
+  ]
+}

@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 from collections import Counter
+from dataclasses import replace
 
 from ...contracts.evaluation import EvaluationResult
-from .contracts import DistortionProbe, FaultConfigurationRecord, V1_FROZEN_SHA256, content_hash
+from .contracts import DistortionProbe, FaultConfigurationRecord, V1_FROZEN_SHA256, V2_FROZEN_SHA256, content_hash
 from .detectors import DETECTORS, text, tokens
 from .mechanism import cleanup_gate, validate_mechanism
 
@@ -14,9 +15,14 @@ VISIBLE = {"TASK_OR_STRUCTURE_FAILURE", "DEGENERATION", "GARBAGE_INCOHERENT"}
 PRIORITY = ["CRASH", "GARBAGE_INCOHERENT", "DEGENERATION", "TASK_OR_STRUCTURE_FAILURE"]
 
 
-def compare(probe, baseline, response, thresholds):
+def compare(probe, baseline, response, thresholds, calibration=None):
     results = [DETECTORS[name].evaluate(probe, baseline, response, {"thresholds": thresholds})
                for name in probe.applicable_detectors]
+    if calibration is not None:
+        results = [replace(r, triggered=None, severity='UNKNOWN', phenotype=None,
+                           reason='pre-fault calibration: ' + calibration.get(r.detector, {}).get('status', 'MISSING'),
+                           evidence={**r.evidence, 'uncalibrated_result': r.to_dict()})
+                   if calibration.get(r.detector, {}).get('status') != 'ELIGIBLE' else r for r in results]
     triggered = [r for r in results if r.triggered is True]
     unknown = [r.detector for r in results if r.triggered is None]
     baseline_failures = [r.detector for r in results if r.baseline_failed is True]
@@ -35,6 +41,7 @@ def compare(probe, baseline, response, thresholds):
         if first is None and len(bt) != len(ft):
             first = min(len(bt), len(ft))
     return {"verdict": verdict, "observation_status": observation,
+            "semantic_status": 'VALIDATOR_SCOPED' if probe.expected else 'SEMANTIC_REVIEW_REQUIRED',
             "families": sorted({r.phenotype for r in triggered if r.phenotype}),
             "detectors": [r.to_dict() for r in results], "unknown_detectors": unknown,
             "baseline_failed_detectors": baseline_failures, "response_diverged": divergence,
@@ -42,7 +49,7 @@ def compare(probe, baseline, response, thresholds):
             "token_ids": None if bb != "token_ids" or fb != "token_ids" else {"baseline": bt, "response": ft}}
 
 
-def pairing(probe, rows, official):
+def pairing(probe, rows, official, protocol=None):
     requests = [row.get("request") for row in rows]
     if any(not isinstance(r, dict) for r in requests):
         return {"status": "UNKNOWN", "reason": "raw request missing"}
@@ -52,8 +59,12 @@ def pairing(probe, rows, official):
         return {"status": "FAIL", "reason": "sample identity mismatch"}
     if official:
         req = requests[0]
-        if req.get("prompt") != probe.prompt or any(req.get(k) != v for k, v in probe.generation_config.items()):
+        content_matches = req.get('prompt') == probe.prompt or req.get('messages') == [{'role': 'user', 'content': probe.prompt}]
+        if not content_matches or any(req.get(k) != v for k, v in probe.generation_config.items()):
             return {"status": "FAIL", "reason": "request differs from frozen suite"}
+        if protocol and (req.get('messages') != [{'role': 'user', 'content': probe.prompt}]
+                         or any(req.get(k) != protocol[k] for k in ('chat_template_kwargs', 'logprobs', 'top_logprobs'))):
+            return {'status': 'FAIL', 'reason': 'request differs from frozen chat protocol'}
     return {"status": "PASS", "request_hash": content_hash(requests[0])}
 
 
@@ -68,7 +79,7 @@ def excerpt(row):
 
 
 def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluation_id="distortion-v1", analysis=None):
-    official = suite.get("version") == "DISTORTION_PROBE_SUITE_V1"
+    official = suite.get("version") in ("DISTORTION_PROBE_SUITE_V1", "NORMAL_DIAGNOSTIC_SUITE_V2")
     hash_valid = suite.get("hash") == content_hash(suite)
     probes = [DistortionProbe.from_dict(p) for p in suite["probes"]]
     ids = [p.probe_id for p in probes]
@@ -93,9 +104,10 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
             gate["probe_id"] = probe.probe_id
             gate["cycle_id"] = cycle["cycle_id"]
             cycle_gates.append(gate)
-            pair_gate = pairing(probe, [b, f, r], official)
-            effect = compare(probe, b, f, suite["thresholds"])
-            recovery = compare(probe, b, r, suite["thresholds"])
+            pair_gate = pairing(probe, [b, f, r], official, suite.get('request_protocol'))
+            calibration = cycle.get('calibration', {}).get('matrix', {}).get(probe.probe_id)
+            effect = compare(probe, b, f, suite["thresholds"], calibration)
+            recovery = compare(probe, b, r, suite["thresholds"], calibration)
             eligible = gate["status"] == "PASS" and pair_gate["status"] == "PASS" and before["status"] == "PASS" and hash_valid
             visible = eligible and effect["verdict"] in VISIBLE
             equivalent = text(b) is not None and text(b) == text(r)
@@ -107,6 +119,7 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
                            "baseline": excerpt(b), "fault": excerpt(f), "recovery": excerpt(r),
                            "effect": effect, "recovery_effect": recovery, "recovery_restored": restored,
                            "recovery_exact": equivalent, "pairing": pair_gate, "eligible": eligible,
+                           "calibration": calibration,
                            "visible_distortion": visible, "mechanism": gate,
                            "attribution": "VALID_FAULT_RUN" if eligible else "INVALID_FAULT_RUN"})
         # Probability requests are not visible probes, but their mechanism must
@@ -116,7 +129,11 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
             gate.update(probe_id=auxiliary.get("sample_id"), cycle_id=cycle["cycle_id"], auxiliary=True)
             cycle_gates.append(gate)
         gates.extend(cycle_gates)
+        same_process = before.get('pids') == clean.get('pids') and before['status'] == clean['status'] == 'PASS'
+        live_recovery = (same_process and all(x['recovery'].get('http_status') == 200 and
+                         (x['recovery_exact'] or x['recovery_effect']['verdict'] in ('HEALTHY', 'DIVERGED_VALID')) for x in matrix))
         results.append({"cycle_id": cycle["cycle_id"], "complete": complete,
+                        "same_process_recovery": same_process, "all_case_recovery": live_recovery,
                         "clean_before": before, "clean_after": clean, "matrix": matrix,
                         "visible_count": sum(x["visible_distortion"] for x in matrix),
                         "crash_count": sum(x["effect"]["verdict"] == "CRASH" for x in matrix),
@@ -144,7 +161,7 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
     rule = suite["robust_gate"]
     conditions = {
         "mechanism": mechanism_pass,
-        "frozen_16_probe_suite": official and hash_valid and suite.get("hash") == V1_FROZEN_SHA256 and len(probes) == 16,
+        "frozen_16_probe_suite": official and hash_valid and suite.get("hash") in (V1_FROZEN_SHA256, V2_FROZEN_SHA256) and len(probes) == 16,
         "complete_cycles": enough,
         "pairing_and_clean_baseline": bool(results) and all(c["invalid_count"] == 0 for c in results),
         "per_cycle_breadth": bool(results) and all(c["visible_count"] >= rule["min_distorted_per_cycle"] for c in results),
@@ -169,6 +186,16 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
                   "robust_gate": "ROBUST_VISIBLE_DISTORTION_PASS" if robust else "ROBUST_VISIBLE_DISTORTION_FAIL",
                   "robust_conditions": conditions, "cycles": results,
                   "interpretation": "Finite engineering smoke suite, no significance claim; DIVERGED_VALID means no configured detector failure, not semantic correctness."}
+    # The supplemental task has THREE independent outcomes. Keep the earlier
+    # strict breadth gate unchanged; do not force two pathologies to pass live.
+    stable_recovered = distortion['recovery']['stable_probes_restored']
+    delivery = {
+        'tool_live_validation': 'PASS' if enough and mechanism_pass and all(c['all_case_recovery'] for c in results) else 'PARTIAL',
+        'frozen_r1_visible_effect': 'OBSERVED' if affected else 'NOT_OBSERVED',
+        'reproducible_normal_cases': [pid for pid in stable_recovered if any(pid in pids for pids in family_probes.values())],
+        'case_reproduction': 'PASS' if any(pid in stable_recovered for pids in family_probes.values() for pid in pids) else 'NOT_PROVEN',
+        'does_not_require_two_pathology_families': True,
+    } if official else {'status': 'NOT_APPLICABLE_LEGACY_REPLAY'}
     return EvaluationResult.from_dict({
         "evaluation_id": evaluation_id, "capability_id": config.capability or "UNKNOWN", "candidate_id": None,
         "baseline": None, "fault": None, "recovery": None,
@@ -178,5 +205,6 @@ def evaluate_cycles(suite, config: FaultConfigurationRecord, cycles, *, evaluati
         "quality_performance": {}, "status": "PASS" if robust else "FAIL",
         "reason": distortion["robust_gate"], "evidence_refs": [],
         "fault_configuration": config.to_dict(), "distortion": distortion,
+        "normal_diagnostic_delivery": delivery,
         "analysis_details": analysis or {"status": "NOT_REQUESTED"},
     })

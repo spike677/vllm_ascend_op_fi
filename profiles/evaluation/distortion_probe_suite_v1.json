@@ -1,6 +1,6 @@
 {
-  "version": "DISTORTION_PROBE_SUITE_V1",
-  "hash": "abfc3c9a26597e3eefc7204306553dd381353c45dfe5b3d135632bbd8856d502",
+  "version": "NORMAL_DIAGNOSTIC_SUITE_V2",
+  "hash": "e5d853bfb947a4082b77392a55d0c5eb9435ce265f3eade94780ee536ac8bf86",
   "probe_count": 16,
   "thresholds": {
     "repetition_min_tokens": 16,
@@ -402,5 +402,24 @@
         "crash"
       ]
     }
-  ]
+  ],
+  "request_protocol": {
+    "endpoint": "/v1/chat/completions",
+    "messages": [
+      {
+        "role": "user",
+        "content_source": "probe.prompt"
+      }
+    ],
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "logprobs": true,
+    "top_logprobs": 1
+  },
+  "supersedes": {
+    "version": "DISTORTION_PROBE_SUITE_V1",
+    "hash": "abfc3c9a26597e3eefc7204306553dd381353c45dfe5b3d135632bbd8856d502",
+    "reason": "Fault-OFF calibration demonstrated bare completion prompt continuation; prompts/thresholds unchanged."
+  }
 }
