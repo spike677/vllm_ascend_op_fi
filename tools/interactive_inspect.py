@@ -45,8 +45,6 @@ def main():
                 runtime=args.get('runtime', {}), evidence_ref=args['input']))
         elif args['kind'] == 'native_parameter':
             result = adapter.native_parameter(data, source_ref=args['input'], runtime=args.get('runtime'))
-        elif args['kind'] == 'native_parameter':
-            result = adapter.native_parameter(data, source_ref=args['input'], runtime=args.get('runtime'))
         else:
             raise ValueError('UNKNOWN_RECORDED_SCHEMA')
     elif a.command == 'validate':

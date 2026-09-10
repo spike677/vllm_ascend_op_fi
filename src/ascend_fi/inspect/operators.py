@@ -64,35 +64,6 @@ class OperatorEvidenceAdapter:
                 'runtime_fingerprint':runtime or {}, 'parameters':params, 'module_name':None,
                 'cross_event_join':'NOT_ATTEMPTED; explicit cache/lifetime evidence required', 'live_arm_allowed':False}
 
-    def native_parameter(self, record, *, source_ref, runtime=None):
-        """Existing formal collection / weight / scale logs, without cross-event guessing."""
-        event = record.get('event')
-        if event == 'qmm_param_collection':
-            params = [{'surface': 'native_formal_args', 'name': name, 'role': role,
-                       'formal_ordinal': record.get('formal_ordinals', {}).get(name),
-                       'metadata': None, 'runtime_slot_proven': None,
-                       'presence': 'UNKNOWN; ordinal -1 is not by itself a tensor absence proof'}
-                      for name, role in FORMAL_ROLES.items()]
-        elif event in ('qmm_weight_observation', 'qmm_x2_scale_observation'):
-            weight = event == 'qmm_weight_observation'
-            role = 'weight' if weight else 'weight_scale'
-            name = 'x2' if weight else 'x2_scale'
-            slot = record.get('x2_slot' if weight else 'scale_slot')
-            proven = record.get('weight_slot_proven' if weight else 'scale_slot_proven') is True
-            if not weight:
-                proven = proven and record.get('scale_role') == 'x2_scale' and record.get('scale_formal_ordinal') == 3
-            meta = safe_meta(record)
-            meta['shape'] = record.get('view_shape')
-            params = [{'surface':'native_formal_args', 'name':name, 'role':role, 'metadata':meta,
-                       'runtime_slot_proven':slot if proven and type(slot) is int and slot >= 0 else None,
-                       'proof_source':event, 'granularity':'unknown', 'encoding':'unknown',
-                       'activation_scale_compatible':False, 'numeric_value':'NOT_CAPTURED'}]
-        else:
-            raise ValueError('UNSUPPORTED_NATIVE_PARAMETER_EVENT')
-        return {'origin':'RECORDED', 'event':event, 'source_ref':source_ref,
-                'runtime_fingerprint':runtime or {}, 'parameters':params, 'module_name':None,
-                'cross_event_join':'NOT_ATTEMPTED; explicit cache/lifetime evidence required', 'live_arm_allowed':False}
-
     def native_run(self, record, *, context, origin='RECORDED'):
         if origin != 'RECORDED':
             raise ValueError('LIVE_NATIVE_ADAPTER_NOT_WIRED')

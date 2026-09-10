@@ -28,7 +28,7 @@
 - `quantization.QuantizationResolver`：量化方法类型与 runtime fingerprint 匹配可信部署合同；没有已审计合同则只列字段线索，role/granularity/encoding UNKNOWN。
 - `operators.OperatorEvidenceAdapter`：Torch typed probe、native 正式角色、native Run slot 分视图；只接入既有 recorded schema，不添加 live interceptor。
 
-当前没有随包宣称已验证的现场量化合同。尝试把远端量化文件全文传回本地被安全审核拒绝，因此没有获取该载荷，也没有通过其他路径重试。后续需要明确授权源码只读核对，或由用户提供可审计的文件及哈希，才能将具体现场实现从 UNKNOWN 升级为已解析。
+2026-09-09 时没有已验证的现场合同；当时源码回传被安全审核拒绝，没有绕过。2026-09-10 用户附件明确限定授权后，重新通过审批只读核对必要源码，并新增类名/源码哈希固定的 Ascend 量化合同，完成静态 W8A8 与未量化方法实机验收。详见[实机记录](live_validation_20260910_zh.md)。这些源码副本仅存 ignored private，不提交。
 
 ## 审计时保护的 Git 状态
 

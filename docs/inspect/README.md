@@ -1,6 +1,6 @@
 # 列层—看参数—采一次—选目标—导出—验证
 
-当前状态：**本地接口与历史回放完成；真实双卡验证延后**。不改变正在运行的评测服务。Inspect 是开发者只读入口，不是自动注入器，不会因发现一个参数就 arm。
+当前状态：**真实双卡列层、输入观察、清理、现场量化合同与 IDENTITY 已通过；有损单请求 smoke 尚未执行**。详见[2026-09-10 实机记录](live_validation_20260910_zh.md)。Inspect 是开发者只读入口，不是自动注入器，不会因发现一个参数就 arm。
 
 ## 1. 新会话的单一 extension
 
@@ -109,14 +109,35 @@ scale_source: reference
 
 ```bash
 python tools/interactive_inspect.py validate --args validate.json \
-  --adapter your_existing_leased_adapter:factory --confirm-lossless --output validation.json
+  --adapter ascend_fi.inspect.qwen_r1_adapter:factory --confirm-lossless --output validation.json
 ```
 
-factory 是**本地可信现有 lifecycle 接入点**，不是 RPC 执行代码；返回 `ExistingOwnerIdentityValidator`，并负责已有资源锁、配置、单请求 probe 与实时 epoch 查询。`validate.json` 含 plan、service_epoch、runtime_fingerprint。不要把虚构的 factory 路径当作已经安装的命令。
+这是实际存在并已通过双卡 CLI 验证的 factory，返回 `ExistingOwnerIdentityValidator`，委托项目已有 `VerifiedOwner`，不是第二个 controller。仅适配当前已部署的 R1 环境：需要原 helper、冻结 manifest 和已经取得的真实资源锁；不支持仅给任意模型 URL 就直接执行。禁止手写 owner 记录伪造资源交接。
+
+`validate.json` 使用本次实机导出的文件，字段包括 `session_dir`、`suite.request_protocol`、`probe`、`fault_configuration`、`plan`、`service_epoch` 和 `runtime_fingerprint`。可设置唯一 `validation_run`，结果保存于该 session 的 `inspect_identity/<validation_run>/`；已存在则拒绝覆盖。factory 会确认所有 worker 都没有 Inspect hook，再检查目标 worker epoch。
 
 该桥只调用已有 owner 的 preflight、baseline、disabled install、`fault_request(identity=True)`、finally disarm/remove、recovery；不实现新 arm/controller。固定 owner 的实际模块集合和 selector 必须与 plan 等价，不支持的子集明确拒绝。IDENTITY 返回原 tensor，不能用有损 REFERENCE_REQUANT 冒充无损。
 
-验证输出仍为 `ValidationResult`。后续有损请求与单次效果分析继续交给已有 lifecycle/EvaluationResult；Inspect CLI 不直接 arm。本轮并未运行真实 IDENTITY，只有桥接 fixture 测试与历史 native 验证回放。
+验证输出仍为 `ValidationResult`。实机 baseline/disabled/IDENTITY/recovery 均回答 `84`，IDENTITY rank0 命中 256 次、changed=0、rank1=0。后续有损请求与单次效果分析继续交给已有 lifecycle/EvaluationResult；Inspect CLI 不直接 arm。有损集成在本轮未验收，不能以无损结果替代。
+
+已有受控会话的小规模验收入口：
+
+```bash
+python tools/run_interactive_inspect_live.py --session "$SESSION" --stage inspect-identity
+# 仅前一阶段通过、同 epoch、用户提供本次输入后才执行：
+python tools/run_interactive_inspect_live.py --session "$SESSION" --stage smoke --prompt "用户自己的正常输入"
+```
+
+脚本不获取锁、不启动服务，不替换原参数或补齐 4096 次命中。`smoke` 路径已提供但本轮未实际运行，不能标为实机通过。旧 session 恢复原服务以后，旧 epoch/plan 必须重新观察与导出，不能直接重放。
+
+## 当前现场量化合同
+
+- `down_proj` 实机为 `AscendUnquantizedLinearMethod`；不捏造模型 activation scale。
+- 代表性的 `qkv_proj / o_proj / gate_up_proj` 为 `AscendLinearMethod → AscendW8A8LinearMethod`（**静态** W8A8）。
+- `input_scale` 是静态 per-tensor activation scale；重复派生的 `aclnn_input_scale`/reciprocal 给 quantize 使用。
+- `weight_scale` 是 per-output-channel 权重尺度；`deq_scale` 是实际 QMM dequant 参数，不能与 input_scale 混用。
+- `tensor_absmax` 仍为参考 FakeRequant 规则。未实现模型尺度 provider，不自动把静态 scale 传入原 R1。
+- 合同要求完整类名与源码 SHA256 相符；未知或不同构建回退 UNKNOWN，不按字段名猜测。动态 W8A8 合同仅有源码审计，没有当前模型命中证据。
 
 ## QMM：独立算子视图
 
@@ -134,8 +155,9 @@ python tools/interactive_inspect.py recorded --args recorded.json --output opera
 
 ## 验收状态
 
-- 本地 138 项测试通过（包括原有 91 项）；CLI help 与历史回放通过。
+- 本地 146 项测试通过；正式 factory CLI 已通过实机 IDENTITY。
 - 历史数据与 fixture 分开；大体积/现场数据留 `artifacts/inspect/private/`，不提交。
-- 实机模块/参数观察、现场具体量化实现合同、真实 IDENTITY：**未完成**。
-- 原双卡长任务仍运行，本任务状态：`LIVE_DEFERRED_ACTIVE_EXPERIMENT`。
+- 实机 2 worker 各枚举 967 个模块、64 层；早/中/晚层代表观察与全 R1 目标观察通过。
+- 有损单请求集成、QMM 新 live adapter、module→native 精确关联：**未验收/不支持**，分开报告。
+- 旧长任务已结束并清理；本轮使用独立会话，不改旧证据、不 push。
 - 详见[复用地图](implementation_reuse_map.md)与[实机交接清单](live_handoff.md)。
