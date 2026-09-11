@@ -27,6 +27,7 @@ def main():
     p.add_argument('command', choices=['status', 'list', 'describe', 'observe', 'poll', 'stop',
                                        'candidates', 'export', 'validate', 'recorded'])
     p.add_argument('--base-url')
+    p.add_argument('--api-key-file', type=Path)
     p.add_argument('--args', type=Path, help='JSON kwargs, not executable Python')
     p.add_argument('--output', type=Path)
     p.add_argument('--adapter', help='explicit trusted LOCAL lifecycle factory module:function; only validate')
@@ -62,7 +63,7 @@ def main():
         action = {'list': 'list_modules', 'describe': 'describe_target', 'observe': 'observe_start',
                   'poll': 'observe_poll', 'stop': 'observe_stop', 'candidates': 'list_candidates',
                   'export': 'export_plan'}.get(a.command, a.command)
-        result = InspectClient(a.base_url).call(action, **args)
+        result = InspectClient(a.base_url, api_key_file=a.api_key_file).call(action, **args)
     rendered = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False)
     if a.output:
         with a.output.open('x', encoding='utf-8') as handle:

@@ -50,6 +50,11 @@ def small(query):
 class VerifiedOwner:
     def __init__(self, session, suite):
         self.session, self.suite = session, suite
+        self.base = BASE
+        self.worker_count = 2
+        self.device_ids = [2, 5]
+        self.reference_path = ROOT / 'fake_requant/reference_experiment/fake_requant_reference_extension.py'
+        self.observer_path = session / 'client/src/ascend_fi/inspect/experiment_extension.py'
         spec = importlib.util.spec_from_file_location('verified_e1_client', HELPER)
         self.client = importlib.util.module_from_spec(spec); spec.loader.exec_module(self.client)
         self.manifest = json.loads((OLD / 'live_validation/manifest.json').read_text())
@@ -105,7 +110,7 @@ class VerifiedOwner:
         self.attempt = experiment['config_id']
 
     def metrics(self):
-        with urllib.request.urlopen(BASE + '/metrics', timeout=15) as r:
+        with urllib.request.urlopen(self.base + '/metrics', timeout=15) as r:
             raw = r.read().decode()
         out = {'success': 0., 'running': 0., 'waiting': 0.}
         prefixes = {'vllm:request_success_total': 'success', 'vllm:num_requests_running': 'running',
@@ -127,8 +132,8 @@ class VerifiedOwner:
         from ascend_fi.inspect.plan_builder import verify_plan
         verify_plan(plan)
         self.preflight()
-        if len(plan['workers']) != 2:
-            raise ValueError('THIS_DEPLOYMENT_OWNER_REQUIRES_TWO_TP_WORKERS')
+        if len(plan['workers']) != self.worker_count:
+            raise ValueError('DEPLOYMENT_WORKER_COUNT_MISMATCH')
         arm = copy.deepcopy(plan['prospective_arm'])
         original = self.manifest['r1_arm_config']
         allowed = {'scale_multiplier', 'max_hits', 'module_regex', 'layer_filter',
@@ -166,13 +171,13 @@ class VerifiedOwner:
             raise RuntimeError('frozen extension changed')
 
     def rpc(self, method, kwargs=None):
-        return self.client._rpc(BASE, method, kwargs or {}, 180)
+        return self.client._rpc(self.base, method, kwargs or {}, 180)
 
     def clean_query(self):
         return small(self.rpc('fake_requant_query'))
 
     def service_healthy(self):
-        return self.client._health(BASE)
+        return self.client._health(self.base)
 
     def __enter__(self):
         self.guard(); return self
@@ -209,7 +214,7 @@ class VerifiedOwner:
         payload = {'model': self.model, 'messages': [{'role': 'user', 'content': probe['prompt']}],
                    **probe['generation_config'], 'chat_template_kwargs': protocol['chat_template_kwargs'],
                    'logprobs': True, 'top_logprobs': 1}
-        status, raw, error = self.client._post(BASE + protocol['endpoint'], payload, self.request_timeout)
+        status, raw, error = self.client._post(self.base + protocol['endpoint'], payload, self.request_timeout)
         if window is not None:
             # Metrics can lag the finished HTTP response. Never start another
             # request until engine completion and exactly one success are proven.
@@ -272,11 +277,11 @@ class VerifiedOwner:
                          config_id=self.experiment['config_id'], research_scope='CONFIG_EXPLORATION_NOT_FROZEN_R1',
                          bounded_evidence_required=True, window_policy=self.experiment['window_policy'],
                          original_r1_config_hash=self.manifest['r1_arm_config_sha256'],
-                         observer_hash=hashlib.sha256((self.session/'client/src/ascend_fi/inspect/experiment_extension.py').read_bytes()).hexdigest())
-            value['runtime_hash'] = hashlib.sha256((ROOT/'fake_requant/reference_experiment/fake_requant_reference_extension.py').read_bytes()).hexdigest()
+                         observer_hash=hashlib.sha256(self.observer_path.read_bytes()).hexdigest())
+            value['runtime_hash'] = hashlib.sha256(self.reference_path.read_bytes()).hexdigest()
             value['hit_policy'].update(budget_semantics='AT_MOST_NO_PADDING', short_request_padding=None)
             value['persistence'] = {'window': 'private, serialized complete request, finite hard cap, finally disarm'}
-            value['topology']['device_ids'] = [2, 5]
+            value['topology']['device_ids'] = self.device_ids
             return FaultConfigurationRecord.from_dict(value)
         config = configuration_from_raw(self.manifest, query['results'][0]).to_dict()
         config['hit_policy'].update(budget_semantics='AT_MOST_NO_PADDING', short_request_padding=None)

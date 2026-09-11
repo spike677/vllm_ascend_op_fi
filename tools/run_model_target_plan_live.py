@@ -54,13 +54,15 @@ def observe_and_build(client, owner, probe, out, *, roles, multiplier, max_promp
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--session', type=Path, required=True)
+    p.add_argument('--deployment', type=Path, help='Explicit private-service deployment; no legacy lab paths')
+    p.add_argument('--discover-only', action='store_true', help='Observe real clean input and export disabled plan; never install/arm')
     p.add_argument('--plan', type=Path)
     p.add_argument('--roles', nargs='+')
     p.add_argument('--multiplier', type=float, default=20)
     p.add_argument('--max-prompt-tokens', type=int)
     p.add_argument('--suite', type=Path, required=True)
     p.add_argument('--identity-probe', required=True)
-    p.add_argument('--probe', required=True)
+    p.add_argument('--probe', required=True, nargs='+')
     p.add_argument('--out', type=Path, required=True)
     args = p.parse_args()
     suite = json.loads(args.suite.read_text())
@@ -70,12 +72,17 @@ def main():
     if not plan and (not args.roles or not args.max_prompt_tokens):
         p.error('automatic plan needs --roles and --max-prompt-tokens')
     probes = {r['probe_id']: r for r in suite['probes']}
-    if args.identity_probe not in probes or args.probe not in probes:
+    if args.identity_probe not in probes or any(k not in probes for k in args.probe):
         raise ValueError('USE_FROZEN_SUITE_PROBE_IDS')
     args.out.mkdir(parents=True, exist_ok=False)
-    owner = create_owner(args.session, suite)
+    if args.deployment:
+        from private_service_owner import PrivateServiceOwner, InspectTransport
+        owner = PrivateServiceOwner(args.session, suite, json.loads(args.deployment.read_text()))
+        client = InspectClient(owner.base, transport=InspectTransport(owner))
+    else:
+        owner = create_owner(args.session, suite)
+        client = InspectClient('http://127.0.0.1:18031')
     owner.rawroot = args.out / 'raw'
-    client = InspectClient('http://127.0.0.1:18031')
     def current():
         return [r['result']['descriptor'] for r in client.call('describe_model', limit=1)]
     leased = False
@@ -86,7 +93,7 @@ def main():
             raise ValueError('PRIVATE_SINGLE_REQUEST_SERVICE_REQUIRED')
         import urllib.request, urllib.error
         try:
-            urllib.request.urlopen('http://127.0.0.1:18031/v1/models', timeout=15)
+            urllib.request.urlopen(owner.base + '/v1/models', timeout=15)
         except urllib.error.HTTPError as error:
             if error.code != 401:
                 raise
@@ -97,30 +104,44 @@ def main():
         if plan is None:
             plan = observe_and_build(client, owner, probes[args.identity_probe], args.out,
                 roles=args.roles, multiplier=args.multiplier, max_prompt_tokens=args.max_prompt_tokens)
-        for key in (args.identity_probe, args.probe):
+        for key in [args.identity_probe, *args.probe]:
             if probes[key]['generation_config']['max_tokens'] != plan['request_window']['max_tokens']:
                 raise ValueError('PLAN_GENERATION_BUDGET_MISMATCH')
+        if args.discover_only:
+            save(args.out / 'target_plan.json', plan)
+            print(json.dumps({'event': 'disabled_plan_exported', 'targets': len(plan['selected_modules']),
+                'roles': plan['roles'], 'path': str(args.out / 'target_plan.json')}), flush=True)
+            return
         runner = TargetPlanExecutor(owner, plan, current)
         save(args.out / 'target_plan.json', plan)
         save(args.out / 'identity.json', runner.validate_identity(probes[args.identity_probe]))
         before = owner.clean_query()
-        pair = runner.run_pair(probes[args.probe])
-        save(args.out / 'pair.json', pair)
+        pairs, runs = {}, {}
+        for key in args.probe:
+            pair = runner.run_pair(probes[key])
+            save(args.out / ('pair.json' if len(args.probe) == 1 else key + '_pair.json'), pair)
+            runs[key], pairs[key] = pair, pair['pair']
+            print(json.dumps({'event': 'pair_complete', 'probe': key, 'status': pair['status'],
+                'recovery_exact': pair['recovery_exact']}), flush=True)
+            if pair['status'] != 'PASS':
+                raise RuntimeError('PAIR_GATE_FAILED_STOP_SUBSEQUENT_REQUESTS:' + key)
         cycle = {'cycle_id': 'cycle_01', 'before_baseline': before, 'service_healthy_before': True,
-                 'pairs': {args.probe: pair['pair']}, 'after_remove': owner.clean_query(),
+                 'pairs': pairs, 'after_remove': owner.clean_query(),
                  'service_healthy': owner.service_healthy()}
-        subset = {**suite, 'probes': [probes[args.probe]], 'probe_count': 1}
+        subset = {**suite, 'probes': [probes[k] for k in args.probe], 'probe_count': len(args.probe)}
         subset['hash'] = content_hash(subset)
         result = evaluate_dataset(subset, runner.config, [cycle], evaluation_id=plan['plan_sha256'][:16])
         data = result.to_dict()
         data['model_targeting'] = {'plan_sha256': plan['plan_sha256'], 'window': pair['window'],
-                                  'recovery_exact': pair['recovery_exact']}
+                                  'recovery_exact': all(r['recovery_exact'] for r in runs.values()),
+                                  'per_probe_windows': {k: r['window'] for k, r in runs.items()}}
         if pair['status'] != 'PASS' or pair['window']['full_request_window'] != 'PASS':
             # Keep the existing EvaluationStatus enum; PARTIAL is a profile stage,
             # not a new competing result schema/status enumeration.
             data['model_targeting']['status'] = 'PARTIAL'
             data.update(status='UNKNOWN', reason='MODEL_AWARE_EXECUTION_OR_FULL_WINDOW_VALIDATION_INCOMPLETE')
         write_report(args.out / 'effect', EvaluationResult.from_dict(data), {'complete_cycles': 1})
+        save(args.out / 'replay_input.json', {'suite': subset, 'config': runner.config.to_dict(), 'cycles': [cycle]})
     finally:
         if leased:
             owner.disarm_and_remove()

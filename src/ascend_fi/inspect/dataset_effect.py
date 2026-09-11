@@ -45,12 +45,16 @@ def evaluate_dataset(suite, config, cycles, *, evaluation_id):
         for w in workers:
             ranks = {m.get('tp_rank') for m in w.get('matched_modules', [])}
             history = w.get('tensor_effect_history', [])
+            summary = w.get('effect_summary', {})
+            full_aggregate = summary.get('schema') == 'BOUNDED_EFFECT_SUMMARY_V1'
+            population = list(summary.get('per_module', {}).values()) if full_aggregate else history
             cap = w.get('armed_config', {}).get('max_hits')
             budgets.append({'probe_id': p['probe_id'], 'pid': w.get('pid'),
                 'rank': next(iter(ranks)) if len(ranks) == 1 else None,
                 'hit_count': w.get('hit_count'), 'max_hits': cap,
-                'changed_elements': sum(h.get('changed_elements', 0) for h in history),
-                'hit_layers': sorted({h['layer'] for h in history if h.get('layer') is not None}),
+                'changed_elements': sum(h.get('changed_elements', 0) for h in population),
+                'hit_layers': sorted({h['layer'] for h in population if h.get('layer') is not None}),
+                'numeric_population': ('ALL_ACCEPTED_CALLS_AGGREGATE' if full_aggregate else 'RETAINED_RAW_EVENTS'),
                 'budget_exhausted': w.get('hit_count') >= cap if cap is not None and w.get('hit_count') is not None else None,
                 'reject_reasons': w.get('reject_reasons'),
                 'no_claim_of_sustained_full_answer_injection': True})

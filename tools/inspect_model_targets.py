@@ -40,6 +40,7 @@ def collect_reports(client):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--base-url', default='http://127.0.0.1:18031')
+    parser.add_argument('--api-key-file', type=Path)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--roles', nargs='+')
     parser.add_argument('--rank', type=int, nargs='+', default=[0])
@@ -49,7 +50,7 @@ def main():
     parser.add_argument('--max-prompt-tokens', type=int)
     args = parser.parse_args()
     args.out.mkdir(parents=True, exist_ok=False)
-    reports = collect_reports(InspectClient(args.base_url))
+    reports = collect_reports(InspectClient(args.base_url, api_key_file=args.api_key_file))
     with (args.out / 'model_target_reports.json').open('x', encoding='utf-8') as f:
         json.dump(reports, f, ensure_ascii=False, indent=2)
     if args.roles:
