@@ -1,0 +1,128 @@
+{
+  "schema": "FAKE_REQUANT_USABILITY_V1_OFFLINE_VALIDATION",
+  "date": "2026-09-11",
+  "branch": "codex/fake-requant-usability-v1",
+  "implementation_commit": "6bcaefcc8b69458c868840d954888ebc72018f07",
+  "status": "IMPLEMENTED_OFFLINE_LIVE_UNVERIFIED",
+  "tests": [
+    {
+      "command": "python -m unittest discover -s tests -q",
+      "total": 293,
+      "passed": 291,
+      "skipped": 2,
+      "failures": 0,
+      "exit_code": 0,
+      "scope": "All canonical CPU/offline tests; no model requests",
+      "skip_reason": "No local PyTorch; real CPU torch hook and torch numeric parity tests skipped"
+    },
+    {
+      "command": "python -m unittest discover -s experiments/fake_requant_reference/tests -q",
+      "total": 5,
+      "passed": 5,
+      "skipped": 0,
+      "failures": 0,
+      "exit_code": 0
+    },
+    {
+      "command": "python -m unittest runtime_inspect.test_explicit_selection -v",
+      "total": 26,
+      "passed": 25,
+      "skipped": 1,
+      "scope": "Subset of 293, not added as independent tests; simulated worker RPC, metadata guards, host stop mocks"
+    },
+    {
+      "command": "python -m unittest evaluation.test_reference_probability -v",
+      "total": 14,
+      "passed": 14,
+      "scope": "Subset of 293; optional D single-window parser only"
+    }
+  ],
+  "compatibility": {
+    "legacy_manual_plan_tests": "PASS",
+    "legacy_same_process_BFR_tests": "PASS",
+    "new_manual_filters": "PASS_OFFLINE",
+    "all_bindable_distinct_worker_targets": "PASS_OFFLINE",
+    "missing_worker_before_request": "REJECTED_OFFLINE",
+    "rank_mapping_not_supported": "EXPLICIT_REJECTION",
+    "new_single_lossy_then_stop": "MOCK_PASS_LIVE_UNVERIFIED",
+    "reference_algorithm_original_bytes": "UNCHANGED",
+    "fault20_native": "UNCHANGED",
+    "detector_thresholds_and_scorer": "UNCHANGED",
+    "existing_tracked_evidence": "UNCHANGED"
+  },
+  "replays": {
+    "synthetic_detector_regression": {
+      "complete_cases": 12,
+      "assertions": 23,
+      "passed": 23,
+      "quality": "SYNTHETIC_NOT_MODEL_EVIDENCE"
+    },
+    "historical_detector_with_original_token_pieces": {
+      "cases": 9,
+      "passed": 9,
+      "label_source": "historical_audit_expectation",
+      "independent_quality": "INDEPENDENT_LABELS_PENDING"
+    },
+    "historical_text_only_without_original_pieces": {
+      "cases": 9,
+      "passed": 6,
+      "known_gap": "0004 tail-loop missed in three cycles; preserved, no threshold change"
+    },
+    "qwen06b_target_preview": {
+      "source": "previous Qwen0.6B same-epoch reports, replayed offline",
+      "targets": 112,
+      "participating_ranks": [
+        0
+      ],
+      "cap_per_worker": 131264,
+      "execution_qualification": "CURRENT_EPOCH_UNVERIFIED"
+    },
+    "qwen06b_numeric_replay": {
+      "source": "prior single-rank three-question B/F/R, not this turn live",
+      "distortion_score_unchanged": true,
+      "samples": [
+        {
+          "id": 82,
+          "sampled_elements": 13045760,
+          "nmse": 0.2980401447717752,
+          "sqnr_db": 5.257252343176426
+        },
+        {
+          "id": 86,
+          "sampled_elements": 9031680,
+          "nmse": 0.21606375436325118,
+          "sqnr_db": 6.6541808179928195
+        },
+        {
+          "id": 149,
+          "sampled_elements": 10235904,
+          "nmse": 0.35465716096361455,
+          "sqnr_db": 4.5019126678799735
+        }
+      ]
+    }
+  },
+  "new_live_model_validation": "NOT_RUN",
+  "multirank_live": "MULTIRANK_LIVE_PENDING",
+  "new_stop_restart_live": "NOT_RUN",
+  "new_visible_pathology": "NOT_MEASURED",
+  "independent_detector_quality": "INDEPENDENT_LABELS_PENDING",
+  "probability_target_plan_transaction": "NOT_IMPLEMENTED_LIVE_UNVERIFIED",
+  "npu_used": false,
+  "remote_contacted": false,
+  "old_evidence_modified": false,
+  "push": false,
+  "environment_end": "Local only. No service/lock/arm state changed or claimed inspected remotely.",
+  "git_diff_check": "PASS",
+  "release_checks": {
+    "source_files": 141,
+    "source_hash_mismatches": 0,
+    "reference_raw_hash_matches": true,
+    "local_markdown_links_checked": 391,
+    "broken_local_links": 0,
+    "recommended_cli_help_checks": 9,
+    "help_failures": 0,
+    "detail_local_path": "artifacts/inspect/private/usability_v1/release_verification.json",
+    "reproduce": "python tools/audit_source_baseline.py verify --manifest docs/releases/fake_requant_usability_v1/source_manifest.json --out <new-report-path>"
+  }
+}

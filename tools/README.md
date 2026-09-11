@@ -7,9 +7,11 @@
 | [private_demo_service.py](private_demo_service.py) | Linux宿主机，Docker/本地镜像/模型/空闲NPU/参考文件 | `start/stop/status --session`；start另有 `--source-root --model --device --port --image --lock-root` | lease/鉴权/容器/deployment；stop仅本session容器 |
 | [prepare_private_demo_suite.py](prepare_private_demo_suite.py) | 容器或Linux CPU，本地transformers/tokenizer | `--source-suite --model --max-tokens --out` | 选82/86/149并重算模板长度；不推理/下载，新文件 |
 | [interactive_inspect.py](interactive_inspect.py) | 私有服务客户端 | `status/list/describe/observe/poll/stop/candidates/export`、`--base-url --api-key-file --args --output` | 只读查询或有限元数据hook；export不arm。用新输出文件，旧子命令不都保证拒绝覆盖 |
-| [inspect_model_targets.py](inspect_model_targets.py) | 服务ready，客户端 | `--base-url --api-key-file --out`，可选 `--roles` | 结构报告，不等于绑定计划 |
+| [inspect_model_targets.py](inspect_model_targets.py) | 服务只读或离线 `--reports` | `--selection-mode manual/all_bindable --roles --layers --modules --ranks 0/all --reference-arm --max-tokens --max-prompt-tokens --out` | JSON/中文目标预览；生成关闭计划，不arm |
 | [run_model_target_plan_live.py](run_model_target_plan_live.py) | 当前容器、真实lease | `--deployment --session --suite --roles --multiplier --max-prompt-tokens --identity-probe --probe --discover-only --out` | 正常观察和关闭计划；无有损注入 |
 | 同一runner | 当前epoch绑定计划 | `--deployment --session --suite --plan --identity-probe --probe --out` | IDENTITY、每题B/F/R、finally清理、raw/result；独立新目录 |
+| [run_private_demo_once.py](run_private_demo_once.py) | Linux宿主、已启动的自有lease容器 | `--session --suite --plan --identity-probe --probe --out --confirm-stop-instance` | IDENTITY→一次有损→finally清理及完整停止；产物索引。无热恢复请求，不自动启动或重试 |
+| [audit_detector_quality.py](audit_detector_quality.py) | 离线完整文本／原 token pieces | `--cases --suite --out`（详情以 `--help` 为准） | 回归与独立标签质量分开；新文件、不调阈值 |
 | [summarize_private_demo.py](summarize_private_demo.py) | 离线Python、完整evaluation目录 | `--evaluation --out` | 新中文原文报告/数值/Dashboard，不重写输入 |
 | [audit_private_demo.py](audit_private_demo.py) | Linux部署环境，只读 | `--session --branch --head --out` | 源码/安装记录/证据哈希，不推理 |
 | [audit_source_baseline.py](audit_source_baseline.py) | 本地Python/Git | `inventory/links/verify --out`；verify加 `--manifest` | 独立新审计文件；哈希、链接、help；不启动服务 |
