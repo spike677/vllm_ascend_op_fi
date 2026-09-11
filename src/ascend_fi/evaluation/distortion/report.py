@@ -261,6 +261,15 @@ def _single_dashboard(data):
     """Same result renderer, a single-call lifecycle view; never a control UI."""
     esc = lambda v: html.escape(str(v), quote=True).replace('\r', '&#13;').replace('\n', '&#10;')
     single = data['single_request_effect']
+    config, effect = data['fault_configuration'], single['effect']
+    numeric = data['numerical_effect'].get('aggregate', {})
+    summary = {'目标 rank': config.get('targeted_ranks'), '每 worker 模块数': len(config.get('actual_module_names', [])),
+        '强度': config.get('strength'), '机制': single['window']['mechanism'],
+        '目标调用覆盖': single['window']['target_call_window'], '完整请求覆盖': single['window']['full_request_window'],
+        '归因有效': single['eligible'], '全文分叉': effect['response_diverged'],
+        '首分叉': effect['first_divergence'], '比较单位': effect['comparison_basis'],
+        '规则结论': effect['display_status'], '采样 NMSE': numeric.get('nmse'),
+        '采样 SQNR dB': numeric.get('sqnr_db'), '采样状态': numeric.get('status')}
     columns = ''.join('<article><h2>' + title + '</h2><pre>' +
         esc(single['raw'][phase].get('response_text')) + '</pre><details><summary>原始记录 / token pieces</summary><pre>' +
         esc(_pretty(single['raw'][phase])) + '</pre></details></article>'
@@ -268,10 +277,11 @@ def _single_dashboard(data):
     return '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>单次 FakeRequant 效果</title>' + \
         '<style>body{font:16px system-ui;max-width:1280px;margin:auto;padding:24px;background:#f5f7fa;color:#182b40}section{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:white;padding:20px;border:1px solid #ccd5df}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px monospace}summary{cursor:pointer}h1{font-size:26px}</style>' + \
         '<h1>单次有损推理 · 结果只读</h1><p>不是完整 B/F/R 周期。停止实例记录见上一级产物索引；热卸载恢复与重启后文本恢复均未测。</p>' + \
-        '<h2>计划与实际效果</h2><pre>' + esc(_pretty({'config': data['fault_configuration'],
-            'attribution_eligible': single['eligible'], 'window': single['window'],
-            'effect': single['effect'], 'numerical_effect': data['numerical_effect']})) + '</pre>' + \
-        '<section>' + columns + '</section><h2>生命周期</h2><pre>' + esc(_pretty(data['instance_lifecycle'])) + \
+        '<h2>计划与实际效果</h2><pre>' + esc(_pretty(summary)) + '</pre>' + \
+        '<section>' + columns + '</section><details><summary>完整配置、各 worker 覆盖、规则片段与数值</summary><pre>' + \
+        esc(_pretty({'config': config, 'window': single['window'], 'effect': effect,
+                     'numerical_effect': data['numerical_effect']})) + '</pre></details>' + \
+        '<h2>生命周期</h2><pre>' + esc(_pretty(data['instance_lifecycle'])) + \
         '</pre><p>轨迹分叉不等于严重病态；规则告警不等于开放式语义正确性认证。无 recovery 文本，不填充为 baseline。</p></html>'
 
 
