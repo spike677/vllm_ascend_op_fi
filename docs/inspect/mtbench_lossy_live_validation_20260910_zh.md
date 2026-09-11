@@ -16,14 +16,18 @@ rank0 每请求命中 4096 次、覆盖 64 层，rank1 为 0 hit；累计 **32,7
   原分数和阈值全部保留，只增加格式上下文注释，没有事后调参。
 
 本轮证明了“新入口能执行有损变换、改变生成轨迹并精确恢复”，**没有证明模型出现明显病态崩溃**。
-以下是本工作区私有产物，不是普通 Git 中已经提交的文件：
+以下是历史实验工作树的私有产物，不是普通Git提交或当前canonical源码的依赖。源码收束只修正导航，实验结果和原文件未改写；见[证据保存规则](../../artifacts/README.md)。
 
-- [完整输入及 B/F/R 并排 Dashboard](../../artifacts/inspect/private/mtbench_live_20260910_v1/effect_final/effect_dashboard.html)
-- [全部原始回答的中文 Markdown 索引](../../artifacts/inspect/private/mtbench_live_20260910_v1/effect_final/responses_full_zh.md)
-- [完整 EvaluationResult](../../artifacts/inspect/private/mtbench_live_20260910_v1/effect_final/evaluation_result.json)
-- [规则上下文核对](../../artifacts/inspect/private/mtbench_live_20260910_v1/effect_final/rule_context_review.json)
-- [在线 / 离线一致性](../../artifacts/inspect/private/mtbench_live_20260910_v1/effect_final/offline_parity.json)
-- [最终环境状态](../../artifacts/inspect/private/mtbench_live_20260910_v1/final_snapshot/final_environment.json)
+历史包根：`D:\project\demoncatpfi-worktrees\interactive-inspect-v1\artifacts\inspect\private\mtbench_live_20260910_v1`。取得该私有包后按下列相对路径查阅，不假装文件随普通clone提供：
+
+| 内容 | 包内路径 |
+| --- | --- |
+| 完整B/F/R Dashboard | `effect_final/effect_dashboard.html` |
+| 全部原始回答中文索引 | `effect_final/responses_full_zh.md` |
+| EvaluationResult | `effect_final/evaluation_result.json` |
+| 规则上下文 | `effect_final/rule_context_review.json` |
+| 在线/离线一致性 | `effect_final/offline_parity.json` |
+| 最终环境 | `final_snapshot/final_environment.json` |
 
 ## 数据与协议
 

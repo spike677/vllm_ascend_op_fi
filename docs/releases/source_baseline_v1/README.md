@@ -65,6 +65,8 @@ IDENTITY全部112目标、changed=0、normal/disabled/identity/recovery全文和
 
 Linux特有运行检查本轮NOT_RUN；只读归档检查不等于服务启动。无NPU使用、无fault arm、无pull/rebase/push。原始33项证据hash保持，历史大文件/秘密不进入新提交。新增文档链接检查不检查外网可用性或Markdown锚点语义。
 
+正式目录切换后再次执行231项离线测试；发现旧MT-Bench报告的6个链接依赖旧工作树私有文件，已改为证据包路径说明，没有搬数据或改结果。最终verification来自canonical目录复核，而不只是在实验工作树内通过。
+
 已知待办：[算法限制](../../architecture/algorithms_zh.md)记录CPU/tensor极小scale eps差异、remove失败的物理hook确认缺口、启动早期留锁、请求timeout完成证明；本轮不修。通用概率事务、全窗口observer、DeepSeek和一键安装单独推进。
 
 ## 6. 阅读顺序
