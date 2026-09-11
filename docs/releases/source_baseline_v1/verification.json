@@ -1,0 +1,53 @@
+{
+  "status": "PASS",
+  "NPU_used": false,
+  "source_mismatches": [],
+  "reference_hash_matches": true,
+  "workspace_relative_single_root": true,
+  "links": {
+    "checked": 352,
+    "broken": []
+  },
+  "help_checks": [
+    {
+      "path": "tools/private_demo_service.py",
+      "exit_code": 0,
+      "output": "usage: private_demo_service.py [-h] --session SESSION\n                               [--source-root SOURCE_ROOT] [--model MODEL]\n                               [--device DEVICE] [--port PORT] [--image IMAGE]\n                               [--lock-root LOCK_ROOT]\n                               {start,stop,status}\n\nExplicit single-NPU demo service lifecycle; never stops an existing service.\nRun on the Linux host. New files live in --session; an existing local image is\nrequired. start refuses an occupied NPU/project lease. stop only owns this\nnamed container, and releases the lease only after Docker confirms it has\nstopped.\n\npositional arguments:\n  {start,stop,status}\n\noptions:\n  -h, --help            show this help message and exit\n  --session SESSION\n  --source-root SOURCE_ROOT\n  --model MODEL\n  --device DEVICE\n  --port PORT\n  --image IMAGE\n  --lock-root LOCK_ROOT\n"
+    },
+    {
+      "path": "tools/prepare_private_demo_suite.py",
+      "exit_code": 0,
+      "output": "usage: prepare_private_demo_suite.py [-h] --source-suite SOURCE_SUITE --model\n                                     MODEL --out OUT [--max-tokens MAX_TOKENS]\n\nFreeze a new small-model demo protocol from existing verified public samples.\nDoes not change the source suite, prompts, rules or detector thresholds. This\nis a new 512-token demo, not a replay of the historical 1024-token Qwen32B\nevidence.\n\noptions:\n  -h, --help            show this help message and exit\n  --source-suite SOURCE_SUITE\n  --model MODEL\n  --out OUT\n  --max-tokens MAX_TOKENS\n"
+    },
+    {
+      "path": "tools/interactive_inspect.py",
+      "exit_code": 0,
+      "output": "usage: interactive_inspect.py [-h] [--base-url BASE_URL]\n                              [--api-key-file API_KEY_FILE] [--args ARGS]\n                              [--output OUTPUT] [--adapter ADAPTER]\n                              [--confirm-lossless]\n                              {status,list,describe,observe,poll,stop,candidates,export,validate,recorded}\n\nDeveloper CLI: list -> describe -> observe -> candidates -> export ->\nvalidate. No model requests or mutation by default. Observe opens a bounded\nwindow and returns.\n\npositional arguments:\n  {status,list,describe,observe,poll,stop,candidates,export,validate,recorded}\n\noptions:\n  -h, --help            show this help message and exit\n  --base-url BASE_URL\n  --api-key-file API_KEY_FILE\n  --args ARGS           JSON kwargs, not executable Python\n  --output OUTPUT\n  --adapter ADAPTER     explicit trusted LOCAL lifecycle factory\n                        module:function; only validate\n  --confirm-lossless\n"
+    },
+    {
+      "path": "tools/inspect_model_targets.py",
+      "exit_code": 0,
+      "output": "usage: inspect_model_targets.py [-h] [--base-url BASE_URL]\n                                [--api-key-file API_KEY_FILE] --out OUT\n                                [--roles ROLES [ROLES ...]]\n                                [--rank RANK [RANK ...]]\n                                [--reference-arm REFERENCE_ARM]\n                                [--multiplier MULTIPLIER]\n                                [--max-tokens MAX_TOKENS]\n                                [--max-prompt-tokens MAX_PROMPT_TOKENS]\n\nRead-only model-aware discovery / plan export. Never install, arm or launch.\n\noptions:\n  -h, --help            show this help message and exit\n  --base-url BASE_URL\n  --api-key-file API_KEY_FILE\n  --out OUT\n  --roles ROLES [ROLES ...]\n  --rank RANK [RANK ...]\n  --reference-arm REFERENCE_ARM\n  --multiplier MULTIPLIER\n  --max-tokens MAX_TOKENS\n  --max-prompt-tokens MAX_PROMPT_TOKENS\n"
+    },
+    {
+      "path": "tools/run_model_target_plan_live.py",
+      "exit_code": 0,
+      "output": "usage: run_model_target_plan_live.py [-h] --session SESSION\n                                     [--deployment DEPLOYMENT]\n                                     [--discover-only] [--plan PLAN]\n                                     [--roles ROLES [ROLES ...]]\n                                     [--multiplier MULTIPLIER]\n                                     [--max-prompt-tokens MAX_PROMPT_TOKENS]\n                                     --suite SUITE --identity-probe\n                                     IDENTITY_PROBE --probe PROBE [PROBE ...]\n                                     --out OUT\n\nRun an explicit plan through the existing leased lab owner (no launch/lock).\n\noptions:\n  -h, --help            show this help message and exit\n  --session SESSION\n  --deployment DEPLOYMENT\n                        Explicit private-service deployment; no legacy lab\n                        paths\n  --discover-only       Observe real clean input and export disabled plan;\n                        never install/arm\n  --plan PLAN\n  --roles ROLES [ROLES ...]\n  --multiplier MULTIPLIER\n  --max-prompt-tokens MAX_PROMPT_TOKENS\n  --suite SUITE\n  --identity-probe IDENTITY_PROBE\n  --probe PROBE [PROBE ...]\n  --out OUT\n"
+    },
+    {
+      "path": "tools/summarize_private_demo.py",
+      "exit_code": 0,
+      "output": "usage: summarize_private_demo.py [-h] --evaluation EVALUATION --out OUT\n\nOffline new-user walkthrough/report from real TargetPlan and raw B/F/R. Reuse\nEvaluationResult and the existing scorer/Dashboard. No generation, arm, new\nthresholds, LLM judge or invented task/probability measurements.\n\noptions:\n  -h, --help            show this help message and exit\n  --evaluation EVALUATION\n  --out OUT\n"
+    },
+    {
+      "path": "tools/audit_private_demo.py",
+      "exit_code": 0,
+      "output": "usage: audit_private_demo.py [-h] --session SESSION --branch BRANCH --head\n                             HEAD --out OUT\n\nRead-only provenance snapshot after a completed private demo; no model calls.\n\noptions:\n  -h, --help         show this help message and exit\n  --session SESSION\n  --branch BRANCH\n  --head HEAD\n  --out OUT\n"
+    },
+    {
+      "path": "tools/audit_source_baseline.py",
+      "exit_code": 0,
+      "output": "usage: audit_source_baseline.py [-h] [--manifest MANIFEST]\n                                [--inventory INVENTORY]\n                                [--evidence-root EVIDENCE_ROOT] --out OUT\n                                {inventory,verify,links,freeze,tests}\n\nOffline source/documentation inventory and release checks; never starts\nservices. All outputs are new files. No historical manifests, evidence or\nother worktrees are rewritten. This helper is not a runtime, installer or\nfault controller.\n\npositional arguments:\n  {inventory,verify,links,freeze,tests}\n\noptions:\n  -h, --help            show this help message and exit\n  --manifest MANIFEST\n  --inventory INVENTORY\n  --evidence-root EVIDENCE_ROOT\n  --out OUT\n"
+    }
+  ]
+}

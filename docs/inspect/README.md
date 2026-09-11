@@ -2,7 +2,7 @@
 
 单卡新用户实测入口：[Qwen3-0.6B 识别 → 注入 → 评估使用说明](qwen06b_single_npu_user_walkthrough_zh.md)。本分支新增显式 private deployment 配置，已在 2123 的单卡模型上完成 112 个目标的真实绑定、IDENTITY、三题有损 B/F/R；不依赖旧双卡 E1 目录。下方旧双卡描述保留其历史适用范围。
 
-当前推荐：[FakeRequant 工具 V1 功能说明](fake_requant_tool_v1_usage_zh.md)与[完整指标解释](../evaluation/fake_requant_tool_v1_metrics_zh.md)。本页保留通用 Inspect 与早期入口细节；新任务默认走 TargetPlan runner。
+当前推荐：[单卡手册](qwen06b_single_npu_user_walkthrough_zh.md)、[实际CLI](../../tools/README.md)与[完整指标解释](../evaluation/fake_requant_tool_v1_metrics_zh.md)。[早期工具V1](fake_requant_tool_v1_usage_zh.md)与本页下方双卡参数保留历史适用范围；新任务显式使用deployment和TargetPlan runner，不默认依赖旧R1 owner。
 
 新增入口：[Qwen／DeepSeek FakeRequant 自动目标适配 V1](model_aware_fake_requant_v1_zh.md)。新 epoch 的 Qwen 双卡已完成 256 目标自动绑定、IDENTITY 与一题真实有损 B/F/R：262144 hit，明显重复输出，精确恢复。**原生 DeepSeek 和独立执行步完整窗口仍未验收**；总体 PARTIAL，不与下述旧入口的历史通过结论混用。
 

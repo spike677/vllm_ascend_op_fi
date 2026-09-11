@@ -13,13 +13,13 @@ fake_requant_reference_extension.py
 SHA256=56097835861bb441232663380eed2953acd97f3aa03c49262368dce6defeaca7
 ```
 
-参考实现是独立 Research 依赖，不是本次重写的算法。在 Windows 源仓库中的原位置是 `experiments/fake_requant_reference/source/`（research/fake-requant-reference 工作树）。本轮复制到演示目录，不要求新服务器拥有任何历史 E1/R1 结果目录。
+参考实现按研究提交固定纳入本仓库的 `experiments/fake_requant_reference/source/`，不是本次重写的算法，不再依赖其他工作树当前内容。见[依赖与执行环境](../development/workspace_and_dependencies_zh.md)。新部署应将整个发布源码放到明确的Linux路径；下面的历史服务器路径只是本次已验证示例。
 
-当前已部署的公共代码路径：
+先将本次发布源码部署到明确的Linux目录。以下是新部署示例，不依赖旧演示client或旧实验结果；实际路径可以自行指定：
 
 ```bash
-export DEMO_ROOT=/home/gyl/demoncat_demo_qwen06b_20260911
-export DEMO_CODE=$DEMO_ROOT/client
+export DEMO_ROOT=/home/gyl/demoncat_demo
+export DEMO_CODE=/home/gyl/demoncat_source_baseline_v1
 ```
 
 再次演示应创建新 session，不能覆盖本轮 `run_02`：
@@ -27,7 +27,7 @@ export DEMO_CODE=$DEMO_ROOT/client
 ```bash
 export DEMO_SESSION=$DEMO_ROOT/run_$(date -u +%Y%m%dT%H%M%SZ)
 mkdir -p "$DEMO_SESSION/reference"
-cp "$DEMO_ROOT/reference/fake_requant_reference_extension.py" "$DEMO_SESSION/reference/"
+cp "$DEMO_CODE/experiments/fake_requant_reference/source/fake_requant_reference_extension.py" "$DEMO_SESSION/reference/"
 sha256sum "$DEMO_SESSION/reference/fake_requant_reference_extension.py"
 
 python3 "$DEMO_CODE/tools/private_demo_service.py" start \
@@ -79,11 +79,11 @@ python "$DEMO_CODE/tools/inspect_model_targets.py" \
 
 本次使用已有 MT-Bench 首轮原题 82、86、149，预算改为本演示独立固定的 512 token，temperature=0、seed=42、关闭 thinking。没有修改题目、检测阈值，也没有用 LLM judge。
 
-首次先准备 suite：`--source-suite` 指向本次随交付提供的原始 suite。示例路径为历史只读副本，不覆盖它。
+首次先准备 suite：`--source-suite` 指向发布中固定的公开原题快照，不要求旧实验目录。输出是新的模型专属suite，不覆盖来源。
 
 ```bash
 python "$DEMO_CODE/tools/prepare_private_demo_suite.py" \
-  --source-suite "$DEMO_ROOT/run_02/source_suite.json" \
+  --source-suite "$DEMO_CODE/profiles/evaluation/qwen06b_demo_source_suite.json" \
   --model /home/gyl/models/Qwen3-0.6B \
   --max-tokens 512 --out "$DEMO_SESSION/suite.json"
 ```
@@ -111,12 +111,12 @@ python "$DEMO_CODE/tools/run_model_target_plan_live.py" \
 
 ```text
 base_scale = absmax(input) / 127
-fault_scale = max(base_scale × 20, eps)
+fault_scale = max(base_scale, eps) × 20
 q = clamp(round(input / fault_scale), -128, 127)
 faulty_input = (q × fault_scale).to(original_dtype)
 ```
 
-输入最终仍是 BF16，真实线性层继续执行；权重和原生量化参数不变。这个参考 INT8 Q/DQ 的粗步长模拟的是激活精度损失，不是 packed INT4 kernel，也不是训练/压缩模型。
+输入最终仍是 BF16，真实线性层继续执行；权重和原生量化参数不变。这个参考 INT8 Q/DQ 的粗步长模拟的是激活精度损失，不是 packed INT4 kernel，也不是训练/压缩模型。上式仅帮助读配置，精确dtype、舍入、eps及CPU辅助实现差异以[算法说明](../architecture/algorithms_zh.md)为准。
 
 每请求有限硬上限：`112 × (512 + 58 + 16) × 2 = 131264`。覆盖的是观察到的目标调用；触顶记为不完整，不自动清零。倍率 1 仍有损，不可替代 IDENTITY。
 
@@ -208,4 +208,4 @@ python3 "$DEMO_CODE/tools/private_demo_service.py" stop --session "$DEMO_SESSION
     effect/effect_dashboard.html
 ```
 
-初次启动曾因宿主机旧 Python 缺少 `shlex.join` 失败，尚未创建容器/运行模型；失败目录与锁归还记录已保留，修复为兼容拼接后使用独立 `run_02` 重试。最终没有遗留 armed fault，NPU 进程为空，原 `gyl_test` 保持运行。代码在 `codex/qwen06b-single-npu-demo`，基线 HEAD 为 `b8b167d709271296b8114b42a627d3a7827d03b1`，本轮修改未提交/未 push；226 项测试通过。
+初次启动曾因宿主机旧 Python 缺少 `shlex.join` 失败，尚未创建容器/运行模型；失败目录与锁归还记录已保留，修复为兼容拼接后使用独立 `run_02` 重试。当时收尾没有遗留 armed fault，NPU 进程为空，原 `gyl_test` 保持运行；这是当时记录，不是本次实时服务器检查。实测来源是 `b8b167d709271296b8114b42a627d3a7827d03b1` 加工作区修改，随后冻结为 `f67b4186b7ed5652d49ac7c40aa9cc762adfeaf1`。当前正式入口见[源码基线发布](../releases/source_baseline_v1/README.md)，不再依赖演示工作树；实测时226项离线测试通过。启动早期留锁／remove失败的现有边界见算法说明，未在本次文档收束中修复。

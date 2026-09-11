@@ -1,6 +1,8 @@
 # Qwen 文档
 
-当前文档对应私有的 `Qwen3-32B-w8a8-nopdmix` 双卡运行环境。不同 CANN/vLLM/torch_npu 版本、硬件、rank 映射或模型 revision 均需重新验证。
+当前推荐：[Qwen3-0.6B单卡用户手册](../../inspect/qwen06b_single_npu_user_walkthrough_zh.md)和[源码基线记录](../../releases/source_baseline_v1/README.md)。28层112目标、三题N=1；不是下方旧双卡R1的PPL/任务报告。
+
+以下保留 `Qwen3-32B-w8a8-nopdmix` 双卡历史结果。不同CANN/vLLM/torch_npu、硬件、rank或模型revision必须重新验证；不同故障配置的指标不可互借。
 
 - [FakeRequant 效果报告（中文）](fake_requant_effect_v1.md)
 - [FakeRequant 效果报告（English）](fake_requant_effect_v1_en.md)

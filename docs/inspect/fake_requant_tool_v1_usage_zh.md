@@ -1,6 +1,6 @@
 # FakeRequant 工具 V1：功能与使用说明
 
-本版是开发者模式工具主体的受限发布，不是“所有 Qwen／DeepSeek 都能直接运行”的通用服务发行包。推荐主线为 `codex/fake-requant-tool-v1`；发布清单见 [版本记录](../releases/fake_requant_tool_v1/README.md)。
+本页是历史双卡工具V1手册，冻结分支为 `codex/fake-requant-tool-v1`，原[版本记录](../releases/fake_requant_tool_v1/README.md)保留。**当前新用户默认使用[Qwen0.6B单卡手册](qwen06b_single_npu_user_walkthrough_zh.md)及[source-baseline-v1](../releases/source_baseline_v1/README.md)**，不依赖下面的旧E1/R1路径。本项目仍是开发者模式受限源码工具，不是任意Qwen/DeepSeek通用发行包。
 
 已验收：指定 Qwen3-32B 双卡环境的自动目标发现、真实输入绑定、IDENTITY、有损执行、精确恢复和离线报告。原生 DeepSeek 接入、独立执行步覆盖、新组合的 GSM8K／PPL／三周期矩阵是独立后续任务，不阻塞这个最小功能版本。
 

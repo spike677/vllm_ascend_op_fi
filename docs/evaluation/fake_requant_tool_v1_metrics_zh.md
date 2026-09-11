@@ -1,6 +1,6 @@
 # FakeRequant 工具 V1：指标、字段与结论边界
 
-本说明描述**现有实现**，不修改检测阈值，不要求四模块族×20重新测量全部指标。默认评分器是 `DISTORTION_SCORER_V2_TASK_TERMINATION_PATHOLOGY`；配置文件虽名为 `distortion_probe_suite_v1.json`，其当前内容版本为 `NORMAL_DIAGNOSTIC_SUITE_V2`。版本与源码哈希见 [发布清单](../releases/fake_requant_tool_v1/release_manifest.json)。
+本说明是当前**唯一指标字段参考**，描述现有实现，不修改阈值、不要求重新测量全部指标。默认评分器是 `DISTORTION_SCORER_V2_TASK_TERMINATION_PATHOLOGY`；配置文件虽名为 `distortion_probe_suite_v1.json`，其当前内容版本为 `NORMAL_DIAGNOSTIC_SUITE_V2`。当前版本见[源码基线](../releases/source_baseline_v1/README.md)，旧双卡版本见[历史清单](../releases/fake_requant_tool_v1/release_manifest.json)。数学dtype/eps与生命周期以[算法说明](../architecture/algorithms_zh.md)为准。
 
 ## 1. 先判断证据在哪一层
 
@@ -51,16 +51,16 @@
 | 累计改变元素 | `S.changed_elements`；总和进入 `R.mechanism.changed_elements` | 每个被接受的activation调用中 `x' != x` 的元素事件；同一存储多次参与会重复计数，不是唯一权重数量 |
 | 累计元素 | `S.total_elements` | 所有接受调用的元素事件总和，不是模型参数量 |
 | 改变调用 | `S.changed_calls/S.hit_count` | 一次调用至少一个元素改变；IDENTITY应为0 |
-| 绝对误差 | `S.max_abs_error`、`abs_error_sum/total_elements` | 聚合既有reference统计；不是每个tensor等权平均 |
+| 绝对误差 | `S.max_abs_error`、`abs_error_sum/total_elements` | reference先在原dtype相减/取abs，均值才转float；sum累加每调用mean×元素数，不是完整FP32误差或每tensor等权平均 |
 | 裁剪率 | `sum(clip_count)/sum(total_elements)` | 全接受事件；倍率大导致归零不一定导致clip |
 | 新增归零率 | `sum(sampled_new_zero_elements)/sum(sampled_nonzero_elements)` | **只在采样调用内**，分母为原非零元素，不是全部元素；分母0无定义 |
 | 相对L2误差 | `sqrt(sum(sampled_error_sq_sum)/sum(sampled_input_sq_sum))` | FP32诊断和的采样聚合；不是逐模块相对L2简单平均；输入平方和0则空 |
 | 实际fault scale | `S.fault_scale_min/max`；逐族取min/max | 参考步长已乘m；原reference尺度可由fault_scale/m推导，不冒充原生量化参数 |
 | 日志完整性 | `effect_summary.event_count/contiguous_hit_indices/errors` | 聚合覆盖全部接受调用；单事件只保留首16/尾16，不能从32条日志推定仅32hit |
 
-附加 zero/L2 采样为每模块第1、65、129…次接受调用；采样规则不决定是否注入。phase与生成token位置在此层目前为 `UNKNOWN`，不能按 `[1,K]` 断言decode。量化级占用 `effective_code_values=NOT_SAMPLED`；不是已交付的全量统计。
+附加 zero/L2 采样为每模块第1、65、129…次接受调用；install/arm的既有reset同时清空计数与EffectStats，因此每次arm重新编号，disarm保留测量。这是确定性周期采样，不是随机样本或全体元素无偏估计；采样不决定是否注入。phase与生成token位置目前为 `UNKNOWN`，不能按 `[1,K]` 断言decode。量化级占用 `effective_code_values=NOT_SAMPLED`；不是全量统计。
 
-当前 Qwen×20 样例的changed为1,850,723,432；这仅说明数值影响确实发生。裁剪率0与大量新增归零可以同时成立。
+历史Qwen32B×20单题changed为1,850,723,432，不是本次0.6B的数值。本次三题changed分别113,904,247／57,097,327／111,147,413；全调用元素分别114,200,576／57,200,640／111,390,720。裁剪率0与大量新增归零可以同时成立，不代表无扰动。
 
 ## 4. Task：答案、未交付和配对损伤
 
@@ -194,3 +194,27 @@ V2会按实际输出长度新增通用检测器：任一侧≥16token增加repet
 | 原生DeepSeek效果 | 只读规则存在；尚无具体实例实测 | PENDING_INSTANCE |
 
 本版能够冻结的事实是：Qwen最小功能链路、数值变化、明显重复样例、精确恢复和可追溯的离线报告；不是新强配置的完整任务/PPL性能报告。
+
+## 9. 粒度、空值、版本与当前配置测量表
+
+数值字段S以模块/arm为粒度，跨模块和rank汇总时先求分子分母和；同一activation重复调用属于多个元素事件，不是唯一存储计数。worker query是一个时刻的快照，最终汇总必须与同request generation/配置/plan相配；不得合并其他epoch的hit。日志首尾采样与数值采样不是同一回事。
+
+| 表达 | 含义 | 不能替代成 |
+| --- | --- | --- |
+| 字段缺失/null | 没有该数值，结合reason确定未采集或无定义 | 0 |
+| NOT_MEASURED/NOT_SAMPLED | 本次没有测/采 | 没有故障 |
+| NOT_EVALUATED/NOT_APPLICABLE | 无适用答案/规则或不满足此评价范围 | PASS |
+| UNKNOWN/UNPROVEN/PARTIAL | 身份/覆盖/证据不足或仅部分完成 | 已完整认证 |
+| INVALID_FAULT_RUN | 机制或合同失败；不能进效果分母 | “模型未改变” |
+
+| Qwen0.6B×20，28层112目标，N=1三题 | 实际测量 |
+| --- | --- |
+| 目标绑定/IDENTITY | 112/112；changed=0；全文和pieces相同 |
+| 全接受调用hit/changed/clip | 已测；不是32条保留event的估计 |
+| 新增零/相对L2 | 每模块1、65、129…采样；L2为累计平方和开根比 |
+| 输出/规则/恢复 | 三题完整B/F/R、首pieces分叉0、3/3精确恢复 |
+| Accuracy/Task retention | 开放题无独立expected，NOT_EVALUATED |
+| NLL/PPL、KL、TTFT/TPOT | 本配置NOT_MEASURED，不借旧R1 |
+| N≥3 repeatability／scheduler窗口 | 未做；UNPROVEN |
+
+版本由发布source_manifest中scorer、detectors、suite、effect_stats、experiment_extension及参考文件SHA共同限定。规则回归见[tests/evaluation](../../tests/evaluation)，聚合与计划回归见[tests/runtime_inspect](../../tests/runtime_inspect)；本轮不改测试语义或检测阈值。

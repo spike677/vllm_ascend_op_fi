@@ -1,0 +1,416 @@
+{
+  "version": "MT_BENCH_FIRST_TURN_TARGETED_SUBSET",
+  "hash": "8b3c17046b15cf4f0cae5e51be9fb37d36411a2ac029434c6a41b1d206ab2d4a",
+  "probe_count": 8,
+  "thresholds": {
+    "repetition_min_tokens": 16,
+    "periodic_max_period": 8,
+    "periodic_min_repetitions": 3,
+    "repeated_run_min": 6,
+    "seq_rep_4_min": 0.3,
+    "seq_rep_4_delta": 0.2,
+    "lexical_min_tokens": 32,
+    "distinct_ratio_max": 0.5,
+    "dominance_delta": 0.15,
+    "punctuation_rate_min": 0.35,
+    "punctuation_rate_delta": 0.2,
+    "punctuation_run_min": 8,
+    "punctuation_run_delta": 4,
+    "early_stop_min_baseline_tokens": 32,
+    "early_stop_length_ratio_max": 0.35,
+    "runaway_min_tokens": 64,
+    "runaway_length_ratio_min": 1.5,
+    "bad_character_min": 2
+  },
+  "robust_gate": {
+    "min_complete_cycles": 3,
+    "min_distorted_per_cycle": 4,
+    "min_stable_probes": 3,
+    "min_stable_families": 2,
+    "max_crashes": 0
+  },
+  "notes": [
+    "Frozen before Distortion replay; no strength or probe search.",
+    "Distortion V1 uses early ratio 0.35 and periodic window 1-8. Legacy Analysis thresholds remain unchanged.",
+    "Garbage is a deterministic character heuristic, not a semantic judge. Unknown is not healthy."
+  ],
+  "probes": [
+    {
+      "probe_id": "mtbench_82_turn0",
+      "category": "writing",
+      "prompt": "Draft a professional email seeking your supervisor's feedback on the 'Quarterly Financial Report' you prepared. Ask specifically about the data analysis, presentation style, and the clarity of conclusions drawn. Keep the email short and to the point.",
+      "dataset_sample": {
+        "question_id": 82,
+        "turn_index": 0,
+        "category": "writing",
+        "prompt": "Draft a professional email seeking your supervisor's feedback on the 'Quarterly Financial Report' you prepared. Ask specifically about the data analysis, presentation style, and the clarity of conclusions drawn. Keep the email short and to the point.",
+        "prompt_sha256": "3a10cad88c0e1c791b33ee9b50c35a5e024f0e1a9d9e361ea77bab32d47f0e25",
+        "source_revision": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "source_sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7"
+      },
+      "generation_config": {
+        "temperature": 0,
+        "seed": 42,
+        "max_tokens": 1024,
+        "top_p": 1.0,
+        "top_k": -1,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "repetition_penalty": 1.0,
+        "stop": [],
+        "stop_token_ids": [],
+        "ignore_eos": false,
+        "min_tokens": 0,
+        "n": 1,
+        "add_generation_prompt": true
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "mtbench_83_turn0",
+      "category": "writing",
+      "prompt": "Imagine you are writing a blog post comparing two popular smartphone models. Develop an outline for the blog post, including key points and subheadings to effectively compare and contrast the features, performance, and user experience of the two models. Please answer in fewer than 200 words.",
+      "dataset_sample": {
+        "question_id": 83,
+        "turn_index": 0,
+        "category": "writing",
+        "prompt": "Imagine you are writing a blog post comparing two popular smartphone models. Develop an outline for the blog post, including key points and subheadings to effectively compare and contrast the features, performance, and user experience of the two models. Please answer in fewer than 200 words.",
+        "prompt_sha256": "bfa9789b68b0ecf4f4d7f62de614e225099783f93c4eaada4111add69343026a",
+        "source_revision": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "source_sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7"
+      },
+      "generation_config": {
+        "temperature": 0,
+        "seed": 42,
+        "max_tokens": 1024,
+        "top_p": 1.0,
+        "top_k": -1,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "repetition_penalty": 1.0,
+        "stop": [],
+        "stop_token_ids": [],
+        "ignore_eos": false,
+        "min_tokens": 0,
+        "n": 1,
+        "add_generation_prompt": true
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "mtbench_86_turn0",
+      "category": "writing",
+      "prompt": "Write a descriptive paragraph about a bustling marketplace, incorporating sensory details such as smells, sounds, and visual elements to create an immersive experience for the reader.",
+      "dataset_sample": {
+        "question_id": 86,
+        "turn_index": 0,
+        "category": "writing",
+        "prompt": "Write a descriptive paragraph about a bustling marketplace, incorporating sensory details such as smells, sounds, and visual elements to create an immersive experience for the reader.",
+        "prompt_sha256": "dbb8fbd4c10e8892a8848c79417e1f732009a11f154eb9be0234a96bc67a7cf9",
+        "source_revision": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "source_sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7"
+      },
+      "generation_config": {
+        "temperature": 0,
+        "seed": 42,
+        "max_tokens": 1024,
+        "top_p": 1.0,
+        "top_k": -1,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "repetition_penalty": 1.0,
+        "stop": [],
+        "stop_token_ids": [],
+        "ignore_eos": false,
+        "min_tokens": 0,
+        "n": 1,
+        "add_generation_prompt": true
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "mtbench_88_turn0",
+      "category": "writing",
+      "prompt": "Craft an intriguing opening paragraph for a fictional short story. The story should involve a character who wakes up one morning to find that they can time travel.",
+      "dataset_sample": {
+        "question_id": 88,
+        "turn_index": 0,
+        "category": "writing",
+        "prompt": "Craft an intriguing opening paragraph for a fictional short story. The story should involve a character who wakes up one morning to find that they can time travel.",
+        "prompt_sha256": "2b4f2c7b895c7d3fe1707ffec5e5dcb2982394a8be564ab35539884c605aaf8b",
+        "source_revision": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "source_sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7"
+      },
+      "generation_config": {
+        "temperature": 0,
+        "seed": 42,
+        "max_tokens": 1024,
+        "top_p": 1.0,
+        "top_k": -1,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "repetition_penalty": 1.0,
+        "stop": [],
+        "stop_token_ids": [],
+        "ignore_eos": false,
+        "min_tokens": 0,
+        "n": 1,
+        "add_generation_prompt": true
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "mtbench_141_turn0",
+      "category": "stem",
+      "prompt": "In the field of quantum physics, what is superposition, and how does it relate to the phenomenon of quantum entanglement?",
+      "dataset_sample": {
+        "question_id": 141,
+        "turn_index": 0,
+        "category": "stem",
+        "prompt": "In the field of quantum physics, what is superposition, and how does it relate to the phenomenon of quantum entanglement?",
+        "prompt_sha256": "53a273409f3b69f8a417625745bb800e36bb7dd07f5f9ddaa0f866e696d3ac05",
+        "source_revision": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "source_sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7"
+      },
+      "generation_config": {
+        "temperature": 0,
+        "seed": 42,
+        "max_tokens": 1024,
+        "top_p": 1.0,
+        "top_k": -1,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "repetition_penalty": 1.0,
+        "stop": [],
+        "stop_token_ids": [],
+        "ignore_eos": false,
+        "min_tokens": 0,
+        "n": 1,
+        "add_generation_prompt": true
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "mtbench_143_turn0",
+      "category": "stem",
+      "prompt": "Photosynthesis is a vital process for life on Earth. Could you outline the two main stages of photosynthesis, including where they take place within the chloroplast, and the primary inputs and outputs for each stage?",
+      "dataset_sample": {
+        "question_id": 143,
+        "turn_index": 0,
+        "category": "stem",
+        "prompt": "Photosynthesis is a vital process for life on Earth. Could you outline the two main stages of photosynthesis, including where they take place within the chloroplast, and the primary inputs and outputs for each stage?",
+        "prompt_sha256": "df59d06c5f48840659bae50083d3886e5948ca9a7f781baa4d94994fc20bad1b",
+        "source_revision": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "source_sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7"
+      },
+      "generation_config": {
+        "temperature": 0,
+        "seed": 42,
+        "max_tokens": 1024,
+        "top_p": 1.0,
+        "top_k": -1,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "repetition_penalty": 1.0,
+        "stop": [],
+        "stop_token_ids": [],
+        "ignore_eos": false,
+        "min_tokens": 0,
+        "n": 1,
+        "add_generation_prompt": true
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "mtbench_146_turn0",
+      "category": "stem",
+      "prompt": "Please explain the differences between exothermic and endothermic reactions, and include the criteria you used to distinguish between them. Additionally, please provide a real-world example to illustrate your explanation.",
+      "dataset_sample": {
+        "question_id": 146,
+        "turn_index": 0,
+        "category": "stem",
+        "prompt": "Please explain the differences between exothermic and endothermic reactions, and include the criteria you used to distinguish between them. Additionally, please provide a real-world example to illustrate your explanation.",
+        "prompt_sha256": "f20987efd8da957a2fd96b291ce69ba50698737c41795e4e9a7f916d35cbf3c6",
+        "source_revision": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "source_sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7"
+      },
+      "generation_config": {
+        "temperature": 0,
+        "seed": 42,
+        "max_tokens": 1024,
+        "top_p": 1.0,
+        "top_k": -1,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "repetition_penalty": 1.0,
+        "stop": [],
+        "stop_token_ids": [],
+        "ignore_eos": false,
+        "min_tokens": 0,
+        "n": 1,
+        "add_generation_prompt": true
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "length",
+        "garbage",
+        "crash"
+      ]
+    },
+    {
+      "probe_id": "mtbench_149_turn0",
+      "category": "stem",
+      "prompt": "Please describe the concept of machine learning. Could you elaborate on the differences between supervised, unsupervised, and reinforcement learning? Provide real-world examples of each.",
+      "dataset_sample": {
+        "question_id": 149,
+        "turn_index": 0,
+        "category": "stem",
+        "prompt": "Please describe the concept of machine learning. Could you elaborate on the differences between supervised, unsupervised, and reinforcement learning? Provide real-world examples of each.",
+        "prompt_sha256": "e434f345916d58b36e85d706c7a939141b5f70be1bf4ea33eb43b1d8bc98aaba",
+        "source_revision": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "source_sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7"
+      },
+      "generation_config": {
+        "temperature": 0,
+        "seed": 42,
+        "max_tokens": 1024,
+        "top_p": 1.0,
+        "top_k": -1,
+        "min_p": 0.0,
+        "presence_penalty": 0.0,
+        "frequency_penalty": 0.0,
+        "repetition_penalty": 1.0,
+        "stop": [],
+        "stop_token_ids": [],
+        "ignore_eos": false,
+        "min_tokens": 0,
+        "n": 1,
+        "add_generation_prompt": true
+      },
+      "expected": {},
+      "applicable_detectors": [
+        "length",
+        "garbage",
+        "crash"
+      ]
+    }
+  ],
+  "request_protocol": {
+    "endpoint": "/v1/chat/completions",
+    "messages": [
+      {
+        "role": "user",
+        "content_source": "probe.prompt"
+      }
+    ],
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "logprobs": true,
+    "top_logprobs": 1
+  },
+  "supersedes": {
+    "version": "DISTORTION_PROBE_SUITE_V1",
+    "hash": "abfc3c9a26597e3eefc7204306553dd381353c45dfe5b3d135632bbd8856d502",
+    "reason": "Fault-OFF calibration demonstrated bare completion prompt continuation; prompts/thresholds unchanged."
+  },
+  "dataset": {
+    "repository": "lm-sys/FastChat",
+    "source_file": "fastchat/llm_judge/data/mt_bench/question.jsonl",
+    "revision": "587d5cfa1609a43d192cedb8441cac3c17db105d",
+    "sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7",
+    "scope": "MT_BENCH_FIRST_TURN_TARGETED_SUBSET",
+    "question_ids": [
+      82,
+      83,
+      86,
+      88,
+      141,
+      143,
+      146,
+      149
+    ],
+    "turn_index": 0,
+    "acquired_at": "2026-09-10T03:28:44.040869+00:00",
+    "acquisition": "verified HTTPS public files only",
+    "proxy_used": false,
+    "receipts": [
+      {
+        "url": "https://api.github.com/repos/lm-sys/FastChat/commits/587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "final_url": "https://api.github.com/repos/lm-sys/FastChat/commits/587d5cfa1609a43d192cedb8441cac3c17db105d",
+        "status": 200,
+        "etag": "W/\"220b81f36a6ab66b41fa416f5d7969a34133a1d1d0f7e229267e9472cdd66a01\"",
+        "sha256": "220b81f36a6ab66b41fa416f5d7969a34133a1d1d0f7e229267e9472cdd66a01",
+        "bytes": 7602
+      },
+      {
+        "url": "https://raw.githubusercontent.com/lm-sys/FastChat/587d5cfa1609a43d192cedb8441cac3c17db105d/fastchat/llm_judge/data/mt_bench/question.jsonl",
+        "final_url": "https://raw.githubusercontent.com/lm-sys/FastChat/587d5cfa1609a43d192cedb8441cac3c17db105d/fastchat/llm_judge/data/mt_bench/question.jsonl",
+        "status": 200,
+        "etag": "\"4a8b8dc0a8989fd08ecaa0de92d7d2c95c5676e2ce3c9fd0e154f72d2f194c3f\"",
+        "sha256": "119565adbab82227089cefdb44c8d7e2cf04dc0a0ec233634c82e7d4e2a944f7",
+        "bytes": 48929
+      },
+      {
+        "url": "https://raw.githubusercontent.com/lm-sys/FastChat/587d5cfa1609a43d192cedb8441cac3c17db105d/LICENSE",
+        "final_url": "https://raw.githubusercontent.com/lm-sys/FastChat/587d5cfa1609a43d192cedb8441cac3c17db105d/LICENSE",
+        "status": 200,
+        "etag": "\"0f7ad233313d00f59c4f65f8c224ab2bfe14a8608ea59dc12ae4d7f13ba699e9\"",
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "bytes": 11357
+      },
+      {
+        "url": "https://raw.githubusercontent.com/lm-sys/FastChat/587d5cfa1609a43d192cedb8441cac3c17db105d/fastchat/llm_judge/README.md",
+        "final_url": "https://raw.githubusercontent.com/lm-sys/FastChat/587d5cfa1609a43d192cedb8441cac3c17db105d/fastchat/llm_judge/README.md",
+        "status": 200,
+        "etag": "\"a1baef8dca25b5ee9dd254525617263b452fdc1fe47ec8b243087058ede79800\"",
+        "sha256": "4104f9e877fe04a4a87a5b6618114adc8604f09ceca09be198f96189c4c2238e",
+        "bytes": 6796
+      }
+    ],
+    "license": {
+      "repository_license": "Apache-2.0",
+      "path": "LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "scope_note": "Repository license captured; no claim of separate dataset-specific grant beyond upstream materials."
+    },
+    "official_benchmark_score": "NOT_COMPUTED; first-turn targeted subset, no judge"
+  }
+}

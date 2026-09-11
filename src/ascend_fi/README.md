@@ -1,60 +1,19 @@
-# ascend_fi product-facing integration scaffold
+# ascend_fi：工具主体与共享合同
 
-This directory establishes the product-facing boundary for reusable Ascend fault-injection
-backends, strategies, observers, discovery helpers, evaluation helpers, and shared
-handoff contracts. It is an integration scaffold; no native implementation has been migrated here yet.
+## 职责和边界
 
-It intentionally contains no `Fault20`, `Fault26`, `Fault39`, or `Fault41`
-package names. Fault numbers identify validation cases; they are not product
-runtime abstractions.
+Inspect、发现、验证、效果评估和profile工具已实现，不再只是占位scaffold；native整合仍保留各目录阶段边界，不代表所有C++已迁移。
 
-The current native implementation remains the single canonical source under
-`fault20_fast_validation/source/` until each component has an isolated build,
-ABI test, and model-level regression in this structure. Capability manifests
-under `profiles/capabilities/` point to those canonical sources during the
-transition, so code is not duplicated and allowed to drift.
+| 包 | 输入 → 输出／下游 |
+| --- | --- |
+| [inspect](inspect/README.md) | worker/model/实参 → descriptor/绑定计划 → 执行器 |
+| [contracts](contracts/README.md) | JSON DTO ↔ 对象；不是生产registry |
+| [discovery](discovery/README.md) | 记录证据 → Candidate；不是实时计划 |
+| [validation](validation/README.md) | 候选＋无损证据 → ValidationResult |
+| [evaluation](evaluation/README.md) | B/F/R raw → EvaluationResult/报告 |
+| [profiles](profiles/README.md) | 通过验证的记录 → profile |
+| [backends](backends/README.md)、[strategies](strategies/README.md)、[observers](observers/README.md) | 执行面整合索引；原native路径保留 |
 
-The current canonical development clone is D:\project\demoncatpfi. The
-C:\Users\admin\Documents\demoncatpfi copy is a legacy/local investigation
-clone and must not be used as a second source of truth.
+执行环境、状态与失败处理见组件文档。[tools](../../tools/README.md)提供入口，[tests](../../tests/README.md)说明验证范围。跨组件字段以[产物合同](../../docs/reference/artifact_io_contracts_zh.md)为准。
 
-## Ownership boundary
-
-This repository owns:
-
-- Ascend execution-plane backends;
-- mutation and observation implementations;
-- discovery and evaluation utilities;
-- capability descriptors, tests, and validation evidence.
-
-The isolated DemonCAT product owns:
-
-- the production `position + primitive + target + params` interface;
-- `PrimitiveSpec`, `RuntimeBinding`, and the production registry;
-- controller lifecycle, policy enforcement, and the production CLI.
-
-This repository must not introduce a competing production registry,
-controller, or injection CLI.
-
-## Planned package roles
-
-```text
-ascend_fi/
-├── backends/       # execution-plane adapters and native bindings
-├── strategies/     # data/value mutation primitives
-├── observers/      # read-only evidence collection
-├── discovery/      # logical candidate to physical binding discovery
-├── validation/     # independent lossless target gate
-├── evaluation/     # baseline/fault/recovery measurement
-├── profiles/       # validated portable model capability output
-└── contracts/      # JSON-serializable capability, candidate, validation, evaluation DTOs
-```
-
-`execution_plane` describes where an implementation binds (`aclnn`,
-`torch_npu`, `vllm_ascend_backend`, `atb`, `hccl`, or `state`). It does not
-replace DemonCAT's semantic `position`.
-
-`contracts/` is a shared data boundary, not a runtime registry or dispatcher.
-It carries evidence between discovery and evaluation while DemonCAT retains
-ownership of product policy, binding selection, controller lifecycle, and the
-production CLI.
+隔离DemonCAT产品负责生产 `position + primitive + target + params`、策略与生产控制器；这里的演示owner不是第二套生产registry。见[合并边界](../../docs/overview/demoncat_merge_contract.md)。

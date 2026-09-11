@@ -20,6 +20,8 @@ DemonCAT 产品框架
 
 ## 当前目录职责
 
+当前默认入口是[Qwen0.6B单卡手册](../inspect/qwen06b_single_npu_user_walkthrough_zh.md)，源码主体与固定参考依赖见[源码基线](../releases/source_baseline_v1/README.md)。Windows仅阅读维护，真实运行仍为Linux/Ascend；DeepSeek未实机认证。Inspect已是实现模块，不再仅是整合规划。
+
 | 目录 | 职责 |
 | --- | --- |
 | `src/ascend_fi/` | 可复用的 backend、strategy、observer、discovery、validation 与 evaluation 集成边界 |
