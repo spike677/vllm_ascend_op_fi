@@ -266,6 +266,9 @@ class VerifiedOwner:
         result = self.rpc('fake_requant_install', {'module_regex': self.arm['module_regex'], 'layer_filter': self.arm['layer_filter']})
         assert all(w.get('ok') for w in result['results']), result
         query = self.rpc('fake_requant_query')
+        if self.target_plan is not None and 'selection' in self.target_plan:
+            from ascend_fi.inspect.worker_confirmation import confirm_workers
+            confirm_workers(self.target_plan, query, ack=result)
         if self.experiment:
             for w in query['results']:
                 assert set(m['module'] for m in w['matched_modules']) == set(self.experiment['selected_modules'])
@@ -323,6 +326,11 @@ class VerifiedOwner:
         try:
             transaction['arm'] = self.rpc('fake_requant_arm', arm)
             assert all(w.get('ok') for w in transaction['arm']['results'])
+            if self.target_plan is not None and 'selection' in self.target_plan:
+                from ascend_fi.inspect.worker_confirmation import confirm_workers
+                transaction['pre_request_query'] = self.rpc('fake_requant_query')
+                transaction['all_worker_arm_confirmation'] = confirm_workers(self.target_plan,
+                    transaction['pre_request_query'], ack=transaction['arm'], expected_arm=arm)
             row = self.request(probe, 'fault', index)
             transaction['measurement_query'] = self.rpc('fake_requant_query')
             transaction['transaction_query'] = small(transaction['measurement_query'])

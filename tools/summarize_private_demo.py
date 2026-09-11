@@ -58,8 +58,8 @@ def main():
     lines += ['', '## 2. 注入的是哪一种量化误差', '',
         '模型权重保持 BF16；这不是给模型转换 W8A8，也不是修改原生量化 scale。',
         '在已识别的模块输入处，用原参考实现计算：', '',
-        '```text', 'base_scale = absmax(input) / 127',
-        f"fault_scale = max(base_scale × {plan['prospective_arm']['scale_multiplier']}, eps)",
+        '```text', 'base_scale = absmax(input).to(FP32) / 127  # absmax 在原 dtype',
+        f"fault_scale = max(base_scale, eps) × {plan['prospective_arm']['scale_multiplier']}",
         'q = clamp(round(input / fault_scale), -128, 127)',
         'faulty_input = (q × fault_scale).to(original_dtype)', '```', '',
         '倍率增大让量化步长变粗，可能增加归零和误差；不保证每个模型都产生病态输出。',
@@ -99,10 +99,12 @@ def main():
             'candidate_equals_hit': worker['candidate_seen'] == worker['hit_count'],
             'all_targets_hit': all(s['hit_count'] > 0 for s in stats) and len(stats) == len(targets),
             'source_request': f['source_ref']}
+        numeric['derived_energy_metrics'] = data['numerical_effect']['per_probe'][pid]['aggregate']
         numerical.append(numeric)
         details += [f'### {pid}', '', f"原问题：{b['request']['messages'][0]['content']}", '',
             f"首次分叉位置（0 起始 token pieces）：{effect['first_divergence']}。整数 token IDs 未提供时保留 null。", '',
             f"数值采样：新增归零={numeric['sampled_new_zero_fraction_of_original_nonzero']:.2%}；相对 L2={numeric['sampled_relative_l2']:.6g}。",
+            f"同采样能量派生：NMSE={numeric['derived_energy_metrics']['nmse']}；SQNR_dB={numeric['derived_energy_metrics']['sqnr_db']}（非独立证据）。",
             '采样为每模块第 1、65、129…次调用，不是全量元素统计。', '']
         for label, raw in [('正常输出', b), ('故障输出', f), ('恢复输出', r)]:
             details += [f'#### {label}', '', f"HTTP={raw['http_status']}；finish_reason={raw['finish_reason']}；tokens={raw['generation_length']}", '',

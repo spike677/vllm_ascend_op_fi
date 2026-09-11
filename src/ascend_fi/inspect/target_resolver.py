@@ -63,6 +63,8 @@ def resolve_targets(descriptor, modules, events, observation_status):
         if bindings and any(b != bindings[0] for b in bindings):
             blockers.append('INPUT_BINDING_CHANGED_BETWEEN_CALLS')
         row = {'module_name': t['module_name'], 'module_class': t['module_class'],
+               'parent': {'name': t.get('parent_name'), 'class': t.get('parent_class')},
+               'aliases': t.get('aliases', []),
                'roles': t['roles'], 'layer': t['layer_index'], 'ranks': t['ranks'],
                'scope': t['scope'], 'role_proof': t['role_proof'],
                'discovered': True, 'role_resolved': True, 'observed': bool(seen),
@@ -71,7 +73,10 @@ def resolve_targets(descriptor, modules, events, observation_status):
                'binding': bindings[0] if bindings else None,
                'observed_phases': sorted({e.get('phase', 'UNKNOWN') for e in seen}),
                'call_count': observation_status.get('module_call_counts', {}).get(t['module_name'], 0),
-               'blockers': sorted(set(blockers)), 'observed_samples': len(seen)}
+               'blockers': sorted(set(blockers)), 'observed_samples': len(seen),
+               'input_observations': [{'session': e.get('session'), 'invocation': e.get('invocation'),
+                   'phase': e.get('phase', 'UNKNOWN'), 'parameters': copy.deepcopy(e.get('parameters', []))}
+                   for e in seen]}
         rows.append(row)
     report = {'schema': 'MODEL_TARGET_REPORT_V1', 'descriptor': copy.deepcopy(descriptor),
               'adapter': adapter, 'targets': rows, 'structural_gaps': structural_gaps,

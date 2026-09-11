@@ -9,6 +9,7 @@ import shutil
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from pathlib import Path
 
 from run_normal_diagnostic_live import VerifiedOwner
@@ -98,7 +99,19 @@ class PrivateServiceOwner(VerifiedOwner):
         self.plan_discovery_window = True
         self.request_timeout = 600
 
+    def reserve_single_instance(self):
+        """Durable one-driver reservation; never reset after failure or hot remove."""
+        self.guard()
+        reservation = uuid.uuid4().hex
+        with (self.session / 'single_lossy_instance_reserved.json').open('x', encoding='utf-8') as f:
+            json.dump({'reservation_id': reservation, 'lease_id': self.deployment['lease_id'],
+                       'policy': 'SINGLE_LOSSY_THEN_STOP_INSTANCE'}, f)
+        self._single_instance_reservation = reservation
+
     def guard(self):
+        marker = self.session / 'single_lossy_instance_reserved.json'
+        if marker.exists() and json.loads(marker.read_text()).get('reservation_id') != getattr(self, '_single_instance_reservation', None):
+            raise RuntimeError('INSTANCE_RESERVED_OR_CONSUMED; restart complete model in new session')
         if (self.session / 'request_completion_unproven.json').exists():
             raise RuntimeError('PRIOR_REQUEST_COMPLETION_UNPROVEN')
         lock = json.loads(Path(self.deployment['lock_owner_path']).read_text())

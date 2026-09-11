@@ -1,0 +1,577 @@
+{
+  "purpose": "SYNTHETIC_REGRESSION_ONLY_NOT_LIVE_OR_INDEPENDENT_HUMAN_GOLD",
+  "cases": [
+    {
+      "case_id": "normal_paraphrase",
+      "case_family": "normal_paraphrase",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "normal_paraphrase",
+        "category": "detector_regression",
+        "prompt": "Fixture normal_paraphrase",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {},
+        "applicable_detectors": [
+          "garbage",
+          "crash"
+        ]
+      },
+      "baseline": {
+        "response_text": "Careful tests find defects.",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "Defects can be found through careful testing.",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "garbage": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "crash": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "legal_json",
+      "case_family": "legal_json",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "legal_json",
+        "category": "detector_regression",
+        "prompt": "Fixture legal_json",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {
+          "structure": "json",
+          "schema": {
+            "type": "array"
+          }
+        },
+        "applicable_detectors": [
+          "structure",
+          "repetition",
+          "punctuation"
+        ]
+      },
+      "baseline": {
+        "response_text": "[{\"name\":\"one\"}]",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "[{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"},{\"name\":\"one\"}]",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "structure": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "repetition": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "punctuation": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "legal_table",
+      "case_family": "legal_table",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "legal_table",
+        "category": "detector_regression",
+        "prompt": "Fixture legal_table",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {
+          "structure": "table",
+          "items": [
+            "| name | value |",
+            "| ---- | ----- |",
+            "| alpha | 1 |",
+            "| beta | 2 |"
+          ]
+        },
+        "applicable_detectors": [
+          "structure",
+          "repetition",
+          "punctuation"
+        ]
+      },
+      "baseline": {
+        "response_text": "| name | value |\n| ---- | ----- |\n| alpha | 1 |\n| beta | 2 |",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "| name | value |\n| ---- | ----- |\n| alpha | 1 |\n| beta | 2 |",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "structure": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "repetition": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "punctuation": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "legal_numbered_list",
+      "case_family": "legal_numbered_list",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "legal_numbered_list",
+        "category": "detector_regression",
+        "prompt": "Fixture legal_numbered_list",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {
+          "structure": "line_list",
+          "items": [
+            "alpha",
+            "beta",
+            "gamma"
+          ]
+        },
+        "applicable_detectors": [
+          "structure",
+          "repetition",
+          "punctuation"
+        ]
+      },
+      "baseline": {
+        "response_text": "alpha\nbeta\ngamma",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "1. alpha\n2. beta\n3. gamma",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "structure": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "repetition": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "punctuation": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "legal_code",
+      "case_family": "legal_code",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "legal_code",
+        "category": "detector_regression",
+        "prompt": "Fixture legal_code",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {},
+        "applicable_detectors": [
+          "garbage",
+          "punctuation"
+        ]
+      },
+      "baseline": {
+        "response_text": "def square(x):\n    return x * x\n",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "def cube(x):\n    return x * x * x\n",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "garbage": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "punctuation": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "correct_answer_then_loop",
+      "case_family": "correct_answer_then_loop",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "correct_answer_then_loop",
+        "category": "detector_regression",
+        "prompt": "Fixture correct_answer_then_loop",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {
+          "answer": "3",
+          "answer_type": "number"
+        },
+        "applicable_detectors": [
+          "task_answer",
+          "repetition"
+        ]
+      },
+      "baseline": {
+        "response_text": "The answer is 3.\n#### 3",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "The answer is 3.\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n#### 3\n",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "task_answer": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "repetition": {
+          "source": "fixture_spec",
+          "expected_trigger": true,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "tail_only_loop",
+      "case_family": "tail_only_loop",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "tail_only_loop",
+        "category": "detector_regression",
+        "prompt": "Fixture tail_only_loop",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {},
+        "applicable_detectors": [
+          "repetition"
+        ]
+      },
+      "baseline": {
+        "response_text": "distinct_word_0 distinct_word_1 distinct_word_2 distinct_word_3 distinct_word_4 distinct_word_5 distinct_word_6 distinct_word_7 distinct_word_8 distinct_word_9 distinct_word_10 distinct_word_11 distinct_word_12 distinct_word_13 distinct_word_14 distinct_word_15 distinct_word_16 distinct_word_17 distinct_word_18 distinct_word_19 distinct_word_20 distinct_word_21 distinct_word_22 distinct_word_23 distinct_word_24 distinct_word_25 distinct_word_26 distinct_word_27 distinct_word_28 distinct_word_29 distinct_word_30 distinct_word_31 distinct_word_32 distinct_word_33 distinct_word_34 distinct_word_35 distinct_word_36 distinct_word_37 distinct_word_38 distinct_word_39 distinct_word_40 distinct_word_41 distinct_word_42 distinct_word_43 distinct_word_44 distinct_word_45 distinct_word_46 distinct_word_47 distinct_word_48 distinct_word_49 distinct_word_50 distinct_word_51 distinct_word_52 distinct_word_53 distinct_word_54 distinct_word_55 distinct_word_56 distinct_word_57 distinct_word_58 distinct_word_59 distinct_word_60 distinct_word_61 distinct_word_62 distinct_word_63 distinct_word_64 distinct_word_65 distinct_word_66 distinct_word_67 distinct_word_68 distinct_word_69 distinct_word_70 distinct_word_71 distinct_word_72 distinct_word_73 distinct_word_74 distinct_word_75 distinct_word_76 distinct_word_77 distinct_word_78 distinct_word_79",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "distinct_word_0 distinct_word_1 distinct_word_2 distinct_word_3 distinct_word_4 distinct_word_5 distinct_word_6 distinct_word_7 distinct_word_8 distinct_word_9 distinct_word_10 distinct_word_11 distinct_word_12 distinct_word_13 distinct_word_14 distinct_word_15 distinct_word_16 distinct_word_17 distinct_word_18 distinct_word_19 distinct_word_20 distinct_word_21 distinct_word_22 distinct_word_23 distinct_word_24 distinct_word_25 distinct_word_26 distinct_word_27 distinct_word_28 distinct_word_29 distinct_word_30 distinct_word_31 distinct_word_32 distinct_word_33 distinct_word_34 distinct_word_35 distinct_word_36 distinct_word_37 distinct_word_38 distinct_word_39 distinct_word_40 distinct_word_41 distinct_word_42 distinct_word_43 distinct_word_44 distinct_word_45 distinct_word_46 distinct_word_47 distinct_word_48 distinct_word_49 distinct_word_50 distinct_word_51 distinct_word_52 distinct_word_53 distinct_word_54 distinct_word_55 distinct_word_56 distinct_word_57 distinct_word_58 distinct_word_59 distinct_word_60 distinct_word_61 distinct_word_62 distinct_word_63 distinct_word_64 distinct_word_65 distinct_word_66 distinct_word_67 distinct_word_68 distinct_word_69 distinct_word_70 distinct_word_71 distinct_word_72 distinct_word_73 distinct_word_74 distinct_word_75 distinct_word_76 distinct_word_77 distinct_word_78 distinct_word_79\nred blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "repetition": {
+          "source": "fixture_spec",
+          "expected_trigger": true,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "budget_no_answer_no_pathology",
+      "case_family": "budget_no_answer_no_pathology",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "budget_no_answer_no_pathology",
+        "category": "detector_regression",
+        "prompt": "Fixture budget_no_answer_no_pathology",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {
+          "answer": "70000",
+          "answer_type": "number"
+        },
+        "applicable_detectors": [
+          "task_answer",
+          "repetition",
+          "garbage"
+        ]
+      },
+      "baseline": {
+        "response_text": "FINAL_ANSWER=70000",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "The value starts at 80000. Improvements increase it by half. We must next subtract the renovation cost to determine the final amount.",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "length",
+        "token_ids": null
+      },
+      "labels": {
+        "task_answer": {
+          "source": "fixture_spec",
+          "expected_trigger": true,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "repetition": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        },
+        "garbage": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "baseline_itself_loop",
+      "case_family": "baseline_itself_loop",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "baseline_itself_loop",
+        "category": "detector_regression",
+        "prompt": "Fixture baseline_itself_loop",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {},
+        "applicable_detectors": [
+          "repetition"
+        ]
+      },
+      "baseline": {
+        "response_text": "red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue red blue",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "repetition": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "punctuation_spam",
+      "case_family": "punctuation_spam",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "punctuation_spam",
+        "category": "detector_regression",
+        "prompt": "Fixture punctuation_spam",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {},
+        "applicable_detectors": [
+          "punctuation"
+        ]
+      },
+      "baseline": {
+        "response_text": "An ordinary complete explanation.",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "punctuation": {
+          "source": "fixture_spec",
+          "expected_trigger": true,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "bad_characters",
+      "case_family": "bad_characters",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "bad_characters",
+        "category": "detector_regression",
+        "prompt": "Fixture bad_characters",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {},
+        "applicable_detectors": [
+          "garbage"
+        ]
+      },
+      "baseline": {
+        "response_text": "A normal answer.",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "A normal answer.��",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "garbage": {
+          "source": "fixture_spec",
+          "expected_trigger": true,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    },
+    {
+      "case_id": "multilingual_not_garbage",
+      "case_family": "multilingual_not_garbage",
+      "source_kind": "synthetic_regression",
+      "protocol": "synthetic_rule_fixture_v1",
+      "split": "regression",
+      "probe": {
+        "probe_id": "multilingual_not_garbage",
+        "category": "detector_regression",
+        "prompt": "Fixture multilingual_not_garbage",
+        "generation_config": {
+          "max_tokens": 1024
+        },
+        "expected": {},
+        "applicable_detectors": [
+          "garbage"
+        ]
+      },
+      "baseline": {
+        "response_text": "A normal answer.",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "response": {
+        "response_text": "中文 日本語 العربية Ελληνικά",
+        "text_is_complete": true,
+        "http_status": 200,
+        "finish_reason": "stop",
+        "token_ids": null
+      },
+      "labels": {
+        "garbage": {
+          "source": "fixture_spec",
+          "expected_trigger": false,
+          "evidence_note": "Synthetic deterministic regression; not model or human-gold evidence"
+        }
+      }
+    }
+  ]
+}

@@ -38,6 +38,21 @@ def verify_plan(plan):
         raise ValueError('INVALID_WORKER_SET')
     if arm.get('rank_filter') != sorted(w['rank'] for w in plan['workers'] if w['targeted']):
         raise ValueError('INVALID_RANK_POLICY')
+    if 'selection' in plan:
+        from .selection import SELECTION_VERSION
+        s = plan['selection']
+        ranks = sorted(w['rank'] for w in plan['workers'])
+        targeted = sorted(w['rank'] for w in plan['workers'] if w['targeted'])
+        expected_caps = {str(w['rank']): window['max_hits'] if w['targeted'] else 0 for w in plan['workers']}
+        if (s.get('version') != SELECTION_VERSION or s.get('mode') not in ('manual', 'all_bindable')
+                or ranks != list(range(len(ranks))) or not targeted
+                or s.get('participating_global_ranks') != ranks or s.get('targeted_global_ranks') != targeted
+                or s.get('per_worker_modules') != {str(r): sorted(names) for r in ranks}
+                or (s['intent']['ranks'] == 'all' and targeted != ranks)
+                or window.get('budget_scope') != 'PER_WORKER_ARM_LIFETIME'
+                or window.get('per_worker_max_hits') != expected_caps
+                or window.get('theoretical_sum_of_targeted_worker_caps') != window['max_hits'] * len(targeted)):
+            raise ValueError('SELECTION_WORKER_OR_BUDGET_CONTRACT_MISMATCH')
     for w in plan['workers']:
         if {t['module_name'] for t in w['targets']} != set(names) or len(w['targets']) != len(names):
             raise ValueError('WORKER_TARGET_SET_MISMATCH')
@@ -53,7 +68,18 @@ def verify_plan(plan):
 
 
 def build_target_plan(reports, *, roles, rank_filter, scale_multiplier, reference_arm,
-                      max_tokens, max_prompt_tokens, phase='ALL_OBSERVED'):
+                      max_tokens, max_prompt_tokens, phase='ALL_OBSERVED', selection_mode=None,
+                      layers=None, module_names=None):
+    selection = None
+    if selection_mode is not None or layers is not None or module_names is not None or rank_filter == 'all':
+        from .selection import resolve_selection
+        selection = resolve_selection(reports, mode=selection_mode or 'manual', roles=roles,
+            layers=layers, module_names=module_names, rank_filter=rank_filter)
+        rank_filter = selection['targeted_global_ranks']
+        if roles is None:
+            roles = sorted({role for r in reports for t in r['targets']
+                if t['module_name'] in selection['per_worker_modules'][str(r['descriptor']['ranks']['global']['value'])]
+                for role in t['roles']})
     if not reports or not roles or len(roles) != len(set(roles)):
         raise ValueError('EXPLICIT_UNIQUE_ROLES_REQUIRED')
     if not rank_filter or any(type(r) is not int or r < 0 for r in rank_filter) or len(set(rank_filter)) != len(rank_filter):
@@ -96,9 +122,13 @@ def build_target_plan(reports, *, roles, rank_filter, scale_multiplier, referenc
         if report.get('adapter', {}).get('qualification') != 'CURRENT_EPOCH_IDENTITY_REQUIRED':
             raise ValueError('VARIANT_READONLY_UNTIL_LIVE_ADAPTED')
         gaps = expected_role_gaps(d, [], [dict(t, layer_index=t['layer']) for t in report['targets']], roles)
-        if gaps:
+        if gaps and selection is None:
             raise ValueError('ARCHITECTURE_EXPECTED_COVERAGE_GAP:' + str(gaps[:5]))
-        selected = [t for t in report['targets'] if set(t['roles']) & set(roles)]
+        if selection is None:
+            selected = [t for t in report['targets'] if set(t['roles']) & set(roles)]
+        else:
+            wanted = selection['per_worker_modules'][str(rank)]
+            selected = list({t['module_name']: t for t in report['targets'] if t['module_name'] in wanted}.values())
         if not selected or any(not t['bound'] or t['blockers'] for t in selected):
             raise ValueError('SELECTED_TARGET_NOT_BOUND')
         names = [t['module_name'] for t in selected]
@@ -148,5 +178,11 @@ def build_target_plan(reports, *, roles, rank_filter, scale_multiplier, referenc
                  'exclusive service lease', 'exact token-piece recovery', 'independent execution coverage'],
              'coverage_scope': 'selected module entry boundaries; not fused internal kernels',
              'report_refs': [r['report_sha256'] for r in reports]}
+    if selection is not None:
+        value['selection'] = selection
+        value['request_window'].update(budget_scope='PER_WORKER_ARM_LIFETIME',
+            per_worker_max_hits={str(w['rank']): cap if w['targeted'] else 0 for w in workers},
+            theoretical_sum_of_targeted_worker_caps=cap * len(rank_filter),
+            not_a_scheduler_bound=True)
     value['plan_sha256'] = digest(value)
     return value

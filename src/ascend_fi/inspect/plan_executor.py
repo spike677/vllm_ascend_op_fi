@@ -19,12 +19,29 @@ def plan_window_gate(plan, fault, *, execution_coverage=None, identity=False):
         failures.append('ARM_OR_DISARM_NOT_CONFIRMED_ON_ALL_WORKERS')
     if len(workers) != len(plan['workers']):
         failures.append('WORKER_COUNT_MISMATCH')
+    if 'selection' in plan:
+        from .worker_confirmation import confirm_workers
+        transaction = fault.get('fault_transaction', {})
+        armed = {**plan['prospective_arm'], 'request_generation': fault.get('request_generation')}
+        if identity:
+            armed['mode'] = 'IDENTITY'
+        try:
+            confirm_workers(plan, transaction.get('pre_request_query'),
+                            ack=transaction.get('arm'), expected_arm=armed)
+            confirm_workers(plan, transaction.get('measurement_query'),
+                            ack=transaction.get('arm'), expected_arm=armed)
+        except ValueError as e:
+            failures.append(str(e))
     seen = set()
     for raw in workers:
         ranks = {m.get('tp_rank') for m in raw.get('matched_modules', [])}
         if len(ranks) != 1 or None in ranks:
             failures.append('WORKER_RANK_UNRESOLVED'); continue
         rank = next(iter(ranks))
+        if 'selection' in plan:
+            ident = raw.get('input_contract', {}).get('worker_identity', {})
+            if ident.get('global_rank') != rank or ident.get('reference_rank') != rank:
+                failures.append('MEASUREMENT_GLOBAL_RANK_NOT_PROVEN'); continue
         expected = next((w for w in plan['workers'] if w['rank'] == rank), None)
         if expected is None or rank in seen:
             failures.append('WORKER_RANK_MISMATCH'); continue
@@ -63,7 +80,8 @@ def plan_window_gate(plan, fault, *, execution_coverage=None, identity=False):
             stats = None
             if raw.get('hit_count') != 0 or not raw.get('hook_seen') or reject != {'rank_filter': raw.get('hook_seen')}:
                 failures.append('EXCLUDED_RANK_POLICY_VIOLATION')
-        measured.append({'rank': rank, 'hit_count': raw.get('hit_count'), 'reject': reject,
+        measured.append({'rank': rank, 'candidate_count': raw.get('candidate_seen'),
+                         'hit_count': raw.get('hit_count'), 'reject': reject,
                          'effect': stats, 'per_module': raw.get('per_module', {})})
     if (fault.get('http_status') != 200 or fault.get('request_window_evidence', {}).get('single_request_completed') is not True):
         failures.append('REQUEST_COMPLETION_UNPROVEN')
@@ -94,6 +112,7 @@ class TargetPlanExecutor:
         self.current_descriptors = current_descriptors
         self.identity_receipt = None
         self.config = None
+        self.single_instance_consumed = False
 
     def rebind(self):
         verify_plan(self.plan)
@@ -109,6 +128,8 @@ class TargetPlanExecutor:
             raise ValueError('OWNER_NOT_CLEAN')
 
     def validate_identity(self, probe):
+        if self.single_instance_consumed:
+            raise ValueError('INSTANCE_CONSUMED_RESTART_REQUIRED')
         self.identity_receipt = None
         self.rebind()
         self.owner.configure_target_plan(copy.deepcopy(self.plan))
@@ -136,7 +157,49 @@ class TargetPlanExecutor:
             raise RuntimeError('MODEL_AWARE_IDENTITY_GATE_FAILED')
         return {'validation': result.to_dict(), 'identity_receipt': self.identity_receipt, 'window': gate}
 
+    def run_once(self, probe, cycle=1):
+        """One lossy call, no post-loss inference. Host must stop its owned worker.
+
+        Cleanup remains best-effort and observable, not a hot-recovery claim.
+        A fresh executor is insufficient: the private owner also reserves the
+        entire instance/session before IDENTITY and rejects a second driver.
+        """
+        if self.single_instance_consumed:
+            raise ValueError('INSTANCE_CONSUMED_RESTART_REQUIRED')
+        if not self.identity_receipt or self.identity_receipt['plan_sha256'] != self.plan['plan_sha256']:
+            raise ValueError('SAME_PLAN_IDENTITY_REQUIRED')
+        self.rebind()
+        if self.owner.arm != self.plan['prospective_arm']:
+            raise ValueError('OWNER_ARM_CHANGED_AFTER_IDENTITY')
+        self.single_instance_consumed, self.identity_receipt = True, None
+        baseline, fault, error, cleanup = None, None, None, {}
+        try:
+            baseline = self.owner.request(probe, 'baseline', cycle)
+            if baseline.get('http_status') != 200:
+                raise RuntimeError('BASELINE_FAILED_NO_FAULT_REQUEST')
+            config = self.owner.install()
+            if set(config.actual_module_names) != set(self.plan['selected_modules']):
+                raise ValueError('INSTALLED_MODULE_SET_MISMATCH')
+            fault = self.owner.fault_request(probe, config, cycle)
+        except Exception as exc:
+            error = repr(exc)
+        finally:
+            try:
+                self.owner.disarm_and_remove()
+                cleanup['attempt'] = 'RETURNED; physical hook cleanup not independently certified'
+            except Exception as exc:
+                cleanup.update(attempt='ERROR', error=repr(exc))
+        gate = plan_window_gate(self.plan, fault or {})
+        return {'pair': {'baseline': baseline, 'fault': fault, 'recovery': None},
+                'window': gate, 'cleanup': cleanup, 'error': error,
+                'execution_policy': 'SINGLE_LOSSY_THEN_STOP_INSTANCE',
+                'instance_stop_required': True, 'stop_confirmed': False,
+                'hot_recovery': 'NOT_MEASURED', 'restart_text_recovery': 'NOT_MEASURED',
+                'status': 'MEASURED_STOP_PENDING' if not error and gate['mechanism'] == 'PASS' else 'PARTIAL'}
+
     def run_pair(self, probe, cycle=1):
+        if self.single_instance_consumed:
+            raise ValueError('INSTANCE_CONSUMED_RESTART_REQUIRED')
         if not self.identity_receipt or self.identity_receipt['plan_sha256'] != self.plan['plan_sha256']:
             raise ValueError('SAME_PLAN_IDENTITY_REQUIRED')
         self.rebind()

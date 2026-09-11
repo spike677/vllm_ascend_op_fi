@@ -26,6 +26,8 @@ def _dataset_configuration(config):
 
 def render_dashboard(result, *, mode="distortion"):
     data = result.to_dict()
+    if 'single_request_effect' in data:
+        return _single_dashboard(data)
     d, config = data["distortion"], data["fault_configuration"]
     # Preserve raw newline/trailing-space evidence in the DOM without placing
     # evidence whitespace at physical Git line endings in the generated HTML.
@@ -112,6 +114,8 @@ def render_dashboard(result, *, mode="distortion"):
                        'semantic_status': row['effect'].get('semantic_status'), 'pairing': row['pairing']}
             rows.append(f'<tr data-tags="{esc(tags)}"><th scope="row">{esc(row["probe_id"])}<small>{esc(cycle["cycle_id"])} · {esc(row["attribution"])}</small>{original_prompt}<p>{esc(", ".join(families))}</p><details><summary>本请求命中/校准</summary><pre>{esc(_pretty(details))}</pre></details></th>{"".join(cells)}</tr>')
     analysis = f'<details id="analysis" {"open" if mode == "analysis" else ""}><summary>Analysis Details · PPL / NLL / task / legacy classification</summary><pre>{esc(_pretty(data.get("analysis_details", {})))}</pre><p>仅作二级分析；PPL、RDR、VDR、L0–L6 不驱动 Distortion PASS。</p></details>'
+    if data.get('numerical_effect'):
+        analysis += '<details><summary>采样 NMSE / SQNR / 相对 L2（同一误差能量的派生，不改变判定）</summary><pre>' + esc(_pretty(data['numerical_effect'])) + '</pre></details>'
     filters = [("all", "全部"), ("distorted", "只看失常"), ("repetition", "重复"), ("structure", "结构"), ("garbage", "乱码"), ("unresolved", "答案未解"), ("crash", "错误/崩溃"), ("recovery_failure", "恢复失败")]
     options = "".join(f'<option value="{k}">{v}</option>' for k,v in filters)
     supplemental = '' if dataset else '<details><summary>补充任务的三项独立结论</summary><pre>' + esc(_pretty(data.get('normal_diagnostic_delivery', {}))) + '</pre></details>'
@@ -137,6 +141,8 @@ article{{min-width:0;overflow-wrap:anywhere}}
 def write_report(output, result, provenance, *, mode="distortion"):
     output = Path(output).resolve()
     output.mkdir(parents=True, exist_ok=True)
+    if 'single_request_effect' in result.to_dict():
+        return _write_single_report(output, result, provenance)
     names = ["evaluation_result.json", "distortion_profile.json", "effect_card.json", "effect_card.md", "effect_dashboard.html", "distortion_hits.jsonl", "replay_manifest.json"]
     if any((output / name).exists() for name in names):
         raise FileExistsError("result directory already contains report files; never overwrite historical evidence")
@@ -248,4 +254,39 @@ Scorer：{d['scorer_version']}，hash 见 evaluation_result.json；阈值在任�
             for row in cycle["matrix"]:
                 if row["visible_distortion"]:
                     handle.write(json.dumps(row, ensure_ascii=False, allow_nan=False)+"\n")
+    return {name: str(output / name) for name in names}
+
+
+def _single_dashboard(data):
+    """Same result renderer, a single-call lifecycle view; never a control UI."""
+    esc = lambda v: html.escape(str(v), quote=True).replace('\r', '&#13;').replace('\n', '&#10;')
+    single = data['single_request_effect']
+    columns = ''.join('<article><h2>' + title + '</h2><pre>' +
+        esc(single['raw'][phase].get('response_text')) + '</pre><details><summary>原始记录 / token pieces</summary><pre>' +
+        esc(_pretty(single['raw'][phase])) + '</pre></details></article>'
+        for phase, title in [('baseline', '正常对照'), ('fault', '有损输出')])
+    return '<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>单次 FakeRequant 效果</title>' + \
+        '<style>body{font:16px system-ui;max-width:1280px;margin:auto;padding:24px;background:#f5f7fa;color:#182b40}section{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}article{background:white;padding:20px;border:1px solid #ccd5df}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:14px monospace}summary{cursor:pointer}h1{font-size:26px}</style>' + \
+        '<h1>单次有损推理 · 结果只读</h1><p>不是完整 B/F/R 周期。停止实例记录见上一级产物索引；热卸载恢复与重启后文本恢复均未测。</p>' + \
+        '<h2>计划与实际效果</h2><pre>' + esc(_pretty({'config': data['fault_configuration'],
+            'attribution_eligible': single['eligible'], 'window': single['window'],
+            'effect': single['effect'], 'numerical_effect': data['numerical_effect']})) + '</pre>' + \
+        '<section>' + columns + '</section><h2>生命周期</h2><pre>' + esc(_pretty(data['instance_lifecycle'])) + \
+        '</pre><p>轨迹分叉不等于严重病态；规则告警不等于开放式语义正确性认证。无 recovery 文本，不填充为 baseline。</p></html>'
+
+
+def _write_single_report(output, result, provenance):
+    data = result.to_dict()
+    names = ['evaluation_result.json', 'effect_profile.json', 'effect_card.md', 'effect_dashboard.html', 'replay_manifest.json']
+    if any((output / name).exists() for name in names):
+        raise FileExistsError('Never overwrite historical report')
+    for name, value in [('evaluation_result.json', data),
+                        ('effect_profile.json', {k: data[k] for k in ('mechanism', 'single_request_effect', 'numerical_effect', 'instance_lifecycle')}),
+                        ('replay_manifest.json', provenance)]:
+        (output / name).write_text(_pretty(value) + '\n', encoding='utf-8')
+    (output / 'effect_dashboard.html').write_text(render_dashboard(result), encoding='utf-8')
+    (output / 'effect_card.md').write_text('# 单次 FakeRequant 效果\n\n'
+        '本结果保留完整正常/有损输出，不伪造 Recovery。完整 worker 停止确认见宿主产物索引。\n\n'
+        '- [完整原文与指标](effect_dashboard.html)\n- [EvaluationResult](evaluation_result.json)\n\n'
+        '热卸载恢复：NOT_MEASURED；重启后文本对照：NOT_MEASURED；完整周期 N=0。\n', encoding='utf-8')
     return {name: str(output / name) for name in names}

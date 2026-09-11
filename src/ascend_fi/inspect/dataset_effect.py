@@ -81,4 +81,9 @@ def evaluate_dataset(suite, config, cycles, *, evaluation_id):
     data.update(dataset_delivery=delivery,
                 normal_diagnostic_delivery={'status': 'NOT_APPLICABLE_DATASET_TARGETED_SUBSET'},
                 status='PASS' if integration else 'FAIL', reason='DATASET_BACKED_LOSSY_INTEGRATION:' + delivery['DATASET_BACKED_LOSSY_INTEGRATION'])
+    from .single_effect import numerical_from_request
+    data['numerical_effect'] = {'aggregation_scope': 'PER_REQUEST_ONLY; no repeated cumulative query summation',
+        'per_probe': {p['probe_id']: numerical_from_request(cycles[0]['pairs'][p['probe_id']]['fault'],
+                        list(range(config.world_size))) for p in suite['probes']},
+        'detector_thresholds_changed': False}
     return EvaluationResult.from_dict(data)

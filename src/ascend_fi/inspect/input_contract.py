@@ -62,9 +62,26 @@ class PlanInputContractMixin:
             target = next((w for w in plan['workers'] if w['service_epoch'] == session.epoch), None)
             if target is None or target['model_fingerprint'] != d['model_fingerprint']:
                 raise ValueError('STALE_MODEL_OR_PLAN_WORKER')
+            identity = None
+            if 'selection' in plan:
+                # Read the pinned backend's actual rank resolver, never substitute
+                # a device ordinal or assume LOCAL_RANK means global rank.
+                from fake_requant_reference_extension import _rank_for
+                modules = [session.surface.modules[t['module_name']] for t in target['targets']]
+                ranks = [_rank_for(m) for m in modules]
+                tp_ranks = {getattr(m, 'tp_rank', None) for m in modules}
+                rank = d.get('ranks', {}).get('global', {}).get('value')
+                if (rank != target['rank'] or tp_ranks != {rank}
+                        or any(r[0] != rank for r in ranks)):
+                    raise ValueError('REFERENCE_GLOBAL_TP_RANK_MAPPING_UNSUPPORTED')
+                identity = {'service_epoch': session.epoch, 'global_rank': rank,
+                    'reference_rank': rank, 'reference_rank_sources': sorted({r[1] for r in ranks}),
+                    'module_tp_ranks': sorted(tp_ranks), 'descriptor_ranks': d['ranks']}
             self._target_plan_guards = []
             self._target_plan_guard_status = {'installed': True, 'plan_sha256': plan['plan_sha256'],
                                              'calls_checked': 0, 'violations': 0, 'last_error': None}
+            if identity is not None:
+                self._target_plan_guard_status['worker_identity'] = identity
             try:
                 for t in target['targets']:
                     module = session.surface.modules[t['module_name']]
