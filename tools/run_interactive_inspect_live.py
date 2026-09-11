@@ -50,9 +50,16 @@ def paged(client, action, epoch, **kwargs):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--session', type=Path, required=True)
-    parser.add_argument('--stage', choices=['inspect-identity', 'smoke'], required=True)
+    parser.add_argument('--stage', choices=['inspect-identity', 'smoke', 'dataset'], required=True)
     parser.add_argument('--prompt', help='User-provided normal prompt; required for lossy smoke')
+    parser.add_argument('--dataset-file', type=Path, help='Verified official question.jsonl for dataset stage')
+    parser.add_argument('--dataset-manifest', type=Path, help='Pinned revision / source SHA256')
     args = parser.parse_args()
+    if args.stage == 'dataset':
+        if not args.dataset_file or not args.dataset_manifest or args.prompt:
+            parser.error('dataset stage requires file + manifest, forbids manual prompt override')
+        from inspect_dataset_live import run_dataset
+        return run_dataset(args)
     if args.stage == 'smoke' and not args.prompt:
         parser.error('lossy smoke requires the user prompt, not a benchmark substitute')
     output = args.session / 'acceptance'

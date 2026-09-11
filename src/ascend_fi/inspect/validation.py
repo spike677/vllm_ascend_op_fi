@@ -69,10 +69,16 @@ class ExistingOwnerIdentityValidator:
             ranks_seen.add(rank)
             if rank in plan['ranks'] and worker.get('hit_count', 0):
                 targeted += worker['hit_count']
-                good = good and len(histories) == worker['hit_count'] and all(
-                    h.get('mode') == 'IDENTITY' and h.get('changed_elements') == 0
-                    and h.get('rank') == rank and h.get('module') in plan['selected_modules'] for h in histories)
-                good = good and {h.get('module') for h in histories} == set(plan['selected_modules'])
+                if 'effect_summary' in worker:
+                    from .effect_stats import validate_stats
+                    checked = validate_stats(worker, plan['selected_modules'], self.config.targeted_layers,
+                                             rank, owner.arm, identity=True)
+                    good = good and checked['status'] == 'PASS'
+                else:
+                    good = good and len(histories) == worker['hit_count'] and all(
+                        h.get('mode') == 'IDENTITY' and h.get('changed_elements') == 0
+                        and h.get('rank') == rank and h.get('module') in plan['selected_modules'] for h in histories)
+                    good = good and {h.get('module') for h in histories} == set(plan['selected_modules'])
             elif rank in plan['ranks'] or worker.get('hit_count') != 0:
                 good = False
         def answer(row):

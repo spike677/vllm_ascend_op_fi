@@ -94,12 +94,20 @@ def validate_mechanism(row, config: FaultConfigurationRecord, service_healthy=No
         history = worker.get("tensor_effect_history")
         reject = worker.get("reject_reasons")
         changed = None
+        summary_layers = None
         if not _integer(hits):
             unknowns.append(f"rank{rank}: hit_count missing/invalid")
         elif rank in config.targeted_ranks:
             if hits == 0:
                 failures.append(f"rank{rank}: zero actual measurement hits")
-            if not isinstance(history, list) or len(history) != hits:
+            if 'effect_summary' in worker:
+                from ...inspect.effect_stats import validate_stats
+                checked = validate_stats(worker, expected_modules, expected_layers, rank,
+                                         config.extra.get('frozen_arm_config', {}))
+                failures.extend(f'rank{rank}: {f}' for f in checked['failures'])
+                changed = checked['changed_elements']
+                summary_layers = checked['hit_layers']
+            elif not isinstance(history, list) or len(history) != hits:
                 unknowns.append(f"rank{rank}: incomplete raw tensor_effect_history")
             else:
                 changes = [h.get("changed_elements") for h in history]
@@ -136,7 +144,7 @@ def validate_mechanism(row, config: FaultConfigurationRecord, service_healthy=No
                 failures.append(f"rank{rank}: rank_filter not observed")
         ranks.append({"rank": rank, "pid": pid, "hit_count": hits, "changed_elements": changed,
                       "reject_reasons": reject, "worker_responsive": True,
-                      "hit_layers": sorted({h["layer"] for h in history or [] if type(h.get("layer")) is int}),
+                      "hit_layers": summary_layers if summary_layers is not None else sorted({h["layer"] for h in history or [] if type(h.get("layer")) is int}),
                       "health_basis": "successful post-request RPC response with worker pid"})
     if config.world_size and seen_ranks != set(range(config.world_size)):
         failures.append("all expected ranks not independently identified")

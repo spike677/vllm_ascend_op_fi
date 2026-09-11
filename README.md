@@ -1,8 +1,21 @@
-# vLLM Ascend Operator Fault Injection
+# DemonCATPFI：FakeRequant 工具与历史原生算子研究
+
+## 当前推荐工具入口
+
+本轮推荐发布主线为 `codex/fake-requant-tool-v1`：通用 Inspect、模型感知 TargetPlan、现有 FakeRequant owner、V2 效果解释与 Dashboard。指定 Qwen 双卡实例已完成最小真实验收；原生 DeepSeek 和独立执行步完整覆盖尚未验收。源码安装依赖和限制均须阅读说明，不是任意服务的一键注错包。
+
+- [功能与使用说明](docs/inspect/fake_requant_tool_v1_usage_zh.md)
+- [完整指标口径与字段](docs/evaluation/fake_requant_tool_v1_metrics_zh.md)
+- [版本、分支与最小验收记录](docs/releases/fake_requant_tool_v1/README.md)
+- 推荐运行入口：`tools/run_model_target_plan_live.py`；离线验收：`tools/verify_fake_requant_release.py`。
+
+以下内容保留历史 Fault20／26／39／41 原生能力的研究边界，不随本次工具收束重新认证或重构。
+
+## 历史原生算子原型
 
 这是一个面向 vLLM-Ascend/CANN 的开发者模式原生算子故障注入原型。实现覆盖 CANN repeat executor-cache replay 边界、typed operator adapter 和 temporary device buffer 替换，并提供受控、可审计的输入数值退化、非有限输出代理与 allocation-boundary 写错地址代理。
 
-本仓库仅包含最终运行源码、构建/容器脚本和能力说明。请求响应、token 对比、trace、结构化 evidence、离线测试程序和历史探针不上传。
+本仓库现包含工具实现、测试、能力说明及部分经选择的历史证据；新实验的完整响应与现场数据仍保存在独立 evidence 目录，不随本次发布提交。历史目录不迁移或删除。
 
 ## 已验证能力
 

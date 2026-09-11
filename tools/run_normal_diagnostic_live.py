@@ -11,6 +11,8 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
+import time
 from pathlib import Path
 import shutil
 import sys
@@ -58,8 +60,98 @@ class VerifiedOwner:
         self.events = 0
         self.attempt = 'attempt_02_chat'
         self.rawroot = session / 'normal_v2'
+        self.experiment = None
+        self.request_timeout = 600
+        self.access_token = None
+        self.target_plan = None
+        self.plan_discovery_window = False
+        token_path = session / 'access.token'
+        if token_path.exists():
+            self.access_token = token_path.read_text().strip()
+            # Same verified lifecycle/decoder; optional authenticated transport.
+            self.client._post = self.authenticated_post
+
+    def authenticated_post(self, url, payload, timeout):
+        req = urllib.request.Request(url, json.dumps(payload, ensure_ascii=False).encode('utf-8'),
+              {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + self.access_token})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as reply:
+                return reply.status, json.load(reply), None
+        except urllib.error.HTTPError as exc:
+            return exc.code, None, exc.read().decode('utf-8', errors='replace')
+        except (OSError, ValueError) as exc:
+            return None, None, repr(exc)
+
+    def configure_experiment(self, experiment):
+        """Explicit non-R1 configuration; default owner behavior is unchanged."""
+        clean = cleanup_gate(self.clean_query(), self.service_healthy(), 2)
+        assert clean['status'] == 'PASS'
+        arm = copy.deepcopy(experiment['arm'])
+        original = self.manifest['r1_arm_config']
+        allowed = {'scale_multiplier', 'max_hits', 'module_regex', 'layer_filter'}
+        assert set(arm) == set(original)
+        assert all(arm[k] == original[k] for k in original if k not in allowed)
+        assert type(arm['max_hits']) is int and 0 < arm['max_hits'] <= 2**21
+        assert arm['scale_multiplier'] in (.25, 1, 2, 5, 10, 20)
+        names = experiment['selected_modules']
+        assert len(set(names)) == len(names) and 0 < len(names) <= 256
+        assert all(re.search(arm['module_regex'], n) for n in names)
+        assert not any(a != b and b.startswith(a + '.') for a in names for b in names)
+        assert experiment['request_timeout_seconds'] == 3600
+        self.experiment = copy.deepcopy(experiment)
+        self.target_plan = None
+        self.arm = arm
+        self.request_timeout = experiment['request_timeout_seconds']
+        self.attempt = experiment['config_id']
+
+    def metrics(self):
+        with urllib.request.urlopen(BASE + '/metrics', timeout=15) as r:
+            raw = r.read().decode()
+        out = {'success': 0., 'running': 0., 'waiting': 0.}
+        prefixes = {'vllm:request_success_total': 'success', 'vllm:num_requests_running': 'running',
+                    'vllm:num_requests_waiting': 'waiting'}
+        seen = set()
+        for line in raw.splitlines():
+            for prefix, key in prefixes.items():
+                if line.startswith(prefix + '{'):
+                    out[key] += float(line.rsplit(' ', 1)[1]); seen.add(key)
+        assert seen == set(out), 'SERVICE_REQUEST_METRICS_UNAVAILABLE'
+        return out
+
+    def configure_target_plan(self, plan):
+        """Deployment adapter for a resolved plan; legacy R1/C3 paths unchanged.
+
+        This owner is the existing two-card lab deployment, NOT a universal
+        launcher. The plan executor itself has no model/device/port constants.
+        """
+        from ascend_fi.inspect.plan_builder import verify_plan
+        verify_plan(plan)
+        self.preflight()
+        if len(plan['workers']) != 2:
+            raise ValueError('THIS_DEPLOYMENT_OWNER_REQUIRES_TWO_TP_WORKERS')
+        arm = copy.deepcopy(plan['prospective_arm'])
+        original = self.manifest['r1_arm_config']
+        allowed = {'scale_multiplier', 'max_hits', 'module_regex', 'layer_filter',
+                   'tensor_selector', 'tensor_index', 'rank_filter'}
+        if set(arm) != set(original) or any(arm[k] != original[k] for k in original if k not in allowed):
+            raise ValueError('REFERENCE_MATH_CONFIG_CHANGED')
+        if arm['tensor_selector'] == 'first_float':
+            raise ValueError('EXPLICIT_INPUT_BINDING_REQUIRED')
+        names = plan['selected_modules']
+        if {n for n in names if re.search(arm['module_regex'], n)} != set(names):
+            raise ValueError('EXACT_PLAN_PATTERN_REQUIRED')
+        self.experiment = {'arm': arm, 'selected_modules': names,
+            'module_families': plan['roles'], 'config_id': 'target_plan_' + plan['plan_sha256'][:16],
+            'window_policy': plan['request_window']['policy'], 'target_plan_sha256': plan['plan_sha256'],
+            'request_timeout_seconds': plan['request_window']['timeout_seconds']}
+        self.arm = arm
+        self.request_timeout = self.experiment['request_timeout_seconds']
+        self.attempt = self.experiment['config_id']
+        self.target_plan = copy.deepcopy(plan)
 
     def guard(self):
+        if (self.session / 'request_completion_unproven.json').exists():
+            raise RuntimeError('PRIOR_REQUEST_COMPLETION_UNPROVEN; service must be isolated/restored')
         owner = json.loads((ROOT / 'coordination/NPU_LOCK/owner.json').read_text())
         assert owner.get('result_dir') == str(self.session) and owner.get('owner') == 'EVALUATION'
         if shutil.disk_usage('/home').free < 12*1024**3:
@@ -90,7 +182,9 @@ class VerifiedOwner:
 
     def preflight(self):
         self.guard()
-        with urllib.request.urlopen(BASE + '/v1/models', timeout=10) as r:
+        req = urllib.request.Request(BASE + '/v1/models', headers=(
+            {'Authorization': 'Bearer ' + self.access_token} if self.access_token else {}))
+        with urllib.request.urlopen(req, timeout=10) as r:
             models = json.load(r)
         assert self.model in [m['id'] for m in models['data']]
         clean = cleanup_gate(self.clean_query(), self.service_healthy(), 2)
@@ -103,11 +197,34 @@ class VerifiedOwner:
 
     def request(self, probe, phase, index):
         self.guard()
+        window = None
+        if self.experiment or self.plan_discovery_window:
+            assert self.access_token, 'ISOLATED_GENERATION_CREDENTIAL_REQUIRED'
+            before = self.metrics()
+            assert before['running'] == before['waiting'] == 0, 'SERVICE_NOT_IDLE'
+            window = {'started_at': dt.datetime.now(dt.timezone.utc).isoformat(), 'before': before,
+                      'isolation': 'exclusive project lease + private generation API key + serialized owner + engine counters',
+                      'request_generation_is_isolation': False, 'scheduler_token_mapping': 'UNKNOWN'}
         protocol = self.suite['request_protocol']
         payload = {'model': self.model, 'messages': [{'role': 'user', 'content': probe['prompt']}],
                    **probe['generation_config'], 'chat_template_kwargs': protocol['chat_template_kwargs'],
                    'logprobs': True, 'top_logprobs': 1}
-        status, raw, error = self.client._post(BASE + protocol['endpoint'], payload, 600)
+        status, raw, error = self.client._post(BASE + protocol['endpoint'], payload, self.request_timeout)
+        if window is not None:
+            # Metrics can lag the finished HTTP response. Never start another
+            # request until engine completion and exactly one success are proven.
+            deadline = time.monotonic() + 20
+            while True:
+                after = self.metrics()
+                if after['running'] == after['waiting'] == 0 and after['success'] == before['success'] + 1:
+                    break
+                if status != 200 or time.monotonic() > deadline:
+                    save(self.session / 'request_completion_unproven.json', {'http': status, 'error': error,
+                         'before': before, 'after': after, 'probe': probe['probe_id']})
+                    raise RuntimeError('REQUEST_COMPLETION_OR_EXCLUSIVITY_NOT_PROVEN')
+                time.sleep(1)
+            window.update(after=after, completed_at=dt.datetime.now(dt.timezone.utc).isoformat(),
+                          single_request_completed=True)
         # Preserve the original chat response; adapt only the existing row decoder's view.
         view = copy.deepcopy(raw)
         if view and view.get('choices'):
@@ -117,6 +234,8 @@ class VerifiedOwner:
             c['logprobs'] = {**lp, 'tokens': [t['token'] for t in lp.get('content', [])]}
         row = self.client._choice_row({'id': probe['probe_id'], 'category': probe['category']}, payload, status, view, error)
         row['raw_response'] = raw
+        if window is not None:
+            row['request_window_evidence'] = window
         row.update(case_id=probe['probe_id'], phase=phase, cycle_id=f'cycle_{index:02d}',
                    attempt_id=self.attempt, request_generation=None,
                    service_healthy=self.service_healthy(), recorded_at=dt.datetime.now(dt.timezone.utc).isoformat())
@@ -135,9 +254,30 @@ class VerifiedOwner:
                           'tokens': row.get('generation_length')}), flush=True)
 
     def install(self, config=None):
+        if self.target_plan is not None:
+            guard = self.rpc('fake_requant_bind_target_plan', {'plan': self.target_plan})
+            if not guard.get('results') or not all(w.get('ok') for w in guard['results']):
+                raise ValueError('CURRENT_INPUT_CONTRACT_BINDING_FAILED:' + str(guard)[:500])
         result = self.rpc('fake_requant_install', {'module_regex': self.arm['module_regex'], 'layer_filter': self.arm['layer_filter']})
         assert all(w.get('ok') for w in result['results']), result
         query = self.rpc('fake_requant_query')
+        if self.experiment:
+            for w in query['results']:
+                assert set(m['module'] for m in w['matched_modules']) == set(self.experiment['selected_modules'])
+                assert w.get('effect_summary', {}).get('schema') == 'BOUNDED_EFFECT_SUMMARY_V1'
+            declaration = {**self.manifest, 'r1_arm_config': self.arm,
+                           'r1_arm_config_sha256': 'sha256:' + content_hash(self.arm)}
+            value = configuration_from_raw(declaration, query['results'][0]).to_dict()
+            value.update(module_families=self.experiment['module_families'],
+                         config_id=self.experiment['config_id'], research_scope='CONFIG_EXPLORATION_NOT_FROZEN_R1',
+                         bounded_evidence_required=True, window_policy=self.experiment['window_policy'],
+                         original_r1_config_hash=self.manifest['r1_arm_config_sha256'],
+                         observer_hash=hashlib.sha256((self.session/'client/src/ascend_fi/inspect/experiment_extension.py').read_bytes()).hexdigest())
+            value['runtime_hash'] = hashlib.sha256((ROOT/'fake_requant/reference_experiment/fake_requant_reference_extension.py').read_bytes()).hexdigest()
+            value['hit_policy'].update(budget_semantics='AT_MOST_NO_PADDING', short_request_padding=None)
+            value['persistence'] = {'window': 'private, serialized complete request, finite hard cap, finally disarm'}
+            value['topology']['device_ids'] = [2, 5]
+            return FaultConfigurationRecord.from_dict(value)
         config = configuration_from_raw(self.manifest, query['results'][0]).to_dict()
         config['hit_policy'].update(budget_semantics='AT_MOST_NO_PADDING', short_request_padding=None)
         config['persistence'] = {'window': 'exactly one measured request; finally disarm; no padding'}
@@ -154,6 +294,13 @@ class VerifiedOwner:
         for method in ('fake_requant_disarm', 'fake_requant_remove'):
             try:
                 self.rpc(method)
+            except Exception as exc:
+                failures.append(repr(exc))
+        if self.target_plan is not None:
+            try:
+                cleared = self.rpc('fake_requant_bind_target_plan', {'clear': True})
+                if not cleared.get('results') or not all(w.get('ok') and w.get('handles') == 0 for w in cleared['results']):
+                    failures.append('INPUT_GUARD_CLEANUP_UNPROVEN')
             except Exception as exc:
                 failures.append(repr(exc))
         if failures:

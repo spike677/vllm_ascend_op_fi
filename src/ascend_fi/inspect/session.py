@@ -44,6 +44,7 @@ class InspectSession:
         self.window = None
         self.counts = Counter()
         self.stop_reason = 'NOT_STARTED'
+        self.terminal_stop_reason = None
         self.errors = []
         self.selected_names = []
 
@@ -58,6 +59,9 @@ class InspectSession:
                     'owned_layers': self.surface.owned_layers, 'active': self.active,
                     'session': self.session_id, 'event_count': len(self.events),
                     'installed_handles': len(self.handles), 'stop_reason': self.stop_reason,
+                    'terminal_stop_reason': self.terminal_stop_reason,
+                    'module_call_counts': dict(self.counts),
+                    'enumeration_complete': True,
                     'observation_status': 'OBSERVED' if self.events else
                         'HOOK_INSTALLED_BUT_NOT_OBSERVED' if self.session_id else 'NOT_STARTED',
                     'errors': self.errors[:10], 'mutation_supported_by_inspect': False,
@@ -97,6 +101,7 @@ class InspectSession:
             self.session_id = uuid.uuid4().hex
             self.window = request_window
             self.events, self.counts, self.errors = [], Counter(), []
+            self.terminal_stop_reason = None
             self.max_events, self.max_bytes, self.samples_per_module = max_events, max_bytes, samples_per_module
             self.bytes_used = 0
             self.selected_names = list(module_names)
@@ -124,6 +129,9 @@ class InspectSession:
             if self.counts[name] > self.samples_per_module:
                 return
             try:
+                from .model_descriptor import annotate_call
+                parameters = tensor_paths(args, kwargs, self.surface.predicate)
+                annotate_call(self.surface.modules[name], args, kwargs, parameters)
                 event = {'session': self.session_id, 'service_epoch': self.epoch,
                          'runtime_fingerprint': self.fingerprint, 'origin': 'LIVE',
                          'request_window': self.window, 'request_identity_level': 'USER_ASSERTED_EXCLUSIVE_WINDOW',
@@ -133,7 +141,7 @@ class InspectSession:
                          'layer_index': self.surface.by_name[name]['layer_index'],
                          'ranks': self.surface.by_name[name]['ranks'], 'invocation': self.counts[name],
                          'phase': 'UNKNOWN', 'surface': 'module_args',
-                         'parameters': tensor_paths(args, kwargs, self.surface.predicate)}
+                         'parameters': parameters}
                 cost = len(json.dumps(event, allow_nan=False).encode())
                 if len(self.events) >= self.max_events or self.bytes_used + cost > self.max_bytes:
                     self.stop(reason='METADATA_BUDGET_REACHED')
@@ -162,6 +170,8 @@ class InspectSession:
                 self.timer.cancel()
                 self.timer = None
             self.stop_reason = reason
+            if reason not in ('EXPLICIT_STOP', 'ACTIVE'):
+                self.terminal_stop_reason = reason
             pending = []
             for handle in self.handles:
                 try:

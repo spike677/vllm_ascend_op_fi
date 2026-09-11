@@ -4,6 +4,8 @@
 
 ## 推荐阅读顺序
 
+本轮工具使用请先读 [FakeRequant 工具 V1](inspect/fake_requant_tool_v1_usage_zh.md)、[指标口径](evaluation/fake_requant_tool_v1_metrics_zh.md)和[发布记录](releases/fake_requant_tool_v1/README.md)。它是最小功能发布，不要求新强配置已经完成 GSM8K／PPL／三周期研究。
+
 1. [项目概览](overview/project_overview.md)：仓库定位、边界和当前状态。
 2. [术语](overview/terminology.md)：统一区分语义故障、执行平面、能力、证据与代理。
 3. [故障效果评估核心指标](evaluation/fault_effect_evaluation_core_metrics_zh.md)：如何解释一个已验证 Fault 的实际效果。
@@ -11,7 +13,7 @@
 4. [故障效果评估设计 V1](evaluation/fault_effect_evaluation_design_v1.md)：baseline/fault/recovery 的工程协议和证据要求。
 5. [Fault 索引](faults/README.md)：Fault15、20、26、39、41 的 canonical 文档入口。
 6. [模型索引](models/README.md)：当前模型的注入面与效果报告。
-   [交互 Inspect 使用指南](inspect/README.md)：列层、参数观察、候选选择、DRAFT 导出与显式无损验证；当前 live 延后。
+   [交互 Inspect 使用指南](inspect/README.md)：列层、参数观察、候选选择、DRAFT 导出与显式无损验证；指定 Qwen 实例已通过真实验收，原生 DeepSeek 尚待验证。
 7. [历史归档](archive/README.md)：阶段审计、探查与失败/替代路线的定位目录。
 
 ## 证据与文档的边界

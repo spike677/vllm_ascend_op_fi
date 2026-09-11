@@ -1,6 +1,10 @@
 # 列层—看参数—采一次—选目标—导出—验证
 
-当前状态：**真实双卡列层、输入观察、清理、现场量化合同与 IDENTITY 已通过；有损单请求 smoke 尚未执行**。详见[2026-09-10 实机记录](live_validation_20260910_zh.md)。Inspect 是开发者只读入口，不是自动注入器，不会因发现一个参数就 arm。
+当前推荐：[FakeRequant 工具 V1 功能说明](fake_requant_tool_v1_usage_zh.md)与[完整指标解释](../evaluation/fake_requant_tool_v1_metrics_zh.md)。本页保留通用 Inspect 与早期入口细节；新任务默认走 TargetPlan runner。
+
+新增入口：[Qwen／DeepSeek FakeRequant 自动目标适配 V1](model_aware_fake_requant_v1_zh.md)。新 epoch 的 Qwen 双卡已完成 256 目标自动绑定、IDENTITY 与一题真实有损 B/F/R：262144 hit，明显重复输出，精确恢复。**原生 DeepSeek 和独立执行步完整窗口仍未验收**；总体 PARTIAL，不与下述旧入口的历史通过结论混用。
+
+当前状态：**双卡 Inspect / IDENTITY 已通过，基于 MT-Bench 官方八题首轮子集的真实有损集成也已通过**。8/8 输出分叉并精确恢复；唯一标点规则告警来自表格分隔线，不能直接认定真实刷屏。详见[有损实机报告](mtbench_lossy_live_validation_20260910_zh.md)与[数据集接入说明](dataset_backed_lossy_integration_zh.md)。早期只读/无损证据仍保留在[原实机记录](live_validation_20260910_zh.md)。Inspect 自身仍是只读入口，有损执行委托已有 R1 owner，不会因发现参数就自动 arm。
 
 ## 1. 新会话的单一 extension
 
@@ -118,7 +122,7 @@ python tools/interactive_inspect.py validate --args validate.json \
 
 该桥只调用已有 owner 的 preflight、baseline、disabled install、`fault_request(identity=True)`、finally disarm/remove、recovery；不实现新 arm/controller。固定 owner 的实际模块集合和 selector 必须与 plan 等价，不支持的子集明确拒绝。IDENTITY 返回原 tensor，不能用有损 REFERENCE_REQUANT 冒充无损。
 
-验证输出仍为 `ValidationResult`。实机 baseline/disabled/IDENTITY/recovery 均回答 `84`，IDENTITY rank0 命中 256 次、changed=0、rank1=0。后续有损请求与单次效果分析继续交给已有 lifecycle/EvaluationResult；Inspect CLI 不直接 arm。有损集成在本轮未验收，不能以无损结果替代。
+验证输出仍为 `ValidationResult`。实机 baseline/disabled/IDENTITY/recovery 均回答 `84`，IDENTITY rank0 命中 256 次、changed=0、rank1=0。后续有损请求与效果分析继续交给已有 lifecycle/EvaluationResult；Inspect CLI 不直接 arm。八题数据集有损集成已在独立报告中完成；新的完整请求窗口配置探索仍按[预运行契约](config_exploration_v1_zh.md)单独记录，不能与冻结 R1 混写。
 
 已有受控会话的小规模验收入口：
 
@@ -155,9 +159,9 @@ python tools/interactive_inspect.py recorded --args recorded.json --output opera
 
 ## 验收状态
 
-- 本地 146 项测试通过；正式 factory CLI 已通过实机 IDENTITY。
+- 本地最新 214 项测试通过；早期 factory CLI 与新 TargetPlan runner 的实机证据分别保留。
 - 历史数据与 fixture 分开；大体积/现场数据留 `artifacts/inspect/private/`，不提交。
 - 实机 2 worker 各枚举 967 个模块、64 层；早/中/晚层代表观察与全 R1 目标观察通过。
-- 有损单请求集成、QMM 新 live adapter、module→native 精确关联：**未验收/不支持**，分开报告。
+- 数据集有损集成已完成；QMM 新 live adapter、module→native 精确关联仍为**未验收/不支持**，分开报告。
 - 旧长任务已结束并清理；本轮使用独立会话，不改旧证据、不 push。
 - 详见[复用地图](implementation_reuse_map.md)与[实机交接清单](live_handoff.md)。

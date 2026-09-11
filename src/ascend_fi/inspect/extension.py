@@ -11,7 +11,8 @@ from .plans import module_candidates, export_plan
 
 
 _INIT_LOCK = threading.RLock()
-ACTIONS = frozenset({'status', 'list_modules', 'describe_target', 'observe_start',
+ACTIONS = frozenset({'status', 'list_modules', 'describe_target', 'describe_model',
+                     'auto_targets', 'observe_start',
                      'observe_poll', 'observe_stop', 'list_candidates', 'export_plan'})
 
 
@@ -86,6 +87,17 @@ class InspectWorkerExtension:
                 if kwargs:
                     raise ValueError('UNKNOWN_STATUS_ARGUMENT')
                 value = {**session.status(), 'reference_backend_available': available, 'actions': sorted(ACTIONS)}
+            elif action in ('describe_model', 'auto_targets'):
+                from .model_descriptor import describe_model
+                from .target_resolver import resolve_targets
+                descriptor, modules = describe_model(session, self)
+                if action == 'describe_model':
+                    value = {'descriptor': descriptor, **page(modules, **kwargs)}
+                else:
+                    with session.lock:
+                        report = resolve_targets(descriptor, modules, session.events, session.status())
+                    targets_page = page(report.pop('targets'), **kwargs)
+                    value = {**report, **targets_page}
             elif action == 'list_modules':
                 value = session.list_modules(**kwargs)
             elif action == 'describe_target':
