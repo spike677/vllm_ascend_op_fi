@@ -1,23 +1,60 @@
-# Fault18 baseline and fault msprobe dumps
+# Fault18 baseline / fault msprobe statistics dumps
 
-These archives contain only the original dump directories from the 2026-09-15 systemic normalization-output gain experiment.
+Replaces the earlier rank0 step0/step1 explicit tensor samples at these same
+archive paths. Current archives contain only B/F automatic statistics dumps
+and configuration evidence from the validated composed-wrapper run.
 
-| Archive | Case | Files | Tensor files | Bytes |
+## Configuration and contents
+
+- `task=statistics`, `summary_mode=statistics`, `level=mix`.
+- Steps **0 through 8 inclusive**; ranks **0 and 1**.
+- Each archive has 18 `dump.json`, 18 `construct.json`, 18 `stack.json`,
+  `dump_config.json`, and `probe_config_ack.json`: 56 JSON files, no tensors.
+- Archive roots remain `B_ON/` and `F_ON/` for compatibility.
+- `dump_config.json` deliberately starts with `dump_enable=false` to exclude
+  warmup. `probe_config_ack.json` records activation before the formal request.
+- No Z/R groups, service logs, runtime event JSONL, responses, binaries, source
+  code, or intermediate failed attempts are included.
+
+| Archive | Group | Files | Dump files | Compressed bytes |
 | --- | --- | ---: | ---: | ---: |
-| Fault18_Baseline_B_ON.zip | B_ON: normal baseline, msprobe ON | 33 | 30 | 1214865 |
-| Fault18_Fault_F_ON.zip | F_ON: output gain 0.5, msprobe ON | 33 | 30 | 1218232 |
+| Fault18_Baseline_B_ON.zip | B: disabled | 56 | 18 | 5012373 |
+| Fault18_Fault_F_ON.zip | F: alpha=-0.5, output gain=0.5 | 56 | 18 | 5759551 |
 
-Each archive retains its B_ON or F_ON top-level directory, dump_config.json, step0/step1 rank0 debug.json, and .pt tensor files. Every archived file was SHA256-checked against its local source; file counts also match.
+Every archived member was SHA256-compared with the downloaded source archive;
+ZIP integrity, exact file counts and step/rank coverage were checked. Each
+dump.json contains 97 `NPU.npu_rms_norm` call entries.
 
-These are bounded explicit PrecisionDebugger.save samples, not a full automatic API trace. Sampling covers rank0; fault execution covered both ranks. Service logs, event JSONL, responses, source code, and other experimental groups are not included in this upload.
+## Associated run results and boundaries
 
-F_ON produced 1024 tokens with finish_reason=length and 509 occurrences of "bustling". This is a normalization-output effect proxy, not proof of native reduction nondeterminism. The full experiment separately verified recovery; these two archives alone are not the complete recovery evidence package.
+Model: Qwen3-VL-30B-A3B-Instruct-w8a8; text-only Q86, TP2, A2/910B4,
+CANN8.5.1, vLLM-Ascend `99e1ea0fe685e93f53ee5adfe4b41cdd42fb809f`.
+
+- B: 316 tokens, `finish_reason=stop`; text, integer token IDs and selected
+  logprobs exactly matched the frozen baseline. 30,652 API/consumer calls/rank.
+- F: 1,024 tokens, `finish_reason=length`; repeated `bustling`, first token
+  difference at index0. 99,328 changed API outputs and matched consumer calls/rank.
+- Actual finite changes were recorded inside dump-active step0 on both ranks.
+- Owner removal, registry restoration and service shutdown passed. No R request
+  was run after the user limited this delivery to B/F; no new-request recovery
+  claim is made for this run.
+
+This is a normalization-output effect proxy, not native reduction statistic
+corruption or naturally reproduced nondeterminism. With `F -> W -> N`, msprobe's
+RMSNorm API dump observes native output; the proxy's changed output is observed
+downstream. These dump-only archives are not the full runtime evidence package.
+Counts and response results above come from separately retained runtime logs
+and responses, not from the ZIP contents alone.
+
+Source evidence: `/home/haoran/fault18_determinism_20260915_composed_v4/cases/{B,F}`.
+The wrapper composition / one-time module registration implementation is not
+included in this dump-only update.
 
 ## Archive SHA256
 
 ```text
-ead12deb629d8f70735cb3fab02746385e118d98f4cc92ae3639f9da7cb1ab8f  Fault18_Baseline_B_ON.zip
-8cdd00bb4bf731d79b3aedab450de9efc9fdb4c2023c29c0d4656bcf8e3b44ac  Fault18_Fault_F_ON.zip
+b83672b6f28d93d82a657588c0376904420a3376d51c11e79bcd8e18affd9a4a  Fault18_Baseline_B_ON.zip
+96dfd443947c29ccb826f322290a87c91f9a1439a2ac40d7f45bb513fbf45a32  Fault18_Fault_F_ON.zip
 ```
 
-Source snapshot: local research commit 3f6e17a6b205327f7f0075f7021e0f7fc23b4e50, experiments/fault18_determinism/deliveries/systemic_api_half_20260915/dumps/{B_ON,F_ON}. That separate commit is not included by this archive-only branch.
+Old tensor archives remain recoverable from Git history; no history is rewritten.
