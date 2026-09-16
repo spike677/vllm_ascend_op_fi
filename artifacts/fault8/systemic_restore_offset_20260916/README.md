@@ -3,6 +3,9 @@
 Only the baseline (B) and systemic restore-offset fault (F) groups are included.
 This is a new Fault8 artifact directory; existing Fault18 artifacts are unchanged.
 
+Injection mechanism, scope, lifecycle and evidence boundaries:
+[故障注入逻辑说明](INJECTION_LOGIC.md).
+
 ## Configuration and contents
 
 - `task=statistics`, `summary_mode=statistics`, `level=mix`.
