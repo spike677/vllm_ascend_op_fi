@@ -4,6 +4,9 @@ Only baseline (B) and fault (F) are included. These are compressed original
 statistics dumps, not full tensor dumps. Archive sizes and SHA256 checksums are
 in `archives.json`. No experiment source or compiled runtime is delivered here.
 
+See [INJECTION_LOGIC.md](INJECTION_LOGIC.md) for the injection principle,
+native execution contract, observed effect, and evidence limitations (Chinese).
+
 ## Experiment and observed response
 
 - Model: Qwen3-VL-30B-A3B-Instruct-w8a8; A2/910B4, physical devices 2 and 5,
