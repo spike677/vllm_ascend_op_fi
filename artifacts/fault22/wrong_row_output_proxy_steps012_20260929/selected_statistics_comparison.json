@@ -1,0 +1,1349 @@
+{
+  "boundary": "Statistics compare only; not elementwise tensor diff or global first-divergence proof.",
+  "entries": [
+    {
+      "step": 0,
+      "rank": 0,
+      "target": "ROPE_INDEXSELECT",
+      "baseline_key": "Tensor.index_select.0.forward",
+      "fault_key": "Tensor.index_select.0.forward",
+      "input_statistics_equal": true,
+      "output_statistics_equal": false,
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            14,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.47265625,
+          "Norm": 29.875
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            14,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.4765625,
+          "Norm": 29.875
+        }
+      ]
+    },
+    {
+      "step": 0,
+      "rank": 0,
+      "target": "FIRST_ROTARY_API",
+      "baseline_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "fault_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "baseline_count": 64,
+      "fault_count": 64,
+      "input_statistics_equal": false,
+      "output_statistics_equal": false,
+      "baseline_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            32,
+            128
+          ],
+          "Max": 14.625,
+          "Min": -16.625,
+          "Mean": -0.01177978515625,
+          "Norm": 374.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            4,
+            128
+          ],
+          "Max": 108.5,
+          "Min": -92.5,
+          "Mean": 0.2138671875,
+          "Norm": 508.0
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.83984375,
+          "Norm": 40.0
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.10400390625,
+          "Norm": 13.625
+        }
+      ],
+      "fault_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            32,
+            128
+          ],
+          "Max": 14.625,
+          "Min": -16.625,
+          "Mean": -0.01177978515625,
+          "Norm": 374.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            4,
+            128
+          ],
+          "Max": 108.5,
+          "Min": -92.5,
+          "Mean": 0.2138671875,
+          "Norm": 508.0
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.85546875,
+          "Norm": 40.25
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.095703125,
+          "Norm": 12.9375
+        }
+      ],
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            32,
+            128
+          ],
+          "Max": 16.625,
+          "Min": -16.375,
+          "Mean": 0.017333984375,
+          "Norm": 374.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            4,
+            128
+          ],
+          "Max": 108.5,
+          "Min": -92.5,
+          "Mean": 0.2412109375,
+          "Norm": 508.0
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            32,
+            128
+          ],
+          "Max": 16.625,
+          "Min": -16.375,
+          "Mean": 0.0159912109375,
+          "Norm": 374.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            4,
+            128
+          ],
+          "Max": 108.5,
+          "Min": -92.5,
+          "Mean": 0.2392578125,
+          "Norm": 508.0
+        }
+      ]
+    },
+    {
+      "step": 0,
+      "rank": 1,
+      "target": "ROPE_INDEXSELECT",
+      "baseline_key": "Tensor.index_select.0.forward",
+      "fault_key": "Tensor.index_select.0.forward",
+      "input_statistics_equal": true,
+      "output_statistics_equal": false,
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            14,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.47265625,
+          "Norm": 29.875
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            14,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.4765625,
+          "Norm": 29.875
+        }
+      ]
+    },
+    {
+      "step": 0,
+      "rank": 1,
+      "target": "FIRST_ROTARY_API",
+      "baseline_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "fault_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "baseline_count": 64,
+      "fault_count": 64,
+      "input_statistics_equal": false,
+      "output_statistics_equal": false,
+      "baseline_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            32,
+            128
+          ],
+          "Max": 13.5,
+          "Min": -11.0,
+          "Mean": 0.028076171875,
+          "Norm": 374.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            4,
+            128
+          ],
+          "Max": 69.5,
+          "Min": -112.5,
+          "Mean": -0.20703125,
+          "Norm": 478.0
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.83984375,
+          "Norm": 40.0
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.10400390625,
+          "Norm": 13.625
+        }
+      ],
+      "fault_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            32,
+            128
+          ],
+          "Max": 13.5,
+          "Min": -11.0,
+          "Mean": 0.028076171875,
+          "Norm": 374.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            4,
+            128
+          ],
+          "Max": 69.5,
+          "Min": -112.5,
+          "Mean": -0.20703125,
+          "Norm": 478.0
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.85546875,
+          "Norm": 40.25
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.095703125,
+          "Norm": 12.9375
+        }
+      ],
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            32,
+            128
+          ],
+          "Max": 13.5,
+          "Min": -11.0,
+          "Mean": 0.0269775390625,
+          "Norm": 374.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            4,
+            128
+          ],
+          "Max": 69.5,
+          "Min": -112.5,
+          "Mean": -0.2255859375,
+          "Norm": 478.0
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            32,
+            128
+          ],
+          "Max": 13.5,
+          "Min": -11.0,
+          "Mean": 0.026123046875,
+          "Norm": 374.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            14,
+            4,
+            128
+          ],
+          "Max": 69.5,
+          "Min": -112.5,
+          "Mean": -0.224609375,
+          "Norm": 478.0
+        }
+      ]
+    },
+    {
+      "step": 1,
+      "rank": 0,
+      "target": "ROPE_INDEXSELECT",
+      "baseline_key": "Tensor.index_select.0.forward",
+      "fault_key": "Tensor.index_select.0.forward",
+      "input_statistics_equal": true,
+      "output_statistics_equal": true,
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.44140625,
+          "Norm": 8.0
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.44140625,
+          "Norm": 8.0
+        }
+      ]
+    },
+    {
+      "step": 1,
+      "rank": 0,
+      "target": "FIRST_ROTARY_API",
+      "baseline_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "fault_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "baseline_count": 64,
+      "fault_count": 64,
+      "input_statistics_equal": true,
+      "output_statistics_equal": true,
+      "baseline_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.1875,
+          "Min": -16.625,
+          "Mean": -0.003936767578125,
+          "Norm": 98.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 73.0,
+          "Min": -48.5,
+          "Mean": 0.21875,
+          "Norm": 111.5
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.76171875,
+          "Norm": 10.375
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.12109375,
+          "Norm": 4.46875
+        }
+      ],
+      "fault_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.1875,
+          "Min": -16.625,
+          "Mean": -0.003936767578125,
+          "Norm": 98.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 73.0,
+          "Min": -48.5,
+          "Mean": 0.21875,
+          "Norm": 111.5
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.76171875,
+          "Norm": 10.375
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.12109375,
+          "Norm": 4.46875
+        }
+      ],
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.1875,
+          "Min": -16.5,
+          "Mean": 0.006134033203125,
+          "Norm": 98.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 73.0,
+          "Min": -48.5,
+          "Mean": 0.244140625,
+          "Norm": 111.5
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.1875,
+          "Min": -16.5,
+          "Mean": 0.006134033203125,
+          "Norm": 98.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 73.0,
+          "Min": -48.5,
+          "Mean": 0.244140625,
+          "Norm": 111.5
+        }
+      ]
+    },
+    {
+      "step": 1,
+      "rank": 1,
+      "target": "ROPE_INDEXSELECT",
+      "baseline_key": "Tensor.index_select.0.forward",
+      "fault_key": "Tensor.index_select.0.forward",
+      "input_statistics_equal": true,
+      "output_statistics_equal": true,
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.44140625,
+          "Norm": 8.0
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.44140625,
+          "Norm": 8.0
+        }
+      ]
+    },
+    {
+      "step": 1,
+      "rank": 1,
+      "target": "FIRST_ROTARY_API",
+      "baseline_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "fault_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "baseline_count": 64,
+      "fault_count": 64,
+      "input_statistics_equal": true,
+      "output_statistics_equal": true,
+      "baseline_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 12.9375,
+          "Min": -9.6875,
+          "Mean": 0.017822265625,
+          "Norm": 96.5
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 60.75,
+          "Min": -54.0,
+          "Mean": -0.1298828125,
+          "Norm": 102.5
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.76171875,
+          "Norm": 10.375
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.12109375,
+          "Norm": 4.46875
+        }
+      ],
+      "fault_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 12.9375,
+          "Min": -9.6875,
+          "Mean": 0.017822265625,
+          "Norm": 96.5
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 60.75,
+          "Min": -54.0,
+          "Mean": -0.1298828125,
+          "Norm": 102.5
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.76171875,
+          "Norm": 10.375
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -1.0,
+          "Mean": 0.12109375,
+          "Norm": 4.46875
+        }
+      ],
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 12.9375,
+          "Min": -9.6875,
+          "Mean": 0.014892578125,
+          "Norm": 96.5
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 60.75,
+          "Min": -54.0,
+          "Mean": -0.1396484375,
+          "Norm": 102.5
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 12.9375,
+          "Min": -9.6875,
+          "Mean": 0.014892578125,
+          "Norm": 96.5
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 60.75,
+          "Min": -54.0,
+          "Mean": -0.1396484375,
+          "Norm": 102.5
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "rank": 0,
+      "target": "ROPE_INDEXSELECT",
+      "baseline_key": "Tensor.index_select.0.forward",
+      "fault_key": "Tensor.index_select.0.forward",
+      "input_statistics_equal": true,
+      "output_statistics_equal": true,
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.984375,
+          "Mean": 0.43359375,
+          "Norm": 8.0
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.984375,
+          "Mean": 0.43359375,
+          "Norm": 8.0
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "rank": 0,
+      "target": "FIRST_ROTARY_API",
+      "baseline_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "fault_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "baseline_count": 64,
+      "fault_count": 64,
+      "input_statistics_equal": false,
+      "output_statistics_equal": false,
+      "baseline_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 14.1875,
+          "Min": -14.8125,
+          "Mean": -0.005462646484375,
+          "Norm": 99.5
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 84.0,
+          "Min": -94.0,
+          "Mean": 0.1748046875,
+          "Norm": 147.0
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.984375,
+          "Mean": 0.75,
+          "Norm": 10.5
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.92578125,
+          "Mean": 0.11865234375,
+          "Norm": 4.21875
+        }
+      ],
+      "fault_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.1875,
+          "Min": -14.4375,
+          "Mean": -0.0225830078125,
+          "Norm": 100.5
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 96.0,
+          "Min": -88.5,
+          "Mean": 0.1923828125,
+          "Norm": 150.0
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.984375,
+          "Mean": 0.75,
+          "Norm": 10.5
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.92578125,
+          "Mean": 0.11865234375,
+          "Norm": 4.21875
+        }
+      ],
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 14.1875,
+          "Min": -11.625,
+          "Mean": 0.03759765625,
+          "Norm": 99.5
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 84.0,
+          "Min": -94.0,
+          "Mean": 0.251953125,
+          "Norm": 147.0
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.1875,
+          "Min": -11.3125,
+          "Mean": 0.01708984375,
+          "Norm": 100.5
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 96.0,
+          "Min": -88.5,
+          "Mean": 0.248046875,
+          "Norm": 150.0
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "rank": 1,
+      "target": "ROPE_INDEXSELECT",
+      "baseline_key": "Tensor.index_select.0.forward",
+      "fault_key": "Tensor.index_select.0.forward",
+      "input_statistics_equal": true,
+      "output_statistics_equal": true,
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.984375,
+          "Mean": 0.43359375,
+          "Norm": 8.0
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.984375,
+          "Mean": 0.43359375,
+          "Norm": 8.0
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "rank": 1,
+      "target": "FIRST_ROTARY_API",
+      "baseline_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "fault_key": "NPU.npu_apply_rotary_pos_emb.0.forward",
+      "baseline_count": 64,
+      "fault_count": 64,
+      "input_statistics_equal": false,
+      "output_statistics_equal": false,
+      "baseline_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.6875,
+          "Min": -8.9375,
+          "Mean": 0.040283203125,
+          "Norm": 95.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 71.0,
+          "Min": -94.5,
+          "Mean": -0.283203125,
+          "Norm": 148.0
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.984375,
+          "Mean": 0.75,
+          "Norm": 10.5
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.92578125,
+          "Mean": 0.11865234375,
+          "Norm": 4.21875
+        }
+      ],
+      "fault_input": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.1875,
+          "Min": -9.9375,
+          "Mean": 0.0220947265625,
+          "Norm": 100.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 69.5,
+          "Min": -112.5,
+          "Mean": -0.306640625,
+          "Norm": 163.0
+        },
+        {
+          "path": "/2",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.984375,
+          "Mean": 0.75,
+          "Norm": 10.5
+        },
+        {
+          "path": "/3",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            1,
+            128
+          ],
+          "Max": 1.0,
+          "Min": -0.92578125,
+          "Mean": 0.11865234375,
+          "Norm": 4.21875
+        }
+      ],
+      "baseline_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.6875,
+          "Min": -8.9375,
+          "Mean": 0.059814453125,
+          "Norm": 95.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 71.0,
+          "Min": -94.5,
+          "Mean": -0.3046875,
+          "Norm": 148.0
+        }
+      ],
+      "fault_output": [
+        {
+          "path": "/0",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            32,
+            128
+          ],
+          "Max": 13.1875,
+          "Min": -9.9375,
+          "Mean": 0.04150390625,
+          "Norm": 100.0
+        },
+        {
+          "path": "/1",
+          "dtype": "torch.bfloat16",
+          "shape": [
+            1,
+            1,
+            4,
+            128
+          ],
+          "Max": 69.5,
+          "Min": -112.5,
+          "Mean": -0.30078125,
+          "Norm": 163.0
+        }
+      ]
+    }
+  ]
+}
