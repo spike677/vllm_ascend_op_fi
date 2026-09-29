@@ -3,6 +3,12 @@
 这是 **INDEXSELECT_WRONG_ROW_OUTPUT_PROXY** 的观测证据，不是原生 Fault22
 32 位地址溢出复现，也不证明 LD_PRELOAD Run 绑定成功。
 
+**模拟根因标签：RoPE 表按行读取的源行映射错误（效果级代理）。**
+实际注入点为原生 IndexSelect 返回后、下游 RoPE 消费前的 output Tensor。
+原生 index 和 kernel 未修改；本实验不是已定位的原生软件缺陷。
+完整原理、根因与代理的区别、范围和证据链见
+[故障根因与注入逻辑说明](INJECTION_LOGIC.md)。
+
 本次交付从 2026-09-29 已完成的 B/F `step0..7` 原始采集中提取 `step0..2`，
 没有重新启动模型或重跑 NPU。保留原始配置，未将其伪改为三步采集。
 生成请求仍为 32 token 上限；**forward step 不等同于生成 token 序号**。
@@ -21,7 +27,7 @@ step0 是完整 prefill，后续为 decode。这里同时交付前三个生成 t
 - `token_comparison.json`：前三个生成 token、完整 B/F/R 正文和恢复比较。
 - `fault_hit_evidence.json`：两个 rank 的实际命中事件及 dump-active 证据。
 - `manifest.json`：每个 ZIP 及原始成员的 SHA256；`SHA256.json` 校验交付数据文件。
-  SHA256.json 不包括自身与此说明文档。
+  SHA256.json 不包括自身和 Markdown 说明文档。
 - `B_source_manifest.json` / `F_source_manifest.json`：实测源码哈希；本目录不包含完整工具源码。
 
 只包含 statistics 日志，没有全量 Tensor 文件、模型权重、编译库或服务日志。
