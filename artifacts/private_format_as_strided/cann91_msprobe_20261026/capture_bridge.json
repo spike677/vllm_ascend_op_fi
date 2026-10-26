@@ -1,0 +1,245 @@
+{
+  "schema": "as_strided.msprobe_real_execute_bridge.v1",
+  "pid": 750,
+  "status": "THREE_EXECUTES_CAPTURED_AWAITING_ARTIFACT_REVIEW",
+  "task": "statistics",
+  "level": "mix",
+  "capture_enabled": true,
+  "requested_steps": [
+    0,
+    1,
+    2
+  ],
+  "rank": 0,
+  "completed_steps": [
+    0,
+    1,
+    2
+  ],
+  "events": [
+    {
+      "event": "bridge_installed",
+      "epoch_ns": 1793006802076555926,
+      "mono_ns": 2064221619415896,
+      "tid": 750,
+      "scope": "Only real cold_generate first three Ascend runner executes; no dummy/load/warm capture"
+    },
+    {
+      "event": "debugger_initialized_only_at_real_cold_execute",
+      "epoch_ns": 1793006852324151347,
+      "mono_ns": 2064271867011367,
+      "tid": 750
+    },
+    {
+      "event": "capture_start_requested",
+      "epoch_ns": 1793006852324644876,
+      "mono_ns": 2064271867504226,
+      "tid": 750,
+      "step": 0,
+      "scope": {
+        "id": "750:750:SCOPE27",
+        "parent_id": "750:750:SCOPE24",
+        "method": "execute_model",
+        "phase": {
+          "phase": "cold_generate",
+          "name": "cold_generate",
+          "request_id": "cold-1",
+          "mono_ns": 2064270882216643,
+          "epoch_ns": 1793006851339357113,
+          "parent_pid": 676
+        }
+      },
+      "schedule": {
+        "scheduler_type": "vllm.v1.core.sched.output.SchedulerOutput",
+        "scheduled_request_ids": [
+          "0-bc9d6ed7"
+        ],
+        "num_scheduled_tokens": {
+          "0-bc9d6ed7": 5
+        },
+        "total_num_scheduled_tokens": 5
+      },
+      "actual_model_python_id": 281462788893136
+    },
+    {
+      "event": "capture_started",
+      "epoch_ns": 1793006852370945058,
+      "mono_ns": 2064271913804618,
+      "tid": 750,
+      "step": 0
+    },
+    {
+      "event": "capture_stopped",
+      "epoch_ns": 1793006855850561064,
+      "mono_ns": 2064275393420524,
+      "tid": 750,
+      "step": 0,
+      "returned_type": "builtins.NoneType"
+    },
+    {
+      "event": "capture_step_advanced",
+      "epoch_ns": 1793006855853389586,
+      "mono_ns": 2064275396248976,
+      "tid": 750,
+      "completed_step": 0,
+      "next_step": 1
+    },
+    {
+      "event": "capture_start_requested",
+      "epoch_ns": 1793006855877133479,
+      "mono_ns": 2064275419992909,
+      "tid": 750,
+      "step": 1,
+      "scope": {
+        "id": "750:750:SCOPE372",
+        "parent_id": "750:750:SCOPE370",
+        "method": "execute_model",
+        "phase": {
+          "phase": "cold_generate",
+          "name": "cold_generate",
+          "request_id": "cold-1",
+          "mono_ns": 2064270882216643,
+          "epoch_ns": 1793006851339357113,
+          "parent_pid": 676
+        }
+      },
+      "schedule": {
+        "scheduler_type": "vllm.v1.core.sched.output.SchedulerOutput",
+        "scheduled_request_ids": [
+          "0-bc9d6ed7"
+        ],
+        "num_scheduled_tokens": {
+          "0-bc9d6ed7": 1
+        },
+        "total_num_scheduled_tokens": 1
+      },
+      "actual_model_python_id": 281462788893136
+    },
+    {
+      "event": "capture_started",
+      "epoch_ns": 1793006855879596254,
+      "mono_ns": 2064275422455564,
+      "tid": 750,
+      "step": 1
+    },
+    {
+      "event": "capture_stopped",
+      "epoch_ns": 1793006858995936983,
+      "mono_ns": 2064278538796103,
+      "tid": 750,
+      "step": 1,
+      "returned_type": "builtins.NoneType"
+    },
+    {
+      "event": "capture_step_advanced",
+      "epoch_ns": 1793006858999114362,
+      "mono_ns": 2064278541973622,
+      "tid": 750,
+      "completed_step": 1,
+      "next_step": 2
+    },
+    {
+      "event": "capture_start_requested",
+      "epoch_ns": 1793006859004212717,
+      "mono_ns": 2064278547071987,
+      "tid": 750,
+      "step": 2,
+      "scope": {
+        "id": "750:750:SCOPE717",
+        "parent_id": "750:750:SCOPE715",
+        "method": "execute_model",
+        "phase": {
+          "phase": "cold_generate",
+          "name": "cold_generate",
+          "request_id": "cold-1",
+          "mono_ns": 2064270882216643,
+          "epoch_ns": 1793006851339357113,
+          "parent_pid": 676
+        }
+      },
+      "schedule": {
+        "scheduler_type": "vllm.v1.core.sched.output.SchedulerOutput",
+        "scheduled_request_ids": [
+          "0-bc9d6ed7"
+        ],
+        "num_scheduled_tokens": {
+          "0-bc9d6ed7": 1
+        },
+        "total_num_scheduled_tokens": 1
+      },
+      "actual_model_python_id": 281462788893136
+    },
+    {
+      "event": "capture_started",
+      "epoch_ns": 1793006859006810156,
+      "mono_ns": 2064278549669356,
+      "tid": 750,
+      "step": 2
+    },
+    {
+      "event": "capture_stopped",
+      "epoch_ns": 1793006862091456574,
+      "mono_ns": 2064281634315694,
+      "tid": 750,
+      "step": 2,
+      "returned_type": "builtins.NoneType"
+    },
+    {
+      "event": "capture_step_advanced",
+      "epoch_ns": 1793006862094810556,
+      "mono_ns": 2064281637669776,
+      "tid": 750,
+      "completed_step": 2,
+      "next_step": 3
+    }
+  ],
+  "failures": [],
+  "python_dispatch_mode_enabled": false,
+  "native_identity_observer_preserved": true,
+  "boundary": "Native API/schema metadata identity plus native msProbe statistics. No fault injection; statistics are not tensor-value dump or writeback oracle.",
+  "versions": {
+    "torch": "2.10.0",
+    "torch-npu": "2.10.0.post4",
+    "vllm": "0.23.0+empty",
+    "vllm-ascend": "0.23.0",
+    "mindstudio-probe": "26.1.0"
+  },
+  "configuration": {
+    "task": "statistics",
+    "level": "mix",
+    "rank": [
+      0
+    ],
+    "step": [
+      0,
+      1,
+      2
+    ],
+    "dump_path": "/evidence/model_on/msprobe_dump",
+    "dump_enable": true,
+    "async_dump": false,
+    "extra_info": true,
+    "statistics": {
+      "scope": [],
+      "list": [],
+      "data_mode": [
+        "all"
+      ],
+      "summary_mode": "statistics"
+    }
+  },
+  "config_path": "/audit/setup/msprobe_config.json",
+  "config_sha256": "0aa352d3c68aaea8aabb1eba1a28bc8ae193192b924d384d079e8f16a576df8c",
+  "debugger_source": "/msprobe_packages/msprobe/pytorch/dump/debugger/precision_debugger.py",
+  "debugger_source_sha256": "43bb9d834c736ebeb5c7c89e4770c23e1c6fc813000d12aeee8c2b72753a02fb",
+  "signatures": {
+    "start": "(model=None, token_range=None, rank_id=None)",
+    "stop": "()",
+    "step": "()"
+  },
+  "actual_rank": 0,
+  "actual_world_size": 1,
+  "actual_model_type": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+  "actual_model_python_id": 281462788893136,
+  "bridge_source_sha256": "e076b3d338f2909296ba3c959a1f7c108947b3d0f85e1f4b37f0d6d6d483e053"
+}

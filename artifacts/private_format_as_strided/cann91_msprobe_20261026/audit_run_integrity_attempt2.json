@@ -1,0 +1,150 @@
+{
+  "schema": "demoncatpfi.as_strided_msprobe_run_integrity.v1",
+  "status": "PASS",
+  "checks": {
+    "both_model_processes_passed": true,
+    "separate_parent_processes": true,
+    "same_prompt_tokens_outputs_text_finish_reasons": true,
+    "two_requests_eight_tokens_each": true,
+    "versions_identical": true,
+    "same_private_weight_configuration": true,
+    "off_did_not_initialize_msprobe": true,
+    "off_has_no_native_msprobe_dump": true,
+    "on_real_model_rank0_world1": true,
+    "on_no_bridge_failure": true,
+    "on_three_cold_execute_schedules": true,
+    "controller_completed_and_released_lock": true,
+    "all_stage_rc0": true,
+    "all_sampled_device2_processes_owned": true,
+    "no_foreign_device2_container_during_samples": true,
+    "owned_container_stop_succeeded": true,
+    "owned_container_absent_after": true,
+    "five_preexisting_service_ids_images_created_times_preserved": true,
+    "device2_idle_at_final_snapshot": true,
+    "finished_before_deadline": true
+  },
+  "scope": "Attempt2; two independent full-model processes; token/text transparency only. Both use native identity observer. No fault injection or full-logits comparison.",
+  "versions": {
+    "vllm": "0.23.0+empty",
+    "vllm-ascend": "0.23.0",
+    "torch": "2.10.0",
+    "torch-npu": "2.10.0.post4",
+    "mindstudio-probe": "26.1.0"
+  },
+  "cann_root": {
+    "path": "/usr/local/Ascend/cann-9.1.0",
+    "resolved": "/usr/local/Ascend/cann-9.1.0",
+    "exists": true
+  },
+  "requests": [
+    {
+      "phase": "cold",
+      "prompt": "The capital of France is",
+      "prompt_token_ids": [
+        785,
+        6722,
+        315,
+        9625,
+        374
+      ],
+      "output_token_ids": [
+        12095,
+        13,
+        576,
+        6722,
+        315,
+        9625,
+        374,
+        1083
+      ],
+      "text": " Paris. The capital of France is also",
+      "finish_reason": "length",
+      "tokens": 8
+    },
+    {
+      "phase": "warm",
+      "prompt": "The capital of France is",
+      "prompt_token_ids": [
+        785,
+        6722,
+        315,
+        9625,
+        374
+      ],
+      "output_token_ids": [
+        12095,
+        13,
+        576,
+        6722,
+        315,
+        9625,
+        374,
+        1083
+      ],
+      "text": " Paris. The capital of France is also",
+      "finish_reason": "length",
+      "tokens": 8
+    }
+  ],
+  "capture_steps": [
+    0,
+    1,
+    2
+  ],
+  "rank": 0,
+  "on_worker_pid": 750,
+  "scheduler_token_counts": [
+    5,
+    1,
+    1
+  ],
+  "five_services_preserved": [
+    "catmonitor-demo-dfee",
+    "catmonitor-demo-web",
+    "catmonitor-demo-control",
+    "catmonitor-demo-cpu",
+    "grafana"
+  ],
+  "sample_count": 73,
+  "owned_npu_process_observations": 32,
+  "started_epoch": 1793006657.2322042,
+  "finished_epoch": 1793006884.3432167,
+  "evidence": [
+    {
+      "path": "completion.json",
+      "sha256": "88c09d7b37359939de620364b57e369bbb23e4f8789b32e87a2abc7643040c85"
+    },
+    {
+      "path": "model_off/model_result.json",
+      "sha256": "e7057997fe9176d8a101f2d0e585566e612e55cf880746c8fc1483ae0a993aeb"
+    },
+    {
+      "path": "model_on/model_result.json",
+      "sha256": "54c770c590dd4d2f246cbf39493e0ca1baad9d3d420e32a720986c3356284aeb"
+    },
+    {
+      "path": "services_before.json",
+      "sha256": "9d49861f2dd76bb9e865b9e0f66216ca60b145016850503f65956a40b9dd83df"
+    },
+    {
+      "path": "services_after.json",
+      "sha256": "eb448fbbdd5e1df90c216b91855f5e6cb1057a47d5ee3fbb956d3b174e7d0674"
+    },
+    {
+      "path": "final_npu.json",
+      "sha256": "2980f6e26f638ab0921be7a252f7a05323c83fa41f41c2b5be985d92fc3b49c1"
+    },
+    {
+      "path": "frozen_native.json",
+      "sha256": "7fce015db73b5bc1e3be3771c94f827f2a0292d4170a0fd9afa1af4d17f1ffb5"
+    }
+  ],
+  "limitations": [
+    "No full-logits equivalence claim",
+    "No uninstrumented/native-only-observer OFF baseline comparison",
+    "No service latency or unrelated task performance measurement",
+    "Snapshot resource state is not a guarantee of later availability",
+    "No numeric private-view writeback oracle"
+  ],
+  "attempt1": "Preserved separately: statistics capture valid, native identity log directories absent; not used to certify the native chain."
+}

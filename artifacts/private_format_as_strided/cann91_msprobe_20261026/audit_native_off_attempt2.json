@@ -1,0 +1,2446 @@
+{
+  "schema": "as_strided.msprobe_strict_native_chain_review.v1",
+  "evidence_root": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2",
+  "mode": "off",
+  "model_dir": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off",
+  "native_dir": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off",
+  "reviewer_source": {
+    "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\scripts\\review_native_msprobe_chain.py",
+    "sha256": "f4b10e130c87c36c3caab6bef06893c9842cb4871e019fa93c7285e4e64e939a"
+  },
+  "adapted_parser_sha256": "9f9d80913a8bfe95e5ca0cd9e22f2f3f256ed5b63b3fd03a80fa8f1b8e7bf01b",
+  "model_chain_filter": "Exact original F.linear weight TensorImpl+storage+geometry+BF16+format29; complete bounded native interval; live descendants; consumer must be in same interval",
+  "excluded_private_roots_count": 0,
+  "excluded_private_root_examples": [],
+  "tracked_consumers_outside_exact_linear_interval": 0,
+  "outside_linear_consumer_examples": [],
+  "tracked_schema_writes_outside_exact_linear_interval": 0,
+  "outside_linear_write_targets": [],
+  "outside_linear_derived_edge_count": 0,
+  "outside_linear_derived_edge_examples": [],
+  "unfiltered_native_private_as_pairs_are_not_model_chain_count": true,
+  "all_recorded_schema_write_operand_counts_not_attributed_to_model": [
+    {
+      "phase": "cold_generate",
+      "op": "aten::copy_",
+      "count": 624
+    },
+    {
+      "phase": "cold_generate",
+      "op": "aten::index_select",
+      "count": 8
+    },
+    {
+      "phase": "cold_generate",
+      "op": "aten::add",
+      "count": 8
+    },
+    {
+      "phase": "cold_generate",
+      "op": "aten::fill_",
+      "count": 48
+    },
+    {
+      "phase": "cold_generate",
+      "op": "vllm::unified_attention_with_output",
+      "count": 224
+    },
+    {
+      "phase": "cold_generate",
+      "op": "atb::_npu_reshape_and_cache",
+      "count": 448
+    },
+    {
+      "phase": "warm_generate",
+      "op": "aten::copy_",
+      "count": 624
+    },
+    {
+      "phase": "warm_generate",
+      "op": "aten::index_select",
+      "count": 8
+    },
+    {
+      "phase": "warm_generate",
+      "op": "aten::add",
+      "count": 8
+    },
+    {
+      "phase": "warm_generate",
+      "op": "aten::fill_",
+      "count": 48
+    },
+    {
+      "phase": "warm_generate",
+      "op": "vllm::unified_attention_with_output",
+      "count": 224
+    },
+    {
+      "phase": "warm_generate",
+      "op": "atb::_npu_reshape_and_cache",
+      "count": 448
+    }
+  ],
+  "model_status": "PASS",
+  "model_result_sha256": "e7057997fe9176d8a101f2d0e585566e612e55cf880746c8fc1483ae0a993aeb",
+  "request_windows": [
+    {
+      "phase": "cold_generate",
+      "begin": 2064169137453746,
+      "end": 2064172737636267
+    },
+    {
+      "phase": "warm_generate",
+      "begin": 2064172738353510,
+      "end": 2064176228337589
+    }
+  ],
+  "raw_files": [
+    {
+      "file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "bytes": 80184273,
+      "sha256": "864e9721ae6551478d2e746f2dc6cba275ce6d3e868c82866da20c20bb43fc63"
+    }
+  ],
+  "parse_errors": [],
+  "all_rows": 47117,
+  "qualified_rows": 47108,
+  "as_pairs": {
+    "enter": 6924,
+    "exit": 6924
+  },
+  "qualified_consumer_pairs": {
+    "enter": 10014,
+    "exit": 10014
+  },
+  "native_private_as_pairs_independent_of_registry": 1792,
+  "typed_consumer_records_available": true,
+  "private_as_events": 1792,
+  "private_as_root_generations": 1792,
+  "private_roots_with_observed_consumers": 1792,
+  "private_roots_with_valid_live_consumers": 1792,
+  "private_as_events_by_phase": {
+    "cold_generate": 896,
+    "warm_generate": 896
+  },
+  "private_roots_with_valid_live_consumers_by_phase": {
+    "cold_generate": 896,
+    "warm_generate": 896
+  },
+  "private_unique_original_tensorimpl": 112,
+  "private_proof_counts": [
+    {
+      "input_format": 29,
+      "returned_format": 29,
+      "same_original_storage": true,
+      "exact_linear_weight": true,
+      "count": 1792
+    }
+  ],
+  "private_root_examples": [
+    {
+      "registered": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 389,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169225101778,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR29",
+        "event": "consumer_root_registered"
+      },
+      "as_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 388,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169224998566,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR29",
+        "seq": 90,
+        "event": "enter",
+        "op": "at::_ops::as_strided::call"
+      },
+      "as_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 390,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169225151839,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR29",
+        "seq": 90,
+        "event": "exit",
+        "op": "at::_ops::as_strided::call"
+      },
+      "tracked": {
+        "track_id": 72,
+        "root_track_id": 72,
+        "parent_track_id": 0,
+        "as_seq": 90,
+        "relation": "as_strided_return_root",
+        "exact_live_tensorimpl": true
+      },
+      "private_input": {
+        "defined": true,
+        "tensor_impl": "0x4f18ee00",
+        "device": "npu:0",
+        "dtype": "BFloat16",
+        "sizes": [
+          4096,
+          1024
+        ],
+        "strides": [
+          1024,
+          1
+        ],
+        "storage_offset": 0,
+        "storage_impl": "0x4fe86ff0",
+        "storage_ptr": "0x12ca8908c000",
+        "storage_bytes": 8388608,
+        "data_ptr": "0x12ca8908c000",
+        "actual_npu_format": 29
+      },
+      "returned_view": {
+        "defined": true,
+        "tensor_impl": "0x63604f30",
+        "device": "npu:0",
+        "dtype": "BFloat16",
+        "sizes": [
+          1024,
+          4096
+        ],
+        "strides": [
+          1,
+          1024
+        ],
+        "storage_offset": 0,
+        "storage_impl": "0x4fe86ff0",
+        "storage_ptr": "0x12ca8908c000",
+        "storage_bytes": 8388608,
+        "data_ptr": "0x12ca8908c000",
+        "actual_npu_format": 29
+      },
+      "same_original_storage": true,
+      "input_exact_linear_weight": true,
+      "linear_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 387,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169224864804,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR29",
+        "event": "linear_enter"
+      },
+      "linear_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 393,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169225756900,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR29",
+        "event": "linear_exit"
+      }
+    },
+    {
+      "registered": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 483,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169292073686,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR32",
+        "event": "consumer_root_registered"
+      },
+      "as_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 482,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169291944313,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR32",
+        "seq": 106,
+        "event": "enter",
+        "op": "at::_ops::as_strided::call"
+      },
+      "as_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 484,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169292124097,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR32",
+        "seq": 106,
+        "event": "exit",
+        "op": "at::_ops::as_strided::call"
+      },
+      "tracked": {
+        "track_id": 89,
+        "root_track_id": 89,
+        "parent_track_id": 0,
+        "as_seq": 106,
+        "relation": "as_strided_return_root",
+        "exact_live_tensorimpl": true
+      },
+      "private_input": {
+        "defined": true,
+        "tensor_impl": "0x4f18dda0",
+        "device": "npu:0",
+        "dtype": "BFloat16",
+        "sizes": [
+          1024,
+          2048
+        ],
+        "strides": [
+          2048,
+          1
+        ],
+        "storage_offset": 0,
+        "storage_impl": "0x4f24b660",
+        "storage_ptr": "0x12ca528c4000",
+        "storage_bytes": 4194304,
+        "data_ptr": "0x12ca528c4000",
+        "actual_npu_format": 29
+      },
+      "returned_view": {
+        "defined": true,
+        "tensor_impl": "0x63a05540",
+        "device": "npu:0",
+        "dtype": "BFloat16",
+        "sizes": [
+          2048,
+          1024
+        ],
+        "strides": [
+          1,
+          2048
+        ],
+        "storage_offset": 0,
+        "storage_impl": "0x4f24b660",
+        "storage_ptr": "0x12ca528c4000",
+        "storage_bytes": 4194304,
+        "data_ptr": "0x12ca528c4000",
+        "actual_npu_format": 29
+      },
+      "same_original_storage": true,
+      "input_exact_linear_weight": true,
+      "linear_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 481,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169291815871,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR32",
+        "event": "linear_enter"
+      },
+      "linear_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 487,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169292727548,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR32",
+        "event": "linear_exit"
+      }
+    },
+    {
+      "registered": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 23950,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172789548324,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2795",
+        "event": "consumer_root_registered"
+      },
+      "as_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 23949,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172789445052,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2795",
+        "seq": 4227,
+        "event": "enter",
+        "op": "at::_ops::as_strided::call"
+      },
+      "as_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 23951,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172789598465,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2795",
+        "seq": 4227,
+        "event": "exit",
+        "op": "at::_ops::as_strided::call"
+      },
+      "tracked": {
+        "track_id": 4305,
+        "root_track_id": 4305,
+        "parent_track_id": 0,
+        "as_seq": 4227,
+        "relation": "as_strided_return_root",
+        "exact_live_tensorimpl": true
+      },
+      "private_input": {
+        "defined": true,
+        "tensor_impl": "0x4f18ee00",
+        "device": "npu:0",
+        "dtype": "BFloat16",
+        "sizes": [
+          4096,
+          1024
+        ],
+        "strides": [
+          1024,
+          1
+        ],
+        "storage_offset": 0,
+        "storage_impl": "0x4fe86ff0",
+        "storage_ptr": "0x12ca8908c000",
+        "storage_bytes": 8388608,
+        "data_ptr": "0x12ca8908c000",
+        "actual_npu_format": 29
+      },
+      "returned_view": {
+        "defined": true,
+        "tensor_impl": "0x66dc8f60",
+        "device": "npu:0",
+        "dtype": "BFloat16",
+        "sizes": [
+          1024,
+          4096
+        ],
+        "strides": [
+          1,
+          1024
+        ],
+        "storage_offset": 0,
+        "storage_impl": "0x4fe86ff0",
+        "storage_ptr": "0x12ca8908c000",
+        "storage_bytes": 8388608,
+        "data_ptr": "0x12ca8908c000",
+        "actual_npu_format": 29
+      },
+      "same_original_storage": true,
+      "input_exact_linear_weight": true,
+      "linear_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 23948,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172789326630,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2795",
+        "event": "linear_enter"
+      },
+      "linear_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 23954,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172790073594,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2795",
+        "event": "linear_exit"
+      }
+    },
+    {
+      "registered": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 24044,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172800478327,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2798",
+        "event": "consumer_root_registered"
+      },
+      "as_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 24043,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172800375405,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2798",
+        "seq": 4243,
+        "event": "enter",
+        "op": "at::_ops::as_strided::call"
+      },
+      "as_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 24045,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172800530318,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2798",
+        "seq": 4243,
+        "event": "exit",
+        "op": "at::_ops::as_strided::call"
+      },
+      "tracked": {
+        "track_id": 4322,
+        "root_track_id": 4322,
+        "parent_track_id": 0,
+        "as_seq": 4243,
+        "relation": "as_strided_return_root",
+        "exact_live_tensorimpl": true
+      },
+      "private_input": {
+        "defined": true,
+        "tensor_impl": "0x4f18dda0",
+        "device": "npu:0",
+        "dtype": "BFloat16",
+        "sizes": [
+          1024,
+          2048
+        ],
+        "strides": [
+          2048,
+          1
+        ],
+        "storage_offset": 0,
+        "storage_impl": "0x4f24b660",
+        "storage_ptr": "0x12ca528c4000",
+        "storage_bytes": 4194304,
+        "data_ptr": "0x12ca528c4000",
+        "actual_npu_format": 29
+      },
+      "returned_view": {
+        "defined": true,
+        "tensor_impl": "0x66ec88b0",
+        "device": "npu:0",
+        "dtype": "BFloat16",
+        "sizes": [
+          2048,
+          1024
+        ],
+        "strides": [
+          1,
+          2048
+        ],
+        "storage_offset": 0,
+        "storage_impl": "0x4f24b660",
+        "storage_ptr": "0x12ca528c4000",
+        "storage_bytes": 4194304,
+        "data_ptr": "0x12ca528c4000",
+        "actual_npu_format": 29
+      },
+      "same_original_storage": true,
+      "input_exact_linear_weight": true,
+      "linear_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 24042,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172800254413,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2798",
+        "event": "linear_enter"
+      },
+      "linear_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 24048,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172800997647,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2798",
+        "event": "linear_exit"
+      }
+    }
+  ],
+  "root_registration_errors": [],
+  "all_private_input_output_relation_counts": {
+    "new_result_storage": 1792
+  },
+  "untracked_same_storage_output_candidates": 0,
+  "untracked_same_storage_examples": [],
+  "derived_edge_counts": {},
+  "derived_edge_examples": [],
+  "derived_edge_errors": [],
+  "consumer_operand_counts": [
+    {
+      "operator": "aten::matmul",
+      "formal_name": "other",
+      "direct_tensor_schema_write": false,
+      "container_write": false,
+      "count": 1792
+    }
+  ],
+  "consumer_operand_counts_by_phase": [
+    {
+      "phase": "cold_generate",
+      "operator": "aten::matmul",
+      "formal_name": "other",
+      "direct_tensor_schema_write": false,
+      "count": 896
+    },
+    {
+      "phase": "warm_generate",
+      "operator": "aten::matmul",
+      "formal_name": "other",
+      "direct_tensor_schema_write": false,
+      "count": 896
+    }
+  ],
+  "direct_tensor_schema_write_entries": 0,
+  "direct_tensor_schema_write_targets": [],
+  "container_only_write_entries": 0,
+  "container_only_write_targets": [],
+  "unknown_target_or_alias_propagation_count": 0,
+  "unknown_examples": [],
+  "consumer_examples": [
+    {
+      "consumer_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 391,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169225266371,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR29",
+        "event": "consumer_enter",
+        "op": "aten::matmul",
+        "rf_op_id": 299,
+        "rf_parent_op_id": 295,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE27",
+        "rf_scope_phase": "cold_generate",
+        "rf_request_id": "cold-1",
+        "rf_linear_id": "164:164:LINEAR29"
+      },
+      "consumer_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 392,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169225533136,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR29",
+        "event": "consumer_exit",
+        "op": "aten::matmul",
+        "rf_op_id": 299,
+        "rf_parent_op_id": 295,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE27",
+        "rf_scope_phase": "cold_generate",
+        "rf_request_id": "cold-1",
+        "rf_linear_id": "164:164:LINEAR29"
+      },
+      "operator": "aten::matmul",
+      "schema": "aten::matmul(Tensor self, Tensor other) -> Tensor",
+      "operand": {
+        "formal_index": 1,
+        "ivalue_path": "input1",
+        "formal_name": "other",
+        "alias": null,
+        "schema_is_write": false,
+        "container_is_write": false,
+        "kwarg_only": false,
+        "is_out_argument": false,
+        "exact_tracked": {
+          "track_id": 72,
+          "root_track_id": 72,
+          "parent_track_id": 0,
+          "as_seq": 90,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "tensor": {
+          "defined": true,
+          "tensor_impl": "0x63604f30",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            4096
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4fe86ff0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        }
+      },
+      "lineage_live_at_edge_and_operand": true,
+      "root": {
+        "registered": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 389,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169225101778,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR29",
+          "event": "consumer_root_registered"
+        },
+        "as_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 388,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169224998566,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR29",
+          "seq": 90,
+          "event": "enter",
+          "op": "at::_ops::as_strided::call"
+        },
+        "as_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 390,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169225151839,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR29",
+          "seq": 90,
+          "event": "exit",
+          "op": "at::_ops::as_strided::call"
+        },
+        "tracked": {
+          "track_id": 72,
+          "root_track_id": 72,
+          "parent_track_id": 0,
+          "as_seq": 90,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "private_input": {
+          "defined": true,
+          "tensor_impl": "0x4f18ee00",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            4096,
+            1024
+          ],
+          "strides": [
+            1024,
+            1
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4fe86ff0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        },
+        "returned_view": {
+          "defined": true,
+          "tensor_impl": "0x63604f30",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            4096
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4fe86ff0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        },
+        "same_original_storage": true,
+        "input_exact_linear_weight": true,
+        "linear_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 387,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169224864804,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR29",
+          "event": "linear_enter"
+        },
+        "linear_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 393,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169225756900,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR29",
+          "event": "linear_exit"
+        }
+      },
+      "output_relations": [
+        {
+          "input_path": "input1",
+          "output_path": "output0",
+          "input_tracked": {
+            "track_id": 72,
+            "root_track_id": 72,
+            "parent_track_id": 0,
+            "as_seq": 90,
+            "relation": "as_strided_return_root",
+            "exact_live_tensorimpl": true
+          },
+          "same_live_tensorimpl": false,
+          "same_storage": false,
+          "schema_alias_intersects": false,
+          "output_track": null,
+          "relation": "new_result_storage"
+        }
+      ],
+      "numeric_write_or_correctness": "UNMEASURED"
+    },
+    {
+      "consumer_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 485,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169292236379,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR32",
+        "event": "consumer_enter",
+        "op": "aten::matmul",
+        "rf_op_id": 376,
+        "rf_parent_op_id": 372,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE27",
+        "rf_scope_phase": "cold_generate",
+        "rf_request_id": "cold-1",
+        "rf_linear_id": "164:164:LINEAR32"
+      },
+      "consumer_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 486,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169292513934,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR32",
+        "event": "consumer_exit",
+        "op": "aten::matmul",
+        "rf_op_id": 376,
+        "rf_parent_op_id": 372,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE27",
+        "rf_scope_phase": "cold_generate",
+        "rf_request_id": "cold-1",
+        "rf_linear_id": "164:164:LINEAR32"
+      },
+      "operator": "aten::matmul",
+      "schema": "aten::matmul(Tensor self, Tensor other) -> Tensor",
+      "operand": {
+        "formal_index": 1,
+        "ivalue_path": "input1",
+        "formal_name": "other",
+        "alias": null,
+        "schema_is_write": false,
+        "container_is_write": false,
+        "kwarg_only": false,
+        "is_out_argument": false,
+        "exact_tracked": {
+          "track_id": 89,
+          "root_track_id": 89,
+          "parent_track_id": 0,
+          "as_seq": 106,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "tensor": {
+          "defined": true,
+          "tensor_impl": "0x63a05540",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            2048,
+            1024
+          ],
+          "strides": [
+            1,
+            2048
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f24b660",
+          "storage_ptr": "0x12ca528c4000",
+          "storage_bytes": 4194304,
+          "data_ptr": "0x12ca528c4000",
+          "actual_npu_format": 29
+        }
+      },
+      "lineage_live_at_edge_and_operand": true,
+      "root": {
+        "registered": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 483,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169292073686,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR32",
+          "event": "consumer_root_registered"
+        },
+        "as_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 482,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169291944313,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR32",
+          "seq": 106,
+          "event": "enter",
+          "op": "at::_ops::as_strided::call"
+        },
+        "as_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 484,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169292124097,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR32",
+          "seq": 106,
+          "event": "exit",
+          "op": "at::_ops::as_strided::call"
+        },
+        "tracked": {
+          "track_id": 89,
+          "root_track_id": 89,
+          "parent_track_id": 0,
+          "as_seq": 106,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "private_input": {
+          "defined": true,
+          "tensor_impl": "0x4f18dda0",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            2048
+          ],
+          "strides": [
+            2048,
+            1
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f24b660",
+          "storage_ptr": "0x12ca528c4000",
+          "storage_bytes": 4194304,
+          "data_ptr": "0x12ca528c4000",
+          "actual_npu_format": 29
+        },
+        "returned_view": {
+          "defined": true,
+          "tensor_impl": "0x63a05540",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            2048,
+            1024
+          ],
+          "strides": [
+            1,
+            2048
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f24b660",
+          "storage_ptr": "0x12ca528c4000",
+          "storage_bytes": 4194304,
+          "data_ptr": "0x12ca528c4000",
+          "actual_npu_format": 29
+        },
+        "same_original_storage": true,
+        "input_exact_linear_weight": true,
+        "linear_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 481,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169291815871,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR32",
+          "event": "linear_enter"
+        },
+        "linear_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 487,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169292727548,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR32",
+          "event": "linear_exit"
+        }
+      },
+      "output_relations": [
+        {
+          "input_path": "input1",
+          "output_path": "output0",
+          "input_tracked": {
+            "track_id": 89,
+            "root_track_id": 89,
+            "parent_track_id": 0,
+            "as_seq": 106,
+            "relation": "as_strided_return_root",
+            "exact_live_tensorimpl": true
+          },
+          "same_live_tensorimpl": false,
+          "same_storage": false,
+          "schema_alias_intersects": false,
+          "output_track": null,
+          "relation": "new_result_storage"
+        }
+      ],
+      "numeric_write_or_correctness": "UNMEASURED"
+    },
+    {
+      "consumer_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 492,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169295001280,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR35",
+        "event": "consumer_enter",
+        "op": "aten::matmul",
+        "rf_op_id": 395,
+        "rf_parent_op_id": 391,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE27",
+        "rf_scope_phase": "cold_generate",
+        "rf_request_id": "cold-1",
+        "rf_linear_id": "164:164:LINEAR35"
+      },
+      "consumer_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 493,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064169295236785,
+        "phase": "cold_generate",
+        "scope_phase": "cold_generate",
+        "request_id": "cold-1",
+        "scope_id": "164:164:SCOPE27",
+        "linear_id": "164:164:LINEAR35",
+        "event": "consumer_exit",
+        "op": "aten::matmul",
+        "rf_op_id": 395,
+        "rf_parent_op_id": 391,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE27",
+        "rf_scope_phase": "cold_generate",
+        "rf_request_id": "cold-1",
+        "rf_linear_id": "164:164:LINEAR35"
+      },
+      "operator": "aten::matmul",
+      "schema": "aten::matmul(Tensor self, Tensor other) -> Tensor",
+      "operand": {
+        "formal_index": 1,
+        "ivalue_path": "input1",
+        "formal_name": "other",
+        "alias": null,
+        "schema_is_write": false,
+        "container_is_write": false,
+        "kwarg_only": false,
+        "is_out_argument": false,
+        "exact_tracked": {
+          "track_id": 90,
+          "root_track_id": 90,
+          "parent_track_id": 0,
+          "as_seq": 107,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "tensor": {
+          "defined": true,
+          "tensor_impl": "0x63a02df0",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            6144
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f2013b0",
+          "storage_ptr": "0x12ca89890000",
+          "storage_bytes": 12582912,
+          "data_ptr": "0x12ca89890000",
+          "actual_npu_format": 29
+        }
+      },
+      "lineage_live_at_edge_and_operand": true,
+      "root": {
+        "registered": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 490,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169294846237,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR35",
+          "event": "consumer_root_registered"
+        },
+        "as_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 489,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169294743275,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR35",
+          "seq": 107,
+          "event": "enter",
+          "op": "at::_ops::as_strided::call"
+        },
+        "as_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 491,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169294898348,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR35",
+          "seq": 107,
+          "event": "exit",
+          "op": "at::_ops::as_strided::call"
+        },
+        "tracked": {
+          "track_id": 90,
+          "root_track_id": 90,
+          "parent_track_id": 0,
+          "as_seq": 107,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "private_input": {
+          "defined": true,
+          "tensor_impl": "0x4fda4d70",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            6144,
+            1024
+          ],
+          "strides": [
+            1024,
+            1
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f2013b0",
+          "storage_ptr": "0x12ca89890000",
+          "storage_bytes": 12582912,
+          "data_ptr": "0x12ca89890000",
+          "actual_npu_format": 29
+        },
+        "returned_view": {
+          "defined": true,
+          "tensor_impl": "0x63a02df0",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            6144
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f2013b0",
+          "storage_ptr": "0x12ca89890000",
+          "storage_bytes": 12582912,
+          "data_ptr": "0x12ca89890000",
+          "actual_npu_format": 29
+        },
+        "same_original_storage": true,
+        "input_exact_linear_weight": true,
+        "linear_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 488,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169294623943,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR35",
+          "event": "linear_enter"
+        },
+        "linear_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 494,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064169295448629,
+          "phase": "cold_generate",
+          "scope_phase": "cold_generate",
+          "request_id": "cold-1",
+          "scope_id": "164:164:SCOPE27",
+          "linear_id": "164:164:LINEAR35",
+          "event": "linear_exit"
+        }
+      },
+      "output_relations": [
+        {
+          "input_path": "input1",
+          "output_path": "output0",
+          "input_tracked": {
+            "track_id": 90,
+            "root_track_id": 90,
+            "parent_track_id": 0,
+            "as_seq": 107,
+            "relation": "as_strided_return_root",
+            "exact_live_tensorimpl": true
+          },
+          "same_live_tensorimpl": false,
+          "same_storage": false,
+          "schema_alias_intersects": false,
+          "output_track": null,
+          "relation": "new_result_storage"
+        }
+      ],
+      "numeric_write_or_correctness": "UNMEASURED"
+    },
+    {
+      "consumer_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 23952,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172789708597,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2795",
+        "event": "consumer_enter",
+        "op": "aten::matmul",
+        "rf_op_id": 28408,
+        "rf_parent_op_id": 28404,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE2793",
+        "rf_scope_phase": "warm_generate",
+        "rf_request_id": "warm-2",
+        "rf_linear_id": "164:164:LINEAR2795"
+      },
+      "consumer_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 23953,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172789858890,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2795",
+        "event": "consumer_exit",
+        "op": "aten::matmul",
+        "rf_op_id": 28408,
+        "rf_parent_op_id": 28404,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE2793",
+        "rf_scope_phase": "warm_generate",
+        "rf_request_id": "warm-2",
+        "rf_linear_id": "164:164:LINEAR2795"
+      },
+      "operator": "aten::matmul",
+      "schema": "aten::matmul(Tensor self, Tensor other) -> Tensor",
+      "operand": {
+        "formal_index": 1,
+        "ivalue_path": "input1",
+        "formal_name": "other",
+        "alias": null,
+        "schema_is_write": false,
+        "container_is_write": false,
+        "kwarg_only": false,
+        "is_out_argument": false,
+        "exact_tracked": {
+          "track_id": 4305,
+          "root_track_id": 4305,
+          "parent_track_id": 0,
+          "as_seq": 4227,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "tensor": {
+          "defined": true,
+          "tensor_impl": "0x66dc8f60",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            4096
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4fe86ff0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        }
+      },
+      "lineage_live_at_edge_and_operand": true,
+      "root": {
+        "registered": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 23950,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172789548324,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2795",
+          "event": "consumer_root_registered"
+        },
+        "as_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 23949,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172789445052,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2795",
+          "seq": 4227,
+          "event": "enter",
+          "op": "at::_ops::as_strided::call"
+        },
+        "as_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 23951,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172789598465,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2795",
+          "seq": 4227,
+          "event": "exit",
+          "op": "at::_ops::as_strided::call"
+        },
+        "tracked": {
+          "track_id": 4305,
+          "root_track_id": 4305,
+          "parent_track_id": 0,
+          "as_seq": 4227,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "private_input": {
+          "defined": true,
+          "tensor_impl": "0x4f18ee00",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            4096,
+            1024
+          ],
+          "strides": [
+            1024,
+            1
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4fe86ff0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        },
+        "returned_view": {
+          "defined": true,
+          "tensor_impl": "0x66dc8f60",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            4096
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4fe86ff0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        },
+        "same_original_storage": true,
+        "input_exact_linear_weight": true,
+        "linear_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 23948,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172789326630,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2795",
+          "event": "linear_enter"
+        },
+        "linear_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 23954,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172790073594,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2795",
+          "event": "linear_exit"
+        }
+      },
+      "output_relations": [
+        {
+          "input_path": "input1",
+          "output_path": "output0",
+          "input_tracked": {
+            "track_id": 4305,
+            "root_track_id": 4305,
+            "parent_track_id": 0,
+            "as_seq": 4227,
+            "relation": "as_strided_return_root",
+            "exact_live_tensorimpl": true
+          },
+          "same_live_tensorimpl": false,
+          "same_storage": false,
+          "schema_alias_intersects": false,
+          "output_track": null,
+          "relation": "new_result_storage"
+        }
+      ],
+      "numeric_write_or_correctness": "UNMEASURED"
+    },
+    {
+      "consumer_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 24046,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172800634750,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2798",
+        "event": "consumer_enter",
+        "op": "aten::matmul",
+        "rf_op_id": 28485,
+        "rf_parent_op_id": 28481,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE2793",
+        "rf_scope_phase": "warm_generate",
+        "rf_request_id": "warm-2",
+        "rf_linear_id": "164:164:LINEAR2798"
+      },
+      "consumer_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 24047,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172800780143,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2798",
+        "event": "consumer_exit",
+        "op": "aten::matmul",
+        "rf_op_id": 28485,
+        "rf_parent_op_id": 28481,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE2793",
+        "rf_scope_phase": "warm_generate",
+        "rf_request_id": "warm-2",
+        "rf_linear_id": "164:164:LINEAR2798"
+      },
+      "operator": "aten::matmul",
+      "schema": "aten::matmul(Tensor self, Tensor other) -> Tensor",
+      "operand": {
+        "formal_index": 1,
+        "ivalue_path": "input1",
+        "formal_name": "other",
+        "alias": null,
+        "schema_is_write": false,
+        "container_is_write": false,
+        "kwarg_only": false,
+        "is_out_argument": false,
+        "exact_tracked": {
+          "track_id": 4322,
+          "root_track_id": 4322,
+          "parent_track_id": 0,
+          "as_seq": 4243,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "tensor": {
+          "defined": true,
+          "tensor_impl": "0x66ec88b0",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            2048,
+            1024
+          ],
+          "strides": [
+            1,
+            2048
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f24b660",
+          "storage_ptr": "0x12ca528c4000",
+          "storage_bytes": 4194304,
+          "data_ptr": "0x12ca528c4000",
+          "actual_npu_format": 29
+        }
+      },
+      "lineage_live_at_edge_and_operand": true,
+      "root": {
+        "registered": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24044,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172800478327,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2798",
+          "event": "consumer_root_registered"
+        },
+        "as_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24043,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172800375405,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2798",
+          "seq": 4243,
+          "event": "enter",
+          "op": "at::_ops::as_strided::call"
+        },
+        "as_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24045,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172800530318,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2798",
+          "seq": 4243,
+          "event": "exit",
+          "op": "at::_ops::as_strided::call"
+        },
+        "tracked": {
+          "track_id": 4322,
+          "root_track_id": 4322,
+          "parent_track_id": 0,
+          "as_seq": 4243,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "private_input": {
+          "defined": true,
+          "tensor_impl": "0x4f18dda0",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            2048
+          ],
+          "strides": [
+            2048,
+            1
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f24b660",
+          "storage_ptr": "0x12ca528c4000",
+          "storage_bytes": 4194304,
+          "data_ptr": "0x12ca528c4000",
+          "actual_npu_format": 29
+        },
+        "returned_view": {
+          "defined": true,
+          "tensor_impl": "0x66ec88b0",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            2048,
+            1024
+          ],
+          "strides": [
+            1,
+            2048
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f24b660",
+          "storage_ptr": "0x12ca528c4000",
+          "storage_bytes": 4194304,
+          "data_ptr": "0x12ca528c4000",
+          "actual_npu_format": 29
+        },
+        "same_original_storage": true,
+        "input_exact_linear_weight": true,
+        "linear_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24042,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172800254413,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2798",
+          "event": "linear_enter"
+        },
+        "linear_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24048,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172800997647,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2798",
+          "event": "linear_exit"
+        }
+      },
+      "output_relations": [
+        {
+          "input_path": "input1",
+          "output_path": "output0",
+          "input_tracked": {
+            "track_id": 4322,
+            "root_track_id": 4322,
+            "parent_track_id": 0,
+            "as_seq": 4243,
+            "relation": "as_strided_return_root",
+            "exact_live_tensorimpl": true
+          },
+          "same_live_tensorimpl": false,
+          "same_storage": false,
+          "schema_alias_intersects": false,
+          "output_track": null,
+          "relation": "new_result_storage"
+        }
+      ],
+      "numeric_write_or_correctness": "UNMEASURED"
+    },
+    {
+      "consumer_enter": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 24053,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172802499185,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2801",
+        "event": "consumer_enter",
+        "op": "aten::matmul",
+        "rf_op_id": 28504,
+        "rf_parent_op_id": 28500,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE2793",
+        "rf_scope_phase": "warm_generate",
+        "rf_request_id": "warm-2",
+        "rf_linear_id": "164:164:LINEAR2801"
+      },
+      "consumer_exit": {
+        "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+        "_line": 24054,
+        "pid": 164,
+        "tid": 164,
+        "mono_ns": 2064172802652138,
+        "phase": "warm_generate",
+        "scope_phase": "warm_generate",
+        "request_id": "warm-2",
+        "scope_id": "164:164:SCOPE2793",
+        "linear_id": "164:164:LINEAR2801",
+        "event": "consumer_exit",
+        "op": "aten::matmul",
+        "rf_op_id": 28504,
+        "rf_parent_op_id": 28500,
+        "rf_start_tid": 164,
+        "rf_scope_id": "164:164:SCOPE2793",
+        "rf_scope_phase": "warm_generate",
+        "rf_request_id": "warm-2",
+        "rf_linear_id": "164:164:LINEAR2801"
+      },
+      "operator": "aten::matmul",
+      "schema": "aten::matmul(Tensor self, Tensor other) -> Tensor",
+      "operand": {
+        "formal_index": 1,
+        "ivalue_path": "input1",
+        "formal_name": "other",
+        "alias": null,
+        "schema_is_write": false,
+        "container_is_write": false,
+        "kwarg_only": false,
+        "is_out_argument": false,
+        "exact_tracked": {
+          "track_id": 4323,
+          "root_track_id": 4323,
+          "parent_track_id": 0,
+          "as_seq": 4244,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "tensor": {
+          "defined": true,
+          "tensor_impl": "0x66f32920",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            6144
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f2013b0",
+          "storage_ptr": "0x12ca89890000",
+          "storage_bytes": 12582912,
+          "data_ptr": "0x12ca89890000",
+          "actual_npu_format": 29
+        }
+      },
+      "lineage_live_at_edge_and_operand": true,
+      "root": {
+        "registered": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24051,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172802341362,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2801",
+          "event": "consumer_root_registered"
+        },
+        "as_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24050,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172802237900,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2801",
+          "seq": 4244,
+          "event": "enter",
+          "op": "at::_ops::as_strided::call"
+        },
+        "as_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24052,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172802392813,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2801",
+          "seq": 4244,
+          "event": "exit",
+          "op": "at::_ops::as_strided::call"
+        },
+        "tracked": {
+          "track_id": 4323,
+          "root_track_id": 4323,
+          "parent_track_id": 0,
+          "as_seq": 4244,
+          "relation": "as_strided_return_root",
+          "exact_live_tensorimpl": true
+        },
+        "private_input": {
+          "defined": true,
+          "tensor_impl": "0x4fda4d70",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            6144,
+            1024
+          ],
+          "strides": [
+            1024,
+            1
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f2013b0",
+          "storage_ptr": "0x12ca89890000",
+          "storage_bytes": 12582912,
+          "data_ptr": "0x12ca89890000",
+          "actual_npu_format": 29
+        },
+        "returned_view": {
+          "defined": true,
+          "tensor_impl": "0x66f32920",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            6144
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x4f2013b0",
+          "storage_ptr": "0x12ca89890000",
+          "storage_bytes": 12582912,
+          "data_ptr": "0x12ca89890000",
+          "actual_npu_format": 29
+        },
+        "same_original_storage": true,
+        "input_exact_linear_weight": true,
+        "linear_enter": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24049,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172802116038,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2801",
+          "event": "linear_enter"
+        },
+        "linear_exit": {
+          "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+          "_line": 24055,
+          "pid": 164,
+          "tid": 164,
+          "mono_ns": 2064172802868612,
+          "phase": "warm_generate",
+          "scope_phase": "warm_generate",
+          "request_id": "warm-2",
+          "scope_id": "164:164:SCOPE2793",
+          "linear_id": "164:164:LINEAR2801",
+          "event": "linear_exit"
+        }
+      },
+      "output_relations": [
+        {
+          "input_path": "input1",
+          "output_path": "output0",
+          "input_tracked": {
+            "track_id": 4323,
+            "root_track_id": 4323,
+            "parent_track_id": 0,
+            "as_seq": 4244,
+            "relation": "as_strided_return_root",
+            "exact_live_tensorimpl": true
+          },
+          "same_live_tensorimpl": false,
+          "same_storage": false,
+          "schema_alias_intersects": false,
+          "output_track": null,
+          "relation": "new_result_storage"
+        }
+      ],
+      "numeric_write_or_correctness": "UNMEASURED"
+    }
+  ],
+  "consumer_pair_errors": [],
+  "live_generation_errors": [],
+  "summary_coverage_snapshots": [
+    {
+      "file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\operators\\pid127.summary.json",
+      "sha256": "110417acc772a3df245c03cb5484987a820b007dee9eba401e42b9e265545ed6",
+      "pid": 127,
+      "native_consumer_stats": {
+        "available": true,
+        "data": {
+          "rf_started": 0,
+          "rf_ended": 0,
+          "rf_related": 0,
+          "rf_no_schema": 0,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 0,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "python_errors": {},
+      "registry_capped": false,
+      "counts": {}
+    },
+    {
+      "file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\operators\\pid128.summary.json",
+      "sha256": "62936d3ba8752cf27f62b9854bc539ebe2412a1f7ab55f21c1faa46d9f533b04",
+      "pid": 128,
+      "native_consumer_stats": {
+        "available": true,
+        "data": {
+          "rf_started": 0,
+          "rf_ended": 0,
+          "rf_related": 0,
+          "rf_no_schema": 0,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 0,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "python_errors": {},
+      "registry_capped": false,
+      "counts": {}
+    },
+    {
+      "file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\operators\\pid164.summary.json",
+      "sha256": "d3d5cb790113ce2b0f6f0375d74838f1b5c5eceaf2843c13ba149dbe600e8df1",
+      "pid": 164,
+      "native_consumer_stats": {
+        "available": true,
+        "data": {
+          "rf_started": 56225,
+          "rf_ended": 56225,
+          "rf_related": 10014,
+          "rf_no_schema": 17201,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 8451,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "python_errors": {},
+      "registry_capped": false,
+      "counts": {}
+    },
+    {
+      "file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\operators\\pid244.summary.json",
+      "sha256": "99372a58b20adfc35ae01309883671331c38ffece6bd0b870cc5dbfc3860a699",
+      "pid": 244,
+      "native_consumer_stats": {
+        "available": true,
+        "data": {
+          "rf_started": 0,
+          "rf_ended": 0,
+          "rf_related": 0,
+          "rf_no_schema": 0,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 0,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "python_errors": {},
+      "registry_capped": false,
+      "counts": {}
+    },
+    {
+      "file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\operators\\pid251.summary.json",
+      "sha256": "20383d7ff08ddd107b0f4e56538cb4171118b446bb4a4bfa6b5119c2830b58e8",
+      "pid": 251,
+      "native_consumer_stats": {
+        "available": true,
+        "data": {
+          "rf_started": 0,
+          "rf_ended": 0,
+          "rf_related": 0,
+          "rf_no_schema": 0,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 0,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "python_errors": {},
+      "registry_capped": false,
+      "counts": {}
+    },
+    {
+      "file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\operators\\pid306.summary.json",
+      "sha256": "fb0ce091177398ac92ff8692675f76eb4647d0e235ff33d3396ce25b592ebb6b",
+      "pid": 306,
+      "native_consumer_stats": {
+        "available": true,
+        "data": {
+          "rf_started": 0,
+          "rf_ended": 0,
+          "rf_related": 0,
+          "rf_no_schema": 0,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 0,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "python_errors": {},
+      "registry_capped": false,
+      "counts": {}
+    },
+    {
+      "file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\operators\\pid90.summary.json",
+      "sha256": "38c21a369d4bcce65438beb36e61c035bdff5ccfbcd1c0b305543358094683e3",
+      "pid": 90,
+      "native_consumer_stats": {
+        "available": true,
+        "data": {
+          "rf_started": 0,
+          "rf_ended": 0,
+          "rf_related": 0,
+          "rf_no_schema": 0,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 0,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "python_errors": {},
+      "registry_capped": false,
+      "counts": {}
+    }
+  ],
+  "model_native_worker_coverage": [
+    {
+      "file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\operators\\pid164.summary.json",
+      "sha256": "d3d5cb790113ce2b0f6f0375d74838f1b5c5eceaf2843c13ba149dbe600e8df1",
+      "pid": 164,
+      "native_consumer_stats": {
+        "available": true,
+        "data": {
+          "rf_started": 56225,
+          "rf_ended": 56225,
+          "rf_related": 10014,
+          "rf_no_schema": 17201,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 8451,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "python_errors": {},
+      "registry_capped": false,
+      "counts": {}
+    }
+  ],
+  "excluded_phase_or_request_rows": [
+    {
+      "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "_line": 23557,
+      "pid": 164,
+      "tid": 164,
+      "mono_ns": 2064172738362750,
+      "phase": "between_requests",
+      "scope_phase": "cold_generate",
+      "request_id": "cold-1",
+      "scope_id": "164:164:SCOPE2787",
+      "linear_id": "",
+      "seq": 4137,
+      "event": "enter",
+      "op": "at::_ops::as_strided::call"
+    },
+    {
+      "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "_line": 23558,
+      "pid": 164,
+      "tid": 164,
+      "mono_ns": 2064172738479223,
+      "phase": "between_requests",
+      "scope_phase": "cold_generate",
+      "request_id": "cold-1",
+      "scope_id": "164:164:SCOPE2787",
+      "linear_id": "",
+      "event": "consumer_root_registered"
+    },
+    {
+      "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "_line": 23559,
+      "pid": 164,
+      "tid": 164,
+      "mono_ns": 2064172738531793,
+      "phase": "between_requests",
+      "scope_phase": "cold_generate",
+      "request_id": "cold-1",
+      "scope_id": "164:164:SCOPE2787",
+      "linear_id": "",
+      "seq": 4137,
+      "event": "exit",
+      "op": "at::_ops::as_strided::call"
+    },
+    {
+      "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "_line": 23560,
+      "pid": 164,
+      "tid": 164,
+      "mono_ns": 2064172738620905,
+      "phase": "warm_generate",
+      "scope_phase": "cold_generate",
+      "request_id": "cold-1",
+      "scope_id": "164:164:SCOPE2787",
+      "linear_id": "",
+      "seq": 4138,
+      "event": "enter",
+      "op": "at::_ops::as_strided::call"
+    },
+    {
+      "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "_line": 23561,
+      "pid": 164,
+      "tid": 164,
+      "mono_ns": 2064172738701317,
+      "phase": "warm_generate",
+      "scope_phase": "cold_generate",
+      "request_id": "cold-1",
+      "scope_id": "164:164:SCOPE2787",
+      "linear_id": "",
+      "event": "consumer_root_registered"
+    },
+    {
+      "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "_line": 23562,
+      "pid": 164,
+      "tid": 164,
+      "mono_ns": 2064172738748068,
+      "phase": "warm_generate",
+      "scope_phase": "cold_generate",
+      "request_id": "cold-1",
+      "scope_id": "164:164:SCOPE2787",
+      "linear_id": "",
+      "seq": 4138,
+      "event": "exit",
+      "op": "at::_ops::as_strided::call"
+    },
+    {
+      "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "_line": 23563,
+      "pid": 164,
+      "tid": 164,
+      "mono_ns": 2064172738821759,
+      "phase": "warm_generate",
+      "scope_phase": "cold_generate",
+      "request_id": "cold-1",
+      "scope_id": "164:164:SCOPE2787",
+      "linear_id": "",
+      "seq": 4139,
+      "event": "enter",
+      "op": "at::_ops::as_strided::call"
+    },
+    {
+      "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "_line": 23564,
+      "pid": 164,
+      "tid": 164,
+      "mono_ns": 2064172738903220,
+      "phase": "warm_generate",
+      "scope_phase": "cold_generate",
+      "request_id": "cold-1",
+      "scope_id": "164:164:SCOPE2787",
+      "linear_id": "",
+      "event": "consumer_root_registered"
+    },
+    {
+      "_file": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_off\\native_pid164.jsonl",
+      "_line": 23565,
+      "pid": 164,
+      "tid": 164,
+      "mono_ns": 2064172738948311,
+      "phase": "warm_generate",
+      "scope_phase": "cold_generate",
+      "request_id": "cold-1",
+      "scope_id": "164:164:SCOPE2787",
+      "linear_id": "",
+      "seq": 4139,
+      "event": "exit",
+      "op": "at::_ops::as_strided::call"
+    }
+  ],
+  "callback_errors": [],
+  "log_cap_markers": [],
+  "boundary": [
+    "msProbe statistics may execute extra native operations. Global event counts cannot be attributed to model; only exact bounded F.linear roots/consumers enter model-chain counts.",
+    "Tracked consumers outside the originating F.linear interval remain separate pending attribution, including writes; they are not silently treated as absent.",
+    "No claim of observer transparency or numerical A/B equivalence; compare independently completed OFF/ON model token outputs and statistics separately.",
+    "Counts are observed schema write entries, not numerical byte changes. Metadata/zero-element/exception details remain separate.",
+    "Direct Tensor write annotations are separate from inherited container-only mutation annotations.",
+    "Storage separation does not discard actual as-returned roots or nominal schema-alias provenance, and is not itself a numerical defect.",
+    "No-schema/missing typed output/binding/flat limits, hidden or direct custom/device paths and unobserved threads constrain any negative conclusion.",
+    "All identities derive from weak-live generation anchors at edge creation/use; a later expired ancestor does not invalidate an already-proven live child edge."
+  ],
+  "review_status": "REVIEWED_WITH_BOUNDARIES"
+}

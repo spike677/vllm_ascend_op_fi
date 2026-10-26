@@ -1,0 +1,366 @@
+{
+  "schema": "as_strided.msprobe_attempt1_native_gap_and_token_comparison.v1",
+  "native_chain_review": "BLOCKED_MISSING_NATIVE_JSONL",
+  "zero_native_rows_are_not_negative_write_evidence": true,
+  "modes": {
+    "off": {
+      "model_status": "PASS",
+      "worker_pid": 197,
+      "versions": {
+        "vllm": "0.23.0+empty",
+        "vllm-ascend": "0.23.0",
+        "torch": "2.10.0",
+        "torch-npu": "2.10.0.post4",
+        "mindstudio-probe": "26.1.0"
+      },
+      "native_directory_exists": false,
+      "native_jsonl_files": 0,
+      "native_callback_summary": {
+        "available": true,
+        "data": {
+          "rf_started": 56231,
+          "rf_ended": 56231,
+          "rf_related": 10014,
+          "rf_no_schema": 17201,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 8458,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "bridge_status": "OFF_BASELINE_NATIVE_ONLY_NO_MSPROBE_INITIALIZATION",
+      "completed_capture_steps": [],
+      "bridge_failures": [],
+      "python_linear": {
+        "cold": {
+          "entries": 904,
+          "exits": 904,
+          "weight_format_dtype_counts": [
+            {
+              "format": 29,
+              "dtype": "torch.bfloat16",
+              "count": 896
+            },
+            {
+              "format": 2,
+              "dtype": "torch.bfloat16",
+              "count": 8
+            }
+          ]
+        },
+        "warm": {
+          "entries": 904,
+          "exits": 904,
+          "weight_format_dtype_counts": [
+            {
+              "format": 29,
+              "dtype": "torch.bfloat16",
+              "count": 896
+            },
+            {
+              "format": 2,
+              "dtype": "torch.bfloat16",
+              "count": 8
+            }
+          ]
+        }
+      }
+    },
+    "on": {
+      "model_status": "PASS",
+      "worker_pid": 1181,
+      "versions": {
+        "vllm": "0.23.0+empty",
+        "vllm-ascend": "0.23.0",
+        "torch": "2.10.0",
+        "torch-npu": "2.10.0.post4",
+        "mindstudio-probe": "26.1.0"
+      },
+      "native_directory_exists": false,
+      "native_jsonl_files": 0,
+      "native_callback_summary": {
+        "available": true,
+        "data": {
+          "rf_started": 235151,
+          "rf_ended": 235151,
+          "rf_related": 17945,
+          "rf_no_schema": 81145,
+          "rf_input_mismatch": 0,
+          "rf_missing_outputs": 0,
+          "rf_output_mismatch": 0,
+          "rf_errors": 0,
+          "rf_flat_drops": 0,
+          "track_expired": 10345,
+          "track_evicted": 0
+        },
+        "context_at_snapshot": {
+          "stage": "init_or_outside_scope",
+          "parent_phase_readback": {
+            "name": "OUTSIDE_RECORDED_SCOPE"
+          },
+          "scope_ids": [],
+          "scope_methods": [],
+          "linear_id": null,
+          "schema_control_case": null
+        }
+      },
+      "bridge_status": "THREE_EXECUTES_CAPTURED_AWAITING_ARTIFACT_REVIEW",
+      "completed_capture_steps": [
+        0,
+        1,
+        2
+      ],
+      "bridge_failures": [],
+      "python_linear": {
+        "cold": {
+          "entries": 904,
+          "exits": 904,
+          "weight_format_dtype_counts": [
+            {
+              "format": 29,
+              "dtype": "torch.bfloat16",
+              "count": 896
+            },
+            {
+              "format": 2,
+              "dtype": "torch.bfloat16",
+              "count": 8
+            }
+          ]
+        },
+        "warm": {
+          "entries": 904,
+          "exits": 904,
+          "weight_format_dtype_counts": [
+            {
+              "format": 29,
+              "dtype": "torch.bfloat16",
+              "count": 896
+            },
+            {
+              "format": 2,
+              "dtype": "torch.bfloat16",
+              "count": 8
+            }
+          ]
+        }
+      }
+    }
+  },
+  "evidence": [
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_off\\operators\\pid197.generate_cold.jsonl",
+      "bytes": 4883872,
+      "sha256": "933b48be352f8d857456e5571c43a1a0887077603ed1ecefecd9aaba69ecf890"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_off\\operators\\pid197.generate_warm.jsonl",
+      "bytes": 4888268,
+      "sha256": "17384b6b574cf8233e9b108a6b60905a7b608464babfb816c61b0857db9f3ff7"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_off\\model_result.json",
+      "bytes": 4668,
+      "sha256": "14919ccbf9a37e68cb21766921c0927a4a21eb9d38528e9b14f0cff6bbfc4199"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_off\\operators\\pid197.summary.json",
+      "bytes": 1491,
+      "sha256": "8ab64bddf44a3ed55fd5b5211c7464a2217179abefdb0a8e865cc33b39722412"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_off\\msprobe_bridge\\pid197.bridge.json",
+      "bytes": 987,
+      "sha256": "6745624a8a48e12bb09198c2eb744ef144170d14945f79471fbd9209ac579fb9"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_on\\operators\\pid1181.generate_cold.jsonl",
+      "bytes": 4885168,
+      "sha256": "2b8a84aabaa87cf4127db1e4ab33c19df277dca77f0853acc751999f48f2f4ac"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_on\\operators\\pid1181.generate_warm.jsonl",
+      "bytes": 4889564,
+      "sha256": "9b92d49751698ac1040e8e4ac20f12767b3060743617e47f0e87e846bb43262c"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_on\\model_result.json",
+      "bytes": 4666,
+      "sha256": "d487f363986e0b67743b7c6f64a2f4682dca6fabae2ef7a22401d7b567cec2b0"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_on\\operators\\pid1181.summary.json",
+      "bytes": 1495,
+      "sha256": "e45e24e30bb2f60291f87d4d1ea64c4684b66c1d4879d413f3200aacc44212a6"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified\\evidence_attempt1\\model_on\\msprobe_bridge\\pid1181.bridge.json",
+      "bytes": 6593,
+      "sha256": "351e943362e13c78cf4c3b44a6615789c43d323803dffb8a23319e9c94fdb772"
+    }
+  ],
+  "output_comparison": {
+    "same_versions": true,
+    "same_request_records": true,
+    "requests": [
+      {
+        "phase": "cold",
+        "prompt": "The capital of France is",
+        "prompt_token_ids": [
+          785,
+          6722,
+          315,
+          9625,
+          374
+        ],
+        "output_token_ids": [
+          12095,
+          13,
+          576,
+          6722,
+          315,
+          9625,
+          374,
+          1083
+        ],
+        "text": " Paris. The capital of France is also",
+        "finish_reason": "length",
+        "tokens": 8
+      },
+      {
+        "phase": "warm",
+        "prompt": "The capital of France is",
+        "prompt_token_ids": [
+          785,
+          6722,
+          315,
+          9625,
+          374
+        ],
+        "output_token_ids": [
+          12095,
+          13,
+          576,
+          6722,
+          315,
+          9625,
+          374,
+          1083
+        ],
+        "text": " Paris. The capital of France is also",
+        "finish_reason": "length",
+        "tokens": 8
+      }
+    ],
+    "scope": "Two complete deterministic 8-token requests; prompt tokens, generated token IDs, text, finish_reason and lengths match. Full logits/intermediate tensors were not compared."
+  },
+  "capture_schedule": [
+    {
+      "step": 0,
+      "scope": {
+        "id": "1181:1181:SCOPE27",
+        "parent_id": "1181:1181:SCOPE24",
+        "method": "execute_model",
+        "phase": {
+          "phase": "cold_generate",
+          "name": "cold_generate",
+          "request_id": "cold-1",
+          "mono_ns": 2063769851726871,
+          "epoch_ns": 1793006350308867531,
+          "parent_pid": 1106
+        }
+      },
+      "schedule": {
+        "scheduler_type": "vllm.v1.core.sched.output.SchedulerOutput",
+        "scheduled_request_ids": [
+          "0-8f975976"
+        ],
+        "num_scheduled_tokens": {
+          "0-8f975976": 5
+        },
+        "total_num_scheduled_tokens": 5
+      }
+    },
+    {
+      "step": 1,
+      "scope": {
+        "id": "1181:1181:SCOPE372",
+        "parent_id": "1181:1181:SCOPE370",
+        "method": "execute_model",
+        "phase": {
+          "phase": "cold_generate",
+          "name": "cold_generate",
+          "request_id": "cold-1",
+          "mono_ns": 2063769851726871,
+          "epoch_ns": 1793006350308867531,
+          "parent_pid": 1106
+        }
+      },
+      "schedule": {
+        "scheduler_type": "vllm.v1.core.sched.output.SchedulerOutput",
+        "scheduled_request_ids": [
+          "0-8f975976"
+        ],
+        "num_scheduled_tokens": {
+          "0-8f975976": 1
+        },
+        "total_num_scheduled_tokens": 1
+      }
+    },
+    {
+      "step": 2,
+      "scope": {
+        "id": "1181:1181:SCOPE717",
+        "parent_id": "1181:1181:SCOPE715",
+        "method": "execute_model",
+        "phase": {
+          "phase": "cold_generate",
+          "name": "cold_generate",
+          "request_id": "cold-1",
+          "mono_ns": 2063769851726871,
+          "epoch_ns": 1793006350308867531,
+          "parent_pid": 1106
+        }
+      },
+      "schedule": {
+        "scheduler_type": "vllm.v1.core.sched.output.SchedulerOutput",
+        "scheduled_request_ids": [
+          "0-8f975976"
+        ],
+        "num_scheduled_tokens": {
+          "0-8f975976": 1
+        },
+        "total_num_scheduled_tokens": 1
+      }
+    }
+  ],
+  "cause_assessment": {
+    "fact": "Controller creates native but environment names native_off/native_on; native callback summaries nonzero, local verified raw has no corresponding JSONL.",
+    "inference": "Missing per-mode output directories likely caused native open failure; parent must confirm remote original directories before treating cause as established.",
+    "evidence": {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\scripts\\controller.py",
+      "bytes": 8349,
+      "sha256": "b3f1d1243f4c9c8f27f3f3c808a906a2823624770bc9e60acdaa609df7ef0518"
+    }
+  },
+  "boundaries": [
+    "Successful msProbe statistics capture is separate from missing native identity raw records.",
+    "Native callbacks are active but their summary counters cannot establish same-tensor return/consumer/write lineage.",
+    "ON contains more RecordFunction callbacks than OFF; statistical helper operations cannot be attributed to model operations wholesale.",
+    "Prior 20261022 chain evidence remains historical scoped evidence, not a replacement for this run native records.",
+    "No claim of original defect, complete private-format/as_strided/inplace chain, observer numerical passivity, or logits equality."
+  ]
+}

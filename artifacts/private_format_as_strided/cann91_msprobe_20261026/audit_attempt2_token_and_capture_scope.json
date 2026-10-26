@@ -1,0 +1,433 @@
+{
+  "schema": "as_strided.msprobe_attempt2_capture_scope_and_tokens.v1",
+  "status": "REVIEWED_WITH_BOUNDARIES",
+  "capture_steps": [
+    {
+      "step": 0,
+      "scope": {
+        "id": "750:750:SCOPE27",
+        "parent_id": "750:750:SCOPE24",
+        "method": "execute_model",
+        "phase": {
+          "phase": "cold_generate",
+          "name": "cold_generate",
+          "request_id": "cold-1",
+          "mono_ns": 2064270882216643,
+          "epoch_ns": 1793006851339357113,
+          "parent_pid": 676
+        }
+      },
+      "schedule": {
+        "scheduler_type": "vllm.v1.core.sched.output.SchedulerOutput",
+        "scheduled_request_ids": [
+          "0-bc9d6ed7"
+        ],
+        "num_scheduled_tokens": {
+          "0-bc9d6ed7": 5
+        },
+        "total_num_scheduled_tokens": 5
+      },
+      "direct_native_counts": {
+        "linear_enter": 113,
+        "private_linear_enter": 112,
+        "exact_private_weight_as_enter": 112,
+        "private_roots": 112,
+        "matmul_other_read": 112
+      },
+      "example": {
+        "native_line": 618,
+        "scope": "750:750:SCOPE27",
+        "linear_id": "750:750:LINEAR29",
+        "base": {
+          "defined": true,
+          "tensor_impl": "0x48564060",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            4096,
+            1024
+          ],
+          "strides": [
+            1024,
+            1
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x492661e0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        },
+        "view": {
+          "defined": true,
+          "tensor_impl": "0x5e5ae4e0",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            4096
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x492661e0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        }
+      }
+    },
+    {
+      "step": 1,
+      "scope": {
+        "id": "750:750:SCOPE372",
+        "parent_id": "750:750:SCOPE370",
+        "method": "execute_model",
+        "phase": {
+          "phase": "cold_generate",
+          "name": "cold_generate",
+          "request_id": "cold-1",
+          "mono_ns": 2064270882216643,
+          "epoch_ns": 1793006851339357113,
+          "parent_pid": 676
+        }
+      },
+      "schedule": {
+        "scheduler_type": "vllm.v1.core.sched.output.SchedulerOutput",
+        "scheduled_request_ids": [
+          "0-bc9d6ed7"
+        ],
+        "num_scheduled_tokens": {
+          "0-bc9d6ed7": 1
+        },
+        "total_num_scheduled_tokens": 1
+      },
+      "direct_native_counts": {
+        "linear_enter": 113,
+        "private_linear_enter": 112,
+        "exact_private_weight_as_enter": 112,
+        "private_roots": 112,
+        "matmul_other_read": 112
+      },
+      "example": {
+        "native_line": 10124,
+        "scope": "750:750:SCOPE372",
+        "linear_id": "750:750:LINEAR374",
+        "base": {
+          "defined": true,
+          "tensor_impl": "0x48564060",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            4096,
+            1024
+          ],
+          "strides": [
+            1024,
+            1
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x492661e0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        },
+        "view": {
+          "defined": true,
+          "tensor_impl": "0x61c0cf80",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            4096
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x492661e0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        }
+      }
+    },
+    {
+      "step": 2,
+      "scope": {
+        "id": "750:750:SCOPE717",
+        "parent_id": "750:750:SCOPE715",
+        "method": "execute_model",
+        "phase": {
+          "phase": "cold_generate",
+          "name": "cold_generate",
+          "request_id": "cold-1",
+          "mono_ns": 2064270882216643,
+          "epoch_ns": 1793006851339357113,
+          "parent_pid": 676
+        }
+      },
+      "schedule": {
+        "scheduler_type": "vllm.v1.core.sched.output.SchedulerOutput",
+        "scheduled_request_ids": [
+          "0-bc9d6ed7"
+        ],
+        "num_scheduled_tokens": {
+          "0-bc9d6ed7": 1
+        },
+        "total_num_scheduled_tokens": 1
+      },
+      "direct_native_counts": {
+        "linear_enter": 113,
+        "private_linear_enter": 112,
+        "exact_private_weight_as_enter": 112,
+        "private_roots": 112,
+        "matmul_other_read": 112
+      },
+      "example": {
+        "native_line": 18454,
+        "scope": "750:750:SCOPE717",
+        "linear_id": "750:750:LINEAR719",
+        "base": {
+          "defined": true,
+          "tensor_impl": "0x48564060",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            4096,
+            1024
+          ],
+          "strides": [
+            1024,
+            1
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x492661e0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        },
+        "view": {
+          "defined": true,
+          "tensor_impl": "0x5e28c310",
+          "device": "npu:0",
+          "dtype": "BFloat16",
+          "sizes": [
+            1024,
+            4096
+          ],
+          "strides": [
+            1,
+            1024
+          ],
+          "storage_offset": 0,
+          "storage_impl": "0x492661e0",
+          "storage_ptr": "0x12ca8908c000",
+          "storage_bytes": 8388608,
+          "data_ptr": "0x12ca8908c000",
+          "actual_npu_format": 29
+        }
+      }
+    }
+  ],
+  "output_comparison": {
+    "versions_equal": true,
+    "request_records_equal": true,
+    "requests": [
+      {
+        "phase": "cold",
+        "prompt": "The capital of France is",
+        "prompt_token_ids": [
+          785,
+          6722,
+          315,
+          9625,
+          374
+        ],
+        "output_token_ids": [
+          12095,
+          13,
+          576,
+          6722,
+          315,
+          9625,
+          374,
+          1083
+        ],
+        "text": " Paris. The capital of France is also",
+        "finish_reason": "length",
+        "tokens": 8
+      },
+      {
+        "phase": "warm",
+        "prompt": "The capital of France is",
+        "prompt_token_ids": [
+          785,
+          6722,
+          315,
+          9625,
+          374
+        ],
+        "output_token_ids": [
+          12095,
+          13,
+          576,
+          6722,
+          315,
+          9625,
+          374,
+          1083
+        ],
+        "text": " Paris. The capital of France is also",
+        "finish_reason": "length",
+        "tokens": 8
+      }
+    ],
+    "comparison_scope": "Complete two 8-token request records only; full logits and intermediate values were not compared."
+  },
+  "full_request_chain_counts": {
+    "off": {
+      "private_as_root_generations": 1792,
+      "private_as_events_by_phase": {
+        "cold_generate": 896,
+        "warm_generate": 896
+      },
+      "private_unique_original_tensorimpl": 112,
+      "consumer_operand_counts": [
+        {
+          "operator": "aten::matmul",
+          "formal_name": "other",
+          "direct_tensor_schema_write": false,
+          "container_write": false,
+          "count": 1792
+        }
+      ],
+      "direct_tensor_schema_write_entries": 0,
+      "container_only_write_entries": 0,
+      "tracked_schema_writes_outside_exact_linear_interval": 0,
+      "derived_edge_counts": {},
+      "log_cap_markers": []
+    },
+    "on": {
+      "private_as_root_generations": 1792,
+      "private_as_events_by_phase": {
+        "cold_generate": 896,
+        "warm_generate": 896
+      },
+      "private_unique_original_tensorimpl": 112,
+      "consumer_operand_counts": [
+        {
+          "operator": "aten::matmul",
+          "formal_name": "other",
+          "direct_tensor_schema_write": false,
+          "container_write": false,
+          "count": 1792
+        }
+      ],
+      "direct_tensor_schema_write_entries": 0,
+      "container_only_write_entries": 0,
+      "tracked_schema_writes_outside_exact_linear_interval": 0,
+      "derived_edge_counts": {},
+      "log_cap_markers": []
+    }
+  },
+  "native_instrumentation_boundary": {
+    "off": {
+      "all_rows": 47117,
+      "qualified_rows": 47108,
+      "all_as_strided_pairs": 6924,
+      "all_consumer_pairs": 10014,
+      "native_stats": {
+        "rf_started": 56225,
+        "rf_ended": 56225,
+        "rf_related": 10014,
+        "rf_no_schema": 17201,
+        "rf_input_mismatch": 0,
+        "rf_missing_outputs": 0,
+        "rf_output_mismatch": 0,
+        "rf_errors": 0,
+        "rf_flat_drops": 0,
+        "track_expired": 8451,
+        "track_evicted": 0
+      },
+      "global_schema_write_entries_not_this_private_chain": 2720
+    },
+    "on": {
+      "all_rows": 64029,
+      "qualified_rows": 64011,
+      "all_as_strided_pairs": 7263,
+      "all_consumer_pairs": 17945,
+      "native_stats": {
+        "rf_started": 235157,
+        "rf_ended": 235157,
+        "rf_related": 17945,
+        "rf_no_schema": 81145,
+        "rf_input_mismatch": 0,
+        "rf_missing_outputs": 0,
+        "rf_output_mismatch": 0,
+        "rf_errors": 0,
+        "rf_flat_drops": 0,
+        "track_expired": 10348,
+        "track_evicted": 0
+      },
+      "global_schema_write_entries_not_this_private_chain": 2720
+    }
+  },
+  "evidence": [
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\native_on\\native_pid750.jsonl",
+      "bytes": 109226248,
+      "sha256": "8c1f10333c0eccedd549011fe194a23d3ad68fd1dd74fa64aa522f84472bb93b"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_bridge\\pid750.bridge.json",
+      "bytes": 6563,
+      "sha256": "473fe32889d2a4c0d2df6dc4aa9af533ec733f8e13887e44896639a1d70c86fc"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\audit_native_off_attempt2.json",
+      "bytes": 85472,
+      "sha256": "c51cdf39d571659997ac8215460d22f1fe7cd07b8ab1cf39c9496ae9b6da8ab5"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\model_result.json",
+      "bytes": 4668,
+      "sha256": "e7057997fe9176d8a101f2d0e585566e612e55cf880746c8fc1483ae0a993aeb"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_off\\operators\\pid164.summary.json",
+      "bytes": 1491,
+      "sha256": "d3d5cb790113ce2b0f6f0375d74838f1b5c5eceaf2843c13ba149dbe600e8df1"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\audit_native_on_attempt2.json",
+      "bytes": 90143,
+      "sha256": "db85226b9372d1c50a97c7a16e5307a53615074fa20ce67e9690786d36d452ba"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\model_result.json",
+      "bytes": 4665,
+      "sha256": "54c770c590dd4d2f246cbf39493e0ca1baad9d3d420e32a720986c3356284aeb"
+    },
+    {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\operators\\pid750.summary.json",
+      "bytes": 1491,
+      "sha256": "7bfb7e9edf7029007c5484d55462249af450dc05860a90adedb91e0d4d624a37"
+    }
+  ],
+  "boundaries": [
+    "1792 exact private chains in each mode cover both full cold and warm requests; only 336 of the ON chains belong to the three msProbe sampled execute scopes (112 per step).",
+    "Global ON native callback/as_strided counts include potential statistics helpers and must not be treated as additional model chains.",
+    "Native callback no-schema counts (OFF 17201/ON 81145) are observed generation-scope summary totals, not a proof of hidden write absence.",
+    "No direct/container schema writes or live derived alias edges observed on the exact private chain, including tracked consumers outside originating linear interval; numerical writeback correctness and hidden/direct device writes remain unproven.",
+    "FRACTAL_NZ is not the historical NC1HWC0/NDHWC/NDC1HWC0/Z_3D format coverage.",
+    "First attempt native-log absence retained as an evidence collection failure, not negative model evidence."
+  ]
+}

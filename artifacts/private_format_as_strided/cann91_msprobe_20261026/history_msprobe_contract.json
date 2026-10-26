@@ -1,0 +1,1131 @@
+{
+  "schema": "demoncatpfi.msprobe_history_format_contract.v1",
+  "git_commit": "9bc4ad238b2619ae1bb6c7e7762fa42c369602b4",
+  "git_repository_read": "D:\\project\\demoncatpfi",
+  "scope": "Previously committed Fault22 B/F statistics delivery; not this as_strided mechanism",
+  "published_steps": [
+    0,
+    1,
+    2
+  ],
+  "original_capture_steps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "ranks": [
+    0,
+    1
+  ],
+  "dump_contract": {
+    "required_top_keys": [
+      "task",
+      "level",
+      "framework",
+      "dump_data_dir",
+      "data"
+    ],
+    "task": "statistics",
+    "level": "mix",
+    "framework": "pytorch",
+    "dump_data_dir": null,
+    "required_tensor_keys": [
+      "type",
+      "dtype",
+      "shape",
+      "Max",
+      "Min",
+      "Mean",
+      "Norm",
+      "requires_grad"
+    ]
+  },
+  "msprobe_version": {
+    "status": "NOT_RECORDED_IN_SELECTED_PUBLISHED_EVIDENCE",
+    "value": null
+  },
+  "serialization": {
+    "files": "JSON only",
+    "pt_npy_present": false,
+    "original_dtype": "Tensor dtype field names the captured torch tensor dtype",
+    "disk_values": "JSON statistics scalars, booleans and null; no stored tensor dtype or full tensor payload"
+  },
+  "manifest": {
+    "path": "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/manifest.json",
+    "sha256": "a8c9faf302e0f31a90aecb694598c85db16ec8d5a88595bd35d785ed6c8ed3e2"
+  },
+  "readme": {
+    "path": "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/README.md",
+    "sha256": "b666fb05bddbbb7659249dd53a6bafc1547055e9c71379def0bac3c55f23ed7a",
+    "lines": [
+      21,
+      23,
+      24,
+      29,
+      33,
+      92,
+      93
+    ]
+  },
+  "archives": [
+    {
+      "path": "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/B_dump_steps012.zip",
+      "bytes": 1034427,
+      "sha256": "5ff2e8925d403ddda89777ffaae046ca135ac3b02903fd3438e1c21ab90076eb",
+      "member_count": 18,
+      "all_manifest_hashes_match": true,
+      "original_tensor_dtype_counts": {
+        "torch.bfloat16": 41098,
+        "torch.bool": 48,
+        "torch.float32": 3980,
+        "torch.int32": 3032,
+        "torch.int64": 1200,
+        "torch.int8": 5888
+      },
+      "original_tensor_dtype_counts_by_rank": {
+        "rank0": {
+          "torch.bfloat16": 20549,
+          "torch.bool": 24,
+          "torch.float32": 1990,
+          "torch.int32": 1612,
+          "torch.int64": 600,
+          "torch.int8": 2944
+        },
+        "rank1": {
+          "torch.bfloat16": 20549,
+          "torch.bool": 24,
+          "torch.float32": 1990,
+          "torch.int32": 1420,
+          "torch.int64": 600,
+          "torch.int8": 2944
+        }
+      },
+      "members": [
+        {
+          "path": "step0/rank0/dump.json",
+          "bytes": 2653165,
+          "sha256": "56d735194473c30507e0d7d92dd441ca076fe4f3504f6e2cf27fe88ff736bf8a",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2065,
+            "tensor_records": 9325,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6935,
+              "torch.bool": 8,
+              "torch.float32": 706,
+              "torch.int32": 452,
+              "torch.int64": 200,
+              "torch.int8": 1024
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9325
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1166
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step0/rank0/stack.json",
+          "bytes": 302121,
+          "sha256": "a2eb4c822b081aafc6df005b48795e09f07c34de35b27dfa0f80f70f07071209",
+          "review": {
+            "compatible": true,
+            "groups": 49,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step0/rank0/construct.json",
+          "bytes": 242552,
+          "sha256": "552127519f9e6612b53ca90ec6311a7007c55d3f8e0ba7cff4362f3c5b084d2d",
+          "review": {
+            "compatible": true,
+            "records": 2141,
+            "errors": []
+          }
+        },
+        {
+          "path": "step0/rank1/dump.json",
+          "bytes": 2640631,
+          "sha256": "066999d166089c1d1da14757debc113ce9a352b149965e2c1912749fbda1a163",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2065,
+            "tensor_records": 9261,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6935,
+              "torch.bool": 8,
+              "torch.float32": 706,
+              "torch.int32": 388,
+              "torch.int64": 200,
+              "torch.int8": 1024
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9261
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1166
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step0/rank1/stack.json",
+          "bytes": 302121,
+          "sha256": "a2eb4c822b081aafc6df005b48795e09f07c34de35b27dfa0f80f70f07071209",
+          "review": {
+            "compatible": true,
+            "groups": 49,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step0/rank1/construct.json",
+          "bytes": 242552,
+          "sha256": "552127519f9e6612b53ca90ec6311a7007c55d3f8e0ba7cff4362f3c5b084d2d",
+          "review": {
+            "compatible": true,
+            "records": 2141,
+            "errors": []
+          }
+        },
+        {
+          "path": "step1/rank0/dump.json",
+          "bytes": 2586471,
+          "sha256": "a78f101c58e7b3bf5772fa83b0245aa7ab963b8d043ca8384c0fc1a23b563b81",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2001,
+            "tensor_records": 9197,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6807,
+              "torch.bool": 8,
+              "torch.float32": 642,
+              "torch.int32": 580,
+              "torch.int64": 200,
+              "torch.int8": 960
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9197
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1102
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step1/rank0/stack.json",
+          "bytes": 294028,
+          "sha256": "7e073d7ac34e311920d5c71cdb37c7fbcd21e21d283cb442b72a337dca902c25",
+          "review": {
+            "compatible": true,
+            "groups": 48,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step1/rank0/construct.json",
+          "bytes": 235788,
+          "sha256": "4af18bd340cace9f0d23144b5119d3304067037dd7891944855da0d10c543de4",
+          "review": {
+            "compatible": true,
+            "records": 2077,
+            "errors": []
+          }
+        },
+        {
+          "path": "step1/rank1/dump.json",
+          "bytes": 2574448,
+          "sha256": "867c690851a8ef9b03e13bb2de9db0b96a72454cd01f1c11667efc9b956a53f9",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2001,
+            "tensor_records": 9133,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6807,
+              "torch.bool": 8,
+              "torch.float32": 642,
+              "torch.int32": 516,
+              "torch.int64": 200,
+              "torch.int8": 960
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9133
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1102
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step1/rank1/stack.json",
+          "bytes": 294028,
+          "sha256": "7e073d7ac34e311920d5c71cdb37c7fbcd21e21d283cb442b72a337dca902c25",
+          "review": {
+            "compatible": true,
+            "groups": 48,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step1/rank1/construct.json",
+          "bytes": 235788,
+          "sha256": "4af18bd340cace9f0d23144b5119d3304067037dd7891944855da0d10c543de4",
+          "review": {
+            "compatible": true,
+            "records": 2077,
+            "errors": []
+          }
+        },
+        {
+          "path": "step2/rank0/dump.json",
+          "bytes": 2587312,
+          "sha256": "f3f66f3b23ffce82b1d3e9ad11fe517d540dedba34a749e0a53d7b476c5d12eb",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2001,
+            "tensor_records": 9197,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6807,
+              "torch.bool": 8,
+              "torch.float32": 642,
+              "torch.int32": 580,
+              "torch.int64": 200,
+              "torch.int8": 960
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9197
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1102
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step2/rank0/stack.json",
+          "bytes": 294028,
+          "sha256": "7e073d7ac34e311920d5c71cdb37c7fbcd21e21d283cb442b72a337dca902c25",
+          "review": {
+            "compatible": true,
+            "groups": 48,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step2/rank0/construct.json",
+          "bytes": 235788,
+          "sha256": "4af18bd340cace9f0d23144b5119d3304067037dd7891944855da0d10c543de4",
+          "review": {
+            "compatible": true,
+            "records": 2077,
+            "errors": []
+          }
+        },
+        {
+          "path": "step2/rank1/dump.json",
+          "bytes": 2574744,
+          "sha256": "a4af58dc1d796de665a8f52bb75b346527dcd6b5f543a8f11301c9f5aa7fd555",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2001,
+            "tensor_records": 9133,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6807,
+              "torch.bool": 8,
+              "torch.float32": 642,
+              "torch.int32": 516,
+              "torch.int64": 200,
+              "torch.int8": 960
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9133
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1102
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step2/rank1/stack.json",
+          "bytes": 294028,
+          "sha256": "7e073d7ac34e311920d5c71cdb37c7fbcd21e21d283cb442b72a337dca902c25",
+          "review": {
+            "compatible": true,
+            "groups": 48,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step2/rank1/construct.json",
+          "bytes": 235788,
+          "sha256": "4af18bd340cace9f0d23144b5119d3304067037dd7891944855da0d10c543de4",
+          "review": {
+            "compatible": true,
+            "records": 2077,
+            "errors": []
+          }
+        }
+      ]
+    },
+    {
+      "path": "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/F_dump_steps012.zip",
+      "bytes": 1036481,
+      "sha256": "d0dfebe5b3c2700d803a871de0bf6d1bfb7cee188801290a69ed8b246697d0d0",
+      "member_count": 18,
+      "all_manifest_hashes_match": true,
+      "original_tensor_dtype_counts": {
+        "torch.bfloat16": 41098,
+        "torch.bool": 48,
+        "torch.float32": 3980,
+        "torch.int32": 3032,
+        "torch.int64": 1200,
+        "torch.int8": 5888
+      },
+      "original_tensor_dtype_counts_by_rank": {
+        "rank0": {
+          "torch.bfloat16": 20549,
+          "torch.bool": 24,
+          "torch.float32": 1990,
+          "torch.int32": 1612,
+          "torch.int64": 600,
+          "torch.int8": 2944
+        },
+        "rank1": {
+          "torch.bfloat16": 20549,
+          "torch.bool": 24,
+          "torch.float32": 1990,
+          "torch.int32": 1420,
+          "torch.int64": 600,
+          "torch.int8": 2944
+        }
+      },
+      "members": [
+        {
+          "path": "step0/rank0/dump.json",
+          "bytes": 2653625,
+          "sha256": "e4547eb08657fe99523e62e7ddcf120ee11e085e1639be60303cc4953f17876f",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2065,
+            "tensor_records": 9325,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6935,
+              "torch.bool": 8,
+              "torch.float32": 706,
+              "torch.int32": 452,
+              "torch.int64": 200,
+              "torch.int8": 1024
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9325
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1166
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step0/rank0/stack.json",
+          "bytes": 314669,
+          "sha256": "ab59a0027ba1589174778515cdd04e48e7e107124df788dd084123fb4ca04cee",
+          "review": {
+            "compatible": true,
+            "groups": 50,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step0/rank0/construct.json",
+          "bytes": 242658,
+          "sha256": "4dc2cb01c3f79fb5aba7a938f4b6abdb610d523388d9a4803b3ab720a3794940",
+          "review": {
+            "compatible": true,
+            "records": 2142,
+            "errors": []
+          }
+        },
+        {
+          "path": "step0/rank1/dump.json",
+          "bytes": 2641280,
+          "sha256": "b54c5e5a3f54190b3a713f21fee5e89c7ec8d4b6874c3437233362029a35c176",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2065,
+            "tensor_records": 9261,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6935,
+              "torch.bool": 8,
+              "torch.float32": 706,
+              "torch.int32": 388,
+              "torch.int64": 200,
+              "torch.int8": 1024
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9261
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1166
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step0/rank1/stack.json",
+          "bytes": 314669,
+          "sha256": "ab59a0027ba1589174778515cdd04e48e7e107124df788dd084123fb4ca04cee",
+          "review": {
+            "compatible": true,
+            "groups": 50,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step0/rank1/construct.json",
+          "bytes": 242658,
+          "sha256": "4dc2cb01c3f79fb5aba7a938f4b6abdb610d523388d9a4803b3ab720a3794940",
+          "review": {
+            "compatible": true,
+            "records": 2142,
+            "errors": []
+          }
+        },
+        {
+          "path": "step1/rank0/dump.json",
+          "bytes": 2587460,
+          "sha256": "91191462907a4df3ace044eae936bd70d93f804f808d33bd2cd421fc516ac590",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2001,
+            "tensor_records": 9197,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6807,
+              "torch.bool": 8,
+              "torch.float32": 642,
+              "torch.int32": 580,
+              "torch.int64": 200,
+              "torch.int8": 960
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9197
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1102
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step1/rank0/stack.json",
+          "bytes": 301585,
+          "sha256": "d972c7e0ee54fa8b9dc848c7aca070c405af8c0f0aa4df9d9ce78a78b8dc7510",
+          "review": {
+            "compatible": true,
+            "groups": 48,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step1/rank0/construct.json",
+          "bytes": 235788,
+          "sha256": "4af18bd340cace9f0d23144b5119d3304067037dd7891944855da0d10c543de4",
+          "review": {
+            "compatible": true,
+            "records": 2077,
+            "errors": []
+          }
+        },
+        {
+          "path": "step1/rank1/dump.json",
+          "bytes": 2575589,
+          "sha256": "d7d251ffbf32e458e5d744d0026749796468748860bb51e1f964ee96f9a82291",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2001,
+            "tensor_records": 9133,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6807,
+              "torch.bool": 8,
+              "torch.float32": 642,
+              "torch.int32": 516,
+              "torch.int64": 200,
+              "torch.int8": 960
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9133
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1102
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step1/rank1/stack.json",
+          "bytes": 301585,
+          "sha256": "d972c7e0ee54fa8b9dc848c7aca070c405af8c0f0aa4df9d9ce78a78b8dc7510",
+          "review": {
+            "compatible": true,
+            "groups": 48,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step1/rank1/construct.json",
+          "bytes": 235788,
+          "sha256": "4af18bd340cace9f0d23144b5119d3304067037dd7891944855da0d10c543de4",
+          "review": {
+            "compatible": true,
+            "records": 2077,
+            "errors": []
+          }
+        },
+        {
+          "path": "step2/rank0/dump.json",
+          "bytes": 2587292,
+          "sha256": "e86e3af259795c22d461c5f272dbd7638846b9c714b8415545e96fc4c2e19681",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2001,
+            "tensor_records": 9197,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6807,
+              "torch.bool": 8,
+              "torch.float32": 642,
+              "torch.int32": 580,
+              "torch.int64": 200,
+              "torch.int8": 960
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9197
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1102
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step2/rank0/stack.json",
+          "bytes": 301585,
+          "sha256": "d972c7e0ee54fa8b9dc848c7aca070c405af8c0f0aa4df9d9ce78a78b8dc7510",
+          "review": {
+            "compatible": true,
+            "groups": 48,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step2/rank0/construct.json",
+          "bytes": 235788,
+          "sha256": "4af18bd340cace9f0d23144b5119d3304067037dd7891944855da0d10c543de4",
+          "review": {
+            "compatible": true,
+            "records": 2077,
+            "errors": []
+          }
+        },
+        {
+          "path": "step2/rank1/dump.json",
+          "bytes": 2574929,
+          "sha256": "2305bd10afac3f45a01281fdf125cbc236c9feee2a13129d7d7c0e5661767cb2",
+          "review": {
+            "compatible": true,
+            "errors": [],
+            "error_count": 0,
+            "metadata": {
+              "task": "statistics",
+              "level": "mix",
+              "framework": "pytorch",
+              "dump_data_dir": null
+            },
+            "operator_records": 2001,
+            "tensor_records": 9133,
+            "original_tensor_dtype_counts": {
+              "torch.bfloat16": 6807,
+              "torch.bool": 8,
+              "torch.float32": 642,
+              "torch.int32": 516,
+              "torch.int64": 200,
+              "torch.int8": 960
+            },
+            "tensor_fieldsets": [
+              {
+                "fields": [
+                  "Max",
+                  "Mean",
+                  "Min",
+                  "Norm",
+                  "dtype",
+                  "requires_grad",
+                  "shape",
+                  "type"
+                ],
+                "count": 9133
+              }
+            ],
+            "operator_fieldsets": [
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output"
+                ],
+                "count": 1102
+              },
+              {
+                "fields": [
+                  "input_args",
+                  "input_kwargs",
+                  "output",
+                  "parameters"
+                ],
+                "count": 899
+              }
+            ],
+            "schema_extensions": []
+          }
+        },
+        {
+          "path": "step2/rank1/stack.json",
+          "bytes": 301585,
+          "sha256": "d972c7e0ee54fa8b9dc848c7aca070c405af8c0f0aa4df9d9ce78a78b8dc7510",
+          "review": {
+            "compatible": true,
+            "groups": 48,
+            "errors": [],
+            "error_count": 0
+          }
+        },
+        {
+          "path": "step2/rank1/construct.json",
+          "bytes": 235788,
+          "sha256": "4af18bd340cace9f0d23144b5119d3304067037dd7891944855da0d10c543de4",
+          "review": {
+            "compatible": true,
+            "records": 2077,
+            "errors": []
+          }
+        }
+      ]
+    }
+  ]
+}

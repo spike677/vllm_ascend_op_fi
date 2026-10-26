@@ -1,0 +1,4636 @@
+{
+  "schema": "demoncatpfi.as_strided_msprobe_operator_review.v1",
+  "attempt": "attempt2",
+  "status": "UPLOAD_ELIGIBLE_NATIVE_STATISTICS_FORMAT_AND_REAL_LINEAR_CALLS_SCOPE_LIMITED",
+  "interpretation": "This second capture independently passes native statistics format and real-vLLM linear-call checks. Use attempt2 native step0-2 JSON for publication; preserve attempt1 as prior evidence. This is not a fault B/F pair or a complete private-view writeback proof.",
+  "format_review": {
+    "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\audit_msprobe_format_attempt2.json",
+    "bytes": 13538,
+    "sha256": "ba27a03bec8323cb2e5491c448048c075c2629e5cd4b47e1a4adb4ed9830a90a"
+  },
+  "historical_reference": {
+    "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\reference\\history_msprobe_contract.json",
+    "bytes": 31972,
+    "sha256": "f1126ecd612f76396e60aa2c1ce6474f45215550634bfc47cc6644c2908b0d8f"
+  },
+  "capture_bridge": {
+    "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_bridge\\pid750.bridge.json",
+    "bytes": 6563,
+    "sha256": "473fe32889d2a4c0d2df6dc4aa9af533ec733f8e13887e44896639a1d70c86fc"
+  },
+  "producer_evidence": {
+    "package_distribution": "mindstudio-probe",
+    "reported_version": "26.1.0",
+    "version_json_pointer": "/versions/mindstudio-probe",
+    "debugger_source": "/msprobe_packages/msprobe/pytorch/dump/debugger/precision_debugger.py",
+    "debugger_source_sha256_recorded": "43bb9d834c736ebeb5c7c89e4770c23e1c6fc813000d12aeee8c2b72753a02fb",
+    "bridge_source_sha256_matches": true,
+    "config_sha256_matches": true,
+    "source": {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\model_probe\\msprobe_bridge.py",
+      "bytes": 11964,
+      "sha256": "e076b3d338f2909296ba3c959a1f7c108947b3d0f85e1f4b37f0d6d6d483e053"
+    },
+    "config": {
+      "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\setup\\msprobe_config.json",
+      "bytes": 314,
+      "sha256": "0aa352d3c68aaea8aabb1eba1a28bc8ae193192b924d384d079e8f16a576df8c"
+    },
+    "source_calls": [
+      {
+        "line": 104,
+        "action": "PrecisionDebugger import"
+      },
+      {
+        "line": 115,
+        "action": "constructor uses reviewed native configuration"
+      },
+      {
+        "line": 175,
+        "action": "start(model=runner.model,rank_id=0)"
+      },
+      {
+        "line": 179,
+        "action": "stop()"
+      },
+      {
+        "line": 182,
+        "action": "step()"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "step": 0,
+      "rank": 0,
+      "total_dump_records": 811,
+      "functional_linear_count": 113,
+      "real_vllm_stack_verified_count": 113,
+      "source_kinds": {
+        "ascend_linear_line58": 112,
+        "lm_head_default_gemm": 1
+      },
+      "linear_tensor_dtype_counts": {
+        "torch.bfloat16": 339
+      },
+      "linear_weight_dtype_counts": {
+        "torch.bfloat16": 113
+      },
+      "weight_statistics_all_null_by_source": {
+        "ascend_linear_line58": 112,
+        "lm_head_default_gemm": 0
+      },
+      "explicit_as_strided_dump_entries": [],
+      "linear_binding_index": [
+        {
+          "operator": "Functional.linear.0.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.1.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.0.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.2.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.0.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.3.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.0.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.4.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.1.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.5.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.1.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.6.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.1.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.7.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.1.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.8.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.2.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.9.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.2.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.10.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.2.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.11.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.2.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.12.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.3.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.13.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.3.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.14.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.3.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.15.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.3.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.16.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.4.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.17.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.4.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.18.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.4.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.19.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.4.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.20.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.5.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.21.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.5.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.22.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.5.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.23.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.5.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.24.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.6.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.25.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.6.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.26.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.6.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.27.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.6.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.28.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.7.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.29.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.7.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.30.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.7.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.31.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.7.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.32.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.8.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.33.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.8.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.34.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.8.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.35.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.8.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.36.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.9.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.37.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.9.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.38.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.9.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.39.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.9.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.40.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.10.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.41.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.10.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.42.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.10.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.43.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.10.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.44.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.11.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.45.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.11.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.46.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.11.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.47.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.11.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.48.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.12.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.49.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.12.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.50.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.12.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.51.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.12.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.52.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.13.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.53.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.13.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.54.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.13.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.55.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.13.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.56.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.14.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.57.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.14.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.58.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.14.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.59.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.14.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.60.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.15.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.61.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.15.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.62.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.15.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.63.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.15.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.64.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.16.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.65.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.16.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.66.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.16.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.67.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.16.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.68.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.17.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.69.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.17.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.70.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.17.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.71.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.17.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.72.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.18.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.73.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.18.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.74.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.18.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.75.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.18.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.76.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.19.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.77.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.19.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.78.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.19.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.79.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.19.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.80.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.20.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.81.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.20.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.82.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.20.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.83.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.20.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.84.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.21.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.85.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.21.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.86.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.21.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.87.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.21.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.88.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.22.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.89.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.22.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.90.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.22.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.91.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.22.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.92.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.23.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.93.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.23.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.94.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.23.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.95.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.23.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.96.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.24.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.97.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.24.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.98.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.24.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.99.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.24.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.100.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.25.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.101.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.25.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.102.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.25.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.103.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.25.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.104.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.26.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.105.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.26.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.106.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.26.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.107.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.26.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.108.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "25",
+          "construct_parent": "Module.model.layers.27.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.109.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "38",
+          "construct_parent": "Module.model.layers.27.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.110.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "43",
+          "construct_parent": "Module.model.layers.27.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.111.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "47",
+          "construct_parent": "Module.model.layers.27.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.112.forward",
+          "source_kind": "lm_head_default_gemm",
+          "stack_group": "55",
+          "construct_parent": "Module.logits_processor.AscendLogitsProcessor.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            151936,
+            1024
+          ],
+          "weight_statistics_all_null": false
+        }
+      ],
+      "representative": {
+        "operator": "Functional.linear.0.forward",
+        "record": {
+          "input_args": [
+            {
+              "type": "torch.Tensor",
+              "dtype": "torch.bfloat16",
+              "shape": [
+                5,
+                1024
+              ],
+              "Max": 1.796875,
+              "Min": -2.65625,
+              "Mean": -0.0040283203125,
+              "Norm": 15.0625,
+              "requires_grad": false
+            },
+            {
+              "type": "torch.Tensor",
+              "dtype": "torch.bfloat16",
+              "shape": [
+                4096,
+                1024
+              ],
+              "Max": null,
+              "Min": null,
+              "Mean": null,
+              "Norm": null,
+              "requires_grad": false
+            },
+            null
+          ],
+          "input_kwargs": {},
+          "output": [
+            {
+              "type": "torch.Tensor",
+              "dtype": "torch.bfloat16",
+              "shape": [
+                5,
+                4096
+              ],
+              "Max": 4.96875,
+              "Min": -5.25,
+              "Mean": -0.0010528564453125,
+              "Norm": 49.25,
+              "requires_grad": false
+            }
+          ]
+        },
+        "stack_group": "25",
+        "frames": [
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 58, in unquantized_gemm, \n return torch.nn.functional.linear(x, weight, bias)",
+          "File /work/venv/lib/python3.11/site-packages/torch/_ops.py, line 1209, in __call__, \n return self._op(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/parameter.py, line 126, in __torch_function__, \n return super().__torch_function__(func, types, args, kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/_ops.py, line 1209, in __call__, \n return self._op(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 106, in apply, \n return torch.ops.vllm.unquantized_gemm(x, layer.weight, bias)",
+          "File /work/sources/vllm/vllm/model_executor/layers/linear.py, line 582, in forward, \n output_parallel = self.quant_method.apply(self, input_, bias)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 215, in forward, \n return super().forward(input_)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/patch/worker/patch_qwen3vl.py, line 36, in forward_with_split_qkv_rmsnorm_mrope, \n qkv, _ = self.qkv_proj(hidden_states)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/models/qwen3.py, line 228, in forward, \n hidden_states = self.self_attn(",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/models/qwen2.py, line 411, in forward, \n hidden_states, residual = layer(positions, hidden_states, residual)",
+          "File /work/sources/vllm/vllm/compilation/decorators.py, line 507, in __call__, \n return self.forward(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/models/qwen3.py, line 323, in forward, \n hidden_states = self.model(",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/model_runner_v1.py, line 2867, in _model_forward, \n hidden_states = run_model()",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/model_runner_v1.py, line 2320, in execute_model, \n hidden_states = self._model_forward(",
+          "File /work/venv/lib/python3.11/site-packages/torch/utils/_contextlib.py, line 124, in decorate_context, \n return func(*args, **kwargs)",
+          "File /audit/model_probe/msprobe_bridge.py, line 178, in _run_target, \n result = original(runner, *args, **kwargs)",
+          "File /audit/model_probe/msprobe_bridge.py, line 216, in observed, \n return _run_target(original, runner, args, kwargs, scope)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/worker.py, line 647, in execute_model, \n output = self.model_runner.execute_model(scheduler_output, intermediate_tensors)",
+          "File /audit/model_probe/msprobe_bridge.py, line 162, in _run_target, \n return original(runner, *args, **kwargs)",
+          "File /audit/model_probe/msprobe_bridge.py, line 216, in observed, \n return _run_target(original, runner, args, kwargs, scope)",
+          "File /work/sources/vllm/vllm/v1/worker/worker_base.py, line 345, in execute_model, \n return self.worker.execute_model(scheduler_output)",
+          "File /work/sources/vllm/vllm/v1/executor/multiproc_executor.py, line 982, in worker_busy_loop, \n output = func(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/v1/executor/multiproc_executor.py, line 879, in worker_main, \n worker.worker_busy_loop()",
+          "File /usr/lib/python3.11/multiprocessing/process.py, line 108, in run, \n self._target(*self._args, **self._kwargs)",
+          "File /usr/lib/python3.11/multiprocessing/process.py, line 314, in _bootstrap, \n self.run()",
+          "File /usr/lib/python3.11/multiprocessing/spawn.py, line 135, in _main, \n return self._bootstrap(parent_sentinel)",
+          "File /usr/lib/python3.11/multiprocessing/spawn.py, line 122, in spawn_main, \n exitcode = _main(fd, parent_sentinel)"
+        ],
+        "construct_parent": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0"
+      },
+      "evidence": [
+        {
+          "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_dump\\step0\\rank0\\dump.json",
+          "bytes": 901615,
+          "sha256": "a4f48160b4f2d65e79abd336d5571e532af62fd304c8cffc005923a98b9a2c8f",
+          "json_pointer": "/data/Functional.linear.0.forward"
+        },
+        {
+          "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_dump\\step0\\rank0\\stack.json",
+          "bytes": 243177,
+          "sha256": "95e69d85bf9c685750d11bceb3c11bc891b89787affdc0da668c86914ce5639d",
+          "json_pointer": "/25"
+        },
+        {
+          "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_dump\\step0\\rank0\\construct.json",
+          "bytes": 102442,
+          "sha256": "b62152c8f7de9fc8f3e28c1133944ce0ebd2b28a322fdfe84d4e6e1ac7924813",
+          "json_pointer": "/Functional.linear.0.forward"
+        }
+      ]
+    },
+    {
+      "step": 1,
+      "rank": 0,
+      "total_dump_records": 810,
+      "functional_linear_count": 113,
+      "real_vllm_stack_verified_count": 113,
+      "source_kinds": {
+        "ascend_linear_line58": 112,
+        "lm_head_default_gemm": 1
+      },
+      "linear_tensor_dtype_counts": {
+        "torch.bfloat16": 339
+      },
+      "linear_weight_dtype_counts": {
+        "torch.bfloat16": 113
+      },
+      "weight_statistics_all_null_by_source": {
+        "ascend_linear_line58": 112,
+        "lm_head_default_gemm": 0
+      },
+      "explicit_as_strided_dump_entries": [],
+      "linear_binding_index": [
+        {
+          "operator": "Functional.linear.0.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.1.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.0.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.2.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.0.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.3.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.0.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.4.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.1.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.5.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.1.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.6.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.1.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.7.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.1.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.8.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.2.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.9.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.2.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.10.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.2.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.11.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.2.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.12.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.3.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.13.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.3.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.14.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.3.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.15.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.3.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.16.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.4.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.17.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.4.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.18.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.4.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.19.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.4.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.20.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.5.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.21.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.5.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.22.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.5.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.23.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.5.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.24.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.6.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.25.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.6.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.26.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.6.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.27.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.6.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.28.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.7.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.29.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.7.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.30.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.7.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.31.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.7.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.32.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.8.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.33.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.8.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.34.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.8.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.35.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.8.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.36.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.9.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.37.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.9.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.38.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.9.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.39.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.9.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.40.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.10.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.41.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.10.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.42.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.10.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.43.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.10.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.44.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.11.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.45.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.11.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.46.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.11.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.47.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.11.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.48.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.12.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.49.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.12.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.50.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.12.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.51.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.12.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.52.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.13.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.53.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.13.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.54.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.13.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.55.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.13.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.56.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.14.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.57.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.14.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.58.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.14.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.59.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.14.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.60.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.15.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.61.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.15.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.62.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.15.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.63.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.15.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.64.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.16.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.65.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.16.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.66.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.16.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.67.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.16.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.68.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.17.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.69.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.17.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.70.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.17.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.71.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.17.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.72.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.18.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.73.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.18.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.74.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.18.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.75.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.18.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.76.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.19.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.77.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.19.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.78.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.19.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.79.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.19.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.80.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.20.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.81.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.20.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.82.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.20.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.83.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.20.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.84.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.21.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.85.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.21.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.86.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.21.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.87.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.21.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.88.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.22.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.89.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.22.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.90.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.22.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.91.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.22.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.92.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.23.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.93.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.23.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.94.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.23.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.95.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.23.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.96.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.24.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.97.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.24.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.98.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.24.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.99.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.24.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.100.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.25.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.101.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.25.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.102.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.25.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.103.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.25.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.104.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.26.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.105.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.26.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.106.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.26.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.107.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.26.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.108.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.27.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.109.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.27.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.110.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.27.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.111.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.27.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.112.forward",
+          "source_kind": "lm_head_default_gemm",
+          "stack_group": "54",
+          "construct_parent": "Module.logits_processor.AscendLogitsProcessor.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            151936,
+            1024
+          ],
+          "weight_statistics_all_null": false
+        }
+      ],
+      "representative": {
+        "operator": "Functional.linear.0.forward",
+        "record": {
+          "input_args": [
+            {
+              "type": "torch.Tensor",
+              "dtype": "torch.bfloat16",
+              "shape": [
+                1,
+                1024
+              ],
+              "Max": 1.8046875,
+              "Min": -2.4375,
+              "Mean": 0.003753662109375,
+              "Norm": 6.59375,
+              "requires_grad": false
+            },
+            {
+              "type": "torch.Tensor",
+              "dtype": "torch.bfloat16",
+              "shape": [
+                4096,
+                1024
+              ],
+              "Max": null,
+              "Min": null,
+              "Mean": null,
+              "Norm": null,
+              "requires_grad": false
+            },
+            null
+          ],
+          "input_kwargs": {},
+          "output": [
+            {
+              "type": "torch.Tensor",
+              "dtype": "torch.bfloat16",
+              "shape": [
+                1,
+                4096
+              ],
+              "Max": 2.390625,
+              "Min": -2.578125,
+              "Mean": 0.0028839111328125,
+              "Norm": 17.875,
+              "requires_grad": false
+            }
+          ]
+        },
+        "stack_group": "24",
+        "frames": [
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 58, in unquantized_gemm, \n return torch.nn.functional.linear(x, weight, bias)",
+          "File /work/venv/lib/python3.11/site-packages/torch/_ops.py, line 1209, in __call__, \n return self._op(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/parameter.py, line 126, in __torch_function__, \n return super().__torch_function__(func, types, args, kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/_ops.py, line 1209, in __call__, \n return self._op(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 106, in apply, \n return torch.ops.vllm.unquantized_gemm(x, layer.weight, bias)",
+          "File /work/sources/vllm/vllm/model_executor/layers/linear.py, line 582, in forward, \n output_parallel = self.quant_method.apply(self, input_, bias)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 215, in forward, \n return super().forward(input_)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/patch/worker/patch_qwen3vl.py, line 36, in forward_with_split_qkv_rmsnorm_mrope, \n qkv, _ = self.qkv_proj(hidden_states)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/models/qwen3.py, line 228, in forward, \n hidden_states = self.self_attn(",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/models/qwen2.py, line 411, in forward, \n hidden_states, residual = layer(positions, hidden_states, residual)",
+          "File /work/sources/vllm/vllm/compilation/decorators.py, line 507, in __call__, \n return self.forward(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/models/qwen3.py, line 323, in forward, \n hidden_states = self.model(",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/model_runner_v1.py, line 2867, in _model_forward, \n hidden_states = run_model()",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/model_runner_v1.py, line 2320, in execute_model, \n hidden_states = self._model_forward(",
+          "File /work/venv/lib/python3.11/site-packages/torch/utils/_contextlib.py, line 124, in decorate_context, \n return func(*args, **kwargs)",
+          "File /audit/model_probe/msprobe_bridge.py, line 178, in _run_target, \n result = original(runner, *args, **kwargs)",
+          "File /audit/model_probe/msprobe_bridge.py, line 216, in observed, \n return _run_target(original, runner, args, kwargs, scope)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/worker.py, line 647, in execute_model, \n output = self.model_runner.execute_model(scheduler_output, intermediate_tensors)",
+          "File /audit/model_probe/msprobe_bridge.py, line 162, in _run_target, \n return original(runner, *args, **kwargs)",
+          "File /audit/model_probe/msprobe_bridge.py, line 216, in observed, \n return _run_target(original, runner, args, kwargs, scope)",
+          "File /work/sources/vllm/vllm/v1/worker/worker_base.py, line 345, in execute_model, \n return self.worker.execute_model(scheduler_output)",
+          "File /work/sources/vllm/vllm/v1/executor/multiproc_executor.py, line 982, in worker_busy_loop, \n output = func(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/v1/executor/multiproc_executor.py, line 879, in worker_main, \n worker.worker_busy_loop()",
+          "File /usr/lib/python3.11/multiprocessing/process.py, line 108, in run, \n self._target(*self._args, **self._kwargs)",
+          "File /usr/lib/python3.11/multiprocessing/process.py, line 314, in _bootstrap, \n self.run()",
+          "File /usr/lib/python3.11/multiprocessing/spawn.py, line 135, in _main, \n return self._bootstrap(parent_sentinel)",
+          "File /usr/lib/python3.11/multiprocessing/spawn.py, line 122, in spawn_main, \n exitcode = _main(fd, parent_sentinel)"
+        ],
+        "construct_parent": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0"
+      },
+      "evidence": [
+        {
+          "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_dump\\step1\\rank0\\dump.json",
+          "bytes": 910619,
+          "sha256": "85f4273b0e9be6e9d3143f8f8ccb45554ab9d9d4f62986f965d0f3cabb65bdb3",
+          "json_pointer": "/data/Functional.linear.0.forward"
+        },
+        {
+          "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_dump\\step1\\rank0\\stack.json",
+          "bytes": 240476,
+          "sha256": "f2aabcd26b5a54b2c1b5f78c3774a07346d4ffce2ba681faa2d248a7973dfb4e",
+          "json_pointer": "/24"
+        },
+        {
+          "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_dump\\step1\\rank0\\construct.json",
+          "bytes": 102316,
+          "sha256": "1e78c5b9ff3e1ab8901db6dbca97ebf7c6bf6a2f747285ac000018fd48b3fb72",
+          "json_pointer": "/Functional.linear.0.forward"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "rank": 0,
+      "total_dump_records": 810,
+      "functional_linear_count": 113,
+      "real_vllm_stack_verified_count": 113,
+      "source_kinds": {
+        "ascend_linear_line58": 112,
+        "lm_head_default_gemm": 1
+      },
+      "linear_tensor_dtype_counts": {
+        "torch.bfloat16": 339
+      },
+      "linear_weight_dtype_counts": {
+        "torch.bfloat16": 113
+      },
+      "weight_statistics_all_null_by_source": {
+        "ascend_linear_line58": 112,
+        "lm_head_default_gemm": 0
+      },
+      "explicit_as_strided_dump_entries": [],
+      "linear_binding_index": [
+        {
+          "operator": "Functional.linear.0.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.1.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.0.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.2.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.0.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.3.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.0.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.4.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.1.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.5.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.1.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.6.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.1.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.7.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.1.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.8.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.2.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.9.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.2.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.10.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.2.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.11.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.2.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.12.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.3.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.13.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.3.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.14.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.3.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.15.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.3.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.16.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.4.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.17.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.4.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.18.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.4.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.19.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.4.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.20.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.5.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.21.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.5.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.22.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.5.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.23.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.5.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.24.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.6.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.25.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.6.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.26.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.6.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.27.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.6.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.28.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.7.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.29.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.7.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.30.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.7.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.31.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.7.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.32.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.8.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.33.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.8.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.34.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.8.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.35.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.8.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.36.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.9.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.37.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.9.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.38.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.9.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.39.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.9.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.40.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.10.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.41.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.10.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.42.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.10.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.43.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.10.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.44.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.11.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.45.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.11.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.46.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.11.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.47.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.11.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.48.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.12.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.49.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.12.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.50.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.12.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.51.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.12.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.52.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.13.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.53.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.13.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.54.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.13.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.55.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.13.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.56.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.14.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.57.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.14.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.58.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.14.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.59.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.14.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.60.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.15.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.61.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.15.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.62.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.15.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.63.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.15.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.64.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.16.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.65.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.16.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.66.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.16.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.67.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.16.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.68.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.17.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.69.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.17.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.70.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.17.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.71.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.17.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.72.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.18.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.73.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.18.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.74.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.18.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.75.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.18.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.76.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.19.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.77.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.19.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.78.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.19.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.79.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.19.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.80.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.20.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.81.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.20.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.82.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.20.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.83.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.20.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.84.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.21.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.85.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.21.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.86.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.21.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.87.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.21.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.88.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.22.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.89.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.22.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.90.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.22.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.91.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.22.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.92.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.23.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.93.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.23.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.94.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.23.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.95.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.23.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.96.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.24.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.97.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.24.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.98.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.24.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.99.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.24.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.100.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.25.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.101.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.25.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.102.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.25.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.103.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.25.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.104.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.26.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.105.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.26.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.106.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.26.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.107.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.26.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.108.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "24",
+          "construct_parent": "Module.model.layers.27.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            4096,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.109.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "37",
+          "construct_parent": "Module.model.layers.27.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            2048
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.110.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "42",
+          "construct_parent": "Module.model.layers.27.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            6144,
+            1024
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.111.forward",
+          "source_kind": "ascend_linear_line58",
+          "stack_group": "46",
+          "construct_parent": "Module.model.layers.27.mlp.down_proj.AscendRowParallelLinear.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            1024,
+            3072
+          ],
+          "weight_statistics_all_null": true
+        },
+        {
+          "operator": "Functional.linear.112.forward",
+          "source_kind": "lm_head_default_gemm",
+          "stack_group": "54",
+          "construct_parent": "Module.logits_processor.AscendLogitsProcessor.forward.0",
+          "weight_dtype": "torch.bfloat16",
+          "weight_shape": [
+            151936,
+            1024
+          ],
+          "weight_statistics_all_null": false
+        }
+      ],
+      "representative": {
+        "operator": "Functional.linear.0.forward",
+        "record": {
+          "input_args": [
+            {
+              "type": "torch.Tensor",
+              "dtype": "torch.bfloat16",
+              "shape": [
+                1,
+                1024
+              ],
+              "Max": 1.6953125,
+              "Min": -1.6796875,
+              "Mean": -0.002777099609375,
+              "Norm": 6.6875,
+              "requires_grad": false
+            },
+            {
+              "type": "torch.Tensor",
+              "dtype": "torch.bfloat16",
+              "shape": [
+                4096,
+                1024
+              ],
+              "Max": null,
+              "Min": null,
+              "Mean": null,
+              "Norm": null,
+              "requires_grad": false
+            },
+            null
+          ],
+          "input_kwargs": {},
+          "output": [
+            {
+              "type": "torch.Tensor",
+              "dtype": "torch.bfloat16",
+              "shape": [
+                1,
+                4096
+              ],
+              "Max": 4.90625,
+              "Min": -4.96875,
+              "Mean": -0.0020599365234375,
+              "Norm": 23.5,
+              "requires_grad": false
+            }
+          ]
+        },
+        "stack_group": "24",
+        "frames": [
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 58, in unquantized_gemm, \n return torch.nn.functional.linear(x, weight, bias)",
+          "File /work/venv/lib/python3.11/site-packages/torch/_ops.py, line 1209, in __call__, \n return self._op(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/parameter.py, line 126, in __torch_function__, \n return super().__torch_function__(func, types, args, kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/_ops.py, line 1209, in __call__, \n return self._op(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 106, in apply, \n return torch.ops.vllm.unquantized_gemm(x, layer.weight, bias)",
+          "File /work/sources/vllm/vllm/model_executor/layers/linear.py, line 582, in forward, \n output_parallel = self.quant_method.apply(self, input_, bias)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 215, in forward, \n return super().forward(input_)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/patch/worker/patch_qwen3vl.py, line 36, in forward_with_split_qkv_rmsnorm_mrope, \n qkv, _ = self.qkv_proj(hidden_states)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/models/qwen3.py, line 228, in forward, \n hidden_states = self.self_attn(",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/models/qwen2.py, line 411, in forward, \n hidden_states, residual = layer(positions, hidden_states, residual)",
+          "File /work/sources/vllm/vllm/compilation/decorators.py, line 507, in __call__, \n return self.forward(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/model_executor/models/qwen3.py, line 323, in forward, \n hidden_states = self.model(",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/model_runner_v1.py, line 2867, in _model_forward, \n hidden_states = run_model()",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/model_runner_v1.py, line 2320, in execute_model, \n hidden_states = self._model_forward(",
+          "File /work/venv/lib/python3.11/site-packages/torch/utils/_contextlib.py, line 124, in decorate_context, \n return func(*args, **kwargs)",
+          "File /audit/model_probe/msprobe_bridge.py, line 178, in _run_target, \n result = original(runner, *args, **kwargs)",
+          "File /audit/model_probe/msprobe_bridge.py, line 216, in observed, \n return _run_target(original, runner, args, kwargs, scope)",
+          "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/worker.py, line 647, in execute_model, \n output = self.model_runner.execute_model(scheduler_output, intermediate_tensors)",
+          "File /audit/model_probe/msprobe_bridge.py, line 162, in _run_target, \n return original(runner, *args, **kwargs)",
+          "File /audit/model_probe/msprobe_bridge.py, line 216, in observed, \n return _run_target(original, runner, args, kwargs, scope)",
+          "File /work/sources/vllm/vllm/v1/worker/worker_base.py, line 345, in execute_model, \n return self.worker.execute_model(scheduler_output)",
+          "File /work/sources/vllm/vllm/v1/executor/multiproc_executor.py, line 982, in worker_busy_loop, \n output = func(*args, **kwargs)",
+          "File /work/sources/vllm/vllm/v1/executor/multiproc_executor.py, line 879, in worker_main, \n worker.worker_busy_loop()",
+          "File /usr/lib/python3.11/multiprocessing/process.py, line 108, in run, \n self._target(*self._args, **self._kwargs)",
+          "File /usr/lib/python3.11/multiprocessing/process.py, line 314, in _bootstrap, \n self.run()",
+          "File /usr/lib/python3.11/multiprocessing/spawn.py, line 135, in _main, \n return self._bootstrap(parent_sentinel)",
+          "File /usr/lib/python3.11/multiprocessing/spawn.py, line 122, in spawn_main, \n exitcode = _main(fd, parent_sentinel)"
+        ],
+        "construct_parent": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0"
+      },
+      "evidence": [
+        {
+          "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_dump\\step2\\rank0\\dump.json",
+          "bytes": 910625,
+          "sha256": "247f0d3328d0aba462b402cebce8b48a667d9a0444df5eb8265d901bdfe157c2",
+          "json_pointer": "/data/Functional.linear.0.forward"
+        },
+        {
+          "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_dump\\step2\\rank0\\stack.json",
+          "bytes": 240476,
+          "sha256": "f2aabcd26b5a54b2c1b5f78c3774a07346d4ffce2ba681faa2d248a7973dfb4e",
+          "json_pointer": "/24"
+        },
+        {
+          "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\raw_verified_attempt2\\evidence_attempt2\\model_on\\msprobe_dump\\step2\\rank0\\construct.json",
+          "bytes": 102316,
+          "sha256": "1e78c5b9ff3e1ab8901db6dbca97ebf7c6bf6a2f747285ac000018fd48b3fb72",
+          "json_pointer": "/Functional.linear.0.forward"
+        }
+      ]
+    }
+  ],
+  "capture_phase": {
+    "pid": 750,
+    "actual_model_type": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+    "phase": "cold_generate first3 actual model-runner execute calls",
+    "requested_steps": [
+      0,
+      1,
+      2
+    ],
+    "completed_steps": [
+      0,
+      1,
+      2
+    ],
+    "ranks": [
+      0
+    ],
+    "actual_world_size": 1,
+    "request_ids": [
+      "cold-1"
+    ],
+    "scheduler_tokens_by_step": [
+      {
+        "step": 0,
+        "scheduled": {
+          "0-bc9d6ed7": 5
+        }
+      },
+      {
+        "step": 1,
+        "scheduled": {
+          "0-bc9d6ed7": 1
+        }
+      },
+      {
+        "step": 2,
+        "scheduled": {
+          "0-bc9d6ed7": 1
+        }
+      }
+    ],
+    "forward_step_not_generated_token_index": true
+  },
+  "schema_comparison": {
+    "required_schema_extensions": [],
+    "historic_ranks": [
+      0,
+      1
+    ],
+    "new_ranks": [
+      0
+    ],
+    "historic_groups": [
+      "B",
+      "F"
+    ],
+    "new_group": "model_on: healthy inference with msprobe enabled",
+    "new_dtype_counts": {
+      "torch.bfloat16": 7962,
+      "torch.bool": 6,
+      "torch.float32": 423,
+      "torch.int32": 248,
+      "torch.int64": 453,
+      "torch.int8": 84
+    },
+    "dtype_counts_required_equal": false,
+    "dtype_set_matches_history": true,
+    "version_comparability": "UNPROVEN_HISTORICAL_VERSION_NOT_RECORDED",
+    "serialization": "Both are original JSON statistics with torch original dtype labels; no full pt/npy tensor values or stored tensor dtype"
+  },
+  "as_strided_visibility": {
+    "explicit_msprobe_dump_count": 0,
+    "claim": "Absence from this Python/API statistics layer is not absence from native execution. Native observer correlation must be reviewed separately."
+  },
+  "private_weight_boundary": {
+    "direct_from_msprobe": "All113 weights/step labelled torch.bfloat16;112 line58 target weights have shape and dtype but all four numerical statistics null. LM-head weight statistics are populated.",
+    "private_format_proven_by_dump": false,
+    "reason": "Native msprobe statistics schema has no NPU format, TensorImpl or storage identity fields. External native evidence is necessary to identify private weight tensors."
+  },
+  "native_logs_handling": {
+    "availability_reported_by_parent": "Second capture includes OFF/ON native logs, independently archived with244files.",
+    "reviewed_here": false,
+    "scope": "This reviewer reads native msprobe JSON and bridge provenance only; does not borrow native identity/cause claims without a separate review."
+  },
+  "boundaries": [
+    "No original files changed and no source data synthesized.",
+    "113Functional.linear per step means112 target layer line58 calls plus1 LM-head call; these counts must not be conflated.",
+    "Null statistics are missing values, never zero or evidence of correct/equal weights.",
+    "A same-schema JSON capture does not prove every model mode, original defect, injection, observer passivity or complete private-format/as_strided/in-place writeback chain.",
+    "HistoricalTP2 B/F does not turn thisTP1 healthy capture into a fault pair."
+  ],
+  "previous_capture_preserved": {
+    "path": "C:\\Users\\admin\\Documents\\demoncatpfi\\outputs\\as_strided_msprobe_20261026\\audit_msprobe_operator_review.json",
+    "bytes": 124026,
+    "sha256": "b79b3b482fc35c2fd2a334b5e53140ae169520bd5a37f9fa3a0ab77d91fdaf79"
+  }
+}
