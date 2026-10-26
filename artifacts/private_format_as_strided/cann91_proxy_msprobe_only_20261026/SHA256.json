@@ -1,0 +1,1136 @@
+{
+  "schema": "native_msprobe_tensor_only.publication.v1",
+  "scope": "Only native msprobe tensor/debug files and capture configuration; includes target weight, input, output and logit logical BF16 tensor snapshots.",
+  "source_archive_sha256": "846cc359e4e00fea3584731e8cc3ff40c570c3be42723b1410a1f55a1c6e0d75",
+  "native_tensor_files": 208,
+  "native_debug_json_files": 4,
+  "capture_config_files": 4,
+  "groups": {
+    "B": "normal",
+    "I": "same-value weight rematerialization control",
+    "F": "wrong logical weight view-read proxy, one cold-prefill injection",
+    "R": "independent recovery"
+  },
+  "archives": {
+    "B_msprobe.zip": [
+      {
+        "path": "B/capture_config.json",
+        "bytes": 206,
+        "sha256": "211c63564d5009763d5b83e4331aa36b08907841a411c9441194135e0af046fe"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/debug.json",
+        "bytes": 16659,
+        "sha256": "260365b0042e473920a7ce71f8e1d593a55b1f44dfe53cb10a48041d9c9f6c92"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0001_cold_s00_input.0.debug.pt",
+        "bytes": 12134,
+        "sha256": "b60961050a50e691495ba67a79b0f47012d494d52c930a3e9ce1fcc5de12f297"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0002_cold_s00_source_weight.0.debug.pt",
+        "bytes": 8390558,
+        "sha256": "96a1b7190c18e77ad85492ca071dae32ac742c8af4ef9c2752f45f5f9b2da73e"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0003_cold_s00_effective_weight.0.debug.pt",
+        "bytes": 8390579,
+        "sha256": "3ff822385b33372b0b23f51fc61abaa184063eeca4148d743745c7f27cf4266e"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0004_cold_s00_linear_output.0.debug.pt",
+        "bytes": 42910,
+        "sha256": "eb986ef729dde90061fa041ea0ccc145b3a0dd214645f1e8ee3042e8786c193d"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0005_cold_s00_source_after.0.debug.pt",
+        "bytes": 8390551,
+        "sha256": "34f7089f4f490ec7f912d423dbce9a580121a8181679872a2fd4f8ded4e6de9c"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0006_cold_s00_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "94d3c574d82f44110d2b4a1ffb13f0cde816e35ef134dd5363c8a71c7ec2d540"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0007_cold_s01_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "58b6191e39ff082150bef8afed0d55907a49b8edd6920d161ebc6ff5edaa3387"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0008_cold_s01_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "495d1c7802be66091490d4ca080f9f0f9dbea3179fdb53c729e47c2844de9409"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0009_cold_s01_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "d729cf6eedd8b7748b31014d999f399783568893164c6e69806680a443e08446"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0010_cold_s02_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "dc5ccdbc2ad63ae4fa07d3359d7f08d2f50f70f746a3e067b3addbf0a0ec9046"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0011_cold_s02_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "c4dad8d81867e330e1e58035dbabc633903562f7a12f1be2dcae95ff61b00eb9"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0012_cold_s02_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "d3c426a33017e333fa383f69a14bd8a9eb19d7c9efebadd17249b80f388dc5ac"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0013_cold_s03_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "c79131b9d1edb969b75ee50386710d279de9f0735089d59c4f6e1de508de18fc"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0014_cold_s03_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a55eec58acc6f39392dee00ad6447cd44eae786c7520294ef4ce2e64ec7d28d4"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0015_cold_s03_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "94b048c763969f883471780879f8cbf65e2ae496f89d25b1a868fdeff65e94d3"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0016_cold_s04_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "1f4220e7ecc796b9829351750f8e9064ccb6afd13a16feb3be69bf8239274736"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0017_cold_s04_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "894eab8cc4814812810894237deb66d93f80187602af982333ddae0e0bba4181"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0018_cold_s04_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "37560fc432cb555af409e4163a2d4aa91f66ea1bb89f7e2472113cf99c0f3a53"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0019_cold_s05_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "0d0eaec15b6844e130b7e2dbd35827509808a9c58cf8e83410f837b2a1b15b9d"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0020_cold_s05_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "db1c80380c42a0eee5facd2febc08dc573c28c7f629117a919c9e3e0cee550dc"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0021_cold_s05_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "ec9306802ce8846d9a6c2947c4784c934c4c44de5bc6864d830423913a3a27c8"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0022_cold_s06_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "50f207fb2fdda4fc52b251b757aca1aa56694bef5426bb71682721ba1a551ba5"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0023_cold_s06_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "ba2f35e13b8b57011001ffbdb109007d3bad9a2a737d09827f1cc6d77f5dc00b"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0024_cold_s06_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "cd1b06e8ecf47c216b4cf6cde211e1cb1feafa2f8c67a4d31434ced622445f2d"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0025_cold_s07_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "30e219b29bf56ef6efad65db90d2f27434a3c92bc5a9d058f69141ddfc5348cf"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0026_cold_s07_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "0115e5a5b3e7b4a7bea834145866625da20d6bf590423905e8f3bb1dcbceaa4d"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0027_cold_s07_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "42fcd0615efbb12a59d33631f39c9a130223e4e423119c458181e50b460ebdd4"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0028_warm_s00_input.0.debug.pt",
+        "bytes": 12134,
+        "sha256": "9db13b5f7b898e8af132c1581e6396296fca13829647e9eaf534496c57cd8dbb"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0029_warm_s00_source_weight.0.debug.pt",
+        "bytes": 8390558,
+        "sha256": "c601916a2b8a1a2b25219837ad2e2a9bd477fe7de53130d750acacaebd39d7cd"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0030_warm_s00_linear_output.0.debug.pt",
+        "bytes": 42910,
+        "sha256": "cb863861bc75ff9c10fcb71c8f28e563bef381fa9b0eb5bd8e77945b06e00f5e"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0031_warm_s00_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "df191cfe4e62599f0e1f2936f8f88d8f0aca6bf862608830ba0a2e7f0cf242e6"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0032_warm_s01_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "63ec36f56126d653dc4eb231b01c712f27b84ab704ec11ed49a180d1013f1cb6"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0033_warm_s01_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "e0f74a0ebe614eefc0fbad02a5f66216d7534d961eb5a453591cc829db083d67"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0034_warm_s01_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "5b14be780ffa498b6e83de6269dce473e96d4f72f81e229026173ea96f7821a6"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0035_warm_s02_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "ea4d047e6018823388123c361229fe625a7ae2fce049daa4dab7e4187b32fd5b"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0036_warm_s02_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a35887335e381d40e7a928ae431c8fec626bb596b9b6a54da75e082402a3648d"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0037_warm_s02_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "08826f3880c33c4b1011b50780594e60baee8c32afdcfdda94ab3aca9df460a5"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0038_warm_s03_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "da8d1b23c05cf0d0f034f4fb0d3626c65365bfbfced838cb6e9f2a0c6a9a9e62"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0039_warm_s03_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a23aa14cd9de8b97e8118b59c049693469dd5d7829a985c65af26ab9c458b6fc"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0040_warm_s03_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "c64fc8488db1ebb7b34f04bbdac426830fe00c549d51f6622c2c6d575712eb5f"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0041_warm_s04_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "6254c28fe690c209c3b8c291e22ab6af50270acf410a5bd0cf1f872b14b7f674"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0042_warm_s04_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "d338d95d1516cedddbe6f836d390e9376fd0cb37374065e099fa55774f457565"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0043_warm_s04_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "8d4cad950191cc4838ef783c7f74503177322f51dfe536b7a7811f1532f130fc"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0044_warm_s05_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "eb161a4b53c9611272949d2424cf2c9e071e8ee86c3e6688666154ac258c0968"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0045_warm_s05_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "b1f42c14abaea2461895071a7cce3dee1015c6441e0a09a7f0a6610a46805872"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0046_warm_s05_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "7a111d90fd845bd11edd1acb4539f5d1137a33952e118789425e0f050df2f71b"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0047_warm_s06_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "ad13b709a8aa17cc9a946fca3647d61f832034954c4260715d062ac4259b3945"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0048_warm_s06_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "85d4b03a5169c59bd4f2eca6db645588b57ceb3b4c06a28db5b81dd13167c248"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0049_warm_s06_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "0fb02bf1dbf94d950e31817e3174342eaca7028c754605230be9e72bdb56fee6"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0050_warm_s07_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "fb96524c0ea2c2286d8bdb9b62a34748277a83c0631b7e3d726e4ae4b3a881c5"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0051_warm_s07_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "6e7a83595156a950a6666e86b0c2603452a823a13617d3c757530b9288f78d52"
+      },
+      {
+        "path": "B/native_msprobe/step0/rank0/dump_tensor_data/capture0052_warm_s07_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "7e835b30ed332a298f79966888507a2184e38fce0981f0653650bbb1dda1b58c"
+      }
+    ],
+    "I_msprobe.zip": [
+      {
+        "path": "I/capture_config.json",
+        "bytes": 206,
+        "sha256": "34c7335215c24ae0e7c46e9de5d190c18950d8a70e826af783b92b0536e3aed5"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/debug.json",
+        "bytes": 16659,
+        "sha256": "39fc0a7bac26ce1c4688c418c42e113cf480bdf563f09373e9282b5d322c397f"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0001_cold_s00_input.0.debug.pt",
+        "bytes": 12134,
+        "sha256": "b60961050a50e691495ba67a79b0f47012d494d52c930a3e9ce1fcc5de12f297"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0002_cold_s00_source_weight.0.debug.pt",
+        "bytes": 8390558,
+        "sha256": "96a1b7190c18e77ad85492ca071dae32ac742c8af4ef9c2752f45f5f9b2da73e"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0003_cold_s00_effective_weight.0.debug.pt",
+        "bytes": 8390579,
+        "sha256": "3ff822385b33372b0b23f51fc61abaa184063eeca4148d743745c7f27cf4266e"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0004_cold_s00_linear_output.0.debug.pt",
+        "bytes": 42910,
+        "sha256": "eb986ef729dde90061fa041ea0ccc145b3a0dd214645f1e8ee3042e8786c193d"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0005_cold_s00_source_after.0.debug.pt",
+        "bytes": 8390551,
+        "sha256": "34f7089f4f490ec7f912d423dbce9a580121a8181679872a2fd4f8ded4e6de9c"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0006_cold_s00_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "94d3c574d82f44110d2b4a1ffb13f0cde816e35ef134dd5363c8a71c7ec2d540"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0007_cold_s01_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "58b6191e39ff082150bef8afed0d55907a49b8edd6920d161ebc6ff5edaa3387"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0008_cold_s01_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "495d1c7802be66091490d4ca080f9f0f9dbea3179fdb53c729e47c2844de9409"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0009_cold_s01_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "d729cf6eedd8b7748b31014d999f399783568893164c6e69806680a443e08446"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0010_cold_s02_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "dc5ccdbc2ad63ae4fa07d3359d7f08d2f50f70f746a3e067b3addbf0a0ec9046"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0011_cold_s02_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "c4dad8d81867e330e1e58035dbabc633903562f7a12f1be2dcae95ff61b00eb9"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0012_cold_s02_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "d3c426a33017e333fa383f69a14bd8a9eb19d7c9efebadd17249b80f388dc5ac"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0013_cold_s03_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "c79131b9d1edb969b75ee50386710d279de9f0735089d59c4f6e1de508de18fc"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0014_cold_s03_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a55eec58acc6f39392dee00ad6447cd44eae786c7520294ef4ce2e64ec7d28d4"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0015_cold_s03_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "94b048c763969f883471780879f8cbf65e2ae496f89d25b1a868fdeff65e94d3"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0016_cold_s04_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "1f4220e7ecc796b9829351750f8e9064ccb6afd13a16feb3be69bf8239274736"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0017_cold_s04_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "894eab8cc4814812810894237deb66d93f80187602af982333ddae0e0bba4181"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0018_cold_s04_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "37560fc432cb555af409e4163a2d4aa91f66ea1bb89f7e2472113cf99c0f3a53"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0019_cold_s05_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "0d0eaec15b6844e130b7e2dbd35827509808a9c58cf8e83410f837b2a1b15b9d"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0020_cold_s05_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "db1c80380c42a0eee5facd2febc08dc573c28c7f629117a919c9e3e0cee550dc"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0021_cold_s05_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "ec9306802ce8846d9a6c2947c4784c934c4c44de5bc6864d830423913a3a27c8"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0022_cold_s06_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "50f207fb2fdda4fc52b251b757aca1aa56694bef5426bb71682721ba1a551ba5"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0023_cold_s06_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "ba2f35e13b8b57011001ffbdb109007d3bad9a2a737d09827f1cc6d77f5dc00b"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0024_cold_s06_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "cd1b06e8ecf47c216b4cf6cde211e1cb1feafa2f8c67a4d31434ced622445f2d"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0025_cold_s07_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "30e219b29bf56ef6efad65db90d2f27434a3c92bc5a9d058f69141ddfc5348cf"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0026_cold_s07_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "0115e5a5b3e7b4a7bea834145866625da20d6bf590423905e8f3bb1dcbceaa4d"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0027_cold_s07_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "42fcd0615efbb12a59d33631f39c9a130223e4e423119c458181e50b460ebdd4"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0028_warm_s00_input.0.debug.pt",
+        "bytes": 12134,
+        "sha256": "9db13b5f7b898e8af132c1581e6396296fca13829647e9eaf534496c57cd8dbb"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0029_warm_s00_source_weight.0.debug.pt",
+        "bytes": 8390558,
+        "sha256": "c601916a2b8a1a2b25219837ad2e2a9bd477fe7de53130d750acacaebd39d7cd"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0030_warm_s00_linear_output.0.debug.pt",
+        "bytes": 42910,
+        "sha256": "cb863861bc75ff9c10fcb71c8f28e563bef381fa9b0eb5bd8e77945b06e00f5e"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0031_warm_s00_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "df191cfe4e62599f0e1f2936f8f88d8f0aca6bf862608830ba0a2e7f0cf242e6"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0032_warm_s01_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "63ec36f56126d653dc4eb231b01c712f27b84ab704ec11ed49a180d1013f1cb6"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0033_warm_s01_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "e0f74a0ebe614eefc0fbad02a5f66216d7534d961eb5a453591cc829db083d67"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0034_warm_s01_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "5b14be780ffa498b6e83de6269dce473e96d4f72f81e229026173ea96f7821a6"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0035_warm_s02_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "ea4d047e6018823388123c361229fe625a7ae2fce049daa4dab7e4187b32fd5b"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0036_warm_s02_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a35887335e381d40e7a928ae431c8fec626bb596b9b6a54da75e082402a3648d"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0037_warm_s02_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "08826f3880c33c4b1011b50780594e60baee8c32afdcfdda94ab3aca9df460a5"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0038_warm_s03_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "da8d1b23c05cf0d0f034f4fb0d3626c65365bfbfced838cb6e9f2a0c6a9a9e62"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0039_warm_s03_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a23aa14cd9de8b97e8118b59c049693469dd5d7829a985c65af26ab9c458b6fc"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0040_warm_s03_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "c64fc8488db1ebb7b34f04bbdac426830fe00c549d51f6622c2c6d575712eb5f"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0041_warm_s04_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "6254c28fe690c209c3b8c291e22ab6af50270acf410a5bd0cf1f872b14b7f674"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0042_warm_s04_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "d338d95d1516cedddbe6f836d390e9376fd0cb37374065e099fa55774f457565"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0043_warm_s04_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "8d4cad950191cc4838ef783c7f74503177322f51dfe536b7a7811f1532f130fc"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0044_warm_s05_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "eb161a4b53c9611272949d2424cf2c9e071e8ee86c3e6688666154ac258c0968"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0045_warm_s05_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "b1f42c14abaea2461895071a7cce3dee1015c6441e0a09a7f0a6610a46805872"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0046_warm_s05_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "7a111d90fd845bd11edd1acb4539f5d1137a33952e118789425e0f050df2f71b"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0047_warm_s06_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "ad13b709a8aa17cc9a946fca3647d61f832034954c4260715d062ac4259b3945"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0048_warm_s06_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "85d4b03a5169c59bd4f2eca6db645588b57ceb3b4c06a28db5b81dd13167c248"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0049_warm_s06_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "0fb02bf1dbf94d950e31817e3174342eaca7028c754605230be9e72bdb56fee6"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0050_warm_s07_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "fb96524c0ea2c2286d8bdb9b62a34748277a83c0631b7e3d726e4ae4b3a881c5"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0051_warm_s07_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "6e7a83595156a950a6666e86b0c2603452a823a13617d3c757530b9288f78d52"
+      },
+      {
+        "path": "I/native_msprobe/step0/rank0/dump_tensor_data/capture0052_warm_s07_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "7e835b30ed332a298f79966888507a2184e38fce0981f0653650bbb1dda1b58c"
+      }
+    ],
+    "F_msprobe.zip": [
+      {
+        "path": "F/capture_config.json",
+        "bytes": 206,
+        "sha256": "fd762d72a8c134e3ebb103a3464566d7217e2e107cd184204903aa78f984d573"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/debug.json",
+        "bytes": 16640,
+        "sha256": "89cf39e5515c4b823b310bdcd6fdb7f244381e88302522127d0fabcc4eaffdd0"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0001_cold_s00_input.0.debug.pt",
+        "bytes": 12134,
+        "sha256": "b60961050a50e691495ba67a79b0f47012d494d52c930a3e9ce1fcc5de12f297"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0002_cold_s00_source_weight.0.debug.pt",
+        "bytes": 8390558,
+        "sha256": "96a1b7190c18e77ad85492ca071dae32ac742c8af4ef9c2752f45f5f9b2da73e"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0003_cold_s00_effective_weight.0.debug.pt",
+        "bytes": 8390579,
+        "sha256": "5421dbe6d75ed76774276f3f89a9225fc49013d2d1efffee48b3f7208f323f90"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0004_cold_s00_linear_output.0.debug.pt",
+        "bytes": 42910,
+        "sha256": "b2d5c18ee9c978c54130641eb05fdf857ff74e4a2ce0c7b59fa53668ce30f07d"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0005_cold_s00_source_after.0.debug.pt",
+        "bytes": 8390551,
+        "sha256": "34f7089f4f490ec7f912d423dbce9a580121a8181679872a2fd4f8ded4e6de9c"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0006_cold_s00_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "d00d24eae2296e1312ba633dccfdb9d14d2b7ac4ff4e2204b2aa810a010b9666"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0007_cold_s01_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "1503dd6ac117e704c143cb707d92153f07d5216e58e1074793a9c77983ad3c78"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0008_cold_s01_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "1cf52b7cf13ecdfce2ea963dd0ac38701f82608aa959731cf91b35618fcac84d"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0009_cold_s01_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "63415a6cd932cf416283822d33beeac9449c47cd5160cb4ff56c7270fb5c05f0"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0010_cold_s02_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "165961463c5328d1804d59e27993978d57320f26370705bbed4958249ff0a0d8"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0011_cold_s02_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "b27af6451a39eaa300a7a96ee913d47036a63aa48202f5fb331521301d8733c7"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0012_cold_s02_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "d374da2e715712640be273c3d73fe800b311c924710efad35abc4750864387e5"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0013_cold_s03_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "a79f03623c44e4f166fdef83ef2136e39a55f85109fbe3e4b9e54fe2b985928e"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0014_cold_s03_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a6aa11ee22b5c85e9aba68f49c0f7a1775c4d2a3e1596dd9148e6cec6ccea2ef"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0015_cold_s03_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "fa7b39dbae745e30cdbf39f8bf8ab0e43b7fa691b9bf6d343eb6f43abc60529d"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0016_cold_s04_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "1ced20dcc7e10cc13f06b203ef80b347dc8052b4ead629c0c53728ba646763a0"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0017_cold_s04_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "28beae26fc4e896fbea63226fb9c3cbf1ef37a94ded387e46910afd8bfbeca9d"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0018_cold_s04_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "4bdbfbd22c48b5a872b68de6b9a2ce1a81f6f91c8f2a238d40addee12aecb7a7"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0019_cold_s05_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "0903b5c0a6e7415617fcc0db685ba570d5323288a13f9ea010068220951caf2d"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0020_cold_s05_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "310ce1d34358c3cf295d5dfc260b56732593e1bddd79cd20281965e6ba55e745"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0021_cold_s05_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "58c56741c9bf3919b8ea3804c274331c50db8b680c86c559adc565865095ff01"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0022_cold_s06_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "6c971c01a86ed29f07cfaf292ccd75a587f11d3213aeb920820430f4cfd8b291"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0023_cold_s06_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "fc880436f8161783580ea6a27d257cd8bd6e20e6f9f15f3e8afd1c5c4ff0dd49"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0024_cold_s06_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "c1b88e03e6a811bc4ce7732fe4b27a4997f7c9c224dee5441d3b22f6c4d681f7"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0025_cold_s07_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "d5bab5a4d67ec64e1e8cf1cfa02ac7576af44108c0790755a5b3158b65de063c"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0026_cold_s07_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "4738cb5e697266c217ed250105e517a1da4a2a0b60c61643a9047ce56b787422"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0027_cold_s07_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "71908c61c103a758990ffc8561b0fef189beef384b4ea8c6cc0b57be26dada4f"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0028_warm_s00_input.0.debug.pt",
+        "bytes": 12134,
+        "sha256": "9db13b5f7b898e8af132c1581e6396296fca13829647e9eaf534496c57cd8dbb"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0029_warm_s00_source_weight.0.debug.pt",
+        "bytes": 8390558,
+        "sha256": "c601916a2b8a1a2b25219837ad2e2a9bd477fe7de53130d750acacaebd39d7cd"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0030_warm_s00_linear_output.0.debug.pt",
+        "bytes": 42910,
+        "sha256": "cb863861bc75ff9c10fcb71c8f28e563bef381fa9b0eb5bd8e77945b06e00f5e"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0031_warm_s00_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "df191cfe4e62599f0e1f2936f8f88d8f0aca6bf862608830ba0a2e7f0cf242e6"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0032_warm_s01_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "63ec36f56126d653dc4eb231b01c712f27b84ab704ec11ed49a180d1013f1cb6"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0033_warm_s01_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "e0f74a0ebe614eefc0fbad02a5f66216d7534d961eb5a453591cc829db083d67"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0034_warm_s01_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "5b14be780ffa498b6e83de6269dce473e96d4f72f81e229026173ea96f7821a6"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0035_warm_s02_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "ea4d047e6018823388123c361229fe625a7ae2fce049daa4dab7e4187b32fd5b"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0036_warm_s02_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a35887335e381d40e7a928ae431c8fec626bb596b9b6a54da75e082402a3648d"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0037_warm_s02_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "08826f3880c33c4b1011b50780594e60baee8c32afdcfdda94ab3aca9df460a5"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0038_warm_s03_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "da8d1b23c05cf0d0f034f4fb0d3626c65365bfbfced838cb6e9f2a0c6a9a9e62"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0039_warm_s03_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a23aa14cd9de8b97e8118b59c049693469dd5d7829a985c65af26ab9c458b6fc"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0040_warm_s03_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "c64fc8488db1ebb7b34f04bbdac426830fe00c549d51f6622c2c6d575712eb5f"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0041_warm_s04_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "6254c28fe690c209c3b8c291e22ab6af50270acf410a5bd0cf1f872b14b7f674"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0042_warm_s04_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "d338d95d1516cedddbe6f836d390e9376fd0cb37374065e099fa55774f457565"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0043_warm_s04_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "8d4cad950191cc4838ef783c7f74503177322f51dfe536b7a7811f1532f130fc"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0044_warm_s05_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "eb161a4b53c9611272949d2424cf2c9e071e8ee86c3e6688666154ac258c0968"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0045_warm_s05_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "b1f42c14abaea2461895071a7cce3dee1015c6441e0a09a7f0a6610a46805872"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0046_warm_s05_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "7a111d90fd845bd11edd1acb4539f5d1137a33952e118789425e0f050df2f71b"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0047_warm_s06_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "ad13b709a8aa17cc9a946fca3647d61f832034954c4260715d062ac4259b3945"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0048_warm_s06_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "85d4b03a5169c59bd4f2eca6db645588b57ceb3b4c06a28db5b81dd13167c248"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0049_warm_s06_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "0fb02bf1dbf94d950e31817e3174342eaca7028c754605230be9e72bdb56fee6"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0050_warm_s07_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "fb96524c0ea2c2286d8bdb9b62a34748277a83c0631b7e3d726e4ae4b3a881c5"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0051_warm_s07_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "6e7a83595156a950a6666e86b0c2603452a823a13617d3c757530b9288f78d52"
+      },
+      {
+        "path": "F/native_msprobe/step0/rank0/dump_tensor_data/capture0052_warm_s07_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "7e835b30ed332a298f79966888507a2184e38fce0981f0653650bbb1dda1b58c"
+      }
+    ],
+    "R_msprobe.zip": [
+      {
+        "path": "R/capture_config.json",
+        "bytes": 206,
+        "sha256": "62634928ef408bd7003d5ab89d748f341c5552401df68fc998aae2a699c9570a"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/debug.json",
+        "bytes": 16659,
+        "sha256": "d848571892cea2a16258a653ecd4c247b84b1f24fff61b970e207b8782deb0b2"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0001_cold_s00_input.0.debug.pt",
+        "bytes": 12134,
+        "sha256": "b60961050a50e691495ba67a79b0f47012d494d52c930a3e9ce1fcc5de12f297"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0002_cold_s00_source_weight.0.debug.pt",
+        "bytes": 8390558,
+        "sha256": "96a1b7190c18e77ad85492ca071dae32ac742c8af4ef9c2752f45f5f9b2da73e"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0003_cold_s00_effective_weight.0.debug.pt",
+        "bytes": 8390579,
+        "sha256": "3ff822385b33372b0b23f51fc61abaa184063eeca4148d743745c7f27cf4266e"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0004_cold_s00_linear_output.0.debug.pt",
+        "bytes": 42910,
+        "sha256": "eb986ef729dde90061fa041ea0ccc145b3a0dd214645f1e8ee3042e8786c193d"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0005_cold_s00_source_after.0.debug.pt",
+        "bytes": 8390551,
+        "sha256": "34f7089f4f490ec7f912d423dbce9a580121a8181679872a2fd4f8ded4e6de9c"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0006_cold_s00_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "94d3c574d82f44110d2b4a1ffb13f0cde816e35ef134dd5363c8a71c7ec2d540"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0007_cold_s01_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "58b6191e39ff082150bef8afed0d55907a49b8edd6920d161ebc6ff5edaa3387"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0008_cold_s01_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "495d1c7802be66091490d4ca080f9f0f9dbea3179fdb53c729e47c2844de9409"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0009_cold_s01_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "d729cf6eedd8b7748b31014d999f399783568893164c6e69806680a443e08446"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0010_cold_s02_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "dc5ccdbc2ad63ae4fa07d3359d7f08d2f50f70f746a3e067b3addbf0a0ec9046"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0011_cold_s02_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "c4dad8d81867e330e1e58035dbabc633903562f7a12f1be2dcae95ff61b00eb9"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0012_cold_s02_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "d3c426a33017e333fa383f69a14bd8a9eb19d7c9efebadd17249b80f388dc5ac"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0013_cold_s03_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "c79131b9d1edb969b75ee50386710d279de9f0735089d59c4f6e1de508de18fc"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0014_cold_s03_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a55eec58acc6f39392dee00ad6447cd44eae786c7520294ef4ce2e64ec7d28d4"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0015_cold_s03_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "94b048c763969f883471780879f8cbf65e2ae496f89d25b1a868fdeff65e94d3"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0016_cold_s04_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "1f4220e7ecc796b9829351750f8e9064ccb6afd13a16feb3be69bf8239274736"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0017_cold_s04_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "894eab8cc4814812810894237deb66d93f80187602af982333ddae0e0bba4181"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0018_cold_s04_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "37560fc432cb555af409e4163a2d4aa91f66ea1bb89f7e2472113cf99c0f3a53"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0019_cold_s05_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "0d0eaec15b6844e130b7e2dbd35827509808a9c58cf8e83410f837b2a1b15b9d"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0020_cold_s05_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "db1c80380c42a0eee5facd2febc08dc573c28c7f629117a919c9e3e0cee550dc"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0021_cold_s05_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "ec9306802ce8846d9a6c2947c4784c934c4c44de5bc6864d830423913a3a27c8"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0022_cold_s06_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "50f207fb2fdda4fc52b251b757aca1aa56694bef5426bb71682721ba1a551ba5"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0023_cold_s06_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "ba2f35e13b8b57011001ffbdb109007d3bad9a2a737d09827f1cc6d77f5dc00b"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0024_cold_s06_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "cd1b06e8ecf47c216b4cf6cde211e1cb1feafa2f8c67a4d31434ced622445f2d"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0025_cold_s07_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "30e219b29bf56ef6efad65db90d2f27434a3c92bc5a9d058f69141ddfc5348cf"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0026_cold_s07_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "0115e5a5b3e7b4a7bea834145866625da20d6bf590423905e8f3bb1dcbceaa4d"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0027_cold_s07_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "42fcd0615efbb12a59d33631f39c9a130223e4e423119c458181e50b460ebdd4"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0028_warm_s00_input.0.debug.pt",
+        "bytes": 12134,
+        "sha256": "9db13b5f7b898e8af132c1581e6396296fca13829647e9eaf534496c57cd8dbb"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0029_warm_s00_source_weight.0.debug.pt",
+        "bytes": 8390558,
+        "sha256": "c601916a2b8a1a2b25219837ad2e2a9bd477fe7de53130d750acacaebd39d7cd"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0030_warm_s00_linear_output.0.debug.pt",
+        "bytes": 42910,
+        "sha256": "cb863861bc75ff9c10fcb71c8f28e563bef381fa9b0eb5bd8e77945b06e00f5e"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0031_warm_s00_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "df191cfe4e62599f0e1f2936f8f88d8f0aca6bf862608830ba0a2e7f0cf242e6"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0032_warm_s01_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "63ec36f56126d653dc4eb231b01c712f27b84ab704ec11ed49a180d1013f1cb6"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0033_warm_s01_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "e0f74a0ebe614eefc0fbad02a5f66216d7534d961eb5a453591cc829db083d67"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0034_warm_s01_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "5b14be780ffa498b6e83de6269dce473e96d4f72f81e229026173ea96f7821a6"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0035_warm_s02_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "ea4d047e6018823388123c361229fe625a7ae2fce049daa4dab7e4187b32fd5b"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0036_warm_s02_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a35887335e381d40e7a928ae431c8fec626bb596b9b6a54da75e082402a3648d"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0037_warm_s02_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "08826f3880c33c4b1011b50780594e60baee8c32afdcfdda94ab3aca9df460a5"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0038_warm_s03_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "da8d1b23c05cf0d0f034f4fb0d3626c65365bfbfced838cb6e9f2a0c6a9a9e62"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0039_warm_s03_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "a23aa14cd9de8b97e8118b59c049693469dd5d7829a985c65af26ab9c458b6fc"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0040_warm_s03_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "c64fc8488db1ebb7b34f04bbdac426830fe00c549d51f6622c2c6d575712eb5f"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0041_warm_s04_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "6254c28fe690c209c3b8c291e22ab6af50270acf410a5bd0cf1f872b14b7f674"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0042_warm_s04_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "d338d95d1516cedddbe6f836d390e9376fd0cb37374065e099fa55774f457565"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0043_warm_s04_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "8d4cad950191cc4838ef783c7f74503177322f51dfe536b7a7811f1532f130fc"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0044_warm_s05_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "eb161a4b53c9611272949d2424cf2c9e071e8ee86c3e6688666154ac258c0968"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0045_warm_s05_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "b1f42c14abaea2461895071a7cce3dee1015c6441e0a09a7f0a6610a46805872"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0046_warm_s05_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "7a111d90fd845bd11edd1acb4539f5d1137a33952e118789425e0f050df2f71b"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0047_warm_s06_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "ad13b709a8aa17cc9a946fca3647d61f832034954c4260715d062ac4259b3945"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0048_warm_s06_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "85d4b03a5169c59bd4f2eca6db645588b57ceb3b4c06a28db5b81dd13167c248"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0049_warm_s06_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "0fb02bf1dbf94d950e31817e3174342eaca7028c754605230be9e72bdb56fee6"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0050_warm_s07_input.0.debug.pt",
+        "bytes": 3942,
+        "sha256": "fb96524c0ea2c2286d8bdb9b62a34748277a83c0631b7e3d726e4ae4b3a881c5"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0051_warm_s07_linear_output.0.debug.pt",
+        "bytes": 10142,
+        "sha256": "6e7a83595156a950a6666e86b0c2603452a823a13617d3c757530b9288f78d52"
+      },
+      {
+        "path": "R/native_msprobe/step0/rank0/dump_tensor_data/capture0052_warm_s07_logits.0.debug.pt",
+        "bytes": 305773,
+        "sha256": "7e835b30ed332a298f79966888507a2184e38fce0981f0653650bbb1dda1b58c"
+      }
+    ]
+  },
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "B_msprobe.zip",
+      "bytes": 30737037,
+      "sha256": "60132e3ef230eb480f85ea9fb48470835015c16f9c2b2d2d57d5b9fa52dbcca7"
+    },
+    {
+      "path": "F_msprobe.zip",
+      "bytes": 30750418,
+      "sha256": "6cdd519b5340b573594f61c0f5edd9e86098d7374b219727254843f8e07b7e18"
+    },
+    {
+      "path": "I_msprobe.zip",
+      "bytes": 30737038,
+      "sha256": "0ef076d142a03aa702865918ef5727784230d01b8ac354538d8014ad6e3a51fa"
+    },
+    {
+      "path": "R_msprobe.zip",
+      "bytes": 30737037,
+      "sha256": "047bf24a793d5c76868ed100f201b5f78a5a3135da71f79f38eaab623a291c79"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1463,
+      "sha256": "42626f9c374df120acdab301ac722cb89e7236e766975f3094d4442e9e98e5cd"
+    }
+  ]
+}
