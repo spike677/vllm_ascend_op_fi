@@ -1,0 +1,103 @@
+{
+  "schema": "batch_outlier_msprobe_cpu_verification_v1",
+  "status": "PASS",
+  "scope": "Real msProbe 26.1 debug tensor save records, original dtype bytes, canonical native producer/consumer identity and mapped TP2 outputs. Not automatic API-hook dump or independent ACLNN kernel tracing.",
+  "capture_type": "PrecisionDebugger.save: debug.json and .debug.pt",
+  "automatic_api_hook_capture": false,
+  "sessions": 20,
+  "ranks": [
+    0,
+    1
+  ],
+  "cases": [
+    "letter_counts_B2",
+    "even_count_B4"
+  ],
+  "labels": [
+    "H",
+    "H1",
+    "F",
+    "F2",
+    "R"
+  ],
+  "msprobe_tensor_files": 140,
+  "debug_json_files": 20,
+  "canonical_tensor_files": 180,
+  "bound_rank_calls": 20,
+  "all_msprobe_raw_bytes_match_canonical": true,
+  "comparisons": [
+    {
+      "case": "letter_counts_B2",
+      "rank": 0,
+      "healthy_repeat_exact": true,
+      "fault_repeat_exact": true,
+      "recovery_exact": true,
+      "healthy_fault_input_exact": true,
+      "G2_target_activation_damage": true,
+      "target_logits_changed": true,
+      "target_logits_max_abs_delta": 0.625,
+      "G3_repeatable_target_logits": true
+    },
+    {
+      "case": "letter_counts_B2",
+      "rank": 1,
+      "healthy_repeat_exact": true,
+      "fault_repeat_exact": true,
+      "recovery_exact": true,
+      "healthy_fault_input_exact": true,
+      "G2_target_activation_damage": true,
+      "target_logits_changed": true,
+      "target_logits_max_abs_delta": 0.625,
+      "G3_repeatable_target_logits": true
+    },
+    {
+      "case": "even_count_B4",
+      "rank": 0,
+      "healthy_repeat_exact": true,
+      "fault_repeat_exact": true,
+      "recovery_exact": true,
+      "healthy_fault_input_exact": true,
+      "G2_target_activation_damage": false,
+      "target_logits_changed": true,
+      "target_logits_max_abs_delta": 0.8359375,
+      "G3_repeatable_target_logits": false
+    },
+    {
+      "case": "even_count_B4",
+      "rank": 1,
+      "healthy_repeat_exact": true,
+      "fault_repeat_exact": true,
+      "recovery_exact": true,
+      "healthy_fault_input_exact": true,
+      "G2_target_activation_damage": true,
+      "target_logits_changed": true,
+      "target_logits_max_abs_delta": 0.8359375,
+      "G3_repeatable_target_logits": true
+    }
+  ],
+  "limitations": [
+    "Recorded msProbe producer source hashes are pinned; file format alone is not cryptographic producer attestation.",
+    "Reference rounding may differ on real peer activations; only replaced target calibration is a strict gate.",
+    "Per-rank local TP feature range only; no artificial multiplier or added cross-rank maximum.",
+    "A logits or token change is not an objective answer error; no full-answer quality claim is made by this capture verifier."
+  ],
+  "observer_transparency": {
+    "status": "RAW_AND_RESPONSE_EXACT",
+    "cases": [
+      "letter_counts_B2",
+      "even_count_B4"
+    ],
+    "canonical_tensor_files": 36,
+    "bound_rank_calls": 4,
+    "frozen_identity_fields_equal": [
+      "model",
+      "layer",
+      "prior_result_sha256",
+      "source_sha256",
+      "conditions",
+      "max_tokens",
+      "prompts"
+    ],
+    "scope": "Independent msprobe-OFF B still uses the canonical native observer. B/H full logical input/prefix contracts, all nine original-dtype tensors (input, native/returned/reference Q and scale, local consumer contribution, first logits), complete returned prompt/output IDs, text, finish reason and top-5 logprobs are equal. This bounded observation does not prove absence of all global instrumentation side effects."
+  }
+}

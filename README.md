@@ -395,3 +395,7 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 - MoE、GroupedMatmul、MatmulAllReduce；
 - QMM post-Run output Inf/NaN proxy（当前只完成了 floating `aclnnMatmul`）；
 - 外部故障框架集成。
+
+## Batch 共享量化尺度的 msprobe 采集
+
+[2026-10-27 双卡采集数据与说明](artifacts/quantization/batch_shared_scale_msprobe_20261027/README.md)包含两个真实 W8A8 合批条件的正常、故障重复与恢复数据，共 140 份原生 msprobe 张量。故障数值传播可重复，两个最终答案仍正确；该结果不证明原生量化器缺陷或答案准确率下降。
