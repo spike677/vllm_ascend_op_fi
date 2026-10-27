@@ -26,6 +26,87 @@ F/F2 在真实 W8A8 消费链上受控替换目标行的配对 Q/scale；原生�
 
 独立进程的 B 对照不导入 msprobe，但保留原始调用观察。**B/H 的输入约束、9 份原始 dtype 的旁证张量，以及完整 token IDs、文本、结束原因和 top-5 logprobs 均一致**。H/H1、F/F2、H/R 也一致。此结论限于实测数据；msprobe 存在进程级包装行为，不能据此声称没有任何全局副作用。B 对照不计入上述 140 份 msprobe 张量。
 
+## 故障实现与调用链
+
+### 注入位置与实际修改
+
+当前实现是 **Python API 包装下的量化结果边界替换**。在目标层 `quant_method.apply` 的一次受控执行期间，临时包装 `torch_npu.npu_dynamic_quant` 和 `torch_npu.npu_quant_matmul`：先让原生动态量化执行一次，再替换它返回给消费者的目标行 Q/scale，原量化矩阵乘继续实际执行。作用域退出时恢复这两个 API。健康阶段直接保留原生 pair。
+
+设当前 rank 的输入为 `X[T, H_local]`，`V` 为经过 scheduler 验证的有效行集合，`t` 为唯一目标请求行。参考量化计算为：
+
+```text
+A_i       = max_j |X[i,j]|
+s_i       = max(A_i / 127, 1e-12)                    # 每行独立尺度
+s_batch   = max(max_{i in V} A_i / 127, 1e-12)       # 同 rank、全部有效行共享尺度
+Q_fault_t = INT8(clamp(round(FP32(X[t]) / s_batch), -128, 127))
+```
+
+`round` 使用源码中的 `torch.round`。代码先验证目标行的参考 Q 与原生 Q 完全相等、非零目标行的 scale 满足 `rtol=1e-6, atol=0`，再允许故障替换。只有 `max_{i in V} A_i > A_t` 时才同时设置 `returned_q[t] = Q_fault_t`、`returned_scale[t] = s_batch`；其余行继续使用原生 Q/scale。无外部范围增长时保留整对原生结果，并记录 `NO_EXTERNAL_RANGE_INCREASE`。计算尺度时使用真实激活，`scale_multiplier` 固定为 `1.0`。
+
+替换范围是 **每个 rank、每个 generation、该目标层最多一次**，对应第一次所有指定请求都在场的 pure decode。F2 是新 generation 的重复，不能理解为每个 token 都注入。两个 rank 分别计算本地特征分片的最大值；本实现没有跨 rank 的尺度最大值归约。
+
+### 实际调用链
+
+下图中的箭头表示执行或数据流；msprobe 在 pair、consumer 和 logits 三个边界分别即时保存副本。
+
+```mermaid
+flowchart TD
+    A["model_capture.main / worker sitecustomize"] --> B["native_capture_hook.install：注册 runner import hook"]
+    B --> C["包装 NPUModelRunner：load_model / execute_model / _prepare_inputs"]
+    C --> D["原 _prepare_inputs 完成；capture_rows 验证 request、行索引、token 位置"]
+    D --> E["目标 down_proj quant_method.apply：检查 pure decode、输入约束、启用状态"]
+    E --> F["先开始 msprobe session；再进入 NativePairBinding 作用域"]
+    F --> G["原 quant_method.apply 进入 _produce；内部先调用原生量化一次"]
+    G --> H["同一 TargetOnlyBinding._produce 内：目标校准；按条件替换 Q 与 scale"]
+    H --> I["NativePairBinding._consume：检查同一 pair；调用原 npu_quant_matmul"]
+    I --> J["原模型后续 TP 计算；原 compute_logits"]
+    J --> K["记录首次对应 logits；结束 session，step 刷出 debug.json"]
+    H -.-> S["PrecisionDebugger.save：原生 .debug.pt"]
+    I -.-> S
+    J -.-> S
+```
+
+调用身份检查覆盖消费者的 `x1` 与 `pertoken_scale` 是否就是 producer 返回的同一对对象，并检查 pair 在消费前后未被修改。量化输入保持不变；绑定缺失、输入/前缀变化、故障模式下目标参考校准失败或消费链不完整时，运行失败而不继续声称注入成功。
+
+msprobe session 在临时包装量化 API 之前开始。它保存量化输入、原生 Q/scale、返回 Q/scale、原消费者输出和后续 logits，共 7 份原始 dtype 张量，并读回核对；msprobe 负责观测，目标行替换由 `TargetOnlyBinding` 完成。图中的 API 与模型方法来自实际包装和调用证据；不将其延伸解释成已完成底层 ACLNN 内核追踪。
+
+### 为什么这种方式可以模拟故障
+
+这里明确采用的故障模型是：**目标 token 本应使用自己的激活动态范围，却受到同批其他请求更大激活的影响，使用了跨请求共享的量化尺度**。实现把 absmax 的归约范围从“目标行的通道”扩展为“同 rank 的所有有效请求行及其通道”，因此可以在量化输出边界构造这个故障模型规定的目标 Q/scale。
+
+这种模拟的依据是消费者输入的可控对应关系：在输入激活、权重、请求行/位置和既有生成前缀保持一致时，将目标 Q 与其配套 scale 一起替换，交给同一个真实量化消费者计算。若某个故障机制在这一边界产生同样的 Q/scale，并保持其他状态一致，那么该边界之后消费者看到的目标输入相同。这里验证的是这一**条件下的目标行数值后果**，不是故障触发根因或出现概率。
+
+共享范围扩大后，scale 可能增大，INT8 可表示的重建值间距随之变大，小幅值细节更容易被舍入掉。但更粗的量化格点**不保证每个元素误差、整行 MSE 或最终答案错误率必然增加**；必须分别检查 code 变化、重建 MSE/NMSE、下游 logits 和答案。扩大尺度也不能直接解释为溢出或饱和。本轮符合 G2/G3 的三个“条件 × rank”实际测得目标 code 改变、重建误差增加和可重复的下游变化；`even_count_B4` 的 rank 0 因没有外部范围增长而跳过，体现了条件判断而非无差别扰动。
+
+支撑因果判断的对照是 B/H、H/H1、F/F2、H/R，以及每个 rank 在注入前对输入字节、shape/dtype、逻辑请求、token 位置和既有前缀的检查。B/H 对照证明本轮测得的健康结果在开启 msprobe 前后一致；故障重复和关闭后的恢复用于区分故障变化与运行漂移。原始张量和完整响应的离线复核结果见 `verification_summary.json` 及审计包。
+
+需要保留以下适用边界：
+
+- **目标行隔离模拟**：仅目标行使用共享尺度，其余请求保留原生 pair。它隔离目标请求受到其他请求范围影响的后果，不等同于“整个 batch 所有行都被错误共享尺度”的完整实现。
+- **定义明确的参考算术**：故障 pair 使用 FP32 除法、`torch.round` 和 INT8 截断。健康目标校准支持本次替换的可比性，但没有证明未知故障内核在所有输入下都采用相同舍入或中间精度。
+- **范围和样本有限**：只覆盖该模型、目标层、一次 decode 和 rank 本地特征域。`letter_counts_B2` 的实际有效行数是 2，`even_count_B4` 是 8（目标加 7 个 peer）；`B4` 是保留的条件标签，不代表 4 行。不能由这两组样本推出“大 batch 必然失败”或生产环境故障概率。
+- **结论层级有限**：本轮完成了受控故障数值传播验证，两个最终答案仍正确；没有证明原生量化器存在跨请求共享尺度缺陷，也没有证明最终答案准确率下降。
+
+### 关键代码位置
+
+为方便在 GitHub 直接查看，[source/](source/) 提供下列 10 份冻结源码的只读阅读副本。它们与 `audit_support.zip` 中同名成员逐字节相同，原有行号保持不变；`SHA256.json` 的 `source_views` 记录对应关系，`verify_publication.py` 会验证。阅读副本不是完整运行环境；完整冻结模型源码及必要支持文件仍在审计包中。
+
+下表的 `M` 表示 `source/source_versions/model_B01/model/`，`L` 表示 `source/legacy/src/ascend_fi/quantization/`，点击链接可直接跳转到对应行。
+
+| 环节 | 关键代码位置 | 检查或修改内容 |
+|---|---|---|
+| 实验编排 | [M/model_capture.py:23](source/source_versions/model_B01/model/model_capture.py#L23)、[run:83](source/source_versions/model_B01/model/model_capture.py#L83)、[对照顺序:129](source/source_versions/model_B01/model/model_capture.py#L129) | 参数开关、generation 控制、真实 `llm.generate`、B/H/H1/F/F2/R。请求组成见 [18](source/source_versions/model_B01/model/model_capture.py#L18)。 |
+| Worker 启动 | [M/sitecustomize.py:2](source/source_versions/model_B01/model/sitecustomize.py#L2)、[M/native_capture_hook.py:349](source/source_versions/model_B01/model/native_capture_hook.py#L349) | 环境开关、import hook 安装；[296](source/source_versions/model_B01/model/native_capture_hook.py#L296) 包装原 runner 方法。 |
+| 真实请求与行映射 | [M/native_capture_hook.py:122](source/source_versions/model_B01/model/native_capture_hook.py#L122)、[330](source/source_versions/model_B01/model/native_capture_hook.py#L330) | 在原 prepare 返回后验证 scheduler、实际行索引、token 位置、pure decode 和指定请求集合。 |
+| 目标层、单次调用和输入检查 | [M/native_capture_hook.py:163](source/source_versions/model_B01/model/native_capture_hook.py#L163)、[194](source/source_versions/model_B01/model/native_capture_hook.py#L194)、[256](source/source_versions/model_B01/model/native_capture_hook.py#L256) | 确认 INT8/TP2 量化层；检查 `_seen`、健康输入约束、armed；调用原 `quant_method.apply`。 |
+| 临时 API 包装和恢复 | [L/batch_binding.py:48](source/legacy/src/ascend_fi/quantization/batch_binding.py#L48)、[83](source/legacy/src/ascend_fi/quantization/batch_binding.py#L83)、[102](source/legacy/src/ascend_fi/quantization/batch_binding.py#L102) | 临时安装 producer/consumer wrapper，限定 scope，退出后恢复 API。 |
+| 目标行故障替换 | [M/target_pair_binding_v2.py:17](source/source_versions/model_B01/model/target_pair_binding_v2.py#L17)、[61](source/source_versions/model_B01/model/target_pair_binding_v2.py#L61)、[83](source/source_versions/model_B01/model/target_pair_binding_v2.py#L83)、[94](source/source_versions/model_B01/model/target_pair_binding_v2.py#L94) | 原生 producer 一次、目标参考校准、外部范围判断、仅目标行配对替换，并验证 peers 不变。 |
+| 共享尺度和 INT8 计算 | [L/batch_scale_core.py:99](source/legacy/src/ascend_fi/quantization/batch_scale_core.py#L99)、[111](source/legacy/src/ascend_fi/quantization/batch_scale_core.py#L111)、[153](source/legacy/src/ascend_fi/quantization/batch_scale_core.py#L153) | multiplier=1、有效行归约、FP32 round/clamp。尺度提供者的 [541](source/legacy/experiments/fake_requant_reference/source/fake_requant_reference_extension.py#L541) 定义 absmax/127，[562](source/legacy/experiments/fake_requant_reference/source/fake_requant_reference_extension.py#L562) 应用 eps 下限。 |
+| 真实消费与输出 | [L/batch_binding.py:249](source/legacy/src/ascend_fi/quantization/batch_binding.py#L249)、[274](source/legacy/src/ascend_fi/quantization/batch_binding.py#L274) | 校验 Q/scale 对象身份和内容，调用原 `npu_quant_matmul`，保存局部输出。 |
+| logits 与采集结束 | [M/native_capture_hook.py:268](source/source_versions/model_B01/model/native_capture_hook.py#L268) | 原 `compute_logits` 后保存首次对应 logits，并结束 session。 |
+| msprobe 接入与保存 | [M/msprobe_capture_bridge.py:31](source/source_versions/model_B01/model/msprobe_capture_bridge.py#L31)、[L/msprobe_capture.py:144](source/legacy/src/ascend_fi/quantization/msprobe_capture.py#L144)、[164](source/legacy/src/ascend_fi/quantization/msprobe_capture.py#L164) | 建立 session；真实 `save(..., save_backward=False)`、读回字节校验和 `step()` 刷出 JSON。 |
+| 运行证据检查 | [M/driver_helpers.py:34](source/source_versions/model_B01/model/driver_helpers.py#L34)、[61](source/source_versions/model_B01/model/driver_helpers.py#L61) | 检查两 rank 的绑定记录、非目标 pair、调度条件及健康/重复响应；完整原始张量 CPU 校验器在审计包 `verify_msprobe.py`。 |
+
 ## 实测结果
 
 G2 表示目标量化 code 改变且重建误差增加；G3 表示与该故障对应的目标下游 logits 变化可重复，并通过恢复对照。

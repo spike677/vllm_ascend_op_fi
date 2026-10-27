@@ -127,6 +127,16 @@ def verify(root):
                 require(pt in members and debug in members, 'Missing referenced native payload')
                 require(digest(members[pt]) == tensor['file_sha256'] and len(members[pt]) == tensor['file_bytes'], 'Session tensor hash mismatch')
                 require(digest(members[debug]) == tensor['debug_json_sha256'], 'Session debug hash mismatch')
+    views = inventory.get('source_views', [])
+    view_paths = [safe(view['path']) for view in views]
+    require(len(view_paths) == len(set(view_paths)), 'Duplicate source view')
+    require(set(view_paths) == {name for name in names if name.startswith('source/')}, 'Source view inventory mismatch')
+    for view in views:
+        member = safe(view['member'])
+        require(view['archive'] == 'audit_support.zip' and member in audit and member.endswith('.py'), 'Source view member missing')
+        require(view['path'] == 'source/' + member, 'Source view path mismatch')
+        data = (root / view['path']).read_bytes()
+        require(data == audit[member] and digest(data) == view['sha256'], 'Source view differs from frozen original')
     require(len(union) == 182, 'Expected 182 distinct native files')
     require(session_keys == {(c, s, r) for c in CASES for s in STAGES for r in (0, 1)}, 'Incomplete session matrix')
     require(sum(x.endswith('.debug.pt') for x in union) == 140 and sum(x.endswith('/debug.json') for x in union) == 20
@@ -150,7 +160,7 @@ def verify(root):
     require(summary['observer_transparency']['status'] == 'RAW_AND_RESPONSE_EXACT', 'Transparency status mismatch')
     return {'status': 'PASS', 'native_union_files': 182, 'native_tensors': 140, 'debug_json_files': 20,
             'session_manifests': 20, 'rank_configs': 2, 'audit_support_files': len(audit),
-            'capture_index_rows': 140, 'paired_metric_rows': 4, 'archives': 6,
+            'capture_index_rows': 140, 'paired_metric_rows': 4, 'archives': 6, 'source_views': len(views),
             'scope': 'stdlib byte hashes and publication structure; run verify_msprobe.py for CPU tensor semantics'}
 
 
