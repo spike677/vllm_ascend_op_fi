@@ -1,0 +1,211 @@
+{
+  "format": "derived-completion-receipts-v1",
+  "derived": true,
+  "note": "Selected completion fields from private result.json; not byte-identical originals. Prompts, token IDs, generated text and logprobs are omitted.",
+  "runs": [
+    {
+      "run_id": "run002",
+      "published_role": "baseline",
+      "source_path": "outputs/fresh_matrix/run002/result.json",
+      "source_sha256": "56dc4fe5772e970c21108452b419b3e1c271d5ff97672af250068c4dade7a0bf",
+      "status": "completed",
+      "backend": true,
+      "observe": true,
+      "max_tokens": 16,
+      "observation_window": [
+        30,
+        32
+      ],
+      "condition": "letter_counts_B2",
+      "stage": "H",
+      "observation_step": 0,
+      "rank_contract_shapes": {
+        "1": {
+          "shape": [
+            2,
+            13824
+          ],
+          "dtype": "torch.bfloat16"
+        },
+        "0": {
+          "shape": [
+            2,
+            13824
+          ],
+          "dtype": "torch.bfloat16"
+        }
+      },
+      "backend_hits": {
+        "1": {
+          "prepare_hits": 1,
+          "execute_hits": 1,
+          "fault_executions": 0,
+          "api_version": 2,
+          "prepare_errors": 0,
+          "execution_errors": 0
+        },
+        "0": {
+          "prepare_hits": 1,
+          "execute_hits": 1,
+          "fault_executions": 0,
+          "api_version": 2,
+          "prepare_errors": 0,
+          "execution_errors": 0
+        }
+      }
+    },
+    {
+      "run_id": "run004",
+      "published_role": "fault",
+      "source_path": "outputs/fresh_matrix/run004/result.json",
+      "source_sha256": "ec7c4a0584334f54169b85f80b0e783d5ad409bfeba331afbbbfa722eb55c265",
+      "status": "completed",
+      "backend": true,
+      "observe": true,
+      "max_tokens": 16,
+      "observation_window": [
+        30,
+        32
+      ],
+      "condition": "letter_counts_B2",
+      "stage": "F",
+      "observation_step": 0,
+      "rank_contract_shapes": {
+        "1": {
+          "shape": [
+            2,
+            13824
+          ],
+          "dtype": "torch.bfloat16"
+        },
+        "0": {
+          "shape": [
+            2,
+            13824
+          ],
+          "dtype": "torch.bfloat16"
+        }
+      },
+      "backend_hits": {
+        "1": {
+          "prepare_hits": 1,
+          "execute_hits": 1,
+          "fault_executions": 1,
+          "api_version": 2,
+          "prepare_errors": 0,
+          "execution_errors": 0
+        },
+        "0": {
+          "prepare_hits": 1,
+          "execute_hits": 1,
+          "fault_executions": 1,
+          "api_version": 2,
+          "prepare_errors": 0,
+          "execution_errors": 0
+        }
+      }
+    },
+    {
+      "run_id": "run012",
+      "published_role": "baseline",
+      "source_path": "outputs/fresh_matrix/run012/result.json",
+      "source_sha256": "bfb354916d7744474eb784dfd8f4844c0193ed08a5ca5d891bef953026e2626c",
+      "status": "completed",
+      "backend": true,
+      "observe": true,
+      "max_tokens": 16,
+      "observation_window": [
+        30,
+        32
+      ],
+      "condition": "even_count_B4",
+      "stage": "H",
+      "observation_step": 0,
+      "rank_contract_shapes": {
+        "1": {
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.bfloat16"
+        },
+        "0": {
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.bfloat16"
+        }
+      },
+      "backend_hits": {
+        "1": {
+          "prepare_hits": 1,
+          "execute_hits": 1,
+          "fault_executions": 0,
+          "api_version": 2,
+          "prepare_errors": 0,
+          "execution_errors": 0
+        },
+        "0": {
+          "prepare_hits": 1,
+          "execute_hits": 1,
+          "fault_executions": 0,
+          "api_version": 2,
+          "prepare_errors": 0,
+          "execution_errors": 0
+        }
+      }
+    },
+    {
+      "run_id": "run014",
+      "published_role": "fault",
+      "source_path": "outputs/fresh_matrix/run014/result.json",
+      "source_sha256": "52a56c01029dee70984ad3eb3c512a6c230ce4f2fd0b2f2aaa315e043968fcf7",
+      "status": "completed",
+      "backend": true,
+      "observe": true,
+      "max_tokens": 16,
+      "observation_window": [
+        30,
+        32
+      ],
+      "condition": "even_count_B4",
+      "stage": "F",
+      "observation_step": 0,
+      "rank_contract_shapes": {
+        "0": {
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.bfloat16"
+        },
+        "1": {
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.bfloat16"
+        }
+      },
+      "backend_hits": {
+        "0": {
+          "prepare_hits": 1,
+          "execute_hits": 1,
+          "fault_executions": 1,
+          "api_version": 2,
+          "prepare_errors": 0,
+          "execution_errors": 0
+        },
+        "1": {
+          "prepare_hits": 1,
+          "execute_hits": 1,
+          "fault_executions": 1,
+          "api_version": 2,
+          "prepare_errors": 0,
+          "execution_errors": 0
+        }
+      }
+    }
+  ]
+}

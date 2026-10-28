@@ -401,3 +401,9 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 [2026-10-27 双卡采集数据与说明](artifacts/quantization/batch_shared_scale_msprobe_20261027/README.md)包含两个真实 W8A8 合批条件的正常、故障重复与恢复数据，共 140 份原生 msprobe 张量。故障数值传播可重复，两个最终答案仍正确；该结果不证明原生量化器缺陷或答案准确率下降。
 
 实现采用目标层动态量化之后、量化矩阵乘之前的目标行 Q/scale 配对替换，用于模拟同批其他请求扩大目标量化尺度的数值后果。详见[故障实现、调用链与关键源码](artifacts/quantization/batch_shared_scale_msprobe_20261027/README.md#故障实现与调用链)及[模拟依据与适用边界](artifacts/quantization/batch_shared_scale_msprobe_20261027/README.md#为什么这种方式可以模拟故障)。
+
+### v2：原生归约域注入的 B/F 证据
+
+[已完成的 B/F statistics/mix 证据](artifacts/quantization/batch_shared_scale_v2_bf_statistics_20261028/README.md)包含真实 2 行、8 行条件下双 rank 的原生 dump/stack/construct、配置、完成记录、官方及独立分析报告和冻结源码。v2 在原生 DynamicQuant 执行前改变后端归约描述符，使各行共享当前 rank 的 batch 极值尺度；第 30–32 层观测窗口内，B/F 首差异定位到 `model.layers.31.mlp.down_proj → npu_dynamic_quant.127` 的输出。
+
+原采集配置为 `task=statistics, level=mix, summary_mode=md5, tensor_list=["."]`。本次提交公开其 JSON 证据子集，完整张量包私有保留；它不是重新采集的 `summary_mode=statistics` 纯统计版。原生 JSON 与历史报告保留原字节，随包提供 SHA-256 校验；不包含 `.pt` 或模型权重。

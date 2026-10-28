@@ -1,0 +1,1880 @@
+{
+  "status": "DIFFERENCE",
+  "node_count": 113,
+  "first_difference": {
+    "ordinal": 72,
+    "api": "NPU.npu_dynamic_quant.127.forward",
+    "input_differences": [],
+    "output_differences": [
+      {
+        "slot": ".0",
+        "kind": "tensor",
+        "shape": [
+          8,
+          13824
+        ],
+        "dtype": "torch.int8",
+        "different_elements": 53700,
+        "max_abs_difference": 56.0
+      },
+      {
+        "slot": ".1",
+        "kind": "tensor",
+        "shape": [
+          8
+        ],
+        "dtype": "torch.float32",
+        "different_elements": 8,
+        "max_abs_difference": 0.01599409244954586
+      }
+    ]
+  },
+  "changed_nodes": [
+    {
+      "ordinal": 72,
+      "api": "NPU.npu_dynamic_quant.127.forward",
+      "input_differences": [],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 53700,
+          "max_abs_difference": 56.0
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 8,
+          "max_abs_difference": 0.01599409244954586
+        }
+      ]
+    },
+    {
+      "ordinal": 73,
+      "api": "NPU.npu_quant_matmul.127.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 53700,
+          "max_abs_difference": 56.0
+        },
+        {
+          "slot": ".input_kwargs.pertoken_scale",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 8,
+          "max_abs_difference": 0.01599409244954586
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 35063,
+          "max_abs_difference": 0.14453125
+        }
+      ]
+    },
+    {
+      "ordinal": 74,
+      "api": "Tensor.numpy.2.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            10240
+          ],
+          "dtype": "torch.uint8",
+          "different_elements": 40083,
+          "max_abs_difference": 255.0
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            10240
+          ],
+          "dtype": "torch.uint8",
+          "different_elements": 40083,
+          "max_abs_difference": 255.0
+        }
+      ]
+    },
+    {
+      "ordinal": 75,
+      "api": "Distributed.all_reduce.64.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 35063,
+          "max_abs_difference": 0.14453125
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39703,
+          "max_abs_difference": 0.265625
+        }
+      ]
+    },
+    {
+      "ordinal": 76,
+      "api": "Module.model.layers.31.mlp.down_proj.AscendRowParallelLinear.forward.0",
+      "input_differences": [],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39703,
+          "max_abs_difference": 0.265625
+        }
+      ]
+    },
+    {
+      "ordinal": 77,
+      "api": "Module.model.layers.31.mlp.Qwen2MLP.forward.0",
+      "input_differences": [],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39703,
+          "max_abs_difference": 0.265625
+        }
+      ]
+    },
+    {
+      "ordinal": 78,
+      "api": "Module.model.layers.31.Qwen2DecoderLayer.forward.0",
+      "input_differences": [],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39703,
+          "max_abs_difference": 0.265625
+        }
+      ]
+    },
+    {
+      "ordinal": 79,
+      "api": "_C_ascend.npu_add_rms_norm_bias.63.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39703,
+          "max_abs_difference": 0.265625
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36004,
+          "max_abs_difference": 0.013824462890625
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            1
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 8,
+          "max_abs_difference": 0.00033986568450927734
+        },
+        {
+          "slot": ".2",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36575,
+          "max_abs_difference": 0.5
+        }
+      ]
+    },
+    {
+      "ordinal": 80,
+      "api": "Module.model.layers.32.input_layernorm.AscendRMSNorm.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39703,
+          "max_abs_difference": 0.265625
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36004,
+          "max_abs_difference": 0.013824462890625
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36575,
+          "max_abs_difference": 0.5
+        }
+      ]
+    },
+    {
+      "ordinal": 81,
+      "api": "NPU.npu_dynamic_quant.128.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36004,
+          "max_abs_difference": 0.013824462890625
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 11941,
+          "max_abs_difference": 2.0
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 3,
+          "max_abs_difference": 3.0757859349250793e-05
+        }
+      ]
+    },
+    {
+      "ordinal": 82,
+      "api": "NPU.npu_quant_matmul.128.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 11941,
+          "max_abs_difference": 2.0
+        },
+        {
+          "slot": ".input_kwargs.pertoken_scale",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 3,
+          "max_abs_difference": 3.0757859349250793e-05
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            3584
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 25181,
+          "max_abs_difference": 0.09375
+        }
+      ]
+    },
+    {
+      "ordinal": 83,
+      "api": "Module.model.layers.32.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36004,
+          "max_abs_difference": 0.013824462890625
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            3584
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 25181,
+          "max_abs_difference": 0.09375
+        }
+      ]
+    },
+    {
+      "ordinal": 84,
+      "api": "Tensor.split.32.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            3584
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 25181,
+          "max_abs_difference": 0.09375
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            2560
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17921,
+          "max_abs_difference": 0.0687255859375
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            512
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3457,
+          "max_abs_difference": 0.09375
+        },
+        {
+          "slot": ".2",
+          "kind": "tensor",
+          "shape": [
+            8,
+            512
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3803,
+          "max_abs_difference": 0.0703125
+        }
+      ]
+    },
+    {
+      "ordinal": 85,
+      "api": "Tensor.stride.96.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            20,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17921,
+          "max_abs_difference": 0.0687255859375
+        }
+      ],
+      "output_differences": []
+    },
+    {
+      "ordinal": 86,
+      "api": "Tensor.stride.97.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            4,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3457,
+          "max_abs_difference": 0.09375
+        }
+      ],
+      "output_differences": []
+    },
+    {
+      "ordinal": 88,
+      "api": "Triton._triton_rope.32.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            20,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17921,
+          "max_abs_difference": 0.0687255859375
+        },
+        {
+          "slot": ".input_args.2",
+          "kind": "tensor",
+          "shape": [
+            8,
+            4,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3457,
+          "max_abs_difference": 0.09375
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            20,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17900,
+          "max_abs_difference": 0.069091796875
+        },
+        {
+          "slot": ".2",
+          "kind": "tensor",
+          "shape": [
+            8,
+            4,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3461,
+          "max_abs_difference": 0.09375
+        }
+      ]
+    },
+    {
+      "ordinal": 89,
+      "api": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.32",
+      "input_differences": [
+        {
+          "slot": ".input_args.1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            2560
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17921,
+          "max_abs_difference": 0.0687255859375
+        },
+        {
+          "slot": ".input_args.2",
+          "kind": "tensor",
+          "shape": [
+            8,
+            512
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3457,
+          "max_abs_difference": 0.09375
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            2560
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17900,
+          "max_abs_difference": 0.069091796875
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            512
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3461,
+          "max_abs_difference": 0.09375
+        }
+      ]
+    },
+    {
+      "ordinal": 90,
+      "api": "NPU._npu_reshape_and_cache.32.forward",
+      "input_differences": [
+        {
+          "slot": ".input_kwargs.key",
+          "kind": "tensor",
+          "shape": [
+            8,
+            4,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3461,
+          "max_abs_difference": 0.09375
+        },
+        {
+          "slot": ".input_kwargs.value",
+          "kind": "tensor",
+          "shape": [
+            8,
+            4,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3803,
+          "max_abs_difference": 0.0703125
+        }
+      ],
+      "output_differences": []
+    },
+    {
+      "ordinal": 91,
+      "api": "NPU.npu_fused_infer_attention_score.32.forward",
+      "input_differences": [
+        {
+          "slot": ".input_kwargs.key",
+          "kind": "tensor",
+          "shape": [
+            414,
+            128,
+            512
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3461,
+          "max_abs_difference": 0.09375
+        },
+        {
+          "slot": ".input_kwargs.query",
+          "kind": "tensor",
+          "shape": [
+            8,
+            20,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17900,
+          "max_abs_difference": 0.069091796875
+        },
+        {
+          "slot": ".input_kwargs.value",
+          "kind": "tensor",
+          "shape": [
+            414,
+            128,
+            512
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3803,
+          "max_abs_difference": 0.0703125
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            20,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17401,
+          "max_abs_difference": 0.091796875
+        }
+      ]
+    },
+    {
+      "ordinal": 92,
+      "api": "Tensor.__setitem__.67.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            20,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17843,
+          "max_abs_difference": 0.09375
+        },
+        {
+          "slot": ".input_args.2",
+          "kind": "tensor",
+          "shape": [
+            8,
+            20,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17401,
+          "max_abs_difference": 0.091796875
+        }
+      ],
+      "output_differences": []
+    },
+    {
+      "ordinal": 93,
+      "api": "Tensor.__setitem__.68.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            20,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17401,
+          "max_abs_difference": 0.091796875
+        },
+        {
+          "slot": ".input_args.2",
+          "kind": "tensor",
+          "shape": [
+            8,
+            20,
+            128
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17401,
+          "max_abs_difference": 0.091796875
+        }
+      ],
+      "output_differences": []
+    },
+    {
+      "ordinal": 94,
+      "api": "Module.model.layers.32.self_attn.attn.Attention.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            2560
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17900,
+          "max_abs_difference": 0.069091796875
+        },
+        {
+          "slot": ".input_args.1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            512
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3461,
+          "max_abs_difference": 0.09375
+        },
+        {
+          "slot": ".input_args.2",
+          "kind": "tensor",
+          "shape": [
+            8,
+            512
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 3803,
+          "max_abs_difference": 0.0703125
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            2560
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17401,
+          "max_abs_difference": 0.091796875
+        }
+      ]
+    },
+    {
+      "ordinal": 95,
+      "api": "NPU.npu_dynamic_quant.129.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            2560
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17401,
+          "max_abs_difference": 0.091796875
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            2560
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 2351,
+          "max_abs_difference": 7.0
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 3,
+          "max_abs_difference": 0.00012303143739700317
+        }
+      ]
+    },
+    {
+      "ordinal": 96,
+      "api": "NPU.npu_quant_matmul.129.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            2560
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 2351,
+          "max_abs_difference": 7.0
+        },
+        {
+          "slot": ".input_kwargs.pertoken_scale",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 3,
+          "max_abs_difference": 0.00012303143739700317
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 38742,
+          "max_abs_difference": 0.09375
+        }
+      ]
+    },
+    {
+      "ordinal": 97,
+      "api": "Distributed.all_reduce.65.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 38742,
+          "max_abs_difference": 0.09375
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 38151,
+          "max_abs_difference": 0.15625
+        }
+      ]
+    },
+    {
+      "ordinal": 98,
+      "api": "Module.model.layers.32.self_attn.o_proj.AscendRowParallelLinear.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            2560
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 17401,
+          "max_abs_difference": 0.091796875
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 38151,
+          "max_abs_difference": 0.15625
+        }
+      ]
+    },
+    {
+      "ordinal": 99,
+      "api": "Module.model.layers.32.self_attn.Qwen2Attention.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_kwargs.hidden_states",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36004,
+          "max_abs_difference": 0.013824462890625
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 38151,
+          "max_abs_difference": 0.15625
+        }
+      ]
+    },
+    {
+      "ordinal": 100,
+      "api": "_C_ascend.npu_add_rms_norm_bias.64.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 38151,
+          "max_abs_difference": 0.15625
+        },
+        {
+          "slot": ".input_args.1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36575,
+          "max_abs_difference": 0.5
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36194,
+          "max_abs_difference": 0.013885498046875
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            1
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 8,
+          "max_abs_difference": 0.0003559589385986328
+        },
+        {
+          "slot": ".2",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36921,
+          "max_abs_difference": 0.5
+        }
+      ]
+    },
+    {
+      "ordinal": 101,
+      "api": "Module.model.layers.32.post_attention_layernorm.AscendRMSNorm.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 38151,
+          "max_abs_difference": 0.15625
+        },
+        {
+          "slot": ".input_args.1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36575,
+          "max_abs_difference": 0.5
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36194,
+          "max_abs_difference": 0.013885498046875
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36921,
+          "max_abs_difference": 0.5
+        }
+      ]
+    },
+    {
+      "ordinal": 102,
+      "api": "NPU.npu_dynamic_quant.130.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36194,
+          "max_abs_difference": 0.013885498046875
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 15430,
+          "max_abs_difference": 3.0
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 1,
+          "max_abs_difference": 3.0757859349250793e-05
+        }
+      ]
+    },
+    {
+      "ordinal": 103,
+      "api": "NPU.npu_quant_matmul.130.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 15430,
+          "max_abs_difference": 3.0
+        },
+        {
+          "slot": ".input_kwargs.pertoken_scale",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 1,
+          "max_abs_difference": 3.0757859349250793e-05
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            27648
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 204509,
+          "max_abs_difference": 0.0859375
+        }
+      ]
+    },
+    {
+      "ordinal": 104,
+      "api": "Module.model.layers.32.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36194,
+          "max_abs_difference": 0.013885498046875
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            27648
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 204509,
+          "max_abs_difference": 0.0859375
+        }
+      ]
+    },
+    {
+      "ordinal": 105,
+      "api": "NPU.npu_swiglu.32.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            27648
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 204509,
+          "max_abs_difference": 0.0859375
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 105827,
+          "max_abs_difference": 0.09375
+        }
+      ]
+    },
+    {
+      "ordinal": 106,
+      "api": "Module.model.layers.32.mlp.act_fn.AscendSiluAndMul.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            27648
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 204509,
+          "max_abs_difference": 0.0859375
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 105827,
+          "max_abs_difference": 0.09375
+        }
+      ]
+    },
+    {
+      "ordinal": 107,
+      "api": "NPU.npu_dynamic_quant.131.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 105827,
+          "max_abs_difference": 0.09375
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 16749,
+          "max_abs_difference": 5.0
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 6,
+          "max_abs_difference": 0.000738188624382019
+        }
+      ]
+    },
+    {
+      "ordinal": 108,
+      "api": "NPU.npu_quant_matmul.131.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.int8",
+          "different_elements": 16749,
+          "max_abs_difference": 5.0
+        },
+        {
+          "slot": ".input_kwargs.pertoken_scale",
+          "kind": "tensor",
+          "shape": [
+            8
+          ],
+          "dtype": "torch.float32",
+          "different_elements": 6,
+          "max_abs_difference": 0.000738188624382019
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39727,
+          "max_abs_difference": 0.127685546875
+        }
+      ]
+    },
+    {
+      "ordinal": 109,
+      "api": "Distributed.all_reduce.66.forward",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39727,
+          "max_abs_difference": 0.127685546875
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39464,
+          "max_abs_difference": 0.21875
+        }
+      ]
+    },
+    {
+      "ordinal": 110,
+      "api": "Module.model.layers.32.mlp.down_proj.AscendRowParallelLinear.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            13824
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 105827,
+          "max_abs_difference": 0.09375
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39464,
+          "max_abs_difference": 0.21875
+        }
+      ]
+    },
+    {
+      "ordinal": 111,
+      "api": "Module.model.layers.32.mlp.Qwen2MLP.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36194,
+          "max_abs_difference": 0.013885498046875
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39464,
+          "max_abs_difference": 0.21875
+        }
+      ]
+    },
+    {
+      "ordinal": 112,
+      "api": "Module.model.layers.32.Qwen2DecoderLayer.forward.0",
+      "input_differences": [
+        {
+          "slot": ".input_args.1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39703,
+          "max_abs_difference": 0.265625
+        }
+      ],
+      "output_differences": [
+        {
+          "slot": ".0",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 39464,
+          "max_abs_difference": 0.21875
+        },
+        {
+          "slot": ".1",
+          "kind": "tensor",
+          "shape": [
+            8,
+            5120
+          ],
+          "dtype": "torch.bfloat16",
+          "different_elements": 36921,
+          "max_abs_difference": 0.5
+        }
+      ]
+    }
+  ],
+  "dump_sha256": [
+    "7c96285c4f62485d9438a4d672c68e2f1dc2e5d064b2498df57d8e9d6bc0ca7b",
+    "e87835aed79f2c29fe25098799d62e5e18badb423aa27a12b75f67771411f0d1"
+  ],
+  "checksum_only_slots": [
+    {
+      "reference": "NPU.npu_quant_matmul.120.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.120.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        3584
+      ],
+      "reference_checksum": "09660131",
+      "candidate_checksum": "09660131"
+    },
+    {
+      "reference": "Module.model.layers.30.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.30.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        3584
+      ],
+      "reference_checksum": "09660131",
+      "candidate_checksum": "09660131"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.121.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.121.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        2560,
+        5120
+      ],
+      "reference_checksum": "cf48544a",
+      "candidate_checksum": "cf48544a"
+    },
+    {
+      "reference": "Module.model.layers.30.self_attn.o_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.30.self_attn.o_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        2560,
+        5120
+      ],
+      "reference_checksum": "cf48544a",
+      "candidate_checksum": "cf48544a"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.122.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.122.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        27648
+      ],
+      "reference_checksum": "9ad84987",
+      "candidate_checksum": "9ad84987"
+    },
+    {
+      "reference": "Module.model.layers.30.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.30.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        27648
+      ],
+      "reference_checksum": "9ad84987",
+      "candidate_checksum": "9ad84987"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.123.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.123.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        13824,
+        5120
+      ],
+      "reference_checksum": "7d72a91c",
+      "candidate_checksum": "7d72a91c"
+    },
+    {
+      "reference": "Module.model.layers.30.mlp.down_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.30.mlp.down_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        13824,
+        5120
+      ],
+      "reference_checksum": "7d72a91c",
+      "candidate_checksum": "7d72a91c"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.124.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.124.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        3584
+      ],
+      "reference_checksum": "ca8e929c",
+      "candidate_checksum": "ca8e929c"
+    },
+    {
+      "reference": "Module.model.layers.31.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.31.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        3584
+      ],
+      "reference_checksum": "ca8e929c",
+      "candidate_checksum": "ca8e929c"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.125.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.125.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        2560,
+        5120
+      ],
+      "reference_checksum": "3ec1cd1b",
+      "candidate_checksum": "3ec1cd1b"
+    },
+    {
+      "reference": "Module.model.layers.31.self_attn.o_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.31.self_attn.o_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        2560,
+        5120
+      ],
+      "reference_checksum": "3ec1cd1b",
+      "candidate_checksum": "3ec1cd1b"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.126.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.126.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        27648
+      ],
+      "reference_checksum": "15879458",
+      "candidate_checksum": "15879458"
+    },
+    {
+      "reference": "Module.model.layers.31.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.31.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        27648
+      ],
+      "reference_checksum": "15879458",
+      "candidate_checksum": "15879458"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.127.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.127.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        13824,
+        5120
+      ],
+      "reference_checksum": "2b4de2c4",
+      "candidate_checksum": "2b4de2c4"
+    },
+    {
+      "reference": "Module.model.layers.31.mlp.down_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.31.mlp.down_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        13824,
+        5120
+      ],
+      "reference_checksum": "2b4de2c4",
+      "candidate_checksum": "2b4de2c4"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.128.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.128.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        3584
+      ],
+      "reference_checksum": "88c18797",
+      "candidate_checksum": "88c18797"
+    },
+    {
+      "reference": "Module.model.layers.32.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.32.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        3584
+      ],
+      "reference_checksum": "88c18797",
+      "candidate_checksum": "88c18797"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.129.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.129.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        2560,
+        5120
+      ],
+      "reference_checksum": "24d3d35d",
+      "candidate_checksum": "24d3d35d"
+    },
+    {
+      "reference": "Module.model.layers.32.self_attn.o_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.32.self_attn.o_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        2560,
+        5120
+      ],
+      "reference_checksum": "24d3d35d",
+      "candidate_checksum": "24d3d35d"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.130.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.130.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        27648
+      ],
+      "reference_checksum": "a1ae2c59",
+      "candidate_checksum": "a1ae2c59"
+    },
+    {
+      "reference": "Module.model.layers.32.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.32.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        5120,
+        27648
+      ],
+      "reference_checksum": "a1ae2c59",
+      "candidate_checksum": "a1ae2c59"
+    },
+    {
+      "reference": "NPU.npu_quant_matmul.131.forward.input.1.pt",
+      "candidate": "NPU.npu_quant_matmul.131.forward.input.1.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        13824,
+        5120
+      ],
+      "reference_checksum": "738c6127",
+      "candidate_checksum": "738c6127"
+    },
+    {
+      "reference": "Module.model.layers.32.mlp.down_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "candidate": "Module.model.layers.32.mlp.down_proj.AscendRowParallelLinear.forward.0.parameters.weight.pt",
+      "dtype": "torch.int8",
+      "shape": [
+        13824,
+        5120
+      ],
+      "reference_checksum": "738c6127",
+      "candidate_checksum": "738c6127"
+    }
+  ],
+  "coverage_note": "Available raw tensors compared exactly; missing raw files compared only by native msprobe checksums, as explicitly listed.",
+  "earlier_observed_nodes_exact": 72,
+  "first_boundary": "output_with_equal_inputs",
+  "numerical_hypotheses": {
+    "reference": {
+      "fits": {
+        "row": {
+          "scale_matches": true,
+          "scale_max_abs_error": 0.0,
+          "code_mismatches": 0
+        },
+        "batch": {
+          "scale_matches": false,
+          "scale_max_abs_error": 0.01599409617483616,
+          "code_mismatches": 53700
+        }
+      },
+      "row_absmax": [
+        4.28125,
+        4.59375,
+        3.875,
+        2.9375,
+        2.5625,
+        3.109375,
+        2.8125,
+        3.140625
+      ],
+      "observed_scale": [
+        0.033710628747940063,
+        0.036171261221170425,
+        0.03051181137561798,
+        0.023129921406507492,
+        0.020177165046334267,
+        0.024483267217874527,
+        0.022145669907331467,
+        0.024729330092668533
+      ],
+      "extreme_rows": [
+        1
+      ]
+    },
+    "candidate": {
+      "fits": {
+        "row": {
+          "scale_matches": false,
+          "scale_max_abs_error": 0.01599409244954586,
+          "code_mismatches": 53700
+        },
+        "batch": {
+          "scale_matches": true,
+          "scale_max_abs_error": 3.725290298461914e-09,
+          "code_mismatches": 0
+        }
+      },
+      "row_absmax": [
+        4.28125,
+        4.59375,
+        3.875,
+        2.9375,
+        2.5625,
+        3.109375,
+        2.8125,
+        3.140625
+      ],
+      "observed_scale": [
+        0.03617125749588013,
+        0.03617125749588013,
+        0.03617125749588013,
+        0.03617125749588013,
+        0.03617125749588013,
+        0.03617125749588013,
+        0.03617125749588013,
+        0.03617125749588013
+      ],
+      "extreme_rows": [
+        1
+      ]
+    }
+  },
+  "first_node_parent_module": "Module.model.layers.31.mlp.down_proj.AscendRowParallelLinear.forward.0",
+  "rank_directory": "rank1",
+  "first_node_stack": [
+    [
+      [
+        "NPU.npu_dynamic_quant.127.forward"
+      ],
+      [
+        "File /work/venv/lib/python3.11/site-packages/vllm_ascend/quantization/methods/w8a8_dynamic.py, line 82, in apply, \n quantized_x, pertoken_scale = torch_npu.npu_dynamic_quant(x, dst_type=self.act_quant_type)",
+        "File /work/venv/lib/python3.11/site-packages/vllm_ascend/quantization/method_adapters.py, line 162, in apply, \n return self.quant_method.apply(layer, x, bias, tp_rank)",
+        "File /audit/final/model_hook.py, line 145, in apply, \n result=original(module,*args,**kwargs)",
+        "File /work/sources/vllm/vllm/model_executor/layers/linear.py, line 1553, in forward, \n output_parallel = self.quant_method.apply(self, input_parallel, bias_)",
+        "File /work/venv/lib/python3.11/site-packages/vllm_ascend/ops/linear.py, line 371, in forward, \n return super().forward(input_)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /work/sources/vllm/vllm/model_executor/models/qwen2.py, line 116, in forward, \n x, _ = self.down_proj(x)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /work/sources/vllm/vllm/model_executor/models/qwen2.py, line 311, in forward, \n hidden_states = self.mlp(hidden_states)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /work/sources/vllm/vllm/model_executor/models/qwen2.py, line 411, in forward, \n hidden_states, residual = layer(positions, hidden_states, residual)",
+        "File /work/sources/vllm/vllm/compilation/decorators.py, line 507, in __call__, \n return self.forward(*args, **kwargs)",
+        "File /work/sources/vllm/vllm/model_executor/models/qwen2.py, line 538, in forward, \n hidden_states = self.model(",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/model_runner_v1.py, line 2867, in _model_forward, \n hidden_states = run_model()",
+        "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/model_runner_v1.py, line 2320, in execute_model, \n hidden_states = self._model_forward(",
+        "File /work/venv/lib/python3.11/site-packages/torch/utils/_contextlib.py, line 124, in decorate_context, \n return func(*args, **kwargs)",
+        "File /audit/final/model_hook.py, line 181, in execute, \n return old_execute(self,*args,**kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/vllm_ascend/worker/worker.py, line 647, in execute_model, \n output = self.model_runner.execute_model(scheduler_output, intermediate_tensors)",
+        "File /work/sources/vllm/vllm/v1/worker/worker_base.py, line 345, in execute_model, \n return self.worker.execute_model(scheduler_output)",
+        "File /work/sources/vllm/vllm/v1/executor/multiproc_executor.py, line 982, in worker_busy_loop, \n output = func(*args, **kwargs)",
+        "File /work/sources/vllm/vllm/v1/executor/multiproc_executor.py, line 879, in worker_main, \n worker.worker_busy_loop()",
+        "File /usr/lib/python3.11/multiprocessing/process.py, line 108, in run, \n self._target(*self._args, **self._kwargs)",
+        "File /usr/lib/python3.11/multiprocessing/process.py, line 314, in _bootstrap, \n self.run()",
+        "File /usr/lib/python3.11/multiprocessing/spawn.py, line 135, in _main, \n return self._bootstrap(parent_sentinel)",
+        "File /usr/lib/python3.11/multiprocessing/spawn.py, line 122, in spawn_main, \n exitcode = _main(fd, parent_sentinel)"
+      ]
+    ]
+  ],
+  "observed_consumers_with_exact_pair": [
+    "NPU.npu_quant_matmul.127.forward"
+  ]
+}
