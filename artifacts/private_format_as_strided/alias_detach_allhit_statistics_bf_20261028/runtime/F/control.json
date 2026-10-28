@@ -1,0 +1,898 @@
+{
+  "arm": "F",
+  "hits": 6,
+  "selected_original_calls": 6,
+  "unmatched_calls": 4,
+  "unmatched_original_calls": 4,
+  "errors": [],
+  "events": [
+    {
+      "forward": 0,
+      "call": null,
+      "case_id": "f0_guard_other_callsite",
+      "registered_base_slot": 0,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "unmatched_as_strided",
+        "line": 57
+      },
+      "input_identity": {
+        "object_id": 281454197354048,
+        "tensor_cdata": 704948912,
+        "storage_cdata": 704842576,
+        "storage_ptr": 20616935638016,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935638016,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": false,
+      "original_argument_identity": {
+        "object_id": 281454197354048,
+        "tensor_cdata": 704948912,
+        "storage_cdata": 704842576,
+        "storage_ptr": 20616935638016,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935638016,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453863100464,
+        "tensor_cdata": 981528992,
+        "storage_cdata": 704842576,
+        "storage_ptr": 20616935638016,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935638050,
+        "storage_offset": 17,
+        "actual_format": 29,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    },
+    {
+      "forward": 0,
+      "call": null,
+      "case_id": "f0_guard_unregistered_base",
+      "registered_base_slot": null,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "selected_as_strided",
+        "line": 53
+      },
+      "input_identity": {
+        "object_id": 281454197355568,
+        "tensor_cdata": 940612352,
+        "storage_cdata": 859290432,
+        "storage_ptr": 20616935640064,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935640064,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": false,
+      "original_argument_identity": {
+        "object_id": 281454197355568,
+        "tensor_cdata": 940612352,
+        "storage_cdata": 859290432,
+        "storage_ptr": 20616935640064,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935640064,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453856630384,
+        "tensor_cdata": 999975536,
+        "storage_cdata": 859290432,
+        "storage_ptr": 20616935640064,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935640098,
+        "storage_offset": 17,
+        "actual_format": 29,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    },
+    {
+      "forward": 0,
+      "call": 0,
+      "case_id": "f0_c0",
+      "registered_base_slot": 0,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "selected_as_strided",
+        "line": 53
+      },
+      "input_identity": {
+        "object_id": 281454197354048,
+        "tensor_cdata": 704948912,
+        "storage_cdata": 704842576,
+        "storage_ptr": 20616935638016,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935638016,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": true,
+      "original_argument_identity": {
+        "object_id": 281453851213360,
+        "tensor_cdata": 1000052752,
+        "storage_cdata": 1000052384,
+        "storage_ptr": 20616935676928,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935676928,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453861364000,
+        "tensor_cdata": 999984992,
+        "storage_cdata": 1000052384,
+        "storage_ptr": 20616935676928,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935676962,
+        "storage_offset": 17,
+        "actual_format": 2,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    },
+    {
+      "forward": 0,
+      "call": 1,
+      "case_id": "f0_c1",
+      "registered_base_slot": 0,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "selected_as_strided",
+        "line": 53
+      },
+      "input_identity": {
+        "object_id": 281454197354048,
+        "tensor_cdata": 704948912,
+        "storage_cdata": 704842576,
+        "storage_ptr": 20616935638016,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935638016,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": true,
+      "original_argument_identity": {
+        "object_id": 281453850452576,
+        "tensor_cdata": 1001000352,
+        "storage_cdata": 1000999984,
+        "storage_ptr": 20616935767040,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935767040,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453851208240,
+        "tensor_cdata": 1000989088,
+        "storage_cdata": 1000999984,
+        "storage_ptr": 20616935767040,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935767074,
+        "storage_offset": 17,
+        "actual_format": 2,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    },
+    {
+      "forward": 0,
+      "call": 2,
+      "case_id": "f0_c2",
+      "registered_base_slot": 0,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "selected_as_strided",
+        "line": 53
+      },
+      "input_identity": {
+        "object_id": 281454197354048,
+        "tensor_cdata": 704948912,
+        "storage_cdata": 704842576,
+        "storage_ptr": 20616935638016,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935638016,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": true,
+      "original_argument_identity": {
+        "object_id": 281453851151088,
+        "tensor_cdata": 1001296816,
+        "storage_cdata": 1001296448,
+        "storage_ptr": 20616935857152,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935857152,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453858275968,
+        "tensor_cdata": 1001285552,
+        "storage_cdata": 1001296448,
+        "storage_ptr": 20616935857152,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935857186,
+        "storage_offset": 17,
+        "actual_format": 2,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    },
+    {
+      "forward": 1,
+      "call": null,
+      "case_id": "f1_guard_other_callsite",
+      "registered_base_slot": 1,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "unmatched_as_strided",
+        "line": 57
+      },
+      "input_identity": {
+        "object_id": 281456021076112,
+        "tensor_cdata": 940606144,
+        "storage_cdata": 871247136,
+        "storage_ptr": 20616935639040,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935639040,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": false,
+      "original_argument_identity": {
+        "object_id": 281456021076112,
+        "tensor_cdata": 940606144,
+        "storage_cdata": 871247136,
+        "storage_ptr": 20616935639040,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935639040,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453861370720,
+        "tensor_cdata": 1001575968,
+        "storage_cdata": 871247136,
+        "storage_ptr": 20616935639040,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935639074,
+        "storage_offset": 17,
+        "actual_format": 29,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    },
+    {
+      "forward": 1,
+      "call": null,
+      "case_id": "f1_guard_unregistered_base",
+      "registered_base_slot": null,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "selected_as_strided",
+        "line": 53
+      },
+      "input_identity": {
+        "object_id": 281454197352208,
+        "tensor_cdata": 940609632,
+        "storage_cdata": 659462752,
+        "storage_ptr": 20616935641088,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935641088,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": false,
+      "original_argument_identity": {
+        "object_id": 281454197352208,
+        "tensor_cdata": 940609632,
+        "storage_cdata": 659462752,
+        "storage_ptr": 20616935641088,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935641088,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453858284928,
+        "tensor_cdata": 984281248,
+        "storage_cdata": 659462752,
+        "storage_ptr": 20616935641088,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935641122,
+        "storage_offset": 17,
+        "actual_format": 29,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    },
+    {
+      "forward": 1,
+      "call": 0,
+      "case_id": "f1_c0",
+      "registered_base_slot": 1,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "selected_as_strided",
+        "line": 53
+      },
+      "input_identity": {
+        "object_id": 281456021076112,
+        "tensor_cdata": 940606144,
+        "storage_cdata": 871247136,
+        "storage_ptr": 20616935639040,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935639040,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": true,
+      "original_argument_identity": {
+        "object_id": 281453850454176,
+        "tensor_cdata": 1000131792,
+        "storage_cdata": 999941280,
+        "storage_ptr": 20616935677952,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935677952,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453861359200,
+        "tensor_cdata": 1001217264,
+        "storage_cdata": 999941280,
+        "storage_ptr": 20616935677952,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935677986,
+        "storage_offset": 17,
+        "actual_format": 2,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    },
+    {
+      "forward": 1,
+      "call": 1,
+      "case_id": "f1_c1",
+      "registered_base_slot": 1,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "selected_as_strided",
+        "line": 53
+      },
+      "input_identity": {
+        "object_id": 281456021076112,
+        "tensor_cdata": 940606144,
+        "storage_cdata": 871247136,
+        "storage_ptr": 20616935639040,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935639040,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": true,
+      "original_argument_identity": {
+        "object_id": 281453848125888,
+        "tensor_cdata": 1000115360,
+        "storage_cdata": 1000114992,
+        "storage_ptr": 20616935769088,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935769088,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453851156688,
+        "tensor_cdata": 1001162528,
+        "storage_cdata": 1000114992,
+        "storage_ptr": 20616935769088,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935769122,
+        "storage_offset": 17,
+        "actual_format": 2,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    },
+    {
+      "forward": 1,
+      "call": 2,
+      "case_id": "f1_c2",
+      "registered_base_slot": 1,
+      "callsite": {
+        "file": "/audit/alias_probe.py",
+        "function": "selected_as_strided",
+        "line": 53
+      },
+      "input_identity": {
+        "object_id": 281456021076112,
+        "tensor_cdata": 940606144,
+        "storage_cdata": 871247136,
+        "storage_ptr": 20616935639040,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935639040,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "requested_size": [
+        8,
+        8
+      ],
+      "requested_stride": [
+        16,
+        1
+      ],
+      "requested_offset": 17,
+      "matched": true,
+      "original_argument_identity": {
+        "object_id": 281453848759184,
+        "tensor_cdata": 1001813392,
+        "storage_cdata": 1001813024,
+        "storage_ptr": 20616935860224,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935860224,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "native_return_identity": {
+        "object_id": 281453848509440,
+        "tensor_cdata": 1001802672,
+        "storage_cdata": 1001813024,
+        "storage_ptr": 20616935860224,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935860258,
+        "storage_offset": 17,
+        "actual_format": 2,
+        "shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      "completed": true
+    }
+  ],
+  "policy": "every_eligible_call",
+  "selector": {
+    "pid": 656,
+    "rank": 0,
+    "active_forward": true,
+    "forward_filter": null,
+    "hit_limit": null,
+    "callsite_file": "/audit/alias_probe.py",
+    "callsite_function": "selected_as_strided",
+    "callsite_line": 53,
+    "base_identities": [
+      {
+        "object_id": 281454197354048,
+        "tensor_cdata": 704948912,
+        "storage_cdata": 704842576,
+        "storage_ptr": 20616935638016,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935638016,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      },
+      {
+        "object_id": 281456021076112,
+        "tensor_cdata": 940606144,
+        "storage_cdata": 871247136,
+        "storage_ptr": 20616935639040,
+        "storage_nbytes": 512,
+        "tensor_ptr": 20616935639040,
+        "storage_offset": 0,
+        "actual_format": 29,
+        "shape": [
+          16,
+          16
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "device": "npu:0"
+      }
+    ],
+    "view_size": [
+      8,
+      8
+    ],
+    "view_stride": [
+      16,
+      1
+    ],
+    "view_offset": 17
+  },
+  "coverage": "Only this controlled Python torch.as_strided call; no Tensor/ATen/native internal coverage claim",
+  "native_callable": {
+    "module": "msprobe.core.dump.api_dump.api_registry",
+    "name": "ApiRegistry.register_custom_api.<locals>.wrap_api_func.<locals>.api_function",
+    "called_once_per_dispatch": true
+  }
+}

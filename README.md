@@ -408,12 +408,16 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 
 原采集配置为 `task=statistics, level=mix, summary_mode=md5, tensor_list=["."]`。本次提交公开其 JSON 证据子集，完整张量包私有保留；它不是重新采集的 `summary_mode=statistics` 纯统计版。原生 JSON 与历史报告保留原字节，随包提供 SHA-256 校验；不包含 `.pt` 或模型权重。
 
-## 故障 27：私有格式视图别名断开与原张量更新丢失
+## 故障 15：私有格式视图别名断开与原张量更新丢失
 
-[实现、调用链与验收说明](experiments/fault27_alias_detach_20261028/README.md)及[本次 B/F statistics/mix 证据](artifacts/private_format_as_strided/alias_detach_statistics_bf_20261028/README.md)已完成 124 物理卡 5 的实机验证，**目前仅通过受控机制级验收**。本方案替换“错误 stride 重排权重”代理：F 只在指定 as_strided 入口把原 NZ29 base 转成等值、独立存储的 ND2 临时张量，再用相同 size/stride/offset 创建视图；随后两组执行相同的真实 copy_ 与 original_base+1。
+本机制此前误标为故障 27，现统一纠正为**故障 15**。[持续条件触发的实现、调用链与验收说明](experiments/fault15_alias_detach_allhit_20261028/README.md)及[新 B/F statistics/mix 证据](artifacts/private_format_as_strided/alias_detach_allhit_statistics_bf_20261028/README.md)已在 124 物理卡 5 通过 `PASS_ALL_ELIGIBLE_MECHANISM_AND_STATISTICS`，**目前仅通过机制级验收**。
 
-B/F 的视图初值和 copy_ 结果均正确。B 正确写回 64 个目标元素；F 的原 base 仍保留旧值，消费者差异恰好对应这 64 个位置；两组 192 个非目标元素均不变。msprobe 首个可对齐数值差异位于写后原 base 的共同读回，首个语义模块差异为 ReadOriginalBase。别名断开的位置由共同运行时存储证据确认，不能仅凭 statistics 唯一推断根因；null 统计及原生 offset 警告保留。
+注入器持续处理每次满足指定进程、rank、活动 forward、调用位置、已注册活 base 身份及 NZ29/BF16 固定几何的调用，没有首次命中后禁用或第二次匹配报错的限制。F 每次将原 base 转为逻辑等值、独立存储的 ND2 临时张量，再用相同 size/stride/offset 调用真实 as_strided；两组随后执行相同的真实 copy_ 和 original_base+1。
 
-当前是**一次指定调用的精确注入**：绑定进程、rank0、forward0、调用位置、活 base 身份及固定格式/几何，F 恰好命中一次；第二次匹配选中调用会报错。后续写回丢失和消费者差异自然传播，无再次改值。持续“每次满足条件都触发”的模式尚未实现和验证；本次也不证明自然模型写回链、历史 CANN 缺陷或生产事故已复现。
+本次每组使用同一个注入器跨两个真实 forward，每个 forward 对同一个 base 连续写入三次且不重置，共六次匹配。F 六次全部触发，每次 view 写入正确而原 base 丢失 64 个目标元素的写回；B 每次正常更新。每次消费者差异恰好对应这 64 个位置，两组 192 个非目标均不变；每组四次未匹配对照正常透传。六个 F 临时存储两两独立，且不与任一注册 base 共享存储。
 
-采集配置为 task=statistics、level=mix、summary_mode=statistics。B/F 各包含 dump/stack/construct、config、receipt 五个原生 JSON；小规模完整逻辑值、BF16 位模式与存储关系单列 runtime JSON。包内没有 .pt 等张量二进制，附冻结源码、独立分析报告和 SHA-256 清单。
+msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写后原 base 读回，语义模块为 ReadOriginalBase；后续两次在 ReadBaseBefore 已看到前次差异，报告明确标为继承传播。每次再次发生的别名断开与写回丢失由独立存储关系和本次前后状态确认，不能仅凭累计命中数或持续输出差异推断。null 统计不可判相等，原生 offset 警告保留。
+
+新采集配置为 task=statistics、level=mix、summary_mode=statistics。B/F 各包含 step0–1/rank0 的 dump/stack/construct，加 config 与 receipt，共八个原生 JSON；小规模完整逻辑值、BF16 位模式与存储证据单列 runtime JSON，没有 .pt 等张量二进制。实际微基准步骤不包装成模型 token 步骤；自然模型写回链与历史 CANN 缺陷仍未验证。
+
+[历史单次实现](experiments/fault27_alias_detach_20261028/README.md)和[历史单次证据包](artifacts/private_format_as_strided/alias_detach_statistics_bf_20261028/README.md)保留追溯入口；旧源码、采集数据和包内 SHA 不改写，旧路径及 schema 中的 fault27 属于此前误标，不代表另一项故障。

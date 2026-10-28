@@ -1,0 +1,95 @@
+{
+  "schema": "fault15.alias_detach.allhit.contract.v1",
+  "status": "FROZEN_DESIGN_PENDING_NEW_NPU_B_F_VALIDATION",
+  "fault_name": "Every eligible private-format view creation detaches the original-base alias",
+  "arms": ["B", "F"],
+  "expected_acceptance_status": "PASS_ALL_ELIGIBLE_MECHANISM_AND_STATISTICS",
+  "scope": "Constructed bounded mechanism experiment; no model-path or historical-defect claim",
+  "selection_policy": "Every call satisfying all predicates is handled; no hit-count suppression or one-shot error",
+  "selection_predicates": [
+    "owning PID", "rank0", "active real forward context", "fixed selected Python callsite",
+    "live registered base object and its storage identity", "actual NPU device",
+    "actual format29", "BF16", "base shape[16,16]/stride[16,1]/offset0",
+    "requested view size[8,8]/stride[16,1]/offset17"
+  ],
+  "persistent_state": {
+    "registered_target_bases": 2,
+    "create_and_register_before_install": true,
+    "same_injector_instance_across_forwards": true,
+    "preserve_cumulative_counters": true,
+    "retain_bases_views_and_fault_temporaries_until_finish": true,
+    "do_not_compare_addresses_across_B_F_processes": true
+  },
+  "matrix": {
+    "forward_count": 2,
+    "step_ids": [0, 1],
+    "calls_per_forward": 3,
+    "base_selection": "forward f uses registered base[f]",
+    "reset_base_between_calls": false,
+    "initial_base_formula": "arange(256) reshaped[16,16]",
+    "write_values_formula": "-64*(call+1)-arange(64), call=0,1,2, reshaped[8,8]",
+    "consumer": "actual original_base + 1 after every write",
+    "expected_matched_original_calls_per_arm": 6,
+    "expected_fault_hits": {"B": 0, "F": 6},
+    "expected_fault_hits_per_forward": {"B": 0, "F": 3}
+  },
+  "guards": {
+    "per_forward": 2,
+    "other_callsite": "Registered base, identical requested geometry, different callsite, read-only native view",
+    "unregistered_base": "Fresh independent unregistered NZ29 base at the same selected entry; real copy_(-16-arange64) then original_base+1",
+    "unregistered_base_fresh_per_forward": true,
+    "expected_unmatched_calls_per_arm": 4,
+    "expected_unmatched_original_calls_per_arm": 4,
+    "both_arms_must_preserve_native_alias_and_correct_guard_effects": true
+  },
+  "unique_fault_factor": "F: actual npu_format_cast(base,2), followed by the original as_strided with unchanged geometry",
+  "forbidden_changes": [
+    "clone fallback", "stride or initial-value replacement", "copy_ result substitution",
+    "consumer rewriting", "rebinding the original base", "base reset between selected calls",
+    "recreating a one-shot injector per invocation", "using prior divergence as proof of a later hit"
+  ],
+  "common_observer": {
+    "independent_of_arm_and_injector_success_counters": true,
+    "synchronize_each_observation": true,
+    "full_small_values_and_BF16_bits": true,
+    "object_TensorImpl_StorageImpl_pointers_offset_format_shape_stride_dtype_device": true,
+    "direct_CPU_and_ND_readback_before_after_integrity": true,
+    "pre_view_snapshot_for_each_invocation": true,
+    "consumer_uses_that_forward_same_original_base": true,
+    "F_each_temporary_equal_to_its_own_pre_base_at_creation": true,
+    "F_each_new_temporary_storage_distinct_from_registered_bases_and_retained_prior_temporaries": true
+  },
+  "integer_oracle": {
+    "producer": "build_reference.py; Python integers only, no Torch/NPU/view operations",
+    "numeric_tolerance": 0,
+    "target_positions": 64,
+    "untouched_positions": 192,
+    "all_three_B_writes_must_change_all_64_targets_relative_to_own_pre_state": true,
+    "F_each_view_write_matches_requested_values": true,
+    "F_original_base_unchanged_relative_to_own_pre_state_after_each_write": true,
+    "each_consumer_pair_differs_at_exactly_the_64_target_positions": true,
+    "cross_forward_bases_start_from_independent_fresh_initial_state": true
+  },
+  "msprobe": {
+    "task": "statistics", "level": "mix", "summary_mode": "statistics", "tensor_list": [],
+    "rank": 0, "steps": [0, 1],
+    "native_jsons_per_step": ["dump.json", "stack.json", "construct.json"],
+    "statistics_JSONs_per_arm_including_config_receipt": 8,
+    "official_custom_API_registration": ["Torch.as_strided", "Tensor.copy_"],
+    "native_coverage_each_matched_call_and_each_guard": true,
+    "alignment": "step plus semantic invocation-module/construct path, phase, API kind and callsite; never global API suffix alone",
+    "runtime_and_control_not_used_to_choose_native_first_difference": true,
+    "null_statistics": "UNOBSERVABLE, never equal or numerical failure",
+    "raw_API_trace_and_semantic_module_results_reported_separately": true
+  },
+  "causal_interpretation": {
+    "structural_difference": "Every matched CreateView returns a view of a fresh independent F temporary rather than the original base",
+    "first_call_of_each_fresh_forward": "B/F pre-values equal; first observed numerical divergence should arise after write, while reading original base",
+    "later_calls_on_same_base": "Pre-values already differ through prior writes; ReadBaseBefore/CreateView input differences are inherited, not a new earlier fault location",
+    "per_call_proof": "Compare each arm's own pre/post transition and fresh view storage relation; total hits or persistent output difference alone are insufficient",
+    "statistics_limit": "Statistics do not uniquely prove alias break or a native device instruction root cause"
+  },
+  "execution_order": "All B forwards and calls must pass the healthy gate before F begins",
+  "warnings": "Preserve native warnings and stage markers; do not claim their unique origin without direct evidence",
+  "publication": "New alias_detach_allhit_statistics_bf_20261028 only; preserve old single-hit implementation and evidence unchanged"
+}

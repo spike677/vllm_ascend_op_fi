@@ -1,0 +1,3399 @@
+{
+ "task": "statistics",
+ "level": "mix",
+ "framework": "pytorch",
+ "dump_data_dir": null,
+ "data": {
+  "NPU.npu_format_cast.0.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": 0.0,
+     "Mean": 127.5,
+     "Norm": 2352.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Torch.as_strided.0.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {
+    "size": [
+     {
+      "type": "int",
+      "value": 8
+     },
+     {
+      "type": "int",
+      "value": 8
+     }
+    ],
+    "stride": [
+     {
+      "type": "int",
+      "value": 16
+     },
+     {
+      "type": "int",
+      "value": 1
+     }
+    ],
+    "storage_offset": {
+     "type": "int",
+     "value": 17
+    }
+   },
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.1.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": 136.0,
+     "Min": 17.0,
+     "Mean": 76.5,
+     "Norm": 680.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.2.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": 0.0,
+     "Mean": 127.5,
+     "Norm": 2352.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.guards.other_callsite.GuardOtherCallsite.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.3.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": 0.0,
+     "Mean": 127.5,
+     "Norm": 2352.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Torch.as_strided.1.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {
+    "size": [
+     {
+      "type": "int",
+      "value": 8
+     },
+     {
+      "type": "int",
+      "value": 8
+     }
+    ],
+    "stride": [
+     {
+      "type": "int",
+      "value": 16
+     },
+     {
+      "type": "int",
+      "value": 1
+     }
+    ],
+    "storage_offset": {
+     "type": "int",
+     "value": 17
+    }
+   },
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.4.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": 136.0,
+     "Min": 17.0,
+     "Mean": 76.5,
+     "Norm": 680.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Tensor.copy_.0.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -16.0,
+     "Min": -79.0,
+     "Mean": -47.5,
+     "Norm": 408.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.5.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -16.0,
+     "Min": -79.0,
+     "Mean": -47.5,
+     "Norm": 408.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.6.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -79.0,
+     "Mean": 96.5,
+     "Norm": 2288.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Tensor.__add__.0.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 1
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.7.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 256.0,
+     "Min": -78.0,
+     "Mean": 97.5,
+     "Norm": 2304.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.8.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -16.0,
+     "Min": -79.0,
+     "Mean": -47.5,
+     "Norm": 408.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -16.0,
+     "Min": -79.0,
+     "Mean": -47.5,
+     "Norm": 408.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.guards.unregistered_base.GuardUnregisteredBase.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -16.0,
+     "Min": -79.0,
+     "Mean": -47.5,
+     "Norm": 408.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.9.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": 0.0,
+     "Mean": 127.5,
+     "Norm": 2352.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.0.read_base_before.ReadBaseBefore.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": 0.0,
+     "Mean": 127.5,
+     "Norm": 2352.0,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.10.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": 0.0,
+     "Mean": 127.5,
+     "Norm": 2352.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": 0.0,
+     "Mean": 127.5,
+     "Norm": 2352.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.11.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": 0.0,
+     "Mean": 127.5,
+     "Norm": 2352.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Torch.as_strided.2.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {
+    "size": [
+     {
+      "type": "int",
+      "value": 8
+     },
+     {
+      "type": "int",
+      "value": 8
+     }
+    ],
+    "stride": [
+     {
+      "type": "int",
+      "value": 16
+     },
+     {
+      "type": "int",
+      "value": 1
+     }
+    ],
+    "storage_offset": {
+     "type": "int",
+     "value": 17
+    }
+   },
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.0.create_view.CreateView.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.12.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": 0.0,
+     "Mean": 127.5,
+     "Norm": 2352.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.13.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": 136.0,
+     "Min": 17.0,
+     "Mean": 76.5,
+     "Norm": 680.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Tensor.copy_.1.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -64.0,
+     "Min": -127.0,
+     "Mean": -95.5,
+     "Norm": 780.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.0.write_view.WriteView.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -64.0,
+     "Min": -127.0,
+     "Mean": -95.5,
+     "Norm": 780.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.14.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -64.0,
+     "Min": -127.0,
+     "Mean": -95.5,
+     "Norm": 780.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -64.0,
+     "Min": -127.0,
+     "Mean": -95.5,
+     "Norm": 780.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.15.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.16.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -64.0,
+     "Min": -127.0,
+     "Mean": -95.5,
+     "Norm": 780.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.17.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.0.read_original_base.ReadOriginalBase.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.18.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.19.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.20.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -64.0,
+     "Min": -127.0,
+     "Mean": -95.5,
+     "Norm": 780.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Tensor.__add__.1.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 1
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.0.consume_original_base.ConsumeOriginalBase.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.21.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 256.0,
+     "Min": -126.0,
+     "Mean": 85.5,
+     "Norm": 2400.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.22.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.23.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -64.0,
+     "Min": -127.0,
+     "Mean": -95.5,
+     "Norm": 780.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.0.InvocationBlock.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -64.0,
+     "Min": -127.0,
+     "Mean": -95.5,
+     "Norm": 780.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.24.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.1.read_base_before.ReadBaseBefore.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.25.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.26.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Torch.as_strided.3.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {
+    "size": [
+     {
+      "type": "int",
+      "value": 8
+     },
+     {
+      "type": "int",
+      "value": 8
+     }
+    ],
+    "stride": [
+     {
+      "type": "int",
+      "value": 16
+     },
+     {
+      "type": "int",
+      "value": 1
+     }
+    ],
+    "storage_offset": {
+     "type": "int",
+     "value": 17
+    }
+   },
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.1.create_view.CreateView.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.27.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -127.0,
+     "Mean": 84.5,
+     "Norm": 2384.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.28.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -64.0,
+     "Min": -127.0,
+     "Mean": -95.5,
+     "Norm": 780.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Tensor.copy_.2.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -128.0,
+     "Min": -191.0,
+     "Mean": -160.0,
+     "Norm": 1288.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.1.write_view.WriteView.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -128.0,
+     "Min": -191.0,
+     "Mean": -160.0,
+     "Norm": 1288.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.29.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -128.0,
+     "Min": -191.0,
+     "Mean": -160.0,
+     "Norm": 1288.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -128.0,
+     "Min": -191.0,
+     "Mean": -160.0,
+     "Norm": 1288.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.30.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.31.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -128.0,
+     "Min": -191.0,
+     "Mean": -160.0,
+     "Norm": 1288.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.32.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.1.read_original_base.ReadOriginalBase.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.33.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.34.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.35.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -128.0,
+     "Min": -191.0,
+     "Mean": -160.0,
+     "Norm": 1288.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Tensor.__add__.2.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 1
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.1.consume_original_base.ConsumeOriginalBase.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.36.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 256.0,
+     "Min": -190.0,
+     "Mean": 69.5,
+     "Norm": 2608.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.37.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.38.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -128.0,
+     "Min": -191.0,
+     "Mean": -160.0,
+     "Norm": 1288.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.1.InvocationBlock.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -128.0,
+     "Min": -191.0,
+     "Mean": -160.0,
+     "Norm": 1288.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.39.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.2.read_base_before.ReadBaseBefore.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.40.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.41.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Torch.as_strided.4.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {
+    "size": [
+     {
+      "type": "int",
+      "value": 8
+     },
+     {
+      "type": "int",
+      "value": 8
+     }
+    ],
+    "stride": [
+     {
+      "type": "int",
+      "value": 16
+     },
+     {
+      "type": "int",
+      "value": 1
+     }
+    ],
+    "storage_offset": {
+     "type": "int",
+     "value": 17
+    }
+   },
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.2.create_view.CreateView.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.42.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -191.0,
+     "Mean": 68.5,
+     "Norm": 2592.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.43.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -128.0,
+     "Min": -191.0,
+     "Mean": -160.0,
+     "Norm": 1288.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Tensor.copy_.3.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -192.0,
+     "Min": -255.0,
+     "Mean": -224.0,
+     "Norm": 1792.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.2.write_view.WriteView.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -192.0,
+     "Min": -255.0,
+     "Mean": -224.0,
+     "Norm": 1792.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.44.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -192.0,
+     "Min": -255.0,
+     "Mean": -224.0,
+     "Norm": 1792.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -192.0,
+     "Min": -255.0,
+     "Mean": -224.0,
+     "Norm": 1792.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.45.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -255.0,
+     "Mean": 52.5,
+     "Norm": 2880.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.46.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -192.0,
+     "Min": -255.0,
+     "Mean": -224.0,
+     "Norm": 1792.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.47.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -255.0,
+     "Mean": 52.5,
+     "Norm": 2880.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.2.read_original_base.ReadOriginalBase.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -255.0,
+     "Mean": 52.5,
+     "Norm": 2880.0,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.48.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -255.0,
+     "Mean": 52.5,
+     "Norm": 2880.0,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -255.0,
+     "Mean": 52.5,
+     "Norm": 2880.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.49.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -255.0,
+     "Mean": 52.5,
+     "Norm": 2880.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.50.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -192.0,
+     "Min": -255.0,
+     "Mean": -224.0,
+     "Norm": 1792.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Tensor.__add__.3.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 1
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.2.consume_original_base.ConsumeOriginalBase.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  },
+  "NPU.npu_format_cast.51.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 256.0,
+     "Min": -254.0,
+     "Mean": 53.5,
+     "Norm": 2896.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.52.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": 255.0,
+     "Min": -255.0,
+     "Mean": 52.5,
+     "Norm": 2880.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "NPU.npu_format_cast.53.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "int",
+     "value": 2
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -192.0,
+     "Min": -255.0,
+     "Mean": -224.0,
+     "Norm": 1792.0,
+     "requires_grad": false
+    }
+   ]
+  },
+  "Module.invocations.2.InvocationBlock.forward.0": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      8,
+      8
+     ],
+     "Max": -192.0,
+     "Min": -255.0,
+     "Mean": -224.0,
+     "Norm": 1792.0,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {},
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      16,
+      16
+     ],
+     "Max": null,
+     "Min": null,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "parameters": {}
+  }
+ }
+}
