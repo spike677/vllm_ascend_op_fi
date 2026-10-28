@@ -1,0 +1,430 @@
+{
+  "scope": "Native msprobe config/dump/stack/construct only. No runtime, reference, arm controls, or expected fault position read.",
+  "input_sha256": {
+    "B": {
+      "config.json": "2237704ceb883ba82ffca8b73bc34f17cdeb4df89e0397b5438a8796a09b4b67",
+      "dump.json": "333860176060ccef83b6d671b4abea0f6be42872c9618bebeffd3dd051ce22a3",
+      "stack.json": "919b6a3296d3be81746f7a6c3f0fbc49143406815565d400d8c7e475242d725e",
+      "construct.json": "500687d9280f4ae6f9d197781c2e2861ea1000f671b99b9f62da5d062833849b"
+    },
+    "F": {
+      "config.json": "1cfb675e2acf8f2a68eeeabbccc9c8097e599fa19b085ee7e9e36859b5068127",
+      "dump.json": "3179d3a69a436ae80715fac975c7b1c37d5be2d267af7cb89a958605ea1d3939",
+      "stack.json": "7c4b1aade836efec28dbe030137ea530d650fcc81f255b676355302589aac30d",
+      "construct.json": "e261c9b97259beb0c1f038652e264a8e0ad58d76d3c9047962be96af023dd492"
+    }
+  },
+  "baseline_module_sequence": [
+    "Module.create_view.CreateView.forward.0",
+    "Module.write_view.WriteView.forward.0",
+    "Module.read_original_base.ReadOriginalBase.forward.0",
+    "Module.consume_original_base.ConsumeOriginalBase.forward.0"
+  ],
+  "native_operation_coverage": {
+    "B": {
+      "status": "PASS_NATIVE_OPERATION_COVERAGE",
+      "selected_as_strided": {
+        "name": "Torch.as_strided.1.forward",
+        "owner_module": "Module.create_view.CreateView.forward.0",
+        "stack": [
+          "File /audit/alias_injector.py, line 107, in dispatch, \n result = self.original(argument, size=size, stride=stride, storage_offset=storage_offset)",
+          "File /audit/alias_probe.py, line 53, in selected_as_strided, \n return torch.as_strided(base, size=(8, 8), stride=(16, 1), storage_offset=17)",
+          "File /audit/alias_probe.py, line 144, in forward, \n return selected_as_strided(base)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 179, in forward, \n state.view = self.create_view(state.base)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 315, in main, \n model()",
+          "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "write_copy": {
+        "name": "Tensor.copy_.0.forward",
+        "owner_module": "Module.write_view.WriteView.forward.0",
+        "stack": [
+          "File /audit/alias_probe.py, line 148, in forward, \n return view.copy_(values)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 181, in forward, \n copy_return = self.write_view(state.view, new_values)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 315, in main, \n model()",
+          "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "unmatched_as_strided": {
+        "name": "Torch.as_strided.0.forward",
+        "stack": [
+          "File /audit/alias_injector.py, line 107, in dispatch, \n result = self.original(argument, size=size, stride=stride, storage_offset=storage_offset)",
+          "File /audit/alias_probe.py, line 57, in unmatched_as_strided, \n return torch.as_strided(base, size=(8, 8), stride=(16, 1), storage_offset=17)",
+          "File /audit/alias_probe.py, line 174, in forward, \n other_view = unmatched_as_strided(state.base)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 315, in main, \n model()",
+          "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "scope": "Actual native msprobe API records plus construct ancestry and callsite stacks. Separate from first-difference search and injector success counts."
+    },
+    "F": {
+      "status": "PASS_NATIVE_OPERATION_COVERAGE",
+      "selected_as_strided": {
+        "name": "Torch.as_strided.1.forward",
+        "owner_module": "Module.create_view.CreateView.forward.0",
+        "stack": [
+          "File /audit/alias_injector.py, line 107, in dispatch, \n result = self.original(argument, size=size, stride=stride, storage_offset=storage_offset)",
+          "File /audit/alias_probe.py, line 53, in selected_as_strided, \n return torch.as_strided(base, size=(8, 8), stride=(16, 1), storage_offset=17)",
+          "File /audit/alias_probe.py, line 144, in forward, \n return selected_as_strided(base)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 179, in forward, \n state.view = self.create_view(state.base)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 315, in main, \n model()",
+          "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "write_copy": {
+        "name": "Tensor.copy_.0.forward",
+        "owner_module": "Module.write_view.WriteView.forward.0",
+        "stack": [
+          "File /audit/alias_probe.py, line 148, in forward, \n return view.copy_(values)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 181, in forward, \n copy_return = self.write_view(state.view, new_values)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 315, in main, \n model()",
+          "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "unmatched_as_strided": {
+        "name": "Torch.as_strided.0.forward",
+        "stack": [
+          "File /audit/alias_injector.py, line 107, in dispatch, \n result = self.original(argument, size=size, stride=stride, storage_offset=storage_offset)",
+          "File /audit/alias_probe.py, line 57, in unmatched_as_strided, \n return torch.as_strided(base, size=(8, 8), stride=(16, 1), storage_offset=17)",
+          "File /audit/alias_probe.py, line 174, in forward, \n other_view = unmatched_as_strided(state.base)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/alias_probe.py, line 315, in main, \n model()",
+          "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "scope": "Actual native msprobe API records plus construct ancestry and callsite stacks. Separate from first-difference search and injector success counts."
+    }
+  },
+  "semantic_leaf_module_sequence": [
+    "Module.create_view.CreateView.forward.0",
+    "Module.write_view.WriteView.forward.0",
+    "Module.read_original_base.ReadOriginalBase.forward.0",
+    "Module.consume_original_base.ConsumeOriginalBase.forward.0"
+  ],
+  "excluded_container_modules": [],
+  "limits": [
+    "Null/nonfinite statistics are unobservable, never equal measurements.",
+    "Equal summaries do not establish elementwise equality or storage aliasing.",
+    "The semantic first difference is searched only over leaf module outputs; enclosing AliasMechanism output is excluded using construct parent relationships.",
+    "Only Tensor/ndarray numeric summary fields count as numerical differences. Scalar format codes and other non-tensor changes are metadata.",
+    "Injected extra API calls are not aligned by global numerical suffix.",
+    "This report does not identify a unique native kernel root cause."
+  ],
+  "module_comparisons": [
+    {
+      "module": "Module.create_view.CreateView.forward.0",
+      "output": {
+        "numeric_differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          "$[0].Max",
+          "$[0].Min",
+          "$[0].Mean",
+          "$[0].Norm"
+        ],
+        "compared_numeric_fields": 0,
+        "interpretation": "NO_DIFFERENCE_IN_AVAILABLE_STATISTICS"
+      },
+      "input": {
+        "numeric_differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          "$[0].Max",
+          "$[0].Min",
+          "$[0].Mean",
+          "$[0].Norm"
+        ],
+        "compared_numeric_fields": 0,
+        "interpretation": "NO_DIFFERENCE_IN_AVAILABLE_STATISTICS"
+      },
+      "B_stack": [
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 179, in forward, \n state.view = self.create_view(state.base)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 315, in main, \n model()",
+        "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+      ],
+      "F_stack": [
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 179, in forward, \n state.view = self.create_view(state.base)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 315, in main, \n model()",
+        "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+      ],
+      "stacks_equal": true,
+      "parents_equal": true
+    },
+    {
+      "module": "Module.write_view.WriteView.forward.0",
+      "output": {
+        "numeric_differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          "$[0].Max",
+          "$[0].Min",
+          "$[0].Mean",
+          "$[0].Norm"
+        ],
+        "compared_numeric_fields": 0,
+        "interpretation": "NO_DIFFERENCE_IN_AVAILABLE_STATISTICS"
+      },
+      "input": {
+        "numeric_differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          "$[0].Max",
+          "$[0].Min",
+          "$[0].Mean",
+          "$[0].Norm"
+        ],
+        "compared_numeric_fields": 4,
+        "interpretation": "NO_DIFFERENCE_IN_AVAILABLE_STATISTICS"
+      },
+      "B_stack": [
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 181, in forward, \n copy_return = self.write_view(state.view, new_values)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 315, in main, \n model()",
+        "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+      ],
+      "F_stack": [
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 181, in forward, \n copy_return = self.write_view(state.view, new_values)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 315, in main, \n model()",
+        "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+      ],
+      "stacks_equal": true,
+      "parents_equal": true
+    },
+    {
+      "module": "Module.read_original_base.ReadOriginalBase.forward.0",
+      "output": {
+        "numeric_differences": [
+          {
+            "path": "$[0].Min",
+            "B": -127.0,
+            "F": 0.0
+          },
+          {
+            "path": "$[0].Mean",
+            "B": 84.5,
+            "F": 127.5
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 2384.0,
+            "F": 2352.0
+          }
+        ],
+        "metadata_differences": [],
+        "unobservable": [],
+        "compared_numeric_fields": 4,
+        "interpretation": "NUMERIC_DIFFERENCE"
+      },
+      "input": {
+        "numeric_differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          "$[0].Max",
+          "$[0].Min",
+          "$[0].Mean",
+          "$[0].Norm"
+        ],
+        "compared_numeric_fields": 0,
+        "interpretation": "NO_DIFFERENCE_IN_AVAILABLE_STATISTICS"
+      },
+      "B_stack": [
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 184, in forward, \n original_read = self.read_original_base(state.base)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 315, in main, \n model()",
+        "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+      ],
+      "F_stack": [
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 184, in forward, \n original_read = self.read_original_base(state.base)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 315, in main, \n model()",
+        "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+      ],
+      "stacks_equal": true,
+      "parents_equal": true
+    },
+    {
+      "module": "Module.consume_original_base.ConsumeOriginalBase.forward.0",
+      "output": {
+        "numeric_differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          "$[0].Max",
+          "$[0].Min",
+          "$[0].Mean",
+          "$[0].Norm"
+        ],
+        "compared_numeric_fields": 0,
+        "interpretation": "NO_DIFFERENCE_IN_AVAILABLE_STATISTICS"
+      },
+      "input": {
+        "numeric_differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          "$[0].Max",
+          "$[0].Min",
+          "$[0].Mean",
+          "$[0].Norm"
+        ],
+        "compared_numeric_fields": 0,
+        "interpretation": "NO_DIFFERENCE_IN_AVAILABLE_STATISTICS"
+      },
+      "B_stack": [
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 187, in forward, \n output = self.consume_original_base(state.base)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 315, in main, \n model()",
+        "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+      ],
+      "F_stack": [
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 187, in forward, \n output = self.consume_original_base(state.base)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 315, in main, \n model()",
+        "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+      ],
+      "stacks_equal": true,
+      "parents_equal": true
+    }
+  ],
+  "first_observable_numerical_module_difference": "Module.read_original_base.ReadOriginalBase.forward.0",
+  "first_semantic_module_difference": "Module.read_original_base.ReadOriginalBase.forward.0",
+  "changed_module_outputs": [
+    "Module.read_original_base.ReadOriginalBase.forward.0"
+  ],
+  "trace_comparison_including_observer": {
+    "first_aligned_trace_numerical_difference": {
+      "B_trace_index": 11,
+      "F_trace_index": 13,
+      "B_name": "NPU.npu_format_cast.6.forward",
+      "F_name": "NPU.npu_format_cast.8.forward",
+      "api_type": "NPU.npu_format_cast",
+      "parent": null,
+      "stack": [
+        "File /audit/alias_probe.py, line 107, in read_tensor, \n nd = torch_npu.npu_format_cast(tensor, 2)",
+        "File /audit/alias_probe.py, line 134, in stage, \n 'base': self.read_tensor(self.state.base),",
+        "File /audit/alias_probe.py, line 182, in forward, \n observer.stage('view_written', copy_return_identity=identity(copy_return, torch_npu),",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/alias_probe.py, line 315, in main, \n model()",
+        "File /audit/alias_probe.py, line 382, in <module>, \n raise SystemExit(main())"
+      ],
+      "common_observer_readback": true,
+      "output": {
+        "numeric_differences": [
+          {
+            "path": "$[0].Min",
+            "B": -127.0,
+            "F": 0.0
+          },
+          {
+            "path": "$[0].Mean",
+            "B": 84.5,
+            "F": 127.5
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 2384.0,
+            "F": 2352.0
+          }
+        ],
+        "metadata_differences": [],
+        "unobservable": [],
+        "compared_numeric_fields": 4,
+        "interpretation": "NUMERIC_DIFFERENCE"
+      }
+    },
+    "aligned_api_pairs": 19,
+    "changed_aligned_api_pairs": 6,
+    "unobservable_statistic_fields": 16,
+    "unmatched_groups": [
+      {
+        "api_type": "NPU.npu_format_cast",
+        "B_count": 0,
+        "F_count": 1,
+        "stack_sha256": "5c4e1d065e5a2bfe6576933d0b3d07729d0c41d945a480c136b5c61c8f8b5412"
+      },
+      {
+        "api_type": "NPU.npu_format_cast",
+        "B_count": 0,
+        "F_count": 1,
+        "stack_sha256": "31854a87b62cdd383bdb4331e12874dce22e8ff0740fa71d0c341e0c68dc7b4c"
+      },
+      {
+        "api_type": "NPU.npu_format_cast",
+        "B_count": 0,
+        "F_count": 1,
+        "stack_sha256": "7cebdd84739944a40b0d77f8c0c587d7c8ca30cc937dd062d24c40f5e76fc689"
+      },
+      {
+        "api_type": "NPU.npu_format_cast",
+        "B_count": 0,
+        "F_count": 1,
+        "stack_sha256": "431efe917548950f625e8c4a2e1041c030d8b7e61f5a0cd3cd6a5519766bfcda"
+      },
+      {
+        "api_type": "NPU.npu_format_cast",
+        "B_count": 0,
+        "F_count": 1,
+        "stack_sha256": "afd25983f3754fd4e741f9b159be84aec8354fd9e0cc3e06e3aed79dbef53366"
+      }
+    ],
+    "scope": "Earliest numeric output difference among API pairs with matching type, full native stack, parent and occurrence count. Includes shared observer readback. Fault-only unmatched calls are not globally aligned; no absolute claim about all unpaired trace nodes."
+  },
+  "status": "ANALYZED_NATIVE_STATISTICS_ONLY"
+}

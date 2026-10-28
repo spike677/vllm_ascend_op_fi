@@ -407,3 +407,13 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 [已完成的 B/F statistics/mix 证据](artifacts/quantization/batch_shared_scale_v2_bf_statistics_20261028/README.md)包含真实 2 行、8 行条件下双 rank 的原生 dump/stack/construct、配置、完成记录、官方及独立分析报告和冻结源码。v2 在原生 DynamicQuant 执行前改变后端归约描述符，使各行共享当前 rank 的 batch 极值尺度；第 30–32 层观测窗口内，B/F 首差异定位到 `model.layers.31.mlp.down_proj → npu_dynamic_quant.127` 的输出。
 
 原采集配置为 `task=statistics, level=mix, summary_mode=md5, tensor_list=["."]`。本次提交公开其 JSON 证据子集，完整张量包私有保留；它不是重新采集的 `summary_mode=statistics` 纯统计版。原生 JSON 与历史报告保留原字节，随包提供 SHA-256 校验；不包含 `.pt` 或模型权重。
+
+## 故障 27：私有格式视图别名断开与原张量更新丢失
+
+[实现、调用链与验收说明](experiments/fault27_alias_detach_20261028/README.md)及[本次 B/F statistics/mix 证据](artifacts/private_format_as_strided/alias_detach_statistics_bf_20261028/README.md)已完成 124 物理卡 5 的实机验证，**目前仅通过受控机制级验收**。本方案替换“错误 stride 重排权重”代理：F 只在指定 as_strided 入口把原 NZ29 base 转成等值、独立存储的 ND2 临时张量，再用相同 size/stride/offset 创建视图；随后两组执行相同的真实 copy_ 与 original_base+1。
+
+B/F 的视图初值和 copy_ 结果均正确。B 正确写回 64 个目标元素；F 的原 base 仍保留旧值，消费者差异恰好对应这 64 个位置；两组 192 个非目标元素均不变。msprobe 首个可对齐数值差异位于写后原 base 的共同读回，首个语义模块差异为 ReadOriginalBase。别名断开的位置由共同运行时存储证据确认，不能仅凭 statistics 唯一推断根因；null 统计及原生 offset 警告保留。
+
+当前是**一次指定调用的精确注入**：绑定进程、rank0、forward0、调用位置、活 base 身份及固定格式/几何，F 恰好命中一次；第二次匹配选中调用会报错。后续写回丢失和消费者差异自然传播，无再次改值。持续“每次满足条件都触发”的模式尚未实现和验证；本次也不证明自然模型写回链、历史 CANN 缺陷或生产事故已复现。
+
+采集配置为 task=statistics、level=mix、summary_mode=statistics。B/F 各包含 dump/stack/construct、config、receipt 五个原生 JSON；小规模完整逻辑值、BF16 位模式与存储关系单列 runtime JSON。包内没有 .pt 等张量二进制，附冻结源码、独立分析报告和 SHA-256 清单。
