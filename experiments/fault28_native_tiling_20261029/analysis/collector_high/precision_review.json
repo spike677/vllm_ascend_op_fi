@@ -1,0 +1,63 @@
+{
+  "schema": "fault28.msprobe.precision_review.v1",
+  "status": "TASK_LOCAL_COLLECTOR_CPU_VERIFIED_NPU_ACCEPTANCE_PENDING",
+  "original_failed_attempt": "bf_statistics_a2",
+  "original_evidence_policy": "Preserve original official-default B/F dump, stack, construct and failed independent inference without rewriting.",
+  "official_configuration": {
+    "supported_name": "precision",
+    "documented_values": ["low", "high"],
+    "documented_high_semantics": "Float32 statistics, including task=statistics and level=mix.",
+    "document_url": "https://github.com/Ascend/msprobe/blob/e924267f08362b9b053067faa928b0dd6ab52f96/docs/zh/user_guide/dump/config_json_introduct.md",
+    "document_sha256": "11b3a652215568375bcfe6b941ba1b95aa56af2fef52901753197144adfb5961",
+    "fp64_configuration_found": false,
+    "limitation": "The public high option exists; its intended semantics are not implemented by the reviewed installed get_stat_info path. This is not a claim that an undocumented configuration is supported."
+  },
+  "installed_implementation": {
+    "version": "26.1.0",
+    "path": "/home/batch-scale-dynamic-msprobe-20261023/python_packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+    "sha256": "e981aa6fe9afa1e7a1f0654db44166d7c199674b0727d8d7ffa40626b1074011",
+    "matches_distribution_record": true,
+    "wheel_sha256_from_direct_url": "c004abe1123629ecdfb9938eee25cc8b554694d545c5123ae801c1846e4cfa68",
+    "wheel_archive_available": false,
+    "get_stat_info_lines": [378, 430],
+    "behavior": "Low computes nonscalar floating Mean/Norm in the tensor dtype; high skips these Mean/Norm calculations. No FP32 cast or later replacement reduction is present.",
+    "metadata_lines": [476, 485],
+    "metadata_behavior": "DataInfo dtype comes from the original tensor and shape from the original common tensor; collector scalar statistics are separate temporary values.",
+    "writer_sha256": "59b31ed3b0f75c2378966c7809a0f519efc11f3d77d41179019ab18931807a48",
+    "writer_behavior": "The scalar writer calls item() without casting back to the metadata dtype and never recomputes omitted statistics.",
+    "hook_behavior": "The existing hook manager sets per-thread inner_switch while collecting original output and rejects reentrant hooks, so collector-internal temporary casts are not model API nodes. Native capture must still verify this property."
+  },
+  "upstream_crosscheck": {
+    "commit": "e924267f08362b9b053067faa928b0dd6ab52f96",
+    "url": "https://github.com/Ascend/msprobe/blob/e924267f08362b9b053067faa928b0dd6ab52f96/python/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+    "file_sha256": "9fa2bd29f210a7b2eb56cbfcc3b31418ef5297cad9f40eb7e990f1aec3da69d5",
+    "get_stat_info_ast_sha256": "11505697ad9a581e7f916cce212c19b1944dc6e14ea97bffe80e3fbce931bdda",
+    "installed_method_ast_identical": true,
+    "limitation": "That upstream revision declares version 26.0.0. It establishes equivalent reviewed function behavior, not identity with an upstream 26.1 release tag."
+  },
+  "task_local_repair": {
+    "variant": "task_local_fp32_high_v1",
+    "stage_root": "/audit/collector_high_a1",
+    "manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+    "patched_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+    "artifact_count": 513,
+    "construction": "Copy the complete installed msprobe and distribution metadata after verifying every package file against RECORD; change only get_stat_info in one copied source. The installed package is untouched. Stage files are read-only and mounted read-only.",
+    "changes": [
+      "For precision=high only, detach FP16/BF16 statistics input and convert that local temporary to FP32 after existing empty, special-format, float8/float4 and checksum guards.",
+      "Compute Mean/Norm for floating non-FP64 tensors, removing the defective high exclusion. FP32 high now receives statistics. Low behavior and existing FP64/bool/integer/complex rules remain unchanged."
+    ],
+    "scope": "Identical policy for all APIs, modules, layers, arms and forwards. No target, fault, layer or arm inputs exist in the collector patch. No tensor writes, native API replacements, model parameter changes or dump rewriting.",
+    "runtime_binding": "Select and verify the entire manifest before importing msprobe, then verify actual module path, method code filename and source SHA. Result, receipt and collector_provenance.json bind the actual loaded collector.",
+    "disclosure": "Task-local modified collector, not an unmodified official msprobe execution. This measurement dependency must remain explicit in published evidence."
+  },
+  "cpu_validation": {
+    "report": "cpu_checks_v3.json",
+    "report_sha256": "b0b1c56c1e7be09cc6668a628b8db05c13430040af8bcfbe71b6ef3e69b161ea",
+    "script": "test_collector_cpu.py",
+    "script_sha256": "882da4fc1ab001669fd3013d48c94d028b1e6f3a95f8ce1c70466ac59a385e27",
+    "checks": 23,
+    "coverage": ["Actual full-package import and code-source SHA", "FP16/BF16/FP32/FP64 vector, noncontiguous, empty and scalar", "Boolean, integer, complex, NaN, Inf", "Original id, data_ptr, dtype, shape, stride, device, storage_offset, version and bytes unchanged", "Low matches original get_stat_info AST execution", "Represented floating values compared with CPU FP64 Mean/L2 within rtol 2e-6 and atol 2e-7", "Actual _analyze_tensor original dtype/shape retained", "Actual official DataWriter flush, placeholder replacement and JSON roundtrip retain FP32 statistics"],
+    "npu_execution": false,
+    "limit": "CPU fixture separability does not guarantee the actual fault is separable by four aggregate statistics. Independent native msprobe first-difference acceptance remains required."
+  }
+}

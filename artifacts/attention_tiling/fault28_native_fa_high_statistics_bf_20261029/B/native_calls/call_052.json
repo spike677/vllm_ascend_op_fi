@@ -1,0 +1,233 @@
+{
+  "case_id": "B",
+  "rank": 0,
+  "call_id": "pid47:r0:n52",
+  "native_index": 52,
+  "forward_index": 1,
+  "layer_index": 24,
+  "layer_name": "model.layers.24.self_attn",
+  "api": "torch.nn.functional.scaled_dot_product_attention",
+  "source_sha256": {
+    "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+    "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+    "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+    "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+  },
+  "status": "returned",
+  "entrypoint_kind": "PyTorch SDPA; actual CANN operator requires native logs",
+  "original_api_calls": 1,
+  "original_return_object_id": 281461089971376,
+  "actual_layout": "BNSD",
+  "target_mapping_certified": true,
+  "target_mapping": {
+    "batch_slot": 0,
+    "last_token_position": 2047,
+    "token_sha256": "a732622a8c880e7fedb77404887b40617cfd84119e86a14515e76046ef6a0b47"
+  },
+  "scalar_arguments": {
+    "dropout_p": 0.0,
+    "is_causal": true,
+    "scale": 0.08838834764831845,
+    "enable_gqa": true
+  },
+  "target_inputs_before": {
+    "query": {
+      "shape": [
+        8,
+        16,
+        2048,
+        128
+      ],
+      "stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281461089935248,
+      "tensor_ptr": 20623560542720,
+      "actual_format": 0,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "254bc57889e162d810c492cd9119124bbf8af562cbdb5740540e7cc535fced4f",
+      "logical_bytes": 8388608,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    },
+    "key": {
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281461089975296,
+      "tensor_ptr": 20623493433344,
+      "actual_format": 0,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "15ffdd932652ee5225f8a1d7b282091c2599b1e1ccc7ee866c3e96ab6af229cc",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    },
+    "value": {
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        128,
+        1024,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281461089930928,
+      "tensor_ptr": 20623392768512,
+      "actual_format": 2,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "b46a796f73bcd165f7e7ad1f97bd853db2690407d7495e50f7f0f20e625e5e6f",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    }
+  },
+  "target_inputs_after": {
+    "query": {
+      "shape": [
+        8,
+        16,
+        2048,
+        128
+      ],
+      "stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281461089935248,
+      "tensor_ptr": 20623560542720,
+      "actual_format": 2,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "254bc57889e162d810c492cd9119124bbf8af562cbdb5740540e7cc535fced4f",
+      "logical_bytes": 8388608,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    },
+    "key": {
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281461089975296,
+      "tensor_ptr": 20623493433344,
+      "actual_format": 2,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "15ffdd932652ee5225f8a1d7b282091c2599b1e1ccc7ee866c3e96ab6af229cc",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    },
+    "value": {
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        128,
+        1024,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281461089930928,
+      "tensor_ptr": 20623392768512,
+      "actual_format": 2,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "b46a796f73bcd165f7e7ad1f97bd853db2690407d7495e50f7f0f20e625e5e6f",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    }
+  },
+  "attention_mask": null,
+  "target_output": {
+    "shape": [
+      8,
+      16,
+      2048,
+      128
+    ],
+    "stride": [
+      4194304,
+      262144,
+      128,
+      1
+    ],
+    "dtype": "torch.float16",
+    "device": "npu:0",
+    "storage_offset": 0,
+    "object_id": 281461089971376,
+    "tensor_ptr": 20623627652096,
+    "actual_format": 0,
+    "hashed_slice": "batch[0:1], all heads/positions",
+    "logical_sha256": "d09c8b0f7d073ec8636d1094b4673bcf4304bd43ce5b9b16739eb1db9878ba80",
+    "logical_bytes": 8388608,
+    "byteorder": "little",
+    "raw_order": "C-contiguous logical elements"
+  },
+  "input_format_normalizations": [
+    {
+      "field": "target_inputs.key.actual_format",
+      "before": 0,
+      "after": 2,
+      "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+    },
+    {
+      "field": "target_inputs.query.actual_format",
+      "before": 0,
+      "after": 2,
+      "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+    }
+  ],
+  "selected_layer_full_inputs_before": {},
+  "selected_layer_full_inputs_after": {},
+  "selected_layer_private_inputs": {},
+  "selected_layer_private_output": null,
+  "host_scope": null,
+  "native_fa_coverage_verified": false
+}

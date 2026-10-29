@@ -1,0 +1,2814 @@
+{
+  "schema": "fault28.fa.native_log_profile.v1",
+  "status": "CAPTURED_UNDECODED_FRAMING_CANDIDATE",
+  "case_id": "stock_b1",
+  "source_sha256": {
+    "log": "e19aa076c770879b11014576506d1d5fe9d312e01af32230075ec9827e2a685e",
+    "result": "28099a5b398803d672f1b807471b64e2bd2f75cbbddff3a02c4ac85225812828"
+  },
+  "extractor_sha256": "fae9ce5be05d002376680a808b006711931334b83d8efb289de44931118a3f44",
+  "call_count": 28,
+  "calls": [
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248473542965024,
+        "monotonic_ns": 2305893085825824,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n0",
+        "native_index": 0,
+        "forward_index": 0,
+        "layer_index": 0,
+        "layer_name": "model.layers.0.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 151465,
+      "launches": [
+        {
+          "line": 171078,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:33.693.743 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_119_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_119_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 171123,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:33.698.175 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_119_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_119_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 171124,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:33.698.182 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_119_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1093 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_119_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1093 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 153255,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:33.561.231 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_119] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9e9b33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_119",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248473699087708,
+        "monotonic_ns": 2305893241948819,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n0",
+        "native_index": 0,
+        "forward_index": 0,
+        "layer_index": 0,
+        "layer_name": "model.layers.0.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 171251,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "ff14e998e82594b28a00b2b7039c838f3b7a9a2e5834864b7424aee0861874d0",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_000.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248473858674268,
+        "monotonic_ns": 2305893401534598,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n1",
+        "native_index": 1,
+        "forward_index": 0,
+        "layer_index": 1,
+        "layer_name": "model.layers.1.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 182692,
+      "launches": [
+        {
+          "line": 183540,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:33.863.416 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_239_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_239_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 183569,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:33.863.622 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_239_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_239_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 183570,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:33.863.627 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_239_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2280 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_239_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 2280 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 183437,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:33.863.014 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_239] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_239",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248473864127749,
+        "monotonic_ns": 2305893406987179,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n1",
+        "native_index": 1,
+        "forward_index": 0,
+        "layer_index": 1,
+        "layer_name": "model.layers.1.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 183692,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "ce20b5b4c510a0d4c4f822b7fd8f300e79ceec495668229d5f038782b3d61063",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_001.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248473958675008,
+        "monotonic_ns": 2305893501535448,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n2",
+        "native_index": 2,
+        "forward_index": 0,
+        "layer_index": 2,
+        "layer_name": "model.layers.2.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 194559,
+      "launches": [
+        {
+          "line": 195407,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:33.963.275 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_357_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_357_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 195436,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:33.963.478 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_357_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_357_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 195437,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:33.963.484 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_357_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3449 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_357_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 3449 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 195305,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:33.962.874 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_357] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_357",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248473963942996,
+        "monotonic_ns": 2305893506802516,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n2",
+        "native_index": 2,
+        "forward_index": 0,
+        "layer_index": 2,
+        "layer_name": "model.layers.2.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 195555,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "19267dce588378ee8125b8b355b3fe65b6ad620e593a594ca9f2f2c8313b328d",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_002.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474049330655,
+        "monotonic_ns": 2305893592191475,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n3",
+        "native_index": 3,
+        "forward_index": 0,
+        "layer_index": 3,
+        "layer_name": "model.layers.3.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 206417,
+      "launches": [
+        {
+          "line": 207265,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.054.083 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_475_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_475_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 207294,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.054.301 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_475_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_475_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 207295,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.054.307 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_475_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4618 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_475_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 4618 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 207163,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.053.668 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_475] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_475",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474054787576,
+        "monotonic_ns": 2305893597646936,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n3",
+        "native_index": 3,
+        "forward_index": 0,
+        "layer_index": 3,
+        "layer_name": "model.layers.3.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 207414,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "b77bfcf1e051ae7ecb8fcbe2cdd05bc4e1b18ab0e7e4f7c8d624316797dd140a",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_003.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474141566101,
+        "monotonic_ns": 2305893684426521,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n4",
+        "native_index": 4,
+        "forward_index": 0,
+        "layer_index": 4,
+        "layer_name": "model.layers.4.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 218273,
+      "launches": [
+        {
+          "line": 219121,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.146.308 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_593_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_593_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 219150,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.146.514 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_593_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_593_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 219151,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.146.519 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_593_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5787 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_593_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5787 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 219018,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.145.889 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_593] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_593",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474147017872,
+        "monotonic_ns": 2305893689877432,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n4",
+        "native_index": 4,
+        "forward_index": 0,
+        "layer_index": 4,
+        "layer_name": "model.layers.4.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 219274,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "f4f74ab21e0b7a92ed1ff50e95bfe2b5811a9a819a1a5659f22eaa0a7496cf8d",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_004.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474234589402,
+        "monotonic_ns": 2305893777449832,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n5",
+        "native_index": 5,
+        "forward_index": 0,
+        "layer_index": 5,
+        "layer_name": "model.layers.5.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 230132,
+      "launches": [
+        {
+          "line": 230980,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.267.566 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_711_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_711_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 231009,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.267.769 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_711_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_711_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 231010,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.267.774 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_711_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6956 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_711_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6956 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 230877,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.267.164 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_711] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_711",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474268249458,
+        "monotonic_ns": 2305893811109438,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n5",
+        "native_index": 5,
+        "forward_index": 0,
+        "layer_index": 5,
+        "layer_name": "model.layers.5.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 231128,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "7e5ec0635a1c65adc2711804bf23446ce0f55a8cfb2b26c2c583d7e6a635954a",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_005.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474352217110,
+        "monotonic_ns": 2305893895077480,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n6",
+        "native_index": 6,
+        "forward_index": 0,
+        "layer_index": 6,
+        "layer_name": "model.layers.6.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 241988,
+      "launches": [
+        {
+          "line": 242836,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.356.962 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_829_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_829_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 242865,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.357.169 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_829_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_829_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 242866,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.357.177 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_829_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8125 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_829_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8125 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 242733,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.356.566 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_829] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_829",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474357647621,
+        "monotonic_ns": 2305893900507011,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n6",
+        "native_index": 6,
+        "forward_index": 0,
+        "layer_index": 6,
+        "layer_name": "model.layers.6.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 242985,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "67cff524724211f43b45b3343f70ad9a36f8030abf4c01d9bb519c9eeeef89c5",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_006.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474452490806,
+        "monotonic_ns": 2305893995351036,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n7",
+        "native_index": 7,
+        "forward_index": 0,
+        "layer_index": 7,
+        "layer_name": "model.layers.7.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 253844,
+      "launches": [
+        {
+          "line": 254692,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.457.243 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_947_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_947_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 254721,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.457.459 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_947_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_947_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 254722,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.457.466 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_947_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9294 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_947_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 9294 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 254589,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.456.808 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_947] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_947",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474457938297,
+        "monotonic_ns": 2305894000798017,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n7",
+        "native_index": 7,
+        "forward_index": 0,
+        "layer_index": 7,
+        "layer_name": "model.layers.7.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 254846,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "3de3eb224fc8e2f5c546db54fe9ffe279164f3da2435b4976f97b3c4198ceec6",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_007.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474558627721,
+        "monotonic_ns": 2305894101488041,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n8",
+        "native_index": 8,
+        "forward_index": 0,
+        "layer_index": 8,
+        "layer_name": "model.layers.8.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 265700,
+      "launches": [
+        {
+          "line": 266548,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.563.327 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_1065_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1065_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 266577,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.563.548 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1065_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1065_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 266578,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.563.554 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1065_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10463 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1065_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 10463 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 266446,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.562.894 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_1065] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1065",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474564051202,
+        "monotonic_ns": 2305894106910712,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n8",
+        "native_index": 8,
+        "forward_index": 0,
+        "layer_index": 8,
+        "layer_name": "model.layers.8.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 266696,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "4043360e7f65b059d4d7fa14a7d11fa875501c72afd82e42af5b1672a76e9e4c",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_008.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474649135995,
+        "monotonic_ns": 2305894191996385,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n9",
+        "native_index": 9,
+        "forward_index": 0,
+        "layer_index": 9,
+        "layer_name": "model.layers.9.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 277556,
+      "launches": [
+        {
+          "line": 278404,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.660.900 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_1183_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1183_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 278433,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.661.112 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1183_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1183_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 278434,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.661.119 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1183_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 11632 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1183_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 11632 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 278301,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.660.459 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_1183] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1183",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474661648157,
+        "monotonic_ns": 2305894204507677,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n9",
+        "native_index": 9,
+        "forward_index": 0,
+        "layer_index": 9,
+        "layer_name": "model.layers.9.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 278554,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "8d92985957dbfa8e0f3b60f033b0c9f4ceeafd402c860ce6ede3bb81a16a1973",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_009.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474748482253,
+        "monotonic_ns": 2305894291342953,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n10",
+        "native_index": 10,
+        "forward_index": 0,
+        "layer_index": 10,
+        "layer_name": "model.layers.10.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 289412,
+      "launches": [
+        {
+          "line": 290260,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.753.413 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_1301_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1301_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 290289,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.753.638 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1301_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1301_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 290290,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.753.644 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1301_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 12801 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1301_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 12801 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 290157,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.752.962 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_1301] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1301",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474754144848,
+        "monotonic_ns": 2305894297004438,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n10",
+        "native_index": 10,
+        "forward_index": 0,
+        "layer_index": 10,
+        "layer_name": "model.layers.10.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 290409,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "a32be8b7434ee55782e7c559ca4594923d926781916e9bd1c2c01a34a0953e76",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_010.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474839383254,
+        "monotonic_ns": 2305894382243724,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n11",
+        "native_index": 11,
+        "forward_index": 0,
+        "layer_index": 11,
+        "layer_name": "model.layers.11.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 301268,
+      "launches": [
+        {
+          "line": 302116,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.844.125 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_1419_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1419_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 302145,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.844.339 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1419_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1419_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 302146,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.844.345 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1419_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 13970 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1419_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 13970 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 302014,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.843.710 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_1419] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1419",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474844839566,
+        "monotonic_ns": 2305894387698986,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n11",
+        "native_index": 11,
+        "forward_index": 0,
+        "layer_index": 11,
+        "layer_name": "model.layers.11.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 302265,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "c213f3eea4988cdae0569286911ff908e9780f0828b9460f4b887f2143b38f02",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_011.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474927429082,
+        "monotonic_ns": 2305894470289312,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n12",
+        "native_index": 12,
+        "forward_index": 0,
+        "layer_index": 12,
+        "layer_name": "model.layers.12.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 313124,
+      "launches": [
+        {
+          "line": 313972,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:34.949.308 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_1537_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1537_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 314001,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.949.531 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1537_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1537_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 314002,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.949.538 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1537_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15139 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1537_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15139 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 313869,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:34.948.873 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_1537] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1537",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248474950034003,
+        "monotonic_ns": 2305894492893513,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n12",
+        "native_index": 12,
+        "forward_index": 0,
+        "layer_index": 12,
+        "layer_name": "model.layers.12.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 314124,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "f507b9647b70ede098191bb9555c0561c6cd15a64e3e21010a6ee0ebb3690978",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_012.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475032500307,
+        "monotonic_ns": 2305894575360457,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n13",
+        "native_index": 13,
+        "forward_index": 0,
+        "layer_index": 13,
+        "layer_name": "model.layers.13.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 324982,
+      "launches": [
+        {
+          "line": 325830,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:35.132.495 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_1655_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1655_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 325859,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.132.711 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1655_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1655_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 325860,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.132.717 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1655_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16308 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1655_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16308 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 325727,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.132.071 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_1655] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1655",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475133220221,
+        "monotonic_ns": 2305894676080031,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n13",
+        "native_index": 13,
+        "forward_index": 0,
+        "layer_index": 13,
+        "layer_name": "model.layers.13.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 325985,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "575c2bc3c45c649b52e4b4cba9275fdb58df3ece5b57574961d577f26077eaa1",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_013.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475224013041,
+        "monotonic_ns": 2305894766873371,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n14",
+        "native_index": 14,
+        "forward_index": 0,
+        "layer_index": 14,
+        "layer_name": "model.layers.14.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 336841,
+      "launches": [
+        {
+          "line": 337689,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:35.237.630 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_1773_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1773_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 337718,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.237.834 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1773_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1773_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 337719,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.237.840 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1773_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 17477 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1773_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 17477 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 337586,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.237.225 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_1773] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1773",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475238327097,
+        "monotonic_ns": 2305894781186487,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n14",
+        "native_index": 14,
+        "forward_index": 0,
+        "layer_index": 14,
+        "layer_name": "model.layers.14.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 337846,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "fe69c60d285de42970fc7cde6ba84fef14f0e87f7f7c53b5bb14ee91f0b40cf0",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_014.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475412615550,
+        "monotonic_ns": 2305894955475750,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n15",
+        "native_index": 15,
+        "forward_index": 0,
+        "layer_index": 15,
+        "layer_name": "model.layers.15.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 348700,
+      "launches": [
+        {
+          "line": 349548,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:35.437.054 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_1891_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1891_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 349577,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.437.282 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1891_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1891_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 349578,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.437.289 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_1891_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 18646 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1891_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 18646 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 349445,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.436.628 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_1891] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_1891",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475437786888,
+        "monotonic_ns": 2305894980646258,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n15",
+        "native_index": 15,
+        "forward_index": 0,
+        "layer_index": 15,
+        "layer_name": "model.layers.15.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 349703,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "6537dedc0defe6a8e20ce87c14adc194ed1261ec002fb97ce35c3d12c213b2e2",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_015.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475549284322,
+        "monotonic_ns": 2305895092144312,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n16",
+        "native_index": 16,
+        "forward_index": 0,
+        "layer_index": 16,
+        "layer_name": "model.layers.16.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 360557,
+      "launches": [
+        {
+          "line": 361405,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:35.553.936 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_2009_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2009_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 361434,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.554.149 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2009_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2009_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 361435,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.554.156 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2009_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 19815 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2009_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 19815 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 361303,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.553.520 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_2009] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2009",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475554629932,
+        "monotonic_ns": 2305895097489312,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n16",
+        "native_index": 16,
+        "forward_index": 0,
+        "layer_index": 16,
+        "layer_name": "model.layers.16.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 361554,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "628466cb4587e1b56b58822e5d13433cab8e5840507686b4b842ed3aae68653a",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_016.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475653068183,
+        "monotonic_ns": 2305895195928403,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n17",
+        "native_index": 17,
+        "forward_index": 0,
+        "layer_index": 17,
+        "layer_name": "model.layers.17.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 372413,
+      "launches": [
+        {
+          "line": 373261,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:35.657.736 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_2127_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2127_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 373290,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.657.950 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2127_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2127_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 373291,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.657.956 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2127_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 20984 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2127_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 20984 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 373158,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.657.329 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_2127] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2127",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475658417753,
+        "monotonic_ns": 2305895201277083,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n17",
+        "native_index": 17,
+        "forward_index": 0,
+        "layer_index": 17,
+        "layer_name": "model.layers.17.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 373412,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "95856f6d7f9ba3ade40692d6ea5cd517aef25852cac20f0359552c28b52c2dd4",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_017.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475766482733,
+        "monotonic_ns": 2305895309343064,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n18",
+        "native_index": 18,
+        "forward_index": 0,
+        "layer_index": 18,
+        "layer_name": "model.layers.18.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 384272,
+      "launches": [
+        {
+          "line": 385120,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:35.770.994 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_2245_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2245_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 385149,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.771.205 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2245_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2245_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 385150,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.771.212 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2245_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 22153 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2245_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 22153 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 385018,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.770.581 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_2245] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2245",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475771687140,
+        "monotonic_ns": 2305895314546440,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n18",
+        "native_index": 18,
+        "forward_index": 0,
+        "layer_index": 18,
+        "layer_name": "model.layers.18.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 385268,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "f04c6d7704b371c51d1a3b274c145852ebd60439f143b7a11a5adb36227605ac",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_018.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475892283564,
+        "monotonic_ns": 2305895435143604,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n19",
+        "native_index": 19,
+        "forward_index": 0,
+        "layer_index": 19,
+        "layer_name": "model.layers.19.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 396128,
+      "launches": [
+        {
+          "line": 396976,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:35.942.939 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_2363_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2363_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 397005,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.943.143 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2363_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2363_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 397006,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.943.149 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2363_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 23322 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2363_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 23322 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 396874,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:35.942.527 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_2363] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2363",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248475943629609,
+        "monotonic_ns": 2305895486489029,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n19",
+        "native_index": 19,
+        "forward_index": 0,
+        "layer_index": 19,
+        "layer_name": "model.layers.19.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 397132,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "578571f1a6e87a601898e72538d9196fcdaa254c2f88a6698a04b3035628752f",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_019.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476025701586,
+        "monotonic_ns": 2305895568561876,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n20",
+        "native_index": 20,
+        "forward_index": 0,
+        "layer_index": 20,
+        "layer_name": "model.layers.20.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 407984,
+      "launches": [
+        {
+          "line": 408838,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:36.030.419 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_2481_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2481_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 408867,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.030.638 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2481_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2481_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 408868,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.030.644 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2481_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 24491 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2481_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 24491 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 408735,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.030.007 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_2481] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2481",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476031140578,
+        "monotonic_ns": 2305895573999938,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n20",
+        "native_index": 20,
+        "forward_index": 0,
+        "layer_index": 20,
+        "layer_name": "model.layers.20.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 408986,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "8acf915435d37edde1c9d754928df1b204928e2d20afe1a41bf9d5f2621eab6b",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_020.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476161880190,
+        "monotonic_ns": 2305895704740440,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n21",
+        "native_index": 21,
+        "forward_index": 0,
+        "layer_index": 21,
+        "layer_name": "model.layers.21.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 419844,
+      "launches": [
+        {
+          "line": 420692,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:36.166.601 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_2599_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2599_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 420721,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.166.804 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2599_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2599_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 420722,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.166.811 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2599_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 25660 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2599_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 25660 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 420589,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.166.198 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_2599] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2599",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476167281581,
+        "monotonic_ns": 2305895710140981,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n21",
+        "native_index": 21,
+        "forward_index": 0,
+        "layer_index": 21,
+        "layer_name": "model.layers.21.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 420846,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "1570120f945cfa02f61f1568ca8d43385656155c2a9ea3041f18e84a3236044f",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_021.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476279504309,
+        "monotonic_ns": 2305895822364399,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n22",
+        "native_index": 22,
+        "forward_index": 0,
+        "layer_index": 22,
+        "layer_name": "model.layers.22.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 431700,
+      "launches": [
+        {
+          "line": 432548,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:36.294.744 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_2717_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2717_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 432577,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.294.950 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2717_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2717_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 432578,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.294.956 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2717_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 26829 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2717_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 26829 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 432446,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.294.341 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_2717] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2717",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476295437205,
+        "monotonic_ns": 2305895838296585,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n22",
+        "native_index": 22,
+        "forward_index": 0,
+        "layer_index": 22,
+        "layer_name": "model.layers.22.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 432697,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "07b81efb5f8745ae22d15d19fac8e62ea6e0c5f7abc9ad80ca0cb613cc3f8785",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_022.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476421499630,
+        "monotonic_ns": 2305895964359920,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n23",
+        "native_index": 23,
+        "forward_index": 0,
+        "layer_index": 23,
+        "layer_name": "model.layers.23.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 443559,
+      "launches": [
+        {
+          "line": 444407,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:36.426.117 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_2835_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2835_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 444436,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.426.330 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2835_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2835_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 444437,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.426.336 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2835_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 27998 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2835_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 27998 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 444304,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.425.703 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_2835] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2835",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476426791379,
+        "monotonic_ns": 2305895969650849,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n23",
+        "native_index": 23,
+        "forward_index": 0,
+        "layer_index": 23,
+        "layer_name": "model.layers.23.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 444555,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "d184eb10be99fe89a74649e952fd3d6f2382e3e92785c8239376fffc290582f7",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_023.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476513825758,
+        "monotonic_ns": 2305896056685828,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n24",
+        "native_index": 24,
+        "forward_index": 0,
+        "layer_index": 24,
+        "layer_name": "model.layers.24.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 455415,
+      "launches": [
+        {
+          "line": 456263,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:36.518.373 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_2953_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2953_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 456292,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.518.590 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2953_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2953_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 456293,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.518.597 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_2953_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 29167 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2953_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 29167 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 456160,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.517.965 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_2953] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9eaa33f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_2953",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476519067426,
+        "monotonic_ns": 2305896061926726,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n24",
+        "native_index": 24,
+        "forward_index": 0,
+        "layer_index": 24,
+        "layer_name": "model.layers.24.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 456412,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "83be18872a987c03baf04ae7ec028a0fe0bf5440fb19cb07b42455da6bd640ef",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_024.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476634441592,
+        "monotonic_ns": 2305896177301332,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n25",
+        "native_index": 25,
+        "forward_index": 0,
+        "layer_index": 25,
+        "layer_name": "model.layers.25.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 467265,
+      "launches": [
+        {
+          "line": 468113,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:36.639.034 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_3071_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3071_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 468142,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.639.249 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_3071_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3071_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 468143,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.639.255 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_3071_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 30336 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3071_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 30336 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 468011,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.638.614 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_3071] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9ea433f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3071",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476639723681,
+        "monotonic_ns": 2305896182583021,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n25",
+        "native_index": 25,
+        "forward_index": 0,
+        "layer_index": 25,
+        "layer_name": "model.layers.25.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 468261,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "ac5113e69380654e126af8f90f88f07f8e039882b9e5b7c08055f87346124448",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_025.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476732364654,
+        "monotonic_ns": 2305896275224614,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n26",
+        "native_index": 26,
+        "forward_index": 0,
+        "layer_index": 26,
+        "layer_name": "model.layers.26.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 479121,
+      "launches": [
+        {
+          "line": 479969,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:36.737.190 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_3189_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3189_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 479998,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.737.410 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_3189_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3189_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 479999,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.737.416 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_3189_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 31505 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3189_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 31505 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 479866,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.736.746 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_3189] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9ea433f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3189",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476737900487,
+        "monotonic_ns": 2305896280759777,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n26",
+        "native_index": 26,
+        "forward_index": 0,
+        "layer_index": 26,
+        "layer_name": "model.layers.26.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 480117,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "4c7fc3cd6d9839816de11ca37e44b7df2df4d83f26539848116ccd82dc627bcb",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_026.declared_prefix.bin"
+    },
+    {
+      "enter": {
+        "event": "native_api_enter",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476819069987,
+        "monotonic_ns": 2305896361930457,
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n27",
+        "native_index": 27,
+        "forward_index": 0,
+        "layer_index": 27,
+        "layer_name": "model.layers.27.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "enter_line": 490977,
+      "launches": [
+        {
+          "line": 491825,
+          "text": "[DEBUG] OP(47,python):2026-10-29-04:34:36.876.626 [op_executor.cpp:675][NNOP][Launch][87] OpName:[aclnnFlashAttentionScore_3307_FlashAttentionScore] Tiling Key: 22619644976, len: 1464, numBlocks: 20, Workspace Num: 1.",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3307_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        }
+      ],
+      "chunks": [
+        {
+          "line": 491854,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.876.835 [rts_arg.cpp:81][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_3307_FlashAttentionScore] PrintTilingData[0]: Aligned TilingData Size: 1472, data(uint32_t): 1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3307_FlashAttentionScore",
+          "index": "0",
+          "aligned": "1472",
+          "words": "1 0 8 0 2 0 2048 0 2048 0 2048 0 128 0 1065353216 1035273459 2048 0 0 0 0 0 0 0 0 0 16908547 196609 0 0 2048 1 0 0 0 0 0 0 0 0 40 0 256 0 14 0 4 0 0 0 10 0 14 0 22 0 28 0 32 0 42 0 46 0 54 0 60 0 64 0 74 0 78 0 86 0 92 0 96 0 106 0 110 0 118 0 124 0 128 0 138 0 142 0 150 0 156 0 160 0 170 0 174 0 182 0 188 0 192 0 202 0 206 0 214 0 220 0 224 0 234 0 238 0 246 0 252 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 256 0 128 128 16 0 64 0 0 0 128 128 2 0 128 128 1 0 1 1 1 0 1 1 8 0 1 1 2 0 8 0 128 0 2048 0 0 0 0 0 0 0 16384 16384 0 0 16384 1024 1024 1024 131072 16384 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 1024 128 128 128 1024 128 128 128 128 1 8 1"
+        },
+        {
+          "line": 491855,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.876.841 [rts_arg.cpp:85][NNOP][SplitDataAndPrint][87] OpName:[aclnnFlashAttentionScore_3307_FlashAttentionScore] PrintTilingData[1]:  8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 32674 2779096485 ",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3307_FlashAttentionScore",
+          "index": "1",
+          "aligned": null,
+          "words": "8 0 0 0 0 524032 131072 0 1 1 1 1 1 1 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 2048 128 1024 128 128 128 1024 128 128 128 4 8 1 1 0 0 0 0 524032 131072 0 1 1 1 1 2 8 0 0 2 2 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 1024 16384 16 8 128 8 1024 8192 8 8 64 2 0 0 0 1 1 128 128 128 1 16 2048 2048 4096 16384 128 32768 0 128 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 32674 2779096485 "
+        }
+      ],
+      "api_workspaces": [
+        {
+          "line": 491722,
+          "text": "[INFO] OP(47,python):2026-10-29-04:34:36.876.171 [op_executor.cpp:1411][NNOP][CommonOpExecutorRun][87] OpName:[aclnnFlashAttentionScore_3307] Workspace addr: 0x12c194000000, size: 73401856, executor: 0xfffd9ea433f0",
+          "tid": "87",
+          "op": "aclnnFlashAttentionScore_3307",
+          "size": "73401856"
+        }
+      ],
+      "exit": {
+        "event": "native_api_exit",
+        "pid": 47,
+        "thread_id": 47,
+        "epoch_ns": 1793248476877330981,
+        "monotonic_ns": 2305896420190591,
+        "status": "returned",
+        "case_id": "stock_b1",
+        "rank": 0,
+        "call_id": "pid47:r0:n27",
+        "native_index": 27,
+        "forward_index": 0,
+        "layer_index": 27,
+        "layer_name": "model.layers.27.self_attn",
+        "api": "torch.nn.functional.scaled_dot_product_attention",
+        "source_sha256": {
+          "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+          "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+          "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+          "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+        }
+      },
+      "exit_line": 491973,
+      "tiling_key": "22619644976",
+      "declared_raw_bytes": 1464,
+      "aligned_log_bytes": 1472,
+      "block_dim": 20,
+      "kernel_workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "framing_verified": false,
+      "schema_decoded": false,
+      "scope": "Actual FA launch; raw framing candidate pending public-context byte comparison. API workspace includes helper operators.",
+      "aligned_log.bin_sha256": "4406298570936c94e4d19cd3baa727c3570933c13115a594f3b1f486a59dab5a",
+      "declared_prefix.bin_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "prefix_file": "call_027.declared_prefix.bin"
+    }
+  ],
+  "mechanism_accepted": false
+}

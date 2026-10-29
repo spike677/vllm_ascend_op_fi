@@ -1,0 +1,812 @@
+{
+  "status": "PASS_SOURCE_DERIVED_QUERY_KEY_COVERAGE",
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "source_sha256": {
+    "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_s1s2_bn2gs1.h": "18bbd703454ea8cd6fbe6936329c29513745c269e7f7ad7ea5ab05d81dcd08cb",
+    "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_common.h": "3e074a966515df1c9cf0cc070d2315a5978ccb44e7e75a842188de5016e4cc34",
+    "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+    "attention/flash_attention_score/op_kernel/flash_attention_score.cpp": "7f4adb241e3f09ad3204159bcd1b963800e174230f80c78b8126e29b7481ba64",
+    "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_template_tiling_key.h": "a8951fea89250f0f815382e9c3b2a05a4c01a12f971985bfe5d133f04062f072"
+  },
+  "scope": "fixed BNSD causal S1S2 source semantics",
+  "not_hardware_execution_trace": true,
+  "not_numerical_equivalence_proof": true,
+  "mode_or_hit_fields_used": false,
+  "total_real_query_tasks": 2048,
+  "queries_checked": 262144,
+  "every_real_query_owned_once": true,
+  "each_query_legal_keys_covered_once": true,
+  "query_split_between_cores": false,
+  "full_task_trace_sha256": "7fcaa64702309e16f62175a3fcb59f9672fd14d68e815a6e5934bb202534f810",
+  "active_aiv_intervals": [
+    {
+      "aiv": 0,
+      "start": 0,
+      "end": 106
+    },
+    {
+      "aiv": 1,
+      "start": 0,
+      "end": 106
+    },
+    {
+      "aiv": 2,
+      "start": 106,
+      "end": 206
+    },
+    {
+      "aiv": 3,
+      "start": 106,
+      "end": 206
+    },
+    {
+      "aiv": 4,
+      "start": 206,
+      "end": 311
+    },
+    {
+      "aiv": 5,
+      "start": 206,
+      "end": 311
+    },
+    {
+      "aiv": 6,
+      "start": 311,
+      "end": 412
+    },
+    {
+      "aiv": 7,
+      "start": 311,
+      "end": 412
+    },
+    {
+      "aiv": 8,
+      "start": 412,
+      "end": 512
+    },
+    {
+      "aiv": 9,
+      "start": 412,
+      "end": 512
+    },
+    {
+      "aiv": 10,
+      "start": 512,
+      "end": 618
+    },
+    {
+      "aiv": 11,
+      "start": 512,
+      "end": 618
+    },
+    {
+      "aiv": 12,
+      "start": 618,
+      "end": 718
+    },
+    {
+      "aiv": 13,
+      "start": 618,
+      "end": 718
+    },
+    {
+      "aiv": 14,
+      "start": 718,
+      "end": 823
+    },
+    {
+      "aiv": 15,
+      "start": 718,
+      "end": 823
+    },
+    {
+      "aiv": 16,
+      "start": 823,
+      "end": 924
+    },
+    {
+      "aiv": 17,
+      "start": 823,
+      "end": 924
+    },
+    {
+      "aiv": 18,
+      "start": 924,
+      "end": 1024
+    },
+    {
+      "aiv": 19,
+      "start": 924,
+      "end": 1024
+    },
+    {
+      "aiv": 20,
+      "start": 1024,
+      "end": 1130
+    },
+    {
+      "aiv": 21,
+      "start": 1024,
+      "end": 1130
+    },
+    {
+      "aiv": 22,
+      "start": 1130,
+      "end": 1230
+    },
+    {
+      "aiv": 23,
+      "start": 1130,
+      "end": 1230
+    },
+    {
+      "aiv": 24,
+      "start": 1230,
+      "end": 1335
+    },
+    {
+      "aiv": 25,
+      "start": 1230,
+      "end": 1335
+    },
+    {
+      "aiv": 26,
+      "start": 1335,
+      "end": 1436
+    },
+    {
+      "aiv": 27,
+      "start": 1335,
+      "end": 1436
+    },
+    {
+      "aiv": 28,
+      "start": 1436,
+      "end": 1536
+    },
+    {
+      "aiv": 29,
+      "start": 1436,
+      "end": 1536
+    },
+    {
+      "aiv": 30,
+      "start": 1536,
+      "end": 1642
+    },
+    {
+      "aiv": 31,
+      "start": 1536,
+      "end": 1642
+    },
+    {
+      "aiv": 32,
+      "start": 1642,
+      "end": 1742
+    },
+    {
+      "aiv": 33,
+      "start": 1642,
+      "end": 1742
+    },
+    {
+      "aiv": 34,
+      "start": 1742,
+      "end": 1847
+    },
+    {
+      "aiv": 35,
+      "start": 1742,
+      "end": 1847
+    },
+    {
+      "aiv": 36,
+      "start": 1847,
+      "end": 1948
+    },
+    {
+      "aiv": 37,
+      "start": 1847,
+      "end": 1948
+    },
+    {
+      "aiv": 38,
+      "start": 1948,
+      "end": 2048
+    },
+    {
+      "aiv": 39,
+      "start": 1948,
+      "end": 2048
+    }
+  ],
+  "fake_pairs_without_vec_output": [
+    {
+      "aiv": 5,
+      "duplicated_task": 310
+    },
+    {
+      "aiv": 7,
+      "duplicated_task": 319
+    },
+    {
+      "aiv": 15,
+      "duplicated_task": 822
+    },
+    {
+      "aiv": 17,
+      "duplicated_task": 831
+    },
+    {
+      "aiv": 25,
+      "duplicated_task": 1334
+    },
+    {
+      "aiv": 27,
+      "duplicated_task": 1343
+    },
+    {
+      "aiv": 35,
+      "duplicated_task": 1846
+    },
+    {
+      "aiv": 37,
+      "duplicated_task": 1855
+    }
+  ],
+  "target_tasks": [
+    {
+      "aiv": 1,
+      "task": 15,
+      "batch": 0,
+      "kv_head": 0,
+      "query_head": 0,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 1,
+      "task": 31,
+      "batch": 0,
+      "kv_head": 0,
+      "query_head": 1,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 1,
+      "task": 47,
+      "batch": 0,
+      "kv_head": 1,
+      "query_head": 2,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 1,
+      "task": 63,
+      "batch": 0,
+      "kv_head": 1,
+      "query_head": 3,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 1,
+      "task": 79,
+      "batch": 0,
+      "kv_head": 2,
+      "query_head": 4,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 1,
+      "task": 95,
+      "batch": 0,
+      "kv_head": 2,
+      "query_head": 5,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 3,
+      "task": 111,
+      "batch": 0,
+      "kv_head": 3,
+      "query_head": 6,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 3,
+      "task": 127,
+      "batch": 0,
+      "kv_head": 3,
+      "query_head": 7,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 3,
+      "task": 143,
+      "batch": 0,
+      "kv_head": 4,
+      "query_head": 8,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 3,
+      "task": 159,
+      "batch": 0,
+      "kv_head": 4,
+      "query_head": 9,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 3,
+      "task": 175,
+      "batch": 0,
+      "kv_head": 5,
+      "query_head": 10,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 3,
+      "task": 191,
+      "batch": 0,
+      "kv_head": 5,
+      "query_head": 11,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 5,
+      "task": 207,
+      "batch": 0,
+      "kv_head": 6,
+      "query_head": 12,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 5,
+      "task": 223,
+      "batch": 0,
+      "kv_head": 6,
+      "query_head": 13,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 5,
+      "task": 239,
+      "batch": 0,
+      "kv_head": 7,
+      "query_head": 14,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "aiv": 5,
+      "task": 255,
+      "batch": 0,
+      "kv_head": 7,
+      "query_head": 15,
+      "query_interval": [
+        1920,
+        2048
+      ],
+      "computed_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ],
+      "use_next_l1": false,
+      "target_query": 2047,
+      "target_legal_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    }
+  ],
+  "profile_dimensions": {
+    "b": 8,
+    "n1": 16,
+    "n2": 8,
+    "g": 2,
+    "s1": 2048,
+    "s2": 2048,
+    "m": 128,
+    "s2_base": 128,
+    "n_ratio": 8,
+    "enable_l1_reuse": true
+  },
+  "source_locations": {
+    "GetS1LoopRange": "650-694",
+    "GetS2LoopRange": "700-764",
+    "Process": "770-950",
+    "GetBNIdx_ComputeAxisIdx": "974-994",
+    "fake_pair_Vec1_return": "1253-1256",
+    "fake_pair_Vec2_return": "2164-2167",
+    "online_softmax": "1955 onward",
+    "online_output_accumulation": "2239-2247"
+  },
+  "profile_sha256": "60638431e6ca3b7636486187050235310e29059099a43517408ad4bc0399b392",
+  "record_index": 0,
+  "source_files_verified": true
+}

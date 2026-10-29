@@ -1,0 +1,58 @@
+{
+  "schema": "fault28.cache_control.v1",
+  "checked_date": "2026-10-29",
+  "status": "DOCUMENTED_AND_INSTALLED_BINARY_CORROBORATED_RUNTIME_VALIDATION_PENDING",
+  "requested_setting": {"ACLNN_CACHE_LIMIT": "0"},
+  "scope": "Set before starting each owned probe process, identically for baseline and fault; no host-global or external-service modification.",
+  "official_document": {
+    "version": "CANN Community Edition 9.1.0",
+    "url": "https://www.hiascend.com/document/detail/en/CANNCommunityEdition/910/maintenref/envvar/envref_07_0031.html",
+    "default": 10000,
+    "minimum": 0,
+    "maximum": 10000000,
+    "zero_meaning": "Disable host operator-information caching for aclnn APIs.",
+    "cached_information": ["workspace size", "operator executor", "tiling details"],
+    "management": "Each thread has an independent cache; the environment value supplies its entry-count limit.",
+    "version_caveat": "Older 8.0/8.2 documents list a lower bound of 1. Their range must not replace the version-9.1 documentation."
+  },
+  "installation": {
+    "image_id": "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+    "cann_version": "9.1.0",
+    "cann_inner_version": "V100R001C11SPC001B243",
+    "library_path": "/usr/local/Ascend/cann-9.1.0/lib64/libnnopbase.so",
+    "library_bytes": 4328144,
+    "library_sha256": "308dda461704a6e5f70de6e0eac4495e9829b9cec3328563b75a5b382c6e438b",
+    "read_method": "Read-only image-layer files, strings, nm and objdump; the library was not loaded or executed.",
+    "observed_environment_identifier": "MM_ENV_ACLNN_CACHE_LIMIT",
+    "observed_error_format": "Env variable ACLNN_CACHE_LIMIT[%s] is invalid! must be a number!",
+    "observed_functions": [
+      "op::internal::OpExecCacheManager::GetCacheSizeLimit()",
+      "nnopbase::ArgsPool::GetCacheSizeLimit()",
+      "op::internal::CheckCacheable()",
+      "CanUsePTACache",
+      "InitPTACacheThreadLocal"
+    ],
+    "static_function_observation": "The two GetCacheSizeLimit functions read the controlled environment, parse an unsigned integer, use default 10000 and cap at 10000000. In the observed successful parse branch, zero is preserved rather than raised to one. This corroborates the official setting; it does not prove that every execution route re-enters host tiling."
+  },
+  "installed_source_headers": [
+    {
+      "path": "/usr/local/Ascend/cann-9.1.0/include/aclnn/opdev/op_cache.h",
+      "sha256": "6c029dbffaa30dce5d0009b490e12695aa4140efad95aee82b1bcb166111fe25",
+      "evidence": "Lines 124-128 test CheckCacheable before returning GetFromCache(executor, workspaceSize)."
+    },
+    {
+      "path": "/usr/local/Ascend/cann-9.1.0/include/aclnn/opdev/op_cache_container.h",
+      "sha256": "a198d26c3349244cfd57bbe481fed0f2ddb5398310567292bd5dc8f571fa2b56"
+    }
+  ],
+  "source_limit": "No installed op_cache.cpp implementation was found in the checked CANN include/pkg_inc or torch_npu include/csrc/op_plugin directories. Binary fingerprints are not represented as matching public source-checkout fingerprints.",
+  "unproven_controls_not_used": ["GE_DUMP_TILING_DATA", "invented per-layer cache-key fields", "opaque executor offsets"],
+  "runtime_acceptance_required": [
+    "Record ACLNN_CACHE_LIMIT=0 before imports and native initialization in every baseline/fault process.",
+    "Identify each target layer and native API invocation with unique markers and synchronization.",
+    "Verify actual host-tiling entry for the intended layer-1 call even after identical-shape layer-0 calls.",
+    "Verify host-tiling entry on repeated calls; cache configuration alone is insufficient evidence.",
+    "Correlate native kernel/tiling evidence and preserve missing or ambiguous data as incomplete.",
+    "Do not treat kernel-binary cache, allocator cache or model KV/prefix cache as equivalent to the documented aclnn operator-information cache."
+  ]
+}

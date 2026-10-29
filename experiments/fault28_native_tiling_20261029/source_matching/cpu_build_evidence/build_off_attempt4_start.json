@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "docker",
+    "run",
+    "--rm",
+    "--cpus",
+    "4",
+    "--memory",
+    "16g",
+    "--pids-limit",
+    "512",
+    "--name",
+    "fault28-cpu-build-off-20261029",
+    "-v",
+    "/home/fault28-native-tiling-20261029/source_matching:/src",
+    "-v",
+    "/home/fault28-native-tiling-20261029/build_off:/build",
+    "-v",
+    "/usr/bin/patch:/buildtools/patch:ro",
+    "--entrypoint",
+    "bash",
+    "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+    "-lc",
+    "set -eo pipefail\nsource /usr/local/Ascend/cann-9.1.0/set_env.sh\nexport PYTHONPATH=/build/python_deps:${PYTHONPATH:-}\nexport PATH=/buildtools:${PATH}\ncd /src/ops-transformer-v9.1.0\ncmake -S . -B build -DPython3_EXECUTABLE=/usr/bin/python3.11 -DHI_PYTHON=/usr/bin/python3.11 -DASCEND_PYTHON_EXECUTABLE=/usr/bin/python3.11\ncmake --build build --target package --parallel 4\n"
+  ],
+  "start_unix": 1793245845.8639646,
+  "devices": [],
+  "privileged": false,
+  "timeout_seconds": 1800,
+  "attempt": 4
+}

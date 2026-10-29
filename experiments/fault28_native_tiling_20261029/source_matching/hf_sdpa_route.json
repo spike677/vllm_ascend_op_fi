@@ -1,0 +1,37 @@
+{
+  "schema": "fault28.hf_sdpa.source_route.v1",
+  "status": "SOURCE_SUPPORTED_NOT_RUNTIME_VERIFIED",
+  "checked_utc_date": "2026-10-29",
+  "no_npu_execution": true,
+  "candidate": "Stock Transformers Qwen3ForCausalLM with attn_implementation=sdpa, original BF16 checkpoint loaded with dtype=float16, eager full prefill",
+  "versions": {"transformers": "5.5.4", "torch": "2.10.0", "torch_npu": "2.10.0.post4"},
+  "site_packages": "/home/tik-constfold-cann91-overnight-20261022/venv/lib/python3.11/site-packages",
+  "installed_sources": {
+    "transformers/models/qwen3/modeling_qwen3.py": {"sha256": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab", "lines": [273, 285, 344, 345, 413, 426, 502, 505]},
+    "transformers/integrations/sdpa_attention.py": {"sha256": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564", "lines": [28, 37, 56, 62, 77, 84, 101]},
+    "transformers/masking_utils.py": {"sha256": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd", "lines": [233, 500, 501]},
+    "torch/nn/attention/__init__.py": {"sha256": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6", "lines": [113, 131, 152, 155]},
+    "torch_npu/include/torch_npu/csrc/aten/NPUNativeFunctions.h": {"sha256": "392bce15b7f5a0e035002cf3a3b35d01a393b96598e53548981d9726752aad52", "lines": [65, 1348, 1435]},
+    "torch_npu/include/torch_npu/csrc/aten/ops/scaled_dot_product_attention_npu_dispatch.h": {"sha256": "ee84462c669f379371a33cc048fda7e79664711cf94ced656fe49210dc09d7f5", "lines": [20]},
+    "torch_npu/lib/libtorch_npu.so": {"sha256": "3b43f9530ba124efd1f9cc8ea9f93088171d4493bfd8da9152b9ca547399a68a", "bytes": 82494777, "evidence": "Read-only strings contain SDPA/FA source filenames and npu_fusion_attention_v3_symint implementation/wrapper names; library was not loaded."}
+  },
+  "source_revision": {
+    "installed_torch_npu_git_version": "5dd8ef3f9b375b5ae4a83538d5785754148c3302",
+    "official_tree": "https://github.com/Ascend/pytorch/tree/5dd8ef3f9b375b5ae4a83538d5785754148c3302/third_party",
+    "op_plugin_submodule_commit": "8b9c8534fa41eff367a41c155843daa530ab3a08",
+    "qualification": "Official submodule revision linked to installed version metadata, corroborated by installed generated declarations and binary source-name strings. This is not a reproducible-build proof of every machine instruction."
+  },
+  "official_sources": {
+    "op_plugin/ops/opapi/ScaledDotProductAttentionKernelNpuOpApi.cpp": {"sha256": "d8af51a37fd764368d134c618df09ee460c16a8b593a3fe4b4b057e0db8b494a", "url": "https://github.com/Ascend/op-plugin/blob/8b9c8534fa41eff367a41c155843daa530ab3a08/op_plugin/ops/opapi/ScaledDotProductAttentionKernelNpuOpApi.cpp", "lines": [291, 321, 332, 348, 357, 407]},
+    "op_plugin/ops/opapi/FlashAttentionKernelNpuOpApi.cpp": {"sha256": "0df98c0da4e4a5501bb5a87ea36eca4c38c2e86c6c60e5ea82fb41b071bcd7c9", "url": "https://github.com/Ascend/op-plugin/blob/8b9c8534fa41eff367a41c155843daa530ab3a08/op_plugin/ops/opapi/FlashAttentionKernelNpuOpApi.cpp", "lines": [2053, 2232, 2268, 2291, 2295]},
+    "op_plugin/ops/opapi/FusedSdpChoiceKernelNpuOpApi.cpp": {"sha256": "f9c5c89d9bda0470918cab1460e097ebdbf0406796916beaf068316aca5f090c", "url": "https://github.com/Ascend/op-plugin/blob/8b9c8534fa41eff367a41c155843daa530ab3a08/op_plugin/ops/opapi/FusedSdpChoiceKernelNpuOpApi.cpp", "lines": [21, 34]},
+    "op_plugin/config/op_plugin_functions.yaml": {"sha256": "85e6ee9781b97cea03ec70cfff02c65a9f523e167e91e05f0b453ecf809a5268", "url": "https://github.com/Ascend/op-plugin/blob/8b9c8534fa41eff367a41c155843daa530ab3a08/op_plugin/config/op_plugin_functions.yaml", "lines": [4473, 4480, 6187, 6189]},
+    "torch_npu/csrc/framework/interface/EnvVariables.cpp": {"sha256": "c8e0f0bc107f91f499109ccae78550dfecf7a48f45b7c0dd62770bda05990953", "url": "https://github.com/Ascend/pytorch/blob/5dd8ef3f9b375b5ae4a83538d5785754148c3302/torch_npu/csrc/framework/interface/EnvVariables.cpp", "lines": [301, 302]}
+  },
+  "native_route": ["Qwen3Attention.forward", "ALL_ATTENTION_FUNCTIONS sdpa interface", "torch.nn.functional.scaled_dot_product_attention", "NPU op_api::scaled_dot_product_attention", "custom_ops::npu_fusion_attention_v3", "op_api::npu_fusion_attention_v3_symint", "EXEC_NPU_CMD(aclnnFlashAttentionScore)"],
+  "fa_selection_conditions": {"dtype": ["Half", "BFloat16", "Float"], "input_layout": "BNSD (all Q/K/V rank 4)", "mask": "None or bool", "query_and_key_heads_max": 2048, "query_head_dimension_max": 512, "gqa": "positive integer Q-head/KV-head ratio", "soc": "at least Ascend910B1; below Ascend950 uses FA v3 wrapper", "precedence": "FA branch precedes FIA and math branches; no requires_grad condition for FA"},
+  "planned_qwen_prefill_inference": {"runtime_verified": false, "batch": [1, 8], "sequence": 1024, "query": ["B", 16, 1024, 128], "key_value_without_repeat": ["B", 8, 1024, 128], "mask_at_sdpa": null, "is_causal": true, "dropout_p": 0.0, "scale": "1/sqrt(128)", "native_layout": "BNSD", "native_sparse_mode": 2, "native_pre_tokens": 2147483647, "native_next_tokens": 0, "native_inner_precise": 0, "native_mask_construction": "2048x2048 bool upper triangular compressed causal mask", "conditions": "eager equal-length unpadded inputs; no KV cache; actual mask and GQA still recorded by runtime probe"},
+  "flash_context_limitation": "Installed torch.nn.attention.sdpa_kernel supports FLASH_ATTENTION. But NPU _fused_sdp_choice returns OVERRIDEABLE=4, and the NPU SDPA implementation can still enter its final math branch when FA conditions fail without rechecking userEnabledMathSDP. FLASH-only flags are requested and recorded, not accepted as proof that math fallback is impossible. Require real CANN selected+launch FA evidence for every recorded layer.",
+  "not_established": ["Actual HF model execution on this server", "Actual FA tiling key or raw tiling fields", "Legal M/tile change on the selected FA kernel", "Fault mechanism reproduction", "Historical 38B model equivalence"],
+  "difference_from_vllm": "Stock HF SDPA full-prefill BNSD route; vLLM native FP16 TND FIA route remains a separate experiment. Identical checkpoint/tokens do not make the two framework numerics interchangeable baselines."
+}

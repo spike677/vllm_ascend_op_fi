@@ -1,0 +1,28 @@
+{
+  "schema": "fault28.fa.policy_source.v1",
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "status": "SOURCE_FROZEN_FOR_CLEAN_CPU_BUILD_2_NOT_NPU_VALIDATED",
+  "files": [
+    {
+      "path": "attention/flash_attention_score/op_host/flash_attention_score_tiling.cpp",
+      "before_sha256": "1ff5d96f741145cdd1e09001e52af9e56ce1efec1fb617865cfd8cb7fcf8924b",
+      "after_sha256": "6ee2c00b9681056ca874543f4f60204126c5fa5ee979353b069f2cdb2e64140d",
+      "bytes": 25363
+    },
+    {
+      "path": "attention/flash_attention_score/op_host/arch22/flash_attention_score_tiling_general.cpp",
+      "before_sha256": "d1c4ce53034ab9f7cab90888c4f75aa988f5e48d635ebc23b91eedc2eca2e97c",
+      "after_sha256": "d8f3723a3bd3e97a32760f9c1062409596925bf65435f6dff8f596fde2ef2c9d",
+      "bytes": 217693
+    },
+    {
+      "path": "attention/flash_attention_score/op_host/fault28_fa_policy.h",
+      "before_sha256": null,
+      "after_sha256": "57adae43bb6c547d2d74f8d41a88a66189a98a3b6291c1d74f12433079006a24",
+      "bytes": 7674
+    }
+  ],
+  "patch_sha256": "cb1b367444fd3be37e9379a3ad8beea56a2ba40e56fae6eb9723356e9a3b4124",
+  "kernel_source_modified": false,
+  "off_restoration": "FAULT28_FA_MODE=off or absent/mismatched scope preserves original selector"
+}

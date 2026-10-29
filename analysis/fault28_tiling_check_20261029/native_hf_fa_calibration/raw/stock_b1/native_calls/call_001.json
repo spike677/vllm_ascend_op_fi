@@ -1,0 +1,340 @@
+{
+  "case_id": "stock_b1",
+  "rank": 0,
+  "call_id": "pid47:r0:n1",
+  "native_index": 1,
+  "forward_index": 0,
+  "layer_index": 1,
+  "layer_name": "model.layers.1.self_attn",
+  "api": "torch.nn.functional.scaled_dot_product_attention",
+  "source_sha256": {
+    "transformers.models.qwen3.modeling_qwen3": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab",
+    "transformers.integrations.sdpa_attention": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564",
+    "transformers.masking_utils": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd",
+    "torch.nn.attention": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+  },
+  "status": "returned",
+  "entrypoint_kind": "PyTorch SDPA; actual CANN operator requires native logs",
+  "original_api_calls": 1,
+  "original_return_object_id": 281463694184432,
+  "actual_layout": "BNSD",
+  "target_mapping_certified": true,
+  "target_mapping": {
+    "batch_slot": 0,
+    "last_token_position": 2047,
+    "token_sha256": "a732622a8c880e7fedb77404887b40617cfd84119e86a14515e76046ef6a0b47"
+  },
+  "scalar_arguments": {
+    "dropout_p": 0.0,
+    "is_causal": true,
+    "scale": 0.08838834764831845,
+    "enable_gqa": true
+  },
+  "target_inputs_before": {
+    "query": {
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281463694185152,
+      "tensor_ptr": 20622608433664,
+      "actual_format": 0,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "9e97d8c8ad070a92ff3098fa9262b2ce1d2ae396238503b0cb35a34f30e274a0",
+      "logical_bytes": 8388608,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    },
+    "key": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281463694190112,
+      "tensor_ptr": 20622547616256,
+      "actual_format": 0,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "8cd14d5e05ce302297ca71c2c26aa2166c1e45846e0a0b5eb606763bb3b89156",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    },
+    "value": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        128,
+        1024,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281463694186112,
+      "tensor_ptr": 20622564393472,
+      "actual_format": 2,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "d7fc49076d45a568f2f8fa000ce8f4847b11104451ff795d7a1d6d90ea4789b6",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    }
+  },
+  "target_inputs_after": {
+    "query": {
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281463694185152,
+      "tensor_ptr": 20622608433664,
+      "actual_format": 2,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "9e97d8c8ad070a92ff3098fa9262b2ce1d2ae396238503b0cb35a34f30e274a0",
+      "logical_bytes": 8388608,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    },
+    "key": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281463694190112,
+      "tensor_ptr": 20622547616256,
+      "actual_format": 2,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "8cd14d5e05ce302297ca71c2c26aa2166c1e45846e0a0b5eb606763bb3b89156",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    },
+    "value": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        128,
+        1024,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281463694186112,
+      "tensor_ptr": 20622564393472,
+      "actual_format": 2,
+      "hashed_slice": "batch[0:1], all heads/positions",
+      "logical_sha256": "d7fc49076d45a568f2f8fa000ce8f4847b11104451ff795d7a1d6d90ea4789b6",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements"
+    }
+  },
+  "attention_mask": null,
+  "target_output": {
+    "shape": [
+      1,
+      16,
+      2048,
+      128
+    ],
+    "stride": [
+      4194304,
+      262144,
+      128,
+      1
+    ],
+    "dtype": "torch.float16",
+    "device": "npu:0",
+    "storage_offset": 0,
+    "object_id": 281463694184432,
+    "tensor_ptr": 20622600044544,
+    "actual_format": 0,
+    "hashed_slice": "batch[0:1], all heads/positions",
+    "logical_sha256": "7370b9855e95d435a321004e0984e1c9aa4bd22c3ec690804d09ee17fc60e3d5",
+    "logical_bytes": 8388608,
+    "byteorder": "little",
+    "raw_order": "C-contiguous logical elements"
+  },
+  "input_format_normalizations": [
+    {
+      "field": "target_inputs.key.actual_format",
+      "before": 0,
+      "after": 2,
+      "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+    },
+    {
+      "field": "target_inputs.query.actual_format",
+      "before": 0,
+      "after": 2,
+      "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+    }
+  ],
+  "selected_layer_private_inputs": {
+    "query": {
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281463694185152,
+      "tensor_ptr": 20622608433664,
+      "actual_format": 0,
+      "hashed_slice": "entire logical tensor",
+      "logical_sha256": "9e97d8c8ad070a92ff3098fa9262b2ce1d2ae396238503b0cb35a34f30e274a0",
+      "logical_bytes": 8388608,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements",
+      "private_raw_file": "private_replay/forward0_layer1_query.bin",
+      "publication": "PRIVATE_REPLAY_ONLY_EXCLUDE_FROM_GITHUB"
+    },
+    "key": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281463694190112,
+      "tensor_ptr": 20622547616256,
+      "actual_format": 0,
+      "hashed_slice": "entire logical tensor",
+      "logical_sha256": "8cd14d5e05ce302297ca71c2c26aa2166c1e45846e0a0b5eb606763bb3b89156",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements",
+      "private_raw_file": "private_replay/forward0_layer1_key.bin",
+      "publication": "PRIVATE_REPLAY_ONLY_EXCLUDE_FROM_GITHUB"
+    },
+    "value": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        128,
+        1024,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281463694186112,
+      "tensor_ptr": 20622564393472,
+      "actual_format": 2,
+      "hashed_slice": "entire logical tensor",
+      "logical_sha256": "d7fc49076d45a568f2f8fa000ce8f4847b11104451ff795d7a1d6d90ea4789b6",
+      "logical_bytes": 4194304,
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements",
+      "private_raw_file": "private_replay/forward0_layer1_value.bin",
+      "publication": "PRIVATE_REPLAY_ONLY_EXCLUDE_FROM_GITHUB"
+    },
+    "attn_mask": null
+  },
+  "selected_layer_private_output": {
+    "shape": [
+      1,
+      16,
+      2048,
+      128
+    ],
+    "stride": [
+      4194304,
+      262144,
+      128,
+      1
+    ],
+    "dtype": "torch.float16",
+    "device": "npu:0",
+    "storage_offset": 0,
+    "object_id": 281463694184432,
+    "tensor_ptr": 20622600044544,
+    "actual_format": 0,
+    "hashed_slice": "entire logical tensor",
+    "logical_sha256": "7370b9855e95d435a321004e0984e1c9aa4bd22c3ec690804d09ee17fc60e3d5",
+    "logical_bytes": 8388608,
+    "byteorder": "little",
+    "raw_order": "C-contiguous logical elements",
+    "private_raw_file": "private_replay/forward0_layer1_output.bin",
+    "publication": "PRIVATE_REPLAY_ONLY_EXCLUDE_FROM_GITHUB"
+  },
+  "host_scope": null,
+  "native_fa_coverage_verified": false
+}

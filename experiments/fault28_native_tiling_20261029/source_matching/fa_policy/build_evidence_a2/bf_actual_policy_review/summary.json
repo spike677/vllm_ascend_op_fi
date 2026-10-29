@@ -1,0 +1,3142 @@
+{
+  "schema": "fault28.fa.actual_policy_independent_review.v1",
+  "status": "PASS_PUBLIC_POD_AND_SOURCE_DERIVED_QUERY_COVERAGE",
+  "records": [
+    {
+      "case": "B",
+      "record_index": 0,
+      "token": "f0_layer1_sdpa_40a99bef6804488d8c7d5b1c4f7efd74",
+      "forward": "0",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "raw_bytes": 1464,
+      "public_pod_fields_match_typed": [
+        "m",
+        "s2_base",
+        "n_ratio",
+        "s1_outer",
+        "s2_outer",
+        "s1_tail",
+        "s2_tail",
+        "core_num",
+        "total_query_tasks",
+        "split_factor",
+        "split_factor_tail",
+        "sparse_start_idx",
+        "b",
+        "n2",
+        "g",
+        "s1",
+        "s2",
+        "d",
+        "dv",
+        "sparse_type",
+        "impl_mode",
+        "s1_sparse_valid_size",
+        "s2_sparse_valid_size",
+        "n1",
+        "scale",
+        "keep_prob"
+      ],
+      "trace_returncode": 0,
+      "trace_stdout": "{\"status\": \"PASS_SOURCE_DERIVED_QUERY_KEY_COVERAGE\", \"queries_checked\": 262144}\n",
+      "trace_stderr": "",
+      "trace": {
+        "status": "PASS_SOURCE_DERIVED_QUERY_KEY_COVERAGE",
+        "total_real_query_tasks": 2048,
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "fake_pairs_without_vec_output": [
+          {
+            "aiv": 5,
+            "duplicated_task": 310
+          },
+          {
+            "aiv": 7,
+            "duplicated_task": 319
+          },
+          {
+            "aiv": 15,
+            "duplicated_task": 822
+          },
+          {
+            "aiv": 17,
+            "duplicated_task": 831
+          },
+          {
+            "aiv": 25,
+            "duplicated_task": 1334
+          },
+          {
+            "aiv": 27,
+            "duplicated_task": 1343
+          },
+          {
+            "aiv": 35,
+            "duplicated_task": 1846
+          },
+          {
+            "aiv": 37,
+            "duplicated_task": 1855
+          }
+        ],
+        "target_tasks": [
+          {
+            "aiv": 1,
+            "task": 15,
+            "batch": 0,
+            "kv_head": 0,
+            "query_head": 0,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 31,
+            "batch": 0,
+            "kv_head": 0,
+            "query_head": 1,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 47,
+            "batch": 0,
+            "kv_head": 1,
+            "query_head": 2,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 63,
+            "batch": 0,
+            "kv_head": 1,
+            "query_head": 3,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 79,
+            "batch": 0,
+            "kv_head": 2,
+            "query_head": 4,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 95,
+            "batch": 0,
+            "kv_head": 2,
+            "query_head": 5,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 111,
+            "batch": 0,
+            "kv_head": 3,
+            "query_head": 6,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 127,
+            "batch": 0,
+            "kv_head": 3,
+            "query_head": 7,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 143,
+            "batch": 0,
+            "kv_head": 4,
+            "query_head": 8,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 159,
+            "batch": 0,
+            "kv_head": 4,
+            "query_head": 9,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 175,
+            "batch": 0,
+            "kv_head": 5,
+            "query_head": 10,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 191,
+            "batch": 0,
+            "kv_head": 5,
+            "query_head": 11,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 207,
+            "batch": 0,
+            "kv_head": 6,
+            "query_head": 12,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 223,
+            "batch": 0,
+            "kv_head": 6,
+            "query_head": 13,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 239,
+            "batch": 0,
+            "kv_head": 7,
+            "query_head": 14,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 255,
+            "batch": 0,
+            "kv_head": 7,
+            "query_head": 15,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "B",
+      "record_index": 1,
+      "token": "f1_layer1_sdpa_1ea88d5260664fbfa9801dea7c5e855e",
+      "forward": "1",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "raw_bytes": 1464,
+      "public_pod_fields_match_typed": [
+        "m",
+        "s2_base",
+        "n_ratio",
+        "s1_outer",
+        "s2_outer",
+        "s1_tail",
+        "s2_tail",
+        "core_num",
+        "total_query_tasks",
+        "split_factor",
+        "split_factor_tail",
+        "sparse_start_idx",
+        "b",
+        "n2",
+        "g",
+        "s1",
+        "s2",
+        "d",
+        "dv",
+        "sparse_type",
+        "impl_mode",
+        "s1_sparse_valid_size",
+        "s2_sparse_valid_size",
+        "n1",
+        "scale",
+        "keep_prob"
+      ],
+      "trace_returncode": 0,
+      "trace_stdout": "{\"status\": \"PASS_SOURCE_DERIVED_QUERY_KEY_COVERAGE\", \"queries_checked\": 262144}\n",
+      "trace_stderr": "",
+      "trace": {
+        "status": "PASS_SOURCE_DERIVED_QUERY_KEY_COVERAGE",
+        "total_real_query_tasks": 2048,
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "fake_pairs_without_vec_output": [
+          {
+            "aiv": 5,
+            "duplicated_task": 310
+          },
+          {
+            "aiv": 7,
+            "duplicated_task": 319
+          },
+          {
+            "aiv": 15,
+            "duplicated_task": 822
+          },
+          {
+            "aiv": 17,
+            "duplicated_task": 831
+          },
+          {
+            "aiv": 25,
+            "duplicated_task": 1334
+          },
+          {
+            "aiv": 27,
+            "duplicated_task": 1343
+          },
+          {
+            "aiv": 35,
+            "duplicated_task": 1846
+          },
+          {
+            "aiv": 37,
+            "duplicated_task": 1855
+          }
+        ],
+        "target_tasks": [
+          {
+            "aiv": 1,
+            "task": 15,
+            "batch": 0,
+            "kv_head": 0,
+            "query_head": 0,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 31,
+            "batch": 0,
+            "kv_head": 0,
+            "query_head": 1,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 47,
+            "batch": 0,
+            "kv_head": 1,
+            "query_head": 2,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 63,
+            "batch": 0,
+            "kv_head": 1,
+            "query_head": 3,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 79,
+            "batch": 0,
+            "kv_head": 2,
+            "query_head": 4,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 95,
+            "batch": 0,
+            "kv_head": 2,
+            "query_head": 5,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 111,
+            "batch": 0,
+            "kv_head": 3,
+            "query_head": 6,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 127,
+            "batch": 0,
+            "kv_head": 3,
+            "query_head": 7,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 143,
+            "batch": 0,
+            "kv_head": 4,
+            "query_head": 8,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 159,
+            "batch": 0,
+            "kv_head": 4,
+            "query_head": 9,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 175,
+            "batch": 0,
+            "kv_head": 5,
+            "query_head": 10,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 191,
+            "batch": 0,
+            "kv_head": 5,
+            "query_head": 11,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 207,
+            "batch": 0,
+            "kv_head": 6,
+            "query_head": 12,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 223,
+            "batch": 0,
+            "kv_head": 6,
+            "query_head": 13,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 239,
+            "batch": 0,
+            "kv_head": 7,
+            "query_head": 14,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 255,
+            "batch": 0,
+            "kv_head": 7,
+            "query_head": 15,
+            "query_interval": [
+              1920,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                1024
+              ],
+              [
+                1024,
+                2048
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "F",
+      "record_index": 0,
+      "token": "f0_layer1_sdpa_a004829d474743b1a10e20e5de3316ec",
+      "forward": "0",
+      "raw_sha256": "9bc28e668dff06479158f37787e1812c14167a94f45f1b5840879bca7599307a",
+      "raw_bytes": 1464,
+      "public_pod_fields_match_typed": [
+        "m",
+        "s2_base",
+        "n_ratio",
+        "s1_outer",
+        "s2_outer",
+        "s1_tail",
+        "s2_tail",
+        "core_num",
+        "total_query_tasks",
+        "split_factor",
+        "split_factor_tail",
+        "sparse_start_idx",
+        "b",
+        "n2",
+        "g",
+        "s1",
+        "s2",
+        "d",
+        "dv",
+        "sparse_type",
+        "impl_mode",
+        "s1_sparse_valid_size",
+        "s2_sparse_valid_size",
+        "n1",
+        "scale",
+        "keep_prob"
+      ],
+      "trace_returncode": 0,
+      "trace_stdout": "{\"status\": \"PASS_SOURCE_DERIVED_QUERY_KEY_COVERAGE\", \"queries_checked\": 262144}\n",
+      "trace_stderr": "",
+      "trace": {
+        "status": "PASS_SOURCE_DERIVED_QUERY_KEY_COVERAGE",
+        "total_real_query_tasks": 4096,
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "fake_pairs_without_vec_output": [
+          {
+            "aiv": 3,
+            "duplicated_task": 412
+          },
+          {
+            "aiv": 5,
+            "duplicated_task": 415
+          },
+          {
+            "aiv": 5,
+            "duplicated_task": 622
+          },
+          {
+            "aiv": 7,
+            "duplicated_task": 639
+          },
+          {
+            "aiv": 7,
+            "duplicated_task": 824
+          },
+          {
+            "aiv": 9,
+            "duplicated_task": 831
+          },
+          {
+            "aiv": 11,
+            "duplicated_task": 1236
+          },
+          {
+            "aiv": 13,
+            "duplicated_task": 1247
+          },
+          {
+            "aiv": 13,
+            "duplicated_task": 1436
+          },
+          {
+            "aiv": 15,
+            "duplicated_task": 1439
+          },
+          {
+            "aiv": 15,
+            "duplicated_task": 1646
+          },
+          {
+            "aiv": 17,
+            "duplicated_task": 1663
+          },
+          {
+            "aiv": 17,
+            "duplicated_task": 1848
+          },
+          {
+            "aiv": 19,
+            "duplicated_task": 1855
+          },
+          {
+            "aiv": 21,
+            "duplicated_task": 2260
+          },
+          {
+            "aiv": 23,
+            "duplicated_task": 2271
+          },
+          {
+            "aiv": 23,
+            "duplicated_task": 2460
+          },
+          {
+            "aiv": 25,
+            "duplicated_task": 2463
+          },
+          {
+            "aiv": 25,
+            "duplicated_task": 2670
+          },
+          {
+            "aiv": 27,
+            "duplicated_task": 2687
+          },
+          {
+            "aiv": 27,
+            "duplicated_task": 2872
+          },
+          {
+            "aiv": 29,
+            "duplicated_task": 2879
+          },
+          {
+            "aiv": 31,
+            "duplicated_task": 3284
+          },
+          {
+            "aiv": 33,
+            "duplicated_task": 3295
+          },
+          {
+            "aiv": 33,
+            "duplicated_task": 3484
+          },
+          {
+            "aiv": 35,
+            "duplicated_task": 3487
+          },
+          {
+            "aiv": 35,
+            "duplicated_task": 3694
+          },
+          {
+            "aiv": 37,
+            "duplicated_task": 3711
+          },
+          {
+            "aiv": 37,
+            "duplicated_task": 3896
+          },
+          {
+            "aiv": 39,
+            "duplicated_task": 3903
+          }
+        ],
+        "target_tasks": [
+          {
+            "aiv": 1,
+            "task": 31,
+            "batch": 0,
+            "kv_head": 0,
+            "query_head": 0,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 63,
+            "batch": 0,
+            "kv_head": 0,
+            "query_head": 1,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 95,
+            "batch": 0,
+            "kv_head": 1,
+            "query_head": 2,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 127,
+            "batch": 0,
+            "kv_head": 1,
+            "query_head": 3,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 159,
+            "batch": 0,
+            "kv_head": 2,
+            "query_head": 4,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 191,
+            "batch": 0,
+            "kv_head": 2,
+            "query_head": 5,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 223,
+            "batch": 0,
+            "kv_head": 3,
+            "query_head": 6,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 255,
+            "batch": 0,
+            "kv_head": 3,
+            "query_head": 7,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 287,
+            "batch": 0,
+            "kv_head": 4,
+            "query_head": 8,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 319,
+            "batch": 0,
+            "kv_head": 4,
+            "query_head": 9,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 351,
+            "batch": 0,
+            "kv_head": 5,
+            "query_head": 10,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 383,
+            "batch": 0,
+            "kv_head": 5,
+            "query_head": 11,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 4,
+            "task": 415,
+            "batch": 0,
+            "kv_head": 6,
+            "query_head": 12,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 447,
+            "batch": 0,
+            "kv_head": 6,
+            "query_head": 13,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 479,
+            "batch": 0,
+            "kv_head": 7,
+            "query_head": 14,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 511,
+            "batch": 0,
+            "kv_head": 7,
+            "query_head": 15,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "F",
+      "record_index": 1,
+      "token": "f1_layer1_sdpa_da8ee3d134e24739b80c24b29b02a787",
+      "forward": "1",
+      "raw_sha256": "9bc28e668dff06479158f37787e1812c14167a94f45f1b5840879bca7599307a",
+      "raw_bytes": 1464,
+      "public_pod_fields_match_typed": [
+        "m",
+        "s2_base",
+        "n_ratio",
+        "s1_outer",
+        "s2_outer",
+        "s1_tail",
+        "s2_tail",
+        "core_num",
+        "total_query_tasks",
+        "split_factor",
+        "split_factor_tail",
+        "sparse_start_idx",
+        "b",
+        "n2",
+        "g",
+        "s1",
+        "s2",
+        "d",
+        "dv",
+        "sparse_type",
+        "impl_mode",
+        "s1_sparse_valid_size",
+        "s2_sparse_valid_size",
+        "n1",
+        "scale",
+        "keep_prob"
+      ],
+      "trace_returncode": 0,
+      "trace_stdout": "{\"status\": \"PASS_SOURCE_DERIVED_QUERY_KEY_COVERAGE\", \"queries_checked\": 262144}\n",
+      "trace_stderr": "",
+      "trace": {
+        "status": "PASS_SOURCE_DERIVED_QUERY_KEY_COVERAGE",
+        "total_real_query_tasks": 4096,
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "fake_pairs_without_vec_output": [
+          {
+            "aiv": 3,
+            "duplicated_task": 412
+          },
+          {
+            "aiv": 5,
+            "duplicated_task": 415
+          },
+          {
+            "aiv": 5,
+            "duplicated_task": 622
+          },
+          {
+            "aiv": 7,
+            "duplicated_task": 639
+          },
+          {
+            "aiv": 7,
+            "duplicated_task": 824
+          },
+          {
+            "aiv": 9,
+            "duplicated_task": 831
+          },
+          {
+            "aiv": 11,
+            "duplicated_task": 1236
+          },
+          {
+            "aiv": 13,
+            "duplicated_task": 1247
+          },
+          {
+            "aiv": 13,
+            "duplicated_task": 1436
+          },
+          {
+            "aiv": 15,
+            "duplicated_task": 1439
+          },
+          {
+            "aiv": 15,
+            "duplicated_task": 1646
+          },
+          {
+            "aiv": 17,
+            "duplicated_task": 1663
+          },
+          {
+            "aiv": 17,
+            "duplicated_task": 1848
+          },
+          {
+            "aiv": 19,
+            "duplicated_task": 1855
+          },
+          {
+            "aiv": 21,
+            "duplicated_task": 2260
+          },
+          {
+            "aiv": 23,
+            "duplicated_task": 2271
+          },
+          {
+            "aiv": 23,
+            "duplicated_task": 2460
+          },
+          {
+            "aiv": 25,
+            "duplicated_task": 2463
+          },
+          {
+            "aiv": 25,
+            "duplicated_task": 2670
+          },
+          {
+            "aiv": 27,
+            "duplicated_task": 2687
+          },
+          {
+            "aiv": 27,
+            "duplicated_task": 2872
+          },
+          {
+            "aiv": 29,
+            "duplicated_task": 2879
+          },
+          {
+            "aiv": 31,
+            "duplicated_task": 3284
+          },
+          {
+            "aiv": 33,
+            "duplicated_task": 3295
+          },
+          {
+            "aiv": 33,
+            "duplicated_task": 3484
+          },
+          {
+            "aiv": 35,
+            "duplicated_task": 3487
+          },
+          {
+            "aiv": 35,
+            "duplicated_task": 3694
+          },
+          {
+            "aiv": 37,
+            "duplicated_task": 3711
+          },
+          {
+            "aiv": 37,
+            "duplicated_task": 3896
+          },
+          {
+            "aiv": 39,
+            "duplicated_task": 3903
+          }
+        ],
+        "target_tasks": [
+          {
+            "aiv": 1,
+            "task": 31,
+            "batch": 0,
+            "kv_head": 0,
+            "query_head": 0,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 63,
+            "batch": 0,
+            "kv_head": 0,
+            "query_head": 1,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 95,
+            "batch": 0,
+            "kv_head": 1,
+            "query_head": 2,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 127,
+            "batch": 0,
+            "kv_head": 1,
+            "query_head": 3,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 159,
+            "batch": 0,
+            "kv_head": 2,
+            "query_head": 4,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 1,
+            "task": 191,
+            "batch": 0,
+            "kv_head": 2,
+            "query_head": 5,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 223,
+            "batch": 0,
+            "kv_head": 3,
+            "query_head": 6,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 255,
+            "batch": 0,
+            "kv_head": 3,
+            "query_head": 7,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 287,
+            "batch": 0,
+            "kv_head": 4,
+            "query_head": 8,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 319,
+            "batch": 0,
+            "kv_head": 4,
+            "query_head": 9,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 351,
+            "batch": 0,
+            "kv_head": 5,
+            "query_head": 10,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 3,
+            "task": 383,
+            "batch": 0,
+            "kv_head": 5,
+            "query_head": 11,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 4,
+            "task": 415,
+            "batch": 0,
+            "kv_head": 6,
+            "query_head": 12,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 447,
+            "batch": 0,
+            "kv_head": 6,
+            "query_head": 13,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 479,
+            "batch": 0,
+            "kv_head": 7,
+            "query_head": 14,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          },
+          {
+            "aiv": 5,
+            "task": 511,
+            "batch": 0,
+            "kv_head": 7,
+            "query_head": 15,
+            "query_interval": [
+              1984,
+              2048
+            ],
+            "computed_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ],
+            "use_next_l1": false,
+            "target_query": 2047,
+            "target_legal_key_groups": [
+              [
+                0,
+                512
+              ],
+              [
+                512,
+                1024
+              ],
+              [
+                1024,
+                1536
+              ],
+              [
+                1536,
+                2048
+              ]
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "source_derived_not_hardware_trace": true,
+  "numerical_compatibility_review_separate": true,
+  "diagnostic_profiles_exactly_equal": true,
+  "msprobe_first_difference_acceptance_separate": true
+}

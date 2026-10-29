@@ -1,0 +1,87 @@
+{
+  "schema": "fault28.high_bf_independent_source_and_integrity_review.v1",
+  "status": "PASS_HIGH_BF_PROFILES_COLLECTOR_AND_CHECKPOINT",
+  "reports": {
+    "profiles": {
+      "path": "bf_high_actual_policy_review/summary.json",
+      "sha256": "9f96f01101c647a2a8ca21e022d775f53a6e6fba15c5285bfa17dcd78f4b14d3",
+      "status": "PASS_PUBLIC_POD_AND_SOURCE_DERIVED_QUERY_COVERAGE"
+    },
+    "cpu_receipt": {
+      "path": "bf_high_actual_policy_review_completion.json",
+      "sha256": "353c4fd7ac8873df0638624a2f09cfb3fb793e426e5c57a7ca84a4cfb117f53c",
+      "status": null
+    },
+    "collector": {
+      "path": "high_bf_collector_loading_review.json",
+      "sha256": "b4df94f137f5bf91f7e73e48c933addc99eea03eec7d8e7d4c0d15a0419bad12",
+      "status": "PASS_COLLECTOR_FREEZE_AND_ACTUAL_LOADING"
+    },
+    "checkpoint": {
+      "path": "checkpoint/checkpoint_before_after_high_bf_comparison.json",
+      "sha256": "524ca4aab70d1d3471e06f1111a08d8b1ec26e129daeb6ffba17754c4c2eefa3",
+      "status": "PASS_CHECKPOINT_FILES_UNCHANGED"
+    }
+  },
+  "profile_records": 4,
+  "typed_pod_fields_per_record": 26,
+  "raw_bytes_per_record": 1464,
+  "diagnostic_profiles_exactly_equal": true,
+  "source_derived_query_coverage": {
+    "all_real_queries_owned_once": true,
+    "all_legal_causal_keys_covered_once": true,
+    "same_query_split_between_cores": false,
+    "B_m_s2base_nratio": [
+      128,
+      128,
+      8
+    ],
+    "F_m_s2base_nratio": [
+      64,
+      128,
+      4
+    ],
+    "B_key_groups_target_last_query": [
+      [
+        0,
+        1024
+      ],
+      [
+        1024,
+        2048
+      ]
+    ],
+    "F_key_groups_target_last_query": [
+      [
+        0,
+        512
+      ],
+      [
+        512,
+        1024
+      ],
+      [
+        1024,
+        1536
+      ],
+      [
+        1536,
+        2048
+      ]
+    ],
+    "not_hardware_instruction_trace": true
+  },
+  "collector_stage_artifacts_verified": 513,
+  "collector_identical_both_arms": true,
+  "checkpoint_files": 4,
+  "checkpoint_total_bytes": 1503311025,
+  "checkpoint_files_unchanged": true,
+  "native_msprobe_first_difference_inference": "Performed by separate independent analyzer; not inferred from host policy/hit records by this review.",
+  "limits": [
+    "Review covers the fixed observed HF Qwen3-0.6B FP16 B8/S2048 FA route; not the prior vLLM FIA route or an identified historical hardware defect.",
+    "Statistics collector is the explicitly disclosed task-local high-precision repair of installed msprobe, not an unmodified official wheel.",
+    "Original low-statistics BF evidence remains preserved as an observation-resolution limitation."
+  ],
+  "npu_used_by_review": false,
+  "frozen_runtime_sources_or_libraries_modified": false
+}

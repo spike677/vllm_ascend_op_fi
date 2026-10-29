@@ -1,0 +1,1097 @@
+{
+  "schema": "fault28.stock_hf_fa_calibration.summary.v1",
+  "status": "CALIBRATION_COMPLETED_RAW_TILING_FRAMING_CANDIDATE",
+  "attempt": "hf_stock_2048_a3",
+  "physical_card": 5,
+  "options_except_batch": {
+    "attn_implementation": "sdpa",
+    "dtype": "float16",
+    "use_cache": false,
+    "logits_to_keep": 1,
+    "dropout": 0,
+    "full_prefill_forward_count": 1,
+    "torch_compile": false,
+    "requested_backend": "SDPBackend.FLASH_ATTENTION"
+  },
+  "versions": {
+    "torch": "2.10.0",
+    "torch-npu": "2.10.0.post4",
+    "transformers": "5.5.4"
+  },
+  "same_probe_source_across_cases": true,
+  "cases": {
+    "stock_b1": {
+      "capture_status": "CAPTURE_COMPLETED",
+      "profile_status": "CAPTURED_UNDECODED_FRAMING_CANDIDATE",
+      "batch_size": 1,
+      "prompt_length": 2048,
+      "sdpa_calls": 28,
+      "actual_fa_launch_records": 28,
+      "launch_signatures": [
+        {
+          "key": "22619644976",
+          "blocks": 20,
+          "declared_bytes": 1464,
+          "aligned_bytes": 1472,
+          "kernel_workspace_count": 1,
+          "api_workspace_bytes": 73401856,
+          "calls": 28
+        }
+      ],
+      "schedule_mode_from_profile": null,
+      "unique_declared_prefix_hashes": [
+        "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862"
+      ],
+      "unique_aligned_log_hash_count": 28,
+      "target_layers": [
+        {
+          "layer": 0,
+          "target_inputs": {
+            "query": {
+              "logical_shape": [
+                1,
+                16,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "e5b7f13248688045f72fcc86945fa9de538f5a5c80f24d4f7035d2c43ac9db03",
+              "logical_bytes": 8388608,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "key": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "c1972f0423f13fb57c5b1102e0a8e8b588dfdba5eaf2dc26dc99ad283b08b952",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "value": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "9b8066d9cb60bdab1c3f35c19f316d053def9449962cb70644340735371f3861",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            }
+          },
+          "target_output": {
+            "logical_shape": [
+              1,
+              16,
+              2048,
+              128
+            ],
+            "dtype": "torch.float16",
+            "logical_sha256": "9ff51ccc93b3e73ccc93b1380378543fc097de25918a71718e174bd1079f1613",
+            "logical_bytes": 8388608,
+            "raw_order": "C-contiguous logical elements",
+            "byteorder": "little"
+          },
+          "target_input_values_and_nonformat_metadata_unchanged": true,
+          "format_normalizations": [
+            {
+              "field": "target_inputs.key.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            },
+            {
+              "field": "target_inputs.query.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            }
+          ],
+          "scalar_arguments": {
+            "dropout_p": 0.0,
+            "is_causal": true,
+            "scale": 0.08838834764831845,
+            "enable_gqa": true
+          }
+        },
+        {
+          "layer": 1,
+          "target_inputs": {
+            "query": {
+              "logical_shape": [
+                1,
+                16,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "9e97d8c8ad070a92ff3098fa9262b2ce1d2ae396238503b0cb35a34f30e274a0",
+              "logical_bytes": 8388608,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "key": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "8cd14d5e05ce302297ca71c2c26aa2166c1e45846e0a0b5eb606763bb3b89156",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "value": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "d7fc49076d45a568f2f8fa000ce8f4847b11104451ff795d7a1d6d90ea4789b6",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            }
+          },
+          "target_output": {
+            "logical_shape": [
+              1,
+              16,
+              2048,
+              128
+            ],
+            "dtype": "torch.float16",
+            "logical_sha256": "7370b9855e95d435a321004e0984e1c9aa4bd22c3ec690804d09ee17fc60e3d5",
+            "logical_bytes": 8388608,
+            "raw_order": "C-contiguous logical elements",
+            "byteorder": "little"
+          },
+          "target_input_values_and_nonformat_metadata_unchanged": true,
+          "format_normalizations": [
+            {
+              "field": "target_inputs.key.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            },
+            {
+              "field": "target_inputs.query.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            }
+          ],
+          "scalar_arguments": {
+            "dropout_p": 0.0,
+            "is_causal": true,
+            "scale": 0.08838834764831845,
+            "enable_gqa": true
+          }
+        }
+      ],
+      "target_logits": {
+        "logical_shape": [
+          1,
+          1,
+          151936
+        ],
+        "dtype": "torch.float16",
+        "logical_sha256": "c70a3f3e2ce010203bf37cbe98f02875bc7571701315d9d7ba49122c31f3a38a",
+        "logical_bytes": 303872,
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little"
+      },
+      "target_argmax_token_id": 3516,
+      "full_tensor_bytes_included": false
+    },
+    "stock_b1_repeat": {
+      "capture_status": "CAPTURE_COMPLETED",
+      "profile_status": "CAPTURED_UNDECODED_FRAMING_CANDIDATE",
+      "batch_size": 1,
+      "prompt_length": 2048,
+      "sdpa_calls": 28,
+      "actual_fa_launch_records": 28,
+      "launch_signatures": [
+        {
+          "key": "22619644976",
+          "blocks": 20,
+          "declared_bytes": 1464,
+          "aligned_bytes": 1472,
+          "kernel_workspace_count": 1,
+          "api_workspace_bytes": 73401856,
+          "calls": 28
+        }
+      ],
+      "schedule_mode_from_profile": null,
+      "unique_declared_prefix_hashes": [
+        "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862"
+      ],
+      "unique_aligned_log_hash_count": 28,
+      "target_layers": [
+        {
+          "layer": 0,
+          "target_inputs": {
+            "query": {
+              "logical_shape": [
+                1,
+                16,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "e5b7f13248688045f72fcc86945fa9de538f5a5c80f24d4f7035d2c43ac9db03",
+              "logical_bytes": 8388608,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "key": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "c1972f0423f13fb57c5b1102e0a8e8b588dfdba5eaf2dc26dc99ad283b08b952",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "value": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "9b8066d9cb60bdab1c3f35c19f316d053def9449962cb70644340735371f3861",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            }
+          },
+          "target_output": {
+            "logical_shape": [
+              1,
+              16,
+              2048,
+              128
+            ],
+            "dtype": "torch.float16",
+            "logical_sha256": "9ff51ccc93b3e73ccc93b1380378543fc097de25918a71718e174bd1079f1613",
+            "logical_bytes": 8388608,
+            "raw_order": "C-contiguous logical elements",
+            "byteorder": "little"
+          },
+          "target_input_values_and_nonformat_metadata_unchanged": true,
+          "format_normalizations": [
+            {
+              "field": "target_inputs.key.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            },
+            {
+              "field": "target_inputs.query.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            }
+          ],
+          "scalar_arguments": {
+            "dropout_p": 0.0,
+            "is_causal": true,
+            "scale": 0.08838834764831845,
+            "enable_gqa": true
+          }
+        },
+        {
+          "layer": 1,
+          "target_inputs": {
+            "query": {
+              "logical_shape": [
+                1,
+                16,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "9e97d8c8ad070a92ff3098fa9262b2ce1d2ae396238503b0cb35a34f30e274a0",
+              "logical_bytes": 8388608,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "key": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "8cd14d5e05ce302297ca71c2c26aa2166c1e45846e0a0b5eb606763bb3b89156",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "value": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "d7fc49076d45a568f2f8fa000ce8f4847b11104451ff795d7a1d6d90ea4789b6",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            }
+          },
+          "target_output": {
+            "logical_shape": [
+              1,
+              16,
+              2048,
+              128
+            ],
+            "dtype": "torch.float16",
+            "logical_sha256": "7370b9855e95d435a321004e0984e1c9aa4bd22c3ec690804d09ee17fc60e3d5",
+            "logical_bytes": 8388608,
+            "raw_order": "C-contiguous logical elements",
+            "byteorder": "little"
+          },
+          "target_input_values_and_nonformat_metadata_unchanged": true,
+          "format_normalizations": [
+            {
+              "field": "target_inputs.key.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            },
+            {
+              "field": "target_inputs.query.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            }
+          ],
+          "scalar_arguments": {
+            "dropout_p": 0.0,
+            "is_causal": true,
+            "scale": 0.08838834764831845,
+            "enable_gqa": true
+          }
+        }
+      ],
+      "target_logits": {
+        "logical_shape": [
+          1,
+          1,
+          151936
+        ],
+        "dtype": "torch.float16",
+        "logical_sha256": "c70a3f3e2ce010203bf37cbe98f02875bc7571701315d9d7ba49122c31f3a38a",
+        "logical_bytes": 303872,
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little"
+      },
+      "target_argmax_token_id": 3516,
+      "full_tensor_bytes_included": false
+    },
+    "stock_b8": {
+      "capture_status": "CAPTURE_COMPLETED",
+      "profile_status": "CAPTURED_UNDECODED_FRAMING_CANDIDATE",
+      "batch_size": 8,
+      "prompt_length": 2048,
+      "sdpa_calls": 28,
+      "actual_fa_launch_records": 28,
+      "launch_signatures": [
+        {
+          "key": "22619644976",
+          "blocks": 20,
+          "declared_bytes": 1464,
+          "aligned_bytes": 1472,
+          "kernel_workspace_count": 1,
+          "api_workspace_bytes": 102761984,
+          "calls": 28
+        }
+      ],
+      "schedule_mode_from_profile": null,
+      "unique_declared_prefix_hashes": [
+        "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d"
+      ],
+      "unique_aligned_log_hash_count": 28,
+      "target_layers": [
+        {
+          "layer": 0,
+          "target_inputs": {
+            "query": {
+              "logical_shape": [
+                1,
+                16,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "afa6c646d1df94ba70f3f97966f4c908ec9d73608dfa92245b58aa80dd2fad76",
+              "logical_bytes": 8388608,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "key": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "542813a2f5a8280dade826c695c7c866c424b56d8d888f000459eb22fa5b53bd",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "value": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "dc0872cce674a0bad0ff8cb1c9607fad9cacad7b0422fc353b36eb059f740bd4",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            }
+          },
+          "target_output": {
+            "logical_shape": [
+              1,
+              16,
+              2048,
+              128
+            ],
+            "dtype": "torch.float16",
+            "logical_sha256": "973e1b788e68e42bf033753fce4ed6c83debce4bba398cfa47832e2d8785e29e",
+            "logical_bytes": 8388608,
+            "raw_order": "C-contiguous logical elements",
+            "byteorder": "little"
+          },
+          "target_input_values_and_nonformat_metadata_unchanged": true,
+          "format_normalizations": [
+            {
+              "field": "target_inputs.key.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            },
+            {
+              "field": "target_inputs.query.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            }
+          ],
+          "scalar_arguments": {
+            "dropout_p": 0.0,
+            "is_causal": true,
+            "scale": 0.08838834764831845,
+            "enable_gqa": true
+          }
+        },
+        {
+          "layer": 1,
+          "target_inputs": {
+            "query": {
+              "logical_shape": [
+                1,
+                16,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00",
+              "logical_bytes": 8388608,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "key": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "value": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            }
+          },
+          "target_output": {
+            "logical_shape": [
+              1,
+              16,
+              2048,
+              128
+            ],
+            "dtype": "torch.float16",
+            "logical_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+            "logical_bytes": 8388608,
+            "raw_order": "C-contiguous logical elements",
+            "byteorder": "little"
+          },
+          "target_input_values_and_nonformat_metadata_unchanged": true,
+          "format_normalizations": [
+            {
+              "field": "target_inputs.key.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            },
+            {
+              "field": "target_inputs.query.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            }
+          ],
+          "scalar_arguments": {
+            "dropout_p": 0.0,
+            "is_causal": true,
+            "scale": 0.08838834764831845,
+            "enable_gqa": true
+          }
+        }
+      ],
+      "target_logits": {
+        "logical_shape": [
+          1,
+          1,
+          151936
+        ],
+        "dtype": "torch.float16",
+        "logical_sha256": "05aa2b759bc540311780766088a1d6756abc4a935497fdc66ce833d992c84222",
+        "logical_bytes": 303872,
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little"
+      },
+      "target_argmax_token_id": 3516,
+      "full_tensor_bytes_included": false
+    },
+    "stock_b8_repeat": {
+      "capture_status": "CAPTURE_COMPLETED",
+      "profile_status": "CAPTURED_UNDECODED_FRAMING_CANDIDATE",
+      "batch_size": 8,
+      "prompt_length": 2048,
+      "sdpa_calls": 28,
+      "actual_fa_launch_records": 28,
+      "launch_signatures": [
+        {
+          "key": "22619644976",
+          "blocks": 20,
+          "declared_bytes": 1464,
+          "aligned_bytes": 1472,
+          "kernel_workspace_count": 1,
+          "api_workspace_bytes": 102761984,
+          "calls": 28
+        }
+      ],
+      "schedule_mode_from_profile": null,
+      "unique_declared_prefix_hashes": [
+        "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d"
+      ],
+      "unique_aligned_log_hash_count": 28,
+      "target_layers": [
+        {
+          "layer": 0,
+          "target_inputs": {
+            "query": {
+              "logical_shape": [
+                1,
+                16,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "afa6c646d1df94ba70f3f97966f4c908ec9d73608dfa92245b58aa80dd2fad76",
+              "logical_bytes": 8388608,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "key": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "542813a2f5a8280dade826c695c7c866c424b56d8d888f000459eb22fa5b53bd",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "value": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "dc0872cce674a0bad0ff8cb1c9607fad9cacad7b0422fc353b36eb059f740bd4",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            }
+          },
+          "target_output": {
+            "logical_shape": [
+              1,
+              16,
+              2048,
+              128
+            ],
+            "dtype": "torch.float16",
+            "logical_sha256": "973e1b788e68e42bf033753fce4ed6c83debce4bba398cfa47832e2d8785e29e",
+            "logical_bytes": 8388608,
+            "raw_order": "C-contiguous logical elements",
+            "byteorder": "little"
+          },
+          "target_input_values_and_nonformat_metadata_unchanged": true,
+          "format_normalizations": [
+            {
+              "field": "target_inputs.key.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            },
+            {
+              "field": "target_inputs.query.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            }
+          ],
+          "scalar_arguments": {
+            "dropout_p": 0.0,
+            "is_causal": true,
+            "scale": 0.08838834764831845,
+            "enable_gqa": true
+          }
+        },
+        {
+          "layer": 1,
+          "target_inputs": {
+            "query": {
+              "logical_shape": [
+                1,
+                16,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00",
+              "logical_bytes": 8388608,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "key": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            },
+            "value": {
+              "logical_shape": [
+                1,
+                8,
+                2048,
+                128
+              ],
+              "dtype": "torch.float16",
+              "logical_sha256": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947",
+              "logical_bytes": 4194304,
+              "raw_order": "C-contiguous logical elements",
+              "byteorder": "little"
+            }
+          },
+          "target_output": {
+            "logical_shape": [
+              1,
+              16,
+              2048,
+              128
+            ],
+            "dtype": "torch.float16",
+            "logical_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+            "logical_bytes": 8388608,
+            "raw_order": "C-contiguous logical elements",
+            "byteorder": "little"
+          },
+          "target_input_values_and_nonformat_metadata_unchanged": true,
+          "format_normalizations": [
+            {
+              "field": "target_inputs.key.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            },
+            {
+              "field": "target_inputs.query.actual_format",
+              "before": 0,
+              "after": 2,
+              "interpretation": "Stock npu_format_cast NCHW(0) to ND(2) descriptor normalization; not a fault or numerical difference."
+            }
+          ],
+          "scalar_arguments": {
+            "dropout_p": 0.0,
+            "is_causal": true,
+            "scale": 0.08838834764831845,
+            "enable_gqa": true
+          }
+        }
+      ],
+      "target_logits": {
+        "logical_shape": [
+          1,
+          1,
+          151936
+        ],
+        "dtype": "torch.float16",
+        "logical_sha256": "05aa2b759bc540311780766088a1d6756abc4a935497fdc66ce833d992c84222",
+        "logical_bytes": 303872,
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little"
+      },
+      "target_argmax_token_id": 3516,
+      "full_tensor_bytes_included": false
+    }
+  },
+  "repeat_comparisons": [
+    {
+      "left": "stock_b1",
+      "right": "stock_b1_repeat",
+      "layers": [
+        {
+          "layer": 0,
+          "target_input_hash_equal": {
+            "query": true,
+            "key": true,
+            "value": true
+          },
+          "target_output_hash_equal": true,
+          "scalar_arguments_equal": true
+        },
+        {
+          "layer": 1,
+          "target_input_hash_equal": {
+            "query": true,
+            "key": true,
+            "value": true
+          },
+          "target_output_hash_equal": true,
+          "scalar_arguments_equal": true
+        }
+      ],
+      "target_logits_hash_equal": true,
+      "target_argmax_equal": true,
+      "declared_prefix_hash_equal_by_layer": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "aligned_log_hash_equal_by_layer": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "left": "stock_b8",
+      "right": "stock_b8_repeat",
+      "layers": [
+        {
+          "layer": 0,
+          "target_input_hash_equal": {
+            "query": true,
+            "key": true,
+            "value": true
+          },
+          "target_output_hash_equal": true,
+          "scalar_arguments_equal": true
+        },
+        {
+          "layer": 1,
+          "target_input_hash_equal": {
+            "query": true,
+            "key": true,
+            "value": true
+          },
+          "target_output_hash_equal": true,
+          "scalar_arguments_equal": true
+        }
+      ],
+      "target_logits_hash_equal": true,
+      "target_argmax_equal": true,
+      "declared_prefix_hash_equal_by_layer": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "aligned_log_hash_equal_by_layer": [
+        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    }
+  ],
+  "batch_comparison": {
+    "left": "stock_b1",
+    "right": "stock_b8",
+    "layers": [
+      {
+        "layer": 0,
+        "target_input_hash_equal": {
+          "query": false,
+          "key": false,
+          "value": false
+        },
+        "target_output_hash_equal": false,
+        "scalar_arguments_equal": true
+      },
+      {
+        "layer": 1,
+        "target_input_hash_equal": {
+          "query": false,
+          "key": false,
+          "value": false
+        },
+        "target_output_hash_equal": false,
+        "scalar_arguments_equal": true
+      }
+    ],
+    "target_logits_hash_equal": false,
+    "target_argmax_equal": true,
+    "declared_prefix_hash_equal_by_layer": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "aligned_log_hash_equal_by_layer": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "fault_injection_performed": false,
+  "mechanism_accepted": false,
+  "msprobe_collected": false,
+  "raw_framing_verified": false,
+  "typed_schema_decode_included": false,
+  "stock_same_input_attention_fault_established": false,
+  "cleanup": {
+    "owned_container_removed": true,
+    "device_lock_released": true,
+    "all_host_devices_idle_claimed": false
+  },
+  "limits": [
+    "HF native SDPA/FlashAttentionScore path is distinct from the vLLM FIA calibration and uses a 2048-token prompt.",
+    "Target records retain the original full-batch shape but hash batch[0:1]; logical shape here is independently reconstructed and checked against byte count.",
+    "Q/K format 0 to 2 normalization is explicitly allowed only with identical logical SHA and all remaining recorded metadata unchanged; it is not a numeric fault.",
+    "This calibration records target-input integrity, not the later formal full-B8 before/after integrity contract.",
+    "Different B1/B8 target Q/K/V values before layer0 prevent identifying the observed output difference as a same-input FA failure.",
+    "The declared 1464-byte prefix is an unverified framing candidate. The full 1472 bytes are retained; no trailing bytes are silently discarded or assigned a schema.",
+    "Typed decoding and public-context byte comparison are not included; M/S1/S2 legality, reduction order, precision and non-SplitKV are not established by these files.",
+    "API workspace includes helper operators; it is not the raw kernel workspace-size vector. Schedule mode is not supplied by this extracted profile.",
+    "No private tensor binary or full log is included, so readers cannot recompute numerical error from the package.",
+    "No msprobe collection or fault injection was performed in these stock runs."
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "--cpus",
+    "4",
+    "--memory",
+    "16g",
+    "--pids-limit",
+    "512",
+    "--name",
+    "fault28-cpu-schema-20261029",
+    "-v",
+    "/home/fault28-native-tiling-20261029/source_matching:/src:ro",
+    "-v",
+    "/home/fault28-native-tiling-20261029/build_off:/build",
+    "--entrypoint",
+    "bash",
+    "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+    "-lc",
+    "set -euo pipefail\nsource /usr/local/Ascend/cann-9.1.0/set_env.sh\ng++ -std=c++17 -O2 -D_GLIBCXX_USE_CXX11_ABI=0 /src/fia_schema_check.cpp -I/src -I/usr/local/Ascend/cann-9.1.0/include -L/usr/local/Ascend/cann-9.1.0/lib64 -Wl,-rpath,/usr/local/Ascend/cann-9.1.0/lib64 -lregister -lc_sec -o /build/fia_schema_check\n/build/fia_schema_check > /build/schema_roundtrip.json\n"
+  ],
+  "start_unix": 1793245531.1482172,
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "/usr/local/Ascend/cann-9.1.0/set_env.sh: line 48: LD_LIBRARY_PATH: unbound variable\n/usr/local/Ascend/cann-9.1.0/set_env.sh: line 48: PYTHONPATH: unbound variable\n/usr/local/Ascend/cann-9.1.0/set_env.sh: line 31: CMAKE_PREFIX_PATH: unbound variable\n",
+  "end_unix": 1793245535.5074682,
+  "container_removed": true
+}

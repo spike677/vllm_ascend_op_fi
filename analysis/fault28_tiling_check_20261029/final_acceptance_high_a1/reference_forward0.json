@@ -1,0 +1,54 @@
+{
+  "schema": "fault28.last_query_reference.v1",
+  "status": "REFERENCE_EVALUATED_NOT_ACCEPTANCE",
+  "inputs_identical": true,
+  "target": {
+    "batch": 8,
+    "query_heads": 16,
+    "kv_heads": 8,
+    "length": 2048,
+    "head_dimension": 128,
+    "scale": 0.08838834764831845,
+    "all_represented_fp16_inputs": {
+      "query": "22d02775b5fc527fad8a33bbac66957f4dab43c16f5b62d43cb27a0dbf37be99",
+      "key": "b0dbf9f431c95b376dd7093276054a2308a86358d1e7b377e88a273f8323db82",
+      "value": "fe823a8113b6cfecc79d0bfa1e8bb99584076ee1352dbaa311a0259744ce7f51"
+    },
+    "valid_key_indices": [
+      0,
+      2047
+    ],
+    "valid_key_count_per_head": 2048,
+    "query_index": 2047,
+    "request_index": 0,
+    "arithmetic": "FP64 QK, exp, normalization and PV, from exact represented FP16 bytes"
+  },
+  "baseline_vs_reference": {
+    "max_abs": 0.00010673577043618376,
+    "mean_abs": 7.508878875217747e-06,
+    "rms": 1.2496631630460778e-05,
+    "nonzero_elements": 2048,
+    "elements": 2048
+  },
+  "fault_vs_reference": {
+    "max_abs": 0.00010673577043618376,
+    "mean_abs": 7.505468197605121e-06,
+    "rms": 1.2463799345847355e-05,
+    "nonzero_elements": 2048,
+    "elements": 2048
+  },
+  "fault_vs_baseline": {
+    "max_abs": 0.0001220703125,
+    "mean_abs": 1.7895945347845554e-07,
+    "rms": 3.2494353128082587e-06,
+    "nonzero_elements": 34,
+    "elements": 2048
+  },
+  "call_record_sha256": [
+    "458a683a616da397bd1eeba47b7348d0e2bf78c253ea43c158f7f393bb67c0c8",
+    "446c94296ecae25347bd1f3ad53ece7570eb662376d1874e9cfe247413747563"
+  ],
+  "analyzer_sha256": "f057c458fe79492179063e20d59caa2be04121aa630e8564bee63b47b5891c17",
+  "numpy_version": "1.26.4",
+  "scope": "One prespecified final query; does not establish tiling legality, model propagation or historical reproduction."
+}

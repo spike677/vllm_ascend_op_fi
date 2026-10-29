@@ -1,0 +1,92 @@
+{
+  "status": "PASS_SYNTHETIC_PROFILE_ALGORITHM_CHECK_ONLY",
+  "actual_npu_profile_used": false,
+  "positive_profiles": [
+    {
+      "m": 128,
+      "ratio": 8,
+      "l1_reuse": false,
+      "queries_checked": 262144,
+      "fake_pairs": 0,
+      "target_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "m": 128,
+      "ratio": 8,
+      "l1_reuse": true,
+      "queries_checked": 262144,
+      "fake_pairs": 16,
+      "target_key_groups": [
+        [
+          0,
+          1024
+        ],
+        [
+          1024,
+          2048
+        ]
+      ]
+    },
+    {
+      "m": 64,
+      "ratio": 4,
+      "l1_reuse": false,
+      "queries_checked": 262144,
+      "fake_pairs": 0,
+      "target_key_groups": [
+        [
+          0,
+          512
+        ],
+        [
+          512,
+          1024
+        ],
+        [
+          1024,
+          1536
+        ],
+        [
+          1536,
+          2048
+        ]
+      ]
+    },
+    {
+      "m": 64,
+      "ratio": 4,
+      "l1_reuse": true,
+      "queries_checked": 262144,
+      "fake_pairs": 16,
+      "target_key_groups": [
+        [
+          0,
+          512
+        ],
+        [
+          512,
+          1024
+        ],
+        [
+          1024,
+          1536
+        ],
+        [
+          1536,
+          2048
+        ]
+      ]
+    }
+  ],
+  "negative_profiles_rejected": 20,
+  "limits": "Synthetic one-byte raw placeholder is not an ABI or NPU check. CLI source SHA checking is separate."
+}

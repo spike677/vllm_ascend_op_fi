@@ -1,0 +1,96 @@
+{
+  "schema": "fault28.execution_acceptance.v1",
+  "status": "PASS_FAULT28_NATIVE_TILING_AND_HIGH_STATISTICS",
+  "attempt": "bf_statistics_high_a1",
+  "native_msprobe_first_difference_pass": true,
+  "mechanism_validation_pass": true,
+  "formal_runtime_consistency_pass": true,
+  "collector_variant": "task_local_msprobe26_1_fp32_high",
+  "official_default_msprobe_exact_location_pass": false,
+  "historical_defect_reproduced": false,
+  "scope": {
+    "server": "124",
+    "physical_card": 5,
+    "tensor_parallel": 1,
+    "model": "Qwen3-0.6B BF16 checkpoint loaded as FP16",
+    "framework": "stock HF Qwen3 SDPA to native CANN FlashAttentionScore",
+    "selected_layer_zero_based": 1,
+    "batch": 8,
+    "prefill_tokens_per_request": 2048,
+    "forwards_per_arm": 2,
+    "primary_data": "statistics/mix/summary_mode=statistics, precision=high",
+    "collector_is_task_local_modified_msprobe": true
+  },
+  "native_policy": {
+    "B_M": 128,
+    "B_S2_group": 1024,
+    "F_M": 64,
+    "F_S2_group": 512,
+    "valid_keys_per_query_preserved": true,
+    "query_split_between_cores": false,
+    "repeated_eligible_hits": 2,
+    "same_process_recovery_pass": true,
+    "batch1_guard_pass": true
+  },
+  "observation": {
+    "first_observed_model_api": "Functional.scaled_dot_product_attention.1.forward",
+    "first_layer_zero_based": 1,
+    "first_difference_side": "output.Mean",
+    "B_Mean": 0.0002203190088039264,
+    "F_Mean": 0.00022031953267287463,
+    "input_summary_match_does_not_prove_tensor_equality": true,
+    "exact_runtime_input_hashes_checked_separately": true,
+    "earlier_unobservable_statistic_fields": 50,
+    "direct_cann_kernel_node_in_msprobe": false,
+    "native_fa_identity_proven_by_separate_launch_and_profile_evidence": true
+  },
+  "numerical_effect": {
+    "target_last_query_changed_elements": 34,
+    "target_last_query_elements": 2048,
+    "target_last_query_max_abs_BF": 0.0001220703125,
+    "next_token_logits_changed": true,
+    "top1_changed": false,
+    "top1_token_id": 3516,
+    "business_quality_degradation_proven": false
+  },
+  "limitations": [
+    "Controlled native FA/model-path mechanism simulation; not historical 38B/vLLM-FIA defect reproduction.",
+    "Batch1/8 model inputs naturally differ before attention; same-Batch8 OFF/ON isolates the injected policy.",
+    "Official default FP16 four-statistic capture first observes downstream pow input; only the disclosed high collector resolves SDPA output.",
+    "Statistics do not uniquely identify a CANN instruction or tiling cause; source/profile/runtime evidence is separate."
+  ],
+  "source_reports": [
+    {
+      "path": "summaries/collector_validation.json",
+      "sha256": "fb1e7bd8906df5b01c62e5f4a08a694ba7f04855a0dc98dcf30282d19de6fcc5"
+    },
+    {
+      "path": "summaries/formal_runtime_crosscheck.json",
+      "sha256": "ad0e5270942e88d5201449612327a681a2c799cdfe20387adad61baba28bc755"
+    },
+    {
+      "path": "summaries/independent_msprobe_step0.json",
+      "sha256": "f9dcce8868059955958887a4757f1fe3073c636b56941e4d25ee8441f9cbdf6a"
+    },
+    {
+      "path": "summaries/independent_msprobe_step1.json",
+      "sha256": "f9dcce8868059955958887a4757f1fe3073c636b56941e4d25ee8441f9cbdf6a"
+    },
+    {
+      "path": "summaries/mechanism_validation.json",
+      "sha256": "4f922a79e2e341057036d3f4f33fa518885016f3497e6b38254c0cbd7e740605"
+    },
+    {
+      "path": "summaries/off_compatibility.json",
+      "sha256": "a288d6fee6114ab125d5aeb0d2f526ade0c3776c04a3e684de5baa0ac2dc985a"
+    },
+    {
+      "path": "summaries/official_default_msprobe_step0.json",
+      "sha256": "e0909747c1685e9353d390541127236af22763df6fd2e9b732d066e474acf993"
+    },
+    {
+      "path": "summaries/official_default_msprobe_step1.json",
+      "sha256": "e0909747c1685e9353d390541127236af22763df6fd2e9b732d066e474acf993"
+    }
+  ]
+}

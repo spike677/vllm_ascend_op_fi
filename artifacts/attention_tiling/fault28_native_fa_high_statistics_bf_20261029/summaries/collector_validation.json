@@ -1,0 +1,140 @@
+{
+  "schema": "fault28.collector_validation_summary.v1",
+  "status": "PASS_TASK_LOCAL_HIGH_COLLECTOR_VALIDATION",
+  "modified_official_collector": true,
+  "original_installed_collector_unchanged": true,
+  "review": {
+    "path": "experiments/fault28_native_tiling_20261029/source_matching/fa_policy/build_evidence_a2/collector_high_independent_final_review.json",
+    "sha256": "80714ee3c7c95ec855ccef92f58165fba03650975f40e2278be16a6bf0be5587",
+    "report": {
+      "schema": "fault28.collector_high_independent_final_review.v1",
+      "status": "PASS_COLLECTOR_REVIEW_AND_OBSERVED_STOCK_TRANSPARENCY",
+      "official_high_document": "https://gitcode.com/Ascend/msprobe/blob/f5900e0670ab5406b75d79635dde062d80ad84f0/docs/zh/dump/config_json_introduct.md",
+      "cpu_report": {
+        "path": "experiments\\fault28_native_tiling_20261029\\analysis\\collector_high\\cpu_checks_v3.json",
+        "sha256": "b0b1c56c1e7be09cc6668a628b8db05c13430040af8bcfbe71b6ef3e69b161ea",
+        "checks": 23,
+        "finite_fp64_reference_checks": 11,
+        "max_mean_abs_error": 3.725290298461914e-09,
+        "max_norm_abs_error": 1.350286318313465e-07
+      },
+      "cpu_test_sha256": "882da4fc1ab001669fd3013d48c94d028b1e6f3a95f8ce1c70466ac59a385e27",
+      "builder_sha256": "9dd40778fbdb5bd5b79054e3a3e61165091fd297eb7c4d9d49c87cb23f4a89e7",
+      "selector_sha256": "9f9d69750a1ba363c700ce7bb3d3bae1e3eab472179177ef77ac3c825965e9dd",
+      "pilot_report": {
+        "path": "experiments\\fault28_native_tiling_20261029\\source_matching\\fa_policy\\build_evidence_a2\\high_collector_transparency_review\\summary.json",
+        "sha256": "393c0a7138ae8ff88eb0e6f2a98217bc0f7130b30ef1f7334f265b4f1e7f35a0",
+        "target_call_comparisons": 112,
+        "stage_artifacts": 513
+      },
+      "resolved_findings": [
+        "Patch source anchor corrected to exact installed e981 code; only get_stat_info AST changed.",
+        "CPU identity checks include object/pointer/bytes/dtype/device/shape/stride/storage offset/version.",
+        "Finite represented FP16/BF16/FP32 values additionally checked against CPU FP64 Mean/Norm within declared tolerances.",
+        "Low path checked against original function, and actual DataWriter preserved original metadata and high scalar values."
+      ],
+      "blocking_findings": [],
+      "limits": [
+        "Task-local modified collector following documented high-statistics intent; not unmodified official wheel behavior.",
+        "Pilot uses stock FA without injection; B/F first-difference acceptance remains separate and is not predeclared.",
+        "Source/CPU/observed-pilot evidence does not prove global transparency for every model/dtype/backend."
+      ]
+    }
+  },
+  "formal_native_profile_collector_checkpoint_review": {
+    "path": "experiments/fault28_native_tiling_20261029/source_matching/fa_policy/build_evidence_a2/high_bf_independent_review_summary.json",
+    "sha256": "fcb68eb62e0fd3b6ebdbb467c871bd7d05c5c487b6e532ce42bb5a69f979315f",
+    "report": {
+      "schema": "fault28.high_bf_independent_source_and_integrity_review.v1",
+      "status": "PASS_HIGH_BF_PROFILES_COLLECTOR_AND_CHECKPOINT",
+      "reports": {
+        "profiles": {
+          "path": "bf_high_actual_policy_review/summary.json",
+          "sha256": "9f96f01101c647a2a8ca21e022d775f53a6e6fba15c5285bfa17dcd78f4b14d3",
+          "status": "PASS_PUBLIC_POD_AND_SOURCE_DERIVED_QUERY_COVERAGE"
+        },
+        "cpu_receipt": {
+          "path": "bf_high_actual_policy_review_completion.json",
+          "sha256": "353c4fd7ac8873df0638624a2f09cfb3fb793e426e5c57a7ca84a4cfb117f53c",
+          "status": null
+        },
+        "collector": {
+          "path": "high_bf_collector_loading_review.json",
+          "sha256": "b4df94f137f5bf91f7e73e48c933addc99eea03eec7d8e7d4c0d15a0419bad12",
+          "status": "PASS_COLLECTOR_FREEZE_AND_ACTUAL_LOADING"
+        },
+        "checkpoint": {
+          "path": "checkpoint/checkpoint_before_after_high_bf_comparison.json",
+          "sha256": "524ca4aab70d1d3471e06f1111a08d8b1ec26e129daeb6ffba17754c4c2eefa3",
+          "status": "PASS_CHECKPOINT_FILES_UNCHANGED"
+        }
+      },
+      "profile_records": 4,
+      "typed_pod_fields_per_record": 26,
+      "raw_bytes_per_record": 1464,
+      "diagnostic_profiles_exactly_equal": true,
+      "source_derived_query_coverage": {
+        "all_real_queries_owned_once": true,
+        "all_legal_causal_keys_covered_once": true,
+        "same_query_split_between_cores": false,
+        "B_m_s2base_nratio": [
+          128,
+          128,
+          8
+        ],
+        "F_m_s2base_nratio": [
+          64,
+          128,
+          4
+        ],
+        "B_key_groups_target_last_query": [
+          [
+            0,
+            1024
+          ],
+          [
+            1024,
+            2048
+          ]
+        ],
+        "F_key_groups_target_last_query": [
+          [
+            0,
+            512
+          ],
+          [
+            512,
+            1024
+          ],
+          [
+            1024,
+            1536
+          ],
+          [
+            1536,
+            2048
+          ]
+        ],
+        "not_hardware_instruction_trace": true
+      },
+      "collector_stage_artifacts_verified": 513,
+      "collector_identical_both_arms": true,
+      "checkpoint_files": 4,
+      "checkpoint_total_bytes": 1503311025,
+      "checkpoint_files_unchanged": true,
+      "native_msprobe_first_difference_inference": "Performed by separate independent analyzer; not inferred from host policy/hit records by this review.",
+      "limits": [
+        "Review covers the fixed observed HF Qwen3-0.6B FP16 B8/S2048 FA route; not the prior vLLM FIA route or an identified historical hardware defect.",
+        "Statistics collector is the explicitly disclosed task-local high-precision repair of installed msprobe, not an unmodified official wheel.",
+        "Original low-statistics BF evidence remains preserved as an observation-resolution limitation."
+      ],
+      "npu_used_by_review": false,
+      "frozen_runtime_sources_or_libraries_modified": false
+    }
+  },
+  "cpu_checks_sha256": "b0b1c56c1e7be09cc6668a628b8db05c13430040af8bcfbe71b6ef3e69b161ea",
+  "limits": [
+    "Uniform task-local FP32 statistics repair; not an unmodified official collector.",
+    "Default official statistics exact localization did not pass and is retained."
+  ]
+}

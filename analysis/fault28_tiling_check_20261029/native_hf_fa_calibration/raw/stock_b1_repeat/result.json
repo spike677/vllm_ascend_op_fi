@@ -1,0 +1,479 @@
+{
+  "schema": "fault28.hf_sdpa.calibration.v1",
+  "status": "CAPTURE_COMPLETED",
+  "case_id": "stock_b1_repeat",
+  "framework": "stock_transformers",
+  "operator_variant": "stock",
+  "batch_size": 1,
+  "prompt_length": 2048,
+  "target_index": 0,
+  "layer_index": 1,
+  "source_case_sha256": "2355036ca1c2e1f4e5ce5b7f65608c4d7c468a8f2b3a5323df528681a61c99c8",
+  "source_sha256": {
+    "hf_runtime_probe.py": "239e552ca1e582ff4f404fbf72cf58e02b43e636e46347b0c4cb5e466909886e"
+  },
+  "checkpoint_conversion": "Original BF16 checkpoint loaded by stock Transformers with dtype=torch.float16.",
+  "scope": "Distinct stock-HF model path from vLLM; host variant/mode explicitly recorded. Completion is not fault PASS.",
+  "native_fa_coverage_verified": false,
+  "mechanism_accepted": false,
+  "native_profile_status": "REQUIRES_CANN_SELECTED_AND_LAUNCHED_FA_FOR_EVERY_LAYER",
+  "capture_msprobe": false,
+  "capture_full_inputs": false,
+  "forward_count": 1,
+  "forward_count_cli_override": null,
+  "forward_count_case": 1,
+  "start_epoch": 1793248485.0682747,
+  "native_calls": [
+    {
+      "call_id": "pid141:r0:n0",
+      "native_index": 0,
+      "forward_index": 0,
+      "layer_index": 0,
+      "layer_name": "model.layers.0.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_000.json",
+      "sha256": "9b44c03820df08bec18a26717598656510ccf97b464c1663ccd0a74779c5b3e1",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n1",
+      "native_index": 1,
+      "forward_index": 0,
+      "layer_index": 1,
+      "layer_name": "model.layers.1.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_001.json",
+      "sha256": "8c757b49a38009f876d2d1b3d06ec02dd8bb40dff8d547852b425a6867c0ef77",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n2",
+      "native_index": 2,
+      "forward_index": 0,
+      "layer_index": 2,
+      "layer_name": "model.layers.2.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_002.json",
+      "sha256": "31d54c786c6787f40f7e2d3d309412807afa47e24df9a8c2706cc7bd2c68e245",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n3",
+      "native_index": 3,
+      "forward_index": 0,
+      "layer_index": 3,
+      "layer_name": "model.layers.3.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_003.json",
+      "sha256": "2245617ef1d79ec6bc0ee48dd4a71a9a253ff211f1a55147b2c3792ba6877a86",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n4",
+      "native_index": 4,
+      "forward_index": 0,
+      "layer_index": 4,
+      "layer_name": "model.layers.4.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_004.json",
+      "sha256": "566c869076728778a6a01f61b089d20e39bb61999953fab8b46988d78f937706",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n5",
+      "native_index": 5,
+      "forward_index": 0,
+      "layer_index": 5,
+      "layer_name": "model.layers.5.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_005.json",
+      "sha256": "8cb548d4ea76c37e2499bf0825b9dc3ea36ec15d9eb4d9c6651d0996294e02f5",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n6",
+      "native_index": 6,
+      "forward_index": 0,
+      "layer_index": 6,
+      "layer_name": "model.layers.6.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_006.json",
+      "sha256": "2a8978d21c0edd0cf59043c6fbf3fcc10b77023f7e3ee400eb86db9a1c7efad9",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n7",
+      "native_index": 7,
+      "forward_index": 0,
+      "layer_index": 7,
+      "layer_name": "model.layers.7.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_007.json",
+      "sha256": "09fe1e340c504e01f94cd74cd86590493981ca9f201aa6cfd7195639a340eb74",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n8",
+      "native_index": 8,
+      "forward_index": 0,
+      "layer_index": 8,
+      "layer_name": "model.layers.8.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_008.json",
+      "sha256": "cb6661e1fb578e8b91a82731e932bd206ef5f66fa7ac9226b5d93d3cff77fc0a",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n9",
+      "native_index": 9,
+      "forward_index": 0,
+      "layer_index": 9,
+      "layer_name": "model.layers.9.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_009.json",
+      "sha256": "07c6a2d5da86043b01c9bb9093153b551e2d8b6fbed733b0d8ffa44f4dc5f98d",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n10",
+      "native_index": 10,
+      "forward_index": 0,
+      "layer_index": 10,
+      "layer_name": "model.layers.10.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_010.json",
+      "sha256": "04d8ddcc3541988742da692d8fc2e758ad43fe9b4b34a56c1c2be50d1089961c",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n11",
+      "native_index": 11,
+      "forward_index": 0,
+      "layer_index": 11,
+      "layer_name": "model.layers.11.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_011.json",
+      "sha256": "881b74ecd56372c7c456bae6f86fe876edbf3dd6f37f47e69c79bd08c96c649e",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n12",
+      "native_index": 12,
+      "forward_index": 0,
+      "layer_index": 12,
+      "layer_name": "model.layers.12.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_012.json",
+      "sha256": "b82aa0b20bf08ad6945fa0bc9777cdd61b4874249d34015c6827dd4733893a7e",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n13",
+      "native_index": 13,
+      "forward_index": 0,
+      "layer_index": 13,
+      "layer_name": "model.layers.13.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_013.json",
+      "sha256": "d86a63606e0b5bae7469e218df5e1e570a44b794272fc474db1d306c750ea61b",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n14",
+      "native_index": 14,
+      "forward_index": 0,
+      "layer_index": 14,
+      "layer_name": "model.layers.14.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_014.json",
+      "sha256": "f464b682811cf700bd8365665e64ad92c52de278ec1f5e06f7f0523a7d50e536",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n15",
+      "native_index": 15,
+      "forward_index": 0,
+      "layer_index": 15,
+      "layer_name": "model.layers.15.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_015.json",
+      "sha256": "7784e4a9fe3a1f8ecb6be5e2a9a8178df30e14a13f693111f6d66425184647de",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n16",
+      "native_index": 16,
+      "forward_index": 0,
+      "layer_index": 16,
+      "layer_name": "model.layers.16.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_016.json",
+      "sha256": "d141f3054533110c60d31dee8d38a7da5f358e6b1df3314e2af6f558b19a7c58",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n17",
+      "native_index": 17,
+      "forward_index": 0,
+      "layer_index": 17,
+      "layer_name": "model.layers.17.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_017.json",
+      "sha256": "0f798b019633a5c0caa6c0540fc6f0cfd3bbc70eb17837b7634c54bb27a8f2df",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n18",
+      "native_index": 18,
+      "forward_index": 0,
+      "layer_index": 18,
+      "layer_name": "model.layers.18.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_018.json",
+      "sha256": "2f0a84e8d0557a1ced8c40578edc39e62a8f4ac5143defc3576e3324d53e9854",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n19",
+      "native_index": 19,
+      "forward_index": 0,
+      "layer_index": 19,
+      "layer_name": "model.layers.19.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_019.json",
+      "sha256": "f22d9d0f276ba2d3b421cef64185d413fa254681ed38e904baed25c03d2b7b7c",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n20",
+      "native_index": 20,
+      "forward_index": 0,
+      "layer_index": 20,
+      "layer_name": "model.layers.20.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_020.json",
+      "sha256": "fad7735602dbb6af199eb54d0ee59fb2a3bd0bdc9fca38fa049f3ab6b1b7e518",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n21",
+      "native_index": 21,
+      "forward_index": 0,
+      "layer_index": 21,
+      "layer_name": "model.layers.21.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_021.json",
+      "sha256": "196bf49d86e1430a88553cb292f7e6934b2f3e2604c398fe820d6422eb45f378",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n22",
+      "native_index": 22,
+      "forward_index": 0,
+      "layer_index": 22,
+      "layer_name": "model.layers.22.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_022.json",
+      "sha256": "62ca221ca0112a1e7cd7a2a727ec0aac752e12bd3cbeaf66db4a5795e4d8a651",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n23",
+      "native_index": 23,
+      "forward_index": 0,
+      "layer_index": 23,
+      "layer_name": "model.layers.23.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_023.json",
+      "sha256": "a6bcfa46f886e80abafd9f358519f8a45c55e41abc8e7e5574b7803fea96460f",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n24",
+      "native_index": 24,
+      "forward_index": 0,
+      "layer_index": 24,
+      "layer_name": "model.layers.24.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_024.json",
+      "sha256": "bf53f0f2e29158ed2456a092960dd5f624fc4415ec1ea8874bac5c312386e8b0",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n25",
+      "native_index": 25,
+      "forward_index": 0,
+      "layer_index": 25,
+      "layer_name": "model.layers.25.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_025.json",
+      "sha256": "3b6ec88a6be8b643e76d72be59b30e8c20115a97507b93cb9a14f888d94c06ed",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n26",
+      "native_index": 26,
+      "forward_index": 0,
+      "layer_index": 26,
+      "layer_name": "model.layers.26.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_026.json",
+      "sha256": "8c09c9aa25e6bd4999347cf3469862baab2e0c77ea698880638afaa68ba274b4",
+      "target_mapping_certified": true
+    },
+    {
+      "call_id": "pid141:r0:n27",
+      "native_index": 27,
+      "forward_index": 0,
+      "layer_index": 27,
+      "layer_name": "model.layers.27.self_attn",
+      "api": "torch.nn.functional.scaled_dot_product_attention",
+      "status": "returned",
+      "file": "native_calls/call_027.json",
+      "sha256": "67b6e971445eb1835b61e21f9b669d01215775414a21d6fc5ea5f6007fefc362",
+      "target_mapping_certified": true
+    }
+  ],
+  "forward_results": [
+    {
+      "forward_index": 0,
+      "target_logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281469912508096,
+        "tensor_ptr": 20617269276672,
+        "actual_format": 2,
+        "hashed_slice": "batch[0:1], all heads/positions",
+        "logical_sha256": "c70a3f3e2ce010203bf37cbe98f02875bc7571701315d9d7ba49122c31f3a38a",
+        "logical_bytes": 303872,
+        "byteorder": "little",
+        "raw_order": "C-contiguous logical elements"
+      },
+      "requests": [
+        {
+          "prompt_index": 0,
+          "batch_slot": 0,
+          "prompt_token_sha256": "a732622a8c880e7fedb77404887b40617cfd84119e86a14515e76046ef6a0b47",
+          "last_token_position": 2047,
+          "next_token_argmax": 3516,
+          "top20_logprobs": {
+            "3516": -1.2993727978027891e-05,
+            "52123": -12.03126335144043,
+            "12779": -12.81251335144043,
+            "39846": -13.90626335144043,
+            "8307": -13.98438835144043,
+            "20215": -14.71876335144043,
+            "2473": -14.89063835144043,
+            "4963": -15.03126335144043,
+            "93743": -15.42188835144043,
+            "2161": -15.53126335144043,
+            "58292": -16.10938835144043,
+            "7567": -16.24220085144043,
+            "1112": -16.24220085144043,
+            "22258": -16.30470085144043,
+            "5746": -16.40626335144043,
+            "198": -16.42188835144043,
+            "271": -16.92970085144043,
+            "220": -16.97657585144043,
+            "12786": -16.97657585144043,
+            "7488": -16.97657585144043
+          }
+        }
+      ],
+      "all_requests_in_one_prefill": true
+    }
+  ],
+  "checkpoint_config": {
+    "sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+    "original_dtype": "bfloat16"
+  },
+  "native_sources": {
+    "transformers.models.qwen3.modeling_qwen3": {
+      "path": "/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py",
+      "sha256": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab"
+    },
+    "transformers.integrations.sdpa_attention": {
+      "path": "/work/venv/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py",
+      "sha256": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564"
+    },
+    "transformers.masking_utils": {
+      "path": "/work/venv/lib/python3.11/site-packages/transformers/masking_utils.py",
+      "sha256": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd"
+    },
+    "torch.nn.attention": {
+      "path": "/work/venv/lib/python3.11/site-packages/torch/nn/attention/__init__.py",
+      "sha256": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+    }
+  },
+  "versions": {
+    "torch": "2.10.0",
+    "torch-npu": "2.10.0.post4",
+    "transformers": "5.5.4"
+  },
+  "environment": {
+    "ACLNN_CACHE_LIMIT": "0",
+    "ASCEND_GLOBAL_LOG_LEVEL": "0",
+    "ASCEND_SLOG_PRINT_TO_STDOUT": "1",
+    "TORCH_NPU_USE_COMPATIBLE_IMPL": null
+  },
+  "options": {
+    "attn_implementation": "sdpa",
+    "dtype": "float16",
+    "use_cache": false,
+    "logits_to_keep": 1,
+    "dropout": 0,
+    "batch_size": 1,
+    "full_prefill_forward_count": 1,
+    "torch_compile": false,
+    "requested_backend": "SDPBackend.FLASH_ATTENTION"
+  },
+  "actual_sdpa_context_flags": {
+    "flash": true,
+    "math": false,
+    "mem_efficient": false,
+    "cudnn": false,
+    "overrideable": false
+  },
+  "context_limit": "NPU overrideable implementation may ignore disabled math on fallback; verify native logs.",
+  "all_requests_in_one_prefill": true,
+  "prefill_certified": true,
+  "end_epoch": 1793248499.614788
+}

@@ -1,0 +1,97 @@
+{
+  "schema": "fault28.msprobe_statistics_identity_chain_review.v1",
+  "status": "STATIC_CHAIN_CONFIRMED_PATCH_CPU_VALIDATION_PENDING",
+  "official_high_document": "https://gitcode.com/Ascend/msprobe/blob/f5900e0670ab5406b75d79635dde062d80ad84f0/docs/zh/dump/config_json_introduct.md",
+  "scope": "Read-only installed package source; does not validate a not-yet-received task-local patch or NPU transparency",
+  "findings": [
+    "Forward hook places original API output in ModuleForwardInputsOutputs while inner_switch[thread] is true. Nested hooks are rejected during statistic computation.",
+    "Data collector analyzes that original output_tuple. Ordinary tensor convert_common_tensor returns the same tensor object.",
+    "Tensor dtype metadata comes from original tensor and shape metadata from original common_tensor. get_stat_info temporary local values do not replace this metadata.",
+    "Writer stores scalar statistic results and resolves them through item(); it does not cast them back to tensor metadata dtype.",
+    "A dtype-only temporary conversion limited to the measurement function can therefore measure the native API output without introducing a model cast node, conditional on patch and actual capture validation."
+  ],
+  "files": [
+    {
+      "path": "/home/batch-scale-dynamic-msprobe-20261023/python_packages/msprobe/core/dump/hook_manager.py",
+      "sha256": "8b97af130f80d2f5f2bf39a30c6d180f283b86f7f791effff5ff2dc1db3cd881",
+      "ranges": [
+        {
+          "from": 186,
+          "to": 204,
+          "source": "    def _should_execute_hook(self, hook_type, tid, is_forward=True):\n        is_api_hook = hook_type == Const.API\n        is_dynamic_enable_mode = getattr(self.config, \"dump_enable\", None) is not None\n        if is_dynamic_enable_mode:\n            if is_api_hook and self.config.level not in [Const.LEVEL_MIX, Const.LEVEL_L1, Const.LEVEL_L2]:\n                return False\n            if hook_type == Const.MODULE and self.config.level not in [Const.LEVEL_MIX, Const.LEVEL_L0]:\n                return False\n        if self.is_child_process():\n            return False\n        if BaseHookManager.inner_switch[tid]:\n            return False\n        if not is_api_hook and not Runtime.is_running:\n            return False\n        elif is_api_hook and is_forward and not Runtime.is_running:\n            return False\n        if not self.data_collector or self.data_collector.data_processor.is_terminated:\n            return False\n        return True"
+        },
+        {
+          "from": 243,
+          "to": 289,
+          "source": "    def _build_forward_hook(self, hook_type, api_name):\n        def forward_hook(module, args, kwargs_or_output, output_or_kwargs=None):\n            tid = threading.get_ident()\n            if not self._should_execute_hook(hook_type, tid):\n                self._clear_input_kwargs(module, tid)\n                return None\n\n            with ThreadSafe():\n                self._maybe_update_dump_dir()\n                original_state = self.ensure_gc_enabled()\n                if hook_type == Const.API:\n                    if BaseHookManager.inner_api_count[tid] != 1:\n                        if BaseHookManager.inner_api_count[tid] > 1:\n                            BaseHookManager.inner_api_count[tid] -= 1\n                        self._clear_input_kwargs(module, tid)\n                        return None\n\n                kwargs, output = self._process_kwargs_and_output(\n                    module, tid, hook_type, kwargs_or_output, output_or_kwargs\n                )\n                BaseHookManager.inner_switch[tid] = True\n                module_input_output = ModuleForwardInputsOutputs(args=args, kwargs=kwargs, output=output)\n                full_forward_name = None\n                if hook_type == Const.API:\n                    full_forward_name = api_name + str(self._get_count(api_name)) + Const.SEP + Const.FORWARD\n                    full_backward_name = api_name + str(self._get_count(api_name)) + Const.SEP + Const.BACKWARD\n                    output = self._register_backward_pre_hook(module, full_backward_name, args, kwargs, output)\n\n                with self._no_grad_context():\n                    if hook_type == Const.MODULE:\n                        params_dict = self._get_params_dict(module)\n                        setattr(module_input_output, Const.PARAMS, params_dict)\n                        if params_dict:\n                            self._register_param_hook(api_name, module, params_dict)\n                        self.data_collector.update_api_or_module_name(api_name)\n                        self.data_collector.forward_data_collect(api_name, module, self._pid, module_input_output)\n                    else:\n                        self.data_collector.update_api_or_module_name(full_forward_name)\n                        self.data_collector.forward_output_data_collect(\n                            full_forward_name, module, self._pid, module_input_output\n                        )\n                        self._add_count(api_name)\n                        BaseHookManager.inner_api_count[tid] -= 1\n                    self._clear_input_kwargs(module, tid)\n                BaseHookManager.inner_switch[tid] = False\n                self.restore_gc_state(original_state)\n                return output"
+        }
+      ]
+    },
+    {
+      "path": "/home/batch-scale-dynamic-msprobe-20261023/python_packages/msprobe/core/dump/data_dump/data_collector.py",
+      "sha256": "8bde1bc1aceab68bc7dd2e91bcdf568cf224a96fe9390c30ea9f9665075b5c5d",
+      "ranges": [
+        {
+          "from": 156,
+          "to": 166,
+          "source": "    def forward_output_data_collect(self, name, module, pid, module_input_output):\n        self.update_construct(name)\n        if not self.should_collect(name, pid):\n            return\n\n        data_info = {}\n        if self.config.task != Const.STRUCTURE:\n            data_info = self.data_processor.analyze_forward_output(name, module, module_input_output)\n        if self.config.level == Const.LEVEL_L2:\n            return\n        self.handle_data(name, data_info, flush=self.data_processor.is_terminated)"
+        }
+      ]
+    },
+    {
+      "path": "/home/batch-scale-dynamic-msprobe-20261023/python_packages/msprobe/core/dump/data_dump/data_processor/base.py",
+      "sha256": "156d46decfec405aa64f553d110d04c48dd124cde18d40f63832e3b251635494",
+      "ranges": [
+        {
+          "from": 565,
+          "to": 578,
+          "source": "    def analyze_forward_output(self, name, module, module_input_output: ModuleForwardInputsOutputs):\n        if self.is_distributed_op(module):\n            module_input_output.update_output_with_args_and_kwargs()\n        api_info_struct = {}\n        # check whether data_mode contains forward or input\n        if self.is_dump_for_data_mode(Const.FORWARD, Const.OUTPUT):\n            api_info_struct[name] = {}\n            self.api_data_category = Const.OUTPUT\n            output_info_list = self.analyze_element(\n                self._apply_ignore_rules(module_input_output.output_tuple, Const.FORWARD, Const.OUTPUT)\n            )\n            api_info_struct[name][Const.OUTPUT] = output_info_list\n\n        return api_info_struct"
+        }
+      ]
+    },
+    {
+      "path": "/home/batch-scale-dynamic-msprobe-20261023/python_packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+      "sha256": "e981aa6fe9afa1e7a1f0654db44166d7c199674b0727d8d7ffa40626b1074011",
+      "ranges": [
+        {
+          "from": 80,
+          "to": 83,
+          "source": "    def get_tensor_dtype(tensor):\n        if is_hifloat8_tensor(tensor):\n            return PtConst.HIFLOAT8_TYPE\n        return str(tensor.dtype)"
+        },
+        {
+          "from": 114,
+          "to": 128,
+          "source": "    def convert_common_tensor(self, tensor):\n        if self.is_dtensor(tensor):\n            return tensor.to_local()\n        if self.is_fake_tensor(tensor):\n            logger.debug(\"FakeTensor cannot be converted to torch.Tensor type.\")\n            return tensor\n        if self.is_nested_tensor(tensor):\n            logger.debug(\"For NestedTensor, collecting information from the tensor returned by .values().\")\n            return tensor.values()\n        for _ in range(Const.MAX_DEPTH):\n            if self.is_batchedtensor(tensor):\n                tensor = torch._C._functorch.get_unwrapped(tensor)\n            else:\n                return tensor\n        return tensor"
+        },
+        {
+          "from": 476,
+          "to": 487,
+          "source": "    def _analyze_tensor(self, tensor, suffix):\n        common_tensor = self.tensor_handler.convert_common_tensor(tensor)\n        tensor_stat = self.get_stat_info(common_tensor, self.config.async_dump, self.config.precision)\n        tensor_json = {}\n        tensor_json.update({\"type\": self.tensor_handler.get_tensor_type(tensor)})\n        tensor_json.update({\"dtype\": self.tensor_handler.get_tensor_dtype(tensor)})\n        tensor_json.update({\"shape\": common_tensor.shape})\n\n        stat_values = [tensor_stat.max, tensor_stat.min, tensor_stat.mean, tensor_stat.norm, tensor_stat.check_sum]\n        placeholder_index = self.data_writer.append_stat_to_buffer(stat_values)\n\n        tensor_json.update({Const.TENSOR_STAT_INDEX: placeholder_index})"
+        }
+      ]
+    },
+    {
+      "path": "/home/batch-scale-dynamic-msprobe-20261023/python_packages/msprobe/core/dump/data_dump/json_writer.py",
+      "sha256": "59b31ed3b0f75c2378966c7809a0f519efc11f3d77d41179019ab18931807a48",
+      "ranges": [
+        {
+          "from": 79,
+          "to": 107,
+          "source": "    def _replace_stat_placeholders(self, data, stat_result):\n        if isinstance(data, dict):\n            keys = list(data.keys())  # \u83b7\u53d6\u5f53\u524d\u6240\u6709\u952e\n            for key in keys:  # \u9012\u5f52\u6240\u6709\u53d8\u91cf\n                value = data[key]\n                if key == Const.TENSOR_STAT_INDEX and isinstance(value, int):\n                    if value >= 0:\n                        idx = value\n                    else:\n                        return\n                    stat_values = stat_result[idx] if idx < len(stat_result) else [None] * 5\n                    check_sum = stat_values[4] if len(stat_values) > 4 else None\n                    summary_mode = getattr(getattr(self, \"config\", None), \"summary_mode\", None)\n\n                    new_entries = {\n                        Const.TYPE: data[\"type\"],\n                        Const.DTYPE: data[\"dtype\"],\n                        Const.SHAPE: data[\"shape\"],\n                    }\n                    if summary_mode == Const.XOR_CHECKSUM:\n                        new_entries[Const.MD5] = check_sum\n                    else:\n                        new_entries.update(\n                            {\n                                Const.MAX: stat_values[0],\n                                Const.MIN: stat_values[1],\n                                Const.MEAN: stat_values[2],\n                                Const.NORM: stat_values[3],\n                            }"
+        },
+        {
+          "from": 332,
+          "to": 338,
+          "source": "    def append_stat_to_buffer(self, stat_vector):\n        \"\"\"\n        \u76f4\u63a5\u4f7f\u7528 Python list \u5b58\u50a8 stat_vector,\n        \u5c06 stat_vector \u5b58\u5165 self.stat_stack_list \u7684\u65b9\u5f0f\n        \"\"\"\n        self.stat_stack_list.append(stat_vector)\n        return len(self.stat_stack_list) - 1"
+        },
+        {
+          "from": 358,
+          "to": 382,
+          "source": "    def flush_stat_stack(self):\n        \"\"\"\n        \u5728 flush \u9636\u6bb5\uff0c\u5c06\u6240\u6709\u5b58\u50a8\u7684\u7edf\u8ba1\u503c\u4ece\u8bbe\u5907\u642c\u5230 CPU\uff0c\n        \u8fd9\u91cc\u8fd4\u56de\u4e00\u4e2a\u5217\u8868\uff0c\u6bcf\u4e2a\u5143\u7d20\u662f [Max, Min, Mean, Norm] \u7684\u6570\u503c\u5217\u8868\n        \"\"\"\n        if not self.stat_stack_list:\n            return []\n\n        def _resolve_stat_value(x, pos):\n            if isinstance(x, concurrent.futures.Future):\n                try:\n                    x = x.result()\n                except Exception as e:\n                    logger.warning(f\"Failed to resolve async tensor stat value with error info: {e}.\")\n                    return None\n            x = x.item() if hasattr(x, \"item\") else x\n            if pos == 4 and isinstance(x, int):\n                return f\"0x{(x & ((1 << 64) - 1)):016x}\"\n            return x\n\n        result = [\n            [_resolve_stat_value(x, i) for i, x in enumerate(stat_values)] for stat_values in self.stat_stack_list\n        ]\n        self.stat_stack_list = []\n        return result"
+        }
+      ]
+    }
+  ],
+  "npu_used": false,
+  "installed_sources_modified": false
+}

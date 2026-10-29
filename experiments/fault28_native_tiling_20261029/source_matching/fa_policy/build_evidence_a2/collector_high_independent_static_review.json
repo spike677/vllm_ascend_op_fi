@@ -1,0 +1,12 @@
+{
+  "schema": "fault28.collector_high_independent_static_review.v1",
+  "status": "PASS_MINIMAL_AST_CHANGE_CPU_PENDING",
+  "builder_sha256": "9dd40778fbdb5bd5b79054e3a3e61165091fd297eb7c4d9d49c87cb23f4a89e7",
+  "selector_sha256": "9f9d69750a1ba363c700ce7bb3d3bae1e3eab472179177ef77ac3c825965e9dd",
+  "original_processor_sha256": "e981aa6fe9afa1e7a1f0654db44166d7c199674b0727d8d7ffa40626b1074011",
+  "patched_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+  "only_changed_method": "PytorchDataProcessor.get_stat_info",
+  "no_inplace_tensor_method": true,
+  "scope": "Static source and exact AST comparison; runtime import and CPU/NPU evidence remain separate",
+  "fixed_blocker": "The original incorrect continuation anchor was replaced with the actual parenthesized five-line installed condition."
+}

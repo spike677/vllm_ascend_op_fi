@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "--cpus",
+    "4",
+    "--memory",
+    "8g",
+    "--pids-limit",
+    "512",
+    "--name",
+    "fault28-cpu-fa-key-20261029",
+    "-v",
+    "/home/fault28-native-tiling-20261029/source_matching:/src:ro",
+    "-v",
+    "/home/fault28-native-tiling-20261029/build_off:/build",
+    "--entrypoint",
+    "bash",
+    "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+    "-lc",
+    "set -eo pipefail\nsource /usr/local/Ascend/cann-9.1.0/set_env.sh\ng++ -std=c++17 -O2 -D_GLIBCXX_USE_CXX11_ABI=0 /src/fa_key_check.cpp -I/src/ops-transformer-v9.1.0/attention/flash_attention_score/op_kernel/arch22 -I/usr/local/Ascend/cann-9.1.0/include -o /build/fa_policy/fa_key_check\n/build/fa_policy/fa_key_check > /build/fa_policy/fa_key_check.json\n"
+  ],
+  "start": 1793249160.0229259,
+  "end": 1793249161.9946356,
+  "returncode": 0,
+  "stderr": "",
+  "container_removed": true
+}

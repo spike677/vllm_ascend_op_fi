@@ -1,0 +1,1303 @@
+{
+  "case_id": "stock_b1",
+  "rank": 0,
+  "call_id": "pid106:r0:n1",
+  "native_index": 1,
+  "layer_index": 1,
+  "layer_name": "model.layers.1.self_attn.attn",
+  "api": "npu_fused_infer_attention_score",
+  "source_sha256": {
+    "runner": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968",
+    "attention": "80005aba42bcf61247cc0d91502a0f1338194a4b38dd82bc521f6d3c84958390"
+  },
+  "status": "returned",
+  "arguments_before_metadata": {
+    "positional_args": [],
+    "kwargs": {
+      "query": {
+        "type": "torch.Tensor",
+        "shape": [
+          1024,
+          16,
+          128
+        ],
+        "stride": [
+          2048,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487708800,
+        "tensor_cdata": 1793877264,
+        "storage_cdata": 1727290656,
+        "storage_ptr": 20675246505984,
+        "tensor_ptr": 20675246505984,
+        "storage_nbytes": 4194304,
+        "actual_format": 2
+      },
+      "key": {
+        "type": "torch.Tensor",
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487715200,
+        "tensor_cdata": 1727291568,
+        "storage_cdata": 1727292768,
+        "storage_ptr": 20675250716672,
+        "tensor_ptr": 20675250716672,
+        "storage_nbytes": 2097152,
+        "actual_format": 2
+      },
+      "value": {
+        "type": "torch.Tensor",
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487710240,
+        "tensor_cdata": 1793877456,
+        "storage_cdata": 1727309312,
+        "storage_ptr": 20675252830208,
+        "tensor_ptr": 20675252830208,
+        "storage_nbytes": 2097152,
+        "actual_format": 2
+      },
+      "num_key_value_heads": 8,
+      "num_heads": 16,
+      "scale": 0.08838834764831845,
+      "atten_mask": {
+        "type": "torch.Tensor",
+        "shape": [
+          2048,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "dtype": "torch.int8",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487146064,
+        "tensor_cdata": 1735012848,
+        "storage_cdata": 1734520864,
+        "storage_ptr": 20675227549696,
+        "tensor_ptr": 20675227549696,
+        "storage_nbytes": 4194304,
+        "actual_format": 2
+      },
+      "block_table": null,
+      "input_layout": "TND",
+      "block_size": 128,
+      "actual_seq_lengths": [
+        1024
+      ],
+      "actual_seq_lengths_kv": [
+        1024
+      ],
+      "sparse_mode": 3
+    }
+  },
+  "arguments_after": {
+    "positional_args": [],
+    "kwargs": {
+      "query": {
+        "type": "torch.Tensor",
+        "shape": [
+          1024,
+          16,
+          128
+        ],
+        "stride": [
+          2048,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487708800,
+        "tensor_cdata": 1793877264,
+        "storage_cdata": 1727290656,
+        "storage_ptr": 20675246505984,
+        "tensor_ptr": 20675246505984,
+        "storage_nbytes": 4194304,
+        "actual_format": 2,
+        "logical_bytes": 4194304,
+        "logical_sha256": "91eb3a01adb4260a1091efb3bb96451edd1fb58e980e8ad7c32602415d4849fa",
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "readback_phase": "after_native_api_exit",
+        "identity_after_readback": {
+          "shape": [
+            1024,
+            16,
+            128
+          ],
+          "stride": [
+            2048,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281460487708800,
+          "tensor_cdata": 1793877264,
+          "storage_cdata": 1727290656,
+          "storage_ptr": 20675246505984,
+          "tensor_ptr": 20675246505984,
+          "storage_nbytes": 4194304,
+          "actual_format": 2
+        }
+      },
+      "key": {
+        "type": "torch.Tensor",
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487715200,
+        "tensor_cdata": 1727291568,
+        "storage_cdata": 1727292768,
+        "storage_ptr": 20675250716672,
+        "tensor_ptr": 20675250716672,
+        "storage_nbytes": 2097152,
+        "actual_format": 2,
+        "logical_bytes": 2097152,
+        "logical_sha256": "eb329146cc72e3ff16c7788c2eaacb5cd57cb77b89f88d0b07aebe47c25d1430",
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "readback_phase": "after_native_api_exit",
+        "identity_after_readback": {
+          "shape": [
+            1024,
+            8,
+            128
+          ],
+          "stride": [
+            1024,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281460487715200,
+          "tensor_cdata": 1727291568,
+          "storage_cdata": 1727292768,
+          "storage_ptr": 20675250716672,
+          "tensor_ptr": 20675250716672,
+          "storage_nbytes": 2097152,
+          "actual_format": 2
+        }
+      },
+      "value": {
+        "type": "torch.Tensor",
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487710240,
+        "tensor_cdata": 1793877456,
+        "storage_cdata": 1727309312,
+        "storage_ptr": 20675252830208,
+        "tensor_ptr": 20675252830208,
+        "storage_nbytes": 2097152,
+        "actual_format": 2,
+        "logical_bytes": 2097152,
+        "logical_sha256": "ef96288380d8c52d5bc0bd2a6d0f13ee089b083bf1264f421cca430359ae8c97",
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "readback_phase": "after_native_api_exit",
+        "identity_after_readback": {
+          "shape": [
+            1024,
+            8,
+            128
+          ],
+          "stride": [
+            1024,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281460487710240,
+          "tensor_cdata": 1793877456,
+          "storage_cdata": 1727309312,
+          "storage_ptr": 20675252830208,
+          "tensor_ptr": 20675252830208,
+          "storage_nbytes": 2097152,
+          "actual_format": 2
+        }
+      },
+      "num_key_value_heads": 8,
+      "num_heads": 16,
+      "scale": 0.08838834764831845,
+      "atten_mask": {
+        "type": "torch.Tensor",
+        "shape": [
+          2048,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "dtype": "torch.int8",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487146064,
+        "tensor_cdata": 1735012848,
+        "storage_cdata": 1734520864,
+        "storage_ptr": 20675227549696,
+        "tensor_ptr": 20675227549696,
+        "storage_nbytes": 4194304,
+        "actual_format": 2,
+        "logical_bytes": 4194304,
+        "logical_sha256": "d016ca7be6be829fd102f03317c3eed915d3df3d3fd54279a8858caea2dd57de",
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "readback_phase": "after_native_api_exit",
+        "identity_after_readback": {
+          "shape": [
+            2048,
+            2048
+          ],
+          "stride": [
+            2048,
+            1
+          ],
+          "dtype": "torch.int8",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281460487146064,
+          "tensor_cdata": 1735012848,
+          "storage_cdata": 1734520864,
+          "storage_ptr": 20675227549696,
+          "tensor_ptr": 20675227549696,
+          "storage_nbytes": 4194304,
+          "actual_format": 2
+        }
+      },
+      "block_table": null,
+      "input_layout": "TND",
+      "block_size": 128,
+      "actual_seq_lengths": [
+        1024
+      ],
+      "actual_seq_lengths_kv": [
+        1024
+      ],
+      "sparse_mode": 3
+    }
+  },
+  "result_metadata": [
+    {
+      "type": "torch.Tensor",
+      "shape": [
+        1024,
+        16,
+        128
+      ],
+      "stride": [
+        2048,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460489023920,
+      "tensor_cdata": 1793886224,
+      "storage_cdata": 1793888608,
+      "storage_ptr": 20675263332352,
+      "tensor_ptr": 20675263332352,
+      "storage_nbytes": 4194304,
+      "actual_format": 2
+    },
+    {
+      "type": "torch.Tensor",
+      "shape": [
+        0
+      ],
+      "stride": [
+        1
+      ],
+      "dtype": "torch.float32",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460489025600,
+      "tensor_cdata": 1793886608,
+      "storage_cdata": 1793889696,
+      "storage_ptr": 0,
+      "tensor_ptr": 0,
+      "storage_nbytes": 0,
+      "actual_format": 2
+    }
+  ],
+  "layer_metadata": {
+    "attn_state": {
+      "enum": "AscendAttentionState",
+      "name": "PrefillNoCache",
+      "value": 0
+    },
+    "num_actual_tokens": 1024,
+    "num_decode_tokens": 0,
+    "num_prefills": 1,
+    "num_decodes": 0,
+    "seq_lens_list": [
+      1024
+    ],
+    "actual_seq_lengths_q": [
+      1024
+    ],
+    "max_query_len": 1024,
+    "causal": true,
+    "model_runner_type": "generate",
+    "seq_lens": {
+      "type": "torch.Tensor",
+      "shape": [
+        1
+      ],
+      "stride": [
+        1
+      ],
+      "dtype": "torch.int32",
+      "device": "cpu",
+      "storage_offset": 0,
+      "object_id": 281460487151664,
+      "tensor_cdata": 1735157472,
+      "storage_cdata": 1634804592,
+      "storage_ptr": 20619072622592,
+      "tensor_ptr": 20619072622592,
+      "storage_nbytes": 32,
+      "actual_format": null
+    },
+    "query_start_loc": {
+      "type": "torch.Tensor",
+      "shape": [
+        2
+      ],
+      "stride": [
+        1
+      ],
+      "dtype": "torch.int32",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487146704,
+      "tensor_cdata": 1735163328,
+      "storage_cdata": 1726235040,
+      "storage_ptr": 20623359216640,
+      "tensor_ptr": 20623359216640,
+      "storage_nbytes": 8,
+      "actual_format": 2
+    },
+    "block_tables": {
+      "type": "torch.Tensor",
+      "shape": [
+        1,
+        32
+      ],
+      "stride": [
+        32,
+        1
+      ],
+      "dtype": "torch.int32",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487146944,
+      "tensor_cdata": 1727027680,
+      "storage_cdata": 1636837392,
+      "storage_ptr": 20623359835136,
+      "tensor_ptr": 20623359835136,
+      "storage_nbytes": 1024,
+      "actual_format": 2
+    },
+    "slot_mapping": {
+      "type": "torch.Tensor",
+      "shape": [
+        1024
+      ],
+      "stride": [
+        1
+      ],
+      "dtype": "torch.int32",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487152704,
+      "tensor_cdata": 1735011808,
+      "storage_cdata": 1636838448,
+      "storage_ptr": 20623359836672,
+      "tensor_ptr": 20623359836672,
+      "storage_nbytes": 65600,
+      "actual_format": 2
+    },
+    "attn_mask": {
+      "type": "torch.Tensor",
+      "shape": [
+        2048,
+        2048
+      ],
+      "stride": [
+        2048,
+        1
+      ],
+      "dtype": "torch.int8",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487146064,
+      "tensor_cdata": 1735012848,
+      "storage_cdata": 1734520864,
+      "storage_ptr": 20675227549696,
+      "tensor_ptr": 20675227549696,
+      "storage_nbytes": 4194304,
+      "actual_format": 2
+    }
+  },
+  "backend_head_geometry": {
+    "head_count": 16,
+    "kv_head_count": 8,
+    "head_size": 128
+  },
+  "precision_arguments": {
+    "inner_precise": {
+      "explicitly_supplied": false,
+      "value": null
+    },
+    "softmax_scale": {
+      "explicitly_supplied": false,
+      "value": null
+    },
+    "scale": {
+      "explicitly_supplied": true,
+      "value": 0.08838834764831845
+    }
+  },
+  "precision_default_scope": "Omitted defaults require matching native schema/source/profile; input FP16 alone does not establish accumulator precision.",
+  "diagnostic_readback": "Layer0/selected layer full logical input fingerprints before enter and after exit; raw inputs from the pre snapshot.",
+  "target_mapping_certified": true,
+  "arguments_before": {
+    "positional_args": [],
+    "kwargs": {
+      "query": {
+        "type": "torch.Tensor",
+        "shape": [
+          1024,
+          16,
+          128
+        ],
+        "stride": [
+          2048,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487708800,
+        "tensor_cdata": 1793877264,
+        "storage_cdata": 1727290656,
+        "storage_ptr": 20675246505984,
+        "tensor_ptr": 20675246505984,
+        "storage_nbytes": 4194304,
+        "actual_format": 2,
+        "logical_bytes": 4194304,
+        "logical_sha256": "91eb3a01adb4260a1091efb3bb96451edd1fb58e980e8ad7c32602415d4849fa",
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "readback_phase": "before_native_api_enter",
+        "identity_after_readback": {
+          "shape": [
+            1024,
+            16,
+            128
+          ],
+          "stride": [
+            2048,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281460487708800,
+          "tensor_cdata": 1793877264,
+          "storage_cdata": 1727290656,
+          "storage_ptr": 20675246505984,
+          "tensor_ptr": 20675246505984,
+          "storage_nbytes": 4194304,
+          "actual_format": 2
+        },
+        "private_raw_file": "private_replay/rank0/native_1/kw_query.bin",
+        "publication": "PRIVATE_REPLAY_ONLY_EXCLUDE_FROM_STATISTICS_AND_GITHUB"
+      },
+      "key": {
+        "type": "torch.Tensor",
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487715200,
+        "tensor_cdata": 1727291568,
+        "storage_cdata": 1727292768,
+        "storage_ptr": 20675250716672,
+        "tensor_ptr": 20675250716672,
+        "storage_nbytes": 2097152,
+        "actual_format": 2,
+        "logical_bytes": 2097152,
+        "logical_sha256": "eb329146cc72e3ff16c7788c2eaacb5cd57cb77b89f88d0b07aebe47c25d1430",
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "readback_phase": "before_native_api_enter",
+        "identity_after_readback": {
+          "shape": [
+            1024,
+            8,
+            128
+          ],
+          "stride": [
+            1024,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281460487715200,
+          "tensor_cdata": 1727291568,
+          "storage_cdata": 1727292768,
+          "storage_ptr": 20675250716672,
+          "tensor_ptr": 20675250716672,
+          "storage_nbytes": 2097152,
+          "actual_format": 2
+        },
+        "private_raw_file": "private_replay/rank0/native_1/kw_key.bin",
+        "publication": "PRIVATE_REPLAY_ONLY_EXCLUDE_FROM_STATISTICS_AND_GITHUB"
+      },
+      "value": {
+        "type": "torch.Tensor",
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487710240,
+        "tensor_cdata": 1793877456,
+        "storage_cdata": 1727309312,
+        "storage_ptr": 20675252830208,
+        "tensor_ptr": 20675252830208,
+        "storage_nbytes": 2097152,
+        "actual_format": 2,
+        "logical_bytes": 2097152,
+        "logical_sha256": "ef96288380d8c52d5bc0bd2a6d0f13ee089b083bf1264f421cca430359ae8c97",
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "readback_phase": "before_native_api_enter",
+        "identity_after_readback": {
+          "shape": [
+            1024,
+            8,
+            128
+          ],
+          "stride": [
+            1024,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281460487710240,
+          "tensor_cdata": 1793877456,
+          "storage_cdata": 1727309312,
+          "storage_ptr": 20675252830208,
+          "tensor_ptr": 20675252830208,
+          "storage_nbytes": 2097152,
+          "actual_format": 2
+        },
+        "private_raw_file": "private_replay/rank0/native_1/kw_value.bin",
+        "publication": "PRIVATE_REPLAY_ONLY_EXCLUDE_FROM_STATISTICS_AND_GITHUB"
+      },
+      "num_key_value_heads": 8,
+      "num_heads": 16,
+      "scale": 0.08838834764831845,
+      "atten_mask": {
+        "type": "torch.Tensor",
+        "shape": [
+          2048,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "dtype": "torch.int8",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487146064,
+        "tensor_cdata": 1735012848,
+        "storage_cdata": 1734520864,
+        "storage_ptr": 20675227549696,
+        "tensor_ptr": 20675227549696,
+        "storage_nbytes": 4194304,
+        "actual_format": 2,
+        "logical_bytes": 4194304,
+        "logical_sha256": "d016ca7be6be829fd102f03317c3eed915d3df3d3fd54279a8858caea2dd57de",
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "readback_phase": "before_native_api_enter",
+        "identity_after_readback": {
+          "shape": [
+            2048,
+            2048
+          ],
+          "stride": [
+            2048,
+            1
+          ],
+          "dtype": "torch.int8",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281460487146064,
+          "tensor_cdata": 1735012848,
+          "storage_cdata": 1734520864,
+          "storage_ptr": 20675227549696,
+          "tensor_ptr": 20675227549696,
+          "storage_nbytes": 4194304,
+          "actual_format": 2
+        },
+        "private_raw_file": "private_replay/rank0/native_1/kw_atten_mask.bin",
+        "publication": "PRIVATE_REPLAY_ONLY_EXCLUDE_FROM_STATISTICS_AND_GITHUB"
+      },
+      "block_table": null,
+      "input_layout": "TND",
+      "block_size": 128,
+      "actual_seq_lengths": [
+        1024
+      ],
+      "actual_seq_lengths_kv": [
+        1024
+      ],
+      "sparse_mode": 3
+    }
+  },
+  "input_integrity": {
+    "exact_logical_hashes_and_metadata_unchanged": true,
+    "private_inputs_saved_from": "before_native_api_enter"
+  },
+  "target_mapping": {
+    "layout": "TND",
+    "request_id": "0",
+    "prompt_index": 0,
+    "batch_slot": 0,
+    "first_row": 0,
+    "last_row": 1023,
+    "count": 1024,
+    "prompt_token_sha256": "aa457480f79fc776bedc79788f7420b610f841216af9cd70e2f64637e5d26399",
+    "absolute_query_position": 1023,
+    "keys_are_target_request_all_prefill_tokens": true
+  },
+  "target_tensors": {
+    "query_all": {
+      "type": "torch.Tensor",
+      "shape": [
+        1024,
+        16,
+        128
+      ],
+      "stride": [
+        2048,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487154224,
+      "tensor_cdata": 1793877904,
+      "storage_cdata": 1727290656,
+      "storage_ptr": 20675246505984,
+      "tensor_ptr": 20675246505984,
+      "storage_nbytes": 4194304,
+      "actual_format": 2,
+      "logical_bytes": 4194304,
+      "logical_sha256": "91eb3a01adb4260a1091efb3bb96451edd1fb58e980e8ad7c32602415d4849fa",
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little",
+      "readback_phase": "after_native_api_exit",
+      "identity_after_readback": {
+        "shape": [
+          1024,
+          16,
+          128
+        ],
+        "stride": [
+          2048,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487154224,
+        "tensor_cdata": 1793877904,
+        "storage_cdata": 1727290656,
+        "storage_ptr": 20675246505984,
+        "tensor_ptr": 20675246505984,
+        "storage_nbytes": 4194304,
+        "actual_format": 2
+      }
+    },
+    "key_all": {
+      "type": "torch.Tensor",
+      "shape": [
+        1024,
+        8,
+        128
+      ],
+      "stride": [
+        1024,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487708560,
+      "tensor_cdata": 1793885840,
+      "storage_cdata": 1727292768,
+      "storage_ptr": 20675250716672,
+      "tensor_ptr": 20675250716672,
+      "storage_nbytes": 2097152,
+      "actual_format": 2,
+      "logical_bytes": 2097152,
+      "logical_sha256": "eb329146cc72e3ff16c7788c2eaacb5cd57cb77b89f88d0b07aebe47c25d1430",
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little",
+      "readback_phase": "after_native_api_exit",
+      "identity_after_readback": {
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487708560,
+        "tensor_cdata": 1793885840,
+        "storage_cdata": 1727292768,
+        "storage_ptr": 20675250716672,
+        "tensor_ptr": 20675250716672,
+        "storage_nbytes": 2097152,
+        "actual_format": 2
+      }
+    },
+    "value_all": {
+      "type": "torch.Tensor",
+      "shape": [
+        1024,
+        8,
+        128
+      ],
+      "stride": [
+        1024,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487706960,
+      "tensor_cdata": 1793886032,
+      "storage_cdata": 1727309312,
+      "storage_ptr": 20675252830208,
+      "tensor_ptr": 20675252830208,
+      "storage_nbytes": 2097152,
+      "actual_format": 2,
+      "logical_bytes": 2097152,
+      "logical_sha256": "ef96288380d8c52d5bc0bd2a6d0f13ee089b083bf1264f421cca430359ae8c97",
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little",
+      "readback_phase": "after_native_api_exit",
+      "identity_after_readback": {
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487706960,
+        "tensor_cdata": 1793886032,
+        "storage_cdata": 1727309312,
+        "storage_ptr": 20675252830208,
+        "tensor_ptr": 20675252830208,
+        "storage_nbytes": 2097152,
+        "actual_format": 2
+      }
+    },
+    "query_last": {
+      "type": "torch.Tensor",
+      "shape": [
+        16,
+        128
+      ],
+      "stride": [
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 2095104,
+      "object_id": 281460487705360,
+      "tensor_cdata": 1727306512,
+      "storage_cdata": 1727290656,
+      "storage_ptr": 20675246505984,
+      "tensor_ptr": 20675250696192,
+      "storage_nbytes": 4194304,
+      "actual_format": 2,
+      "logical_bytes": 4096,
+      "logical_sha256": "81556ab883c3ad03d064ceacff25132b0275c169590a13060b1e37be07b08016",
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little",
+      "readback_phase": "after_native_api_exit",
+      "identity_after_readback": {
+        "shape": [
+          16,
+          128
+        ],
+        "stride": [
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 2095104,
+        "object_id": 281460487705360,
+        "tensor_cdata": 1727306512,
+        "storage_cdata": 1727290656,
+        "storage_ptr": 20675246505984,
+        "tensor_ptr": 20675250696192,
+        "storage_nbytes": 4194304,
+        "actual_format": 2
+      }
+    }
+  },
+  "target_tensors_before": {
+    "query_all": {
+      "type": "torch.Tensor",
+      "shape": [
+        1024,
+        16,
+        128
+      ],
+      "stride": [
+        2048,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487154224,
+      "tensor_cdata": 1793877904,
+      "storage_cdata": 1727290656,
+      "storage_ptr": 20675246505984,
+      "tensor_ptr": 20675246505984,
+      "storage_nbytes": 4194304,
+      "actual_format": 2,
+      "logical_bytes": 4194304,
+      "logical_sha256": "91eb3a01adb4260a1091efb3bb96451edd1fb58e980e8ad7c32602415d4849fa",
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little",
+      "readback_phase": "before_native_api_enter",
+      "identity_after_readback": {
+        "shape": [
+          1024,
+          16,
+          128
+        ],
+        "stride": [
+          2048,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487154224,
+        "tensor_cdata": 1793877904,
+        "storage_cdata": 1727290656,
+        "storage_ptr": 20675246505984,
+        "tensor_ptr": 20675246505984,
+        "storage_nbytes": 4194304,
+        "actual_format": 2
+      }
+    },
+    "key_all": {
+      "type": "torch.Tensor",
+      "shape": [
+        1024,
+        8,
+        128
+      ],
+      "stride": [
+        1024,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487708560,
+      "tensor_cdata": 1793885840,
+      "storage_cdata": 1727292768,
+      "storage_ptr": 20675250716672,
+      "tensor_ptr": 20675250716672,
+      "storage_nbytes": 2097152,
+      "actual_format": 2,
+      "logical_bytes": 2097152,
+      "logical_sha256": "eb329146cc72e3ff16c7788c2eaacb5cd57cb77b89f88d0b07aebe47c25d1430",
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little",
+      "readback_phase": "before_native_api_enter",
+      "identity_after_readback": {
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487708560,
+        "tensor_cdata": 1793885840,
+        "storage_cdata": 1727292768,
+        "storage_ptr": 20675250716672,
+        "tensor_ptr": 20675250716672,
+        "storage_nbytes": 2097152,
+        "actual_format": 2
+      }
+    },
+    "value_all": {
+      "type": "torch.Tensor",
+      "shape": [
+        1024,
+        8,
+        128
+      ],
+      "stride": [
+        1024,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460487706960,
+      "tensor_cdata": 1793886032,
+      "storage_cdata": 1727309312,
+      "storage_ptr": 20675252830208,
+      "tensor_ptr": 20675252830208,
+      "storage_nbytes": 2097152,
+      "actual_format": 2,
+      "logical_bytes": 2097152,
+      "logical_sha256": "ef96288380d8c52d5bc0bd2a6d0f13ee089b083bf1264f421cca430359ae8c97",
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little",
+      "readback_phase": "before_native_api_enter",
+      "identity_after_readback": {
+        "shape": [
+          1024,
+          8,
+          128
+        ],
+        "stride": [
+          1024,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281460487706960,
+        "tensor_cdata": 1793886032,
+        "storage_cdata": 1727309312,
+        "storage_ptr": 20675252830208,
+        "tensor_ptr": 20675252830208,
+        "storage_nbytes": 2097152,
+        "actual_format": 2
+      }
+    },
+    "query_last": {
+      "type": "torch.Tensor",
+      "shape": [
+        16,
+        128
+      ],
+      "stride": [
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 2095104,
+      "object_id": 281460487705360,
+      "tensor_cdata": 1727306512,
+      "storage_cdata": 1727290656,
+      "storage_ptr": 20675246505984,
+      "tensor_ptr": 20675250696192,
+      "storage_nbytes": 4194304,
+      "actual_format": 2,
+      "logical_bytes": 4096,
+      "logical_sha256": "81556ab883c3ad03d064ceacff25132b0275c169590a13060b1e37be07b08016",
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little",
+      "readback_phase": "before_native_api_enter",
+      "identity_after_readback": {
+        "shape": [
+          16,
+          128
+        ],
+        "stride": [
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 2095104,
+        "object_id": 281460487705360,
+        "tensor_cdata": 1727306512,
+        "storage_cdata": 1727290656,
+        "storage_ptr": 20675246505984,
+        "tensor_ptr": 20675250696192,
+        "storage_nbytes": 4194304,
+        "actual_format": 2
+      }
+    }
+  },
+  "output_full": {
+    "type": "torch.Tensor",
+    "shape": [
+      1024,
+      16,
+      128
+    ],
+    "stride": [
+      2048,
+      128,
+      1
+    ],
+    "dtype": "torch.float16",
+    "device": "npu:0",
+    "storage_offset": 0,
+    "object_id": 281460489023920,
+    "tensor_cdata": 1793886224,
+    "storage_cdata": 1793888608,
+    "storage_ptr": 20675263332352,
+    "tensor_ptr": 20675263332352,
+    "storage_nbytes": 4194304,
+    "actual_format": 2,
+    "logical_bytes": 4194304,
+    "logical_sha256": "e084f438af549a0da11ebe4460bcd536ce9cee3bb1dd640a2d04b767a3379675",
+    "raw_order": "C-contiguous logical elements",
+    "byteorder": "little",
+    "readback_phase": "after_native_api_exit",
+    "identity_after_readback": {
+      "shape": [
+        1024,
+        16,
+        128
+      ],
+      "stride": [
+        2048,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460489023920,
+      "tensor_cdata": 1793886224,
+      "storage_cdata": 1793888608,
+      "storage_ptr": 20675263332352,
+      "tensor_ptr": 20675263332352,
+      "storage_nbytes": 4194304,
+      "actual_format": 2
+    },
+    "private_raw_file": "private_replay/rank0/native_1/output.bin",
+    "publication": "PRIVATE_REPLAY_ONLY_EXCLUDE_FROM_STATISTICS_AND_GITHUB"
+  },
+  "output_target_all": {
+    "type": "torch.Tensor",
+    "shape": [
+      1024,
+      16,
+      128
+    ],
+    "stride": [
+      2048,
+      128,
+      1
+    ],
+    "dtype": "torch.float16",
+    "device": "npu:0",
+    "storage_offset": 0,
+    "object_id": 281460489022160,
+    "tensor_cdata": 1793890064,
+    "storage_cdata": 1793888608,
+    "storage_ptr": 20675263332352,
+    "tensor_ptr": 20675263332352,
+    "storage_nbytes": 4194304,
+    "actual_format": 2,
+    "logical_bytes": 4194304,
+    "logical_sha256": "e084f438af549a0da11ebe4460bcd536ce9cee3bb1dd640a2d04b767a3379675",
+    "raw_order": "C-contiguous logical elements",
+    "byteorder": "little",
+    "readback_phase": "after_native_api_exit",
+    "identity_after_readback": {
+      "shape": [
+        1024,
+        16,
+        128
+      ],
+      "stride": [
+        2048,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 0,
+      "object_id": 281460489022160,
+      "tensor_cdata": 1793890064,
+      "storage_cdata": 1793888608,
+      "storage_ptr": 20675263332352,
+      "tensor_ptr": 20675263332352,
+      "storage_nbytes": 4194304,
+      "actual_format": 2
+    }
+  },
+  "output_target_last": {
+    "type": "torch.Tensor",
+    "shape": [
+      16,
+      128
+    ],
+    "stride": [
+      128,
+      1
+    ],
+    "dtype": "torch.float16",
+    "device": "npu:0",
+    "storage_offset": 2095104,
+    "object_id": 281460489016880,
+    "tensor_cdata": 1793890256,
+    "storage_cdata": 1793888608,
+    "storage_ptr": 20675263332352,
+    "tensor_ptr": 20675267522560,
+    "storage_nbytes": 4194304,
+    "actual_format": 2,
+    "logical_bytes": 4096,
+    "logical_sha256": "449d5fd7c96b452899c7375925efe2dfdf16b8ceb5dca0258a48fe31fea1ad1e",
+    "raw_order": "C-contiguous logical elements",
+    "byteorder": "little",
+    "readback_phase": "after_native_api_exit",
+    "identity_after_readback": {
+      "shape": [
+        16,
+        128
+      ],
+      "stride": [
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "storage_offset": 2095104,
+      "object_id": 281460489016880,
+      "tensor_cdata": 1793890256,
+      "storage_cdata": 1793888608,
+      "storage_ptr": 20675263332352,
+      "tensor_ptr": 20675267522560,
+      "storage_nbytes": 4194304,
+      "actual_format": 2
+    }
+  }
+}

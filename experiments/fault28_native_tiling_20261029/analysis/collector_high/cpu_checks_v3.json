@@ -1,0 +1,412 @@
+{
+  "schema": "fault28.msprobe.collector_cpu_check.v1",
+  "status": "CPU_CHECKS_PASSED",
+  "torch_version": "2.10.0+cpu",
+  "actual_loaded": {
+    "module": "msprobe.core.dump.data_dump.data_processor.pytorch_processor",
+    "path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+    "sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+    "method_code_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py"
+  },
+  "collector": {
+    "variant": "task_local_fp32_high_v1",
+    "precision": "high",
+    "modified_official_collector": true,
+    "manifest_file": "/audit/collector_high_a1/stage_manifest.json",
+    "manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+    "package_root": "/audit/collector_high_a1/packages",
+    "processor_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+    "original_processor_sha256": "e981aa6fe9afa1e7a1f0654db44166d7c199674b0727d8d7ffa40626b1074011",
+    "patched_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+    "source_manifest_sha256": "d86efe38de5f3ef4bbb9433f015c06eb2d2f6e80b0c8dae71e40e38d2c2510c3",
+    "patch_sha256": "8239db6dbb8d54e77d6e7960fd1ff15121c13bfe5d7327557031b3d66d43975a",
+    "artifact_count": 513,
+    "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+    "policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged."
+  },
+  "checks": [
+    {
+      "name": "torch.float16_vector",
+      "dtype": "torch.float16",
+      "shape": [
+        4
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 1.521794379399921e-08,
+        "reference_mean": 0.1749267578125,
+        "reference_norm": 1.1958710107394892,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "torch.float16_noncontiguous",
+      "dtype": "torch.float16",
+      "shape": [
+        4,
+        3
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 1.350286318313465e-07,
+        "reference_mean": 5.5,
+        "reference_norm": 22.494443758403985,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "torch.float16_empty",
+      "dtype": "torch.float16",
+      "shape": [
+        0
+      ],
+      "high_mean_dtype": null,
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "torch.float16_scalar",
+      "dtype": "torch.float16",
+      "shape": [],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 0.0,
+        "reference_mean": -0.125,
+        "reference_norm": -0.125,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "torch.bfloat16_vector",
+      "dtype": "torch.bfloat16",
+      "shape": [
+        4
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 4.6305533851764835e-08,
+        "reference_mean": 0.175048828125,
+        "reference_norm": 1.194422172121879,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "torch.bfloat16_noncontiguous",
+      "dtype": "torch.bfloat16",
+      "shape": [
+        4,
+        3
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 1.350286318313465e-07,
+        "reference_mean": 5.5,
+        "reference_norm": 22.494443758403985,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "torch.bfloat16_empty",
+      "dtype": "torch.bfloat16",
+      "shape": [
+        0
+      ],
+      "high_mean_dtype": null,
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "torch.bfloat16_scalar",
+      "dtype": "torch.bfloat16",
+      "shape": [],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 0.0,
+        "reference_mean": -0.125,
+        "reference_norm": -0.125,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "torch.float32_vector",
+      "dtype": "torch.float32",
+      "shape": [
+        4
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 3.725290298461914e-09,
+        "norm_abs_error": 7.42125250141612e-10,
+        "reference_mean": 0.17500000074505806,
+        "reference_norm": 1.1958260528772595,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "torch.float32_noncontiguous",
+      "dtype": "torch.float32",
+      "shape": [
+        4,
+        3
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 1.350286318313465e-07,
+        "reference_mean": 5.5,
+        "reference_norm": 22.494443758403985,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "torch.float32_empty",
+      "dtype": "torch.float32",
+      "shape": [
+        0
+      ],
+      "high_mean_dtype": null,
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "torch.float32_scalar",
+      "dtype": "torch.float32",
+      "shape": [],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 0.0,
+        "reference_mean": -0.125,
+        "reference_norm": -0.125,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "torch.float64_vector",
+      "dtype": "torch.float64",
+      "shape": [
+        4
+      ],
+      "high_mean_dtype": null,
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "torch.float64_noncontiguous",
+      "dtype": "torch.float64",
+      "shape": [
+        4,
+        3
+      ],
+      "high_mean_dtype": null,
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "torch.float64_empty",
+      "dtype": "torch.float64",
+      "shape": [
+        0
+      ],
+      "high_mean_dtype": null,
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "torch.float64_scalar",
+      "dtype": "torch.float64",
+      "shape": [],
+      "high_mean_dtype": "torch.float64",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "boolean",
+      "dtype": "torch.bool",
+      "shape": [
+        2
+      ],
+      "high_mean_dtype": null,
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "integer",
+      "dtype": "torch.int64",
+      "shape": [
+        2
+      ],
+      "high_mean_dtype": null,
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "complex",
+      "dtype": "torch.complex64",
+      "shape": [
+        2
+      ],
+      "high_mean_dtype": null,
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "nan",
+      "dtype": "torch.float16",
+      "shape": [
+        2
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "inf",
+      "dtype": "torch.bfloat16",
+      "shape": [
+        2
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": null
+    },
+    {
+      "name": "collision_baseline",
+      "dtype": "torch.float16",
+      "shape": [
+        4096
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 0.0,
+        "reference_mean": 1.0,
+        "reference_norm": 64.0,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    },
+    {
+      "name": "collision_changed",
+      "dtype": "torch.float16",
+      "shape": [
+        4096
+      ],
+      "high_mean_dtype": "torch.float32",
+      "original_identity_metadata_bytes_unchanged": true,
+      "analyze_tensor_preserves_original_dtype_shape": true,
+      "low_matches_original_function": true,
+      "official_writer_json_preserves_statistics": true,
+      "represented_values_fp64_reference": {
+        "mean_abs_error": 0.0,
+        "norm_abs_error": 7.448761607520282e-09,
+        "reference_mean": 1.000000238418579,
+        "reference_norm": 64.00001526623782,
+        "rtol": 2e-06,
+        "atol": 2e-07
+      }
+    }
+  ],
+  "npu_tensors_created": false,
+  "uniform_policy": "No arm/layer/target inputs to patched collector method.",
+  "collision": {
+    "low_mean": 1.0,
+    "high_baseline_mean": 1.0,
+    "high_changed_mean": 1.000000238418579,
+    "low_norm": 64.0,
+    "high_baseline_norm": 64.0,
+    "high_changed_norm": 64.00001525878906
+  },
+  "limits": "CPU measurement and import checks only; no NPU capture or fault-localization acceptance."
+}

@@ -1,0 +1,516 @@
+{
+  "schema": "fault28.fia.exact_log_excerpts.v1",
+  "case_id": "stock_b1_repeat",
+  "source_log": "stock_b1_repeat.log",
+  "source_log_bytes": 150758488,
+  "source_log_sha256": "506fafce80068e87ca870f7da4d8737ad281f91e0d309d4db3c96878ac5ec4cc",
+  "source_log_total_lines": 749058,
+  "full_log_included": false,
+  "extraction": "One full read with universal line boundaries but original endings retained; SHA verifies entire source log. Each requested line matches v4 parser text after its documented ANSI removal. Base64 retains the exact original bytes.",
+  "selected_and_launch_lines": [
+    {
+      "call_id": "pid509:r0:n0",
+      "layer_index": 0,
+      "kind": "selected_tiling_records",
+      "line": 645758,
+      "raw_line_sha256": "1594fc2afa05874298fae6093c1c89ccbde44c227d30b82bf19fcb2c075c597b",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNTYyLjI2MSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.562.261 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n0",
+      "layer_index": 0,
+      "kind": "selected_launch_records",
+      "line": 645876,
+      "raw_line_sha256": "26f13cd52f0710163273d379cc98cf1a2be6e1a435d1fafbdc51f397b92a6bf5",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNTYzLjUxNSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.563.515 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n1",
+      "layer_index": 1,
+      "kind": "selected_tiling_records",
+      "line": 649423,
+      "raw_line_sha256": "4f068a70c27745a91ed1b650058fbd9891f42aefac2cd20f4c2f05674b092728",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNjMxLjE5NSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.631.195 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n1",
+      "layer_index": 1,
+      "kind": "selected_launch_records",
+      "line": 649516,
+      "raw_line_sha256": "dfd14aede1bb8d598d15b5f629c196141fdb07345aef4c541da6a2badd748936",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNjMxLjkyMCBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.631.920 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n2",
+      "layer_index": 2,
+      "kind": "selected_tiling_records",
+      "line": 652687,
+      "raw_line_sha256": "fed6ac8b04868195adf847c5008ec0b54d80690d3b1100aed2b0738659a1971b",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNjc2LjAzNSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.676.035 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n2",
+      "layer_index": 2,
+      "kind": "selected_launch_records",
+      "line": 652763,
+      "raw_line_sha256": "9388444f5657a71c0d28dcf3a7870f488e2d937b0cdaeb0fc0fb63e23250dd2c",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNjc2LjQ2NSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.676.465 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n3",
+      "layer_index": 3,
+      "kind": "selected_tiling_records",
+      "line": 655906,
+      "raw_line_sha256": "78501a1fe158fbca508841a2007bd76ef4bd4fc316a0f2db9c4c8ffd4a39f484",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNjk0LjczMyBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.694.733 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n3",
+      "layer_index": 3,
+      "kind": "selected_launch_records",
+      "line": 655982,
+      "raw_line_sha256": "a0eebb0bede38f92e4d1327a7170b8df05a5a014f04318accb4e0c34a5b8ea96",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNjk1LjE1NCBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.695.154 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n4",
+      "layer_index": 4,
+      "kind": "selected_tiling_records",
+      "line": 659051,
+      "raw_line_sha256": "88cc743b892beb78acda0e02d2f5d6a55b3b8ebd667d8d34ea6c132f075cb6d1",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzEzLjIyNiBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.713.226 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n4",
+      "layer_index": 4,
+      "kind": "selected_launch_records",
+      "line": 659127,
+      "raw_line_sha256": "752aea2dcc8bebf8e207b874f229d362a48193e6d40889a5bcc36d6ed70f5191",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzEzLjY0OSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.713.649 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n5",
+      "layer_index": 5,
+      "kind": "selected_tiling_records",
+      "line": 662207,
+      "raw_line_sha256": "bd6f6d2337e79db95d2cf07422f60250626ff96efcc0db6d6f79def250c254f4",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzMxLjc5NCBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.731.794 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n5",
+      "layer_index": 5,
+      "kind": "selected_launch_records",
+      "line": 662283,
+      "raw_line_sha256": "46468b11d330734d34e948fb91b6152a739e63a204d2920e0dcbdb20299901b5",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzMyLjIwOSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.732.209 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n6",
+      "layer_index": 6,
+      "kind": "selected_tiling_records",
+      "line": 665428,
+      "raw_line_sha256": "7c26ec92a15a930b2546256e800b41c4cde765b9a926286e279c807d172ec407",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzUwLjUwMCBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.750.500 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n6",
+      "layer_index": 6,
+      "kind": "selected_launch_records",
+      "line": 665504,
+      "raw_line_sha256": "3c964ba79dfb3ca33465c663dad17b9e695e8ffcc615b59e94ec26942eb2571b",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzUwLjkxNiBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.750.916 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n7",
+      "layer_index": 7,
+      "kind": "selected_tiling_records",
+      "line": 668575,
+      "raw_line_sha256": "ff8a53363583b133a1b455fae62b1ce76b5daf3e0009aadf263b0d639f878ee5",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzY4Ljk4NSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.768.985 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n7",
+      "layer_index": 7,
+      "kind": "selected_launch_records",
+      "line": 668651,
+      "raw_line_sha256": "a4cfe3921b4d0a522107c9b6afc30fb29c1366169fad8e45590b5a0b745db801",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzY5LjQxOCBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.769.418 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n8",
+      "layer_index": 8,
+      "kind": "selected_tiling_records",
+      "line": 671803,
+      "raw_line_sha256": "c6ac5053a71bae5347b5e07908cf1116cf15c089276fbd59bfb52846889e7811",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzg3LjA1MSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.787.051 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n8",
+      "layer_index": 8,
+      "kind": "selected_launch_records",
+      "line": 671879,
+      "raw_line_sha256": "6c052a4aaec15adce5f2aed3ff0d7009df0c29542ba2882628d513a67f820157",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguNzg3LjQ4MSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.787.481 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n9",
+      "layer_index": 9,
+      "kind": "selected_tiling_records",
+      "line": 674947,
+      "raw_line_sha256": "f172d9feb79f3583ae57a8c5c556594eddb2af5f77ef4822d740e56e41282551",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODA1LjU1NiBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.805.556 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n9",
+      "layer_index": 9,
+      "kind": "selected_launch_records",
+      "line": 675023,
+      "raw_line_sha256": "e0130daf7fcf4b9a3f7a13838db2ae42e91711b12acafb2c3dc5f8367ad34e4e",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODA1Ljk3OSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.805.979 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n10",
+      "layer_index": 10,
+      "kind": "selected_tiling_records",
+      "line": 678098,
+      "raw_line_sha256": "89d814e64f700ed0d485367070383c1de65ae40ea24e7b372c361259eff1d1d8",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODIzLjkwMSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.823.901 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n10",
+      "layer_index": 10,
+      "kind": "selected_launch_records",
+      "line": 678174,
+      "raw_line_sha256": "333ec02e82d23811a2404a6db1d6c34b4b1420665ba526ff449204608fb306e0",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODI0LjMyNiBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.824.326 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n11",
+      "layer_index": 11,
+      "kind": "selected_tiling_records",
+      "line": 681325,
+      "raw_line_sha256": "dbba33dceef49ede8d32cac14ce554033bbef4216a3ff9e0013cc8eaa1c46351",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODQyLjM4OSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.842.389 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n11",
+      "layer_index": 11,
+      "kind": "selected_launch_records",
+      "line": 681401,
+      "raw_line_sha256": "0271447d3ae7a937a81a99436073dccd374261f9da487fc49cd98ee0cf6558d2",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODQyLjgxOCBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.842.818 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n12",
+      "layer_index": 12,
+      "kind": "selected_tiling_records",
+      "line": 684466,
+      "raw_line_sha256": "f873f592f71a372b5c48ff778fc7297dd674d396f4376ebea7ddddffd41e769b",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODYxLjI2MiBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.861.262 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n12",
+      "layer_index": 12,
+      "kind": "selected_launch_records",
+      "line": 684542,
+      "raw_line_sha256": "fb1886c5d75d6f359457481ee12930b7ca958644eb928562c1c39c9d91d04e32",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODYxLjY5MSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.861.691 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n13",
+      "layer_index": 13,
+      "kind": "selected_tiling_records",
+      "line": 687618,
+      "raw_line_sha256": "8aed2448f1aaaec38cf15d84b18efa6dbb05e7a62081c36be577a10027168ffd",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODc5Ljk5NyBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.879.997 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n13",
+      "layer_index": 13,
+      "kind": "selected_launch_records",
+      "line": 687694,
+      "raw_line_sha256": "c9f44c61964c1d40452354dd07577dc315540254d5f11385be58ea3803a91709",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODgwLjQxNyBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.880.417 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n14",
+      "layer_index": 14,
+      "kind": "selected_tiling_records",
+      "line": 690847,
+      "raw_line_sha256": "d05044dd669caa80f0fca1844f4910095c0e2ecf7b78a13a737a2c0c7632a8c6",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODk4Ljc2NiBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.898.766 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n14",
+      "layer_index": 14,
+      "kind": "selected_launch_records",
+      "line": 690923,
+      "raw_line_sha256": "c26251350e4a3de81833ca43882f8038e338d6ae270928e1d1cfdaeabed57216",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguODk5LjE5OCBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.899.198 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n15",
+      "layer_index": 15,
+      "kind": "selected_tiling_records",
+      "line": 693988,
+      "raw_line_sha256": "57bad0b6bc5cddd0f28733893d01e9ede94ca57cb4cd771debecc4fb7c406d7d",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTE3LjQxOSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.917.419 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n15",
+      "layer_index": 15,
+      "kind": "selected_launch_records",
+      "line": 694064,
+      "raw_line_sha256": "806c633651ff852942392ed1d9ce20e5f214ca5944db1df496b2171befef354b",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTE3LjgzNSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.917.835 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n16",
+      "layer_index": 16,
+      "kind": "selected_tiling_records",
+      "line": 697139,
+      "raw_line_sha256": "1676d0881396077434ac711db7bb907b4a4f348c1c1f7062d69365fb666ad60f",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTM1Ljg5OSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.935.899 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n16",
+      "layer_index": 16,
+      "kind": "selected_launch_records",
+      "line": 697215,
+      "raw_line_sha256": "f096cc8d347d18dab6ca0c2c995405fcb710d20adcef1d47089d8b09cc17ca04",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTM2LjMyOSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.936.329 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n17",
+      "layer_index": 17,
+      "kind": "selected_tiling_records",
+      "line": 700367,
+      "raw_line_sha256": "326c869ee4d8cdec9171ef5f3ff0dedae645660e4e7ff5e9e0c2e070faa18345",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTU1LjE3NCBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.955.174 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n17",
+      "layer_index": 17,
+      "kind": "selected_launch_records",
+      "line": 700443,
+      "raw_line_sha256": "e0f3b943447ac9d1afc23547e2b9a9e704bcd20fa22aac8432a8ddf4d8468ac2",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTU1LjYwNiBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.955.606 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n18",
+      "layer_index": 18,
+      "kind": "selected_tiling_records",
+      "line": 703510,
+      "raw_line_sha256": "3287c3eb22a9cb2e5786ec45e9de01c4bdd02f5be40869c48f9bc610a692d2ca",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTc1LjE3NSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.975.175 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n18",
+      "layer_index": 18,
+      "kind": "selected_launch_records",
+      "line": 703586,
+      "raw_line_sha256": "3b6d6e5bf7fbca709fedbab5a9a321936f45fdecdd74e799906ce050ee440dfe",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTc1LjU3NCBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.975.574 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n19",
+      "layer_index": 19,
+      "kind": "selected_tiling_records",
+      "line": 706660,
+      "raw_line_sha256": "e3aaaf99e2d0b5af558041646f9a20d489d3e68fbd3cda11ffe3778288705fe3",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTk0LjU0MSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.994.541 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n19",
+      "layer_index": 19,
+      "kind": "selected_launch_records",
+      "line": 706736,
+      "raw_line_sha256": "3b7ed2ce0baf934f709034fffacda078e58f3d54d6bec159283dc3ebd3296d58",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDguOTk0Ljk5OSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:08.994.999 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n20",
+      "layer_index": 20,
+      "kind": "selected_tiling_records",
+      "line": 709886,
+      "raw_line_sha256": "679d535dbf570b31e465e9bde9a318e016bc8cf14bde5cae32cc5855f6d01129",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDEzLjU4NSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.013.585 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n20",
+      "layer_index": 20,
+      "kind": "selected_launch_records",
+      "line": 709962,
+      "raw_line_sha256": "1d7e2f82a1d2aa7457a7f2b15acc3d505f2b7569d57f99d87fb5509a5fcd19ef",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDE0LjAwNSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.014.005 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n21",
+      "layer_index": 21,
+      "kind": "selected_tiling_records",
+      "line": 713032,
+      "raw_line_sha256": "ba4fdead2f9004349db16a81cd87ee5a22417f53731d8b5a243d95fd3e11d82b",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDMyLjYyMyBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.032.623 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n21",
+      "layer_index": 21,
+      "kind": "selected_launch_records",
+      "line": 713108,
+      "raw_line_sha256": "d5bfc5efcd5cdd0b9a1783bd22bd8a99bf6fea25befa28ac2fc8b74085737725",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDMzLjAyMyBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.033.023 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n22",
+      "layer_index": 22,
+      "kind": "selected_tiling_records",
+      "line": 716184,
+      "raw_line_sha256": "40f0512e81eb182aee27c6f130585fc8412450538e6074a4ed90f200c9a4f018",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDUxLjgzMyBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.051.833 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n22",
+      "layer_index": 22,
+      "kind": "selected_launch_records",
+      "line": 716260,
+      "raw_line_sha256": "d933859a46c51f99948441e24cfd3062d943e30ab09966d1c01b33fb63cf19b7",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDUyLjIzMCBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.052.230 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n23",
+      "layer_index": 23,
+      "kind": "selected_tiling_records",
+      "line": 719410,
+      "raw_line_sha256": "944cf3b946da50eaaafcd21221b025d6923c2f9ebc1d7119a1382ce06e1981a2",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDcwLjY2NyBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.070.667 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n23",
+      "layer_index": 23,
+      "kind": "selected_launch_records",
+      "line": 719486,
+      "raw_line_sha256": "b63728b0a9d23db0ae10f2c97c8cfb506ddb2fc6e750478fd3f3a0ab365ec180",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDcxLjA3OSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.071.079 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n24",
+      "layer_index": 24,
+      "kind": "selected_tiling_records",
+      "line": 722552,
+      "raw_line_sha256": "c37a8297dc8c9e6628dc6b00fadf2ed5e3cd5a08bb6dcb9a5b2a8c063d599be6",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDg5LjU3NyBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.089.577 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n24",
+      "layer_index": 24,
+      "kind": "selected_launch_records",
+      "line": 722628,
+      "raw_line_sha256": "9edf41168f07f3a9255678ecfca9b0960dfbef1e57272c8f34766f5cf06cd062",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMDkwLjA4NSBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.090.085 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n25",
+      "layer_index": 25,
+      "kind": "selected_tiling_records",
+      "line": 725709,
+      "raw_line_sha256": "62bff8270b7e8418076b33642dca35b5ef9a3da7c1ecc5abc597028b36990027",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMTA4LjI2NSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.108.265 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n25",
+      "layer_index": 25,
+      "kind": "selected_launch_records",
+      "line": 725785,
+      "raw_line_sha256": "d2353de3279c3195ed218b0da31cc785089a7198cffde185d79f5d86b276d73b",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMTA4LjY2NCBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.108.664 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n26",
+      "layer_index": 26,
+      "kind": "selected_tiling_records",
+      "line": 728932,
+      "raw_line_sha256": "9cbf8d085a38324702a7eda20b3d7d4b80502786d3ec20fef8348903c06abbad",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMTI3LjM1MSBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.127.351 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n26",
+      "layer_index": 26,
+      "kind": "selected_launch_records",
+      "line": 729008,
+      "raw_line_sha256": "bbcf7dea704397ac899ca648e33ccc5179ee18df268b2c240e4a0d0515301a80",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMTI3Ljc1OCBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.127.758 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    },
+    {
+      "call_id": "pid509:r0:n27",
+      "layer_index": 27,
+      "kind": "selected_tiling_records",
+      "line": 732076,
+      "raw_line_sha256": "fa6bba6bf7bf2d55cd8b3f8aac6db9bf30b73867ea7ec2ffe6024444fd4fe9e8",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMTQ1Ljc3NiBbaW5kdl9leGVjdXRvci5jcHA6ODg3XVtOTk9QXVtObm9wYmFzZUV4ZWN1dG9yRG9UaWxpbmddWzUwOV0gT3BOYW1lOltGdXNlZEluZmVyQXR0ZW50aW9uU2NvcmVfMF0gVGlsaW5nIG91dHB1dHMgb2YgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIGFyZSBbdGlsaW5nS2V5OiA1MDAwMDAwMDAwMDAwMjAwMTAzLCBudW1CbG9ja3M6IDIwLCBzY2hlTW9kZTogMSwgbmVlZEF0b21pYzogMCwgYWljcHVOdW1CbG9ja3M6IDAsIGR5bkJ1ZlNpemU6IDBdLgo=",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.145.776 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][509] OpName:[FusedInferAttentionScore_0] Tiling outputs of FusedInferAttentionScore are [tilingKey: 5000000000000200103, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+    },
+    {
+      "call_id": "pid509:r0:n27",
+      "layer_index": 27,
+      "kind": "selected_launch_records",
+      "line": 732152,
+      "raw_line_sha256": "171fa5b374f9565826967c74f9ac6b4e52f1c75517a2016e7c70d10343539b70",
+      "raw_line_base64": "W0lORk9dIE9QKDUwOSwpOjIwMjYtMTAtMjktMDQ6MjM6MDkuMTQ2LjIzMyBbaW5kdl9leGVjdXRvci5jcHA6MTE0N11bTk5PUF1bTm5vcGJhc2VFeGVjdXRvckxhdW5jaEtlcm5lbF1bNTQ2XSBPcE5hbWU6W0Z1c2VkSW5mZXJBdHRlbnRpb25TY29yZV8wXSBMYXVuY2ggZHluYW1pYyBrZXJuZWwgRnVzZWRJbmZlckF0dGVudGlvblNjb3JlIHRhc2ssIHRpbGluZ0tleSBpcyA1MDAwMDAwMDAwMDAwMjAwMTAzLCBzY2hlTW9kZSBpcyAxLCBudW1CbG9ja3MgaXMgMjAsIHN0cmVhbSBpcyAweDM0ZGNlNTA4Cg==",
+      "text": "[INFO] OP(509,):2026-10-29-04:23:09.146.233 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][546] OpName:[FusedInferAttentionScore_0] Launch dynamic kernel FusedInferAttentionScore task, tilingKey is 5000000000000200103, scheMode is 1, numBlocks is 20, stream is 0x34dce508"
+    }
+  ]
+}
