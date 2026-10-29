@@ -1,0 +1,87 @@
+{
+  "schema": "fault28.causal.static_strategy_audit.v1",
+  "status": "STATICALLY_ADMISSIBLE_CANDIDATES_ONLY",
+  "scope": {
+    "s": 2048,
+    "q_heads": 16,
+    "kv_heads": 8,
+    "d": 128,
+    "dtype": "float16",
+    "layout": "BNSD",
+    "sparse_mode": 2,
+    "inner_precise": 0,
+    "batches": [
+      1,
+      8
+    ]
+  },
+  "rows": [
+    {
+      "m": 128,
+      "n_ratio": 8,
+      "s2_base": 128,
+      "s2_group": 1024,
+      "host_softmax_shape": [
+        16,
+        1024
+      ],
+      "host_shape_predicate": true,
+      "source_derived_workspace_bytes": 69206016,
+      "source_derived_kernel_ub_bytes": 193536,
+      "actual_native_gettiling_validated": false,
+      "npu_executed": false
+    },
+    {
+      "m": 64,
+      "n_ratio": 8,
+      "s2_base": 128,
+      "s2_group": 1024,
+      "host_softmax_shape": [
+        8,
+        1024
+      ],
+      "host_shape_predicate": true,
+      "source_derived_workspace_bytes": 42991616,
+      "source_derived_kernel_ub_bytes": 183296,
+      "actual_native_gettiling_validated": false,
+      "npu_executed": false
+    },
+    {
+      "m": 128,
+      "n_ratio": 4,
+      "s2_base": 128,
+      "s2_group": 512,
+      "host_softmax_shape": [
+        32,
+        512
+      ],
+      "host_shape_predicate": true,
+      "source_derived_workspace_bytes": 48234496,
+      "source_derived_kernel_ub_bytes": 193536,
+      "actual_native_gettiling_validated": false,
+      "npu_executed": false
+    },
+    {
+      "m": 64,
+      "n_ratio": 4,
+      "s2_base": 128,
+      "s2_group": 512,
+      "host_softmax_shape": [
+        16,
+        512
+      ],
+      "host_shape_predicate": true,
+      "source_derived_workspace_bytes": 32505856,
+      "source_derived_kernel_ub_bytes": 183296,
+      "actual_native_gettiling_validated": false,
+      "npu_executed": false
+    }
+  ],
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "limits": [
+    "CalcUBSize itself returns true; static bounds do not prove complete native GetTiling success.",
+    "No kernel execution or cross-profile numerical effect is established here.",
+    "Host Softmax shape is not the dynamic on-device Softmax shape or hardware reduction tree.",
+    "Each actual call must retain one complete query owner, exact legal-key coverage, raw/POD/source equality and original precision attributes."
+  ]
+}

@@ -1,0 +1,530 @@
+{
+  "schema": "fault28.causal.secondary_analysis.v1",
+  "status": "PASS_CONTROLLED_BATCH_PROFILE_CHAIN",
+  "primary_report_sha256": "6531292e9e7bb0bd0547570808cbd8c8ada8784e94b7243c3ded4888c81e1d47",
+  "preregistration_sha256": "7bda4d97baad8d3be15d565b405b8a22ea8017284d08262f9b8eb3c848a6ee64",
+  "matrix_manifest_sha256": "bd8ed297991928f06627c739725f1bac63b5a512e91352831e2e003cf9c7bf08",
+  "calls": [
+    {
+      "case_id": "batch_m_b1_r0",
+      "batch_size": 1,
+      "policy": "batch_m",
+      "repeat_index": 0,
+      "actual_profile": "base",
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "complete_target_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "019073b7823fa34d373b3172a2d96e7e3f4852a5d4a381a2c053931dca3137e0",
+      "host_events_sha256": "e9c157a780da1bdf4c488d30da240da1edb14922b3210b0845efd5d5489a7baf",
+      "native_log_sha256": "73babe7126838652516e797c6a2776a30b80e9e68e4b843aa0889cd8741bd2be",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_m_b1_r1",
+      "batch_size": 1,
+      "policy": "batch_m",
+      "repeat_index": 1,
+      "actual_profile": "base",
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "complete_target_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "d9c2be269aa3460ec1825c71b415dfd753bdd705ba42d5082fcd9f55abcca673",
+      "host_events_sha256": "6f13ea98da1e4eab47972a5942165945eee0befebb6120cf240390df1ba9fc48",
+      "native_log_sha256": "57125dabf2d0333c7699513eb96247bba8aaf09cc14ca7f2f960587f8a2c7c5c",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_m_b8_r0",
+      "batch_size": 8,
+      "policy": "batch_m",
+      "repeat_index": 0,
+      "actual_profile": "m_only",
+      "actual_m": 64,
+      "actual_n_ratio": 8,
+      "complete_target_sha256": "01ae1e1e685efade892348d11cb7fa22f7bc69ba7fc94cad5d3bb34d49369fc6",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "6773bb7dd354e6118ef8a7ce85d35c4c0037df826760e9f0a22c4eae03933902",
+      "host_events_sha256": "401907ada51e0f4a9a7f6780e33ecee121e66503c92bc138a31fdffbcff222f3",
+      "native_log_sha256": "90235fa929a6ca601e1e85188f19db3feb1678b1eefe564843bd56e0eaebfe92",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_m_b8_r1",
+      "batch_size": 8,
+      "policy": "batch_m",
+      "repeat_index": 1,
+      "actual_profile": "m_only",
+      "actual_m": 64,
+      "actual_n_ratio": 8,
+      "complete_target_sha256": "01ae1e1e685efade892348d11cb7fa22f7bc69ba7fc94cad5d3bb34d49369fc6",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "9281df6a9468d5ed414af41972f602f6e24bd162208143af36319c79525736fa",
+      "host_events_sha256": "4e93e2aacfb811f28deb49559f5e63be316ffb6d3ffad68128f53312154f3a38",
+      "native_log_sha256": "306ddc99a188a6e91c338107bf5a1e742ffeadc5ff729b87bab18ec1b63ff1dc",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_r_b1_r0",
+      "batch_size": 1,
+      "policy": "batch_r",
+      "repeat_index": 0,
+      "actual_profile": "base",
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "complete_target_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "f231acd9e6691a1b70c0d803b7c6b13221a9f8e4758a6937ff6f23bc2f853671",
+      "host_events_sha256": "905a1aee98ec714b7cf17422ba4108d5b57446f09d0d061af498273fa2019693",
+      "native_log_sha256": "0d6b19e39db9b2e16426135d6d56b79aa1d2bd4c2d873d20f4349e666001f8b0",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_r_b1_r1",
+      "batch_size": 1,
+      "policy": "batch_r",
+      "repeat_index": 1,
+      "actual_profile": "base",
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "complete_target_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "708809456fd1e785f01a38e58e477136fd913d73278c2454d438582d64e20c71",
+      "host_events_sha256": "eb3f3b378dc5543137ea4776cddbdeac1e38a268b348bce8f513dbd5a6478f05",
+      "native_log_sha256": "ece4e245857142e69abf72c30d8d45d6826ffcb5ae74930e40b3401a0b762f04",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_r_b8_r0",
+      "batch_size": 8,
+      "policy": "batch_r",
+      "repeat_index": 0,
+      "actual_profile": "r_only",
+      "actual_m": 128,
+      "actual_n_ratio": 4,
+      "complete_target_sha256": "a19841ec399db2f66a9cd22e37d876d86066b06325d41aeab7b628101e0ad3a5",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "f591f9b1f45ac2e314671d3a9568be6a89d7d44cddd22245fdbd1e000fd00738",
+      "host_events_sha256": "07d9fccbf0d5b251cad51d12deba302d5349c0c735420b93deb6ac71057c016d",
+      "native_log_sha256": "c8ccf0af0bf35acab2ee3fda557340b2e9c9424bc3bc28c30c8677b9504b0b5a",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_r_b8_r1",
+      "batch_size": 8,
+      "policy": "batch_r",
+      "repeat_index": 1,
+      "actual_profile": "r_only",
+      "actual_m": 128,
+      "actual_n_ratio": 4,
+      "complete_target_sha256": "a19841ec399db2f66a9cd22e37d876d86066b06325d41aeab7b628101e0ad3a5",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "ac84e136f8447425c93dc184d2cbdf9af3d78518cc448d707ba3d3d3b7715a34",
+      "host_events_sha256": "2e7e5f233009fba6b57f92743cb5019b9f371f4311ea1d5d2f3e667e2e7d2390",
+      "native_log_sha256": "65e348e00704a55b2d99be4b611a3e085f56716de9ec26c69bfe6ba3c967ed34",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_joint_b1_r0",
+      "batch_size": 1,
+      "policy": "batch_joint",
+      "repeat_index": 0,
+      "actual_profile": "base",
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "complete_target_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "23e9f5bbc1c8728adeecaaa8f08c134ea07a8da0d5145c5507aba8ff96aee9db",
+      "host_events_sha256": "21fef9b672d5ce6479ab82e54c4c3d8c158a91a7115822d40f041acd49e5867d",
+      "native_log_sha256": "e3b7d0bc846152b705df76b8be3073a4dc680cbac67742e25c1fd1ecf4b6f3b7",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_joint_b1_r1",
+      "batch_size": 1,
+      "policy": "batch_joint",
+      "repeat_index": 1,
+      "actual_profile": "base",
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "complete_target_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "3a46d761415aa11d2fb255219bc0785ebc0170be14e706f4fb7c1a25ba3c9f1d",
+      "host_events_sha256": "84602106583e0e3d961a9e979a4ba6e736fefb5034a630f02753a47deac34ed1",
+      "native_log_sha256": "52ce48999cebaacaebf90545a35341bced2cc31e8a1744836b6cfdf976cfaf37",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_joint_b8_r0",
+      "batch_size": 8,
+      "policy": "batch_joint",
+      "repeat_index": 0,
+      "actual_profile": "joint",
+      "actual_m": 64,
+      "actual_n_ratio": 4,
+      "complete_target_sha256": "f1137a2aba1147f220fd86aa677b6b0e2d6c01588b4c02f5449a4d03dd06620d",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "dc85bb0dd47c4b66063ccad86e840c5c5b434224d9e504a6af1029359d1d0b7a",
+      "host_events_sha256": "c5c516c2f5ec7ea5195606c5d706ba706f8014e7edf2cfbdff7adf534eb4d7ee",
+      "native_log_sha256": "96d2c4bd8ef6dfc4b19663b3b0d2cea6341876bc8048c29b0e3f41f4fd640fb0",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    },
+    {
+      "case_id": "batch_joint_b8_r1",
+      "batch_size": 8,
+      "policy": "batch_joint",
+      "repeat_index": 1,
+      "actual_profile": "joint",
+      "actual_m": 64,
+      "actual_n_ratio": 4,
+      "complete_target_sha256": "f1137a2aba1147f220fd86aa677b6b0e2d6c01588b4c02f5449a4d03dd06620d",
+      "same_batch_primary_byte_equal": true,
+      "same_batch_primary_raw_equal": true,
+      "result_sha256": "80da277ec6321bb9889d27501d8e0ccd8717e5af8036bb093615844ba504a915",
+      "host_events_sha256": "f0f56864d6e8343cf15520b8b9d5451031854ef806dcd7e15e4035b03a7f2127",
+      "native_log_sha256": "402d7da994826b969a97a7302bc6231b61624c83aac5319e36dcbc970b653e87",
+      "auxiliary_returns_vs_same_profile_primary": {
+        "softmax_max": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_sum": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "softmax_out": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "seed": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": false
+        },
+        "offset": {
+          "shape_equal": true,
+          "dtype_equal": true,
+          "full_return_bit_difference": true
+        }
+      },
+      "auxiliary_change_does_not_imply_O_change": true
+    }
+  ],
+  "effect_sizes": "Use the independently computed primary full-sequence factorial contrasts; no output-dependent profile selection.",
+  "observed_main_output_difference_required": false,
+  "historical_default_batch_policy_identified": false,
+  "floating_point_instruction_cause": "NOT_IDENTIFIED",
+  "private_tensor_values_in_report": false
+}

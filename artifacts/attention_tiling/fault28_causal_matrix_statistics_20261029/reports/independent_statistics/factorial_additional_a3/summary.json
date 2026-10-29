@@ -1,0 +1,592 @@
+{
+  "schema": "fault28.causal.independent_statistics_group.v1",
+  "group": "factorial_additional_a3",
+  "analysis_tool_sha256": "8dad91e514994454de3dc726c3d7f56f63626827a0347e82e1621ad7ab5f3c0e",
+  "expected_pairs": 12,
+  "actual_pairs": 12,
+  "all_preregistered_pairs_compared": true,
+  "reports": [
+    {
+      "pair": "base_vs_joint_b1_r0",
+      "baseline_factor": "base",
+      "comparison_factor": "joint",
+      "batch": 1,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum",
+        "seed"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "base_vs_joint_b1_r0.json",
+      "report_sha256": "4289309d25878e6aaed49ea66bae2f74f22b6fee5984dcbc884f9db6f37c4737",
+      "error": null
+    },
+    {
+      "pair": "base_vs_joint_b1_r1",
+      "baseline_factor": "base",
+      "comparison_factor": "joint",
+      "batch": 1,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum",
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "base_vs_joint_b1_r1.json",
+      "report_sha256": "77a5e0c4082b752bde522cdc96285d9643261e4ba78830efd93485cb4fdcc430",
+      "error": null
+    },
+    {
+      "pair": "base_vs_joint_b8_r0",
+      "baseline_factor": "base",
+      "comparison_factor": "joint",
+      "batch": 8,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum",
+        "seed",
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "base_vs_joint_b8_r0.json",
+      "report_sha256": "5683d6cfe79a68cb3147653a35284f9489f8a5cd93e2f46e32761f56a2032e0a",
+      "error": null
+    },
+    {
+      "pair": "base_vs_joint_b8_r1",
+      "baseline_factor": "base",
+      "comparison_factor": "joint",
+      "batch": 8,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "base_vs_joint_b8_r1.json",
+      "report_sha256": "8c6d365245b0ed36a61e37f6ad21697f049b664f37ee355c9d2ee88906f456a0",
+      "error": null
+    },
+    {
+      "pair": "m_only_vs_joint_b1_r0",
+      "baseline_factor": "m_only",
+      "comparison_factor": "joint",
+      "batch": 1,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum",
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "m_only_vs_joint_b1_r0.json",
+      "report_sha256": "029d6e7c85663860e8359dcabc107b31412d649b191fd8ef03c367ac21d4149a",
+      "error": null
+    },
+    {
+      "pair": "m_only_vs_joint_b1_r1",
+      "baseline_factor": "m_only",
+      "comparison_factor": "joint",
+      "batch": 1,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "m_only_vs_joint_b1_r1.json",
+      "report_sha256": "b97e26547fb7bb43f1086663342330ce596d0b8a77a34a45fde88150d5100558",
+      "error": null
+    },
+    {
+      "pair": "m_only_vs_joint_b8_r0",
+      "baseline_factor": "m_only",
+      "comparison_factor": "joint",
+      "batch": 8,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum",
+        "seed"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "m_only_vs_joint_b8_r0.json",
+      "report_sha256": "479298831cac8b082dc4c840d5f808f9a6326f6f645957fb8fc7f9473473644a",
+      "error": null
+    },
+    {
+      "pair": "m_only_vs_joint_b8_r1",
+      "baseline_factor": "m_only",
+      "comparison_factor": "joint",
+      "batch": 8,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum",
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "m_only_vs_joint_b8_r1.json",
+      "report_sha256": "5b919844cb5928129520dee2e8b0d67d94370be07621feae2c055704646a9db5",
+      "error": null
+    },
+    {
+      "pair": "r_only_vs_joint_b1_r0",
+      "baseline_factor": "r_only",
+      "comparison_factor": "joint",
+      "batch": 1,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "r_only_vs_joint_b1_r0.json",
+      "report_sha256": "da491051004feaf410b73a2ad5a0587943d3e916708441587cadfbcce9cfb9e3",
+      "error": null
+    },
+    {
+      "pair": "r_only_vs_joint_b1_r1",
+      "baseline_factor": "r_only",
+      "comparison_factor": "joint",
+      "batch": 1,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "r_only_vs_joint_b1_r1.json",
+      "report_sha256": "8721a0fd860c5d1bb621b604104e9d71da784ee4f59c148f700a27c2bb7ef693",
+      "error": null
+    },
+    {
+      "pair": "r_only_vs_joint_b8_r0",
+      "baseline_factor": "r_only",
+      "comparison_factor": "joint",
+      "batch": 8,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "seed",
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "r_only_vs_joint_b8_r0.json",
+      "report_sha256": "659910dc4db3be59281315023e27a10a9ff40e304216d62329c05fa9caa83ae5",
+      "error": null
+    },
+    {
+      "pair": "r_only_vs_joint_b8_r1",
+      "baseline_factor": "r_only",
+      "comparison_factor": "joint",
+      "batch": 8,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "collector": {
+        "B": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        },
+        "F": {
+          "precision": "high",
+          "variant": "task_local_fp32_high_v1",
+          "modified_official_collector": true,
+          "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+          "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+          "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+          "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+          "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+          "stage_rehashed_by_this_tool": false
+        }
+      },
+      "report_file": "r_only_vs_joint_b8_r1.json",
+      "report_sha256": "4ef94703df9edc7b011c8af25e2223d17306213fc63bed623f1184956e0b4148",
+      "error": null
+    }
+  ],
+  "mechanism_accepted": false,
+  "private_tensor_or_host_profile_used": false
+}

@@ -1,0 +1,44 @@
+{
+  "status": "PASS_TARGETED_CPU_PADDING_REGRESSION",
+  "npu_calls": 0,
+  "checks": [
+    {
+      "name": "cross_batch_padding_only_allowed_and_original_bytes_preserved",
+      "status": "PASS"
+    },
+    {
+      "name": "same_batch_same_padding_allowed",
+      "status": "PASS"
+    },
+    {
+      "name": "same_batch_padding_difference_rejected",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "name": "semantic_change_rejected_inputParams.implMode",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "name": "semantic_change_rejected_inputParams.sparseType",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "name": "semantic_change_rejected_inputParams.scaleValue",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "name": "semantic_change_rejected_inputParams.keepProb",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "name": "malformed_padding_width",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "name": "malformed_padding_value",
+      "status": "PASS_REJECTED"
+    }
+  ],
+  "does_not_confirm_new_native_result": true,
+  "semantic_exception_scope": "Only cross-batch InputParamsPH alignment bytes"
+}

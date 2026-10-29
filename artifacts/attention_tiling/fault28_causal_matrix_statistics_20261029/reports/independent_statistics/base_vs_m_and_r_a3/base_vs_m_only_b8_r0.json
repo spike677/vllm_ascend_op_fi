@@ -1,0 +1,832 @@
+{
+  "schema": "fault28.causal.independent_statistics_comparison.v1",
+  "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+  "analysis_inputs": {
+    "localization": [
+      "config.json",
+      "dump.json",
+      "stack.json",
+      "construct.json"
+    ],
+    "integrity_only": [
+      "completion.json",
+      "receipt.json",
+      "collector_provenance.json",
+      "result.json: status/case_id/receipt_sha256"
+    ],
+    "files_not_opened": [
+      "host/profile/hit logs",
+      "private tensor files"
+    ],
+    "ignored_result_fields": [
+      "profile/policy labels",
+      "native-call/hit annotations",
+      "input/output numerical fingerprints",
+      "private output paths and numerical comparison results"
+    ]
+  },
+  "evidence_sha256": {
+    "B": {
+      "config": "8ca900ee2efbc9676bede56cd32b751efd087edc2e889773c2ccfea817452434",
+      "receipt": "5f55295d806d5db0b33a0e952ac67d2503d969cc2bf242e726bcd093040676c7",
+      "collector_provenance": "4e15103d8e06d831dab5ff06bda1bfecd05f5029696b01b1cc08e78c48eb3ca5",
+      "completion": "26d5182715bfd6c96f2fbc9829a634c2236d0e7645d8c4889abae0c58fa63ec2",
+      "result_integrity_only": "c546bacd0b78427bad2c7c1119e1ba2ebc4cbb0d6ed64cae7626c1828cc378bd",
+      "dump": "4b454b526680c933832d9f625a99a5f386ba8b4c346f658d0ce3a6d64f8b8c16",
+      "stack": "7b978221bf6f4eca4b3ad12cfbebc7d58112ecd4332741c2ada7e99f9596bd4e",
+      "construct": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9"
+    },
+    "F": {
+      "config": "1f6e9fd3e9f9a88cd467a3eb3637e9e535bfdde21d47bb784b64eeb62e22b6fd",
+      "receipt": "852b77af8feec93d7126656453932bae8fc2e2b504af11bfc9a89846ed8377f8",
+      "collector_provenance": "4e15103d8e06d831dab5ff06bda1bfecd05f5029696b01b1cc08e78c48eb3ca5",
+      "completion": "a3482f42bdd8f5a04993cdb26e53d402ca9e809a9acb3e97f7a180e7a22d926a",
+      "result_integrity_only": "a25b4518dc410d8d376ba628e41313eb2e2bc28b8dd461eb3594059604821579",
+      "dump": "1bf5f43e48ee09619023b23f67f92dbd45a69202b30a08f069593e57e854e7d1",
+      "stack": "7b978221bf6f4eca4b3ad12cfbebc7d58112ecd4332741c2ada7e99f9596bd4e",
+      "construct": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9"
+    }
+  },
+  "collector_disclosure": {
+    "B": {
+      "precision": "high",
+      "variant": "task_local_fp32_high_v1",
+      "modified_official_collector": true,
+      "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+      "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+      "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+      "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+      "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+      "stage_rehashed_by_this_tool": false
+    },
+    "F": {
+      "precision": "high",
+      "variant": "task_local_fp32_high_v1",
+      "modified_official_collector": true,
+      "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+      "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+      "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+      "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+      "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+      "stage_rehashed_by_this_tool": false
+    }
+  },
+  "alignment": {
+    "complete": true,
+    "trace_config_collector_match": true,
+    "metadata_compatible": true,
+    "B_nodes": 2,
+    "F_nodes": 2,
+    "matched_ordered_nodes": 2,
+    "B_issues": [],
+    "F_issues": [],
+    "method": "Full parsed source stack including line/code text, module ancestry, API identity and original dump order; no diagnostic exclusions."
+  },
+  "first_observed_api_difference": {
+    "B": {
+      "name": "NPU.npu_fusion_attention_v3.0.forward",
+      "ordinal": 0,
+      "canonical": "NPU.npu_fusion_attention_v3.forward",
+      "parents": [
+        "Module.replay.ReplayModule.forward"
+      ],
+      "stack": [
+        "File /audit/replay.py, line 298, in forward, \n return torch_npu.npu_fusion_attention_v3(query, key, value, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/replay.py, line 329, in main, \n native = module(inputs['query'], inputs['key'], inputs['value'])",
+        "File /audit/replay.py, line 423, in <module>, \n raise SystemExit(main())"
+      ]
+    },
+    "F": {
+      "name": "NPU.npu_fusion_attention_v3.0.forward",
+      "ordinal": 0,
+      "canonical": "NPU.npu_fusion_attention_v3.forward",
+      "parents": [
+        "Module.replay.ReplayModule.forward"
+      ],
+      "stack": [
+        "File /audit/replay.py, line 298, in forward, \n return torch_npu.npu_fusion_attention_v3(query, key, value, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+        "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+        "File /audit/replay.py, line 329, in main, \n native = module(inputs['query'], inputs['key'], inputs['value'])",
+        "File /audit/replay.py, line 423, in <module>, \n raise SystemExit(main())"
+      ]
+    },
+    "input": {
+      "differences": [],
+      "metadata_differences": [],
+      "unobservable": [
+        {
+          "slot": ".input_kwargs.atten_mask.Max",
+          "B": true,
+          "F": true,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".input_kwargs.atten_mask.Min",
+          "B": false,
+          "F": false,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".input_kwargs.atten_mask.Mean",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".input_kwargs.atten_mask.Norm",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        }
+      ],
+      "matching_finite_statistics": 12,
+      "tensor_slots": 4
+    },
+    "output": {
+      "differences": [
+        {
+          "slot": ".0.Mean",
+          "B": 0.00022031491971574724,
+          "F": 0.00022031486150808632,
+          "B_present": true,
+          "F_present": true,
+          "kind": "finite_statistic_difference"
+        },
+        {
+          "slot": ".5.Max",
+          "B": 3528828519200,
+          "F": 4591033472226689024,
+          "B_present": true,
+          "F_present": true,
+          "kind": "finite_statistic_difference"
+        },
+        {
+          "slot": ".5.Min",
+          "B": 3528828519200,
+          "F": 4591033472226689024,
+          "B_present": true,
+          "F_present": true,
+          "kind": "finite_statistic_difference"
+        }
+      ],
+      "metadata_differences": [],
+      "unobservable": [
+        {
+          "slot": ".3.Max",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".3.Min",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".3.Mean",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".3.Norm",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".4.Mean",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".4.Norm",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".5.Mean",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "slot": ".5.Norm",
+          "B": null,
+          "F": null,
+          "B_present": true,
+          "F_present": true
+        }
+      ],
+      "matching_finite_statistics": 13,
+      "tensor_slots": 6
+    },
+    "return_slots": [
+      {
+        "index": 0,
+        "name": "attention_score",
+        "differences": [
+          {
+            "slot": ".Mean",
+            "B": 0.00022031491971574724,
+            "F": 0.00022031486150808632,
+            "B_present": true,
+            "F_present": true,
+            "kind": "finite_statistic_difference"
+          }
+        ],
+        "metadata_differences": [],
+        "unobservable": [],
+        "matching_finite_statistics": 3,
+        "tensor_slots": 1
+      },
+      {
+        "index": 1,
+        "name": "softmax_max",
+        "differences": [],
+        "metadata_differences": [],
+        "unobservable": [],
+        "matching_finite_statistics": 4,
+        "tensor_slots": 1
+      },
+      {
+        "index": 2,
+        "name": "softmax_sum",
+        "differences": [],
+        "metadata_differences": [],
+        "unobservable": [],
+        "matching_finite_statistics": 4,
+        "tensor_slots": 1
+      },
+      {
+        "index": 3,
+        "name": "softmax_out",
+        "differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          {
+            "slot": ".Max",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".Min",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 0,
+        "tensor_slots": 1
+      },
+      {
+        "index": 4,
+        "name": "seed",
+        "differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          {
+            "slot": ".Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 2,
+        "tensor_slots": 1
+      },
+      {
+        "index": 5,
+        "name": "offset",
+        "differences": [
+          {
+            "slot": ".Max",
+            "B": 3528828519200,
+            "F": 4591033472226689024,
+            "B_present": true,
+            "F_present": true,
+            "kind": "finite_statistic_difference"
+          },
+          {
+            "slot": ".Min",
+            "B": 3528828519200,
+            "F": 4591033472226689024,
+            "B_present": true,
+            "F_present": true,
+            "kind": "finite_statistic_difference"
+          }
+        ],
+        "metadata_differences": [],
+        "unobservable": [
+          {
+            "slot": ".Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 0,
+        "tensor_slots": 1
+      }
+    ]
+  },
+  "first_difference_boundary": "output",
+  "attention_score_output_observed_difference": true,
+  "auxiliary_output_observed_differences": [
+    "offset"
+  ],
+  "unobservable_statistic_fields": 20,
+  "module_difference_nodes": [
+    "Module.replay.ReplayModule.forward.0"
+  ],
+  "comparisons": [
+    {
+      "B": {
+        "name": "NPU.npu_fusion_attention_v3.0.forward",
+        "ordinal": 0,
+        "canonical": "NPU.npu_fusion_attention_v3.forward",
+        "parents": [
+          "Module.replay.ReplayModule.forward"
+        ],
+        "stack": [
+          "File /audit/replay.py, line 298, in forward, \n return torch_npu.npu_fusion_attention_v3(query, key, value, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/replay.py, line 329, in main, \n native = module(inputs['query'], inputs['key'], inputs['value'])",
+          "File /audit/replay.py, line 423, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "F": {
+        "name": "NPU.npu_fusion_attention_v3.0.forward",
+        "ordinal": 0,
+        "canonical": "NPU.npu_fusion_attention_v3.forward",
+        "parents": [
+          "Module.replay.ReplayModule.forward"
+        ],
+        "stack": [
+          "File /audit/replay.py, line 298, in forward, \n return torch_npu.npu_fusion_attention_v3(query, key, value, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/replay.py, line 329, in main, \n native = module(inputs['query'], inputs['key'], inputs['value'])",
+          "File /audit/replay.py, line 423, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "input": {
+        "differences": [],
+        "metadata_differences": [],
+        "unobservable": [
+          {
+            "slot": ".input_kwargs.atten_mask.Max",
+            "B": true,
+            "F": true,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".input_kwargs.atten_mask.Min",
+            "B": false,
+            "F": false,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".input_kwargs.atten_mask.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".input_kwargs.atten_mask.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 12,
+        "tensor_slots": 4
+      },
+      "output": {
+        "differences": [
+          {
+            "slot": ".0.Mean",
+            "B": 0.00022031491971574724,
+            "F": 0.00022031486150808632,
+            "B_present": true,
+            "F_present": true,
+            "kind": "finite_statistic_difference"
+          },
+          {
+            "slot": ".5.Max",
+            "B": 3528828519200,
+            "F": 4591033472226689024,
+            "B_present": true,
+            "F_present": true,
+            "kind": "finite_statistic_difference"
+          },
+          {
+            "slot": ".5.Min",
+            "B": 3528828519200,
+            "F": 4591033472226689024,
+            "B_present": true,
+            "F_present": true,
+            "kind": "finite_statistic_difference"
+          }
+        ],
+        "metadata_differences": [],
+        "unobservable": [
+          {
+            "slot": ".3.Max",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".3.Min",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".3.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".3.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".4.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".4.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".5.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".5.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 13,
+        "tensor_slots": 6
+      },
+      "return_slots": [
+        {
+          "index": 0,
+          "name": "attention_score",
+          "differences": [
+            {
+              "slot": ".Mean",
+              "B": 0.00022031491971574724,
+              "F": 0.00022031486150808632,
+              "B_present": true,
+              "F_present": true,
+              "kind": "finite_statistic_difference"
+            }
+          ],
+          "metadata_differences": [],
+          "unobservable": [],
+          "matching_finite_statistics": 3,
+          "tensor_slots": 1
+        },
+        {
+          "index": 1,
+          "name": "softmax_max",
+          "differences": [],
+          "metadata_differences": [],
+          "unobservable": [],
+          "matching_finite_statistics": 4,
+          "tensor_slots": 1
+        },
+        {
+          "index": 2,
+          "name": "softmax_sum",
+          "differences": [],
+          "metadata_differences": [],
+          "unobservable": [],
+          "matching_finite_statistics": 4,
+          "tensor_slots": 1
+        },
+        {
+          "index": 3,
+          "name": "softmax_out",
+          "differences": [],
+          "metadata_differences": [],
+          "unobservable": [
+            {
+              "slot": ".Max",
+              "B": null,
+              "F": null,
+              "B_present": true,
+              "F_present": true
+            },
+            {
+              "slot": ".Min",
+              "B": null,
+              "F": null,
+              "B_present": true,
+              "F_present": true
+            },
+            {
+              "slot": ".Mean",
+              "B": null,
+              "F": null,
+              "B_present": true,
+              "F_present": true
+            },
+            {
+              "slot": ".Norm",
+              "B": null,
+              "F": null,
+              "B_present": true,
+              "F_present": true
+            }
+          ],
+          "matching_finite_statistics": 0,
+          "tensor_slots": 1
+        },
+        {
+          "index": 4,
+          "name": "seed",
+          "differences": [],
+          "metadata_differences": [],
+          "unobservable": [
+            {
+              "slot": ".Mean",
+              "B": null,
+              "F": null,
+              "B_present": true,
+              "F_present": true
+            },
+            {
+              "slot": ".Norm",
+              "B": null,
+              "F": null,
+              "B_present": true,
+              "F_present": true
+            }
+          ],
+          "matching_finite_statistics": 2,
+          "tensor_slots": 1
+        },
+        {
+          "index": 5,
+          "name": "offset",
+          "differences": [
+            {
+              "slot": ".Max",
+              "B": 3528828519200,
+              "F": 4591033472226689024,
+              "B_present": true,
+              "F_present": true,
+              "kind": "finite_statistic_difference"
+            },
+            {
+              "slot": ".Min",
+              "B": 3528828519200,
+              "F": 4591033472226689024,
+              "B_present": true,
+              "F_present": true,
+              "kind": "finite_statistic_difference"
+            }
+          ],
+          "metadata_differences": [],
+          "unobservable": [
+            {
+              "slot": ".Mean",
+              "B": null,
+              "F": null,
+              "B_present": true,
+              "F_present": true
+            },
+            {
+              "slot": ".Norm",
+              "B": null,
+              "F": null,
+              "B_present": true,
+              "F_present": true
+            }
+          ],
+          "matching_finite_statistics": 0,
+          "tensor_slots": 1
+        }
+      ]
+    },
+    {
+      "B": {
+        "name": "Module.replay.ReplayModule.forward.0",
+        "ordinal": 1,
+        "canonical": "Module.replay.ReplayModule.forward",
+        "parents": [],
+        "stack": [
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/replay.py, line 329, in main, \n native = module(inputs['query'], inputs['key'], inputs['value'])",
+          "File /audit/replay.py, line 423, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "F": {
+        "name": "Module.replay.ReplayModule.forward.0",
+        "ordinal": 1,
+        "canonical": "Module.replay.ReplayModule.forward",
+        "parents": [],
+        "stack": [
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+          "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+          "File /audit/replay.py, line 329, in main, \n native = module(inputs['query'], inputs['key'], inputs['value'])",
+          "File /audit/replay.py, line 423, in <module>, \n raise SystemExit(main())"
+        ]
+      },
+      "input": {
+        "differences": [],
+        "metadata_differences": [],
+        "unobservable": [],
+        "matching_finite_statistics": 12,
+        "tensor_slots": 3
+      },
+      "output": {
+        "differences": [
+          {
+            "slot": ".0.Mean",
+            "B": 0.00022031491971574724,
+            "F": 0.00022031486150808632,
+            "B_present": true,
+            "F_present": true,
+            "kind": "finite_statistic_difference"
+          },
+          {
+            "slot": ".5.Max",
+            "B": 3528828519200,
+            "F": 4591033472226689024,
+            "B_present": true,
+            "F_present": true,
+            "kind": "finite_statistic_difference"
+          },
+          {
+            "slot": ".5.Min",
+            "B": 3528828519200,
+            "F": 4591033472226689024,
+            "B_present": true,
+            "F_present": true,
+            "kind": "finite_statistic_difference"
+          }
+        ],
+        "metadata_differences": [],
+        "unobservable": [
+          {
+            "slot": ".3.Max",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".3.Min",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".3.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".3.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".4.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".4.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".5.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "slot": ".5.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 13,
+        "tensor_slots": 6
+      }
+    }
+  ],
+  "tensor_equality_proven": false,
+  "physical_fault_location_proven": false,
+  "native_cann_kernel_coverage_proven": false,
+  "mechanism_accepted": false,
+  "limits": [
+    "First means first differing API statistics record in dump order, not a device instruction or physical fault point.",
+    "Null/missing/matching nonfinite statistics are unobservable, never equal tensor values. Equal finite summaries may collide.",
+    "Matching input statistics do not prove identical Q/K/V/mask values. First output difference does not by itself prove the root cause.",
+    "Different batch shapes cannot align target slices using whole-tensor summaries; incompatible metadata suppresses first-difference claims.",
+    "Attention-score return0 and the five auxiliary returns are reported separately. An auxiliary-only change is not a primary attention-output difference.",
+    "Completion and provenance checks are integrity gates, not independent resource auditing or native profile/tiling verification."
+  ]
+}

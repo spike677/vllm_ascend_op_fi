@@ -1,0 +1,588 @@
+{
+  "schema": "fault28.causal.execution_acceptance.v1",
+  "status": "PASS_CONTROLLED_BATCH_NATIVE_FA_CAUSAL_AND_STATISTICS",
+  "created_utc": "2026-10-29T09:08:54.892655+00:00",
+  "release_approved": true,
+  "all_32_native_captures_completed": true,
+  "valid_cases": 32,
+  "failed_capture_cases_excluded": 1,
+  "attempts": [
+    {
+      "attempt": "stock_bridge_a3",
+      "cases": 4,
+      "completion_sha256": "ea27e0f6722764e6d9ec58c442b62e9f097d2a3bfb9bb2dd8d900136317d84c0"
+    },
+    {
+      "attempt": "private_base_a3",
+      "cases": 4,
+      "completion_sha256": "26d5182715bfd6c96f2fbc9829a634c2236d0e7645d8c4889abae0c58fa63ec2"
+    },
+    {
+      "attempt": "m_and_r_a3",
+      "cases": 8,
+      "completion_sha256": "a3482f42bdd8f5a04993cdb26e53d402ca9e809a9acb3e97f7a180e7a22d926a"
+    },
+    {
+      "attempt": "joint_a3",
+      "cases": 4,
+      "completion_sha256": "6f706c1de96759baba492351f913dbb929c9aeef6ca539278264f70e4e1782dd"
+    },
+    {
+      "attempt": "automatic_a_a3",
+      "cases": 8,
+      "completion_sha256": "ed3241d1708cb6cd0aa2e8492a83f6343d79c0eb11ebceda137bdc284dd48e6d"
+    },
+    {
+      "attempt": "automatic_b_a3",
+      "cases": 4,
+      "completion_sha256": "668cc567c1a921a537bf1edf875aa116ba4205c0df32ad3413aedac791a43d6c"
+    }
+  ],
+  "scope": "Fixed real-model Q/K/V original native FA replay on124 card5, with a source-controlled batch policy; no new model forward.",
+  "capture_revision": "v2",
+  "replay_source_sha256": "32e6e41fb022b6505e9f3a62f12843a4e7b73c7a8729c935bd0ceb4a4b31a647",
+  "vendor_manifest_sha256": "3d3ca8e0bc12003e19c6f3f4cfba21775e516385fe5807b10d59c6bb53cb1785",
+  "input_manifest_sha256": "509123dc725e351d6b10840919c2640b327a13eecceba2ca4a888c4a094f8e62",
+  "checks": {
+    "stock_private_base_bridge": true,
+    "all16_factorial_repeat_and_raw_checks": true,
+    "all12_actual_cpp_batch_policy_and_primary_full_output_matches": true,
+    "independent_statistics_comparisons": 38,
+    "statistics_configuration": "task=statistics level=mix summary_mode=statistics precision=high",
+    "modified_statistics_collector_disclosed": true,
+    "all_raw_capture_files_unchanged": true,
+    "private_full_tensor_files_excluded_from_publication": true
+  },
+  "main_BF": {
+    "baseline": "private_base_a3/base_b8_r0,r1; actual M128/R8",
+    "fault": "automatic_a_a3/batch_m_b8_r0,r1; actual M64/R8",
+    "scope": "SameB8 identical inputs; conditional mode B1 staysbase, B8 selectsMonly in realCPP host",
+    "independent_statistics": [
+      {
+        "pair": "base_vs_batch_m_b8_r0",
+        "baseline_case": "base_b8_r0",
+        "comparison_case": "batch_m_b8_r0",
+        "batch": 8,
+        "repeat": 0,
+        "attention_score_changed": true,
+        "attention_score_different_statistic_fields": [
+          ".Mean"
+        ],
+        "auxiliary_changed": [
+          "offset"
+        ],
+        "unobservable": 20,
+        "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+        "first_boundary": "output"
+      },
+      {
+        "pair": "base_vs_batch_m_b8_r1",
+        "baseline_case": "base_b8_r1",
+        "comparison_case": "batch_m_b8_r1",
+        "batch": 8,
+        "repeat": 1,
+        "attention_score_changed": true,
+        "attention_score_different_statistic_fields": [
+          ".Mean"
+        ],
+        "auxiliary_changed": [],
+        "unobservable": 20,
+        "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+        "first_boundary": "output"
+      }
+    ]
+  },
+  "full_sequence_primary_summary": {
+    "B1.M_at_ratio8": {
+      "nonzero_elements": 27,
+      "max_abs": 0.0001220703125,
+      "exact_int64_le_sha256": "071140bf39bf51e445bbf29489f49e1f421e5195817202773070c985ac93f7b8",
+      "bit_different_elements": 27,
+      "changed_queries_any_head": 23,
+      "earliest_changed_query": 413,
+      "latest_changed_query": 1973,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "B1.M_at_ratio4": {
+      "nonzero_elements": 25,
+      "max_abs": 0.0001220703125,
+      "exact_int64_le_sha256": "f637d98a24e4d9899abf8c16119dab45d9c07e80d265e03a7f53c316b5100048",
+      "bit_different_elements": 25,
+      "changed_queries_any_head": 23,
+      "earliest_changed_query": 413,
+      "latest_changed_query": 1967,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "B1.ratio_at_M128": {
+      "nonzero_elements": 83176,
+      "max_abs": 0.00048828125,
+      "exact_int64_le_sha256": "97fd0d2c7a41b0b0881695190874f3bdac731bf3a57c5c3b1c12079cd867d59a",
+      "bit_different_elements": 83176,
+      "changed_queries_any_head": 1536,
+      "earliest_changed_query": 512,
+      "latest_changed_query": 2047,
+      "last_query_changed_elements": 34,
+      "last_query_max_abs": 0.0001220703125
+    },
+    "B1.ratio_at_M64": {
+      "nonzero_elements": 83174,
+      "max_abs": 0.00048828125,
+      "exact_int64_le_sha256": "14bb3014552fe30de5bb8e76bff4334f99e35a07e4df6f58656d54e1ee5363f5",
+      "bit_different_elements": 83174,
+      "changed_queries_any_head": 1536,
+      "earliest_changed_query": 512,
+      "latest_changed_query": 2047,
+      "last_query_changed_elements": 34,
+      "last_query_max_abs": 0.0001220703125
+    },
+    "B1.M_ratio_interaction": {
+      "nonzero_elements": 42,
+      "max_abs": 0.0001220703125,
+      "exact_int64_le_sha256": "10179f8cf6ccc6f9c8dd8b88125e247167496597b7bd754cbf9eb6dad8099714",
+      "bit_different_elements": null,
+      "changed_queries_any_head": 33,
+      "earliest_changed_query": 901,
+      "latest_changed_query": 1973,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "B8.M_at_ratio8": {
+      "nonzero_elements": 27,
+      "max_abs": 0.0001220703125,
+      "exact_int64_le_sha256": "071140bf39bf51e445bbf29489f49e1f421e5195817202773070c985ac93f7b8",
+      "bit_different_elements": 27,
+      "changed_queries_any_head": 23,
+      "earliest_changed_query": 413,
+      "latest_changed_query": 1973,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "B8.M_at_ratio4": {
+      "nonzero_elements": 25,
+      "max_abs": 0.0001220703125,
+      "exact_int64_le_sha256": "f637d98a24e4d9899abf8c16119dab45d9c07e80d265e03a7f53c316b5100048",
+      "bit_different_elements": 25,
+      "changed_queries_any_head": 23,
+      "earliest_changed_query": 413,
+      "latest_changed_query": 1967,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "B8.ratio_at_M128": {
+      "nonzero_elements": 83176,
+      "max_abs": 0.00048828125,
+      "exact_int64_le_sha256": "97fd0d2c7a41b0b0881695190874f3bdac731bf3a57c5c3b1c12079cd867d59a",
+      "bit_different_elements": 83176,
+      "changed_queries_any_head": 1536,
+      "earliest_changed_query": 512,
+      "latest_changed_query": 2047,
+      "last_query_changed_elements": 34,
+      "last_query_max_abs": 0.0001220703125
+    },
+    "B8.ratio_at_M64": {
+      "nonzero_elements": 83174,
+      "max_abs": 0.00048828125,
+      "exact_int64_le_sha256": "14bb3014552fe30de5bb8e76bff4334f99e35a07e4df6f58656d54e1ee5363f5",
+      "bit_different_elements": 83174,
+      "changed_queries_any_head": 1536,
+      "earliest_changed_query": 512,
+      "latest_changed_query": 2047,
+      "last_query_changed_elements": 34,
+      "last_query_max_abs": 0.0001220703125
+    },
+    "B8.M_ratio_interaction": {
+      "nonzero_elements": 42,
+      "max_abs": 0.0001220703125,
+      "exact_int64_le_sha256": "10179f8cf6ccc6f9c8dd8b88125e247167496597b7bd754cbf9eb6dad8099714",
+      "bit_different_elements": null,
+      "changed_queries_any_head": 33,
+      "earliest_changed_query": 901,
+      "latest_changed_query": 1973,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "Batch.base": {
+      "nonzero_elements": 0,
+      "max_abs": 0.0,
+      "exact_int64_le_sha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+      "bit_different_elements": 0,
+      "changed_queries_any_head": 0,
+      "earliest_changed_query": null,
+      "latest_changed_query": null,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "Batch.m_only": {
+      "nonzero_elements": 0,
+      "max_abs": 0.0,
+      "exact_int64_le_sha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+      "bit_different_elements": 0,
+      "changed_queries_any_head": 0,
+      "earliest_changed_query": null,
+      "latest_changed_query": null,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "Batch.r_only": {
+      "nonzero_elements": 0,
+      "max_abs": 0.0,
+      "exact_int64_le_sha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+      "bit_different_elements": 0,
+      "changed_queries_any_head": 0,
+      "earliest_changed_query": null,
+      "latest_changed_query": null,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "Batch.joint": {
+      "nonzero_elements": 0,
+      "max_abs": 0.0,
+      "exact_int64_le_sha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+      "bit_different_elements": 0,
+      "changed_queries_any_head": 0,
+      "earliest_changed_query": null,
+      "latest_changed_query": null,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "BatchInteraction.M_at_ratio8": {
+      "nonzero_elements": 0,
+      "max_abs": 0.0,
+      "exact_int64_le_sha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+      "bit_different_elements": null,
+      "changed_queries_any_head": 0,
+      "earliest_changed_query": null,
+      "latest_changed_query": null,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "BatchInteraction.M_at_ratio4": {
+      "nonzero_elements": 0,
+      "max_abs": 0.0,
+      "exact_int64_le_sha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+      "bit_different_elements": null,
+      "changed_queries_any_head": 0,
+      "earliest_changed_query": null,
+      "latest_changed_query": null,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "BatchInteraction.ratio_at_M128": {
+      "nonzero_elements": 0,
+      "max_abs": 0.0,
+      "exact_int64_le_sha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+      "bit_different_elements": null,
+      "changed_queries_any_head": 0,
+      "earliest_changed_query": null,
+      "latest_changed_query": null,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "BatchInteraction.ratio_at_M64": {
+      "nonzero_elements": 0,
+      "max_abs": 0.0,
+      "exact_int64_le_sha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+      "bit_different_elements": null,
+      "changed_queries_any_head": 0,
+      "earliest_changed_query": null,
+      "latest_changed_query": null,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    },
+    "BatchInteraction.M_ratio_interaction": {
+      "nonzero_elements": 0,
+      "max_abs": 0.0,
+      "exact_int64_le_sha256": "83ee47245398adee79bd9c0a8bc57b821e92aba10f5f9ade8a5d1fae4d8c4302",
+      "bit_different_elements": null,
+      "changed_queries_any_head": 0,
+      "earliest_changed_query": null,
+      "latest_changed_query": null,
+      "last_query_changed_elements": 0,
+      "last_query_max_abs": 0.0
+    }
+  },
+  "primary_attribution": {
+    "B1.M_at_ratio8": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "B1.M_at_ratio4": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "B1.ratio_at_M128": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "B1.ratio_at_M64": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "B1.M_ratio_interaction": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "B8.M_at_ratio8": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "B8.M_at_ratio4": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "B8.ratio_at_M128": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "B8.ratio_at_M64": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "B8.M_ratio_interaction": {
+      "primary_output_effect": "OBSERVED_REPEATABLE_INTERVENTION_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "Batch.base": {
+      "primary_output_effect": "NO_OBSERVED_NUMERICAL_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "Batch.m_only": {
+      "primary_output_effect": "NO_OBSERVED_NUMERICAL_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "Batch.r_only": {
+      "primary_output_effect": "NO_OBSERVED_NUMERICAL_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "Batch.joint": {
+      "primary_output_effect": "NO_OBSERVED_NUMERICAL_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "BatchInteraction.M_at_ratio8": {
+      "primary_output_effect": "NO_OBSERVED_NUMERICAL_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "BatchInteraction.M_at_ratio4": {
+      "primary_output_effect": "NO_OBSERVED_NUMERICAL_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "BatchInteraction.ratio_at_M128": {
+      "primary_output_effect": "NO_OBSERVED_NUMERICAL_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "BatchInteraction.ratio_at_M64": {
+      "primary_output_effect": "NO_OBSERVED_NUMERICAL_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    },
+    "BatchInteraction.M_ratio_interaction": {
+      "primary_output_effect": "NO_OBSERVED_NUMERICAL_EFFECT",
+      "micro_arithmetic_cause": "NOT_IDENTIFIED",
+      "applies_only_to_fixed_captured_input": true
+    }
+  },
+  "evidence_sha256": {
+    "outputs/causal_reports/base_bridge_a3.json": "74a1a2c331486b872ae3dcb10ddc9b74ca64547b1272307a1d956021db4329d7",
+    "outputs/causal_reports/primary_causal_a3_review2.json": "6531292e9e7bb0bd0547570808cbd8c8ada8784e94b7243c3ded4888c81e1d47",
+    "outputs/causal_reports/primary_causal_a3_summary.json": "09f2e6a6a23c41acd63f82ba91f1eb5065fb535bb7cd5b4bc074bc7f6da86363",
+    "outputs/causal_reports/secondary_batch_policy_a3.json": "4c6f4a0e6c94bf208c122baa9682f4a00fc12d903c1a6e0e5879f5e5286a7b11",
+    "outputs/independent_statistics/automatic_a3/summary.json": "1dc7faa32c2c8909b91180488e062cb966a6df3207dc4899c219a5393e86f48d",
+    "outputs/independent_statistics/automatic_a3/candidate_batch_m_b8_bf_index.json": "a3d28c83221e20ebab579f4de4358585504d1733941198e70ec9bc028fcde4db",
+    "analysis/native_cross_review/m_and_r_a3_review.json": "27d4870881345f5c798670aa103a2a7cbf21dc38b6a412564b0a803f43f0d87e",
+    "analysis/native_cross_review/joint_a3_review.json": "291fb9d74741bc431ba628d67738585a3b189f7c232844d13efd7b83a7d384b4",
+    "analysis/native_cross_review/input_params_padding_review.json": "b886d466ef51b0bbef673ca1c9b45d09a20ecbf4ce9d4159ecce1583a1cf61b0"
+  },
+  "independent_statistics_reports": [
+    {
+      "file": "outputs/independent_statistics/stock_bridge_a3_repeats/b1_repeats.json",
+      "sha256": "1e0e98b6d615502aeb477110ee239d5838179e17d2086a5b0a2e792e06c13fdf"
+    },
+    {
+      "file": "outputs/independent_statistics/stock_bridge_a3_repeats/b8_repeats.json",
+      "sha256": "cfe241d78ef661bb8cce3a67dc9bfe8f91f689e4e8c4fa3d07a19fef0c4cba0e"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_r_b1_r1.json",
+      "sha256": "9ae4b7b311a9d7933c5d6d828c6ec77cc42c9fdc051c04f34fd2f20e8d0fc3b2"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_joint_b8_r1.json",
+      "sha256": "cd2f53b9ebf06a20c4d7ded199d8c68136ac2b713559b97c1b03149a47beb561"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_m_b8_r0.json",
+      "sha256": "5a39c4cc9872b9e743b40e1aad35a1719a2fa3cd7090cd9c37b22eae016dc4cf"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_joint_b8_r0.json",
+      "sha256": "cc32cbfc187094035f051e63e3c4deab67b11787622c40cf95af00ad2081faf7"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_m_b1_r1.json",
+      "sha256": "160514172dae943e70eb0844cc78b48d745929e5e41375a75f34c9a5c66b37ba"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_joint_b1_r0.json",
+      "sha256": "c3b3c3e78e1fc162cbeb48b1dfd6807fa261f9cd4b5b428e74189b98023e983d"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_r_b1_r0.json",
+      "sha256": "62f517bd77e15334e820148dddcede2d23a8d46ece283247cc599a74dd59b2c4"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_m_b1_r0.json",
+      "sha256": "59ec592342fa1d9d82c7316d0b697d8dc22a90859edbd14a37ec2c91872d0fb9"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_r_b8_r0.json",
+      "sha256": "bd0935ee8782a30bd21f2e4776a8f1f6a508bbfae7760ed4b0ff3ec2b56d3f6e"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_joint_b1_r1.json",
+      "sha256": "1c20dffb8751e8bb66f7b81cabc0ba92a51f7129e2cb77ad3d2a7252d7f480fe"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_m_b8_r1.json",
+      "sha256": "327bb3f0e7f5d6ac80a49887eebd0db76ae5d64f8e5de582662e289dc9b23543"
+    },
+    {
+      "file": "outputs/independent_statistics/automatic_a3/base_vs_batch_r_b8_r1.json",
+      "sha256": "4dc808291ef9955c3555f059b57364f66090354337193a7d647f459fed9d9145"
+    },
+    {
+      "file": "outputs/independent_statistics/base_vs_m_and_r_a3/base_vs_m_only_b1_r0.json",
+      "sha256": "97392114fe585d9ee19e143c7664ed1e4247eda6c98beeed8bfb0d0b3d7491f0"
+    },
+    {
+      "file": "outputs/independent_statistics/base_vs_m_and_r_a3/base_vs_r_only_b8_r1.json",
+      "sha256": "926f2ef7cfc55370a63908184a265d0881effa25023a2bab95aa167d250a910b"
+    },
+    {
+      "file": "outputs/independent_statistics/base_vs_m_and_r_a3/base_vs_r_only_b1_r1.json",
+      "sha256": "d5e0e9ebf56c8ed7d03bef99a4dde5396e2822574155833e6cf1cf290fbffa85"
+    },
+    {
+      "file": "outputs/independent_statistics/base_vs_m_and_r_a3/base_vs_r_only_b1_r0.json",
+      "sha256": "555ac10647a23ca3b5ca57d7a6a617e345132d06cd6e6e7a09f10b5a8e2c6d39"
+    },
+    {
+      "file": "outputs/independent_statistics/base_vs_m_and_r_a3/base_vs_m_only_b8_r0.json",
+      "sha256": "4ae251050a6a7e27c06bf77ce164327304d779f880a476b06ecdfe74418c3c1e"
+    },
+    {
+      "file": "outputs/independent_statistics/base_vs_m_and_r_a3/base_vs_m_only_b1_r1.json",
+      "sha256": "beca69b9e8a9be333e45235e713cf58752115c7e58e4a5e50339486e8548e2e9"
+    },
+    {
+      "file": "outputs/independent_statistics/base_vs_m_and_r_a3/base_vs_r_only_b8_r0.json",
+      "sha256": "29796308653cef929164e41782f6fa75a2c28dc05cc71b790097cd8c4df9403b"
+    },
+    {
+      "file": "outputs/independent_statistics/base_vs_m_and_r_a3/base_vs_m_only_b8_r1.json",
+      "sha256": "593d827dcf6e41ceeade0cdfc0cf0603c5693a2d36a883ac1be0d17989fa840a"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/r_only_vs_joint_b8_r1.json",
+      "sha256": "4ef94703df9edc7b011c8af25e2223d17306213fc63bed623f1184956e0b4148"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/r_only_vs_joint_b1_r1.json",
+      "sha256": "8721a0fd860c5d1bb621b604104e9d71da784ee4f59c148f700a27c2bb7ef693"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/base_vs_joint_b1_r0.json",
+      "sha256": "4289309d25878e6aaed49ea66bae2f74f22b6fee5984dcbc884f9db6f37c4737"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/base_vs_joint_b8_r1.json",
+      "sha256": "8c6d365245b0ed36a61e37f6ad21697f049b664f37ee355c9d2ee88906f456a0"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/r_only_vs_joint_b1_r0.json",
+      "sha256": "da491051004feaf410b73a2ad5a0587943d3e916708441587cadfbcce9cfb9e3"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/m_only_vs_joint_b1_r0.json",
+      "sha256": "029d6e7c85663860e8359dcabc107b31412d649b191fd8ef03c367ac21d4149a"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/m_only_vs_joint_b1_r1.json",
+      "sha256": "b97e26547fb7bb43f1086663342330ce596d0b8a77a34a45fde88150d5100558"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/base_vs_joint_b1_r1.json",
+      "sha256": "77a5e0c4082b752bde522cdc96285d9643261e4ba78830efd93485cb4fdcc430"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/m_only_vs_joint_b8_r0.json",
+      "sha256": "479298831cac8b082dc4c840d5f808f9a6326f6f645957fb8fc7f9473473644a"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/m_only_vs_joint_b8_r1.json",
+      "sha256": "5b919844cb5928129520dee2e8b0d67d94370be07621feae2c055704646a9db5"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/base_vs_joint_b8_r0.json",
+      "sha256": "5683d6cfe79a68cb3147653a35284f9489f8a5cd93e2f46e32761f56a2032e0a"
+    },
+    {
+      "file": "outputs/independent_statistics/factorial_additional_a3/r_only_vs_joint_b8_r0.json",
+      "sha256": "659910dc4db3be59281315023e27a10a9ff40e304216d62329c05fa9caa83ae5"
+    },
+    {
+      "file": "outputs/independent_statistics/stock_vs_base_a3/stock_vs_base_b1_r0.json",
+      "sha256": "7ac8b3969ec3dcfc0acda0b40e2f5e9584c2722b444b9db9614cf9abdba836bc"
+    },
+    {
+      "file": "outputs/independent_statistics/stock_vs_base_a3/stock_vs_base_b1_r1.json",
+      "sha256": "ebf110de3a0b6f4ab4c5572c122e64380f8ac0a4d5572db3268b7f3fa6d9a5f8"
+    },
+    {
+      "file": "outputs/independent_statistics/stock_vs_base_a3/stock_vs_base_b8_r1.json",
+      "sha256": "b2fa59aafd7cb006665eacd0b5fae2b106a9383716d5893598b5594e34bd64e8"
+    },
+    {
+      "file": "outputs/independent_statistics/stock_vs_base_a3/stock_vs_base_b8_r0.json",
+      "sha256": "7c77a90e824e4e9fd0ff37eb1c64945c828a9a89d9d3be69b660156cc7e4357f"
+    }
+  ],
+  "retained_failures": [
+    "stock_bridge_a1: resource gate,0 calls",
+    "stock_bridge_a2:1 returned API but no Module coverage; excluded from formal32",
+    "primary_causal_a3.json: analysis initially misclassified unused padding as cross-batch input semantics; original failed report retained"
+  ],
+  "limits": {
+    "historical_fia_or_default_batch_bug_reproduced": false,
+    "unique_reduce_instruction_root_cause_identified": false,
+    "new_model_forward_or_logits_propagation_tested": false,
+    "monotonic_accuracy_degradation_proven": false,
+    "same_profile_B1_B8_full_target_output_bit_equal_observed": true,
+    "msprobe_summary_alone_proves_tensor_equality_or_physical_location": false,
+    "source_derived_plan_is_hardware_instruction_trace": false
+  },
+  "notes": [
+    "M-only changes27/4194304 elements across23queries; lastquery2047 unchanged. R-only changes83176 elements; joint83181.",
+    "M intervenes on selector and its legitimate dependent BMM/Vec/Softmax/scheduling. It does not isolate a single micro-operation.",
+    "Matching Max/Min/Norm can hide changes; all B8 automatic pairs show mainMean differences. Seed/offset auxiliary noise and20unobservable fields per comparison are retained.",
+    "Initial reports remain bound to v1; all32 formal captures use the same v2. Unused six-byte InputParamsPH is excluded only from cross-batch semantic equality, with source evidence; same-batch strict and full raw bindings remain."
+  ]
+}

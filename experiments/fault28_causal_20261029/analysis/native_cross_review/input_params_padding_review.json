@@ -1,0 +1,409 @@
+{
+  "schema": "fault28.causal.input_params_padding_source_review.v1",
+  "status": "CONFIRMED_NON_SEMANTIC_ALIGNMENT_PLACEHOLDER_IN_MATCHED_SOURCE",
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "public_pod_schema_sha256": "82457b4440b60061e3a32345fb3b33adacf1a0f1b527f078f7d2557cb1af743a",
+  "field": {
+    "name": "inputParams.InputParamsPH",
+    "type": "uint8_t",
+    "offset": 154,
+    "width": 1,
+    "count": 6
+  },
+  "input_section": {
+    "name": "inputParams",
+    "offset": 0,
+    "size": 160
+  },
+  "next_section": {
+    "name": "multiCoreParams",
+    "offset": 160,
+    "size": 416
+  },
+  "tracked_source_symbol_search": {
+    "command": "git grep -n InputParamsPH",
+    "matches": [
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h:796:    uint8_t InputParamsPH[6] = {0};"
+    ],
+    "count": 1,
+    "scope": "All tracked files in fixed official v9.1.0 checkout, including audited host patch; no only-name inference."
+  },
+  "source_evidence": [
+    {
+      "path": "/home/fault28-causal-20261029/source/ops-transformer-v9.1.0/attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+      "sha256": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+      "first_line": 790,
+      "last_line": 796,
+      "source": "    uint32_t rsv1 = 0;\n    uint8_t qStartIdxPH[4] = {0};\n    int64_t qStartIdx = 0;\n    int64_t kvStartIdx = 0;\n    uint8_t tndSoftmaxOut = 0;\n    uint8_t needSinkOp = 0;\n    uint8_t InputParamsPH[6] = {0};"
+    },
+    {
+      "path": "/home/fault28-causal-20261029/source/ops-transformer-v9.1.0/attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+      "sha256": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+      "first_line": 904,
+      "last_line": 940,
+      "source": "    void reset()\n    {\n        set_bSize(0);\n        set_n2Size(0);\n        set_gSize(0);\n        set_s1Size(0);\n        set_s2Size(0);\n        set_alignedS2(0);\n        set_dSize(0);\n        set_keepProb(0);\n        set_scaleValue(0);\n        set_preTokens(0);\n        set_nextTokens(0);\n        set_pseS1Size(0);\n        set_pseS2Size(0);\n        set_pseBSize(0);\n        set_bandIndex(0); // 13\n        set_layoutType(0);\n        set_pseShapeType(0);\n        set_attenMaskShapeType(0);\n        set_attenMaskDataType(0);\n        set_attenMaskCompressMode(0);\n        set_implMode(0);\n        set_sparseType(0);\n        set_needDropMaskOp(0);\n        set_pseEncodeType(0);\n        set_rsv(0);\n        set_needL1Carry(0);\n        set_remain(0);\n        set_attenMaskS2Size(0);\n        set_pseType(0); // 16\n        set_rsv1(0);\n        set_qStartIdx(0);\n        set_kvStartIdx(0);\n        set_tndSoftmaxOut(0);\n        set_needSinkOp(0);\n    }"
+    },
+    {
+      "path": "/home/fault28-causal-20261029/source/ops-transformer-v9.1.0/attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+      "sha256": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+      "first_line": 1559,
+      "last_line": 1583,
+      "source": "class FlashAttentionScoreGeneralTilingData {\npublic:\n    InputParams inputParams; // 20 *8 = 160\n    MultiCoreParams multiCoreParams; // 52 * 8 = 416\n    CoreParams coreParams; // 20 * 8 = 160\n    TensorSizeParams tensorSizeParams; // 28 * 4byte = 112\n    TCubeTiling bmm1TilingData; // 50 *4 = 200\n    TCubeTiling bmm2TilingData; // 200\n    SoftMaxTiling softmaxFlashTilingData;   // 16*4 = 64\n    CopyTransposeTiling transposeTilingData;  // 16 * 4byte = 64\n    CopyTransposeTiling transposeTilingDataTailCore; // 64\n    DropmaskParams dropmaskParams;  // 2 * 4byte + 2 * 8byte = 24\n\n    void reset()\n    {\n        inputParams.reset();\n        multiCoreParams.reset();\n        coreParams.reset();\n        tensorSizeParams.reset();\n        transposeTilingData.reset();\n        transposeTilingDataTailCore.reset();\n    }\n};\n// }  // namespace optiling"
+    },
+    {
+      "path": "/home/fault28-causal-20261029/source/ops-transformer-v9.1.0/attention/flash_attention_score/op_host/arch22/flash_attention_score_tiling_general.cpp",
+      "sha256": "aad1652bbce163a475d91e069b59411481f2218af17c83e0df2a223748dddb71",
+      "first_line": 550,
+      "last_line": 557,
+      "source": "    bool hasDropOut = false;\n    bool hasRope = false;\n    bool isSameAB = false;\n    bool enableBestBlock = false;\n    bool needL1Carry = false;\n    bool enableL1Reuse = false;\n    bool isMaxWorkspace = false;\n    FlashAttentionScoreGeneralTilingData *tilingData = context_->GetTilingData<FlashAttentionScoreGeneralTilingData>();"
+    },
+    {
+      "path": "/home/fault28-causal-20261029/source/ops-transformer-v9.1.0/attention/flash_attention_score/op_host/arch22/flash_attention_score_tiling_general.cpp",
+      "sha256": "aad1652bbce163a475d91e069b59411481f2218af17c83e0df2a223748dddb71",
+      "first_line": 1039,
+      "last_line": 1045,
+      "source": "    opName = nullptr;\n    inputLayout = nullptr;\n\n    actualTemplate.Reset();\n\n    tilingData->reset();\n}"
+    },
+    {
+      "path": "/home/docker-system/overlay2/7c31ac8b4081145ef06f7a036edef0df3ab4a9dac44d21f0d046c146cae91d13/diff/usr/local/Ascend/cann-9.1.0/include/exe_graph/runtime/tiling_context.h",
+      "sha256": "32e4addf6b18587d3c0d6c96b3cb997eaf9672eb7464835acbc1d076c2fa3f37",
+      "first_line": 385,
+      "last_line": 400,
+      "source": "   * \u83b7\u53d6\u6709\u7c7b\u578b\u7684tiling data\u6307\u9488\n   * @tparam T tiling data\u7c7b\u578b\uff0csizeof(T)\u4e0d\u53ef\u4ee5\u5927\u4e8e\u7f16\u8bd1\u7ed3\u679c\u4e2d\u6307\u5b9a\u7684\u6700\u5927tiling data\u957f\u5ea6\n   * @return tiling data\u6307\u9488\uff0c\u5931\u8d25\u65f6\u8fd4\u56de\u7a7a\u6307\u9488\n   */\n  template<typename T>\n  auto GetTilingData() -> T* {\n    auto tiling_data = GetRawTilingData();\n    if (tiling_data == nullptr) {\n      return nullptr;\n    }\n    if (tiling_data->GetCapacity() < sizeof(T)) {\n      return nullptr;\n    }\n    tiling_data->SetDataSize(sizeof(T));\n    return static_cast<T *>(tiling_data->GetData());\n  }"
+    },
+    {
+      "path": "/home/fault28-causal-20261029/source/ops-transformer-v9.1.0/attention/flash_attention_score/op_kernel/arch22/flash_attention_score_s1s2_bn2gs1.h",
+      "sha256": "18bbd703454ea8cd6fbe6936329c29513745c269e7f7ad7ea5ab05d81dcd08cb",
+      "first_line": 475,
+      "last_line": 492,
+      "source": "          typename T, bool isBasicBlock, CubeFormat bmm1Format, bool enableL1Reuse, bool hasRope>\n__aicore__ inline void\nFlashAttentionScoreS1s2Bn2gs1<implMode, layOutType, hasPse, hasAtten, hasDrop, INPUT_T, T, isBasicBlock, bmm1Format,\n                              enableL1Reuse, hasRope>::SetTiling(const FlashAttentionScoreGeneralTilingData\n                                                            *__restrict tilingData)\n{\n    // copy base params\n    this->tilingData = tilingData;\n    this->s1BaseSize = this->tilingData->coreParams.s1BaseSize;\n    this->s2BaseSize = this->tilingData->coreParams.s2BaseSize;\n    this->dSize = this->tilingData->inputParams.dSize;\n    if constexpr (hasRope == true) {\n        this->dRopeSize = this->tilingData->coreParams.dRopeSize;\n    }\n    this->d2Size = this->tilingData->coreParams.d2Size;\n    this->dSizeAlign16 = CeilDiv(this->dSize + this->dRopeSize, 16) * 16;\n    this->d2SizeAlign16 = CeilDiv(this->d2Size, 16) * 16;\n};"
+    }
+  ],
+  "actual_cases": [
+    {
+      "case_id": "base_b1_r0",
+      "batch": 1,
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "padding_values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/base_b1_r0/host_events.jsonl",
+      "host_events_sha256": "dbc8a57824dc974f12f7ceb242cd902257c990ace12fe983aa4b652a9eb88836",
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862"
+    },
+    {
+      "case_id": "base_b1_r1",
+      "batch": 1,
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "padding_values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/base_b1_r1/host_events.jsonl",
+      "host_events_sha256": "a217721055f0a6db0bd03bc222812b28b236cc77e1d9bead6a02e2007d10566e",
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862"
+    },
+    {
+      "case_id": "base_b8_r0",
+      "batch": 8,
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "padding_values": [
+        11,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/base_b8_r0/host_events.jsonl",
+      "host_events_sha256": "ed1b64bc0f31d738482bf4f1e5fa1acca07c897e3f48a594f207d1afe2a72633",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d"
+    },
+    {
+      "case_id": "base_b8_r1",
+      "batch": 8,
+      "actual_m": 128,
+      "actual_n_ratio": 8,
+      "padding_values": [
+        11,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/base_b8_r1/host_events.jsonl",
+      "host_events_sha256": "0c2bf805e8a69efdafdac44a551759a902963b468fac4f86eadc917840846f63",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d"
+    },
+    {
+      "case_id": "joint_b1_r0",
+      "batch": 1,
+      "actual_m": 64,
+      "actual_n_ratio": 4,
+      "padding_values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/joint_b1_r0/host_events.jsonl",
+      "host_events_sha256": "2820c34de37ebcca9edc8deee4d0728f232da7fd9c4eb166e65c007363e54bd2",
+      "raw_sha256": "e8566961f26f85272867f2fd986ca9832244db2e5f3fd8a86d6de4f7d9bcdfe7"
+    },
+    {
+      "case_id": "joint_b1_r1",
+      "batch": 1,
+      "actual_m": 64,
+      "actual_n_ratio": 4,
+      "padding_values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/joint_b1_r1/host_events.jsonl",
+      "host_events_sha256": "de9e3bab84aec1175535e26c0f7845886f1982db0a4dc9d4e3332c48acc3af3f",
+      "raw_sha256": "e8566961f26f85272867f2fd986ca9832244db2e5f3fd8a86d6de4f7d9bcdfe7"
+    },
+    {
+      "case_id": "joint_b8_r0",
+      "batch": 8,
+      "actual_m": 64,
+      "actual_n_ratio": 4,
+      "padding_values": [
+        11,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/joint_b8_r0/host_events.jsonl",
+      "host_events_sha256": "be7e5ab90fee3fd4dcdd67789157831a1d8ba0ce4b42709a1a7440a46cc3fafa",
+      "raw_sha256": "9bc28e668dff06479158f37787e1812c14167a94f45f1b5840879bca7599307a"
+    },
+    {
+      "case_id": "joint_b8_r1",
+      "batch": 8,
+      "actual_m": 64,
+      "actual_n_ratio": 4,
+      "padding_values": [
+        11,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/joint_b8_r1/host_events.jsonl",
+      "host_events_sha256": "83cb9d1aa0459684b937999e66f8b736eed79d12292e5b8db0d393b56379dead",
+      "raw_sha256": "9bc28e668dff06479158f37787e1812c14167a94f45f1b5840879bca7599307a"
+    },
+    {
+      "case_id": "m_only_b1_r0",
+      "batch": 1,
+      "actual_m": 64,
+      "actual_n_ratio": 8,
+      "padding_values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/m_only_b1_r0/host_events.jsonl",
+      "host_events_sha256": "4555570a6a82962469f4579242242a5f81977f24b430f235ad2fbc9262cd5a26",
+      "raw_sha256": "c77d70ff0c8ed5ddc148179339c3f40c59f6f9f53ce43757be78c074aac37b06"
+    },
+    {
+      "case_id": "m_only_b1_r1",
+      "batch": 1,
+      "actual_m": 64,
+      "actual_n_ratio": 8,
+      "padding_values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/m_only_b1_r1/host_events.jsonl",
+      "host_events_sha256": "06db585ecfbf733eee50d36872f49ab399304a5453df6de5d156c73e14a754ce",
+      "raw_sha256": "c77d70ff0c8ed5ddc148179339c3f40c59f6f9f53ce43757be78c074aac37b06"
+    },
+    {
+      "case_id": "m_only_b8_r0",
+      "batch": 8,
+      "actual_m": 64,
+      "actual_n_ratio": 8,
+      "padding_values": [
+        11,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/m_only_b8_r0/host_events.jsonl",
+      "host_events_sha256": "b93c92160d4733902097e79625efdf031578fdfd0263313a77bfdbf4fe6fe1a3",
+      "raw_sha256": "a69b507a97f1e2b9219079a10551761c2c825d79f26457642f8a188b49f95148"
+    },
+    {
+      "case_id": "m_only_b8_r1",
+      "batch": 8,
+      "actual_m": 64,
+      "actual_n_ratio": 8,
+      "padding_values": [
+        11,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/m_only_b8_r1/host_events.jsonl",
+      "host_events_sha256": "6dd5ace69ed53a00624d79bb3747892a6980093c84d5ac8d17c01d280ca18511",
+      "raw_sha256": "a69b507a97f1e2b9219079a10551761c2c825d79f26457642f8a188b49f95148"
+    },
+    {
+      "case_id": "r_only_b1_r0",
+      "batch": 1,
+      "actual_m": 128,
+      "actual_n_ratio": 4,
+      "padding_values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/r_only_b1_r0/host_events.jsonl",
+      "host_events_sha256": "c004fde824cbf65456f47a94ee481c986a60f5f87a63fa16a4330950bd34b9f8",
+      "raw_sha256": "c296e42e69cfd4374f22d955eb0d0662cb820fb92c72ff9032fb5622c811db60"
+    },
+    {
+      "case_id": "r_only_b1_r1",
+      "batch": 1,
+      "actual_m": 128,
+      "actual_n_ratio": 4,
+      "padding_values": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/r_only_b1_r1/host_events.jsonl",
+      "host_events_sha256": "f9cba6def6d638f8df653f489c2bd46f324fa055a7d26772b8adfda047ad68f1",
+      "raw_sha256": "c296e42e69cfd4374f22d955eb0d0662cb820fb92c72ff9032fb5622c811db60"
+    },
+    {
+      "case_id": "r_only_b8_r0",
+      "batch": 8,
+      "actual_m": 128,
+      "actual_n_ratio": 4,
+      "padding_values": [
+        11,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/r_only_b8_r0/host_events.jsonl",
+      "host_events_sha256": "c504f07fd5fa2871c33400b7972bf4bf0bc6abe68a4e34e976dd9072b2c7c172",
+      "raw_sha256": "06cbcc40e061ed4d0d732b5ae7a7122573a3cc09edb5818ce1d87bd95748faa8"
+    },
+    {
+      "case_id": "r_only_b8_r1",
+      "batch": 8,
+      "actual_m": 128,
+      "actual_n_ratio": 4,
+      "padding_values": [
+        11,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "host_events_path": "/home/fault28-causal-20261029/outputs/derived_primary_index_a3/r_only_b8_r1/host_events.jsonl",
+      "host_events_sha256": "a8da2d60ae5a11b18018766abd0d56d53de71388020bf7122a46f5b9389dbed7",
+      "raw_sha256": "06cbcc40e061ed4d0d732b5ae7a7122573a3cc09edb5818ce1d87bd95748faa8"
+    }
+  ],
+  "all_input_params_fields_varying": {
+    "inputParams.bSize": [
+      [
+        1
+      ],
+      [
+        8
+      ]
+    ],
+    "inputParams.InputParamsPH": [
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        11,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "within_batch_padding_exact_equal": true,
+  "interpretation": [
+    "The explicit six-byte member fills InputParams offsets154..159 before the next section at160; it is a non-semantic alignment placeholder in this matched source, not a meaningful scalar argument.",
+    "All tracked-source symbol references consist of its declaration; no getter/setter, selector, kernel calculation or explicit assignment reads it. Bulk POD transport can carry its bytes without assigning numerical meaning.",
+    "InputParams.reset resets named semantic fields but does not assign InputParamsPH. The parent reset calls inputParams.reset.",
+    "The public SDK GetTilingData sets size and casts the existing raw buffer; it does not construct the C++ object. Therefore the in-class {0} initializer does not guarantee these raw bytes become zero.",
+    "This explains why byte differences are not a semantic parameter change; it does not identify the particular allocator or earlier writer responsible for the observed value11."
+  ],
+  "recommended_analysis_boundary": {
+    "exclude_only_this_field_from_cross_batch_semantic_equal_check": true,
+    "retain_within_batch_exact_padding_check": true,
+    "retain_complete_raw_public_context_vs_actual_launch_equality": true,
+    "retain_all_205_pod_fields_in_evidence": true,
+    "other_input_params_semantic_fields_equal_except_actual_batch": true
+  },
+  "limits": [
+    "No input/output error metric or desired causal conclusion was used to classify this field.",
+    "The source-derived non-use conclusion applies to the matched FA kernel/host and fixed build only, not arbitrary future releases or unknown kernels.",
+    "No native raw bytes, tools, runtime, libraries or original attempt files were changed.",
+    "No NPU call or container was started by this review."
+  ],
+  "related_raw_validation_reports": {
+    "cross": "27d4870881345f5c798670aa103a2a7cbf21dc38b6a412564b0a803f43f0d87e",
+    "joint": "291fb9d74741bc431ba628d67738585a3b189f7c232844d13efd7b83a7d384b4"
+  }
+}

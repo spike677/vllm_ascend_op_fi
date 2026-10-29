@@ -1,0 +1,32 @@
+--- capture_v1/replay.py
++++ capture_v2/replay.py
+@@ -196,6 +196,9 @@
+     # Installed Const.NPU_API_TYPE_PREFIX is exactly "NPU"; do not relabel the emitted API.
+     apis = [name for name in dump['data'] if re.fullmatch(r'NPU\.npu_fusion_attention_v3\.\d+\.forward', name)]
+     require(len(apis) == 1 and any(name.startswith('Module.') for name in dump['data']), 'Expected one native public API plus replay module statistics')
++    parent = objects['construct'].get(apis[0])
++    require(isinstance(parent, str) and parent.startswith('Module.') and '.ReplayModule.forward.' in parent
++            and parent in dump['data'], 'Original native API must belong to the captured ReplayModule child')
+     return {'schema': 'fault28.causal.statistics_receipt.v1', 'scope': 'Original operator replay, not a model token/forward trace',
+             'rank': 0, 'steps': [0], 'native_files': rows, 'native_api_nodes': apis,
+             'config_sha256': sha(output / 'config.json'), 'statistics_collector': collector,
+@@ -294,6 +297,10 @@
+             def forward(self, query, key, value):
+                 return torch_npu.npu_fusion_attention_v3(query, key, value, **kwargs)
+         module = ReplayModule().eval()
++        # msprobe 26.1 skips the root passed to start(); register the real replay as a child.
++        # This holder is never called and adds no numerical forward or native API invocation.
++        capture_root = torch.nn.Module()
++        capture_root.add_module('replay', module)
+         result['native_dispatch_schema'] = str(torch.ops.npu.npu_fusion_attention_v3.default._schema)
+         if case['capture_msprobe']:
+             from msprobe.pytorch import PrecisionDebugger
+@@ -313,7 +320,7 @@
+         with torch.no_grad(), scope_manager as scope:
+             call['scope_token'] = scope['FAULT28_CAUSAL_SCOPE_TOKEN'] if scope else None
+             if debugger is not None:
+-                debugger.start(model=module, rank_id=0)
++                debugger.start(model=capture_root, rank_id=0)
+                 active = True
+             call.update(enter_epoch_ns=time.time_ns(), enter_monotonic_ns=time.monotonic_ns())
+             print(json.dumps({'event': 'native_api_enter', **call}), flush=True)

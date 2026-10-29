@@ -1,0 +1,21 @@
+{
+  "status": "FAIL",
+  "card": 5,
+  "cases": [],
+  "cleanup_errors": [],
+  "start_epoch": 1793259092.9799979,
+  "probe": "replay.py",
+  "capture": "native-logs",
+  "scope": "Native-path capture only; numerical mechanism acceptance is separate",
+  "mechanism_accepted": false,
+  "idle_allowlist_ids": [
+    "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+    "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+  ],
+  "external_container_mutations": false,
+  "traceback": "Traceback (most recent call last):\n  File \"/home/fault28-causal-20261029/controller.py\", line 464, in main\n    save(evidence / 'before.json', resources(args.card))\n                                   ^^^^^^^^^^^^^^^^^^^^\n  File \"/home/fault28-causal-20261029/controller.py\", line 346, in resources\n    raise RuntimeError('Resource gate rejected: ' + json.dumps({\nRuntimeError: Resource gate rejected: {\"unapproved_container_ids\": [], \"selected_card\": 5, \"foreign_npu_pids\": [1267251], \"require_selected_card_idle\": false, \"selected_card_table_idle\": false}\n",
+  "device_lock_acquired": true,
+  "device_lock_released": true,
+  "owned_container_id": null,
+  "end_epoch": 1793259093.9309268
+}

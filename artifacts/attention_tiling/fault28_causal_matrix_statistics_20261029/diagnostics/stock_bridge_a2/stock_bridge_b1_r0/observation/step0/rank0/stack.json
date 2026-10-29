@@ -1,0 +1,14 @@
+{
+ "0": [
+  [
+   "NPU.npu_fusion_attention_v3.0.forward"
+  ],
+  [
+   "File /audit/replay.py, line 295, in forward, \n return torch_npu.npu_fusion_attention_v3(query, key, value, **kwargs)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+   "File /audit/replay.py, line 322, in main, \n native = module(inputs['query'], inputs['key'], inputs['value'])",
+   "File /audit/replay.py, line 416, in <module>, \n raise SystemExit(main())"
+  ]
+ ]
+}

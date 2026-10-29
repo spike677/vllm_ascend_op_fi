@@ -1,0 +1,200 @@
+{
+  "schema": "fault28.causal.independent_statistics_group.v1",
+  "group": "base_vs_m_and_r_a3",
+  "analysis_tool_sha256": "8dad91e514994454de3dc726c3d7f56f63626827a0347e82e1621ad7ab5f3c0e",
+  "expected_pairs": 8,
+  "actual_pairs": 8,
+  "all_preregistered_pairs_compared": true,
+  "reports": [
+    {
+      "pair": "base_vs_m_only_b1_r0",
+      "profile": "m_only",
+      "batch": 1,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "seed",
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "base_vs_m_only_b1_r0.json",
+      "report_sha256": "97392114fe585d9ee19e143c7664ed1e4247eda6c98beeed8bfb0d0b3d7491f0",
+      "error": null
+    },
+    {
+      "pair": "base_vs_m_only_b1_r1",
+      "profile": "m_only",
+      "batch": 1,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "base_vs_m_only_b1_r1.json",
+      "report_sha256": "beca69b9e8a9be333e45235e713cf58752115c7e58e4a5e50339486e8548e2e9",
+      "error": null
+    },
+    {
+      "pair": "base_vs_m_only_b8_r0",
+      "profile": "m_only",
+      "batch": 8,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "base_vs_m_only_b8_r0.json",
+      "report_sha256": "4ae251050a6a7e27c06bf77ce164327304d779f880a476b06ecdfe74418c3c1e",
+      "error": null
+    },
+    {
+      "pair": "base_vs_m_only_b8_r1",
+      "profile": "m_only",
+      "batch": 8,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "base_vs_m_only_b8_r1.json",
+      "report_sha256": "593d827dcf6e41ceeade0cdfc0cf0603c5693a2d36a883ac1be0d17989fa840a",
+      "error": null
+    },
+    {
+      "pair": "base_vs_r_only_b1_r0",
+      "profile": "r_only",
+      "batch": 1,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum",
+        "seed"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "base_vs_r_only_b1_r0.json",
+      "report_sha256": "555ac10647a23ca3b5ca57d7a6a617e345132d06cd6e6e7a09f10b5a8e2c6d39",
+      "error": null
+    },
+    {
+      "pair": "base_vs_r_only_b1_r1",
+      "profile": "r_only",
+      "batch": 1,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum",
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "base_vs_r_only_b1_r1.json",
+      "report_sha256": "d5e0e9ebf56c8ed7d03bef99a4dde5396e2822574155833e6cf1cf290fbffa85",
+      "error": null
+    },
+    {
+      "pair": "base_vs_r_only_b8_r0",
+      "profile": "r_only",
+      "batch": 8,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum",
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "base_vs_r_only_b8_r0.json",
+      "report_sha256": "29796308653cef929164e41782f6fa75a2c28dc05cc71b790097cd8c4df9403b",
+      "error": null
+    },
+    {
+      "pair": "base_vs_r_only_b8_r1",
+      "profile": "r_only",
+      "batch": 8,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "api_input_observed_difference_count": 0,
+      "attention_score_changed": true,
+      "attention_score_different_statistic_fields": [
+        ".Mean"
+      ],
+      "auxiliary_changed": [
+        "softmax_sum"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "base_vs_r_only_b8_r1.json",
+      "report_sha256": "926f2ef7cfc55370a63908184a265d0881effa25023a2bab95aa167d250a910b",
+      "error": null
+    }
+  ],
+  "mechanism_accepted": false,
+  "private_tensor_or_host_profile_used": false
+}

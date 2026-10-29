@@ -1,0 +1,43 @@
+{
+  "schema": "fault28.causal.capture_v2.cpu_review.v1",
+  "status": "CPU_STATIC_REGISTRATION_CHECKS_PASSED",
+  "v1_replay_sha256": "2058a953c78f95ac2de7cc03543dc8d85a627664b7808d426c1d98c42aae9e3a",
+  "v2_replay_sha256": "32e6e41fb022b6505e9f3a62f12843a4e7b73c7a8729c935bd0ceb4a4b31a647",
+  "sdk_module_processor_sha256": "4876e89f7f726cd552fc1bf0e7b7745a898461deec2cb2abf33b02deba7329d7",
+  "test_sha256": "1c2eeefd58fedf8bc26bce6dc30e33a087c17b18689303afbfb6e14efd991ef4",
+  "syntax_valid": true,
+  "main_only_changes": [
+    "Create torch.nn.Module capture_root",
+    "Register unchanged ReplayModule as child named replay",
+    "Pass capture_root to debugger.start; numerical call still directly invokes module"
+  ],
+  "other_allowed_change": "Receipt additionally requires the original API construct parent to be a captured ReplayModule node.",
+  "unchanged_function_class_asts": [
+    "require",
+    "digest",
+    "sha",
+    "write",
+    "validate_case",
+    "validate_vendor",
+    "load_frozen_inputs",
+    "raw_bytes",
+    "snapshot",
+    "input_integrity",
+    "reference_queries",
+    "statistics_config",
+    "HostScope"
+  ],
+  "replay_forward_ast_unchanged": true,
+  "exact_sdk_registration_function_mock": {
+    "old_root_hook_count": 0,
+    "new_child_hook_count": 1,
+    "new_child_prefix": "Module.replay.ReplayModule.",
+    "native_api_spy_call_count": 1,
+    "original_input_objects_preserved": true,
+    "original_return_object_preserved": true
+  },
+  "framework_imports": false,
+  "containers_started": 0,
+  "npu_calls": 0,
+  "limits": "Mocks execute exact installed registration-method AST with a minimal module hierarchy. Actual SDK hooks and native Module coverage require fresh stock capture; this is not NPU acceptance."
+}

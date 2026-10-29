@@ -1,0 +1,147 @@
+{
+  "schema": "fault28.causal.inputs.v1",
+  "source_call_sha256": "458a683a616da397bd1eeba47b7348d0e2bf78c253ea43c158f7f393bb67c0c8",
+  "source_case_directory": "/home/fault28-native-tiling-20261029/outputs/private_off_compat_a2/fa_off_b8",
+  "source_call_file": "source_call.json",
+  "source": "Actual Qwen3 model layer1 OFF capture; no synthetic values or outlier perturbations.",
+  "target_batch_slot": 0,
+  "sequence_length": 2048,
+  "query_heads": 16,
+  "kv_heads": 8,
+  "head_dim": 128,
+  "inputs": {
+    "query": {
+      "file": "query.fp16.bin",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "bytes": 8388608,
+      "sha256": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00",
+      "dtype": "torch.float16",
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements",
+      "source_file": "/home/fault28-native-tiling-20261029/outputs/private_off_compat_a2/fa_off_b8/private_replay/forward0_layer1_query.bin",
+      "source_bytes": 67108864,
+      "source_sha256": "22d02775b5fc527fad8a33bbac66957f4dab43c16f5b62d43cb27a0dbf37be99",
+      "source_shape": [
+        8,
+        16,
+        2048,
+        128
+      ],
+      "source_stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "source_actual_format": 0,
+      "batch_rule": "B1=batch0; B8=8 byte-identical copies of original batch0 in logical BNSD order",
+      "expected_full_sha256": {
+        "1": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00",
+        "8": "65f35ab4a415f0e04e902b63b6679331fb68c2cdf626fae8c248916df524234b"
+      }
+    },
+    "key": {
+      "file": "key.fp16.bin",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "bytes": 4194304,
+      "sha256": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde",
+      "dtype": "torch.float16",
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements",
+      "source_file": "/home/fault28-native-tiling-20261029/outputs/private_off_compat_a2/fa_off_b8/private_replay/forward0_layer1_key.bin",
+      "source_bytes": 33554432,
+      "source_sha256": "b0dbf9f431c95b376dd7093276054a2308a86358d1e7b377e88a273f8323db82",
+      "source_shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "source_stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "source_actual_format": 0,
+      "batch_rule": "B1=batch0; B8=8 byte-identical copies of original batch0 in logical BNSD order",
+      "expected_full_sha256": {
+        "1": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde",
+        "8": "26506b98f8b7c5985bc3b79f4dd65abea5009d0574602246441976190c7b02fd"
+      }
+    },
+    "value": {
+      "file": "value.fp16.bin",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "bytes": 4194304,
+      "sha256": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947",
+      "dtype": "torch.float16",
+      "byteorder": "little",
+      "raw_order": "C-contiguous logical elements",
+      "source_file": "/home/fault28-native-tiling-20261029/outputs/private_off_compat_a2/fa_off_b8/private_replay/forward0_layer1_value.bin",
+      "source_bytes": 33554432,
+      "source_sha256": "fe823a8113b6cfecc79d0bfa1e8bb99584076ee1352dbaa311a0259744ce7f51",
+      "source_shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "source_stride": [
+        2097152,
+        128,
+        1024,
+        1
+      ],
+      "source_actual_format": 2,
+      "batch_rule": "B1=batch0; B8=8 byte-identical copies of original batch0 in logical BNSD order",
+      "expected_full_sha256": {
+        "1": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947",
+        "8": "44bbc0c316b9522483d1242c0751e395aea588750f9c53cb8d9c30522316e075"
+      }
+    }
+  },
+  "source_sdpa_scalar_arguments": {
+    "dropout_p": 0.0,
+    "is_causal": true,
+    "scale": 0.08838834764831845,
+    "enable_gqa": true
+  },
+  "native_kwargs": {
+    "head_num": 16,
+    "input_layout": "BNSD",
+    "scale": 0.08838834764831845,
+    "keep_prob": 1.0,
+    "pre_tockens": 2147483647,
+    "next_tockens": 0,
+    "inner_precise": 0,
+    "sparse_mode": 2,
+    "gen_mask_parallel": true,
+    "sync": false,
+    "softmax_layout": ""
+  },
+  "native_mask": {
+    "dtype": "torch.bool",
+    "shape": [
+      2048,
+      2048
+    ],
+    "rule": "strict upper triangle true; same compressed causal mask as native SDPA lowering"
+  },
+  "publication": "PRIVATE_INPUT_BINARY_DO_NOT_PUBLISH"
+}

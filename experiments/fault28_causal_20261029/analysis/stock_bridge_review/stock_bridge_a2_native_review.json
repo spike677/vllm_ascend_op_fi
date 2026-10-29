@@ -1,0 +1,74 @@
+{
+  "status": "DIAGNOSTIC_ONLY_CAPTURE_FAILED",
+  "capture_status": "CAPTURE_FAILED",
+  "actual_api_returned": true,
+  "original_api_calls": 1,
+  "native": {
+    "source_sha256": "4f7f6e6a170897378886ee23d909806d1968193cc39f032275763ea6dcb944a0",
+    "tiling_key": "22619644976",
+    "block_dim": 20,
+    "workspace_count": 1,
+    "api_workspace_bytes": 73401856,
+    "launch": {
+      "line": 144699,
+      "line_sha256": "17fe5ae6214bf923939c70d7da323d1a984da30e52bf4110f8d6907ca74cd8a5",
+      "tid": "79",
+      "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "key": "22619644976",
+      "size": "1464",
+      "blocks": "20",
+      "workspaces": "1"
+    },
+    "enter_line": 93223,
+    "exit_line": 145770,
+    "raw_lines": [
+      144744,
+      144745
+    ]
+  },
+  "source_pod_schema_sha256": "82457b4440b60061e3a32345fb3b33adacf1a0f1b527f078f7d2557cb1af743a",
+  "raw_bytes": 1464,
+  "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+  "fields_decoded": 205,
+  "projection": {
+    "inputParams.bSize": 1,
+    "inputParams.n2Size": 8,
+    "inputParams.gSize": 2,
+    "inputParams.s1Size": 2048,
+    "inputParams.s2Size": 2048,
+    "inputParams.dSize": 128,
+    "inputParams.scaleValue": 0.0883883461356163,
+    "inputParams.preTokens": 2048,
+    "inputParams.nextTokens": 0,
+    "inputParams.layoutType": 3,
+    "inputParams.implMode": 0,
+    "inputParams.sparseType": 3,
+    "coreParams.s1BaseSize": 128,
+    "coreParams.s2BaseSize": 128,
+    "coreParams.nRatio": 8,
+    "multiCoreParams.coreNum": 40,
+    "multiCoreParams.totalSize": 256
+  },
+  "stock_bridge": {
+    "expected_original_target_output_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+    "actual_target_output_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+    "same_target_output_bytes": true,
+    "required_match_to_old_B8_capture": false,
+    "scope": "Complete batch0 output compared with old B8 model capture. Only B8 requires exact equality; B1 batch effect is observed without an equality assumption."
+  },
+  "versions": {
+    "torch": "2.10.0",
+    "torch-npu": "2.10.0.post4"
+  },
+  "native_dispatch_schema": "npu::npu_fusion_attention_v3(Tensor query, Tensor key, Tensor value, int head_num, str input_layout, Tensor? pse=None, Tensor? padding_mask=None, Tensor? atten_mask=None, float scale=1., float keep_prob=1., int pre_tockens=2147483647, int next_tockens=2147483647, int inner_precise=0, SymInt[]? prefix=None, Tensor? actual_seq_qlen=None, Tensor? actual_seq_kvlen=None, int sparse_mode=0, bool gen_mask_parallel=True, bool sync=False, str softmax_layout=\"\", Tensor? sink=None) -> (Tensor, Tensor, Tensor, Tensor, Tensor, Tensor)",
+  "cleanup": {
+    "owned_container_removed": true,
+    "device_lock_released": true,
+    "cleanup_errors": []
+  },
+  "native_log_parser_adaptation_needed": false,
+  "framing_current_public_context_byte_equality_verified": false,
+  "scope": "Raw framing uses previously public-context verified same-SDK FA framing; current stock has no experiment public callback. New public C++ POD decoder and independently decoded205 schema fields agree. Failed capture is not an accepted factorial case.",
+  "public_cpp_decoder_vs_python_fields": "PASS_205_FIELDS_EQUAL",
+  "cpp_decoded_sha256": "9ecbd5b9672e20520949047db3b66e6e5f87d48a96fd238a52934c56ba5527fa"
+}

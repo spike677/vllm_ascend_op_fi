@@ -1,0 +1,97 @@
+{
+  "schema": "fault28.causal.final_cpu_review.v1",
+  "status": "PASS_CPU_REVIEW_NATIVE_GATES_DEFERRED",
+  "new_npu_api_calls": 0,
+  "service_8002_untouched": true,
+  "runtime_or_controller_or_setup_modified_by_this_review": false,
+  "preregistration_sha256": "7bda4d97baad8d3be15d565b405b8a22ea8017284d08262f9b8eb3c848a6ee64",
+  "fixed_findings": [
+    {
+      "priority": "P1",
+      "finding": "Analysis confused case.phase stock_bridge with frozen native_call.phase operator_replay.",
+      "resolution": "validate_stock_scope now checks both separately; null scope token/no host event/stock vendor remain mandatory.",
+      "regression": "6 targeted CPU checks passed."
+    }
+  ],
+  "execution_sequence": {
+    "groups": [
+      {
+        "name": "stock_bridge",
+        "case_count": 4
+      },
+      {
+        "name": "private_base",
+        "case_count": 4
+      },
+      {
+        "name": "m_and_r",
+        "case_count": 8
+      },
+      {
+        "name": "joint",
+        "case_count": 4
+      },
+      {
+        "name": "automatic_a",
+        "case_count": 8
+      },
+      {
+        "name": "automatic_b",
+        "case_count": 4
+      }
+    ],
+    "total_calls": 32,
+    "intermediate_gate": "verify_base_bridge.py validates stock4 plus actual privateBASE4 only; it fabricates no unexecuted cross cell.",
+    "cross_batch_index": "index_attempts.py creates symlinks and source SHA manifest only from exact successful attempts; originals remain unchanged."
+  },
+  "cpu_checks": {
+    "factorial_and_plan": 24,
+    "stock_scope_targeted": 6,
+    "base_selection_and_index_plan": 9,
+    "native_bridge_execution_tested": false,
+    "linux_symlink_materialization_tested": false
+  },
+  "verified_consistency": {
+    "32_case_hashes_match": true,
+    "readiness_final_runtime_sources_match": true,
+    "controller_prepare_report_shas_match": true,
+    "all_six_batches_same_frozen_sources": true,
+    "public_POD_fields": 205,
+    "private_vendor_artifacts": 670,
+    "preregistration_setup_and_analysis_byte_equal": true,
+    "README_RESUME_major_contradictions": false
+  },
+  "deferred_native_gates": [
+    "User requires preserving card5 service8002; wait for actual release and resource gates.",
+    "Stock B8 must match the old actual target output; stock B1 cross-batch effect is descriptive.",
+    "Stock/privateBASE all-output/raw/repeat compatibility before cross profiles.",
+    "Native host legality, actual launch/POD binding and whole-sequence effects remain untested.",
+    "compare_replay_statistics.py has CPU fixtures only; after native collection infer from config/dump/stack/construct independently of profile/hit/private outputs.",
+    "Source-derived query/Vec/Softmax plans are not a hardware floating-point instruction trace; no historical FIA/default-strategy claim."
+  ],
+  "reviewed_files_sha256": {
+    "README.md": "c8d2e02ae783bb735977014b8b7e3b4490c5e0a47e33a010fa1366990aa2c5ad",
+    "RESUME.md": "a685ab52de546e977990a4c426bcf568d081080960b854886dce531f6a7bc240",
+    "replay.py": "2058a953c78f95ac2de7cc03543dc8d85a627664b7808d426c1d98c42aae9e3a",
+    "controller.py": "a9a6bb96bfe69251311a17eea9b8cbc8165a104e32b605cb7d8bb64668b9efe0",
+    "replay_cpu_final.json": "d537c6edc7b64a2c1620c37bcacd807ec339f7a58a802d307989a0426a522d0d",
+    "outputs/cpu_prepare/real_vendor_readiness.json": "ebac154c7aa29d3af783b23f26b5f42862f047a9ec80272d0b0b37e44b2c9446",
+    "outputs/cpu_prepare/controller_plan_a1/summary.json": "f58e6ae701077d24644e9779f986e84f89c0dcdfddcced14f65a82cd3d4c7e48",
+    "outputs/stock_bridge_a1/completion.json": "71bcb91e7394dda58916cf8bb9bad80c49f33be0a07f44184c27bd7c6f813cc9",
+    "source_policy/build_evidence_a1/ready_summary.json": "7e851db59f548c9e2fbc5fe25362fa66355ffec7f1f5822c8b68e08ca41adce8",
+    "source_policy/build_evidence_a1/fa_pod_schema.json": "82457b4440b60061e3a32345fb3b33adacf1a0f1b527f078f7d2557cb1af743a",
+    "source_policy/build_evidence_a1/vendor_manifest.json": "3d3ca8e0bc12003e19c6f3f4cfba21775e516385fe5807b10d59c6bb53cb1785",
+    "setup/preregistered_contract.json": "7bda4d97baad8d3be15d565b405b8a22ea8017284d08262f9b8eb3c848a6ee64",
+    "analysis/preregistered_contract.json": "7bda4d97baad8d3be15d565b405b8a22ea8017284d08262f9b8eb3c848a6ee64",
+    "analysis/verify_causal_matrix.py": "690afeb432fec21b83cb19270b47804bc75068d84b5447e1a9842a821b78cae8",
+    "analysis/verify_secondary_batch_policy.py": "1bb76781576054d2b23b3726a5bef6a9eeef6ae75b5e77dc0eed43df1aee19e6",
+    "analysis/verify_base_bridge.py": "db5e895d47c956e31e99d61ce5a66f9d571913cf897ed0fe9027cd6c2544ae5e",
+    "analysis/index_attempts.py": "6e5a4aa9d1cf82e90dcdba58c8db7e2841efec70b16aec4609f8318405c0f08b",
+    "analysis/test_stock_bridge_scope.py": "23c46c6afc20513372af15c09f463e1dc49d1b06760e73290523845668094df1",
+    "analysis/stock_scope_cpu_checks.json": "b9dedbb67e1e144498ab486dccf1bedf5d3727862cf51519dc4df47bdb4dbf77",
+    "analysis/test_bridge_index.py": "d215ffb6f11694a43c4c597adc482e6bae766a3241ab76f57db5a46ea9813b15",
+    "analysis/bridge_index_cpu_checks.json": "b81727a2a30cb9dff94b3389a2e56943f0a486a90607637bf6e62fc19c706166",
+    "analysis/cpu_checks.json": "3e9fcd334cd54ee91e18f0585311b6925899c7f9f07b668af32ae6f41cf990ce",
+    "analysis/README.md": "1ca30eef3d0266397612c8e233b6b3e4d188049e9abbeda4ca04efbda4aa033f"
+  }
+}

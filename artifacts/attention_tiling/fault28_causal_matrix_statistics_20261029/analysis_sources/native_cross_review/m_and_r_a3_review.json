@@ -1,0 +1,4506 @@
+{
+  "schema": "fault28.causal.cross_native_review.v1",
+  "status": "PASS_ACTUAL_CROSS_NATIVE_TILING_AND_SOURCE_COVERAGE",
+  "scope": "8 cross and4 completed base calls; no numerical-effect or micro-arithmetic conclusion.",
+  "vendor_manifest_sha256": "3d3ca8e0bc12003e19c6f3f4cfba21775e516385fe5807b10d59c6bb53cb1785",
+  "public_pod_schema_sha256": "82457b4440b60061e3a32345fb3b33adacf1a0f1b527f078f7d2557cb1af743a",
+  "source_files": {
+    "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_s1s2_bn2gs1.h": "18bbd703454ea8cd6fbe6936329c29513745c269e7f7ad7ea5ab05d81dcd08cb",
+    "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_common.h": "3e074a966515df1c9cf0cc070d2315a5978ccb44e7e75a842188de5016e4cc34",
+    "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+    "attention/flash_attention_score/op_kernel/flash_attention_score.cpp": "7f4adb241e3f09ad3204159bcd1b963800e174230f80c78b8126e29b7481ba64",
+    "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_template_tiling_key.h": "a8951fea89250f0f815382e9c3b2a05a4c01a12f971985bfe5d133f04062f072",
+    "common/include/op_kernel/util.h": "442648c354814d149ba7f8185e4b16cc7d528d1333f8437f07c0f3c5c93187d9"
+  },
+  "kernel_source_unchanged": true,
+  "same_binary_rehashed_artifacts": 670,
+  "calls": [
+    {
+      "case_id": "base_b1_r0",
+      "batch": 1,
+      "factor_label": "base",
+      "repeat": 0,
+      "actual_m": 128,
+      "actual_ratio": 8,
+      "actual_s2_base": 128,
+      "actual_s2_group": 1024,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        69206016
+      ],
+      "enclosing_api_workspace_bytes": 73401856,
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 256,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 1024,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 1024,
+        "singleCoreK": 128,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 8,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 1024,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 128,
+        "singleCoreK": 1024,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 4,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 2,
+        "stepKb": 8,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "5cd6526d5d4061a1a0890560c60f6f3594586e83d836823f0df5e692cf51f2c6",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 73401856,
+        "launch": {
+          "line": 148281,
+          "line_sha256": "92e27826c6bd0eb7cfd4d1bb4716f34f4bd4725b20c3efe3a579f40e7a6f5f9f",
+          "tid": "76",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93346,
+        "exit_line": 151834,
+        "raw_lines": [
+          148326,
+          148327
+        ],
+        "loads": [
+          {
+            "line": 3706,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "97e5b4b3445f221a027ec96171625aadd04ba7c0f48e1b1227e32bf994aa48b8"
+          },
+          {
+            "line": 3707,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "33c80315d9bc8ccbaa7e03e5ddacb0dad1434c3ff57da5535f256c9f4195efdb"
+          },
+          {
+            "line": 4048,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "ad744010ff0c0cb943eea026cb020917dd64085fa132e80bbd2febb2a17f0f0f"
+          },
+          {
+            "line": 4049,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "a858ec11fa0fa3c9e137b548cf160915b9051a81ca7f0224577b3855b9a6b652"
+          },
+          {
+            "line": 4050,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "b47f902a5579e77161e37e2b829e96d93a41de79859d52e2ffedeac1c3e7d29d"
+          },
+          {
+            "line": 4051,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "7a01ee5e14f57227895490bce27575b5e06d23e161c468b197377a11e80de2cd"
+          },
+          {
+            "line": 4052,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "647c54a06b57c510b0c334209282b840309d646ca270517c96b0b25c1a4ab1f5"
+          },
+          {
+            "line": 4053,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "25a347dfc7cbb6c6e56c471d782accff8867096418122c306a1439a00c67d3f8"
+          },
+          {
+            "line": 4054,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "f2255a518767cf1f73fac98011069d6c599c4a9f82d6c1dfa3daa08ce52ed763"
+          },
+          {
+            "line": 4055,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "fff81af7c1552dce5890aefc8dac16f70e60897dba87fbc7c9b7915f0bf79e4f"
+          },
+          {
+            "line": 4056,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "967b81c556dacc1f7437f4326ed05b892d8c4b0f08b799c29bd30ffa06e92822"
+          },
+          {
+            "line": 4057,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "5298a317e70be93c53be85c8e2ec4912233ed90f1cf1844ee951cd9265f99c06"
+          },
+          {
+            "line": 4058,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "8a8c8cca39c5d27bc12b71c88f802580dc068154f1e6a0e54c214edb2bf5b0c5"
+          },
+          {
+            "line": 4059,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "1596a183506522db9aed54e1206e20e29ca68240c94f73e7fc412ef437d3ec53"
+          },
+          {
+            "line": 4060,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "63d4512b05484103039d199d32adfb2e90d9f7e005df5b9f7a14422e9d089c2a"
+          },
+          {
+            "line": 4061,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "6e4fb8407286bc70a54e17ca47dc18e3e94a6b53f6f9197c45a81ff866bb8828"
+          },
+          {
+            "line": 81024,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "15ec44f55b47ac625a30bafa4efe94ee45ba6bcd7049406a67dd8af04c18b073"
+          },
+          {
+            "line": 81025,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "38c45a73439575a3c9fb3f0a49f7f26c2d862cf43a99e509cf9d6878ad32be41"
+          },
+          {
+            "line": 81052,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "a164435522181c16186859be2c57334b2e600fd1c0556b86b170d6f331614317"
+          },
+          {
+            "line": 81053,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "bfac4de056dfa9b7aac9712cb7c5855f91986145603d67149b8fcb429ae6ffea"
+          },
+          {
+            "line": 81054,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "c84d24d64c85cc17af6b69d83b6fc5db6119cc606c768ae04d5073b8b5f69e7a"
+          },
+          {
+            "line": 81055,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "36355ad8b20745faf21314e730d537bd0f488aec69af3cb3513d07283e93d924"
+          },
+          {
+            "line": 81056,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "13fbea88872b1578248e7d11d1ba8dabfcaba74a4154337db160a69c4d71a1df"
+          },
+          {
+            "line": 81057,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "379a04d02516150f12f601ca0748c510bbdf8fa6a02a531835325469ab28f517"
+          },
+          {
+            "line": 81058,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "5cbbb0a42b3644ac8fd497b27a3bc7013c379fafa830ca25ec4f872d10097ab3"
+          },
+          {
+            "line": 81059,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "974128f336870576bd565dc3129f3e15527951a59f3d4698bc1546edc5ad7c92"
+          },
+          {
+            "line": 81060,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "c0705a7b59068765dc703dfb272caa128317a539ecea0fcaee95df897e47bdee"
+          },
+          {
+            "line": 81061,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "5d27c4f061abf9cd2b54c78d6b409a22c73f8b6760f522f5c9467c41b05b5ecc"
+          },
+          {
+            "line": 81062,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "c331b63944a5bf0d14e80c1729e6f92905c22791e4449486b6ee79440d10d9fb"
+          },
+          {
+            "line": 81063,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "9076bdc857e3f1fcafc4d8e78003cfa132ca9773eff97c42c88fed3e5f78df15"
+          },
+          {
+            "line": 81064,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "3ed21dc62b9bcbbff0c2ff8637eb38358b0141cbe2d2b65813d84f10c687ed72"
+          },
+          {
+            "line": 81065,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "92d763fa679d1bad5249460c9445863ceb286d26c80941f4dd653a604503d5a4"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 32768,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "c5bb186080360b6cd49af6f452b8e076e4795dd3c0e844500c3396f25eaaebb4"
+      }
+    },
+    {
+      "case_id": "base_b1_r1",
+      "batch": 1,
+      "factor_label": "base",
+      "repeat": 1,
+      "actual_m": 128,
+      "actual_ratio": 8,
+      "actual_s2_base": 128,
+      "actual_s2_group": 1024,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        69206016
+      ],
+      "enclosing_api_workspace_bytes": 73401856,
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 256,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 1024,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 1024,
+        "singleCoreK": 128,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 8,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 1024,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 128,
+        "singleCoreK": 1024,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 4,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 2,
+        "stepKb": 8,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "e3236c5dbe787d71ac0942f3acf58cec903d4056a849da44756340bd27b80128",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 73401856,
+        "launch": {
+          "line": 148280,
+          "line_sha256": "8b797d72309f2778cc8bb6aeb274d05df90993c3fdfdc20289140b32428c8d9c",
+          "tid": "154",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93345,
+        "exit_line": 151845,
+        "raw_lines": [
+          148325,
+          148326
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "91fdfc8219c3127bd2952e157866a7ba57eb8115e88264965c3711df4505c84b"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "7225d5762021f6150e7ae07161f3d1f1bd56171fbdf053ea259abb1f2064d1c5"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "37df87a7e5336ad9749555b742d5f3fb81fa73e11c5f70302dc7ce379cdb7f66"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "a532c6169dc601776b225b78b7060b395e5191e67b855e5e6f45085530ad43e4"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "de96c4758cc94c3fd63a4b6b61eb8406330c6bf1aef4132353f6f79c094d226b"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "0544768fcde48f16a354924a1bce46464455d4e95c27b7f20208b3075fd77f30"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "520cbb582a7f4289a339cfe7d2733308744cd1a15cdceb7619d11369694a8276"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "a08adbff03ee0657fe6cd1e1ed06556e20aa30b67352bb2232028a3c5c92d2ed"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "8301471c561b6e4bbde76323933ecdf7ab4ac2e4eadb9d3630e10ed8f13870ce"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "b9cff4bdfeaa9dd9f8407da5ecf2aa616432024134fbf68b7f53f3ae4a79874a"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "ce3fd7b6bd2e563ee3cb62e1ec75d1b8fcda8c372f8c445870bf00891d6c8935"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "bc617a43ece0cd91222eb0f5a037a1c09f51ae0eeee4cbd242e832d1312d373e"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "edc59397cd145e7a21c6f92cec4bfda1ba8f625ccb687e52e55ac3f66b1ca1e5"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "c0d6e927861362e911ce026a0b9fd579ca042685285120860dc7a56a6204979e"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "d2f310b06877a7b8e54050d1b559f257fa5fdb525e9e0309cfa76a3c51f71bf7"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "4a7d2a7eec581d6f4cca7c64a5c210c107ab165b47ab6ba3f71ed903d209caad"
+          },
+          {
+            "line": 81023,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "27075ef407472aad690365030cf4da3b10a8e68cca5d142351eb0191f3626df5"
+          },
+          {
+            "line": 81024,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "0c27ecee2d5cca473251802c3364a5e66008c629b507c529f28c03747bd5d7b8"
+          },
+          {
+            "line": 81051,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "cada2d8792746006d150f2dbd941eb0528a27e7a4dfcf1cd64b07b0f7e666424"
+          },
+          {
+            "line": 81052,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "8c000810cad2062cdb41fda062f03a259b9a5744c92aed8eae508eda46e3ab58"
+          },
+          {
+            "line": 81053,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "7fdd67d7bb8383ddb2839924e944067a5c51c599f13df54bc1ad03f76e3943d3"
+          },
+          {
+            "line": 81054,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "94cd1d110223d5e54a7480e552ab6781d5ac3d53a419dac6571b6d19001379de"
+          },
+          {
+            "line": 81055,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "3184ac4305d9cb6b5e7fc85ba7af4d42c5f26a2e715e4d207cd9cbcaf679d87d"
+          },
+          {
+            "line": 81056,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "f1949e786e76ad84f6002e6d874b41859bed2629cba42f7d5823aa91099b602d"
+          },
+          {
+            "line": 81057,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "462434db7a4d3042634192905e0203d7c64d08503df1f85806aeb59b447dcfab"
+          },
+          {
+            "line": 81058,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "8eabd6fac3f5b19314373d1c88147570171ca3be70f17dbca40e167e02c25bf8"
+          },
+          {
+            "line": 81059,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "ba2a8bab601706930ebfa9d3f28bf357c74ccf5088dcbfa06bd8c4292af4db87"
+          },
+          {
+            "line": 81060,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "b32c8c91d25deb100a926bd3ccf13a33aebab9d623b17a5f5d1f9a48d6f8e89e"
+          },
+          {
+            "line": 81061,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "24b38b583272d1315030586bbf0c6a8764964b852ec7b7a19b4cb22461fb2ca2"
+          },
+          {
+            "line": 81062,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "7a704fbdf60fd9e858dd66a5d46750bb29e65ac12bb33a9c102253fe766a2e2c"
+          },
+          {
+            "line": 81063,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "6bea6cbdea453be14f8a099697f67ae59f3a0346afa8258f35c3f095be0dc7e9"
+          },
+          {
+            "line": 81064,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "489ba78b0b43da5ec6f0f57094b2d1f81d3e3ecd7c8156721400c4da3ea93343"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 32768,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "c5bb186080360b6cd49af6f452b8e076e4795dd3c0e844500c3396f25eaaebb4"
+      }
+    },
+    {
+      "case_id": "base_b8_r0",
+      "batch": 8,
+      "factor_label": "base",
+      "repeat": 0,
+      "actual_m": 128,
+      "actual_ratio": 8,
+      "actual_s2_base": 128,
+      "actual_s2_group": 1024,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        69206016
+      ],
+      "enclosing_api_workspace_bytes": 102761984,
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 2048,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 1024,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 1024,
+        "singleCoreK": 128,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 8,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 1024,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 128,
+        "singleCoreK": 1024,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 4,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 2,
+        "stepKb": 8,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "4ab1a3858cdfd225a353d9a8d5ce677d8319a087f54c8d8a5b439336619b35c6",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 102761984,
+        "launch": {
+          "line": 148276,
+          "line_sha256": "4e8f8aa7aed15b813cb29403017825c499af4735ec22df1c83dc0b7d0ad37a93",
+          "tid": "230",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93316,
+        "exit_line": 151843,
+        "raw_lines": [
+          148321,
+          148322
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "eb94675949f49ec090bd9dafd72925f9ea263497d6f3b2b2286bb5d854630f02"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "79f8816a67ac6b085d96fffcbc87618a7538c9146676cb957e121b8f27c27e9b"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "d918760c267c1fed54b05546cfd24d1e2f19cd94cc64439655f8a1bf5dfef38a"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "931c2d6dbd1c3d73439c8ee34777e49c6d3b7e5cae03ee349efefcc3fa3b1d23"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "70d2c061a2d925a311cada94a82222bc7317b8c775b67b1692a2fb83c42f713d"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "6810bc48416aee144bc8f0fa0e4c6995062dfb87dff425edab7ea2aa96655b36"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "589a28d0ecb24273c4049a52c89e48293fe0e3c14e9064a211441d1cebe5a76c"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "5a1f15a222fc6d29461b1e0488624393cb4845b04e94500825d89e1fe0c28d21"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "4dbb5e5161e9ce847d56622ac129f5588f56875dbd880acff94b5767a20969ea"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "7357c9be11f70e57b551823b576a34f9623e5aace54812486fe4577e3dac98d6"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "a360624f1c90eb67e9f5755075169b2a279855bd200b9503b2b9bd904006f036"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "b21e7049782736dedd9e9eb54fffb17a6cb2ce8c45f2982eaf4287f4556837dc"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "752574b4382e26963bbf5eb1f0847b565b3725ecc96d4189c51a5e532fd9a9d9"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "baf11c68ed3881c8a078c50cb6a6acd2920c487e81e55d2dc37e7654bcb79f82"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "45eef4279606bc905132bf3492947b1b7050a3fdd98409be5f8cf41dd7ac7606"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "fca2563a8e8b541bdc0df6ff694e3b2c52c660b24708d907e32afbf54427faa6"
+          },
+          {
+            "line": 81057,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "f68d6dc6d7346e98f9a0515f1d26fe9147e3c785f8ce4f1ac4ff96f93bcc87f5"
+          },
+          {
+            "line": 81058,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "325e5c224d8fdf6ba4c9e399277e5b63043e239999db4fa56a1ea0df18b96c97"
+          },
+          {
+            "line": 81085,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "aea64bc9980c3191c2d14d595a939d1f0b3f911f6b4d6e9acaeaac01732d2c52"
+          },
+          {
+            "line": 81086,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "09b30d39f299aecea15ddd78ed58168d6395adc4f62f5edde71f9c39d22ae6f6"
+          },
+          {
+            "line": 81087,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "3a0cab52525682882405202f47ca11efc0cb4dd9eeffd33ee5fe1313e8229e48"
+          },
+          {
+            "line": 81088,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "1e86f4e41ae16880970d51a3650e6073f7d44f16fca12d3e2a81ac9d28e430f4"
+          },
+          {
+            "line": 81089,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "3ac8a5fd5f520bac1ad9020c7665806ef592c063f4bb69009f9b71a58c58a720"
+          },
+          {
+            "line": 81090,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "ee7212c4c911c2819fdd1f95e3a5fc0bae55855da76b939d99e6f010dfd19e0f"
+          },
+          {
+            "line": 81091,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "d9a5f0605b676769f6638d53b4ea691f16aa565dd12e87ca382faaf07cceba09"
+          },
+          {
+            "line": 81092,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "d0d5d16bf9fb5970125ddb36e98a532c1dce88fdc7b003a2b006fbfea9170b7a"
+          },
+          {
+            "line": 81093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "693c291f2c1c45d3a7b20a86c9b98b3da43017b97a3bff499fa3d004583f05d5"
+          },
+          {
+            "line": 81094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "3632f7b6fac7c387b0649622c7bcdbb5385f9c4f39bfdf5d08412d275ebf033b"
+          },
+          {
+            "line": 81095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "75582a8599546b499eba8fdc09191598fa5514a68039fddb034e2c5854367a81"
+          },
+          {
+            "line": 81096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "8422d9245b4e758ba669c6bd804ebe59d393f5478aa93a1862b3a3cd93089c4e"
+          },
+          {
+            "line": 81097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "19242064cd8b8ed28c1a6543a8ae89409a6629bdebb3cb3809bb49ee1b4c8e75"
+          },
+          {
+            "line": 81098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "1bcbf530843905e64624161b5c255c0f928749dec1110f1683fd3d8cd4330e2d"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "7fcaa64702309e16f62175a3fcb59f9672fd14d68e815a6e5934bb202534f810"
+      }
+    },
+    {
+      "case_id": "base_b8_r1",
+      "batch": 8,
+      "factor_label": "base",
+      "repeat": 1,
+      "actual_m": 128,
+      "actual_ratio": 8,
+      "actual_s2_base": 128,
+      "actual_s2_group": 1024,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        69206016
+      ],
+      "enclosing_api_workspace_bytes": 102761984,
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 2048,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 1024,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 1024,
+        "singleCoreK": 128,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 8,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 1024,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 128,
+        "singleCoreK": 1024,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 4,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 2,
+        "stepKb": 8,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "78d6f5107db2a0d5bdba3640be14201b1135753fdea4689b342282f145138536",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 102761984,
+        "launch": {
+          "line": 148274,
+          "line_sha256": "3d55801ec2df476ea5012d2b0d1126df8a72f5a626c249b0bd009ac6d48b4fcb",
+          "tid": "306",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93317,
+        "exit_line": 151836,
+        "raw_lines": [
+          148319,
+          148320
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "1a1ecfe62b1d97c1062d24ac9af294a5e0b45dc25bed82a901929ccd68a3d8e3"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "5a5930da883b1786acea5c8b261af1b07c3d3c3c6c0d7c1247b7dbdeedc07f62"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "7e91721650f46e632b9ef9859f6275984116a4c3802d508178e096d650171084"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "da1dd5e59c31b18c9c1d8bd054710a43cc8236f662c70112cf1a6a696c0d7559"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "65a80088785890c23c97f050e854eb0f4b4f08e2469365b9e52d7664d2a944e6"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "406252a910a33b30a1cac1beb87a21491e254001339ea182e5a62527792dad58"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "2701328b4c96b281dd98ee25f83ed889133581854bd4faf0548252ec5b952133"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "d7d9746d7611b66b3d9f5b2fa9f70aecb04f6e0dcf425e697303b21864d5aeb4"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "6bd88e4174b946f44014f4df56861e8b82f73fd8a4376d68dbef5be7e1436675"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "a3bf11ce4852195f83a7e1cd96962469a2e588db33aba850f9187afe780a1f64"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "a94b657a2c52c066a90bbe4996bcdf17172c9ed703d533e737da9e0534d44a1f"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "3e0d4161567c4746aa2c4b029d0b2b4abc22edc5515d416968e095d0bfcf6093"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "f658ec833c21e286a6bc0100814de38e828ce0e175beebc196b1c35d2d2c94f4"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "a3044684287c7fa1d7b5457780e6c1dfdb0fb48aee74114abe18583a5e441db0"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "321f4a736563edcf301e56cabec670dd3b25dab0250b4837869a8152aa8ba91a"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "ea6c5a8ec3a9b0b3e44e62467ffd66b5da0a854be5e52148e885e1a2438ca5e5"
+          },
+          {
+            "line": 81057,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "c3254d0103908b560af94616803faf5383c446465bf311c26fda9e23c5b333e1"
+          },
+          {
+            "line": 81058,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "769b1beb04b405a8fd25195f8dc6ac2312d69f00b9d95c6a9dac8d25a896952e"
+          },
+          {
+            "line": 81085,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "6757354fa608cbf1e24c62038bd5d38c5e6c133ea3e6c22831ba3a91752783b4"
+          },
+          {
+            "line": 81086,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "bdd1e9bb04f9c916ecf5355a4b5c52c8dbdc71f147589fcb196a58b9bddf3b43"
+          },
+          {
+            "line": 81087,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "46f3cd6ff4c1f34336f14c7e97cf6522c3410aeb8e56c01c2973c6f866eecf36"
+          },
+          {
+            "line": 81088,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "bbdc2ae8d533c2c4788585e52fcef0c09b10e4e356ac5b243b558cf5d8adee3f"
+          },
+          {
+            "line": 81089,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "cd2c30c5201c2a338a4a76620c025d14d0ecf67cf0f40439e3160bd60bc5963f"
+          },
+          {
+            "line": 81090,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "f5a4088b339cc3c04e6772ef95eed7cf8dcd27119f2110bb9718ee61a25c42f2"
+          },
+          {
+            "line": 81091,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "a5249329f6b364459d94b42a0d79ccce7821e96c8636b6eddf15f8a350abc1a0"
+          },
+          {
+            "line": 81092,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "216851ea4875da26157a6e4e08fb8192da130cf2115e6190b656da897f9b9938"
+          },
+          {
+            "line": 81093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "6549339b1ebac765a61a9ed37eec87bb5c01e5013f909b4eed3e3b48f54b407a"
+          },
+          {
+            "line": 81094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "c1f0a70e15bd1921a6532f882e7fd731518348526ee31f2567429ef7d4f2bc28"
+          },
+          {
+            "line": 81095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "ddf69a45ff483940f6fdebcd6ceab8efb86d4364460b9944ed0ea1f49caa8d00"
+          },
+          {
+            "line": 81096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "6a9adf73ff908fe4fcfd13495562d50ec516c372e7af321b607b6a9cb8829c8e"
+          },
+          {
+            "line": 81097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "e72293a656dc2bf5ab627aed226e5a8ffa1300af7fc6781f6dbb674405c163c5"
+          },
+          {
+            "line": 81098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "7118327b60aa78d48126f5c1a97c514e2caaf95de4e0a918f868b2419cb16be3"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "7fcaa64702309e16f62175a3fcb59f9672fd14d68e815a6e5934bb202534f810"
+      }
+    },
+    {
+      "case_id": "m_only_b1_r0",
+      "batch": 1,
+      "factor_label": "m_only",
+      "repeat": 0,
+      "actual_m": 64,
+      "actual_ratio": 8,
+      "actual_s2_base": 128,
+      "actual_s2_group": 1024,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        42991616
+      ],
+      "enclosing_api_workspace_bytes": 47187456,
+      "raw_sha256": "c77d70ff0c8ed5ddc148179339c3f40c59f6f9f53ce43757be78c074aac37b06",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 512,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 1024,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 64,
+        "singleCoreN": 1024,
+        "singleCoreK": 128,
+        "baseM": 64,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 8,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 1024,
+        "Kb": 128,
+        "singleCoreM": 64,
+        "singleCoreN": 128,
+        "singleCoreK": 1024,
+        "baseM": 64,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 8,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 8,
+        "stepKb": 8,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "f6083ba63402821e21731eb1fc1cb44191c65e274538fcbe3fd30ebedd7d3bf9",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 47187456,
+        "launch": {
+          "line": 148283,
+          "line_sha256": "dfeaca930f8010698e50de32a4c36ec9f6a43e810a00b6861c241392321cb775",
+          "tid": "76",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93346,
+        "exit_line": 151847,
+        "raw_lines": [
+          148328,
+          148329
+        ],
+        "loads": [
+          {
+            "line": 3760,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "073b6e91a6ac609cb5b440a09a4414b68a29e341cf96ee86e231779d44064c67"
+          },
+          {
+            "line": 3761,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "2af65ee89aac4ca43590223d269a0d3d66ca25f0ba179fb0423a4a4a181e1e7d"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "92917bba2342fbdb457a46e3e1262bff8f8ac26cbf881babe3c2def4f4d45f5f"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "e3dfdf716dc6f11fec6c7b3b02402a2dc191c8406624643157f7ea25c9ced9db"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "5a3e4dd4574830ccdd069b67fa1aac4cfd821419e467d3d14deff6acdee4365c"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "d7ec98cf8f942afc25280681170f9ba05648e491eb0ae9738769ff4604abefd2"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "c089b75929eb6d7a24d5e3518b905fce93da8faf82844c40178f56d761e9bbbc"
+          },
+          {
+            "line": 4107,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "e9fe799373c2419153ce2995f54b60fb3ed94c6a5c6e8acf71e682a98ea9e7d3"
+          },
+          {
+            "line": 4108,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "bad48889607897facbefacad52d02a026dfb67da83151277391a8a2f92b0d4db"
+          },
+          {
+            "line": 4109,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "c091865d11ab3106d8b22314fcd48889817e1090c4465b091528a294d30cb4b6"
+          },
+          {
+            "line": 4110,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "5431e61db6dc77620c016cd691567493771e06c8e67952f643ee462327572dc6"
+          },
+          {
+            "line": 4111,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "84c58d0be902c72f6b4f1f244f3bdf12509cbf409b894e7bf6112cf525e461f7"
+          },
+          {
+            "line": 4112,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "7d04c5d99e82201052001f100ad70e167b7637ebae83100955a8fabf35953aa6"
+          },
+          {
+            "line": 4113,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "47d9be27e3425207234d4eb6bedee2539dbba64f1fe6cfb989850b10c416591c"
+          },
+          {
+            "line": 4114,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "df39debd05d3c347a7c68ed91ee05bf2f5d413a1fb92ef4e389b0f2f0b93ca07"
+          },
+          {
+            "line": 4115,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "1fa852a144704a45f67ae7b56e4fe1c5171bb39f4eeb05620a1563fd60912ad6"
+          },
+          {
+            "line": 81024,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "b40868ce6c22f6d5736de63b5cc52bec4b795f02496d98d21a0dc003c24fb49e"
+          },
+          {
+            "line": 81025,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "76586eb77b1150db972ac944743496a570590987cc5f820fcce39351b46ae12a"
+          },
+          {
+            "line": 81052,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "e0f44ef7c323e1b3bb203b758848c41d095e0e2073af7aa74ebb691ab54622b7"
+          },
+          {
+            "line": 81053,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "1dc9aa3ea85462caa9542878318125f9277cbbadd632214c7edbea22163de0b0"
+          },
+          {
+            "line": 81054,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "7d45ce6990aafbbd7d5301e3d769e82c973d168fd3939118a5354d0eb06d8d14"
+          },
+          {
+            "line": 81055,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "936a406a6796b731c646fac5edf68840e4ecf36528c94ead2bc2e1eaafa3a4b8"
+          },
+          {
+            "line": 81056,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "470cb246a46687c3657fb9a41606e9d15509e559c60e288cd92bd9b8b99ce7a3"
+          },
+          {
+            "line": 81057,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "944b7587f549b2aa83f05217183c6f84d7acf9c35ca1fcac8e70d99ab0f99efc"
+          },
+          {
+            "line": 81058,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "f2cdc1056017adff6cd6a2488617285b0fb8312ad30f788642c3cdd288cec4e9"
+          },
+          {
+            "line": 81059,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "37bb9ede04dc76c515972087f4dcadf186397df8d615249b36b55d35c2b11232"
+          },
+          {
+            "line": 81060,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "732f7432e34930fcefe228fff95691998eeb7dc1c18ff5cd96c72f767dbe311e"
+          },
+          {
+            "line": 81061,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "cf1aac2205451a845c060a581bd9ff6bf7db3e67671bb5d2e69b1d5dbbcf45e8"
+          },
+          {
+            "line": 81062,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "5dac14d6e622d0a9bbfad84ccabebaab9e189698312839778a9f25455113fc5f"
+          },
+          {
+            "line": 81063,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "a159fb66c0a35a15125998da797cd3a99f7662c038a931e58a6ce2dabe9cf459"
+          },
+          {
+            "line": 81064,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "a64808d983c95bf5531d2a244c7c163319bfd449ea1b0976dc0b42cc36a298ad"
+          },
+          {
+            "line": 81065,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "07a4d796115a0cb7d73205abef9823a424125b6b12dcbfdcd423b4c75072bc75"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 32768,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "e798bb987551b8458f218ac311bc413200f83b0304f31e9e47d814f6a7ffe189"
+      }
+    },
+    {
+      "case_id": "m_only_b1_r1",
+      "batch": 1,
+      "factor_label": "m_only",
+      "repeat": 1,
+      "actual_m": 64,
+      "actual_ratio": 8,
+      "actual_s2_base": 128,
+      "actual_s2_group": 1024,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        42991616
+      ],
+      "enclosing_api_workspace_bytes": 47187456,
+      "raw_sha256": "c77d70ff0c8ed5ddc148179339c3f40c59f6f9f53ce43757be78c074aac37b06",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 512,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 1024,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 64,
+        "singleCoreN": 1024,
+        "singleCoreK": 128,
+        "baseM": 64,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 8,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 1024,
+        "Kb": 128,
+        "singleCoreM": 64,
+        "singleCoreN": 128,
+        "singleCoreK": 1024,
+        "baseM": 64,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 8,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 8,
+        "stepKb": 8,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "e425ad356a9c0b9b726dc82b33f1ef091ff5a82e3b85dbb4c6838cd2ec9ce919",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 47187456,
+        "launch": {
+          "line": 148282,
+          "line_sha256": "8f838efa2d4e1bb4530babee680fdce7e4fa12b64706548c99c079bd5532bcdf",
+          "tid": "154",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93345,
+        "exit_line": 151841,
+        "raw_lines": [
+          148327,
+          148328
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "59cbd8775cce1c997b7e9a7c44195ce1f3e582f94a031afe6be38fe140845849"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "b5b71a339c4b5ca53530e2fa8bd8ef5e3d1a95060fc5eb4c71bdb5573fc49c8b"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "db2c64018304747fdbeb427f844c0c469971b42df445552d9427ab7aaeb7d601"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "3c8a2066c8740b29bb47f03b49330d1dc9e4cbad78e102195d73970897da1388"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "2388a5d712fb72308d72929ccb99e0de3b467350c8db81af2806eb9b0783a15e"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "ac5f84cd1b6bf799bc669a23627ab41addbd2325b450031a3ce45ede20532bc9"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "33a4e98cafc39053a5be60a5ebb462f111ae8d75b200a0dc7dad16a8fdc447a4"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "faf8b7cf204e984f1317634013a6c66fe9f0eb47617da547102c07180b238f1c"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "28bb619b098b1f60be7bab54952be18f1c608bcbaf1bc33fbdba50951a6407b7"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "2bead8a4700ded9553ba86708766347832d9ff7f3bed6ca453650044dea231a6"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "d34da0f1b117f499ad5a861ba30324c67404dc5536021bbf3ca59c16ad148719"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "f91584d7e4d6bbebf0803ab524dc12760f7d8e475f540cf323b7536e555e2ff0"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "d6914496ef24da0ecae05e0404dc9ae729644a88b875e104eec772b9df747f5b"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "5e842cdd9d1019f81ce9fd37e6d0a3c874040e89859bc54fb27b10b2d22e73a2"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "97d36a6a3ac36614efe497354a447412ad60a0f18956fc4a0ef4ea1499073eb1"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "904e7f60cb2ebdb514b63d1978de3827faca1ea995719e518d422781413ad494"
+          },
+          {
+            "line": 81023,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "b8dba185c19610a2c2dad0bd10f470bac5850115847f68c5291c22ec10aefa96"
+          },
+          {
+            "line": 81024,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "d1072909b3927896eb8081c8a46fee0d6e173d6dd9314230f6a149a4f4a51f2e"
+          },
+          {
+            "line": 81051,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "d7f05a0ed9e8a765a5da115659a9efb2588b2dc0d1b8b9d80153ea852601288c"
+          },
+          {
+            "line": 81052,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "930addcb322dc034d86c6a3014d3219f691035fb089ac8c64705458466fc1b15"
+          },
+          {
+            "line": 81053,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "4793f7a9a856dc2a8719936080111b3737bf4b412589dc641dcd1a0cd8c4eafd"
+          },
+          {
+            "line": 81054,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "7b3102684ce7d2ab3fe1de359cef596d50cb4e2c7966ecf47d7a3dca50dcaf08"
+          },
+          {
+            "line": 81055,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "5209cb410f9ef78e2a614a36ac26c57453d9b770c86a9c0c0ca856195e93572f"
+          },
+          {
+            "line": 81056,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "494de2896f239259efbe092f5899b06b5a21a93c4e329ef456c6132e9ee345b0"
+          },
+          {
+            "line": 81057,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "b4d36c1da633534c31fbf213caf818b8ce26cf1a8170cbb9786111bba281cf9a"
+          },
+          {
+            "line": 81058,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "8be71f3e6daa0305dda91e6e209169008ac6c9664d8ae01aa72aca116afcbf0a"
+          },
+          {
+            "line": 81059,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "4e2fe8a3ae107b0594fc84691368a6a2aad599255cdc684c50a22897b450833a"
+          },
+          {
+            "line": 81060,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "652ee11405daedcec6cc173f8d85e1db31a157c70477589c02d14172dec1d686"
+          },
+          {
+            "line": 81061,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "3168ea4fc50f0dd84c7d1902e6aaaf5ca0d2e65ba92925c75cbc18fe4c015bd0"
+          },
+          {
+            "line": 81062,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "e5fd5e10eb17320d98021ec2e3f7f069d2c4845e6e05ff974f1107377a1a83f1"
+          },
+          {
+            "line": 81063,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "28bfb6d145346b1d3158f0ea9da46adb2377e3f1e99b7fc15f166763474b53dc"
+          },
+          {
+            "line": 81064,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "224c69fe4632e52d13a48f39ab523691c568bab2fc3fa22076ce45dc6d042246"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 32768,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "e798bb987551b8458f218ac311bc413200f83b0304f31e9e47d814f6a7ffe189"
+      }
+    },
+    {
+      "case_id": "m_only_b8_r0",
+      "batch": 8,
+      "factor_label": "m_only",
+      "repeat": 0,
+      "actual_m": 64,
+      "actual_ratio": 8,
+      "actual_s2_base": 128,
+      "actual_s2_group": 1024,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        42991616
+      ],
+      "enclosing_api_workspace_bytes": 76547584,
+      "raw_sha256": "a69b507a97f1e2b9219079a10551761c2c825d79f26457642f8a188b49f95148",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 4096,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 1024,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 64,
+        "singleCoreN": 1024,
+        "singleCoreK": 128,
+        "baseM": 64,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 8,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 1024,
+        "Kb": 128,
+        "singleCoreM": 64,
+        "singleCoreN": 128,
+        "singleCoreK": 1024,
+        "baseM": 64,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 8,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 8,
+        "stepKb": 8,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "c1de21a928b419daacd7f6eced9f038e96d415a4766dd5addc16bd3f396bf26a",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 76547584,
+        "launch": {
+          "line": 148275,
+          "line_sha256": "55294438de0e032644b7e10b4ad0aa731cdbeb9f4bf58437a79adae3eb26f626",
+          "tid": "230",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93318,
+        "exit_line": 151839,
+        "raw_lines": [
+          148320,
+          148321
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "ab433fb6a141d32e2c42dd85a0ee4a3fb486c6768a508253f205ac588767476f"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "407cca66f82a0b23a0ae070995cd007d064f105ec03478aaa02c10341e762b3a"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "07511697dba34b6b985e69dde205e7d1e8b135c63f18a667ddf44b55f69f202e"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "ef7f57e689ce2b06a926704221cf26e3de988a515aa977764d42e5e530764fc7"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "adce88aca64dfc8e9d1ee66452aa81f84895e4a3dbe46a91c47f32233b2c4159"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "701e3c7ace5da174b464a39b912079cdd8e0717ed6995d977603e84eb254ce91"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "feba88d64b78d1350783a5776c2f83dfa6b10bd07047465f74bf13ed76b646be"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "207f8c73804f2a8472161d9199fd8b59bdb468b629223d6210fdf2cff60167a7"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "8d152ae41fd5a5073d3859d4ba7f508aec5e7dd75f9589020621bfe459bce65d"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "a9a9a7d3c0faf41e54e155bb0d22a652c4d51326cf7fafd5e567397452c37eae"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "fd8e869ff1fac26dd7a521f474c10f5d41d1f1e35e0433fc081f88b8cb56fd7b"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "481243614869ba919d3da8e1b2fe4b01c1c12ed54e5526af0ac6c3d34e8081ac"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "538d2a0c958939b3bf4fe38dd3ca33185612e13f6503ca96421321239ce038f8"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "e93e79e8b4958f0f973e6ee5faa5f3da4bb99172fc0464afc46a98795846ed98"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "90f17092f174ef9a56249a0b9b9bb798936f7c819018ae5064e7bd55ed1b5cae"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "7210486d328788e6a80110af91cf0279a6d2ed49e10826fb238898fdbc1a21e8"
+          },
+          {
+            "line": 81057,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "a7232166d0448f65ffd13681504e802ed0e7e31b10bcbfd58e35619cbf80a0ea"
+          },
+          {
+            "line": 81058,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "c4aa5a5c938962fdf93996d21ecb247d5fcce1f38fef483e22eca909a142ce68"
+          },
+          {
+            "line": 81085,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "a8c1bc7606c51c31a65a77728cf81bd46e5df2ddb595084dfdb3bb163a519e8d"
+          },
+          {
+            "line": 81086,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "1bdb6071f42ee1d70eae828881e96f68dd82f01aa55b3bef0fdf7cd446b7a02d"
+          },
+          {
+            "line": 81087,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "b7885dfcb86adaedf3e183c72df0c1ec067a320cb2a0455dcf463eade08f6c6b"
+          },
+          {
+            "line": 81088,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "9578f88d55f4bd33d65d9271403dc5a3f96d11d75bb9a022a3d20f68716ebbf4"
+          },
+          {
+            "line": 81089,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "6f89c4d2a8e24b0ced454eb26e01f61aae4a4688a4087f9af18995992daa53ce"
+          },
+          {
+            "line": 81090,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "997272c854ac4ba3152f247203546b72a153e195d59a84e95dc787c3ed156401"
+          },
+          {
+            "line": 81091,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "eae02b12bcd1037ec6e8abc2f8637f2e0ab4358846c5087873ebd0516e783ac6"
+          },
+          {
+            "line": 81092,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "b6ed784beb3d4e53aca2ce4837f786cc21bc3f5517644534bb15ca2c5af3f95b"
+          },
+          {
+            "line": 81093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "0a2462255d52c0a625a1659a613b44e66840533e5f03e58c486c4a58933e4d22"
+          },
+          {
+            "line": 81094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "14bbaac6295a7ca7408be67afe87a9009ca3bfae0bef2d93d047651bfeb9a779"
+          },
+          {
+            "line": 81095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "9adaeb19ffb4aceea3ddb33e1e3bfd02dc087d27a35dab7e4febf146385878a4"
+          },
+          {
+            "line": 81096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "67906e74d9336e52a0fb343a418338ac629fe72204c47b111702fecd22e8a194"
+          },
+          {
+            "line": 81097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "1f9e8c57c78bcfee39c117a00de81fa1474f9bf8128c4f3e0df2187f87946be5"
+          },
+          {
+            "line": 81098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "8499a9ca5e11c6467f09289127a97730281440b699545ae8f3f9789ff68e0c85"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "17fac5958d131d719c9c35e1b2eff1a9f1712de9a33309b5303a000d11a628b8"
+      }
+    },
+    {
+      "case_id": "m_only_b8_r1",
+      "batch": 8,
+      "factor_label": "m_only",
+      "repeat": 1,
+      "actual_m": 64,
+      "actual_ratio": 8,
+      "actual_s2_base": 128,
+      "actual_s2_group": 1024,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        42991616
+      ],
+      "enclosing_api_workspace_bytes": 76547584,
+      "raw_sha256": "a69b507a97f1e2b9219079a10551761c2c825d79f26457642f8a188b49f95148",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 4096,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 1024,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 64,
+        "singleCoreN": 1024,
+        "singleCoreK": 128,
+        "baseM": 64,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 8,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 1024,
+        "Kb": 128,
+        "singleCoreM": 64,
+        "singleCoreN": 128,
+        "singleCoreK": 1024,
+        "baseM": 64,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 8,
+        "depthB1": 8,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 8,
+        "stepKb": 8,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "0b196de61215c271d518c7b36dcf037a6827f9a71d191b995fa383d3ed93ece6",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 76547584,
+        "launch": {
+          "line": 148275,
+          "line_sha256": "6f32b602713beefbba1d6032362b80adf23f9be52e6f8e4dfda0c5b19f3b7bd6",
+          "tid": "306",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93317,
+        "exit_line": 151837,
+        "raw_lines": [
+          148320,
+          148321
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "25ca3d0325592cb65067932e29f5b90b5b7c3b16f7ba4cd02e050627390faead"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "9c5806f45f16078adb35393ee14fc30f9ebc020337fa535a942d631b9cf17eea"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "9feeafd46e691e18a54b6fc6cabc74ed5e18eeac74d68d89c118d9b235031e0f"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "76a24c7bfbc11d2e623ed9ac6834169087e7c83ba956d2e0bc644935c2e914f5"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "7010deaa6753ca149a305d81e6a4e4c7b48a27040d9b185968868a0e20eac3b3"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "e417ca7bf4da734d4036dddc21dc54bef6f17af8a5f86948bc7504b468ba469b"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "3c741aa98ec1674f37429d04744a4f32109cb42f1e1ecf80c3ec668bfe56589c"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "cd02b23cbda1379b36b0c6fe01cb345e9768f4f94bc44eac4d3feb98bc706de2"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "c26bfca79cbee369ce7329864f687df493649f049255ba91d245723f65616a63"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "637d1466361d63ad911e175a04eda2d097f4d62a0522092b7d00073503a97495"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "28f2fd40b8bbffabcebca39faf1da9a1533bbdb1e9dd0c4361987695c2084130"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "9a4424ee53b7fa1d7ed6140ed1fab6fd94b3cc27df4b076876c32ad1c70519d6"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "218bd7428a84e7323008a8bc9a9373a93bf4bb598b63ccbbc0b63fdb8e8a8b29"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "913d7338843ae0f04fca10e339e489e150ce3705bc3e78de6724bfdf5dffb79f"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "105bd023e68a16741f22a46b365d05fa3d6870c1ea8dbd037c2053810ff5f7ef"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "65dcef9b48d6c22925d778c1e60f3f947f31c2eba36c8d86eb4dcfdcb5866aed"
+          },
+          {
+            "line": 81057,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "82299483e0f70b14c0ed7a8af8fb804c4344c67655765975631d03b8c305446e"
+          },
+          {
+            "line": 81058,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "367e60cdb1e3d59be5e7b7eee2523e7cc03bada7f34c9bd4788b143020553ccc"
+          },
+          {
+            "line": 81085,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "da359841e86f5cfca02bad0341efd50724d2c46b103f109c03b7a7f1d06a8636"
+          },
+          {
+            "line": 81086,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "bc5cc42e5a5802ed49758eb3ab7c79ca102e7a38e8feb11d88357d46a46f4956"
+          },
+          {
+            "line": 81087,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "375f06386eab745d768d4b3075689683f81e5d550a8e5833e90dcc2536a9d1c4"
+          },
+          {
+            "line": 81088,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "7905d4fbe60493800f36094b9f432e639e138f6ffde20db51ba2d636ce7874ca"
+          },
+          {
+            "line": 81089,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "835a98c9f6c2ea9cc687b724e9cd32b8fa1df35a3000080bdf6a82e4f57119ec"
+          },
+          {
+            "line": 81090,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "252a3d23d8b20103bee189c62534380564593bba74b737b984416535f27943c4"
+          },
+          {
+            "line": 81091,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "04536c3e2ee21db1c2b34f753e8c1d745e77b78f4949b85686c584185caac720"
+          },
+          {
+            "line": 81092,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "06020c7c1d84af02eb26014f7cb616e9f9a9b7a9c49deae8217559a50f85946a"
+          },
+          {
+            "line": 81093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "98123ceb2622e7491a78e8f756b8a03578f78b0f17e396e19ebff519de48ea85"
+          },
+          {
+            "line": 81094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "6fcae2a3e1717766ec5a71a112918821cea8b2593ce25e08d300b2088536f6df"
+          },
+          {
+            "line": 81095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "0f0172b89bc2a40d9710a7fc775093c97c1e5e2e5754f2320be7ac9092374a60"
+          },
+          {
+            "line": 81096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "8adf95fa6e442db164acc5fa55d0f7305de3fb49446a3f79256896a8a9defae2"
+          },
+          {
+            "line": 81097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "75fbb4353d0ffed31aff97a9ed7d75f94704fac3d5f684015028cf284b7b5b68"
+          },
+          {
+            "line": 81098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "fd973a9edd054dfb754ba8cfeef6874e49afce6b067d9fed8169b677c356f52a"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "17fac5958d131d719c9c35e1b2eff1a9f1712de9a33309b5303a000d11a628b8"
+      }
+    },
+    {
+      "case_id": "r_only_b1_r0",
+      "batch": 1,
+      "factor_label": "r_only",
+      "repeat": 0,
+      "actual_m": 128,
+      "actual_ratio": 4,
+      "actual_s2_base": 128,
+      "actual_s2_group": 512,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        48234496
+      ],
+      "enclosing_api_workspace_bytes": 52430336,
+      "raw_sha256": "c296e42e69cfd4374f22d955eb0d0662cb820fb92c72ff9032fb5622c811db60",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 256,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 512,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 512,
+        "singleCoreK": 128,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 4,
+        "stepM": 1,
+        "stepN": 4,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 512,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 128,
+        "singleCoreK": 512,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 4,
+        "depthB1": 4,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 4,
+        "stepKb": 4,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "d7008b7be932e50ac6677fa89edcce3baa0d0ce9920f9afdf678c6d0cbcb0842",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 52430336,
+        "launch": {
+          "line": 148283,
+          "line_sha256": "d8aeb4b97a687b47b44a9a0bf2da5603eadd517174a89fb40c63b6d9d2dd15bd",
+          "tid": "382",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93345,
+        "exit_line": 151840,
+        "raw_lines": [
+          148328,
+          148329
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "295a1c8bb5a5fbb8282d99e56b01634740a744910eac382f89fdb32962b7d604"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "638b7ca53b13c6ea69a9cf22a681e1fb26fa39773bfcc7eea153556f1c7499d1"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "620318af0c2b50786ec783cfb4eeaee0e07048681efa94411172fb206bde6890"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "d156c31404f4e3f75916b6dd79594c0f2a0687a7fabc77ee8c8eedd9b04613e2"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "42ec479b479bb602ed638e5c74d5ec2df0e01fff2b4cd37c21e674af20d1c596"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "ec5643350f33df80e7e13c775c3c2d81eacc909fc71e372b2d440a4433d37d9a"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "537c0845912aab740a79a2f9032469ab8ba737b3afa9b038728789d27a75618f"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "8138d6c24d662726d0519a8d245e96d5c454e5405ce1e37de918bcddbbfdb1da"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "40e3a63f576f40e4f98e8bf497b4f224b6b5129448b1bdc5e1afbbf7a0f52b9c"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "665cb2403504bbbcd8617d7f205cc689beadda542473faad9fada49e4719afe4"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "f718e29f67ee680f7dac4c6ad0b5cc94b68b45207fbf921a859ef6319c666a22"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "44ccc4c3084c256bb4dc8947cec5507392346e7c87f916d5e3d12958c007756a"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "6ade7b4069d726bf237faee440ac1d0a0bea6f60a2e871646183d868d7ea9086"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "9bb4c9aba4038df0fc9170ee747d4112cc58a36fa155cb442f7820e12d26d12e"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "f76bddeaf033f69747b7707b349299aaaa838e55d90d8d250a10077c8af1d495"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "fb96046bf1d8d4538721e017bdf8117bb08fb226e60b84f085bc29e019756bbe"
+          },
+          {
+            "line": 81023,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "7444f6d21ad2beccb20c4a0a66254fa8a05be4de083d8e608f7cd27889801bb6"
+          },
+          {
+            "line": 81024,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "6e15b0ef4c5fa1990e248a9d177f6ee02555be4996063e4d9095128f2de265ef"
+          },
+          {
+            "line": 81051,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "152aa7354e9fbb875938fc26c0d3150aa4a758e54268270389ef7f9cd96592ce"
+          },
+          {
+            "line": 81052,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "70a90142a38ce6ba15af77d7d836893c42b8eb10728d9a19d4f864ad7888a5c4"
+          },
+          {
+            "line": 81053,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "d4c15653f1f4822d9565ba10316f4073ba646997bf35e0bc6bc2fa36c9ec52b8"
+          },
+          {
+            "line": 81054,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "691958cc841c138e2e9ec7e5f7e7f5e32f8a647127f75103633445ed0755bd14"
+          },
+          {
+            "line": 81055,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "4274866780cfb04a648b634ca90013dad17ab44f805b4378c84d616a6a496d90"
+          },
+          {
+            "line": 81056,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "b16ec95a7845586b7cc245e40945116459c46f57869f11faf0e8cade7acfeda1"
+          },
+          {
+            "line": 81057,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "4a046d3a9639ac931596689283268e76b0c5e706dabc21fe9b5110efdaec779e"
+          },
+          {
+            "line": 81058,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "8886e38cc119e7cbd09e1ffc60e39e0ec8f34da4a547955a7e42e75bccccf6f2"
+          },
+          {
+            "line": 81059,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "7c37fd2916716986e65dc8c7a5a6c23040d56cbec9d8a0067adc76d69ef0eae3"
+          },
+          {
+            "line": 81060,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "d9b90df2c0bfe5d938882e38b889c4dee8b02302e73d78bb5d52ee1ca391fa22"
+          },
+          {
+            "line": 81061,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "d86020e19cd65ca17c34c8ca1cc3a0c77eb8eeaec445c571be36810eb60c4c82"
+          },
+          {
+            "line": 81062,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "f834b399227cd94a7a6bd0a9c8ef0ffc4fd2829316099a4ede0354c1efe5940a"
+          },
+          {
+            "line": 81063,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "4e4d8f067d1376fdd3255a6a685a2beb1bb8ee2af1330753ed51be3a4b125cc1"
+          },
+          {
+            "line": 81064,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "468c5bf0d912d7e08df661b6c9867f459b317dcdd0f520eef5b442ed7dba8706"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 32768,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "3ab45614931d94b1c97cbee35b8aa5247520475f82b7d0bc6cf98b6f9328b16f"
+      }
+    },
+    {
+      "case_id": "r_only_b1_r1",
+      "batch": 1,
+      "factor_label": "r_only",
+      "repeat": 1,
+      "actual_m": 128,
+      "actual_ratio": 4,
+      "actual_s2_base": 128,
+      "actual_s2_group": 512,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        48234496
+      ],
+      "enclosing_api_workspace_bytes": 52430336,
+      "raw_sha256": "c296e42e69cfd4374f22d955eb0d0662cb820fb92c72ff9032fb5622c811db60",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 256,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 512,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 512,
+        "singleCoreK": 128,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 4,
+        "stepM": 1,
+        "stepN": 4,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 512,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 128,
+        "singleCoreK": 512,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 4,
+        "depthB1": 4,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 4,
+        "stepKb": 4,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "88270e79d5cee558e6b88088655fa940ff91cf3a1708df9ea4fb8050aa510c9e",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 52430336,
+        "launch": {
+          "line": 148283,
+          "line_sha256": "da346edee748e854cac74ad74b7fedfdb5fd216de5d9cb0f2d8d605e659bd298",
+          "tid": "458",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93345,
+        "exit_line": 151844,
+        "raw_lines": [
+          148328,
+          148329
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "28b1dddb161b6a695e73c883d775806da023f997feb2d9bea5824783be97026f"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "ecdfe3f44aa240058fb42bab26c1c4f3f008e3720d99d6db5572c7cc04401f23"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "8796135a3fb172fddae59faef38b9f47bc083e5a0ac089587da88667037a283d"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "b8ad7db060d7731e1a842140b31d809a0addf21baa712cd01d59f604fbd875fb"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "32e123b1048adaaacf2362dda91916e24ccda2f5d71611dc5ba3928afb2f0466"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "e0060e2155d10749ce4210dfa4eb9cb5977ab2b21372da5ca75ae89ed4f1ee87"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "d96d945a4534e5e3bfdb16db8c6ab1884316e6b7514eeb5a80cd8518376461dc"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "eb5b3c0bc5442e2aba5593afb82c5fce09b89c906f538bbe39ffe77cdb583bbd"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "40a7db26d6dcc3090600ea95a7199449cf49a4de3da4012ed8a9743b01b28e3e"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "29d1a1cc087e7e8f31c433ca7f5dbe210bd0b755c50bbadb6e00364cb358a165"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "18e2eeaf3f452ba8d9dc7672a683ddc531d1e7d905c2cfaece00bad4ec9f84d1"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "d8485864ea1d781ec8e59cb489152cf62918b4a317cbbaef0f5a35ddc5f3bb84"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "5b1da6b84f5e4fcb21facdbf0856d71caf6de228ece4afcb85c6c06421d69351"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "f799d998e6defae91ba6b87b32fe8c5f92fae44bd4891120d2ef511b14fcc99b"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "012c2c9729b366f7032d8045068074d070458f702fba267a85718948373c85b0"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "f38897f530291f1af0c36da04e659322a5eb58cc8c0ccda2acca9b32df2d47c9"
+          },
+          {
+            "line": 81023,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "7f24a8426c06782ffaf9b9c9c95b9c5deae35b57800bb9751fb2f597b4ab05d3"
+          },
+          {
+            "line": 81024,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "a4e0f58f1753d0fdb48be48e23a14887739f438737da224678b37572f683560a"
+          },
+          {
+            "line": 81051,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "5753184d8b268b80dd222bbcf2ca338cd3acf1298618c87775f27e4e633a1169"
+          },
+          {
+            "line": 81052,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "205e7279b4e925031f59e108f0d27bc09c90748e5d2c7965a7c688f6f92b4cee"
+          },
+          {
+            "line": 81053,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "32e710ba72f3be66f61e2947886f242ba3caa6d6df652ea4b8a600bb93a85a93"
+          },
+          {
+            "line": 81054,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "33b7f628bdb516036a4089ba95598d6064fc1b7831958238b5257984fe97a17e"
+          },
+          {
+            "line": 81055,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "05ef97000efc6b9982650e5c192cf653971fe99a2f9491d8708e0880ac8e6b1d"
+          },
+          {
+            "line": 81056,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "adee7dea6615dcd2b4af39aa7566e6b60871f542f81ce73a176e04a405d56387"
+          },
+          {
+            "line": 81057,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "ec7acf146d2a222804cd407414ef2ece57fc0509f140d4f7ee1ac9fffb268b5c"
+          },
+          {
+            "line": 81058,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "048f0c0871897563272fb2bb0ced8cf6d0b382c16521cb7dcc0e52b5de3a0490"
+          },
+          {
+            "line": 81059,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "1842e3d21335a59ab998058c7343eed4a29f2cd7580c31979cad81b923643ae0"
+          },
+          {
+            "line": 81060,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "8f9c0a353c4d0c8968065bf2e2ab17d337d197e7badf70289900add165c9d6bf"
+          },
+          {
+            "line": 81061,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "03f5ae80631b820b301dfaa0d6ced986e6ec98a6c08aa57e4c84caa68fc96ceb"
+          },
+          {
+            "line": 81062,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "f718012baa9f5fbe68e3fd14aefe2174e7e1674bc75db9c6f84c3fda2611592d"
+          },
+          {
+            "line": 81063,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "6afca181cffaf92bf122be3f8fc976287eef2e3ff6644a2b7d2963f539a97de2"
+          },
+          {
+            "line": 81064,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "02b1f31f05e9839a6ae48982e5a8757820ff214bcec74866b605c01bf17fd440"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 32768,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "3ab45614931d94b1c97cbee35b8aa5247520475f82b7d0bc6cf98b6f9328b16f"
+      }
+    },
+    {
+      "case_id": "r_only_b8_r0",
+      "batch": 8,
+      "factor_label": "r_only",
+      "repeat": 0,
+      "actual_m": 128,
+      "actual_ratio": 4,
+      "actual_s2_base": 128,
+      "actual_s2_group": 512,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        48234496
+      ],
+      "enclosing_api_workspace_bytes": 81790464,
+      "raw_sha256": "06cbcc40e061ed4d0d732b5ae7a7122573a3cc09edb5818ce1d87bd95748faa8",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 2048,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 512,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 512,
+        "singleCoreK": 128,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 4,
+        "stepM": 1,
+        "stepN": 4,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 512,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 128,
+        "singleCoreK": 512,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 4,
+        "depthB1": 4,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 4,
+        "stepKb": 4,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "ae623fe50c6bd428390e04dc4f17289c2b87e23fd16c51cffce5084ecdc419fe",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 81790464,
+        "launch": {
+          "line": 148277,
+          "line_sha256": "5a5b4af9bc4ab5ff982a346ca85db32eae3f21de10e290168e53c17c88871489",
+          "tid": "534",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93316,
+        "exit_line": 151848,
+        "raw_lines": [
+          148322,
+          148323
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "84b3ebfe8258cf65739e7b77eb71cf22d9b9e0061bf3bccc725c02223f2b9e38"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "2e59dcd4525dc57cc2859a64310d090745eebe2f7282264f64202358e530ae71"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "8a91449f4fac572d453297d2a7b53652441f97612d39134626ff93b941227634"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "e930e220de77df30f1d1a8a392fd21e72ce323718a758030afa81f67dc0712ea"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "7581c2ccf96e9951961f120ea82ccf6a5e89ff12438e8f713e83a0bbd55800cf"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "a304473da57eaf3b519852bdcd4ac8230f02837ededee1a4fdefca89016556d1"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "6784614d34430ca728a5f90de3085e6d81ccae6d23d593c01f1e7fa093819812"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "15836119800de3d04101d49992d7c93f141adcd2ff33d9dccd236542508b31df"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "18b4d35f99d282cb25d58f2c5e02d7eb1d3f03f423704df5e8b4d91f24dbcda6"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "6bbc87d1b5504256f34b27a557f893617e3007aad63a28bba56006525d31b601"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "45beed1dea29881d86e304c5c6c22591c3b3f8a8c49d7635c5123816cd838da3"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "484f121cc7e4ba53dcab4750a72b5901494b7665d15ec9142ff28862bc9833c8"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "8a4fa56353fbfe196746dbe4aef441aba2f15d0cd73ee2448c22a860672d235a"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "579180086a1498ab8eb7faaad5698d23be439c9466ba6f500e1f7b2bac35e47d"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "2914dc175a70cb915c48d9e569962fe2c10037903d2cd36641e30595cbc141ab"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "a405d58708bfd334bcadd108ec130be7024cca2d01b1c4620e151fe10d65acf5"
+          },
+          {
+            "line": 81057,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "41d04e91632cf191c9880a8a68ea15bdfb1f3258c7b88f8c2d371a94796e2908"
+          },
+          {
+            "line": 81058,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "b599f77e726ee7f4671e53a9d1f9a7f59d3ff382e44c2cad90633e7a621f1584"
+          },
+          {
+            "line": 81085,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "632ab575258292ab453d865fc9e820e0d319029d48bfd4f0d20d294dacaef5bd"
+          },
+          {
+            "line": 81086,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "c1cfa19ca6f34823c8307b07741ce53ac12443474db95f6e123b299657ad085b"
+          },
+          {
+            "line": 81087,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "33419d3444a027d8397a001217940b55617211c2a50ac6679a64f64cf376f07c"
+          },
+          {
+            "line": 81088,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "e1031d85bb077a3fc3f71804d8e201e269d1adb1bb5015676f4563362ee8f4e2"
+          },
+          {
+            "line": 81089,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "51bed36dbb86d2a89dd050b525197d2b5443639053de7c66baea12bd62c50911"
+          },
+          {
+            "line": 81090,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "18da82d24dd6a975baede60a218003eaa25f86270082b7296015689ea26fc773"
+          },
+          {
+            "line": 81091,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "5c0ebd656ce955da1a6ad6be4367bf100944c281a749331395c4213edc8e3138"
+          },
+          {
+            "line": 81092,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "bab8d3d3a1a8fba65716138adc347a87010761f4a81e3397cdbf6cb9e6961ded"
+          },
+          {
+            "line": 81093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "62b49c187e272d00c5629520527a75f7fc04f8ec9e58caec52da881fdeef559c"
+          },
+          {
+            "line": 81094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "9986c9587d99ea565632ab33b05c197005b8d93b0e690bcc23a486958ac3c383"
+          },
+          {
+            "line": 81095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "0b54d03e5523bb1424c134c9c093721bfce0e44cbda9ca76b612371a1d77b610"
+          },
+          {
+            "line": 81096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "7b9b14dacb2baa307bf5904f79db4846641068d275673c6924a96a90026b6a2d"
+          },
+          {
+            "line": 81097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "d7e4a0360eed23395dbe5df2f37bfcbfcd260c9d794360fdf1cd606bbde62e1f"
+          },
+          {
+            "line": 81098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "bc544d78b6db8c1ca4943c579926c6168a547fd2641878229c940a527acc2558"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "69bd0208b3c2e31d22a19d7100850c9715834e083bf3c9df4d717028049e13e8"
+      }
+    },
+    {
+      "case_id": "r_only_b8_r1",
+      "batch": 8,
+      "factor_label": "r_only",
+      "repeat": 1,
+      "actual_m": 128,
+      "actual_ratio": 4,
+      "actual_s2_base": 128,
+      "actual_s2_group": 512,
+      "template": "FlashAttentionScoreS1s2Bn2gs1",
+      "key": "22619644976",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "workspace_sizes": [
+        48234496
+      ],
+      "enclosing_api_workspace_bytes": 81790464,
+      "raw_sha256": "06cbcc40e061ed4d0d732b5ae7a7122573a3cc09edb5818ce1d87bd95748faa8",
+      "callback_status": 0,
+      "cpp_python_pod_fields_equal": 205,
+      "guard_checks": 2,
+      "core_num": 40,
+      "query_tasks": 2048,
+      "bmm1": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 512,
+        "Ka": 128,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 512,
+        "singleCoreK": 128,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 1,
+        "depthB1": 4,
+        "stepM": 1,
+        "stepN": 4,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 1,
+        "stepKb": 1,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "bmm2": {
+        "usedCoreNum": 1,
+        "M": 2048,
+        "N": 128,
+        "Ka": 512,
+        "Kb": 128,
+        "singleCoreM": 128,
+        "singleCoreN": 128,
+        "singleCoreK": 512,
+        "baseM": 128,
+        "baseN": 128,
+        "baseK": 128,
+        "depthA1": 4,
+        "depthB1": 4,
+        "stepM": 1,
+        "stepN": 1,
+        "isBias": 0,
+        "transLength": 0,
+        "iterateOrder": 0,
+        "shareMode": 0,
+        "shareL1Size": 524032,
+        "shareL0CSize": 131072,
+        "shareUbSize": 0,
+        "batchM": 1,
+        "batchN": 1,
+        "singleBatchM": 1,
+        "singleBatchN": 1,
+        "stepKa": 4,
+        "stepKb": 4,
+        "depthAL1CacheUB": 0,
+        "depthBL1CacheUB": 0,
+        "dbL0A": 2,
+        "dbL0B": 2,
+        "dbL0C": 1,
+        "ALayoutInfoB": 0,
+        "ALayoutInfoS": 0,
+        "ALayoutInfoN": 0,
+        "ALayoutInfoG": 0,
+        "ALayoutInfoD": 0,
+        "BLayoutInfoB": 0,
+        "BLayoutInfoS": 0,
+        "BLayoutInfoN": 0,
+        "BLayoutInfoG": 0,
+        "BLayoutInfoD": 0,
+        "CLayoutInfoB": 0,
+        "CLayoutInfoS1": 0,
+        "CLayoutInfoN": 0,
+        "CLayoutInfoG": 0,
+        "CLayoutInfoS2": 0,
+        "BatchNum": 0,
+        "mxTypePara": 0
+      },
+      "native_launch": {
+        "source_sha256": "8ca35ef277cf7900dfceefdda6707f267cc13a304e63c382aa4d301bd6f4963e",
+        "tiling_key": "22619644976",
+        "block_dim": 20,
+        "workspace_count": 1,
+        "api_workspace_bytes": 81790464,
+        "launch": {
+          "line": 148277,
+          "line_sha256": "479c46e6333daf7dbaec22e913c9ddf49af9779b054ddd447d5436556fdd4789",
+          "tid": "610",
+          "op": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "key": "22619644976",
+          "size": "1464",
+          "blocks": "20",
+          "workspaces": "1"
+        },
+        "enter_line": 93316,
+        "exit_line": 151844,
+        "raw_lines": [
+          148322,
+          148323
+        ],
+        "loads": [
+          {
+            "line": 3751,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "0c6f3872011709066c19c4d7df57087e46c21f9126b868ce1a39b14de06b0c82"
+          },
+          {
+            "line": 3752,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "3959466499a67d0b48f292c022566108dcbd5b34f3ad87ff14e79da6ea4830cf"
+          },
+          {
+            "line": 4093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "0898e5f4661c4ad5333ee822c2a46325349b014ba6194a2cbc550b8f37a5842d"
+          },
+          {
+            "line": 4094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "8753297a5b1c796e6ea91587febe5dbda261e073c194fa7a99422f9b35836652"
+          },
+          {
+            "line": 4095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "5afdb851cba6c5ebabf221c024479d59bfe5b830fd8de6b6729c36ccaec15521"
+          },
+          {
+            "line": 4096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "ed40d450cea3b5f62d3e5820b03c887ebc11e7794b023b1f958dae365452e663"
+          },
+          {
+            "line": 4097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "101dde99de01a6a975ba42ab33e00e2553bc4e46c0edd39319b840e225810def"
+          },
+          {
+            "line": 4098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "ce05c4d35c71c8fcfe92c1314b3dbbdacd715e5d1f348d1abbc5bc8f6328b646"
+          },
+          {
+            "line": 4099,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "72c16a0a4b465600d740c769a51dc05257b4def96f90d72862b03735914fcfd1"
+          },
+          {
+            "line": 4100,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "9ae4969ce1a351251099534fbf084b6f8fe3ad2bd1fd2b2ec0b2b1d3dcf12379"
+          },
+          {
+            "line": 4101,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "1df57de6667115fe6687f12b1a832d4d6efc7729dd038121128aa321efd09f54"
+          },
+          {
+            "line": 4102,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "07cfb851ef5c40ac0a968daf15e1ffcd60f4ea163e75230c197b87a06e0376f1"
+          },
+          {
+            "line": 4103,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "b43def6248e6da201f11a02390ef04afc2bafb8d3d9b806a97e6db7b37aa197e"
+          },
+          {
+            "line": 4104,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "e5e7dc54c700b38afe00e0aecb10ac6a49ae56b9e2f02c028c4d632f31f8bda1"
+          },
+          {
+            "line": 4105,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "4e0f3e28b67988f926b875598c08c1e6dbf4edd16fffc2972472b4190d78c795"
+          },
+          {
+            "line": 4106,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "5c31ad8f7587be9e2bd5869ef4badb8ee216ac8a2e70b45f09ba0aaee787ce9a"
+          },
+          {
+            "line": 81057,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+            "line_sha256": "d1c921faa2c46b2573ac9ecda4dadda75584d17ee84fa91a2a4cec20254d2150"
+          },
+          {
+            "line": 81058,
+            "path": "/audit/vendor_stage_a1/vendors/fault28_causal_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+            "line_sha256": "88887ef34c2e6f86bece0d686a4e058c1cfb0c15933b4dbd29dba6f721cc7b4c"
+          },
+          {
+            "line": 81085,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+            "line_sha256": "9aed484d6caeae7dae32a4ef59328e9acb61a52fd6eac90a8cec89ab09df7e32"
+          },
+          {
+            "line": 81086,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+            "line_sha256": "96b0418e278260b2a2e5b1bbfd3c92bb2839955a8a14870cdf3d2025e89e75c8"
+          },
+          {
+            "line": 81087,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+            "line_sha256": "673c34a8111f459d18bf2fccc01f8c2cae8e4b431e7b962c5b2c40612a3a6397"
+          },
+          {
+            "line": 81088,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+            "line_sha256": "7f232b2f8308a7fd56b7e0a952138e7810aa0cfb032a834b50d82008e0adf44b"
+          },
+          {
+            "line": 81089,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+            "line_sha256": "7ff43706c3216aa8acfb75d65f4a441f0ab0488ac07ee9cb7057adc3ba2d311f"
+          },
+          {
+            "line": 81090,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+            "line_sha256": "84a2bdbd7cf31b0e3e6e166d2bcd6e138cef48d52f23abd5bdc9ce2a3a4eb2c9"
+          },
+          {
+            "line": 81091,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+            "line_sha256": "5a53ab9f44dc3cf307e8555a2dee0b5591676b72f3552d1a072f7fa3f89504e7"
+          },
+          {
+            "line": 81092,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+            "line_sha256": "074ef52cadb957a26fc872e4070e3e8c9c52d25dd31e93d9b4af537bb753a6ed"
+          },
+          {
+            "line": 81093,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+            "line_sha256": "770f784f358902aa52b12217e60324f0c78a907cc9bfc5459744eda6de834e4f"
+          },
+          {
+            "line": 81094,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+            "line_sha256": "405aec96728a7902d08fc8e50e498770e6cd64c9b96ea4f25fdbde0aa3d6afcc"
+          },
+          {
+            "line": 81095,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+            "line_sha256": "d99501b90a7e31486009b1d90816f22c2295abc82ecc1902a3ee4291f0efa203"
+          },
+          {
+            "line": 81096,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+            "line_sha256": "98306281bbbdcaaaf1e11118c3e91ab99a04a75af946901b1b9f1e1163f44422"
+          },
+          {
+            "line": 81097,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+            "line_sha256": "0c1a6d6514253abaf0f813d4f9d819e91ebb6f0c3d74651ae97fac10c4da31c0"
+          },
+          {
+            "line": 81098,
+            "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+            "line_sha256": "6e22c17bd868dc5277691fe6e380b3604bad8792a85ca8fd7f0cb6bee9c0ce0a"
+          }
+        ]
+      },
+      "source_query_coverage": {
+        "queries_checked": 262144,
+        "every_real_query_owned_once": true,
+        "each_query_legal_keys_covered_once": true,
+        "query_split_between_cores": false,
+        "full_task_trace_sha256": "69bd0208b3c2e31d22a19d7100850c9715834e083bf3c9df4d717028049e13e8"
+      }
+    }
+  ],
+  "source_plan_comparisons": {
+    "B1.base_to_m_only": {
+      "target_queries_compared": 32768,
+      "changed_query_counts": {
+        "legal_key_groups": 0,
+        "computed_key_groups": 16640,
+        "task_query_interval": 32768,
+        "aiv": 17472,
+        "use_next_l1": 15360,
+        "softmax_row_geometry": 16640,
+        "vec1_row_assignment": 32768
+      },
+      "last_query_changed_head_counts": {
+        "legal_key_groups": 0,
+        "computed_key_groups": 0,
+        "task_query_interval": 16,
+        "aiv": 16,
+        "use_next_l1": 0,
+        "softmax_row_geometry": 0,
+        "vec1_row_assignment": 16
+      },
+      "first_changed_examples": {
+        "computed_key_groups": {
+          "head": 0,
+          "query": 0,
+          "before": [
+            [
+              0,
+              128
+            ]
+          ],
+          "after": [
+            [
+              0,
+              64
+            ]
+          ]
+        },
+        "task_query_interval": {
+          "head": 0,
+          "query": 0,
+          "before": [
+            0,
+            128
+          ],
+          "after": [
+            0,
+            64
+          ]
+        },
+        "softmax_row_geometry": {
+          "head": 0,
+          "query": 0,
+          "before": [
+            {
+              "computed_width": 128,
+              "masked_key_count": 127,
+              "softmax_shape": [
+                64,
+                128
+              ],
+              "softmax_original_shape": [
+                64,
+                128
+              ]
+            }
+          ],
+          "after": [
+            {
+              "computed_width": 64,
+              "masked_key_count": 63,
+              "softmax_shape": [
+                64,
+                64
+              ],
+              "softmax_original_shape": [
+                64,
+                64
+              ]
+            }
+          ]
+        },
+        "vec1_row_assignment": {
+          "head": 0,
+          "query": 0,
+          "before": [
+            {
+              "real_split_n": 2,
+              "row_subtile_index": 0
+            }
+          ],
+          "after": [
+            {
+              "real_split_n": 1,
+              "row_subtile_index": 0
+            }
+          ]
+        },
+        "aiv": {
+          "head": 0,
+          "query": 64,
+          "before": 0,
+          "after": 1
+        },
+        "use_next_l1": {
+          "head": 0,
+          "query": 64,
+          "before": true,
+          "after": false
+        }
+      },
+      "legal_key_set_unchanged": true,
+      "query_split_between_cores": false,
+      "floating_point_instruction_order": "NOT_IDENTIFIED",
+      "interpretation": "Actual source-derived grouping and scheduling only; matching groups do not establish identical arithmetic.",
+      "bmm_changed_fields": {
+        "bmm1": {
+          "singleCoreM": [
+            128,
+            64
+          ],
+          "baseM": [
+            128,
+            64
+          ]
+        },
+        "bmm2": {
+          "singleCoreM": [
+            128,
+            64
+          ],
+          "baseM": [
+            128,
+            64
+          ],
+          "depthA1": [
+            4,
+            8
+          ],
+          "stepKa": [
+            2,
+            8
+          ]
+        }
+      }
+    },
+    "B1.base_to_r_only": {
+      "target_queries_compared": 32768,
+      "changed_query_counts": {
+        "legal_key_groups": 24576,
+        "computed_key_groups": 24576,
+        "task_query_interval": 0,
+        "aiv": 0,
+        "use_next_l1": 0,
+        "softmax_row_geometry": 24576,
+        "vec1_row_assignment": 24576
+      },
+      "last_query_changed_head_counts": {
+        "legal_key_groups": 16,
+        "computed_key_groups": 16,
+        "task_query_interval": 0,
+        "aiv": 0,
+        "use_next_l1": 0,
+        "softmax_row_geometry": 16,
+        "vec1_row_assignment": 16
+      },
+      "first_changed_examples": {
+        "legal_key_groups": {
+          "head": 0,
+          "query": 512,
+          "before": [
+            [
+              0,
+              513
+            ]
+          ],
+          "after": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              513
+            ]
+          ]
+        },
+        "computed_key_groups": {
+          "head": 0,
+          "query": 512,
+          "before": [
+            [
+              0,
+              640
+            ]
+          ],
+          "after": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              640
+            ]
+          ]
+        },
+        "softmax_row_geometry": {
+          "head": 0,
+          "query": 512,
+          "before": [
+            {
+              "computed_width": 640,
+              "masked_key_count": 127,
+              "softmax_shape": [
+                8,
+                640
+              ],
+              "softmax_original_shape": [
+                8,
+                640
+              ]
+            }
+          ],
+          "after": [
+            {
+              "computed_width": 512,
+              "masked_key_count": 0,
+              "softmax_shape": [
+                16,
+                512
+              ],
+              "softmax_original_shape": [
+                16,
+                512
+              ]
+            },
+            {
+              "computed_width": 128,
+              "masked_key_count": 127,
+              "softmax_shape": [
+                64,
+                128
+              ],
+              "softmax_original_shape": [
+                64,
+                128
+              ]
+            }
+          ]
+        },
+        "vec1_row_assignment": {
+          "head": 0,
+          "query": 512,
+          "before": [
+            {
+              "real_split_n": 16,
+              "row_subtile_index": 0
+            }
+          ],
+          "after": [
+            {
+              "real_split_n": 8,
+              "row_subtile_index": 0
+            },
+            {
+              "real_split_n": 2,
+              "row_subtile_index": 0
+            }
+          ]
+        }
+      },
+      "legal_key_set_unchanged": true,
+      "query_split_between_cores": false,
+      "floating_point_instruction_order": "NOT_IDENTIFIED",
+      "interpretation": "Actual source-derived grouping and scheduling only; matching groups do not establish identical arithmetic.",
+      "bmm_changed_fields": {
+        "bmm1": {
+          "N": [
+            1024,
+            512
+          ],
+          "singleCoreN": [
+            1024,
+            512
+          ],
+          "depthB1": [
+            8,
+            4
+          ],
+          "stepN": [
+            8,
+            4
+          ]
+        },
+        "bmm2": {
+          "Ka": [
+            1024,
+            512
+          ],
+          "singleCoreK": [
+            1024,
+            512
+          ],
+          "depthB1": [
+            8,
+            4
+          ],
+          "stepKa": [
+            2,
+            4
+          ],
+          "stepKb": [
+            8,
+            4
+          ]
+        }
+      }
+    },
+    "B8.base_to_m_only": {
+      "target_queries_compared": 32768,
+      "changed_query_counts": {
+        "legal_key_groups": 0,
+        "computed_key_groups": 16384,
+        "task_query_interval": 32768,
+        "aiv": 16384,
+        "use_next_l1": 16320,
+        "softmax_row_geometry": 16384,
+        "vec1_row_assignment": 32768
+      },
+      "last_query_changed_head_counts": {
+        "legal_key_groups": 0,
+        "computed_key_groups": 0,
+        "task_query_interval": 16,
+        "aiv": 1,
+        "use_next_l1": 0,
+        "softmax_row_geometry": 0,
+        "vec1_row_assignment": 16
+      },
+      "first_changed_examples": {
+        "computed_key_groups": {
+          "head": 0,
+          "query": 0,
+          "before": [
+            [
+              0,
+              128
+            ]
+          ],
+          "after": [
+            [
+              0,
+              64
+            ]
+          ]
+        },
+        "task_query_interval": {
+          "head": 0,
+          "query": 0,
+          "before": [
+            0,
+            128
+          ],
+          "after": [
+            0,
+            64
+          ]
+        },
+        "softmax_row_geometry": {
+          "head": 0,
+          "query": 0,
+          "before": [
+            {
+              "computed_width": 128,
+              "masked_key_count": 127,
+              "softmax_shape": [
+                64,
+                128
+              ],
+              "softmax_original_shape": [
+                64,
+                128
+              ]
+            }
+          ],
+          "after": [
+            {
+              "computed_width": 64,
+              "masked_key_count": 63,
+              "softmax_shape": [
+                64,
+                64
+              ],
+              "softmax_original_shape": [
+                64,
+                64
+              ]
+            }
+          ]
+        },
+        "vec1_row_assignment": {
+          "head": 0,
+          "query": 0,
+          "before": [
+            {
+              "real_split_n": 2,
+              "row_subtile_index": 0
+            }
+          ],
+          "after": [
+            {
+              "real_split_n": 1,
+              "row_subtile_index": 0
+            }
+          ]
+        },
+        "aiv": {
+          "head": 0,
+          "query": 64,
+          "before": 0,
+          "after": 1
+        },
+        "use_next_l1": {
+          "head": 0,
+          "query": 64,
+          "before": true,
+          "after": false
+        }
+      },
+      "legal_key_set_unchanged": true,
+      "query_split_between_cores": false,
+      "floating_point_instruction_order": "NOT_IDENTIFIED",
+      "interpretation": "Actual source-derived grouping and scheduling only; matching groups do not establish identical arithmetic.",
+      "bmm_changed_fields": {
+        "bmm1": {
+          "singleCoreM": [
+            128,
+            64
+          ],
+          "baseM": [
+            128,
+            64
+          ]
+        },
+        "bmm2": {
+          "singleCoreM": [
+            128,
+            64
+          ],
+          "baseM": [
+            128,
+            64
+          ],
+          "depthA1": [
+            4,
+            8
+          ],
+          "stepKa": [
+            2,
+            8
+          ]
+        }
+      }
+    },
+    "B8.base_to_r_only": {
+      "target_queries_compared": 32768,
+      "changed_query_counts": {
+        "legal_key_groups": 24576,
+        "computed_key_groups": 24576,
+        "task_query_interval": 0,
+        "aiv": 0,
+        "use_next_l1": 0,
+        "softmax_row_geometry": 24576,
+        "vec1_row_assignment": 24576
+      },
+      "last_query_changed_head_counts": {
+        "legal_key_groups": 16,
+        "computed_key_groups": 16,
+        "task_query_interval": 0,
+        "aiv": 0,
+        "use_next_l1": 0,
+        "softmax_row_geometry": 16,
+        "vec1_row_assignment": 16
+      },
+      "first_changed_examples": {
+        "legal_key_groups": {
+          "head": 0,
+          "query": 512,
+          "before": [
+            [
+              0,
+              513
+            ]
+          ],
+          "after": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              513
+            ]
+          ]
+        },
+        "computed_key_groups": {
+          "head": 0,
+          "query": 512,
+          "before": [
+            [
+              0,
+              640
+            ]
+          ],
+          "after": [
+            [
+              0,
+              512
+            ],
+            [
+              512,
+              640
+            ]
+          ]
+        },
+        "softmax_row_geometry": {
+          "head": 0,
+          "query": 512,
+          "before": [
+            {
+              "computed_width": 640,
+              "masked_key_count": 127,
+              "softmax_shape": [
+                8,
+                640
+              ],
+              "softmax_original_shape": [
+                8,
+                640
+              ]
+            }
+          ],
+          "after": [
+            {
+              "computed_width": 512,
+              "masked_key_count": 0,
+              "softmax_shape": [
+                16,
+                512
+              ],
+              "softmax_original_shape": [
+                16,
+                512
+              ]
+            },
+            {
+              "computed_width": 128,
+              "masked_key_count": 127,
+              "softmax_shape": [
+                64,
+                128
+              ],
+              "softmax_original_shape": [
+                64,
+                128
+              ]
+            }
+          ]
+        },
+        "vec1_row_assignment": {
+          "head": 0,
+          "query": 512,
+          "before": [
+            {
+              "real_split_n": 16,
+              "row_subtile_index": 0
+            }
+          ],
+          "after": [
+            {
+              "real_split_n": 8,
+              "row_subtile_index": 0
+            },
+            {
+              "real_split_n": 2,
+              "row_subtile_index": 0
+            }
+          ]
+        }
+      },
+      "legal_key_set_unchanged": true,
+      "query_split_between_cores": false,
+      "floating_point_instruction_order": "NOT_IDENTIFIED",
+      "interpretation": "Actual source-derived grouping and scheduling only; matching groups do not establish identical arithmetic.",
+      "bmm_changed_fields": {
+        "bmm1": {
+          "N": [
+            1024,
+            512
+          ],
+          "singleCoreN": [
+            1024,
+            512
+          ],
+          "depthB1": [
+            8,
+            4
+          ],
+          "stepN": [
+            8,
+            4
+          ]
+        },
+        "bmm2": {
+          "Ka": [
+            1024,
+            512
+          ],
+          "singleCoreK": [
+            1024,
+            512
+          ],
+          "depthB1": [
+            8,
+            4
+          ],
+          "stepKa": [
+            2,
+            4
+          ],
+          "stepKb": [
+            8,
+            4
+          ]
+        }
+      }
+    }
+  },
+  "source_plan_is_hardware_trace": false,
+  "numeric_effect_accepted": false,
+  "msprobe_first_difference_accepted": false,
+  "review_container_or_npu_started": false,
+  "completion_sha256": {
+    "cross": "a3482f42bdd8f5a04993cdb26e53d402ca9e809a9acb3e97f7a180e7a22d926a",
+    "base": "26d5182715bfd6c96f2fbc9829a634c2236d0e7645d8c4889abae0c58fa63ec2"
+  },
+  "tool_sha256": "f4aa23413a02c2fa2f0111c4955cff9506745fdc82f6e82cfe2678acd896fd74"
+}

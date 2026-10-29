@@ -1,0 +1,137 @@
+{
+  "schema": "fault28.causal.cpu_prepare.v1",
+  "status": "CPU_PREPARATION_PASSED",
+  "npu_calls": 0,
+  "native_api_schema": "npu::npu_fusion_attention_v3(Tensor query, Tensor key, Tensor value, int head_num, str input_layout, Tensor? pse=None, Tensor? padding_mask=None, Tensor? atten_mask=None, float scale=1., float keep_prob=1., int pre_tockens=2147483647, int next_tockens=2147483647, int inner_precise=0, SymInt[]? prefix=None, Tensor? actual_seq_qlen=None, Tensor? actual_seq_kvlen=None, int sparse_mode=0, bool gen_mask_parallel=True, bool sync=False, str softmax_layout=\"\", Tensor? sink=None) -> (Tensor, Tensor, Tensor, Tensor, Tensor, Tensor)",
+  "input_checks": [
+    {
+      "batch": 1,
+      "input": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "all_rows_equal_frozen_original_batch0": true,
+      "full_sha256": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00"
+    },
+    {
+      "batch": 1,
+      "input": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "all_rows_equal_frozen_original_batch0": true,
+      "full_sha256": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde"
+    },
+    {
+      "batch": 1,
+      "input": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        128,
+        1024,
+        1
+      ],
+      "all_rows_equal_frozen_original_batch0": true,
+      "full_sha256": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947"
+    },
+    {
+      "batch": 8,
+      "input": "query",
+      "shape": [
+        8,
+        16,
+        2048,
+        128
+      ],
+      "stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "all_rows_equal_frozen_original_batch0": true,
+      "full_sha256": "65f35ab4a415f0e04e902b63b6679331fb68c2cdf626fae8c248916df524234b"
+    },
+    {
+      "batch": 8,
+      "input": "key",
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "all_rows_equal_frozen_original_batch0": true,
+      "full_sha256": "26506b98f8b7c5985bc3b79f4dd65abea5009d0574602246441976190c7b02fd"
+    },
+    {
+      "batch": 8,
+      "input": "value",
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        128,
+        1024,
+        1
+      ],
+      "all_rows_equal_frozen_original_batch0": true,
+      "full_sha256": "44bbc0c316b9522483d1242c0751e395aea588750f9c53cb8d9c30522316e075"
+    }
+  ],
+  "reference_queries": [
+    0,
+    63,
+    64,
+    127,
+    128,
+    511,
+    512,
+    1023,
+    1024,
+    2047
+  ],
+  "reference_fp64_sha256": "005ceeccfc68d0918c6f288f2f7686e8d31636b61ffd3dba2da307a4b8c9aec2",
+  "reference_B1_B8_exact_equal": true,
+  "query0_reference_equals_original_value": true,
+  "effective_scale_float32": 0.0883883461356163,
+  "mask_sha256": "d016ca7be6be829fd102f03317c3eed915d3df3d3fd54279a8858caea2dd57de",
+  "replay_source_sha256": "2058a953c78f95ac2de7cc03543dc8d85a627664b7808d426c1d98c42aae9e3a",
+  "cpu_script_sha256": "ffeef21d79c64717aa7d13ffd3ab473fe5f2317760edeeaec930fd92d566466c",
+  "input_manifest_sha256": "509123dc725e351d6b10840919c2640b327a13eecceba2ca4a888c4a094f8e62",
+  "limits": "No NPU dispatch, private-vendor execution, strategy legality, or fault mechanism acceptance."
+}

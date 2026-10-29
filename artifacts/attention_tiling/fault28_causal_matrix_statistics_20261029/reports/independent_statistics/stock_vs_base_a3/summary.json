@@ -1,0 +1,84 @@
+{
+  "schema": "fault28.causal.independent_statistics_group.v1",
+  "group": "stock_vs_base_a3",
+  "analysis_tool_sha256": "8dad91e514994454de3dc726c3d7f56f63626827a0347e82e1621ad7ab5f3c0e",
+  "expected_pairs": 4,
+  "actual_pairs": 4,
+  "all_preregistered_pairs_compared": true,
+  "reports": [
+    {
+      "pair": "stock_vs_base_b1_r0",
+      "batch": 1,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "attention_score_changed": false,
+      "auxiliary_changed": [
+        "seed"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "stock_vs_base_b1_r0.json",
+      "report_sha256": "7ac8b3969ec3dcfc0acda0b40e2f5e9584c2722b444b9db9614cf9abdba836bc",
+      "error": null
+    },
+    {
+      "pair": "stock_vs_base_b1_r1",
+      "batch": 1,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "attention_score_changed": false,
+      "auxiliary_changed": [
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "stock_vs_base_b1_r1.json",
+      "report_sha256": "ebf110de3a0b6f4ab4c5572c122e64380f8ac0a4d5572db3268b7f3fa6d9a5f8",
+      "error": null
+    },
+    {
+      "pair": "stock_vs_base_b8_r0",
+      "batch": 8,
+      "repeat": 0,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "attention_score_changed": false,
+      "auxiliary_changed": [
+        "offset"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "stock_vs_base_b8_r0.json",
+      "report_sha256": "7c77a90e824e4e9fd0ff37eb1c64945c828a9a89d9d3be69b660156cc7e4357f",
+      "error": null
+    },
+    {
+      "pair": "stock_vs_base_b8_r1",
+      "batch": 8,
+      "repeat": 1,
+      "rc": 0,
+      "status": "ALIGNED_OBSERVED_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "attention_score_changed": false,
+      "auxiliary_changed": [
+        "seed"
+      ],
+      "unobservable": 20,
+      "first_api": "NPU.npu_fusion_attention_v3.0.forward",
+      "first_boundary": "output",
+      "report_file": "stock_vs_base_b8_r1.json",
+      "report_sha256": "b2fa59aafd7cb006665eacd0b5fae2b106a9383716d5893598b5594e34bd64e8",
+      "error": null
+    }
+  ],
+  "mechanism_accepted": false,
+  "private_tensor_or_host_profile_used": false
+}

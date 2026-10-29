@@ -1,0 +1,53 @@
+{
+  "schema": "fault28.causal.statistics_receipt.v1",
+  "scope": "Original operator replay, not a model token/forward trace",
+  "rank": 0,
+  "steps": [
+    0
+  ],
+  "native_files": [
+    {
+      "path": "observation/step0/rank0/dump.json",
+      "sha256": "d4f0e748925f3f009457d7ce820eeffb96b1d8ff7f767bfd9db32c48fd7c4f1b",
+      "bytes": 6200
+    },
+    {
+      "path": "observation/step0/rank0/stack.json",
+      "sha256": "7b978221bf6f4eca4b3ad12cfbebc7d58112ecd4332741c2ada7e99f9596bd4e",
+      "bytes": 1509
+    },
+    {
+      "path": "observation/step0/rank0/construct.json",
+      "sha256": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "bytes": 131
+    }
+  ],
+  "native_api_nodes": [
+    "NPU.npu_fusion_attention_v3.0.forward"
+  ],
+  "config_sha256": "59f5381a72687df647925f52a256e83ab669de4492c4e44416f6a324d2520a12",
+  "statistics_collector": {
+    "variant": "task_local_fp32_high_v1",
+    "precision": "high",
+    "modified_official_collector": true,
+    "manifest_file": "/audit/collector_high_a1/stage_manifest.json",
+    "manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+    "package_root": "/audit/collector_high_a1/packages",
+    "processor_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+    "original_processor_sha256": "e981aa6fe9afa1e7a1f0654db44166d7c199674b0727d8d7ffa40626b1074011",
+    "patched_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+    "source_manifest_sha256": "d86efe38de5f3ef4bbb9433f015c06eb2d2f6e80b0c8dae71e40e38d2c2510c3",
+    "patch_sha256": "8239db6dbb8d54e77d6e7960fd1ff15121c13bfe5d7327557031b3d66d43975a",
+    "artifact_count": 513,
+    "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+    "policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+    "actual_loaded": {
+      "module": "msprobe.core.dump.data_dump.data_processor.pytorch_processor",
+      "path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+      "sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+      "method_code_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py"
+    }
+  },
+  "collector_provenance_sha256": "4e15103d8e06d831dab5ff06bda1bfecd05f5029696b01b1cc08e78c48eb3ca5",
+  "native_cann_coverage_verified": false
+}

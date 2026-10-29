@@ -425,6 +425,8 @@ msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写
 
 ## 故障 28：原生 FA Tiling 切分策略异常
 
+**补充因果验证（2026-10-29）已完成：** [固定真实Q/K/V的实现与机理](experiments/fault28_causal_20261029/README.md)和[32例statistics/mix证据](artifacts/attention_tiling/fault28_causal_matrix_statistics_20261029.md)分离了M、nRatio及交互。M-only改变27个元素，R-only 83,176个，联合83,181个；M差异不在最后query，只看末token会漏检。固定profile时B1/B8完整目标输出逐bit相同；受控C++ batch策略切换后，独立msprobe首个主输出差异在原生FA API输出Mean。该结论不等于默认SDK或历史FIA缺陷复现，也未唯一识别Reduce指令。
+
 [实现、真实调用链与关键代码](experiments/fault28_native_tiling_20261029/README.md)及[新 B/F statistics/mix 证据](artifacts/attention_tiling/fault28_native_fa_high_statistics_bf_20261029.md)已在124物理卡5、910B4、TP1通过受控机理和真实HF模型传播验收。相同Batch8输入下，原生CANN FA从M128/两组1024 keys切至M64/四组512 keys；每次符合条件都触发，两次forward均验证，Batch1保护和同进程关闭恢复通过。所有合法keys仍各参与一次，无跨核SplitKV；原生返回结果未重算或替换。logits有差异，Top-1未变，未证明业务质量下降。
 
 **独立定位通过依赖明确披露的任务私有msprobe FP32统计修正。** 未修改官方26.1.0默认FP16四统计未分辨Attention输出，首差在下游pow输入；失败证据保留，不能当成pow故障。修正统一提高所有FP16/BF16节点的统计归约精度，保持原张量/dtype/shape和模型数值不变，仍使用statistics/mix/summary_mode=statistics及公开precision=high。新B/F两step的独立分析均首先观测到layer1 SDPA输出Mean不同，输入统计匹配；完整输入字节、真实FA身份及tiling由单独证据核验。null仍是不可观测，msprobe本身不唯一证明内部tiling根因。

@@ -1,0 +1,45 @@
+{
+  "schema": "fault28.causal.capture_revision.v1",
+  "revision": "capture_v2",
+  "status": "CPU_PREPARED_REQUIRES_FRESH_NPU_CAPTURE",
+  "failure_attempt": "stock_bridge_a2",
+  "failure_case": "stock_bridge_b1_r0",
+  "failure_evidence_preserved": "/home/fault28-causal-20261029/outputs/stock_bridge_a2",
+  "failure": "Native API record exists, but root ReplayModule has no module dump; receipt correctly rejects incomplete statistics/mix coverage.",
+  "observed_native_dump_keys": [
+    "NPU.npu_fusion_attention_v3.0.forward"
+  ],
+  "observed_construct_parent": null,
+  "old_replay_sha256": "2058a953c78f95ac2de7cc03543dc8d85a627664b7808d426c1d98c42aae9e3a",
+  "new_replay_sha256": "32e6e41fb022b6505e9f3a62f12843a4e7b73c7a8729c935bd0ceb4a4b31a647",
+  "installed_module_processor_sha256": "4876e89f7f726cd552fc1bf0e7b7745a898461deec2cb2abf33b02deba7329d7",
+  "exact_cause": {
+    "file": "msprobe/pytorch/dump/module_dump/module_processor.py",
+    "lines": [
+      185,
+      186
+    ],
+    "code": "if recursive and module == model: continue"
+  },
+  "fix": [
+    "Create a plain capture_root holder and register the unchanged ReplayModule as child replay.",
+    "Pass holder to debugger.start while still directly calling original module(query,key,value).",
+    "Require original API construct parent to name a captured ReplayModule; do not remove module coverage gate."
+  ],
+  "unchanged": [
+    "native API arguments and one-call invocation",
+    "captured inputs and source input manifest",
+    "all32cases/setup",
+    "vendor and profile policy",
+    "collector and statistics configuration",
+    "independent statistics comparator"
+  ],
+  "cpu_review": "../capture_v2_cpu_review.json",
+  "cpu_review_sha256": "a8ca2c07d925a7a0acacfffe1138d9f66d90b6a5a48b2d0cc908bf069eb8b2ce",
+  "patch": "../capture_v2.patch",
+  "patch_sha256": "63ec3b2c86b0ee16e535b0ddee89fc208361a614a9a71dc15839a89f3f4d684b",
+  "previous_cpu_reports": "Keep old reports bound to v1; they are not relabelled or rewritten as v2 tests.",
+  "rerun_requirement": "New source freeze and parent-approved handoff, then fresh stock4/primary16/automatic12 using identical v2 collection. The failed a2 is not accepted or repaired in place.",
+  "npu_started_by_this_revision_task": false,
+  "remote_runtime_modified_by_this_revision_task": false
+}

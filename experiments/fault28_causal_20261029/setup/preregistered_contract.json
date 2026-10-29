@@ -1,0 +1,145 @@
+{
+  "schema": "fault28.causal.preregistered.v1",
+  "status": "DESIGN_FROZEN_BEFORE_NEW_NPU_RESULTS",
+  "scope": "Native FP16 FlashAttentionScore replay from fixed captured batch0, not historical FIA or a model-quality test",
+  "batches": [
+    1,
+    8
+  ],
+  "profiles": {
+    "base": {
+      "m": 128,
+      "n_ratio": 8
+    },
+    "m_only": {
+      "m": 64,
+      "n_ratio": 8
+    },
+    "r_only": {
+      "m": 128,
+      "n_ratio": 4
+    },
+    "joint": {
+      "m": 64,
+      "n_ratio": 4
+    }
+  },
+  "minimum_repeats": 2,
+  "expected_minimum_calls": 16,
+  "fixed_inputs": {
+    "source": "same real captured layer1 batch0 Q/K/V bytes",
+    "b8": "repeat the same sequence eight times; do not use previous full B8 QKV as new input",
+    "target_batch": 0,
+    "sequence_length": 2048,
+    "dtype": "torch.float16",
+    "layout": "BNSD",
+    "causal": true,
+    "dropout": 0,
+    "full_pre_post_value_integrity_required": true
+  },
+  "primary_numeric_endpoint": {
+    "queries": "all 0..2047",
+    "heads": "all 16",
+    "channels": "all128",
+    "shape": [
+      16,
+      2048,
+      128
+    ],
+    "values": "private little-endian full batch0 FP16 output",
+    "contrast_units": "exact signed integer multiples of 2^-24",
+    "no_required_nonzero_effect": true
+  },
+  "secondary_endpoint": "All native return tensors: metadata/SHA/statistics; FP32 softmax auxiliaries may change without a representable FP16 output change.",
+  "gates": [
+    "all sixteen cells observed with distinct call identities",
+    "Q/K/V source bytes and every repeated input batch verified",
+    "same approved vendor/kernel source and precision/mask/scalars",
+    "actual typed raw matches launched raw, not desired profile alone",
+    "all target query/head legal keys exactly once and no query split across cores",
+    "repeat input/profile/raw/output values stable or report unstable, never deterministic attribution"
+  ],
+  "contrasts": {
+    "within_each_batch": [
+      "m_only-base",
+      "joint-r_only",
+      "r_only-base",
+      "joint-m_only",
+      "joint-m_only-r_only+base"
+    ],
+    "between_batches": [
+      "B8-B1 for each profile",
+      "B8-B1 of each within-batch contrast"
+    ]
+  },
+  "attribution_boundaries": [
+    "The joint change cannot identify M as root cause",
+    "An observed M intervention effect includes its legitimate dependent tiling changes; it is not proof of a unique micro-operation",
+    "Source-derived scheduling and grouped key ranges are not a hardware floating-point instruction trace",
+    "Identical legal key groups do not prove identical arithmetic; different host softmax metadata alone does not prove the kernel used it",
+    "If outputs all match, report no observed effect for this fixed input; do not fail or invent a fault",
+    "If repeats differ, keep observed differences but report NOT_IDENTIFIED_UNSTABLE_REPEATS",
+    "For M-only separate task assignment, computed masked ranges, legal key groups, BMM/Vec geometry and observed outputs"
+  ],
+  "fixed_fp64_reference_queries": [
+    0,
+    63,
+    64,
+    127,
+    128,
+    511,
+    512,
+    1023,
+    1024,
+    2047
+  ],
+  "fixed_fp64_reference_note": "Prespecified boundary queries; no post-result selection. FP64 is a numerical reference on represented FP16 inputs, not proof of historical fault or worse model quality.",
+  "secondary_policy_matrix": {
+    "modes": [
+      "batch_m",
+      "batch_r",
+      "batch_joint"
+    ],
+    "batches": [
+      1,
+      8
+    ],
+    "repeats": [
+      0,
+      1
+    ],
+    "additional_calls": 12,
+    "actual_profiles": {
+      "batch_m": {
+        "1": "base",
+        "8": "m_only"
+      },
+      "batch_r": {
+        "1": "base",
+        "8": "r_only"
+      },
+      "batch_joint": {
+        "1": "base",
+        "8": "joint"
+      }
+    },
+    "selection": "Always scheduled after primary matrix independent of primary output differences",
+    "claim_boundary": "Controlled Batch-to-tiling selection only, not evidence of the original stock default or historical FIA defect"
+  },
+  "stock_bridge_calibration": {
+    "calls": 4,
+    "batches": [
+      1,
+      8
+    ],
+    "repeats": [
+      0,
+      1
+    ],
+    "actual_libraries": "original native libraries without custom vendor",
+    "gate": "Every private BASE complete target output is bitwise equal to the same-batch repeated stock bridge output; actual native raw prefix must also match",
+    "old_capture_binding": "B8 target output equals original captured model layer1 OFF batch0 output; B1 comparison to old B8 is descriptive, not equality gate",
+    "purpose": "Separate replay/private OFF compatibility from any tiling intervention"
+  },
+  "planned_calls_total": 32
+}

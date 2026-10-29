@@ -1,0 +1,62 @@
+{
+  "status": "READY_CPU_BUILD_AND_PRIVATE_STAGE_NOT_NPU_VALIDATED",
+  "vendor_manifest_sha256": "3d3ca8e0bc12003e19c6f3f4cfba21775e516385fe5807b10d59c6bb53cb1785",
+  "vendor_root": "vendor_stage_a1/vendors/fault28_causal_transformer",
+  "artifact_count": 670,
+  "policy_source_manifest_sha256": "e1a0ab9baa9c3d62866cfc183e4f76d870803d2a3a5e19225ccfc74ca08ad95b",
+  "public_pod_schema_sha256": "82457b4440b60061e3a32345fb3b33adacf1a0f1b527f078f7d2557cb1af743a",
+  "public_pod_field_count": 205,
+  "build": {
+    "status": "PASS_CPU_BUILD",
+    "returncode": 0,
+    "finished_unix": 1793259493.7007267,
+    "frozen_sources_changed": [],
+    "container_removed": true,
+    "npu_executed": false,
+    "log_sha256": "f70dc628837f3cd10f2f3d16f97b0d8ee19bd132cfc5c19a6a19b02ee45710b8"
+  },
+  "stage": {
+    "status": "PASS_CPU_PRIVATE_STAGE",
+    "returncode": 0,
+    "container_removed": true,
+    "npu_executed": false,
+    "global_sdk_modified": false,
+    "manifest_sha256": "3d3ca8e0bc12003e19c6f3f4cfba21775e516385fe5807b10d59c6bb53cb1785",
+    "manifest": "/home/fault28-causal-20261029/vendor_stage_a1/vendor_manifest.json",
+    "finished_unix": 1793259537.4720528
+  },
+  "scope_cpu": {
+    "status": "PASS_CPU_SCOPE_PROFILE_AND_SHAPE",
+    "valid_scopes": 14,
+    "profile_resolutions": 14,
+    "invalid_scopes": 13,
+    "invalid_resolutions": 2,
+    "shape_checks": 3,
+    "optional_checks": 4,
+    "npu_executed": false,
+    "full_gert_eligibility_tested": false
+  },
+  "pod_cpu": {
+    "status": "PASS_PUBLIC_POD_CPU_ROUNDTRIP",
+    "size": 1464,
+    "fields": 205,
+    "array_elements": 65,
+    "stock_abi_validated": false
+  },
+  "artifact_host_libraries": [
+    {
+      "path": "op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+      "bytes": 2083112,
+      "sha256": "a7a8003704b668466c9f92a8d989d7ce02584c86b0514f31d7c640814a2a5fa6",
+      "symlink": null
+    },
+    {
+      "path": "op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+      "bytes": 764192,
+      "sha256": "95184d3c857156d0b35594ba727ab4dbf4b1640512866cf5a701d56ce06f0e37",
+      "symlink": null
+    }
+  ],
+  "cross_profiles_native_validated": false,
+  "kernel_source_modified": false
+}

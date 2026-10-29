@@ -1,0 +1,32 @@
+{
+  "id": "e820e264110f5d433898f3a19cd1e9875c1752e7400dfad7dba4d9f2d461ab03",
+  "name": "dcat-f28-causal-stock_bridge_a3",
+  "image": "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+  "labels": {
+    "demoncat.controller_token": "a76bc64e358a4f2bb794dd14a824608f",
+    "demoncat.task": "fault28-causal-20261029",
+    "org.opencontainers.image.version": "22.04"
+  },
+  "devices": [
+    {
+      "PathOnHost": "/dev/davinci5",
+      "PathInContainer": "/dev/davinci5",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/davinci_manager",
+      "PathInContainer": "/dev/davinci_manager",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/devmm_svm",
+      "PathInContainer": "/dev/devmm_svm",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/hisi_hdc",
+      "PathInContainer": "/dev/hisi_hdc",
+      "CgroupPermissions": "rwm"
+    }
+  ]
+}
