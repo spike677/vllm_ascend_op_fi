@@ -1,0 +1,389 @@
+{
+  "schema": "nes.fa.padding_source_audit.v1",
+  "status": "SOURCE_AUDIT_COMPLETE",
+  "audit_phase": "pre_registered_before_new_NES_NPU_runtime_validation",
+  "audit_basis": "Pinned source definitions, complete named-symbol searches, reset functions, public SDK getter and compiler-produced POD schema; no numeric output effects used.",
+  "scope": "Only these five exact members of FlashAttentionScoreGeneralTilingData in the pinned arch22 FA source; no PH-suffix wildcard and no generalization to other classes.",
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "source_root_read_only": "/home/native-execution-strategy-20261030/source/ops-transformer-v9.1.0",
+  "source_file": "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+  "source_sha256": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+  "pod_schema": {
+    "path": "native_execution_strategy/native/build_evidence_a1/fa_pod_schema.json",
+    "sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+    "type": "FlashAttentionScoreGeneralTilingData",
+    "field_count": 205,
+    "size": 1464
+  },
+  "members": [
+    {
+      "name": "inputParams.remainPH",
+      "type": "uint8_t",
+      "offset": 115,
+      "width": 1,
+      "count": 1,
+      "bytes": 1,
+      "source_file": "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+      "definition_line": 785,
+      "definition": "uint8_t remainPH[1] = {0};",
+      "classification": "explicit_nonsemantic_alignment_member_in_pinned_FA_POD",
+      "alignment_evidence": {
+        "next_semantic_field": "inputParams.remain",
+        "next_field_offset": 116,
+        "next_field_width": 2,
+        "conclusion": "The explicit byte array fills the gap before the next aligned member or section."
+      },
+      "fa_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "remainPH",
+          "--",
+          "attention/flash_attention_score"
+        ],
+        "matches": [
+          "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h:785:    uint8_t remainPH[1] = {0};"
+        ],
+        "count": 1,
+        "only_definition": true,
+        "named_semantic_read_write_or_accessor_found": false
+      },
+      "whole_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "remainPH"
+        ],
+        "count": 1
+      },
+      "reset": {
+        "class": "InputParams",
+        "first_line": 904,
+        "last_line": 940,
+        "writes_this_member": false
+      }
+    },
+    {
+      "name": "inputParams.attenMaskS2SizePH",
+      "type": "uint8_t",
+      "offset": 118,
+      "width": 1,
+      "count": 2,
+      "bytes": 2,
+      "source_file": "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+      "definition_line": 787,
+      "definition": "uint8_t attenMaskS2SizePH[2] = {0}; // 15",
+      "classification": "explicit_nonsemantic_alignment_member_in_pinned_FA_POD",
+      "alignment_evidence": {
+        "next_semantic_field": "inputParams.attenMaskS2Size",
+        "next_field_offset": 120,
+        "next_field_width": 4,
+        "conclusion": "The explicit byte array fills the gap before the next aligned member or section."
+      },
+      "fa_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "attenMaskS2SizePH",
+          "--",
+          "attention/flash_attention_score"
+        ],
+        "matches": [
+          "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h:787:    uint8_t attenMaskS2SizePH[2] = {0}; // 15"
+        ],
+        "count": 1,
+        "only_definition": true,
+        "named_semantic_read_write_or_accessor_found": false
+      },
+      "whole_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "attenMaskS2SizePH"
+        ],
+        "count": 3,
+        "other_matches": [
+          "attention/flash_attention_score_grad/op_kernel/arch22/flash_attention_score_grad_tiling.h:3496:    uint8_t attenMaskS2SizePH[4] = {};",
+          "experimental/attention/flash_attention_score_grad/op_kernel/arch22/flash_attention_score_grad_tiling.h:3496:    uint8_t attenMaskS2SizePH[4] = {};"
+        ],
+        "other_matches_scope": "Different FA-gradient classes; not semantic references to this FA field."
+      },
+      "reset": {
+        "class": "InputParams",
+        "first_line": 904,
+        "last_line": 940,
+        "writes_this_member": false
+      }
+    },
+    {
+      "name": "inputParams.qStartIdxPH",
+      "type": "uint8_t",
+      "offset": 132,
+      "width": 1,
+      "count": 4,
+      "bytes": 4,
+      "source_file": "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+      "definition_line": 791,
+      "definition": "uint8_t qStartIdxPH[4] = {0};",
+      "classification": "explicit_nonsemantic_alignment_member_in_pinned_FA_POD",
+      "alignment_evidence": {
+        "next_semantic_field": "inputParams.qStartIdx",
+        "next_field_offset": 136,
+        "next_field_width": 8,
+        "conclusion": "The explicit byte array fills the gap before the next aligned member or section."
+      },
+      "fa_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "qStartIdxPH",
+          "--",
+          "attention/flash_attention_score"
+        ],
+        "matches": [
+          "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h:791:    uint8_t qStartIdxPH[4] = {0};"
+        ],
+        "count": 1,
+        "only_definition": true,
+        "named_semantic_read_write_or_accessor_found": false
+      },
+      "whole_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "qStartIdxPH"
+        ],
+        "count": 1
+      },
+      "reset": {
+        "class": "InputParams",
+        "first_line": 904,
+        "last_line": 940,
+        "writes_this_member": false
+      }
+    },
+    {
+      "name": "inputParams.InputParamsPH",
+      "type": "uint8_t",
+      "offset": 154,
+      "width": 1,
+      "count": 6,
+      "bytes": 6,
+      "source_file": "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+      "definition_line": 796,
+      "definition": "uint8_t InputParamsPH[6] = {0};",
+      "classification": "explicit_nonsemantic_alignment_member_in_pinned_FA_POD",
+      "alignment_evidence": {
+        "next_semantic_field": "multiCoreParams.coreNum",
+        "next_field_offset": 160,
+        "next_field_width": 4,
+        "conclusion": "The explicit byte array fills the gap before the next aligned member or section.",
+        "next_section": "MultiCoreParams starts at offset160; InputParams occupies160bytes."
+      },
+      "fa_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "InputParamsPH",
+          "--",
+          "attention/flash_attention_score"
+        ],
+        "matches": [
+          "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h:796:    uint8_t InputParamsPH[6] = {0};"
+        ],
+        "count": 1,
+        "only_definition": true,
+        "named_semantic_read_write_or_accessor_found": false
+      },
+      "whole_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "InputParamsPH"
+        ],
+        "count": 1
+      },
+      "reset": {
+        "class": "InputParams",
+        "first_line": 904,
+        "last_line": 940,
+        "writes_this_member": false
+      }
+    },
+    {
+      "name": "coreParams.s1SparseValidSizePH",
+      "type": "uint8_t",
+      "offset": 700,
+      "width": 1,
+      "count": 4,
+      "bytes": 4,
+      "source_file": "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+      "definition_line": 1017,
+      "definition": "uint8_t s1SparseValidSizePH[4] = {};",
+      "classification": "explicit_nonsemantic_alignment_member_in_pinned_FA_POD",
+      "alignment_evidence": {
+        "next_semantic_field": "coreParams.s1SparseValidSize",
+        "next_field_offset": 704,
+        "next_field_width": 8,
+        "conclusion": "The explicit byte array fills the gap before the next aligned member or section."
+      },
+      "fa_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "s1SparseValidSizePH",
+          "--",
+          "attention/flash_attention_score"
+        ],
+        "matches": [
+          "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h:1017:    uint8_t s1SparseValidSizePH[4] = {};"
+        ],
+        "count": 1,
+        "only_definition": true,
+        "named_semantic_read_write_or_accessor_found": false
+      },
+      "whole_tracked_source_search": {
+        "command": [
+          "git",
+          "grep",
+          "-n",
+          "-w",
+          "s1SparseValidSizePH"
+        ],
+        "count": 1
+      },
+      "reset": {
+        "class": "CoreParams",
+        "first_line": 1111,
+        "last_line": 1141,
+        "writes_this_member": false
+      }
+    }
+  ],
+  "total_members": 5,
+  "total_bytes": 17,
+  "reset_evidence": {
+    "InputParams": {
+      "lines": [
+        904,
+        940
+      ],
+      "writes_ph_members": false,
+      "semantic_neighbor_calls": {
+        "932": "set_remain(0);",
+        "933": "set_attenMaskS2Size(0);",
+        "935": "set_rsv1(0);",
+        "936": "set_qStartIdx(0);",
+        "937": "set_kvStartIdx(0);",
+        "938": "set_tndSoftmaxOut(0);",
+        "939": "set_needSinkOp(0);"
+      }
+    },
+    "CoreParams": {
+      "lines": [
+        1111,
+        1141
+      ],
+      "writes_ph_members": false,
+      "semantic_neighbor_calls": {
+        "1134": "set_nRatio(0);",
+        "1135": "set_dRopeSize(0);",
+        "1136": "set_d2Size(0);",
+        "1137": "set_s1SparseValidSize(0);",
+        "1138": "set_s2SparseValidSize(0);"
+      }
+    },
+    "FlashAttentionScoreGeneralTilingData": {
+      "lines": [
+        1559,
+        1580
+      ],
+      "inputParams_size": 160,
+      "coreParams_size": 160,
+      "reset_calls": {
+        "1574": "inputParams.reset();",
+        "1576": "coreParams.reset();"
+      }
+    }
+  },
+  "raw_buffer_initialization_evidence": {
+    "host_file": "attention/flash_attention_score/op_host/arch22/flash_attention_score_tiling_general.cpp",
+    "host_file_sha256": "7feed9373f6aef6d57972c6e212641058af33f600cd987d8be9c3c4efe330854",
+    "get_tiling_data_line": 557,
+    "reset_call_line": 1044,
+    "sdk_file": "include/exe_graph/runtime/tiling_context.h",
+    "sdk_build": "V100R001C11SPC001B243",
+    "sdk_file_sha256": "32e4addf6b18587d3c0d6c96b3cb997eaf9672eb7464835acbc1d076c2fa3f37",
+    "sdk_lines": [
+      389,
+      399
+    ],
+    "sdk_getter_operations": [
+      "GetRawTilingData()",
+      "null check",
+      "capacity >= sizeof(T) check",
+      "SetDataSize(sizeof(T))",
+      "static_cast<T *>(tiling_data->GetData())"
+    ],
+    "constructs_T": false,
+    "zero_initializes_buffer": false,
+    "conclusion": "The source default member initializers do not guarantee initialization of these arrays through this getter/reset path. Their bytes may differ without changing the named semantic fields.",
+    "limitation": "This does not identify a particular allocator, earlier writer, or cause of any observed byte value. Bulk structure transfer can carry these bytes; it is not a named semantic use."
+  },
+  "comparison_contract": {
+    "exact_semantic_exclusions": [
+      "inputParams.remainPH",
+      "inputParams.attenMaskS2SizePH",
+      "inputParams.qStartIdxPH",
+      "inputParams.InputParamsPH",
+      "coreParams.s1SparseValidSizePH"
+    ],
+    "input_contract_field_count": 34,
+    "execution_plan_field_count": 166,
+    "full_public_field_count": 205,
+    "full_raw_preserved": true,
+    "public_context_raw_vs_actual_native_launch_remains_byte_exact": true,
+    "excluded_bytes_still_decoded_recorded_and_hash_bound": true,
+    "must_retain_semantic_fields": [
+      "inputParams.remain",
+      "inputParams.rsv",
+      "inputParams.rsv1",
+      "inputParams.attenMaskS2Size",
+      "inputParams.qStartIdx",
+      "inputParams.kvStartIdx",
+      "coreParams.s1SparseValidSize",
+      "coreParams.s2SparseValidSize"
+    ],
+    "do_not_infer_from_names": [
+      "Do not exclude arbitrary PH suffixes.",
+      "Do not exclude remain, rsv, rsv1, sparse sizes, or other fields merely because their names suggest reserved storage."
+    ]
+  },
+  "actions": {
+    "new_metadata_file_only": true,
+    "frozen_native_source_modified": false,
+    "frozen_manifests_modified": false,
+    "old_fault28_source_or_data_modified": false,
+    "container_started": false,
+    "npu_invoked": false,
+    "runtime_evidence_used_to_choose_exclusions": false
+  }
+}

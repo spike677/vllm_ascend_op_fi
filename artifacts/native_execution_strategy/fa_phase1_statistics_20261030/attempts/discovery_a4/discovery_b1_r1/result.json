@@ -1,0 +1,1228 @@
+{
+  "schema": "nes.harness.replay.v1",
+  "status": "CAPTURE_COMPLETED",
+  "case_id": "discovery_b1_r1",
+  "phase": "discovery",
+  "batch_size": 1,
+  "repeat_index": 1,
+  "source_case_sha256": "5c2dd67b21a5e76dd4dec835afa9d16cc87f1506976c979de605db7a30a551b1",
+  "replay_source_sha256": "f4f8dcd4ccce2a7d5cdfd2ae1e5d76771fea4e366f59da7768b6a5eb71b233ee",
+  "runtime_manifest_sha256": "6982e9b83717b03349fa57707f635dfcfc3bc46ae778d676442c03bc734b6e7a",
+  "original_api_calls": 1,
+  "steps": [
+    {
+      "step": 0,
+      "mode": "native",
+      "native_call": {
+        "case_id": "discovery_b1_r1",
+        "call_id": "nes_d9ffee6bbd7c45b794d93eb14550daba",
+        "api": "torch_npu.npu_fusion_attention_v3",
+        "pid": 124,
+        "thread_id": 124,
+        "phase": "operator_execution",
+        "step": 0,
+        "mode": "native",
+        "batch_size": 1,
+        "scope_token": null,
+        "enter_epoch_ns": 1793336346031522446,
+        "enter_monotonic_ns": 2393765574382206,
+        "status": "returned",
+        "exit_epoch_ns": 1793336346403105598,
+        "exit_monotonic_ns": 2393765945966558
+      },
+      "policy_decision": null,
+      "typed_plan_intent": null,
+      "session_execution": null,
+      "selection_current_observation_step": null,
+      "inputs_before": {
+        "query": {
+          "shape": [
+            1,
+            16,
+            2048,
+            128
+          ],
+          "stride": [
+            4194304,
+            262144,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281468305608288,
+          "data_ptr": 20616935636992,
+          "version": 1,
+          "actual_format": 0,
+          "full_sha256": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00",
+          "bytes": 8388608,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "target_sha256": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00",
+          "per_batch_sha256": [
+            "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00"
+          ]
+        },
+        "key": {
+          "shape": [
+            1,
+            8,
+            2048,
+            128
+          ],
+          "stride": [
+            2097152,
+            262144,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281468304077472,
+          "data_ptr": 20616944026112,
+          "version": 1,
+          "actual_format": 0,
+          "full_sha256": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde",
+          "bytes": 4194304,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "target_sha256": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde",
+          "per_batch_sha256": [
+            "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde"
+          ]
+        },
+        "value": {
+          "shape": [
+            1,
+            8,
+            2048,
+            128
+          ],
+          "stride": [
+            2097152,
+            128,
+            1024,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281468304077632,
+          "data_ptr": 20616948220928,
+          "version": 1,
+          "actual_format": 0,
+          "full_sha256": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947",
+          "bytes": 4194304,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "target_sha256": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947",
+          "per_batch_sha256": [
+            "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947"
+          ]
+        }
+      },
+      "mask_before": {
+        "shape": [
+          2048,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "dtype": "torch.bool",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281468305265504,
+        "data_ptr": 20616956608512,
+        "version": 0,
+        "actual_format": 2,
+        "full_sha256": "d016ca7be6be829fd102f03317c3eed915d3df3d3fd54279a8858caea2dd57de",
+        "bytes": 4194304,
+        "byteorder": "little",
+        "raw_order": "C-contiguous logical elements"
+      },
+      "resources": {
+        "device_seconds": 0.371584352,
+        "peak_memory_bytes": 104870400
+      },
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 2393765536713174,
+        "reset_completed_monotonic_ns": 2393765536718504,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 0.371584352,
+          "peak_memory_bytes": 104870400
+        },
+        "call_window_monotonic_ns": {
+          "enter": 2393765574382206,
+          "exit_after_synchronize": 2393765945966558,
+          "elapsed": 371584352
+        },
+        "sample_started_monotonic_ns": 2393765952809786,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 104870400,
+          "max_memory_allocated_bytes": 104870400
+        },
+        "sample_completed_monotonic_ns": 2393765953078781,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "step_metadata_file": "steps/step0/step_metadata.json",
+      "step_metadata_sha256": "de87e140e683c72266aabc05c6c98560d670a5b23c9aaa8be3fc2245caf237d6",
+      "assessment": {
+        "strategy_switched": null,
+        "numerics_observed": null,
+        "model_impact": null
+      },
+      "native_observation_only": {
+        "status": "NATIVE_POD_OBSERVED_ONLY",
+        "native_launch": {
+          "raw_hex": "01000000000000000800000000000000020000000000000000080000000000000008000000000000000800000000000080000000000000000000803ff304b53d000800000000000000000000000000000000000000000000000000000000000000000000000000000301020101000300000000000000000000080000010000000000000000000000000000000000000000000000000000000000000000000000280000000000000000010000000000000e00000000000000040000000000000000000000000000000a000000000000000e0000000000000016000000000000001c0000000000000020000000000000002a000000000000002e0000000000000036000000000000003c0000000000000040000000000000004a000000000000004e0000000000000056000000000000005c0000000000000060000000000000006a000000000000006e0000000000000076000000000000007c0000000000000080000000000000008a000000000000008e0000000000000096000000000000009c00000000000000a000000000000000aa00000000000000ae00000000000000b600000000000000bc00000000000000c000000000000000ca00000000000000ce00000000000000d600000000000000dc00000000000000e000000000000000ea00000000000000ee00000000000000f600000000000000fc000000000000000001000000000000000100000000000000010000000000000001000000000000000100000000000000010000000000000001000000000000000100000000000080000000800000001000000000000000400000000000000000000000000000008000000080000000020000000000000080000000800000000100000000000000010000000100000001000000000000000100000001000000080000000000000001000000010000000200000000000000080000000000000080000000000000000008000000000000000000000000000000000000000000000000000000000000004000000040000000000000000000000040000000040000000400000004000000000200004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000080000000400008000000080000000800000000004000080000000800000008000000080000000010000000800000001000000080000000000000000000000000000000000000000ff07000000020000000000010000000100000001000000010000000100000001000000000000000000000002000000020000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000080000800000000004000080000000800000008000000000040000800000008000000080000000040000000800000001000000010000000000000000000000000000000000000000ff0700000002000000000001000000010000000100000001000000020000000800000000000000000000000200000002000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000004000000400000100000000800000080000000080000000004000000200000080000000800000040000000020000000000000000000000000000000100000001000000800000008000000080000000010000001000000000080000000800000010000000400000800000000080000000000000800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "raw_size": 1464,
+          "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+          "tiling_key": "22619644976",
+          "block_dim": 20,
+          "workspace_count": 1,
+          "api_workspace_bytes": 73401856,
+          "pid": 124,
+          "tid": 154,
+          "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+          "source_log": "/evidence/discovery_b1_r1.log",
+          "source_prefix_sha256": "3392b3a4c25e1b31c0e53b4121e96e78e03499f7a45cdba70851f31e34cca32a",
+          "raw_reconstruction": "exact_character_concat_before_uint32_split",
+          "raw_chunk_payload_lengths": [
+            653,
+            385
+          ],
+          "raw_text_sha256": "7b66d794d0a503c0ade60e51f89cfde59cd6ba6fb0a534c76d737bc6293435a2",
+          "source_prefix_bytes": 28910152,
+          "window_byte_range": [
+            15243587,
+            28910152
+          ],
+          "window_line_range": [
+            92968,
+            151449
+          ],
+          "window_file": "/evidence/discovery_b1_r1/steps/step0/native_profile/native_window.log",
+          "window_sha256": "664a90e65770931d7fa9cde4b728c0b0c92e8e1333232de9fe47132e43c08e52",
+          "loaded_libraries_before_exit": [
+            {
+              "line": 3698,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+              "line_sha256": "df12be77381c9e4c1587fff0901eb4450ac694d98f9ec928ab133c4063f52b04"
+            },
+            {
+              "line": 3699,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+              "line_sha256": "059ba7b246da75f41b66209c0a56a7e6148a70fc0281a07797f30924552885f7"
+            },
+            {
+              "line": 3700,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+              "line_sha256": "dcc4598dcb3b035d4995269accbc0f49fae28b0498ca0f35de5832add84dbd61"
+            },
+            {
+              "line": 3701,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+              "line_sha256": "18ed84e13a05ccfb28e9887f0a1f87249bc254459aa16a4088f3e8678bfb06e9"
+            },
+            {
+              "line": 3702,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+              "line_sha256": "de0ed0e24bfd26d70475ff4a3b225e11e048bec6deea543afa96af0ed0ed9184"
+            },
+            {
+              "line": 3703,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+              "line_sha256": "3627d44b14d5d1e27c19fb21b7947f493b7db5bdfe7b14a23c9342841206a79b"
+            },
+            {
+              "line": 3704,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+              "line_sha256": "eeb8064e4ee997641304cc8503640c968cbb49d0f16b0f62391b335e0cb6c2fa"
+            },
+            {
+              "line": 3705,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+              "line_sha256": "84057ac3267f1428ba95f7baebcf887e09ff7361d54207ac23f929d95910ecea"
+            },
+            {
+              "line": 3706,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+              "line_sha256": "416d20973144e31a49c711bc0108ffa8bdf123725f13793ccf1fccb3fccc535b"
+            },
+            {
+              "line": 3707,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+              "line_sha256": "1d47709b20ace05552eca146fa985092c87c9ab6d15267bb36a399ef6cd3bcc0"
+            },
+            {
+              "line": 3708,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+              "line_sha256": "e78686fc8b83e41c34fa7f2f509ad58715b2b6b066af6af163098a8608037ab3"
+            },
+            {
+              "line": 3709,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+              "line_sha256": "ab69adf393f26cc7ec2d97ba744b0e89fc91ffe61bc844b6dca235302833f8d2"
+            },
+            {
+              "line": 3710,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+              "line_sha256": "290b90b189021deed168dc15d78ca0e7e8266b2c643ab249df85ccbaca1c4317"
+            },
+            {
+              "line": 3711,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+              "line_sha256": "476d5585dafb27a63341c01ec67ed255b6d0b52c20d8df6bf4347aa7672dacf1"
+            },
+            {
+              "line": 80674,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_cv.so",
+              "line_sha256": "0f6c49510da626358a398867ebb3be6f702c1a84d5cec00b9a325a95c6d024bf"
+            },
+            {
+              "line": 80675,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_hccl.so",
+              "line_sha256": "5bd9a5f75ea96baf378f2f8c61f4aab9e57a8dfb5f5dd37482e44b6edd7c39e6"
+            },
+            {
+              "line": 80676,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_math.so",
+              "line_sha256": "cf651b5e029b536b23fe7660c1b5f444565332f9c4668ab4ea18f98d794d4df6"
+            },
+            {
+              "line": 80677,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_nn.so",
+              "line_sha256": "0ea2eadc0df3848033dc19ba1d38d6153ac82b9e7cd4db7742521f2d695d67b8"
+            },
+            {
+              "line": 80678,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_ras.so",
+              "line_sha256": "074f6922682846af54f6ce4820b7f3186870411b6b53eca86ea639a201dc1a46"
+            },
+            {
+              "line": 80679,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_transformer.so",
+              "line_sha256": "21800fe5612908225d182627c5327c9f8b35f7c4d30dc8fb2c8d98b915c0cfee"
+            },
+            {
+              "line": 80680,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_cv.so",
+              "line_sha256": "1ba0da75001693fe099909a24d7e372c590c5edb635170adc368986efa21a5d3"
+            },
+            {
+              "line": 80681,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_math.so",
+              "line_sha256": "daf70b7e173c4109ae391566f28b5605028195ffb27a931f71d94b81c5c53aa1"
+            },
+            {
+              "line": 80682,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_nn.so",
+              "line_sha256": "a5c9cfbbe59ff2ff30115e48835dce91f5d3213b3cc060dd0bd6919390625733"
+            },
+            {
+              "line": 80683,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_oam.so",
+              "line_sha256": "439b159cabfc88cadfdf8ef1c900b68c5d6eb01c65128f76fde748053c225659"
+            },
+            {
+              "line": 80684,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_transformer.so",
+              "line_sha256": "d1bdc5215dd760895823161350ff8bf8af509f3bcb9d06c073a309e56d5ccd32"
+            },
+            {
+              "line": 80685,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_graph/lib/linux/aarch64/libopgraph_legacy.so",
+              "line_sha256": "ff4713f942ccb054b33038dbed801b04cab08e7ef0cec08d6f35fe5b7af81e4e"
+            },
+            {
+              "line": 80686,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_comm_legacy.so",
+              "line_sha256": "f4094f1c4e167e93ac75f3315bc4040f9e4d7fcf9a8422fc3ad4739e46d7b37e"
+            },
+            {
+              "line": 80687,
+              "path": "/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe/op_host/lib/linux/aarch64/libophost_legacy.so",
+              "line_sha256": "d06aa0182d46b75ab839914dec6d64d2f7154ce4fc8cb37e7792a4ea4dc57bcd"
+            }
+          ],
+          "framing_verified_against_public_context": false
+        },
+        "pod": {
+          "bmm1TilingData.usedCoreNum": 1,
+          "bmm1TilingData.M": 2048,
+          "bmm1TilingData.N": 1024,
+          "bmm1TilingData.Ka": 128,
+          "bmm1TilingData.Kb": 128,
+          "bmm1TilingData.singleCoreM": 128,
+          "bmm1TilingData.singleCoreN": 1024,
+          "bmm1TilingData.singleCoreK": 128,
+          "bmm1TilingData.baseM": 128,
+          "bmm1TilingData.baseN": 128,
+          "bmm1TilingData.baseK": 128,
+          "bmm1TilingData.depthA1": 1,
+          "bmm1TilingData.depthB1": 8,
+          "bmm1TilingData.stepM": 1,
+          "bmm1TilingData.stepN": 8,
+          "bmm1TilingData.isBias": 0,
+          "bmm1TilingData.transLength": 0,
+          "bmm1TilingData.iterateOrder": 0,
+          "bmm1TilingData.shareMode": 0,
+          "bmm1TilingData.shareL1Size": 524032,
+          "bmm1TilingData.shareL0CSize": 131072,
+          "bmm1TilingData.shareUbSize": 0,
+          "bmm1TilingData.batchM": 1,
+          "bmm1TilingData.batchN": 1,
+          "bmm1TilingData.singleBatchM": 1,
+          "bmm1TilingData.singleBatchN": 1,
+          "bmm1TilingData.stepKa": 1,
+          "bmm1TilingData.stepKb": 1,
+          "bmm1TilingData.depthAL1CacheUB": 0,
+          "bmm1TilingData.depthBL1CacheUB": 0,
+          "bmm1TilingData.dbL0A": 2,
+          "bmm1TilingData.dbL0B": 2,
+          "bmm1TilingData.dbL0C": 1,
+          "bmm1TilingData.ALayoutInfoB": 0,
+          "bmm1TilingData.ALayoutInfoS": 0,
+          "bmm1TilingData.ALayoutInfoN": 0,
+          "bmm1TilingData.ALayoutInfoG": 0,
+          "bmm1TilingData.ALayoutInfoD": 0,
+          "bmm1TilingData.BLayoutInfoB": 0,
+          "bmm1TilingData.BLayoutInfoS": 0,
+          "bmm1TilingData.BLayoutInfoN": 0,
+          "bmm1TilingData.BLayoutInfoG": 0,
+          "bmm1TilingData.BLayoutInfoD": 0,
+          "bmm1TilingData.CLayoutInfoB": 0,
+          "bmm1TilingData.CLayoutInfoS1": 0,
+          "bmm1TilingData.CLayoutInfoN": 0,
+          "bmm1TilingData.CLayoutInfoG": 0,
+          "bmm1TilingData.CLayoutInfoS2": 0,
+          "bmm1TilingData.BatchNum": 0,
+          "bmm1TilingData.mxTypePara": 0,
+          "bmm2TilingData.usedCoreNum": 1,
+          "bmm2TilingData.M": 2048,
+          "bmm2TilingData.N": 128,
+          "bmm2TilingData.Ka": 1024,
+          "bmm2TilingData.Kb": 128,
+          "bmm2TilingData.singleCoreM": 128,
+          "bmm2TilingData.singleCoreN": 128,
+          "bmm2TilingData.singleCoreK": 1024,
+          "bmm2TilingData.baseM": 128,
+          "bmm2TilingData.baseN": 128,
+          "bmm2TilingData.baseK": 128,
+          "bmm2TilingData.depthA1": 4,
+          "bmm2TilingData.depthB1": 8,
+          "bmm2TilingData.stepM": 1,
+          "bmm2TilingData.stepN": 1,
+          "bmm2TilingData.isBias": 0,
+          "bmm2TilingData.transLength": 0,
+          "bmm2TilingData.iterateOrder": 0,
+          "bmm2TilingData.shareMode": 0,
+          "bmm2TilingData.shareL1Size": 524032,
+          "bmm2TilingData.shareL0CSize": 131072,
+          "bmm2TilingData.shareUbSize": 0,
+          "bmm2TilingData.batchM": 1,
+          "bmm2TilingData.batchN": 1,
+          "bmm2TilingData.singleBatchM": 1,
+          "bmm2TilingData.singleBatchN": 1,
+          "bmm2TilingData.stepKa": 2,
+          "bmm2TilingData.stepKb": 8,
+          "bmm2TilingData.depthAL1CacheUB": 0,
+          "bmm2TilingData.depthBL1CacheUB": 0,
+          "bmm2TilingData.dbL0A": 2,
+          "bmm2TilingData.dbL0B": 2,
+          "bmm2TilingData.dbL0C": 1,
+          "bmm2TilingData.ALayoutInfoB": 0,
+          "bmm2TilingData.ALayoutInfoS": 0,
+          "bmm2TilingData.ALayoutInfoN": 0,
+          "bmm2TilingData.ALayoutInfoG": 0,
+          "bmm2TilingData.ALayoutInfoD": 0,
+          "bmm2TilingData.BLayoutInfoB": 0,
+          "bmm2TilingData.BLayoutInfoS": 0,
+          "bmm2TilingData.BLayoutInfoN": 0,
+          "bmm2TilingData.BLayoutInfoG": 0,
+          "bmm2TilingData.BLayoutInfoD": 0,
+          "bmm2TilingData.CLayoutInfoB": 0,
+          "bmm2TilingData.CLayoutInfoS1": 0,
+          "bmm2TilingData.CLayoutInfoN": 0,
+          "bmm2TilingData.CLayoutInfoG": 0,
+          "bmm2TilingData.CLayoutInfoS2": 0,
+          "bmm2TilingData.BatchNum": 0,
+          "bmm2TilingData.mxTypePara": 0,
+          "inputParams.bSize": 1,
+          "inputParams.n2Size": 8,
+          "inputParams.gSize": 2,
+          "inputParams.s1Size": 2048,
+          "inputParams.s2Size": 2048,
+          "inputParams.alignedS2": 2048,
+          "inputParams.dSize": 128,
+          "inputParams.keepProb": 1.0,
+          "inputParams.scaleValue": 0.0883883461356163,
+          "inputParams.preTokens": 2048,
+          "inputParams.nextTokens": 0,
+          "inputParams.pseS1Size": 0,
+          "inputParams.pseS2Size": 0,
+          "inputParams.pseBSize": 0,
+          "inputParams.bandIndex": 0,
+          "inputParams.layoutType": 3,
+          "inputParams.pseShapeType": 1,
+          "inputParams.attenMaskShapeType": 2,
+          "inputParams.attenMaskDataType": 1,
+          "inputParams.attenMaskCompressMode": 1,
+          "inputParams.implMode": 0,
+          "inputParams.sparseType": 3,
+          "inputParams.needDropMaskOp": 0,
+          "inputParams.pseEncodeType": 0,
+          "inputParams.rsv": 0,
+          "inputParams.needL1Carry": 0,
+          "inputParams.remainPH": 0,
+          "inputParams.remain": 0,
+          "inputParams.attenMaskS2SizePH": [
+            0,
+            0
+          ],
+          "inputParams.attenMaskS2Size": 2048,
+          "inputParams.pseType": 1,
+          "inputParams.rsv1": 0,
+          "inputParams.qStartIdxPH": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "inputParams.qStartIdx": 0,
+          "inputParams.kvStartIdx": 0,
+          "inputParams.tndSoftmaxOut": 0,
+          "inputParams.needSinkOp": 0,
+          "inputParams.InputParamsPH": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "multiCoreParams.coreNum": 40,
+          "multiCoreParams.reserve": 0,
+          "multiCoreParams.totalSize": 256,
+          "multiCoreParams.splitFactorSize": 14,
+          "multiCoreParams.splitFactorTailSize": 4,
+          "multiCoreParams.sparseStartIdx": [
+            0,
+            10,
+            14,
+            22,
+            28,
+            32,
+            42,
+            46,
+            54,
+            60,
+            64,
+            74,
+            78,
+            86,
+            92,
+            96,
+            106,
+            110,
+            118,
+            124,
+            128,
+            138,
+            142,
+            150,
+            156,
+            160,
+            170,
+            174,
+            182,
+            188,
+            192,
+            202,
+            206,
+            214,
+            220,
+            224,
+            234,
+            238,
+            246,
+            252,
+            256,
+            256,
+            256,
+            256,
+            256,
+            256,
+            256,
+            256
+          ],
+          "coreParams.s1BaseSize": 128,
+          "coreParams.s1BaseTailSize": 128,
+          "coreParams.s1OuterSize": 16,
+          "coreParams.s1Vec2BaseSize": 64,
+          "coreParams.s1Vec2BaseTailSize": 0,
+          "coreParams.s1Vec2OuterSize": 0,
+          "coreParams.s2BaseSize": 128,
+          "coreParams.s2BaseTailSize": 128,
+          "coreParams.s2OuterSize": 2,
+          "coreParams.dBaseSize": 128,
+          "coreParams.dBaseTailSize": 128,
+          "coreParams.dOuterSize": 1,
+          "coreParams.bBaseSize": 1,
+          "coreParams.bBaseTailSize": 1,
+          "coreParams.bOuterSize": 1,
+          "coreParams.n2BaseSize": 1,
+          "coreParams.n2BaseTailSize": 1,
+          "coreParams.n2OuterSize": 8,
+          "coreParams.gBaseSize": 1,
+          "coreParams.gBaseTailSize": 1,
+          "coreParams.gOuterSize": 2,
+          "coreParams.nRatio": 8,
+          "coreParams.dRopeSize": 0,
+          "coreParams.d2Size": 128,
+          "coreParams.s1SparseValidSizePH": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "coreParams.s1SparseValidSize": 2048,
+          "coreParams.s2SparseValidSize": 0,
+          "coreParams.pseAlibiBaseS1": 0,
+          "coreParams.pseAlibiBaseS2": 0,
+          "tensorSizeParams.bmm1ResUbSize": 16384,
+          "tensorSizeParams.attenMaskUbSize": 16384,
+          "tensorSizeParams.pseUbSize": 0,
+          "tensorSizeParams.dropMaskUbSize": 0,
+          "tensorSizeParams.castUbSize": 16384,
+          "tensorSizeParams.softmaxMaxUbSize": 1024,
+          "tensorSizeParams.softmaxSumUbSize": 1024,
+          "tensorSizeParams.softmaxExpUbSize": 1024,
+          "tensorSizeParams.apiTmpBufferBytes": 131072,
+          "tensorSizeParams.bmm2ResUbSize": 16384,
+          "tensorSizeParams.inputQueBytes": 0,
+          "tensorSizeParams.outputQueBytes": 0,
+          "tensorSizeParams.tmpBufBytes": 0,
+          "tensorSizeParams.softmaxMaxOffsetBytes": 0,
+          "tensorSizeParams.softmaxSumOffsetBytes": 0,
+          "tensorSizeParams.maxSumApiOffsetBytes": 0,
+          "tensorSizeParams.customSoftmaxApiOffsetBytes": 0,
+          "tensorSizeParams.pseTbufOffsetBytes": 0,
+          "tensorSizeParams.dropoutApiOffsetBytes": 0,
+          "tensorSizeParams.maxSumApiSize": 0,
+          "tensorSizeParams.customSoftmaxApiSize": 0,
+          "tensorSizeParams.dropoutApiSize": 0,
+          "tensorSizeParams.attenMaskApiSize": 0,
+          "tensorSizeParams.attenMaskApiOffsetBytes": 0,
+          "tensorSizeParams.bmm1ProcessTInStage2Size": 0,
+          "tensorSizeParams.bmm1ProcessTInStage2OffsetBytes": 0,
+          "tensorSizeParams.wkspSection1OffsetBytes": 0,
+          "tensorSizeParams.wkspSection2OffsetBytes": 0,
+          "dropmaskParams.multiCoreFactorSize": 0,
+          "dropmaskParams.baseUbCalSize": 0,
+          "dropmaskParams.multiCoreTotalSize": 0,
+          "dropmaskParams.shapeTotalSize": 0
+        },
+        "controlled_support_granted": false,
+        "host_callback_available": false,
+        "resources": {
+          "device_seconds": 0.371584352,
+          "peak_memory_bytes": 104870400
+        },
+        "resource_measurement": {
+          "step_metadata_file": "/evidence/discovery_b1_r1/steps/step0/step_metadata.json",
+          "step_metadata_sha256": "de87e140e683c72266aabc05c6c98560d670a5b23c9aaa8be3fc2245caf237d6",
+          "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+          "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+          "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors."
+        }
+      },
+      "inputs_after": {
+        "query": {
+          "shape": [
+            1,
+            16,
+            2048,
+            128
+          ],
+          "stride": [
+            4194304,
+            262144,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281468305608288,
+          "data_ptr": 20616935636992,
+          "version": 1,
+          "actual_format": 2,
+          "full_sha256": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00",
+          "bytes": 8388608,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "target_sha256": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00",
+          "per_batch_sha256": [
+            "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00"
+          ]
+        },
+        "key": {
+          "shape": [
+            1,
+            8,
+            2048,
+            128
+          ],
+          "stride": [
+            2097152,
+            262144,
+            128,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281468304077472,
+          "data_ptr": 20616944026112,
+          "version": 1,
+          "actual_format": 2,
+          "full_sha256": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde",
+          "bytes": 4194304,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "target_sha256": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde",
+          "per_batch_sha256": [
+            "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde"
+          ]
+        },
+        "value": {
+          "shape": [
+            1,
+            8,
+            2048,
+            128
+          ],
+          "stride": [
+            2097152,
+            128,
+            1024,
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281468304077632,
+          "data_ptr": 20616948220928,
+          "version": 1,
+          "actual_format": 2,
+          "full_sha256": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947",
+          "bytes": 4194304,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "target_sha256": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947",
+          "per_batch_sha256": [
+            "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947"
+          ]
+        }
+      },
+      "mask_after": {
+        "shape": [
+          2048,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "dtype": "torch.bool",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281468305265504,
+        "data_ptr": 20616956608512,
+        "version": 0,
+        "actual_format": 2,
+        "full_sha256": "d016ca7be6be829fd102f03317c3eed915d3df3d3fd54279a8858caea2dd57de",
+        "bytes": 4194304,
+        "byteorder": "little",
+        "raw_order": "C-contiguous logical elements"
+      },
+      "input_format_normalizations": [
+        {
+          "input": "query",
+          "before": 0,
+          "after": 2,
+          "logical_values_unchanged": true
+        },
+        {
+          "input": "key",
+          "before": 0,
+          "after": 2,
+          "logical_values_unchanged": true
+        },
+        {
+          "input": "value",
+          "before": 0,
+          "after": 2,
+          "logical_values_unchanged": true
+        }
+      ],
+      "output": {
+        "shape": [
+          1,
+          16,
+          2048,
+          128
+        ],
+        "stride": [
+          4194304,
+          262144,
+          128,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "storage_offset": 0,
+        "object_id": 281467110395648,
+        "data_ptr": 20616960803328,
+        "version": 0,
+        "actual_format": 0,
+        "full_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+        "bytes": 8388608,
+        "byteorder": "little",
+        "raw_order": "C-contiguous logical elements",
+        "target_sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+        "per_batch_sha256": [
+          "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b"
+        ]
+      },
+      "auxiliary_outputs": [
+        {
+          "name": "softmax_max",
+          "batch_mapping_certified": true,
+          "shape": [
+            1,
+            16,
+            2048,
+            8
+          ],
+          "stride": [
+            262144,
+            16384,
+            8,
+            1
+          ],
+          "dtype": "torch.float32",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281467110391968,
+          "data_ptr": 20616952415744,
+          "version": 0,
+          "actual_format": 0,
+          "full_sha256": "b04dd2ea7032594a9e7db62c0b662771351359c2bcf893e9323c3b1fa58fcba4",
+          "bytes": 1048576,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "target_sha256": "b04dd2ea7032594a9e7db62c0b662771351359c2bcf893e9323c3b1fa58fcba4",
+          "per_batch_sha256": [
+            "b04dd2ea7032594a9e7db62c0b662771351359c2bcf893e9323c3b1fa58fcba4"
+          ],
+          "statistics": {
+            "elements": 262144,
+            "finite_count": 262144,
+            "nan_count": 0,
+            "inf_count": 0,
+            "max": 38.77455520629883,
+            "min": -0.9265300035476685,
+            "mean": 12.189075055908688,
+            "norm": 6969.1324525980435
+          }
+        },
+        {
+          "name": "softmax_sum",
+          "batch_mapping_certified": true,
+          "shape": [
+            1,
+            16,
+            2048,
+            8
+          ],
+          "stride": [
+            262144,
+            16384,
+            8,
+            1
+          ],
+          "dtype": "torch.float32",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281467110392208,
+          "data_ptr": 20616953464832,
+          "version": 0,
+          "actual_format": 0,
+          "full_sha256": "cb86d861c176a117553d3eb00373992396cfa5a0eef6622ecea50c2ffc786533",
+          "bytes": 1048576,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "target_sha256": "cb86d861c176a117553d3eb00373992396cfa5a0eef6622ecea50c2ffc786533",
+          "per_batch_sha256": [
+            "cb86d861c176a117553d3eb00373992396cfa5a0eef6622ecea50c2ffc786533"
+          ],
+          "statistics": {
+            "elements": 262144,
+            "finite_count": 262144,
+            "nan_count": 0,
+            "inf_count": 0,
+            "max": 195.6784210205078,
+            "min": 1.0,
+            "mean": 11.48151180588684,
+            "norm": 11272.207848851831
+          }
+        },
+        {
+          "name": "softmax_out",
+          "batch_mapping_certified": false,
+          "shape": [
+            0
+          ],
+          "stride": [
+            1
+          ],
+          "dtype": "torch.float16",
+          "device": "npu:0",
+          "storage_offset": 0,
+          "object_id": 281467110392048,
+          "data_ptr": 0,
+          "version": 0,
+          "actual_format": 2,
+          "full_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements"
+        },
+        {
+          "name": "seed",
+          "batch_mapping_certified": false,
+          "shape": [
+            1
+          ],
+          "stride": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "device": "cpu",
+          "storage_offset": 0,
+          "object_id": 281467110392448,
+          "data_ptr": 6317815235648,
+          "version": 0,
+          "actual_format": null,
+          "full_sha256": "ce2a0271045a498e030bcf58815153a3715c34204ff2ab431c7aec2e85dab436",
+          "bytes": 8,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "statistics": {
+            "elements": 1,
+            "finite_count": 1,
+            "nan_count": 0,
+            "inf_count": 0,
+            "max": 4.591033472226689e+18,
+            "min": 4.591033472226689e+18,
+            "mean": 4.591033472226689e+18,
+            "norm": 4.591033472226689e+18
+          }
+        },
+        {
+          "name": "offset",
+          "batch_mapping_certified": false,
+          "shape": [
+            1
+          ],
+          "stride": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "device": "cpu",
+          "storage_offset": 0,
+          "object_id": 281467110392288,
+          "data_ptr": 6317815235520,
+          "version": 0,
+          "actual_format": null,
+          "full_sha256": "20e516590135fbe7dda6386d2ff6a8502528bdbb061401bf4549ba453866b71c",
+          "bytes": 8,
+          "byteorder": "little",
+          "raw_order": "C-contiguous logical elements",
+          "statistics": {
+            "elements": 1,
+            "finite_count": 1,
+            "nan_count": 0,
+            "inf_count": 0,
+            "max": 6317815235360.0,
+            "min": 6317815235360.0,
+            "mean": 6317815235360.0,
+            "norm": 6317815235360.0
+          }
+        }
+      ],
+      "private_target_output": {
+        "file": "private_output/target_fp16.bin",
+        "shape": [
+          16,
+          2048,
+          128
+        ],
+        "dtype": "torch.float16",
+        "bytes": 8388608,
+        "sha256": "ae353dc2204b4827cf89f32dfe270a6e0e84b49089d3b081ec9a3a36b975f42b",
+        "batch_slot": 0,
+        "byteorder": "little",
+        "raw_order": "C-contiguous logical elements",
+        "publication": "PRIVATE_OUTPUT_BINARY_EXCLUDE_FROM_STATISTICS_AND_GITHUB"
+      },
+      "reference_fp64": {
+        "file": "private_output/reference_fp64.json",
+        "sha256": "794810361f5856f115a2ad19df9748e107a4cf6ebdf0473463f357d6e27a072a",
+        "max_abs_error": 0.00015938974168999698,
+        "l2_error": 0.0016610101926043657,
+        "rms_error": 1.1606661568698056e-05,
+        "reference_l2": 9.350853658432394,
+        "per_query": [
+          {
+            "query_index": 0,
+            "max_abs_error": 0.0,
+            "l2_error": 0.0,
+            "rms_error": 0.0
+          },
+          {
+            "query_index": 63,
+            "max_abs_error": 0.00011103861554045968,
+            "l2_error": 0.0005174475853606772,
+            "rms_error": 1.1434084266160618e-05
+          },
+          {
+            "query_index": 64,
+            "max_abs_error": 0.00015938974168999698,
+            "l2_error": 0.0006180154816952735,
+            "rms_error": 1.3656341812031209e-05
+          },
+          {
+            "query_index": 127,
+            "max_abs_error": 0.00013905580277739915,
+            "l2_error": 0.0005137082689001261,
+            "rms_error": 1.1351456265340046e-05
+          },
+          {
+            "query_index": 128,
+            "max_abs_error": 0.00012134281924452983,
+            "l2_error": 0.0006167225976244032,
+            "rms_error": 1.362777284034994e-05
+          },
+          {
+            "query_index": 511,
+            "max_abs_error": 0.00012158129529787898,
+            "l2_error": 0.0006473595579761861,
+            "rms_error": 1.4304760415965224e-05
+          },
+          {
+            "query_index": 512,
+            "max_abs_error": 6.926864259337862e-05,
+            "l2_error": 0.0004577521740752067,
+            "rms_error": 1.0114989574733238e-05
+          },
+          {
+            "query_index": 1023,
+            "max_abs_error": 0.00011696410854417083,
+            "l2_error": 0.0005032665044530484,
+            "rms_error": 1.1120723688837506e-05
+          },
+          {
+            "query_index": 1024,
+            "max_abs_error": 0.00012853027184822619,
+            "l2_error": 0.0005131271685389359,
+            "rms_error": 1.1338615640154189e-05
+          },
+          {
+            "query_index": 2047,
+            "max_abs_error": 0.00010673506961977886,
+            "l2_error": 0.0005655339574217623,
+            "rms_error": 1.249665300888101e-05
+          }
+        ]
+      }
+    }
+  ],
+  "execution_kind": "original_operator_execution",
+  "model_forward": false,
+  "origin": "Captured Qwen3 layer1 QKV provenance; this process does not execute a model layer.",
+  "assessment": {
+    "strategy_switched": null,
+    "numerics_observed": null,
+    "model_impact": null
+  },
+  "mechanism_accepted": false,
+  "controlled_validation_certificate_granted": false,
+  "start_epoch": 1793336337.0930982,
+  "loader": {
+    "operator_variant": "stock",
+    "native_bridge_loaded": false
+  },
+  "runtime_imports": {
+    "native_execution_strategy": {
+      "path": "/audit/runtime/native_execution_strategy/__init__.py",
+      "sha256": "cb2dc8f9bff8da26f5955c1175d1ca07a82e56a23d5ae4f3b2851b5f12c6d8bc"
+    },
+    "native_execution_strategy.models": {
+      "path": "/audit/runtime/native_execution_strategy/models.py",
+      "sha256": "40f52e32133d6133d474ecc4fa74e679213b28a727546c811802bf2233831c79"
+    },
+    "native_execution_strategy.config": {
+      "path": "/audit/runtime/native_execution_strategy/config.py",
+      "sha256": "bdbf9c672ae08b78b00f87a5c31ef1f29a8e547422015fa1dbfc9e7bc7db39c4"
+    },
+    "native_execution_strategy.policies": {
+      "path": "/audit/runtime/native_execution_strategy/policies.py",
+      "sha256": "5055c8c2e9c2405bea4039ad25b04c1775b5eb1899cd60ccb2c3e485afc914b2"
+    },
+    "native_execution_strategy.session": {
+      "path": "/audit/runtime/native_execution_strategy/session.py",
+      "sha256": "b77cb735a858c1e7a2292911b45be7cc3c058f1c53a5eee6ddf60c04d67a5275"
+    }
+  },
+  "versions": {
+    "torch": "2.10.0",
+    "torch-npu": "2.10.0.post4"
+  },
+  "fp64_reference_contract": {
+    "query_indices": [
+      0,
+      63,
+      64,
+      127,
+      128,
+      511,
+      512,
+      1023,
+      1024,
+      2047
+    ],
+    "batch_slot": 0,
+    "heads": 16,
+    "head_dim": 128,
+    "kv_group_rule": "query_head//2",
+    "effective_scale_float32": 0.0883883461356163,
+    "compute_device": "CPU",
+    "dtype": "float64",
+    "causal_keys": "keys 0 through query_index inclusive",
+    "not_a_native_output_proxy": true
+  },
+  "physical_device_binding": {
+    "device": "Ascend910B4",
+    "public_api_device_name": "Ascend910B4",
+    "logical_device": 0,
+    "physical_card": 5,
+    "npu_smi_device_name": "910B4",
+    "preflight_sha256": "f66314359ad5fa0d425da3a0fd82ca8e60461ac665c7ade900e7f4c0dac30a26",
+    "container_identity_sha256": "832c15ebeafd594d9f393a1fdab056ea5640022345abd43f48d2e1652c9883dc",
+    "source": "Observed public API name plus controller npu-smi and single physical-device mapping"
+  },
+  "native_kwargs": {
+    "head_num": 16,
+    "input_layout": "BNSD",
+    "scale": 0.08838834764831845,
+    "keep_prob": 1.0,
+    "pre_tockens": 2147483647,
+    "next_tockens": 0,
+    "inner_precise": 0,
+    "sparse_mode": 2,
+    "gen_mask_parallel": true,
+    "sync": false,
+    "softmax_layout": "",
+    "pse": null,
+    "padding_mask": null,
+    "prefix": null,
+    "actual_seq_qlen": null,
+    "actual_seq_kvlen": null,
+    "sink": null
+  },
+  "invocation_context": {
+    "operator": "FlashAttentionScore",
+    "request_count": 1,
+    "token_count": 2048,
+    "matrix_dims": {
+      "query_heads": 16,
+      "kv_heads": 8,
+      "query_tokens": 2048,
+      "kv_tokens": 2048,
+      "head_dim": 128
+    },
+    "seq_lens": [
+      2048
+    ],
+    "dtype": "float16",
+    "layout": "BNSD",
+    "attributes": {
+      "scale": 0.0883883461356163,
+      "keep_prob": 1,
+      "pre_tokens": 2147483647,
+      "next_tokens": 0,
+      "heads": 16,
+      "inner_precise": 0,
+      "sparse_mode": 2,
+      "optional_inputs_absent": true
+    }
+  },
+  "statistics_collector": {
+    "variant": "task_local_fp32_high_v1",
+    "precision": "high",
+    "modified_official_collector": true,
+    "manifest_file": "/audit/collector_high_a1/stage_manifest.json",
+    "manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+    "package_root": "/audit/collector_high_a1/packages",
+    "processor_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+    "original_processor_sha256": "e981aa6fe9afa1e7a1f0654db44166d7c199674b0727d8d7ffa40626b1074011",
+    "patched_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+    "source_manifest_sha256": "d86efe38de5f3ef4bbb9433f015c06eb2d2f6e80b0c8dae71e40e38d2c2510c3",
+    "patch_sha256": "8239db6dbb8d54e77d6e7960fd1ff15121c13bfe5d7327557031b3d66d43975a",
+    "artifact_count": 513,
+    "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+    "policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+    "actual_loaded": {
+      "module": "msprobe.core.dump.data_dump.data_processor.pytorch_processor",
+      "path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+      "sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+      "method_code_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py"
+    }
+  },
+  "receipt_sha256": "cfa3c8148b93bbbc8d015efaf19213927fcd26284f54647d42c72c3e1db00eff",
+  "input_unchanged": true,
+  "host_scope_restored": true,
+  "end_epoch": 1793336346.8969736
+}

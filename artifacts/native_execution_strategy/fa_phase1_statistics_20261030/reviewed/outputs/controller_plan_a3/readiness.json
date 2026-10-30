@@ -1,0 +1,321 @@
+{
+  "schema": "nes.cpu.prepared_matrix.v1",
+  "status": "CPU_PREPARED_NO_NATIVE_EXECUTION",
+  "utc": "2026-10-30T04:58:35.545852+00:00",
+  "groups": [
+    {
+      "group": "discovery",
+      "case_count": 8,
+      "original_native_calls": 8,
+      "casefiles": [
+        {
+          "case_id": "discovery_b1_r0",
+          "file": "setup/discovery/discovery_b1_r0.json",
+          "sha256": "f484004014246a2542739035398d76f88826f8b5891976e67fec7972bfed419a",
+          "native_calls": 1
+        },
+        {
+          "case_id": "discovery_b1_r1",
+          "file": "setup/discovery/discovery_b1_r1.json",
+          "sha256": "5c2dd67b21a5e76dd4dec835afa9d16cc87f1506976c979de605db7a30a551b1",
+          "native_calls": 1
+        },
+        {
+          "case_id": "discovery_b2_r0",
+          "file": "setup/discovery/discovery_b2_r0.json",
+          "sha256": "fd53fbb5e818a3ef38f8d4bad58976fc30486d4915f945cdaf2e883fe1bfebfd",
+          "native_calls": 1
+        },
+        {
+          "case_id": "discovery_b2_r1",
+          "file": "setup/discovery/discovery_b2_r1.json",
+          "sha256": "31ebd8ad87cd8c67343d30843c2d70709648d7205ac33eb3af76ac642c31db72",
+          "native_calls": 1
+        },
+        {
+          "case_id": "discovery_b4_r0",
+          "file": "setup/discovery/discovery_b4_r0.json",
+          "sha256": "23867ffb71625967365df1617eaf202294a8bf63144f95df0dcdaef33f17c723",
+          "native_calls": 1
+        },
+        {
+          "case_id": "discovery_b4_r1",
+          "file": "setup/discovery/discovery_b4_r1.json",
+          "sha256": "2df56baf63f25225cbe683c119383f0632763c49d6c727e086163a44475ae59f",
+          "native_calls": 1
+        },
+        {
+          "case_id": "discovery_b8_r0",
+          "file": "setup/discovery/discovery_b8_r0.json",
+          "sha256": "94035624a33f86986dc73c31cfba266678ac1221ff43c991f332218a7ed11430",
+          "native_calls": 1
+        },
+        {
+          "case_id": "discovery_b8_r1",
+          "file": "setup/discovery/discovery_b8_r1.json",
+          "sha256": "f45594040a9975cc173a371c30312742b35917bce039bdb862163aed08fb8820",
+          "native_calls": 1
+        }
+      ],
+      "prepare_receipt": "outputs/controller_plan_a3/discovery.prepare.json",
+      "prepare_receipt_sha256": "e6fcd3de3c4c433625659b756cf7bb1cc6becc299d5cfe631116aa8575b7bf46",
+      "prepare_command": [
+        "python3",
+        "-B",
+        "controller.py",
+        "--card",
+        "5",
+        "--probe",
+        "replay.py",
+        "--capture",
+        "native-logs",
+        "--case-seconds",
+        "300",
+        "--max-seconds",
+        "1800",
+        "--prepare-only",
+        "--allow-idle-container-ID",
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "--allow-idle-container-ID",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+        "--case-file",
+        "setup/discovery/discovery_b1_r0.json",
+        "--case-file",
+        "setup/discovery/discovery_b1_r1.json",
+        "--case-file",
+        "setup/discovery/discovery_b2_r0.json",
+        "--case-file",
+        "setup/discovery/discovery_b2_r1.json",
+        "--case-file",
+        "setup/discovery/discovery_b4_r0.json",
+        "--case-file",
+        "setup/discovery/discovery_b4_r1.json",
+        "--case-file",
+        "setup/discovery/discovery_b8_r0.json",
+        "--case-file",
+        "setup/discovery/discovery_b8_r1.json"
+      ],
+      "sources_count": 59,
+      "sources_canonical_sha256": "a6668b40f9411bacf9d64239ce34302a801ee851a81ba5b9fb7dd0dc0ae5976c"
+    },
+    {
+      "group": "controlled_query_tile",
+      "case_count": 4,
+      "original_native_calls": 16,
+      "casefiles": [
+        {
+          "case_id": "controlled_query_tile_b1_r0",
+          "file": "setup/controlled/controlled_query_tile_b1_r0.json",
+          "sha256": "1f878e3048865b2f300bead6da28959a4e9a37c9043e0e127f808825c1a4054c",
+          "native_calls": 4
+        },
+        {
+          "case_id": "controlled_query_tile_b1_r1",
+          "file": "setup/controlled/controlled_query_tile_b1_r1.json",
+          "sha256": "49f9e6d982509011d60c4794565cc177b842257cc52fa2038494d626521a5169",
+          "native_calls": 4
+        },
+        {
+          "case_id": "controlled_query_tile_b8_r0",
+          "file": "setup/controlled/controlled_query_tile_b8_r0.json",
+          "sha256": "6f7f5c0d80e06d7cb1ce442ebc1c38b4ad9745dd088526face2b76bf63c00f13",
+          "native_calls": 4
+        },
+        {
+          "case_id": "controlled_query_tile_b8_r1",
+          "file": "setup/controlled/controlled_query_tile_b8_r1.json",
+          "sha256": "f6da7472eae91efb78c7b42f1a4902b888760ee78967bafc4e331db49546021d",
+          "native_calls": 4
+        }
+      ],
+      "prepare_receipt": "outputs/controller_plan_a3/controlled_query_tile.prepare.json",
+      "prepare_receipt_sha256": "da324d38069de71e3067e4533a6ffa00d9553a8be1ebcf5899c76e4fbc5915a9",
+      "prepare_command": [
+        "python3",
+        "-B",
+        "controller.py",
+        "--card",
+        "5",
+        "--probe",
+        "replay.py",
+        "--capture",
+        "native-logs",
+        "--case-seconds",
+        "300",
+        "--max-seconds",
+        "1800",
+        "--prepare-only",
+        "--allow-idle-container-ID",
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "--allow-idle-container-ID",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+        "--case-file",
+        "setup/controlled/controlled_query_tile_b1_r0.json",
+        "--case-file",
+        "setup/controlled/controlled_query_tile_b1_r1.json",
+        "--case-file",
+        "setup/controlled/controlled_query_tile_b8_r0.json",
+        "--case-file",
+        "setup/controlled/controlled_query_tile_b8_r1.json"
+      ],
+      "sources_count": 59,
+      "sources_canonical_sha256": "a6668b40f9411bacf9d64239ce34302a801ee851a81ba5b9fb7dd0dc0ae5976c"
+    },
+    {
+      "group": "controlled_key_group",
+      "case_count": 4,
+      "original_native_calls": 16,
+      "casefiles": [
+        {
+          "case_id": "controlled_key_group_b1_r0",
+          "file": "setup/controlled/controlled_key_group_b1_r0.json",
+          "sha256": "0ed4d80d7baa21e1a45e36333b15724cf477582b5eab7e6c395dd4ec6f4505b5",
+          "native_calls": 4
+        },
+        {
+          "case_id": "controlled_key_group_b1_r1",
+          "file": "setup/controlled/controlled_key_group_b1_r1.json",
+          "sha256": "925acb7bca72c7010a612dac952cd0c4bae9607359711ba23dd47a9b715fadce",
+          "native_calls": 4
+        },
+        {
+          "case_id": "controlled_key_group_b8_r0",
+          "file": "setup/controlled/controlled_key_group_b8_r0.json",
+          "sha256": "daced0a904dd81855347d2c5f0c00dbacf2c9bd79b733f483c7032e459e885c0",
+          "native_calls": 4
+        },
+        {
+          "case_id": "controlled_key_group_b8_r1",
+          "file": "setup/controlled/controlled_key_group_b8_r1.json",
+          "sha256": "0a61e968a979a3900e8fc4c3795213a0f417f8a00b4bda0ec9a2324d9105487a",
+          "native_calls": 4
+        }
+      ],
+      "prepare_receipt": "outputs/controller_plan_a3/controlled_key_group.prepare.json",
+      "prepare_receipt_sha256": "0e797fd4fa8551a51d9db6c036896fb423ff7695af0b628bc9c80ec4e294c45b",
+      "prepare_command": [
+        "python3",
+        "-B",
+        "controller.py",
+        "--card",
+        "5",
+        "--probe",
+        "replay.py",
+        "--capture",
+        "native-logs",
+        "--case-seconds",
+        "300",
+        "--max-seconds",
+        "1800",
+        "--prepare-only",
+        "--allow-idle-container-ID",
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "--allow-idle-container-ID",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+        "--case-file",
+        "setup/controlled/controlled_key_group_b1_r0.json",
+        "--case-file",
+        "setup/controlled/controlled_key_group_b1_r1.json",
+        "--case-file",
+        "setup/controlled/controlled_key_group_b8_r0.json",
+        "--case-file",
+        "setup/controlled/controlled_key_group_b8_r1.json"
+      ],
+      "sources_count": 59,
+      "sources_canonical_sha256": "a6668b40f9411bacf9d64239ce34302a801ee851a81ba5b9fb7dd0dc0ae5976c"
+    },
+    {
+      "group": "controlled_joint",
+      "case_count": 4,
+      "original_native_calls": 16,
+      "casefiles": [
+        {
+          "case_id": "controlled_joint_b1_r0",
+          "file": "setup/controlled/controlled_joint_b1_r0.json",
+          "sha256": "f39fdf23576ae51318f0b02e7b779847d358ffeebfaee9b345dffb45fa9bcef1",
+          "native_calls": 4
+        },
+        {
+          "case_id": "controlled_joint_b1_r1",
+          "file": "setup/controlled/controlled_joint_b1_r1.json",
+          "sha256": "3c7537c06c9622fa3325c20e5801d452518d53351c0240fb242bbd9752405356",
+          "native_calls": 4
+        },
+        {
+          "case_id": "controlled_joint_b8_r0",
+          "file": "setup/controlled/controlled_joint_b8_r0.json",
+          "sha256": "f6009754c54003cb6d872e52e6208afdb697ebb8c97927db773d2ae4bfee456f",
+          "native_calls": 4
+        },
+        {
+          "case_id": "controlled_joint_b8_r1",
+          "file": "setup/controlled/controlled_joint_b8_r1.json",
+          "sha256": "7c2622df4443cf6333fcd4f3644b013ebc9a38fa6b99985d66ef98553dd74338",
+          "native_calls": 4
+        }
+      ],
+      "prepare_receipt": "outputs/controller_plan_a3/controlled_joint.prepare.json",
+      "prepare_receipt_sha256": "c05ebc6b7629d84bab328200d60d7b741c3eb13bdf1ef7c91483e86ef4f6235d",
+      "prepare_command": [
+        "python3",
+        "-B",
+        "controller.py",
+        "--card",
+        "5",
+        "--probe",
+        "replay.py",
+        "--capture",
+        "native-logs",
+        "--case-seconds",
+        "300",
+        "--max-seconds",
+        "1800",
+        "--prepare-only",
+        "--allow-idle-container-ID",
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "--allow-idle-container-ID",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+        "--case-file",
+        "setup/controlled/controlled_joint_b1_r0.json",
+        "--case-file",
+        "setup/controlled/controlled_joint_b1_r1.json",
+        "--case-file",
+        "setup/controlled/controlled_joint_b8_r0.json",
+        "--case-file",
+        "setup/controlled/controlled_joint_b8_r1.json"
+      ],
+      "sources_count": 59,
+      "sources_canonical_sha256": "a6668b40f9411bacf9d64239ce34302a801ee851a81ba5b9fb7dd0dc0ae5976c"
+    }
+  ],
+  "total_cases": 20,
+  "total_original_native_calls_planned": 56,
+  "npu_calls": 0,
+  "containers_started": 0,
+  "runtime_manifest_sha256": "6982e9b83717b03349fa57707f635dfcfc3bc46ae778d676442c03bc734b6e7a",
+  "input_manifest_sha256": "0e983abac01a72dc4f6039211c27fbce6fb573bcdcebe8f4051e1b7e8735e03d",
+  "certificate_sha256": "9ef50158e742a5ea1038f199763a4ac444a50eea62728efbff425bf706c16bad",
+  "pod_schema_sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+  "collector_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+  "vendor_manifest_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1",
+  "matrix_manifests": {
+    "discovery": "a9754e8e228f4e2c0fe94cf61f41a5c0821d37e3e45319361479b7522f585129",
+    "controlled": "2f6200e0c37a5ce2f6939b973e8d6f2be4e019be8f90a5192b460d0b2256626c"
+  },
+  "same_frozen_sources_all_groups": true,
+  "sources_count": 59,
+  "sources_canonical_sha256": "a6668b40f9411bacf9d64239ce34302a801ee851a81ba5b9fb7dd0dc0ae5976c",
+  "runtime_no_pycache": true,
+  "source_files_still_match_after_prepare": true,
+  "npu_smi_file": "outputs/controller_plan_a1/npu_smi.txt",
+  "npu_smi_sha256": "7330f8bdf4480e5f6d50ba96f749d8b2bdf075d912b17c23db7a86432c821d4d",
+  "not_established": [
+    "Actual SDK/new vendor compatibility",
+    "Observed strategy switch",
+    "Numerical change",
+    "Model impact",
+    "Hardware runtime budgets"
+  ],
+  "generation": "python_runtime_a2_full_pod_section_binding",
+  "previous_readiness_metadata_correction": "readiness.json inherited old top-level sources hash; group receipts already correct. This file replaces only that summary field."
+}

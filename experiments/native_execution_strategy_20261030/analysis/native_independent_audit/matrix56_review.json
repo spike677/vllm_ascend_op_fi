@@ -1,0 +1,802 @@
+{
+  "schema": "nes.fa.independent_native_matrix_review.v1",
+  "status": "PASS_INDEPENDENT_NATIVE_STRATEGY_AUDIT",
+  "audit_merge_source_sha256": "044acc7da24572f567b9dabcac3acbf2d664514c5c6db2be54f7ce5c92bb1665",
+  "reports": [
+    {
+      "path": "discovery_a4_review_r3.json",
+      "sha256": "9ef0783c7411c3c7103426d3882284c7255d4048e67b090c9ceb43906d54e886"
+    },
+    {
+      "path": "controlled_query_tile_a1_review_r3.json",
+      "sha256": "a92cdbac7b6da3431505811bde5b4ec1199bfd6507141af1d60c7a91ed7334b5"
+    },
+    {
+      "path": "controlled_key_group_a1_review.json",
+      "sha256": "ff159f94b93aea64edcf427bc223a7c50de27cfe2906f6e25a2c400a7e8c0908"
+    },
+    {
+      "path": "controlled_joint_a1_review.json",
+      "sha256": "8f4ce36052ad19fc7426b934cd9035a48ef503eecbd151b65bfee931a2dd72b8"
+    }
+  ],
+  "capture_source_manifest_sha256": "5812dfeccfbd27484c737763b8413b6488a2ae4be1ad0cf9bd03a36b366f430c",
+  "capture_source_count": 59,
+  "source_binding": {
+    "pod_schema_sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+    "vendor_manifest_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1",
+    "policy_source_manifest_sha256": "15bdb7b6e63ddec53f9d3d9a4c31ef4217732f7fdcf46f724cbad52099a5a3f3",
+    "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+    "vendor_artifacts_checked": 670,
+    "kernel_source_sha256": {
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_s1s2_bn2gs1.h": "18bbd703454ea8cd6fbe6936329c29513745c269e7f7ad7ea5ab05d81dcd08cb",
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_common.h": "3e074a966515df1c9cf0cc070d2315a5978ccb44e7e75a842188de5016e4cc34",
+      "attention/flash_attention_score/op_kernel/flash_attention_score.cpp": "7f4adb241e3f09ad3204159bcd1b963800e174230f80c78b8126e29b7481ba64",
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_template_tiling_key.h": "a8951fea89250f0f815382e9c3b2a05a4c01a12f971985bfe5d133f04062f072",
+      "common/include/op_kernel/util.h": "442648c354814d149ba7f8185e4b16cc7d528d1333f8437f07c0f3c5c93187d9"
+    },
+    "padding_source_audit_sha256": "7c268a7a261c4aa72ed53f60a15f021bff7aa67a4c6585b00d9ed838fc68897e",
+    "complete_public_fields": 205,
+    "input_semantic_fields": 34,
+    "execution_semantic_fields": 166,
+    "padding_bytes_preserved": 17
+  },
+  "actual_original_calls": 56,
+  "stock_calls": 8,
+  "private_calls": 48,
+  "private_cases": 12,
+  "actual_controlled_strategy_changes": 24,
+  "private_native_calls": 12,
+  "off_recovery_calls": 12,
+  "stock_discovery": [
+    {
+      "actual_batch": 1,
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 256
+      },
+      "key": "22619644976",
+      "block_dim": 20,
+      "execution_plan_sha256": "48c217ba8488311ae1a71ca39a19ee3eb25cacf31294e3e1be5bd40995359795",
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "repeat_semantics_exact": true,
+      "repeat_complete_raw_equal": true,
+      "section_sha256": {
+        "softmaxFlashTilingData": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+        "transposeTilingData": "e41a8d47952ce24777fa166b589c801619751e8ad63f3aca60f86b453d508bed",
+        "transposeTilingDataTailCore": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+      },
+      "controlled_support_claimed": false
+    },
+    {
+      "actual_batch": 2,
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 512
+      },
+      "key": "22619644976",
+      "block_dim": 20,
+      "execution_plan_sha256": "4f0f3ec3f017c1da52653c61d5b8e582a3cb70e61aea2aababe109e34f359c8a",
+      "input_contract_sha256": "c8bc2ee798a215274617a22ff811b504c537224ab0331db6ab6013f665ad0022",
+      "repeat_semantics_exact": true,
+      "repeat_complete_raw_equal": true,
+      "section_sha256": {
+        "softmaxFlashTilingData": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+        "transposeTilingData": "ab71f0efbdd61ed65913913f9a4c7d0f285fb6ee42c747b78721d0dda0bdc588",
+        "transposeTilingDataTailCore": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+      },
+      "controlled_support_claimed": false
+    },
+    {
+      "actual_batch": 4,
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 1024
+      },
+      "key": "22619644976",
+      "block_dim": 20,
+      "execution_plan_sha256": "dc99a60cdf390039db9f58f1f75674f02ed2135295b1246abeda504cf90c0361",
+      "input_contract_sha256": "3f9e3d9b8b876f154e089b33aee2ef6c80c68e06a41c35a54439fda088c0670f",
+      "repeat_semantics_exact": true,
+      "repeat_complete_raw_equal": true,
+      "section_sha256": {
+        "softmaxFlashTilingData": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+        "transposeTilingData": "d19b5c1df9ac9faaaafdd6bfd2005a8bc351cd7a6c7bfb8b6ebf81c4b3e25f57",
+        "transposeTilingDataTailCore": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+      },
+      "controlled_support_claimed": false
+    },
+    {
+      "actual_batch": 8,
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 2048
+      },
+      "key": "22619644976",
+      "block_dim": 20,
+      "execution_plan_sha256": "cbc13b5b07ba0e75ddfa04beda75c2c0ba3f91697ec719be445f5601245946d6",
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "repeat_semantics_exact": true,
+      "repeat_complete_raw_equal": true,
+      "section_sha256": {
+        "softmaxFlashTilingData": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+        "transposeTilingData": "d78d54f78d000a458278c3e07a8aa75ea9202bc8f67814dda71f586791138c94",
+        "transposeTilingDataTailCore": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+      },
+      "controlled_support_claimed": false
+    }
+  ],
+  "controlled_sequences": [
+    {
+      "case_id": "controlled_query_tile_b1_r0",
+      "actual_batch": 1,
+      "requested_target_label": "query_tile",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_query_tile_b1_r1",
+      "actual_batch": 1,
+      "requested_target_label": "query_tile",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_query_tile_b8_r0",
+      "actual_batch": 8,
+      "requested_target_label": "query_tile",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_query_tile_b8_r1",
+      "actual_batch": 8,
+      "requested_target_label": "query_tile",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_key_group_b1_r0",
+      "actual_batch": 1,
+      "requested_target_label": "key_group",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_key_group_b1_r1",
+      "actual_batch": 1,
+      "requested_target_label": "key_group",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_key_group_b8_r0",
+      "actual_batch": 8,
+      "requested_target_label": "key_group",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_key_group_b8_r1",
+      "actual_batch": 8,
+      "requested_target_label": "key_group",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_joint_b1_r0",
+      "actual_batch": 1,
+      "requested_target_label": "joint",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 4
+        },
+        {
+          "m": 64,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_joint_b1_r1",
+      "actual_batch": 1,
+      "requested_target_label": "joint",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 4
+        },
+        {
+          "m": 64,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_joint_b8_r0",
+      "actual_batch": 8,
+      "requested_target_label": "joint",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 4
+        },
+        {
+          "m": 64,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    },
+    {
+      "case_id": "controlled_joint_b8_r1",
+      "actual_batch": 8,
+      "requested_target_label": "joint",
+      "actual_factors_sequence": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 64,
+          "n_ratio": 4
+        },
+        {
+          "m": 64,
+          "n_ratio": 4
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "native_factors_before_generation": [
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        },
+        {
+          "m": 128,
+          "n_ratio": 8
+        }
+      ],
+      "actual_strategy_changed_calls": 2,
+      "selection_applied_sequence": [
+        false,
+        true,
+        true,
+        false
+      ],
+      "input_contract_34_same_all_steps": true,
+      "execution_plan_169_controlled_repeat_equal": true,
+      "private_native_and_off_169_plan_and_34_input_equal_same_batch_stock": true,
+      "raw_launch_bytes_equal_host_each_call": true
+    }
+  ],
+  "all_private_native_off_match_same_batch_stock_169_plan_and_34_input": true,
+  "controlled_two_matches_and_independent_process_repeats_stable": true,
+  "observed_stock_selector_projection_same_across_batches": true,
+  "observed_stock_full_execution_plan_changes_across_batches": true,
+  "numerical_effect_claimed": false,
+  "model_effect_claimed": false,
+  "new_certificate_issued": false,
+  "limitations": [
+    "This is actual native strategy/provenance evidence; numeric and model effects require separate evidence.",
+    "B2/B4 remain native observation only, not controlled support.",
+    "The 192 bytes in three public SDK sections are bound as whole sections; their internal fields are not independently decoded.",
+    "Only exact source-audited five alignment members are excluded semantically; complete raw bytes remain bound.",
+    "A stock call has no private host callback; its log framing is independently reconstructed, with private native/off bridges separately matching all 169 plan items and 34 input fields."
+  ]
+}

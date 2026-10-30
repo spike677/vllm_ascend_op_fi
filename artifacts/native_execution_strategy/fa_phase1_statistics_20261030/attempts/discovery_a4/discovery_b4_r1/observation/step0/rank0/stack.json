@@ -1,0 +1,29 @@
+{
+ "0": [
+  [
+   "NPU.npu_fusion_attention_v3.0.forward"
+  ],
+  [
+   "File /audit/replay.py, line 190, in forward, \n return torch_npu.npu_fusion_attention_v3(query, key, value, **kwargs)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+   "File /audit/replay.py, line 239, in invoke_original, \n native_value = module(inputs['query'], inputs['key'], inputs['value'])",
+   "File /audit/replay.py, line 292, in main, \n native = invoke_original()",
+   "File /audit/replay.py, line 366, in <module>, \n raise SystemExit(main())"
+  ]
+ ],
+ "1": [
+  [
+   "Module.replay.ReplayModule.forward.0"
+  ],
+  [
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+   "File /audit/replay.py, line 239, in invoke_original, \n native_value = module(inputs['query'], inputs['key'], inputs['value'])",
+   "File /audit/replay.py, line 292, in main, \n native = invoke_original()",
+   "File /audit/replay.py, line 366, in <module>, \n raise SystemExit(main())"
+  ]
+ ]
+}

@@ -1,0 +1,21 @@
+{
+  "status": "FAIL",
+  "card": 5,
+  "cases": [],
+  "cleanup_errors": [],
+  "start_epoch": 1793335653.8908143,
+  "probe": "replay.py",
+  "capture": "native-logs",
+  "scope": "Native strategy capture only; strategy switch, numerical change and model impact require separate acceptance",
+  "mechanism_accepted": false,
+  "idle_allowlist_ids": [
+    "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+    "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+  ],
+  "external_container_mutations": false,
+  "traceback": "Traceback (most recent call last):\n  File \"/home/native-execution-strategy-20261030/controller.py\", line 536, in main\n    returned_id = run(command, 40).strip()\n                  ^^^^^^^^^^^^^^^^\n  File \"/home/native-execution-strategy-20261030/controller.py\", line 45, in run\n    raise RuntimeError(details)\nRuntimeError: ['docker', 'run', '-d']: rc=125: docker: Error response from daemon: OCI runtime create failed: container_linux.go:341: starting container process caused \"process_linux.go:380: container init caused \\\"rootfs_linux.go:62: mounting \\\\\\\"/home/fault28-native-tiling-20261029/collector_high_a1\\\\\\\" to rootfs \\\\\\\"/home/docker-system/overlay2/adb7c5787ab972fe571ca3454fb07af35632399829d6ac760a97551fece3f757/merged\\\\\\\" at \\\\\\\"/home/docker-system/overlay2/adb7c5787ab972fe571ca3454fb07af35632399829d6ac760a97551fece3f757/merged/audit/collector_high_a1\\\\\\\" caused \\\\\\\"mkdir /home/docker-system/overlay2/adb7c5787ab972fe571ca3454fb07af35632399829d6ac760a97551fece3f757/merged/audit/collector_high_a1: read-only file system\\\\\\\"\\\"\": unknown.\n\n",
+  "device_lock_acquired": true,
+  "device_lock_released": true,
+  "owned_container_id": null,
+  "end_epoch": 1793335657.5283456
+}

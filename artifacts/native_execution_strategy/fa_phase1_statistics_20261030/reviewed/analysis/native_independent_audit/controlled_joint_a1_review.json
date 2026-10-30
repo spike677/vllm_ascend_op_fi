@@ -1,0 +1,6022 @@
+{
+  "schema": "nes.fa.independent_native_review.v1",
+  "status": "PASS_NATIVE_SOURCE_AND_POD_REVIEW",
+  "attempt": "controlled_joint_a1",
+  "audit_source_sha256": "341fea001e0afd6ea15add2fa93890cca7b76a628e426e876cb733f04dc8ca55",
+  "reads_tensor_payloads": false,
+  "executes_npu_or_containers": false,
+  "numeric_or_model_effect_claimed": false,
+  "cases": [
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "native_launch_tid": 76,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "window_sha256": "9c2755a1fbbf8b36fb24dbae3a58db3911dd6ded13eafc78569dad8267750b3c",
+      "native_launch_line": 54938,
+      "native_launch_line_sha256": "fca828b789f65b01e6ebd47aa9c36dcc68317f00790ff63b4f080f11549e4b83",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15132798,
+        28693520
+      ],
+      "source_prefix_sha256": "141b072be482b3fca117f599a59ee53b40bcde35fd5ce5bb5a7567d703b5f3ee",
+      "source_log_sha256": "a9ff24de824c78d5a8eb5e1742deb657e9c22107a68f38157980013d27d2802e",
+      "caller_tid": 46,
+      "pid": 46,
+      "case_id": "controlled_joint_b1_r0",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 256
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "56f883fbc81d7da9b6aacf753652f1e9446d93b08cb28470f85317a7f3c28b1d",
+      "result_sha256": "4be0c209b32002d9559f63d058ca548d074e4ffdcec689e3bcddf96f5597945c",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000100000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "e41a8d47952ce24777fa166b589c801619751e8ad63f3aca60f86b453d508bed",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "48c217ba8488311ae1a71ca39a19ee3eb25cacf31294e3e1be5bd40995359795",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "selection_applied": false,
+      "host_reason": "native_observed_passthrough",
+      "host_sha256": "2826ea66f3e072ad83afd50611d6f9f0432e694260b54eb64838abef575e357a",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "80c08be193e5a28c6c316ece798ecf2aa9c88f96e4fca715c77b6571e288526a",
+      "actual_private_library_loads": [
+        {
+          "line": 3760,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3761,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81027,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81028,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 36701696,
+      "native_launch_tid": 76,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_181_FlashAttentionScore",
+      "raw_sha256": "e8566961f26f85272867f2fd986ca9832244db2e5f3fd8a86d6de4f7d9bcdfe7",
+      "window_sha256": "4899f14e185aa27ac1e9e73085dce2e659132ecc67e93accfd91328e222410e2",
+      "native_launch_line": 4215,
+      "native_launch_line_sha256": "a012dc54f5b49f536ad6fff79ba419c573c9b6b7978f57a15c48202068b3a3bd",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        31513462,
+        34000283
+      ],
+      "source_prefix_sha256": "e13d2d5223647c6dca4ff8b8313e560ac4fae98c7fcdd0dae0be1fde0297e7c3",
+      "source_log_sha256": "a9ff24de824c78d5a8eb5e1742deb657e9c22107a68f38157980013d27d2802e",
+      "caller_tid": 46,
+      "pid": 46,
+      "case_id": "controlled_joint_b1_r0",
+      "step": 1,
+      "mode": "controlled",
+      "actual_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 64,
+        "coreParams.nRatio": 4,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 4,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 512
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "b467d002add381ffb217661694804e6ce75a8570fb521954bcffe0c001868be7",
+      "result_sha256": "4be0c209b32002d9559f63d058ca548d074e4ffdcec689e3bcddf96f5597945c",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000200000020000010000000080000008000000010000000000200000020000010000000080000008000000001000000000000000000000000000000",
+          "sha256": "3f244e7f827ae6b7419837800cd9435e398af1b4a11feee071e24f50051d8936",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000004000000080000000800000000100000010000000000800000008000000100000002000004000000000800000000000008000000000000000",
+          "sha256": "2fb91bb340d019de9e61d35ff8d88bc53844ad85e3f59effe2e30ef575351052",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "2a2b862f2cb23ef0f0955f0a7d8c2b8fa0af9c663350e7085a08306e0acd9393",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "selection_applied": true,
+      "host_reason": "controlled_pair_selected",
+      "host_sha256": "71ff17b3b5daf1b4a017d90e1199ac50e1af79d4a2148055e27ffe11a4350170",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "80c08be193e5a28c6c316ece798ecf2aa9c88f96e4fca715c77b6571e288526a",
+      "actual_private_library_loads": [
+        {
+          "line": 3760,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3761,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81027,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81028,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 36701696,
+      "native_launch_tid": 76,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_323_FlashAttentionScore",
+      "raw_sha256": "e8566961f26f85272867f2fd986ca9832244db2e5f3fd8a86d6de4f7d9bcdfe7",
+      "window_sha256": "2431eeefb97a219eb172031be2f720956cdb38c6af8ea38866c61a13f8cef039",
+      "native_launch_line": 4282,
+      "native_launch_line_sha256": "88a0c0a2b14445ffddf124a007dff8a4c1a77b95f245d24477b49425ab9d4383",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        34581661,
+        37052404
+      ],
+      "source_prefix_sha256": "0df99cd49e9acb19e4c38bc77538726045b948376e0dd0fa84321f40f386adb2",
+      "source_log_sha256": "a9ff24de824c78d5a8eb5e1742deb657e9c22107a68f38157980013d27d2802e",
+      "caller_tid": 46,
+      "pid": 46,
+      "case_id": "controlled_joint_b1_r0",
+      "step": 2,
+      "mode": "controlled",
+      "actual_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 64,
+        "coreParams.nRatio": 4,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 4,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 512
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "b467d002add381ffb217661694804e6ce75a8570fb521954bcffe0c001868be7",
+      "result_sha256": "4be0c209b32002d9559f63d058ca548d074e4ffdcec689e3bcddf96f5597945c",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000200000020000010000000080000008000000010000000000200000020000010000000080000008000000001000000000000000000000000000000",
+          "sha256": "3f244e7f827ae6b7419837800cd9435e398af1b4a11feee071e24f50051d8936",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000004000000080000000800000000100000010000000000800000008000000100000002000004000000000800000000000008000000000000000",
+          "sha256": "2fb91bb340d019de9e61d35ff8d88bc53844ad85e3f59effe2e30ef575351052",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "2a2b862f2cb23ef0f0955f0a7d8c2b8fa0af9c663350e7085a08306e0acd9393",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "selection_applied": true,
+      "host_reason": "controlled_pair_selected",
+      "host_sha256": "25866cb0f9e4f8c954eab2250076513647ffcde45b6077df30abe06b7e361325",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "80c08be193e5a28c6c316ece798ecf2aa9c88f96e4fca715c77b6571e288526a",
+      "actual_private_library_loads": [
+        {
+          "line": 3760,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3761,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81027,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81028,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "native_launch_tid": 76,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_465_FlashAttentionScore",
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "window_sha256": "8de3e58bb48983dff7a6bf2e1d3d0c10bd3393bebbc342fcd63dfcbe03192e3f",
+      "native_launch_line": 4213,
+      "native_launch_line_sha256": "0c728a8592b386df79fb028b7cc137da986d00530e41ecd2339aaa6345d8c693",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        37649639,
+        40151117
+      ],
+      "source_prefix_sha256": "289df22ecb6b7a3befa59ffc3b1816ea3e87416b770109e3457c38addad88f95",
+      "source_log_sha256": "a9ff24de824c78d5a8eb5e1742deb657e9c22107a68f38157980013d27d2802e",
+      "caller_tid": 46,
+      "pid": 46,
+      "case_id": "controlled_joint_b1_r0",
+      "step": 3,
+      "mode": "off",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 256
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "56f883fbc81d7da9b6aacf753652f1e9446d93b08cb28470f85317a7f3c28b1d",
+      "result_sha256": "4be0c209b32002d9559f63d058ca548d074e4ffdcec689e3bcddf96f5597945c",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000100000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "e41a8d47952ce24777fa166b589c801619751e8ad63f3aca60f86b453d508bed",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "48c217ba8488311ae1a71ca39a19ee3eb25cacf31294e3e1be5bd40995359795",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "selection_applied": false,
+      "host_reason": "native_observed_passthrough",
+      "host_sha256": "e5b558ce096164335f5609a8cd7c052d2a1a2891e35463ff7e0df28251dd4055",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "80c08be193e5a28c6c316ece798ecf2aa9c88f96e4fca715c77b6571e288526a",
+      "actual_private_library_loads": [
+        {
+          "line": 3760,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3761,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81027,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81028,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "native_launch_tid": 154,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "window_sha256": "fcbc76635acad91a5028ea364c5bc912dd9b95d9b87e1971d32419148e545532",
+      "native_launch_line": 54938,
+      "native_launch_line_sha256": "853fd7226d73fe90154ef671bd4d59f2f8ec1016c644d0260540baed3e474045",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15321046,
+        28998976
+      ],
+      "source_prefix_sha256": "3637f4cafeef9f4a3a91816c91c56bc606bba4355141703db274d41fa9deb4fa",
+      "source_log_sha256": "5168e536cb60f0925677c8161099cd41ee71d6f1fcc63ab1e00b450e81bf17e8",
+      "caller_tid": 124,
+      "pid": 124,
+      "case_id": "controlled_joint_b1_r1",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 256
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "56f883fbc81d7da9b6aacf753652f1e9446d93b08cb28470f85317a7f3c28b1d",
+      "result_sha256": "a147c1ba39cdfaf385f5205ce7ba5e7db920b5cc93a51ce8fae14a3db85fa00b",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000100000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "e41a8d47952ce24777fa166b589c801619751e8ad63f3aca60f86b453d508bed",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "48c217ba8488311ae1a71ca39a19ee3eb25cacf31294e3e1be5bd40995359795",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "selection_applied": false,
+      "host_reason": "native_observed_passthrough",
+      "host_sha256": "8d633dff90862794b94ea78c3e34e676af378fb0798b85ff57b6a996ed11e904",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "89f892bcaef0d472e18a1d122ffb3125072347913d582f420db9246853ebaab8",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81026,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81027,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 36701696,
+      "native_launch_tid": 154,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_181_FlashAttentionScore",
+      "raw_sha256": "e8566961f26f85272867f2fd986ca9832244db2e5f3fd8a86d6de4f7d9bcdfe7",
+      "window_sha256": "3bc86b2b70cf7f5abfd0c7951a2c53872c35a959441ac1251085993e4d580a20",
+      "native_launch_line": 4213,
+      "native_launch_line_sha256": "9a652c28a0dfade35f4ab29bd8cc679adc6525389bde2b08860345b51cc6bf11",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        31843529,
+        34355431
+      ],
+      "source_prefix_sha256": "a2be3cea0c14e8cc546070c0694444e632d90ef1c68b9e284b4a9630cd4857d4",
+      "source_log_sha256": "5168e536cb60f0925677c8161099cd41ee71d6f1fcc63ab1e00b450e81bf17e8",
+      "caller_tid": 124,
+      "pid": 124,
+      "case_id": "controlled_joint_b1_r1",
+      "step": 1,
+      "mode": "controlled",
+      "actual_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 64,
+        "coreParams.nRatio": 4,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 4,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 512
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "b467d002add381ffb217661694804e6ce75a8570fb521954bcffe0c001868be7",
+      "result_sha256": "a147c1ba39cdfaf385f5205ce7ba5e7db920b5cc93a51ce8fae14a3db85fa00b",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000200000020000010000000080000008000000010000000000200000020000010000000080000008000000001000000000000000000000000000000",
+          "sha256": "3f244e7f827ae6b7419837800cd9435e398af1b4a11feee071e24f50051d8936",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000004000000080000000800000000100000010000000000800000008000000100000002000004000000000800000000000008000000000000000",
+          "sha256": "2fb91bb340d019de9e61d35ff8d88bc53844ad85e3f59effe2e30ef575351052",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "2a2b862f2cb23ef0f0955f0a7d8c2b8fa0af9c663350e7085a08306e0acd9393",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "selection_applied": true,
+      "host_reason": "controlled_pair_selected",
+      "host_sha256": "56d1631ad13da99b34de94d9fc62bb78e27a64ff2744559f02618e2fef6b0d46",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "89f892bcaef0d472e18a1d122ffb3125072347913d582f420db9246853ebaab8",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81026,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81027,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 36701696,
+      "native_launch_tid": 154,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_323_FlashAttentionScore",
+      "raw_sha256": "e8566961f26f85272867f2fd986ca9832244db2e5f3fd8a86d6de4f7d9bcdfe7",
+      "window_sha256": "13cb9aebab948b3962e29f08cb3e8cedfae532c841caecd61f74374a7bb3ddb2",
+      "native_launch_line": 4281,
+      "native_launch_line_sha256": "d5a2139fe9a92f32ce5b8b7bd11c4a887af61e884d54145b2f0f80677c0e458b",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        34943495,
+        37439161
+      ],
+      "source_prefix_sha256": "a9daf8210a92145726687081a0534f9aeb12799332d5dfc8e3de528760625810",
+      "source_log_sha256": "5168e536cb60f0925677c8161099cd41ee71d6f1fcc63ab1e00b450e81bf17e8",
+      "caller_tid": 124,
+      "pid": 124,
+      "case_id": "controlled_joint_b1_r1",
+      "step": 2,
+      "mode": "controlled",
+      "actual_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 64,
+        "coreParams.nRatio": 4,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 4,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 512
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "b467d002add381ffb217661694804e6ce75a8570fb521954bcffe0c001868be7",
+      "result_sha256": "a147c1ba39cdfaf385f5205ce7ba5e7db920b5cc93a51ce8fae14a3db85fa00b",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000200000020000010000000080000008000000010000000000200000020000010000000080000008000000001000000000000000000000000000000",
+          "sha256": "3f244e7f827ae6b7419837800cd9435e398af1b4a11feee071e24f50051d8936",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000004000000080000000800000000100000010000000000800000008000000100000002000004000000000800000000000008000000000000000",
+          "sha256": "2fb91bb340d019de9e61d35ff8d88bc53844ad85e3f59effe2e30ef575351052",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "2a2b862f2cb23ef0f0955f0a7d8c2b8fa0af9c663350e7085a08306e0acd9393",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "selection_applied": true,
+      "host_reason": "controlled_pair_selected",
+      "host_sha256": "4b241f59fd76a0f4d739555e811f30ee23ce0e05b111e181e79cebc778f34a73",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "89f892bcaef0d472e18a1d122ffb3125072347913d582f420db9246853ebaab8",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81026,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81027,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "native_launch_tid": 154,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_465_FlashAttentionScore",
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "window_sha256": "a4a097b22c35d6dbb3207cc2acf49d5e4d6d079b763f17f5448857c383a449e5",
+      "native_launch_line": 4211,
+      "native_launch_line_sha256": "1d23e419fbf09f7e3ee4024b0b9f2c82366c962f34389f367c97265b016fe938",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        38043114,
+        40569579
+      ],
+      "source_prefix_sha256": "322a6f76ff217b9c6b43e19b7630061793afe0caf9d7da9ca61bac4a3cb8409b",
+      "source_log_sha256": "5168e536cb60f0925677c8161099cd41ee71d6f1fcc63ab1e00b450e81bf17e8",
+      "caller_tid": 124,
+      "pid": 124,
+      "case_id": "controlled_joint_b1_r1",
+      "step": 3,
+      "mode": "off",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 256
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "56f883fbc81d7da9b6aacf753652f1e9446d93b08cb28470f85317a7f3c28b1d",
+      "result_sha256": "a147c1ba39cdfaf385f5205ce7ba5e7db920b5cc93a51ce8fae14a3db85fa00b",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000100000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "e41a8d47952ce24777fa166b589c801619751e8ad63f3aca60f86b453d508bed",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "48c217ba8488311ae1a71ca39a19ee3eb25cacf31294e3e1be5bd40995359795",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "selection_applied": false,
+      "host_reason": "native_observed_passthrough",
+      "host_sha256": "9ca702f5ccbfa8b3ad8f6cd945e92dd172cfa263e8f51dfdf5e1a54bcab7fd98",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 2097152,
+                  "origin": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    1,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "89f892bcaef0d472e18a1d122ffb3125072347913d582f420db9246853ebaab8",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81026,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81027,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 102761984,
+      "native_launch_tid": 230,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "window_sha256": "8332989a417684d19827e4dfb54579f149dcdcc27243df3c90020ea266aaec4a",
+      "native_launch_line": 54957,
+      "native_launch_line_sha256": "cb7b97e42d3d6802e591b41eba6309cdd36692b6c6e5dc120888e09ed6d61d6f",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15303786,
+        28985804
+      ],
+      "source_prefix_sha256": "692ba73777eda54015e0946963fd3f7a17fcddefd97fd9d140b24d26cb50f667",
+      "source_log_sha256": "670fa27211c851ce09dcf9b81815a894f0ffd9be2035279056f6ac55337bcd96",
+      "caller_tid": 200,
+      "pid": 200,
+      "case_id": "controlled_joint_b8_r0",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 2048
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "66a5d2ce0efd60f5e2e43f2cd7f1c7bd129da2e69aa632f6c543debb46a7bc57",
+      "result_sha256": "3699ee30b524f5ae3c74fa5db18ceaacd8d3dc9154d5257b90530182fde5c290",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000800000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "d78d54f78d000a458278c3e07a8aa75ea9202bc8f67814dda71f586791138c94",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "cbc13b5b07ba0e75ddfa04beda75c2c0ba3f91697ec719be445f5601245946d6",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "selection_applied": false,
+      "host_reason": "native_observed_passthrough",
+      "host_sha256": "390b5ab22d66f44d5d53e5d533323f1846f45838d389d40778478945053ea391",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 33554432,
+                  "origin": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "87462f19c8fdbeb76132a03f2f51ff05fda07add9b5bb17ca33c90b68c883da9",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81060,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81061,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 66061824,
+      "native_launch_tid": 230,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_181_FlashAttentionScore",
+      "raw_sha256": "9bc28e668dff06479158f37787e1812c14167a94f45f1b5840879bca7599307a",
+      "window_sha256": "fd9c1b1f412df4ef0d53da6337d0d02433152189103a656a733e5da7413ae366",
+      "native_launch_line": 4214,
+      "native_launch_line_sha256": "5dabda59628fa0dda4237ec54d9aae34ceb641c16c9ff8f59950e8106c1fd306",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        31830683,
+        34349261
+      ],
+      "source_prefix_sha256": "7a2c20540b94443382dc0af01a74c4c72454393d80e99c25bc0f4bec88cb6a4f",
+      "source_log_sha256": "670fa27211c851ce09dcf9b81815a894f0ffd9be2035279056f6ac55337bcd96",
+      "caller_tid": 200,
+      "pid": 200,
+      "case_id": "controlled_joint_b8_r0",
+      "step": 1,
+      "mode": "controlled",
+      "actual_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 64,
+        "coreParams.nRatio": 4,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 4,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 4096
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "bb4615297cc3e546ac9da04c032fee88f25edc8afa8b045b596fd27eac1d2a14",
+      "result_sha256": "3699ee30b524f5ae3c74fa5db18ceaacd8d3dc9154d5257b90530182fde5c290",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000200000020000010000000080000008000000010000000000200000020000010000000080000008000000001000000000000000000000000000000",
+          "sha256": "3f244e7f827ae6b7419837800cd9435e398af1b4a11feee071e24f50051d8936",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000004000000080000000800000000800000010000000000800000008000000100000002000004000000000800000000000008000000000000000",
+          "sha256": "87de50816eeac3cdf6ea4d4484fab8ddbfd561405fc1121e644deef8e8aa6628",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "b01c0c7b131fe368cf412e0ea79e4ba0b22e686b1285bcc1f6bd47b2f5778279",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "selection_applied": true,
+      "host_reason": "controlled_pair_selected",
+      "host_sha256": "ab82234a2747eadc843dcbcc494df383e25ad5bfeeaa371fc19a73c51bb14740",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 33554432,
+                  "origin": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "87462f19c8fdbeb76132a03f2f51ff05fda07add9b5bb17ca33c90b68c883da9",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81060,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81061,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 66061824,
+      "native_launch_tid": 230,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_323_FlashAttentionScore",
+      "raw_sha256": "9bc28e668dff06479158f37787e1812c14167a94f45f1b5840879bca7599307a",
+      "window_sha256": "5ebebe7f822734adbaceacdc7e6a33a55b1b57b5785214760092fa529fdfefa9",
+      "native_launch_line": 4293,
+      "native_launch_line_sha256": "80fd8c637b684a07f8053b6f3a333a8504cce95d5f7b26ec35597044e7bbfd9e",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        34936594,
+        37435724
+      ],
+      "source_prefix_sha256": "6149cf373962eeebc1af51763290c652b1fe94cf0d2f6d3860cc4fa3beff0c9b",
+      "source_log_sha256": "670fa27211c851ce09dcf9b81815a894f0ffd9be2035279056f6ac55337bcd96",
+      "caller_tid": 200,
+      "pid": 200,
+      "case_id": "controlled_joint_b8_r0",
+      "step": 2,
+      "mode": "controlled",
+      "actual_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 64,
+        "coreParams.nRatio": 4,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 4,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 4096
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "bb4615297cc3e546ac9da04c032fee88f25edc8afa8b045b596fd27eac1d2a14",
+      "result_sha256": "3699ee30b524f5ae3c74fa5db18ceaacd8d3dc9154d5257b90530182fde5c290",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000200000020000010000000080000008000000010000000000200000020000010000000080000008000000001000000000000000000000000000000",
+          "sha256": "3f244e7f827ae6b7419837800cd9435e398af1b4a11feee071e24f50051d8936",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000004000000080000000800000000800000010000000000800000008000000100000002000004000000000800000000000008000000000000000",
+          "sha256": "87de50816eeac3cdf6ea4d4484fab8ddbfd561405fc1121e644deef8e8aa6628",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "b01c0c7b131fe368cf412e0ea79e4ba0b22e686b1285bcc1f6bd47b2f5778279",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "selection_applied": true,
+      "host_reason": "controlled_pair_selected",
+      "host_sha256": "d30b74ce2040c6df1a384ebd9aa24ef9d86e407fb49ce68fa092241af868d0e3",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 33554432,
+                  "origin": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "87462f19c8fdbeb76132a03f2f51ff05fda07add9b5bb17ca33c90b68c883da9",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81060,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81061,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 102761984,
+      "native_launch_tid": 230,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_465_FlashAttentionScore",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "window_sha256": "c5481823d44dcd89248b6e1cdd6acd73d96a9420f21385c6f3b66816e587ca72",
+      "native_launch_line": 4218,
+      "native_launch_line_sha256": "2353d0b88ecb3527c71559feaab1b6cfca5404e1c2a1ab20c252853d600fe547",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        38039458,
+        40569750
+      ],
+      "source_prefix_sha256": "9dcbe76c4bc546db769e7cbcb1de746d9296eaeb8491c6fe8835037a7904632e",
+      "source_log_sha256": "670fa27211c851ce09dcf9b81815a894f0ffd9be2035279056f6ac55337bcd96",
+      "caller_tid": 200,
+      "pid": 200,
+      "case_id": "controlled_joint_b8_r0",
+      "step": 3,
+      "mode": "off",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 2048
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "66a5d2ce0efd60f5e2e43f2cd7f1c7bd129da2e69aa632f6c543debb46a7bc57",
+      "result_sha256": "3699ee30b524f5ae3c74fa5db18ceaacd8d3dc9154d5257b90530182fde5c290",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000800000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "d78d54f78d000a458278c3e07a8aa75ea9202bc8f67814dda71f586791138c94",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "cbc13b5b07ba0e75ddfa04beda75c2c0ba3f91697ec719be445f5601245946d6",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "selection_applied": false,
+      "host_reason": "native_observed_passthrough",
+      "host_sha256": "7fbb49bca3d161bbdfcfbba468802a12baa09dd4c9d0253460e3064c86827dcf",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 33554432,
+                  "origin": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "87462f19c8fdbeb76132a03f2f51ff05fda07add9b5bb17ca33c90b68c883da9",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81060,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81061,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 102761984,
+      "native_launch_tid": 307,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "window_sha256": "ff9258e56782d2e539b6a0e9ca6c58be9cad5d969b4322c78cb7c80590faeb73",
+      "native_launch_line": 54961,
+      "native_launch_line_sha256": "cc0387987bdd971242553a5d44c82f9b277df9f2bdd6f1a8ead92b18b2de9fe6",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15303466,
+        28987756
+      ],
+      "source_prefix_sha256": "aa79359270074dffc4d75c1fd1b00ca20fa5e231196657c27aaf5461e597abd7",
+      "source_log_sha256": "9b0d574da1bedcbf8a4b22f81a332af8ea5c4e2ad9b9777df702c856b7456e9d",
+      "caller_tid": 277,
+      "pid": 277,
+      "case_id": "controlled_joint_b8_r1",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 2048
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "66a5d2ce0efd60f5e2e43f2cd7f1c7bd129da2e69aa632f6c543debb46a7bc57",
+      "result_sha256": "00bc42295e67d1eb2c20de3a2d2e25dd1395fae37d037023bb005a923b53fb1c",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000800000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "d78d54f78d000a458278c3e07a8aa75ea9202bc8f67814dda71f586791138c94",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "cbc13b5b07ba0e75ddfa04beda75c2c0ba3f91697ec719be445f5601245946d6",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "selection_applied": false,
+      "host_reason": "native_observed_passthrough",
+      "host_sha256": "f423536eca64471beb8b011f8ecf5a2cf5bad4ed372815de27318bb6d57b1bf7",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 33554432,
+                  "origin": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "a0f67b9726b65547745b003a845ec25e16af8369d4c166747e0ccf49b7851838",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81060,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81061,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 66061824,
+      "native_launch_tid": 307,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_181_FlashAttentionScore",
+      "raw_sha256": "9bc28e668dff06479158f37787e1812c14167a94f45f1b5840879bca7599307a",
+      "window_sha256": "823ebcd4e25098b441aee496a385f54b9410d13e0c10b5c9b60514259505521f",
+      "native_launch_line": 4216,
+      "native_launch_line_sha256": "2970ae3ef59c856ad12d57984aa7cdc22a081567531a23a45c0641f8860400aa",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        31831072,
+        34350971
+      ],
+      "source_prefix_sha256": "cd4a81a75c450e590e8dd288a2033967dd7724a4b68767fa3f6912e45d0fdf01",
+      "source_log_sha256": "9b0d574da1bedcbf8a4b22f81a332af8ea5c4e2ad9b9777df702c856b7456e9d",
+      "caller_tid": 277,
+      "pid": 277,
+      "case_id": "controlled_joint_b8_r1",
+      "step": 1,
+      "mode": "controlled",
+      "actual_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 64,
+        "coreParams.nRatio": 4,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 4,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 4096
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "bb4615297cc3e546ac9da04c032fee88f25edc8afa8b045b596fd27eac1d2a14",
+      "result_sha256": "00bc42295e67d1eb2c20de3a2d2e25dd1395fae37d037023bb005a923b53fb1c",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000200000020000010000000080000008000000010000000000200000020000010000000080000008000000001000000000000000000000000000000",
+          "sha256": "3f244e7f827ae6b7419837800cd9435e398af1b4a11feee071e24f50051d8936",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000004000000080000000800000000800000010000000000800000008000000100000002000004000000000800000000000008000000000000000",
+          "sha256": "87de50816eeac3cdf6ea4d4484fab8ddbfd561405fc1121e644deef8e8aa6628",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "b01c0c7b131fe368cf412e0ea79e4ba0b22e686b1285bcc1f6bd47b2f5778279",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "selection_applied": true,
+      "host_reason": "controlled_pair_selected",
+      "host_sha256": "6640104fb320f9b25ae832558e67bbd5fb65053e8b3a40f335e9d8a4d89c12d7",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 33554432,
+                  "origin": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "a0f67b9726b65547745b003a845ec25e16af8369d4c166747e0ccf49b7851838",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81060,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81061,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 66061824,
+      "native_launch_tid": 307,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_323_FlashAttentionScore",
+      "raw_sha256": "9bc28e668dff06479158f37787e1812c14167a94f45f1b5840879bca7599307a",
+      "window_sha256": "37eac5701426bb9cad1a8a5619999b927eeca021351126ac2eee8ed9cc3d1f79",
+      "native_launch_line": 4282,
+      "native_launch_line_sha256": "8d3df553947d0ff9b7071dd0457b1c3e7b27ecdb300f5880bea4d802c933190c",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        34937497,
+        37436510
+      ],
+      "source_prefix_sha256": "59d131871a5d8d019a4500ec5f91ce2e11c49c5ae5f0246ef99ea7358683de6c",
+      "source_log_sha256": "9b0d574da1bedcbf8a4b22f81a332af8ea5c4e2ad9b9777df702c856b7456e9d",
+      "caller_tid": 277,
+      "pid": 277,
+      "case_id": "controlled_joint_b8_r1",
+      "step": 2,
+      "mode": "controlled",
+      "actual_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 64,
+        "coreParams.nRatio": 4,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 4,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 4096
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "bb4615297cc3e546ac9da04c032fee88f25edc8afa8b045b596fd27eac1d2a14",
+      "result_sha256": "00bc42295e67d1eb2c20de3a2d2e25dd1395fae37d037023bb005a923b53fb1c",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000200000020000010000000080000008000000010000000000200000020000010000000080000008000000001000000000000000000000000000000",
+          "sha256": "3f244e7f827ae6b7419837800cd9435e398af1b4a11feee071e24f50051d8936",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000004000000080000000800000000800000010000000000800000008000000100000002000004000000000800000000000008000000000000000",
+          "sha256": "87de50816eeac3cdf6ea4d4484fab8ddbfd561405fc1121e644deef8e8aa6628",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "b01c0c7b131fe368cf412e0ea79e4ba0b22e686b1285bcc1f6bd47b2f5778279",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "selection_applied": true,
+      "host_reason": "controlled_pair_selected",
+      "host_sha256": "22e62e034836ea541fff2a1db54fe27767514e542d7158c871cfd7f3766ae156",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 33554432,
+                  "origin": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "a0f67b9726b65547745b003a845ec25e16af8369d4c166747e0ccf49b7851838",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81060,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81061,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 102761984,
+      "native_launch_tid": 307,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_465_FlashAttentionScore",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "window_sha256": "8b5e58ec75e79c3b1b2bb8845750183901adaba3edc6f67e3e700d48585edfe1",
+      "native_launch_line": 4213,
+      "native_launch_line_sha256": "57bed7eff27102adbae1fd7480c28dc34f738e85977fb3bffd7378d5c202f1e2",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        38040244,
+        40571921
+      ],
+      "source_prefix_sha256": "c5dcd50e2c3ceec77a68d41b50f7d464e88edb9f1c82fe3b150386edfa7bd597",
+      "source_log_sha256": "9b0d574da1bedcbf8a4b22f81a332af8ea5c4e2ad9b9777df702c856b7456e9d",
+      "caller_tid": 277,
+      "pid": 277,
+      "case_id": "controlled_joint_b8_r1",
+      "step": 3,
+      "mode": "off",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 2048
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "66a5d2ce0efd60f5e2e43f2cd7f1c7bd129da2e69aa632f6c543debb46a7bc57",
+      "result_sha256": "00bc42295e67d1eb2c20de3a2d2e25dd1395fae37d037023bb005a923b53fb1c",
+      "host_callback_checked": true,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000800000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "d78d54f78d000a458278c3e07a8aa75ea9202bc8f67814dda71f586791138c94",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "cbc13b5b07ba0e75ddfa04beda75c2c0ba3f91697ec719be445f5601245946d6",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "host_raw_byte_exact": true,
+      "typed_fields_checked": 126,
+      "host_native_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "host_selected_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "selection_applied": false,
+      "host_reason": "native_observed_passthrough",
+      "host_sha256": "b955d7dee7325c373d5f032264bc25623e556f14d04207e60a2a9e1b664aa67a",
+      "guard_reports": [
+        {
+          "check": 1,
+          "failed_guards": [],
+          "passed": true,
+          "public_context": {
+            "attrs": {
+              "heads": 16,
+              "keep_prob": 1,
+              "layout": "BNSD",
+              "next_tokens": 0,
+              "pre_tokens": 2147483647,
+              "precision": 0,
+              "scale": 0.0883883461356163,
+              "sparse_mode": 2
+            },
+            "ir_inputs": [
+              {
+                "dtype": 1,
+                "ir_index": 0,
+                "shape": {
+                  "elements": 33554432,
+                  "origin": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    16,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 1,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 2,
+                "shape": {
+                  "elements": 16777216,
+                  "origin": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ],
+                  "rank": 4,
+                  "storage": [
+                    8,
+                    8,
+                    2048,
+                    128
+                  ]
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 3,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 4,
+                "ir_index": 4,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 1,
+                "ir_index": 5,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 12,
+                "ir_index": 6,
+                "shape": {
+                  "elements": 4194304,
+                  "origin": [
+                    2048,
+                    2048
+                  ],
+                  "rank": 2,
+                  "storage": [
+                    2048,
+                    2048
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 7,
+                "shape": {
+                  "elements": 0,
+                  "origin": [
+                    0
+                  ],
+                  "rank": 1,
+                  "storage": [
+                    0
+                  ]
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 8,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 9,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 10,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 9,
+                "ir_index": 11,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 12,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 13,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": 0,
+                "ir_index": 14,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              },
+              {
+                "dtype": null,
+                "ir_index": 15,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 16,
+                "shape": null
+              },
+              {
+                "dtype": null,
+                "ir_index": 17,
+                "shape": null
+              },
+              {
+                "dtype": 0,
+                "ir_index": 18,
+                "shape": {
+                  "elements": 1,
+                  "origin": [],
+                  "rank": 0,
+                  "storage": []
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "launcher_receipt_sha256": "a0f67b9726b65547745b003a845ec25e16af8369d4c166747e0ccf49b7851838",
+      "actual_private_library_loads": [
+        {
+          "line": 3751,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 3752,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        },
+        {
+          "line": 81060,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so"
+        },
+        {
+          "line": 81061,
+          "path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer/op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so"
+        }
+      ],
+      "sequence_invariants": {
+        "input_contract_34_unchanged": true,
+        "controlled_169_plan_repeats_exactly": true,
+        "off_169_plan_equals_native": true,
+        "controlled_169_plan_differs_from_native": true,
+        "pre_selection_native_factors_equal_actual_baseline": true
+      }
+    }
+  ],
+  "source_binding": {
+    "pod_schema_sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+    "vendor_manifest_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1",
+    "policy_source_manifest_sha256": "15bdb7b6e63ddec53f9d3d9a4c31ef4217732f7fdcf46f724cbad52099a5a3f3",
+    "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+    "vendor_artifacts_checked": 670,
+    "kernel_source_sha256": {
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_s1s2_bn2gs1.h": "18bbd703454ea8cd6fbe6936329c29513745c269e7f7ad7ea5ab05d81dcd08cb",
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_common.h": "3e074a966515df1c9cf0cc070d2315a5978ccb44e7e75a842188de5016e4cc34",
+      "attention/flash_attention_score/op_kernel/flash_attention_score.cpp": "7f4adb241e3f09ad3204159bcd1b963800e174230f80c78b8126e29b7481ba64",
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_template_tiling_key.h": "a8951fea89250f0f815382e9c3b2a05a4c01a12f971985bfe5d133f04062f072",
+      "common/include/op_kernel/util.h": "442648c354814d149ba7f8185e4b16cc7d528d1333f8437f07c0f3c5c93187d9"
+    },
+    "padding_source_audit_sha256": "7c268a7a261c4aa72ed53f60a15f021bff7aa67a4c6585b00d9ed838fc68897e",
+    "complete_public_fields": 205,
+    "input_semantic_fields": 34,
+    "execution_semantic_fields": 166,
+    "padding_bytes_preserved": 17
+  },
+  "completion_status": "CAPTURE_COMPLETED",
+  "capture_sources": {
+    "manifest_sha256": "5812dfeccfbd27484c737763b8413b6488a2ae4be1ad0cf9bd03a36b366f430c",
+    "file_count": 59,
+    "all_snapshot_hashes_verified": true
+  },
+  "actual_calls_checked": 16
+}

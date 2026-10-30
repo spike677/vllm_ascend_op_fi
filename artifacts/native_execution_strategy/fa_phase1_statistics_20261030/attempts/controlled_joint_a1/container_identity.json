@@ -1,0 +1,32 @@
+{
+  "id": "fc9b14817076f17e057467b1078561a4768034593df8b15160f4513bb0c53a1a",
+  "name": "dcat-nes-controlled_joint_a1",
+  "image": "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+  "labels": {
+    "demoncat.controller_token": "9e4ab3b1c58c49f1b3610f507ed3589f",
+    "demoncat.task": "native-execution-strategy-20261030",
+    "org.opencontainers.image.version": "22.04"
+  },
+  "devices": [
+    {
+      "PathOnHost": "/dev/davinci5",
+      "PathInContainer": "/dev/davinci5",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/davinci_manager",
+      "PathInContainer": "/dev/davinci_manager",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/devmm_svm",
+      "PathInContainer": "/dev/devmm_svm",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/hisi_hdc",
+      "PathInContainer": "/dev/hisi_hdc",
+      "CgroupPermissions": "rwm"
+    }
+  ]
+}

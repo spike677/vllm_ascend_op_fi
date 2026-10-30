@@ -1,0 +1,101 @@
+{
+  "schema": "nes.harness.case.v1",
+  "case_id": "validated_alias_b8",
+  "phase": "controlled",
+  "operator_variant": "private_vendor",
+  "batch_size": 8,
+  "request_count": 8,
+  "token_count": 16384,
+  "seq_lens": [
+    2048,
+    2048,
+    2048,
+    2048,
+    2048,
+    2048,
+    2048,
+    2048
+  ],
+  "repeat_index": 0,
+  "mode_sequence": [
+    "native",
+    "controlled",
+    "controlled",
+    "off"
+  ],
+  "native_calls_per_process": 4,
+  "execution_config": {
+    "schema_version": 1,
+    "adapter": {
+      "name": "FlashAttentionScore",
+      "version": "validated",
+      "route": "S1S2",
+      "on_unsupported": "reject"
+    },
+    "selection": {
+      "target": "query_tile",
+      "policy": "legal_alternative"
+    },
+    "trigger": {
+      "mode": "every_match",
+      "condition": "adaptive",
+      "predicates": [
+        {
+          "field": "operator",
+          "op": "eq",
+          "value": "FlashAttentionScore"
+        }
+      ]
+    },
+    "discovery": {
+      "max_cases": 32,
+      "max_elapsed_seconds": 1800.0
+    }
+  },
+  "selection_target": "query_tile",
+  "runtime_manifest_file": "/audit/runtime_manifest.json",
+  "runtime_manifest_sha256": "ca0bf188bdc031ea3e4249c03ac13a9a8f751cd5ae8485655d9048c9f6cdba3b",
+  "input_manifest_file": "/audit/inputs/manifest.json",
+  "input_manifest_sha256": "0e983abac01a72dc4f6039211c27fbce6fb573bcdcebe8f4051e1b7e8735e03d",
+  "approved_pod_schema_file": "/audit/build/evidence_a1/fa_pod_schema.json",
+  "approved_pod_schema_sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+  "capture_msprobe": true,
+  "statistics_variant": "task_local_fp32_high_v1",
+  "approved_collector_manifest_file": "/audit/collector_high_a1/stage_manifest.json",
+  "approved_collector_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+  "capture_private_target_output": true,
+  "reference_query_indices": [
+    0,
+    63,
+    64,
+    127,
+    128,
+    511,
+    512,
+    1023,
+    1024,
+    2047
+  ],
+  "native_log_required": true,
+  "observation_only": false,
+  "controlled_validation_completed": true,
+  "initial_assessment": {
+    "strategy_switched": null,
+    "numerics_observed": null,
+    "model_impact": null
+  },
+  "execution_kind": "original_operator_execution_not_model_forward",
+  "repeat_scope": "Two independent processes; each controlled process shares one policy instance across two matching calls.",
+  "resource_budget": {
+    "case_seconds": 300,
+    "controller_seconds": 1800,
+    "cases_per_controller": 8
+  },
+  "approved_vendor_manifest_file": "/audit/native_vendor_stage_a1/vendor_manifest.json",
+  "approved_vendor_manifest_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1",
+  "approved_custom_opp_path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer",
+  "adapter_certificate_file": "/audit/runtime/native_execution_strategy/data/fa_cann91_s1s2_v1.json",
+  "adapter_evidence_root": "/audit/runtime/native_execution_strategy",
+  "adapter_certificate_sha256": "be58b4e77098a8911ab97ad8711144a5a5999dc3742080726c594ad88e8fcc5b",
+  "allow_experimental": false
+}

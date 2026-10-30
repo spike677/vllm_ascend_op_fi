@@ -1,0 +1,55 @@
+{
+  "schema": "nes.statistics_package_binding_cpu_tests.v1",
+  "status": "PASS_CPU_PACKAGE_BINDINGS",
+  "test_source_sha256": "33b0ab02cb6ec2476bb6f06bfb994b875b379558e1d10ab6ba46179e89923d52",
+  "packager_source_sha256": "d1c53ed01ee46b9e50ab5d88829a58f78d1a09868f164b4719e486e52e963d49",
+  "checks": [
+    {
+      "name": "valid_bound_formal_sources_with_later_canary_and_private_exclusion",
+      "passed": true,
+      "publication_created": true,
+      "private_payload_published": false,
+      "files": 284
+    },
+    {
+      "name": "wrong_requested_attempt_rejected_before_output",
+      "passed": true,
+      "rejected": true,
+      "error": "Passed report belongs to another formal matrix",
+      "destination_created": false
+    },
+    {
+      "name": "wrong_statistics_summary_sha_rejected_before_output",
+      "passed": true,
+      "rejected": true,
+      "error": "Passed report binds another independent statistics report",
+      "destination_created": false
+    },
+    {
+      "name": "wrong_formal_source_generation_rejected_before_output",
+      "passed": true,
+      "rejected": true,
+      "error": "Formal source generation differs from acceptance",
+      "destination_created": false
+    },
+    {
+      "name": "changed_private_evidence_rejected_before_output",
+      "passed": true,
+      "rejected": true,
+      "error": "Non-source acceptance evidence changed: outputs/discovery_fixture/discovery_fixture_case0/private_output/target.bin",
+      "destination_created": false
+    },
+    {
+      "name": "non_source_evidence_cannot_use_unregistered_snapshot_backup",
+      "passed": true,
+      "rejected": true,
+      "error": "Non-source acceptance evidence changed: outputs/discovery_fixture/discovery_fixture_case0/result.json",
+      "destination_created": false
+    }
+  ],
+  "negative_cases": 5,
+  "positive_cases": 1,
+  "fixture_only_not_experiment_acceptance": true,
+  "npu_calls": 0,
+  "containers_started": 0
+}

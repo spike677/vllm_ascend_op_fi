@@ -1,0 +1,121 @@
+{
+  "schema": "nes.statistics_receipt.v1",
+  "scope": "Real operator calls; steps are not model tokens/forwards",
+  "rank": 0,
+  "steps": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "native_files": [
+    {
+      "path": "observation/step0/rank0/dump.json",
+      "sha256": "c5df14c1d74a8ac6bca5e80886439004d60f0da30834d81fec9b40ff0e19ed14",
+      "bytes": 6202
+    },
+    {
+      "path": "observation/step0/rank0/stack.json",
+      "sha256": "e995c28cac1423849d78c2b3addb29d6e5e4ec7327d40895c9c25d800ea0bf76",
+      "bytes": 2085
+    },
+    {
+      "path": "observation/step0/rank0/construct.json",
+      "sha256": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "bytes": 131
+    },
+    {
+      "path": "observation/step1/rank0/dump.json",
+      "sha256": "329efb863cf75215e764be9fb4dab8afd7c8c02a04197bae25c85cbf3025fa32",
+      "bytes": 6142
+    },
+    {
+      "path": "observation/step1/rank0/stack.json",
+      "sha256": "e995c28cac1423849d78c2b3addb29d6e5e4ec7327d40895c9c25d800ea0bf76",
+      "bytes": 2085
+    },
+    {
+      "path": "observation/step1/rank0/construct.json",
+      "sha256": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "bytes": 131
+    },
+    {
+      "path": "observation/step2/rank0/dump.json",
+      "sha256": "1255497a3a1067fe14763d77945f1e9daef0664034e41ae73f2fc19bf09e77a4",
+      "bytes": 6058
+    },
+    {
+      "path": "observation/step2/rank0/stack.json",
+      "sha256": "e995c28cac1423849d78c2b3addb29d6e5e4ec7327d40895c9c25d800ea0bf76",
+      "bytes": 2085
+    },
+    {
+      "path": "observation/step2/rank0/construct.json",
+      "sha256": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "bytes": 131
+    },
+    {
+      "path": "observation/step3/rank0/dump.json",
+      "sha256": "23d2c3203867d9ce18c4690ad2ec0619de38ed38a0e8fa510e722a45d98669a1",
+      "bytes": 6202
+    },
+    {
+      "path": "observation/step3/rank0/stack.json",
+      "sha256": "e995c28cac1423849d78c2b3addb29d6e5e4ec7327d40895c9c25d800ea0bf76",
+      "bytes": 2085
+    },
+    {
+      "path": "observation/step3/rank0/construct.json",
+      "sha256": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "bytes": 131
+    }
+  ],
+  "native_api_nodes": [
+    {
+      "step": 0,
+      "api": "NPU.npu_fusion_attention_v3.0.forward",
+      "parent_module": "Module.replay.ReplayModule.forward.0"
+    },
+    {
+      "step": 1,
+      "api": "NPU.npu_fusion_attention_v3.0.forward",
+      "parent_module": "Module.replay.ReplayModule.forward.0"
+    },
+    {
+      "step": 2,
+      "api": "NPU.npu_fusion_attention_v3.0.forward",
+      "parent_module": "Module.replay.ReplayModule.forward.0"
+    },
+    {
+      "step": 3,
+      "api": "NPU.npu_fusion_attention_v3.0.forward",
+      "parent_module": "Module.replay.ReplayModule.forward.0"
+    }
+  ],
+  "config_sha256": "8f555304a7669465265f8679747d526ac74f3afbad477c51b886ffd7c01d529d",
+  "statistics_collector": {
+    "variant": "task_local_fp32_high_v1",
+    "precision": "high",
+    "modified_official_collector": true,
+    "manifest_file": "/audit/collector_high_a1/stage_manifest.json",
+    "manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+    "package_root": "/audit/collector_high_a1/packages",
+    "processor_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+    "original_processor_sha256": "e981aa6fe9afa1e7a1f0654db44166d7c199674b0727d8d7ffa40626b1074011",
+    "patched_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+    "source_manifest_sha256": "d86efe38de5f3ef4bbb9433f015c06eb2d2f6e80b0c8dae71e40e38d2c2510c3",
+    "patch_sha256": "8239db6dbb8d54e77d6e7960fd1ff15121c13bfe5d7327557031b3d66d43975a",
+    "artifact_count": 513,
+    "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+    "policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+    "actual_loaded": {
+      "module": "msprobe.core.dump.data_dump.data_processor.pytorch_processor",
+      "path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+      "sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+      "method_code_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py"
+    }
+  },
+  "collector_provenance_sha256": "4e15103d8e06d831dab5ff06bda1bfecd05f5029696b01b1cc08e78c48eb3ca5",
+  "native_cann_coverage_verified": false,
+  "mechanism_accepted": false
+}

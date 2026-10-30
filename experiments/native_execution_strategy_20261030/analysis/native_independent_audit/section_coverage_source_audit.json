@@ -1,0 +1,51 @@
+{
+  "schema": "nes.fa.unexpanded_section_source_audit.v1",
+  "phase": "source_audit_before_generation3_runtime_freeze",
+  "classification": "Opaque semantic structure sections; not padding",
+  "pod_schema_sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "source_file": "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h",
+  "source_sha256": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+  "definition_lines": {
+    "1567": "SoftMaxTiling softmaxFlashTilingData;   // 16*4 = 64",
+    "1568": "CopyTransposeTiling transposeTilingData;  // 16 * 4byte = 64",
+    "1569": "CopyTransposeTiling transposeTilingDataTailCore; // 64"
+  },
+  "compiler_verified_sections": [
+    {
+      "name": "softmaxFlashTilingData",
+      "offset": 1248,
+      "size": 64
+    },
+    {
+      "name": "transposeTilingData",
+      "offset": 1312,
+      "size": 64
+    },
+    {
+      "name": "transposeTilingDataTailCore",
+      "offset": 1376,
+      "size": 64
+    }
+  ],
+  "byte_coverage": {
+    "root_bytes": 1464,
+    "named_field_count": 205,
+    "named_field_bytes": 1272,
+    "unexpanded_section_bytes": 192,
+    "sole_uncovered_range_before_sections": [
+      1248,
+      1440
+    ],
+    "overlap_bytes": 0,
+    "uncovered_bytes_after_sections": 0
+  },
+  "treatment": "Bind all three full raw sections in execution strategy projection without decoding unverified member layouts; preserve all205 fields and all1464 raw bytes. Only the separately audited exact5 alignment fields17bytes are nonsemantic exclusions.",
+  "limitations": [
+    "This audit does not assert every byte inside these SDK sections is a semantic field; retaining their full raw bytes is conservative.",
+    "This audit does not infer microinstruction or numeric effects from section names or raw values."
+  ],
+  "numeric_results_used": false,
+  "npu_invoked": false,
+  "frozen_schema_or_vendor_modified": false
+}

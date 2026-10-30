@@ -1,0 +1,56 @@
+{
+  "schema": "nes.core.source_manifest.v1",
+  "core_api_version": 1,
+  "files": [
+    {
+      "path": "models.py",
+      "bytes": 8795,
+      "sha256": "40f52e32133d6133d474ecc4fa74e679213b28a727546c811802bf2233831c79"
+    },
+    {
+      "path": "config.py",
+      "bytes": 13419,
+      "sha256": "bdbf9c672ae08b78b00f87a5c31ef1f29a8e547422015fa1dbfc9e7bc7db39c4"
+    },
+    {
+      "path": "policies.py",
+      "bytes": 6527,
+      "sha256": "5055c8c2e9c2405bea4039ad25b04c1775b5eb1899cd60ccb2c3e485afc914b2"
+    },
+    {
+      "path": "discovery.py",
+      "bytes": 7987,
+      "sha256": "56a8715f532d11ea890668e52f64336ff85aa45b46d696e326d73897abbf9d4a"
+    },
+    {
+      "path": "registry.py",
+      "bytes": 4981,
+      "sha256": "9cb7a3c9679a6ef761e70a08c804ec8ffa4c65761bda7b7cd1f9f94409e9456a"
+    },
+    {
+      "path": "protocol.py",
+      "bytes": 1715,
+      "sha256": "35d5d3cf9086c15003e889e47333bd4248370dbb2edc7a71bd6dafaac406c0e6"
+    },
+    {
+      "path": "certificates.py",
+      "bytes": 14124,
+      "sha256": "ea392a7241d46b52cbb04ee52dd351762825465b515eb1e4aba37e33b61303bf"
+    },
+    {
+      "path": "tests/test_core.py",
+      "bytes": 25816,
+      "sha256": "7808f66d7c8ed33286fc0e514c3170d5b2633ef3416f35356f0bae632fc496ea"
+    }
+  ],
+  "validation": {
+    "kind": "CPU_CONTRACT_TESTS_ONLY",
+    "tests": 42,
+    "passed": 42,
+    "native_calls": 0,
+    "native_build_validated": false,
+    "optional_yaml": "Missing-dependency path covered locally; safe-loader branch requires PyYAML.",
+    "filesystem_tests": "Use workspace-local temporary files; symlink-escape subcase runs only if the OS permits symlink creation."
+  },
+  "runtime_dependencies": "FA certificate plan validation imports the separately owned, SHA-bound adapters/fa_schema.py and its POD schema at runtime; those files are not owned by this core manifest."
+}

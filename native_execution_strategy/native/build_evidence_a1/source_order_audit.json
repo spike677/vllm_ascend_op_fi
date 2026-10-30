@@ -1,0 +1,45 @@
+{
+  "schema": "nes.fa.atomic_selector_source_review.v1",
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "official_file": "attention/flash_attention_score/op_host/arch22/flash_attention_score_tiling_general.cpp",
+  "official_file_sha256": "d1c4ce53034ab9f7cab90888c4f75aa988f5e48d635ebc23b91eedc2eca2e97c",
+  "scope": "Only fixed S1S2 arch22 template; do not generalize to base-class search or other templates.",
+  "atomic_hook": "End of S1S2 override CalcNRatio, after original M/R selection and before MatchTemplate returns.",
+  "source_blocks": {
+    "s1s2_selection": {
+      "first_line": 3250,
+      "last_line": 3288,
+      "text": "    void GetBufferNum(BufferNum &bufferNum) const override\n    {\n        bufferNum.bufferS1S2Num = HIGH_PERF_BUFFER_NUM;\n    }\n\n    void CalcS1S2BasicBlock([[maybe_unused]] const BufferNum &bufferNum) override\n    {\n        s1BasicBlock = std::min(64L, alignedS1);\n        // d\u8f74\u4e3a64\n        if (bSize * n1Size * gSize * CeilDiv(s1Size, s1BasicBlock) > static_cast<int64_t>(aivNum)) {\n            s1BasicBlock = std::min(128L, alignedS1);\n        }\n        s2BasicBlock = std::min(128L, alignedS2);\n        if (s2Size % S2_NZTOND_SIZE_64 != 0 && dSize != D_SPECIFIC_SIZE) {\n            tilingKeyBmm1Format = CubeFormatEnum::NZ;\n        }\n    }\n\n    void CalcNRatio() override\n    {\n        if (IsB41L2CacheOptimizable()) {\n            OP_LOGI(opName, \"L2 cache optimization: nRatio set to 4 for B4_1.\");\n            nRatio = 4L;\n        } else {\n            nRatio = 8L;\n        }\n        // s2Size (1025, 1040]\n        if (s2Size / s2BasicBlock == 8L && s2Size % s2BasicBlock > 0 && s2Size % s2BasicBlock <= 16L) {\n            nRatio = 5L;\n        }\n        if (s2Size <= 2304 && s2Size >= 2049 && dSize == 64 && tilingData->inputParams.get_layoutType() == LAYOUT_BNSD) {\n            nRatio = 6L;\n        }\n    }\n\n    void CalcDBasicBlock() override\n    {\n        dBasicBlock = std::min(128L, alignedD);\n    }"
+    },
+    "match_template_order": {
+      "first_line": 1845,
+      "last_line": 1878,
+      "text": "bool FlashAttentionScoreTilingBase::MatchTemplate()\n{\n    // UB Size calc logic: s1s2 * X * sizeof(T) + s1d * Y * sizeof(T) + s1 * expNum * 32 + s1 * 64 + apiTmp\n    BufferNum bufferNum;\n    GetBufferNum(bufferNum);\n\n    s1BasicBlock = std::numeric_limits<int64_t>::max();\n    s2BasicBlock = std::numeric_limits<int64_t>::max();\n    CalcS1S2BasicBlock(bufferNum);\n    CalcNRatio();\n\n    if (s2BasicBlock == std::numeric_limits<int64_t>::max()) {\n        OP_LOGD(context_,\n                  \"[%s]can't find proper S1S2 basic block for shape: S1[%ld] S2[%ld], D[%ld], minS1BasicBlock[%ld], \"\n                  \"dtype[%s], high precision[%d]\",\n                  templateName, s1Size, s2Size, dSize, GetMinS1BasicBlock(),\n                  ge::TypeUtils::DataTypeToSerialString(inputDtype).c_str(), isHighPercision);\n        return false;\n    }\n\n    CalcDBasicBlock();\n    actualTemplate.splitS1 = s1BasicBlock < alignedS1 ? 1U : 0U;\n    actualTemplate.splitS2 = s2BasicBlock < alignedS2 ? 1U : 0U;\n    actualTemplate.splitD = dBasicBlock < alignedD ? 1U : 0U;\n\n    if (IsTemplateMatched()) {\n        (void)CalcUBSize(s1BasicBlock, s2BasicBlock);\n        OP_LOGD(context_, \"[%s]final basic block: [%ld, %ld, %ld], match template[%s].\", templateName, s1BasicBlock,\n                  s2BasicBlock, dBasicBlock, actualTemplate.ToString().c_str());\n        return true;\n    }\n\n    return false;\n}"
+    },
+    "do_op_tiling_order": {
+      "first_line": 1812,
+      "last_line": 1842,
+      "text": "{\n    auto &inputParams = tilingData->inputParams;\n    OP_LOGD(context_, \"[%s]try template[%s]\", templateName, expectTemplate.ToString().c_str());\n    if (!MatchTemplate()) {\n        OP_LOGI(context_,\n                  \"[%s]not match template[%s], input params: bn2gs1s2d[%ld, %ld, %ld, %ld, %ld, %ld], \"\n                  \"keepProb[%f]\",\n                  templateName, expectTemplate.ToString().c_str(), inputParams.get_bSize(), inputParams.get_n2Size(),\n                  inputParams.get_gSize(), inputParams.get_s1Size(), inputParams.get_s2Size(), inputParams.get_dSize(),\n                  inputParams.get_keepProb());\n        return ge::GRAPH_PARAM_INVALID;\n    }\n\n    SparseEnum sparseType = SparseEnum::ALL;\n    OP_CHECK_IF(!GetSparseInfo(sparseType), OP_LOGE(opName, \"fail to get sparse info.\"),\n               return ge::GRAPH_FAILED);\n    SetSparseTilingInfo(sparseType);\n    inputParams.set_implMode(implMode);\n    if (!isSparseValidSizeAligned) {\n        s1SparseValidSize = preTokens;\n        s2SparseValidSize = nextTokens;\n    }\n    SetQKVStartIdx();\n    SetCoreParams();\n    SetMultiCoreParams();\n    SetTensorSizeParams();\n    SetSparseParams();\n    OP_CHECK_IF(!SetPseAlibiParams(), OP_LOGE(opName, \"fail to set pse alibi info.\"),\n               return ge::GRAPH_FAILED);\n\n    return ge::GRAPH_SUCCESS;"
+    },
+    "core_generation": {
+      "first_line": 1997,
+      "last_line": 2025,
+      "text": "void FlashAttentionScoreTilingBase::SetCoreParams()\n{\n    auto &coreParams = tilingData->coreParams;\n    coreParams.set_s1BaseSize(s1BasicBlock);\n    coreParams.set_s1BaseTailSize(CalcTailSize(s1Size, s1BasicBlock));\n    coreParams.set_s1OuterSize(CeilDivision(s1Size, s1BasicBlock));\n    coreParams.set_s2BaseSize(s2BasicBlock);\n    coreParams.set_s2BaseTailSize(CalcTailSize(s2Size, s2BasicBlock));\n    coreParams.set_s2OuterSize(CeilDivision(s2Size, s2BasicBlock));\n    if (expectTemplate.splitS2 == 1) {\n        nRatio = std::min(GetNRatio(), coreParams.get_s2OuterSize());\n        coreParams.set_s2OuterSize(CeilDivision(coreParams.get_s2OuterSize(), nRatio));\n    } else if (expectTemplate.splitS1 == 1) {\n        nRatio = std::min(GetNRatio(), coreParams.get_s1OuterSize());\n    } else {\n        nRatio = 1;\n    }\n    coreParams.set_nRatio(nRatio);\n\n    coreParams.set_dBaseSize(dBasicBlock);\n    coreParams.set_dBaseTailSize(CalcTailSize(dSize, dBasicBlock));\n    coreParams.set_dOuterSize(CeilDivision(dSize, dBasicBlock));\n    // \u5411\u4e0b\u53d6\u6574\u4fdd\u8bc1\u6570\u636e\u91cf\u4e0d\u8d8532K\n    int64_t s1Vec2BaseSize = 8 * 1024 * 2 / (alignedD * inputDtypeBytes);\n    coreParams.set_s1Vec2BaseSize(std::min(s1Vec2BaseSize, S1_VEC2_BASE_SIZE_MAX));\n    coreParams.set_s1Vec2BaseTailSize(s1Size % coreParams.get_s1Vec2BaseSize());\n    coreParams.set_dRopeSize(dRopeSize);\n    coreParams.set_d2Size(d2Size);\n    SetMultiBatchCoreParams();"
+    },
+    "multi_core_and_lib_generation": {
+      "first_line": 2044,
+      "last_line": 2065,
+      "text": "void FlashAttentionScoreTilingBase::SetMultiCoreParams()\n{\n    auto &multiCoreParams = tilingData->multiCoreParams;\n    auto &coreParams = tilingData->coreParams;\n    int64_t totalSize = coreParams.get_bOuterSize() * coreParams.get_n2OuterSize() * coreParams.get_gOuterSize() *\n                        coreParams.get_s1OuterSize();\n    int64_t actualUsedAivNum = std::min(totalSize, static_cast<int64_t>(aivNum));\n    multiCoreParams.set_coreNum(static_cast<int32_t>(actualUsedAivNum));\n    multiCoreParams.set_totalSize(totalSize);\n    multiCoreParams.set_splitFactorSize(CeilDivision(totalSize, actualUsedAivNum));\n    multiCoreParams.set_splitFactorTailSize(CalcTailSize(totalSize, multiCoreParams.get_splitFactorSize()));\n}\n\nge::graphStatus FlashAttentionScoreTilingBase::DoLibApiTiling()\n{\n    if (!SetMatMulTiling(s1BasicBlock, s2BasicBlock, dBasicBlock, batchBasic)) {\n        return ge::GRAPH_FAILED;\n    }\n    SetSoftMaxTiling();\n    SetDataCopyTransposeTiling();\n    SetScalarConst();\n    return ge::GRAPH_SUCCESS;"
+    }
+  },
+  "conclusions": [
+    "S1S2 CalcS1S2BasicBlock assigns M and S2 plus a BMM1-format condition depending only on S2 and D. It does not emit M-dependent core/UB/matmul outputs.",
+    "S1S2 CalcNRatio assigns R; its override does not invoke library tiling or emit core/workspace fields.",
+    "After the atomic hook, native MatchTemplate calculates D/split flags and UB; DoOpTiling subsequently computes core/tails/outer/multicore/tensor/sparse fields; DoLibApiTiling calls native matmul/softmax/transpose/scalar generators.",
+    "The patch selects both factors together only after context and expected-native checks. Rejected selection preserves both original factors.",
+    "The ordinary base-class CalcS1S2 search can call SetMatMulTiling early; this patch does not target that implementation. The evidence specifically concerns the overridden S1S2 implementation."
+  ],
+  "kernel_source_modified": false,
+  "new_bridge_requires_runtime_validation": true,
+  "npu_executed_by_review": false
+}

@@ -1,0 +1,35 @@
+{
+  "schema": "nes.public_memory_api_source_audit.v1",
+  "source": "Read-only installed torch_npu 2.10 Python sources; no framework import or NPU call during audit",
+  "memory_module": {
+    "path": "/home/tik-constfold-cann91-overnight-20261022/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+    "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1"
+  },
+  "public_exports": {
+    "path": "/home/tik-constfold-cann91-overnight-20261022/venv/lib/python3.11/site-packages/torch_npu/npu/__init__.py",
+    "sha256": "355df777433fd8c85670db75d8aacf7fa076332092470d59b6ba26202ed7fd2f",
+    "memory_import_line": 587,
+    "explicit_export_lines": [41, 45]
+  },
+  "functions": {
+    "reset_peak_memory_stats": {
+      "lines": [378, 394],
+      "meaning": "Resets peak counters tracked by the NPU allocator for the selected device"
+    },
+    "memory_stats": {
+      "lines": [276, 347],
+      "meaning": "Returns per-device allocator counters; allocated_bytes.all.peak is allocated tensor-byte peak"
+    },
+    "max_memory_allocated": {
+      "lines": [467, 486],
+      "implementation": "memory_stats(device=device).get('allocated_bytes.all.peak', 0)",
+      "missing_key_policy": "A missing counter is unknown, not a measured zero"
+    }
+  },
+  "limits": [
+    "Allocator peak is not whole-card HBM usage or container host memory",
+    "Device seconds are conservative synchronized call-window wall time, not summed kernel execution time",
+    "Controller timeouts, host RAM limits and NPU process gates remain separate hard controls"
+  ],
+  "npu_calls": 0
+}

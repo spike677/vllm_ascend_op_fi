@@ -1,0 +1,838 @@
+{
+  "schema": "nes.fa.independent_native_review.v1",
+  "status": "PASS_NATIVE_SOURCE_AND_POD_REVIEW",
+  "attempt": "discovery_a4",
+  "audit_source_sha256": "341fea001e0afd6ea15add2fa93890cca7b76a628e426e876cb733f04dc8ca55",
+  "reads_tensor_payloads": false,
+  "executes_npu_or_containers": false,
+  "numeric_or_model_effect_claimed": false,
+  "cases": [
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "native_launch_tid": 76,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "window_sha256": "c7ffb2a45e84df6a5a44d3869cb0752368c110a372640ac19f70680223bf8dee",
+      "native_launch_line": 54919,
+      "native_launch_line_sha256": "0f8fe4d8979b816684d1272ad5ecd5c122c977145a21a42ab21cb1da3df0af85",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15056095,
+        28604968
+      ],
+      "source_prefix_sha256": "44be60705f07011b6c2ddc3e463b640c842f769c62cd28769372a935391e49e2",
+      "source_log_sha256": "f81db990cbb4fc5eedf261fc90a4faffd21c249edccde6c8ef8e5c1897fa25ff",
+      "caller_tid": 46,
+      "pid": 46,
+      "case_id": "discovery_b1_r0",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 256
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "56f883fbc81d7da9b6aacf753652f1e9446d93b08cb28470f85317a7f3c28b1d",
+      "result_sha256": "6bad36f1d89d34f494528442e303aebb56a47d52d37e0016024e2afea7e0134f",
+      "host_callback_checked": false,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000100000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "e41a8d47952ce24777fa166b589c801619751e8ad63f3aca60f86b453d508bed",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "48c217ba8488311ae1a71ca39a19ee3eb25cacf31294e3e1be5bd40995359795",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "framing_limitation": "Stock raw framing is independently re-parsed; public host callback unavailable for this stock call."
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 73401856,
+      "native_launch_tid": 154,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+      "window_sha256": "664a90e65770931d7fa9cde4b728c0b0c92e8e1333232de9fe47132e43c08e52",
+      "native_launch_line": 54921,
+      "native_launch_line_sha256": "d333c9f5ab814e43a5038e4e21ba42eb21c437fdb2d99e86f70ab00ad35a691f",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15243587,
+        28910152
+      ],
+      "source_prefix_sha256": "3392b3a4c25e1b31c0e53b4121e96e78e03499f7a45cdba70851f31e34cca32a",
+      "source_log_sha256": "c70c76d04fd2913096e23bbefba23e0193bf7a833e8a21c5e8662d13ac1fabc5",
+      "caller_tid": 124,
+      "pid": 124,
+      "case_id": "discovery_b1_r1",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 256
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "56f883fbc81d7da9b6aacf753652f1e9446d93b08cb28470f85317a7f3c28b1d",
+      "result_sha256": "89073dc27ae3215059d2f51e4556e7efa76dd6632b25c1c77ef03d06b2806b9f",
+      "host_callback_checked": false,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000100000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "e41a8d47952ce24777fa166b589c801619751e8ad63f3aca60f86b453d508bed",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "519e5583b605cff6d4990014497a117f66553c69cc10c16602b1454efc1ef308",
+      "execution_plan_sha256": "48c217ba8488311ae1a71ca39a19ee3eb25cacf31294e3e1be5bd40995359795",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "framing_limitation": "Stock raw framing is independently re-parsed; public host callback unavailable for this stock call."
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 77596160,
+      "native_launch_tid": 230,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "301a398fd36549a3186032f69e497e176a434507fbc98200e4546cbe393d4c1b",
+      "window_sha256": "e24cdb5573b8d373f312d22a9def6c3d955646b077865b9587c9aba1cfa3e985",
+      "native_launch_line": 54946,
+      "native_launch_line_sha256": "fdda78ffc1e48a0e0a93fba5ddc732a8d7f58cd69f4eaa25f8dc0b558861f24b",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15247018,
+        28922027
+      ],
+      "source_prefix_sha256": "5915f417e77cf8ca881828d5d81cac360fc5fb2813fb07123edd80977d20fadb",
+      "source_log_sha256": "6830e7d1b3741d64afab9e5c665c42ff4c50fb2084f99c0f782c7ccf6469014f",
+      "caller_tid": 200,
+      "pid": 200,
+      "case_id": "discovery_b2_r0",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 512
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "8831e58699308301090e9bc686c38f02a83f7c18fcb11c35daf626f8312d6ef0",
+      "result_sha256": "fc9b7457883b5b423d5efa86916f1e2f1ebc30af69946423b1eab8997125d617",
+      "host_callback_checked": false,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000200000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "ab71f0efbdd61ed65913913f9a4c7d0f285fb6ee42c747b78721d0dda0bdc588",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "c8bc2ee798a215274617a22ff811b504c537224ab0331db6ab6013f665ad0022",
+      "execution_plan_sha256": "4f0f3ec3f017c1da52653c61d5b8e582a3cb70e61aea2aababe109e34f359c8a",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "framing_limitation": "Stock raw framing is independently re-parsed; public host callback unavailable for this stock call."
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 77596160,
+      "native_launch_tid": 306,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "301a398fd36549a3186032f69e497e176a434507fbc98200e4546cbe393d4c1b",
+      "window_sha256": "1ea000072e735d6d5124705b751502d39bad8eab4ebb915a851bca5a33a42ff8",
+      "native_launch_line": 54946,
+      "native_launch_line_sha256": "489e05a771371f0ff5e5cabeaa68cd9cc222ef6544d77a46aba4f334a55cd416",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15247017,
+        28924130
+      ],
+      "source_prefix_sha256": "3e4d67061ffc63bd9c893859e5dd6daafee0439e4b3e2e03f39e4a15df31d910",
+      "source_log_sha256": "11523506d461938bf2bb032afa02e8efd57ea04f3479676bb8a64c5cc9129050",
+      "caller_tid": 276,
+      "pid": 276,
+      "case_id": "discovery_b2_r1",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 512
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "8831e58699308301090e9bc686c38f02a83f7c18fcb11c35daf626f8312d6ef0",
+      "result_sha256": "c889dd04a8a371e1bd962ea3a89232f61216503a9c5b29350d9493b7d05cc331",
+      "host_callback_checked": false,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000200000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "ab71f0efbdd61ed65913913f9a4c7d0f285fb6ee42c747b78721d0dda0bdc588",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "c8bc2ee798a215274617a22ff811b504c537224ab0331db6ab6013f665ad0022",
+      "execution_plan_sha256": "4f0f3ec3f017c1da52653c61d5b8e582a3cb70e61aea2aababe109e34f359c8a",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "framing_limitation": "Stock raw framing is independently re-parsed; public host callback unavailable for this stock call."
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 85984768,
+      "native_launch_tid": 382,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "bdf358074bd6575ce7ae5bc70a1014f8f54281d080ed6509bc9d7d03648cc6e5",
+      "window_sha256": "e256bed8c2d2c96f80fdbfcb71589cc5ccf3d3c43b7360ee6642bceb06440c5c",
+      "native_launch_line": 54946,
+      "native_launch_line_sha256": "424b5dcdf7996c9cd283360af4353db01c99fe3f75a56736376d33d12e34dc32",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15253003,
+        28930403
+      ],
+      "source_prefix_sha256": "715e54120a0eb70d4a2a1c4d28967aeac9b4d2f93898f406849ae38282c67349",
+      "source_log_sha256": "8fa35f3ca2e1f0b235730b5a142bcd29307f09435230167c33ea3c5573f4e54b",
+      "caller_tid": 352,
+      "pid": 352,
+      "case_id": "discovery_b4_r0",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 1024
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "78a9b80f2ecac58b9edd12d89e8f735c7a31c7cd1b305c5a7c953d34b4b0a8e3",
+      "result_sha256": "41f7a0cb60efb1a6fcd6e3d1b25c21ce9972acaf983f917315a1b4dec7c12ad4",
+      "host_callback_checked": false,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000400000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "d19b5c1df9ac9faaaafdd6bfd2005a8bc351cd7a6c7bfb8b6ebf81c4b3e25f57",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "3f9e3d9b8b876f154e089b33aee2ef6c80c68e06a41c35a54439fda088c0670f",
+      "execution_plan_sha256": "dc99a60cdf390039db9f58f1f75674f02ed2135295b1246abeda504cf90c0361",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "framing_limitation": "Stock raw framing is independently re-parsed; public host callback unavailable for this stock call."
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 85984768,
+      "native_launch_tid": 458,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "bdf358074bd6575ce7ae5bc70a1014f8f54281d080ed6509bc9d7d03648cc6e5",
+      "window_sha256": "0e7c5880f1c15b2df4e08a586572b67c9f323ec1ed9ce7daf48f8b27f3c2a70f",
+      "native_launch_line": 54944,
+      "native_launch_line_sha256": "e823cbb250de16bbdacc6ef4ad67f98f3ffb3770233ff363fb4120f56cbb6d43",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15253003,
+        28929682
+      ],
+      "source_prefix_sha256": "8fbb8af1a778bff46d7ca88101e42a11a4f508f0dcebc96afbe6dff384a5bc81",
+      "source_log_sha256": "aa6c74c39141dd4ecb6683486fb9e0539ad91f8ad64ad08f60399fe1f99264c0",
+      "caller_tid": 428,
+      "pid": 428,
+      "case_id": "discovery_b4_r1",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 1024
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "78a9b80f2ecac58b9edd12d89e8f735c7a31c7cd1b305c5a7c953d34b4b0a8e3",
+      "result_sha256": "4b07b134a20817e473851ac8b3b87bf5aef8ea6502221361ebdfda71b3e89572",
+      "host_callback_checked": false,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000400000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "d19b5c1df9ac9faaaafdd6bfd2005a8bc351cd7a6c7bfb8b6ebf81c4b3e25f57",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "3f9e3d9b8b876f154e089b33aee2ef6c80c68e06a41c35a54439fda088c0670f",
+      "execution_plan_sha256": "dc99a60cdf390039db9f58f1f75674f02ed2135295b1246abeda504cf90c0361",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "framing_limitation": "Stock raw framing is independently re-parsed; public host callback unavailable for this stock call."
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 102761984,
+      "native_launch_tid": 534,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "window_sha256": "358cab840226fdd35a4ed376e563b52aa155508ff1c04386242dfbc44b1f92f8",
+      "native_launch_line": 54944,
+      "native_launch_line_sha256": "0053adf6b5f7a62e07dae000d5475788d95cfb8ad53cfe95447e2b9ea908300d",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15225991,
+        28898160
+      ],
+      "source_prefix_sha256": "69ca0acd33edea3b77aa00c5606f2c7c682710a9c687dca4c8a689735cde4aef",
+      "source_log_sha256": "d1d00d913e1feb3e5d3e8fa831f8b2195c271fda0ef54944d74d3b62c03541fe",
+      "caller_tid": 504,
+      "pid": 504,
+      "case_id": "discovery_b8_r0",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 2048
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "66a5d2ce0efd60f5e2e43f2cd7f1c7bd129da2e69aa632f6c543debb46a7bc57",
+      "result_sha256": "8ca6b19ba94eedf5e18fd516009afbd965064174ed5bd1fed387ba38f9911d10",
+      "host_callback_checked": false,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000800000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "d78d54f78d000a458278c3e07a8aa75ea9202bc8f67814dda71f586791138c94",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "cbc13b5b07ba0e75ddfa04beda75c2c0ba3f91697ec719be445f5601245946d6",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "framing_limitation": "Stock raw framing is independently re-parsed; public host callback unavailable for this stock call."
+    },
+    {
+      "key": "22619644976",
+      "block_dim": 20,
+      "workspace_count": 1,
+      "api_workspace_bytes": 102761984,
+      "native_launch_tid": 610,
+      "raw_chunk_count": 2,
+      "aligned_bytes": 1472,
+      "op_name": "aclnnFlashAttentionScore_39_FlashAttentionScore",
+      "raw_sha256": "ca8bc7da1fb2c0b19679f4606965371bfaaf92831afc1dc4bd7a99c632b1a86d",
+      "window_sha256": "56ad4dbec07857a5f650b28489839ae053ef0e3dba95435d2adfb80ff4a4f035",
+      "native_launch_line": 54944,
+      "native_launch_line_sha256": "1db41f5a3812b0adfcc9092df62fa620e98237d0c3ba4b543f2e2684a54c69d8",
+      "marker_count": 2,
+      "source_window_byte_range": [
+        15226009,
+        28898602
+      ],
+      "source_prefix_sha256": "60851b3cdd4b7620755a6cdade0cf4ceb32e166616854e6faf1ef8b2c234e456",
+      "source_log_sha256": "348ed89d4316311c88a8a68ed7e6494772cd092e8c1a180616dbc687da95977a",
+      "caller_tid": 580,
+      "pid": 580,
+      "case_id": "discovery_b8_r1",
+      "step": 0,
+      "mode": "native",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "actual_profile": {
+        "coreParams.s1BaseSize": 128,
+        "coreParams.nRatio": 8,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.totalSize": 2048
+      },
+      "padding": {
+        "inputParams.remainPH": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.InputParamsPH": [
+          11,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "coreParams.s1SparseValidSizePH": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "pod_sha256": "66a5d2ce0efd60f5e2e43f2cd7f1c7bd129da2e69aa632f6c543debb46a7bc57",
+      "result_sha256": "4f4944f1bc07b033430472378c95154dad37060c6824b10a3f9a7f6286d4df6e",
+      "host_callback_checked": false,
+      "controlled_support_granted": false,
+      "unexpanded_sdk_sections": {
+        "softmaxFlashTilingData": {
+          "offset": 1248,
+          "size": 64,
+          "raw_hex": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+          "sha256": "ace8dfc5776b5a9df63f6767f2a828b5b08d2e3b1386e2c8c5939e825408cd4c",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingData": {
+          "offset": 1312,
+          "size": 64,
+          "raw_hex": "01000000010000008000000080000000800000000800000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+          "sha256": "d78d54f78d000a458278c3e07a8aa75ea9202bc8f67814dda71f586791138c94",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        },
+        "transposeTilingDataTailCore": {
+          "offset": 1376,
+          "size": 64,
+          "raw_hex": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "sha256": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b",
+          "semantic_members_decoded": false,
+          "classified_as_padding": false
+        }
+      },
+      "input_contract_sha256": "5e1b6f6901d96a0607cd219fcc21335c29bd8af3e4aa7acb3b2c929acfd1d2e5",
+      "execution_plan_sha256": "cbc13b5b07ba0e75ddfa04beda75c2c0ba3f91697ec719be445f5601245946d6",
+      "input_contract_field_count": 34,
+      "execution_plan_item_count": 169,
+      "framing_limitation": "Stock raw framing is independently re-parsed; public host callback unavailable for this stock call."
+    }
+  ],
+  "source_binding": {
+    "pod_schema_sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+    "vendor_manifest_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1",
+    "policy_source_manifest_sha256": "15bdb7b6e63ddec53f9d3d9a4c31ef4217732f7fdcf46f724cbad52099a5a3f3",
+    "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+    "vendor_artifacts_checked": 670,
+    "kernel_source_sha256": {
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_tiling.h": "6ca76bce8a92fdf63d3c5646dfe6d2af3a9b367a9e6fbf7f994f0a5cee71c8d3",
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_s1s2_bn2gs1.h": "18bbd703454ea8cd6fbe6936329c29513745c269e7f7ad7ea5ab05d81dcd08cb",
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_common.h": "3e074a966515df1c9cf0cc070d2315a5978ccb44e7e75a842188de5016e4cc34",
+      "attention/flash_attention_score/op_kernel/flash_attention_score.cpp": "7f4adb241e3f09ad3204159bcd1b963800e174230f80c78b8126e29b7481ba64",
+      "attention/flash_attention_score/op_kernel/arch22/flash_attention_score_template_tiling_key.h": "a8951fea89250f0f815382e9c3b2a05a4c01a12f971985bfe5d133f04062f072",
+      "common/include/op_kernel/util.h": "442648c354814d149ba7f8185e4b16cc7d528d1333f8437f07c0f3c5c93187d9"
+    },
+    "padding_source_audit_sha256": "7c268a7a261c4aa72ed53f60a15f021bff7aa67a4c6585b00d9ed838fc68897e",
+    "complete_public_fields": 205,
+    "input_semantic_fields": 34,
+    "execution_semantic_fields": 166,
+    "padding_bytes_preserved": 17
+  },
+  "completion_status": "CAPTURE_COMPLETED",
+  "capture_sources": {
+    "manifest_sha256": "5812dfeccfbd27484c737763b8413b6488a2ae4be1ad0cf9bd03a36b366f430c",
+    "file_count": 59,
+    "all_snapshot_hashes_verified": true
+  },
+  "actual_calls_checked": 8
+}

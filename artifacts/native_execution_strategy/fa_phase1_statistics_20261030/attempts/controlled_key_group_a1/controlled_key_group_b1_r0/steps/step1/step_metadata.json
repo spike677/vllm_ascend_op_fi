@@ -1,0 +1,79 @@
+{
+  "schema": "nes.harness.step_metadata.v1",
+  "case_id": "controlled_key_group_b1_r0",
+  "step": 1,
+  "mode": "controlled",
+  "native_call": {
+    "case_id": "controlled_key_group_b1_r0",
+    "call_id": "nes_9d488ba81c8a45a981f46d707fddf390",
+    "api": "torch_npu.npu_fusion_attention_v3",
+    "pid": 46,
+    "thread_id": 46,
+    "phase": "operator_execution",
+    "step": 1,
+    "mode": "controlled",
+    "batch_size": 1,
+    "scope_token": "nes_9d488ba81c8a45a981f46d707fddf390",
+    "enter_epoch_ns": 1793336602563269281,
+    "enter_monotonic_ns": 2394022106128721,
+    "status": "returned",
+    "exit_epoch_ns": 1793336602616422361,
+    "exit_monotonic_ns": 2394022159282141
+  },
+  "resource_measurement": {
+    "schema": "nes.resource_measurement.v1",
+    "logical_device": 0,
+    "public_api_available": {
+      "reset_peak_memory_stats": true,
+      "memory_stats": true,
+      "max_memory_allocated": true
+    },
+    "reset_outside_msprobe_capture": true,
+    "peak_reset_completed": true,
+    "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+    "allocator_metric": "allocated_bytes.all.peak",
+    "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+    "whole_card_hbm_measured": false,
+    "container_host_memory_measured": false,
+    "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+    "errors": [],
+    "actual_memory_module": {
+      "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+      "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+      "matches_audited_source": true
+    },
+    "reset_started_monotonic_ns": 2394022104205915,
+    "reset_completed_monotonic_ns": 2394022104210915,
+    "sample_outside_msprobe_capture": true,
+    "resources": {
+      "device_seconds": 0.05315342,
+      "peak_memory_bytes": 95431680
+    },
+    "call_window_monotonic_ns": {
+      "enter": 2394022106128721,
+      "exit_after_synchronize": 2394022159282141,
+      "elapsed": 53153420
+    },
+    "sample_started_monotonic_ns": 2394022165464136,
+    "allocator_observations": {
+      "memory_stats_peak_bytes": 95431680,
+      "max_memory_allocated_bytes": 95431680
+    },
+    "sample_completed_monotonic_ns": 2394022165711901,
+    "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+    "accounting_complete": true,
+    "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+    "hard_limits_verified_by_this_meter": false
+  },
+  "physical_device_binding": {
+    "device": "Ascend910B4",
+    "public_api_device_name": "Ascend910B4",
+    "logical_device": 0,
+    "physical_card": 5,
+    "npu_smi_device_name": "910B4",
+    "preflight_sha256": "572066c17832a3b5a5a1db5df52612b077d263e398b1f2e9eb1a2a4c81afbd03",
+    "container_identity_sha256": "23b83edafdd7daa8323e05f40930c0f23a11647e5ca1589580ef108f6ad79474",
+    "source": "Observed public API name plus controller npu-smi and single physical-device mapping"
+  },
+  "resource_meter_source_sha256": "8cee0f70149b742cde3256e4349260283752b44197cc8896f991c39967ad069c"
+}

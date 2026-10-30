@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "--cpus",
+    "4",
+    "--memory",
+    "8g",
+    "--pids-limit",
+    "512",
+    "--name",
+    "nes-fa-cpu-stage-a1-20261030",
+    "-v",
+    "/home/native-execution-strategy-20261030:/audit",
+    "--entrypoint",
+    "bash",
+    "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+    "-lc",
+    "set -eo pipefail\nsource /usr/local/Ascend/cann-9.1.0/set_env.sh\nbash /audit/source/ops-transformer-v9.1.0/build_out/cann-ops-transformer-native_execution_strategy_linux-aarch64.run --install-path=/audit/native_vendor_stage_a1 --quiet\n"
+  ],
+  "devices": [],
+  "privileged": false,
+  "timeout_seconds": 600,
+  "started_unix": 1793332987.8563874
+}

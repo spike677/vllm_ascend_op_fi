@@ -1,0 +1,123 @@
+{
+  "schema": "nes.independent_statistics_comparison.v1",
+  "status": "INCONCLUSIVE_ALIGNMENT_OR_METADATA",
+  "selected_steps": {
+    "B": 0,
+    "F": 0
+  },
+  "analysis_inputs": {
+    "localization": [
+      "config.json",
+      "dump.json",
+      "stack.json",
+      "construct.json"
+    ],
+    "integrity_only": [
+      "completion.json",
+      "receipt.json",
+      "collector_provenance.json",
+      "result.json: status/case_id/receipt_sha256"
+    ],
+    "files_not_opened": [
+      "host/profile/hit logs",
+      "private tensor files"
+    ],
+    "ignored_result_fields": [
+      "profile/policy labels",
+      "native-call/hit annotations",
+      "input/output numerical fingerprints",
+      "private output paths and numerical comparison results"
+    ]
+  },
+  "evidence_sha256": {
+    "B": {
+      "config": "5fe58ec1de7ff56d68ec5da2d616b672df1f286d97e6ef6e4006bb793f20f682",
+      "receipt": "e56c119cca0b4694ac74c944e1d715941a528bb3045f246cf138ec7e4edd00fd",
+      "collector_provenance": "4e15103d8e06d831dab5ff06bda1bfecd05f5029696b01b1cc08e78c48eb3ca5",
+      "completion": "6c65a5162a812bb1a4246a35444f93a4cd87670cfc3cf901375053490acf0234",
+      "result_integrity_only": "6bad36f1d89d34f494528442e303aebb56a47d52d37e0016024e2afea7e0134f",
+      "step0_dump": "2e7260bbd0eaefc14f81b5188b361109629a051827411329849bda44e446f49e",
+      "dump": "2e7260bbd0eaefc14f81b5188b361109629a051827411329849bda44e446f49e",
+      "step0_stack": "44b554059112829adc246a8d41e1b155d71e3ad4d1bc3866b7f770882df008b4",
+      "stack": "44b554059112829adc246a8d41e1b155d71e3ad4d1bc3866b7f770882df008b4",
+      "step0_construct": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "construct": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9"
+    },
+    "F": {
+      "config": "08db8db36f94c93464c13eb1f7faad78eb087a0a97425212f314b47e87aa6a68",
+      "receipt": "3357f8ee53b9ab36d438814aa3e9d21d2a2eca7840b04d4d020869358ad1794e",
+      "collector_provenance": "4e15103d8e06d831dab5ff06bda1bfecd05f5029696b01b1cc08e78c48eb3ca5",
+      "completion": "b5045889bf64855cefc59d9dccbad7de3f058beea5d0e4b5919d68878f42f733",
+      "result_integrity_only": "9de4ef61a558c325fea2aae9b1ab3764b1b15e1e9f8610c6ee17a978bca21ab1",
+      "step0_dump": "a4620e00e5097a7b8bd16104e331fdcf5aa364a7ae32eda3d983c638ba34204c",
+      "dump": "a4620e00e5097a7b8bd16104e331fdcf5aa364a7ae32eda3d983c638ba34204c",
+      "step0_stack": "e995c28cac1423849d78c2b3addb29d6e5e4ec7327d40895c9c25d800ea0bf76",
+      "stack": "e995c28cac1423849d78c2b3addb29d6e5e4ec7327d40895c9c25d800ea0bf76",
+      "step0_construct": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "construct": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "step1_dump": "1fe9f40755cd2f54eaff952ebf8007a2abee6b7d65a73b3636449bcce2f79f88",
+      "step1_stack": "e995c28cac1423849d78c2b3addb29d6e5e4ec7327d40895c9c25d800ea0bf76",
+      "step1_construct": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "step2_dump": "eb978346ab0b2e5de85474a4857778ac899a54c50aad950a82df64a16ddcba17",
+      "step2_stack": "e995c28cac1423849d78c2b3addb29d6e5e4ec7327d40895c9c25d800ea0bf76",
+      "step2_construct": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9",
+      "step3_dump": "33d1d3c6deff62e85b586f5f3a64911cb97171f5c220ba1f87a42d599412098b",
+      "step3_stack": "e995c28cac1423849d78c2b3addb29d6e5e4ec7327d40895c9c25d800ea0bf76",
+      "step3_construct": "55a990eac5b9ba14f7d51ea2ef1b68ad458d0c7b2dd8812167ff9fb511ca87c9"
+    }
+  },
+  "collector_disclosure": {
+    "B": {
+      "precision": "high",
+      "variant": "task_local_fp32_high_v1",
+      "modified_official_collector": true,
+      "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+      "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+      "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+      "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+      "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+      "stage_rehashed_by_this_tool": false
+    },
+    "F": {
+      "precision": "high",
+      "variant": "task_local_fp32_high_v1",
+      "modified_official_collector": true,
+      "actual_processor_sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+      "actual_processor_path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+      "stage_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+      "declared_policy": "high: detached FP16/BF16 temporary cast to FP32; floating non-FP64 Mean/Norm calculated. All nodes and arms use identical policy. Original tensor dtype/shape metadata unchanged.",
+      "provenance": "Installed complete package verified against its wheel RECORD; one task-local source repair. Not an unmodified official collector.",
+      "stage_rehashed_by_this_tool": false
+    }
+  },
+  "alignment": {
+    "complete": false,
+    "trace_config_collector_match": false,
+    "metadata_compatible": true,
+    "B_nodes": 2,
+    "F_nodes": 2,
+    "matched_ordered_nodes": 0,
+    "B_issues": [],
+    "F_issues": [],
+    "method": "Full parsed source stack including line/code text, module ancestry, API identity and original dump order; no diagnostic exclusions."
+  },
+  "first_observed_api_difference": null,
+  "first_difference_boundary": null,
+  "attention_score_output_observed_difference": null,
+  "auxiliary_output_observed_differences": null,
+  "unobservable_statistic_fields": 0,
+  "module_difference_nodes": [],
+  "comparisons": [],
+  "tensor_equality_proven": false,
+  "physical_fault_location_proven": false,
+  "native_cann_kernel_coverage_proven": false,
+  "mechanism_accepted": false,
+  "limits": [
+    "First means first differing API statistics record in dump order, not a device instruction or physical fault point.",
+    "Null/missing/matching nonfinite statistics are unobservable, never equal tensor values. Equal finite summaries may collide.",
+    "Matching input statistics do not prove identical Q/K/V/mask values. First output difference does not by itself prove the root cause.",
+    "Different batch shapes cannot align target slices using whole-tensor summaries; incompatible metadata suppresses first-difference claims.",
+    "Attention-score return0 and the five auxiliary returns are reported separately. An auxiliary-only change is not a primary attention-output difference.",
+    "Completion and provenance checks are integrity gates, not independent resource auditing or native profile/tiling verification."
+  ]
+}

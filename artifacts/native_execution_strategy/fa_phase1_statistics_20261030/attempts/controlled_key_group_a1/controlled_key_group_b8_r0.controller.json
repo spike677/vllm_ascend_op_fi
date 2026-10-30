@@ -1,0 +1,2219 @@
+{
+  "case_id": "controlled_key_group_b8_r0",
+  "start": 1793336631.2944422,
+  "resources": [
+    {
+      "epoch": 1793336632.3136005,
+      "selected_card": 5,
+      "monitored_physical_cards": [
+        2,
+        5
+      ],
+      "npu_smi": "+------------------------------------------------------------------------------------------------+\n| npu-smi 25.5.0.b060              Version: 25.5.0.b060                                          |\n+---------------------------+---------------+----------------------------------------------------+\n| NPU   Name                | Health        | Power(W)    Temp(C)           Hugepages-Usage(page)|\n| Chip                      | Bus-Id        | AICore(%)   Memory-Usage(MB)  HBM-Usage(MB)        |\n+===========================+===============+====================================================+\n| 2     910B4               | OK            | 82.7        49                0    / 0             |\n| 0                         | 0000:01:00.0  | 0           0    / 0          2896 / 32768         |\n+===========================+===============+====================================================+\n| 5     910B4               | OK            | 81.6        47                0    / 0             |\n| 0                         | 0000:81:00.0  | 0           0    / 0          2905 / 32768         |\n+===========================+===============+====================================================+\n+---------------------------+---------------+----------------------------------------------------+\n| NPU     Chip              | Process id    | Process name             | Process memory(MB)      |\n+===========================+===============+====================================================+\n| No running processes found in NPU 2                                                            |\n+===========================+===============+====================================================+\n| No running processes found in NPU 5                                                            |\n+===========================+===============+====================================================+\n",
+      "processes": [],
+      "foreign_npu_processes": [],
+      "selected_card_foreign_npu_processes": [],
+      "other_card_foreign_npu_processes": [],
+      "device_capable_containers": [
+        {
+          "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+          "capability_reasons": [
+            "explicit_device:/dev/davinci0",
+            "explicit_device:/dev/davinci1",
+            "explicit_device:/dev/davinci2",
+            "explicit_device:/dev/davinci3",
+            "explicit_device:/dev/davinci4",
+            "explicit_device:/dev/davinci5",
+            "explicit_device:/dev/davinci_manager",
+            "explicit_device:/dev/devmm_svm",
+            "explicit_device:/dev/hisi_hdc",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+            "name": "gyl_test",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "command": [
+              "/bin/bash"
+            ],
+            "entrypoint": [
+              "/bin/bash",
+              "-c",
+              "    source /usr/local/Ascend/ascend-toolkit/set_env.sh &&     source /usr/local/Ascend/cann-8.5.1/share/info/ascendnpu-ir/bin/set_env.sh &&     source /usr/local/Ascend/nnal/atb/set_env.sh &&     exec \"$@\"",
+              "--"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [
+              {
+                "PathOnHost": "/dev/davinci0",
+                "PathInContainer": "/dev/davinci0",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci1",
+                "PathInContainer": "/dev/davinci1",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci2",
+                "PathInContainer": "/dev/davinci2",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci3",
+                "PathInContainer": "/dev/davinci3",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci4",
+                "PathInContainer": "/dev/davinci4",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci5",
+                "PathInContainer": "/dev/davinci5",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci_manager",
+                "PathInContainer": "/dev/davinci_manager",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/devmm_svm",
+                "PathInContainer": "/dev/devmm_svm",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/hisi_hdc",
+                "PathInContainer": "/dev/hisi_hdc",
+                "CgroupPermissions": "rwm"
+              }
+            ],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/AIdata",
+                "Destination": "/AIdata",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/ascend_install.info",
+                "Destination": "/etc/ascend_install.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home",
+                "Destination": "/home",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/lib64",
+                "Destination": "/usr/local/Ascend/driver/lib64",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/version.info",
+                "Destination": "/usr/local/Ascend/driver/version.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/bin/npu-smi",
+                "Destination": "/usr/local/bin/npu-smi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/dcmi",
+                "Destination": "/usr/local/dcmi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 297920,
+            "started_at": "2026-10-27T03:16:22.7288224Z",
+            "network_mode": "host",
+            "pid_mode": "",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "explicit_device:/dev/davinci5",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "00c916fdedb20874bc869282867451480d1f9ca2031a329820ff9a115070fe9f"
+        },
+        {
+          "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+          "capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+            "name": "catmonitor-demo-control",
+            "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+            "command": [
+              "daemon",
+              "--config",
+              "/etc/catmonitor/catmonitor.yaml"
+            ],
+            "entrypoint": [
+              "/usr/local/bin/catmonitor"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/config-model-merge/catmonitor-stress.yaml",
+                "Destination": "/etc/catmonitor/catmonitor.yaml",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/os-release",
+                "Destination": "/etc/os-release",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/",
+                "Destination": "/host",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/control",
+                "Destination": "/run/catmonitor",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver",
+                "Destination": "/usr/local/Ascend/driver",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/sbin/npu-smi",
+                "Destination": "/usr/local/sbin/npu-smi",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/data",
+                "Destination": "/var/lib/catmonitor/data",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/snapshot",
+                "Destination": "/var/lib/catmonitor/snapshot",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/straggler",
+                "Destination": "/var/lib/catmonitor/straggler",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/state",
+                "Destination": "/var/lib/catmonitor/stress",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/var/run/docker.sock",
+                "Destination": "/var/run/docker.sock",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 2483509,
+            "started_at": "2026-10-15T08:08:13.642231473Z",
+            "network_mode": "host",
+            "pid_mode": "host",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "84f3fcdfbb7dd8f20180ee88d2168348cd374c28dd435ca3e6c05699e211593c"
+        }
+      ],
+      "unapproved_device_capable_containers": [],
+      "idle_allowlist_ids": [
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+      ],
+      "allowlisted_ids_not_running": [],
+      "require_selected_card_idle": false,
+      "selected_card_table_idle": true,
+      "retry_pending_owned_missing_processes": [],
+      "blocking_selected_card_foreign_npu_processes": [],
+      "retired_missing_process_identities": [],
+      "eligible": true,
+      "scope": "Selected-card resource gate; both cards recorded. Explicit idle coexistence is not device exclusivity."
+    },
+    {
+      "epoch": 1793336635.4878101,
+      "selected_card": 5,
+      "monitored_physical_cards": [
+        2,
+        5
+      ],
+      "npu_smi": "+------------------------------------------------------------------------------------------------+\n| npu-smi 25.5.0.b060              Version: 25.5.0.b060                                          |\n+---------------------------+---------------+----------------------------------------------------+\n| NPU   Name                | Health        | Power(W)    Temp(C)           Hugepages-Usage(page)|\n| Chip                      | Bus-Id        | AICore(%)   Memory-Usage(MB)  HBM-Usage(MB)        |\n+===========================+===============+====================================================+\n| 2     910B4               | OK            | 82.7        49                0    / 0             |\n| 0                         | 0000:01:00.0  | 0           0    / 0          2897 / 32768         |\n+===========================+===============+====================================================+\n| 5     910B4               | OK            | 81.7        47                0    / 0             |\n| 0                         | 0000:81:00.0  | 0           0    / 0          2904 / 32768         |\n+===========================+===============+====================================================+\n+---------------------------+---------------+----------------------------------------------------+\n| NPU     Chip              | Process id    | Process name             | Process memory(MB)      |\n+===========================+===============+====================================================+\n| No running processes found in NPU 2                                                            |\n+===========================+===============+====================================================+\n| No running processes found in NPU 5                                                            |\n+===========================+===============+====================================================+\n",
+      "processes": [],
+      "foreign_npu_processes": [],
+      "selected_card_foreign_npu_processes": [],
+      "other_card_foreign_npu_processes": [],
+      "device_capable_containers": [
+        {
+          "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+          "capability_reasons": [
+            "explicit_device:/dev/davinci0",
+            "explicit_device:/dev/davinci1",
+            "explicit_device:/dev/davinci2",
+            "explicit_device:/dev/davinci3",
+            "explicit_device:/dev/davinci4",
+            "explicit_device:/dev/davinci5",
+            "explicit_device:/dev/davinci_manager",
+            "explicit_device:/dev/devmm_svm",
+            "explicit_device:/dev/hisi_hdc",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+            "name": "gyl_test",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "command": [
+              "/bin/bash"
+            ],
+            "entrypoint": [
+              "/bin/bash",
+              "-c",
+              "    source /usr/local/Ascend/ascend-toolkit/set_env.sh &&     source /usr/local/Ascend/cann-8.5.1/share/info/ascendnpu-ir/bin/set_env.sh &&     source /usr/local/Ascend/nnal/atb/set_env.sh &&     exec \"$@\"",
+              "--"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [
+              {
+                "PathOnHost": "/dev/davinci0",
+                "PathInContainer": "/dev/davinci0",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci1",
+                "PathInContainer": "/dev/davinci1",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci2",
+                "PathInContainer": "/dev/davinci2",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci3",
+                "PathInContainer": "/dev/davinci3",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci4",
+                "PathInContainer": "/dev/davinci4",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci5",
+                "PathInContainer": "/dev/davinci5",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci_manager",
+                "PathInContainer": "/dev/davinci_manager",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/devmm_svm",
+                "PathInContainer": "/dev/devmm_svm",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/hisi_hdc",
+                "PathInContainer": "/dev/hisi_hdc",
+                "CgroupPermissions": "rwm"
+              }
+            ],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/AIdata",
+                "Destination": "/AIdata",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/ascend_install.info",
+                "Destination": "/etc/ascend_install.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home",
+                "Destination": "/home",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/lib64",
+                "Destination": "/usr/local/Ascend/driver/lib64",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/version.info",
+                "Destination": "/usr/local/Ascend/driver/version.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/bin/npu-smi",
+                "Destination": "/usr/local/bin/npu-smi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/dcmi",
+                "Destination": "/usr/local/dcmi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 297920,
+            "started_at": "2026-10-27T03:16:22.7288224Z",
+            "network_mode": "host",
+            "pid_mode": "",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "explicit_device:/dev/davinci5",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "00c916fdedb20874bc869282867451480d1f9ca2031a329820ff9a115070fe9f"
+        },
+        {
+          "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+          "capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+            "name": "catmonitor-demo-control",
+            "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+            "command": [
+              "daemon",
+              "--config",
+              "/etc/catmonitor/catmonitor.yaml"
+            ],
+            "entrypoint": [
+              "/usr/local/bin/catmonitor"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/config-model-merge/catmonitor-stress.yaml",
+                "Destination": "/etc/catmonitor/catmonitor.yaml",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/os-release",
+                "Destination": "/etc/os-release",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/",
+                "Destination": "/host",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/control",
+                "Destination": "/run/catmonitor",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver",
+                "Destination": "/usr/local/Ascend/driver",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/sbin/npu-smi",
+                "Destination": "/usr/local/sbin/npu-smi",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/data",
+                "Destination": "/var/lib/catmonitor/data",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/snapshot",
+                "Destination": "/var/lib/catmonitor/snapshot",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/straggler",
+                "Destination": "/var/lib/catmonitor/straggler",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/state",
+                "Destination": "/var/lib/catmonitor/stress",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/var/run/docker.sock",
+                "Destination": "/var/run/docker.sock",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 2483509,
+            "started_at": "2026-10-15T08:08:13.642231473Z",
+            "network_mode": "host",
+            "pid_mode": "host",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "84f3fcdfbb7dd8f20180ee88d2168348cd374c28dd435ca3e6c05699e211593c"
+        }
+      ],
+      "unapproved_device_capable_containers": [],
+      "idle_allowlist_ids": [
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+      ],
+      "allowlisted_ids_not_running": [],
+      "require_selected_card_idle": false,
+      "selected_card_table_idle": true,
+      "retry_pending_owned_missing_processes": [],
+      "blocking_selected_card_foreign_npu_processes": [],
+      "retired_missing_process_identities": [],
+      "eligible": true,
+      "scope": "Selected-card resource gate; both cards recorded. Explicit idle coexistence is not device exclusivity."
+    },
+    {
+      "epoch": 1793336638.5455406,
+      "selected_card": 5,
+      "monitored_physical_cards": [
+        2,
+        5
+      ],
+      "npu_smi": "+------------------------------------------------------------------------------------------------+\n| npu-smi 25.5.0.b060              Version: 25.5.0.b060                                          |\n+---------------------------+---------------+----------------------------------------------------+\n| NPU   Name                | Health        | Power(W)    Temp(C)           Hugepages-Usage(page)|\n| Chip                      | Bus-Id        | AICore(%)   Memory-Usage(MB)  HBM-Usage(MB)        |\n+===========================+===============+====================================================+\n| 2     910B4               | OK            | 82.7        49                0    / 0             |\n| 0                         | 0000:01:00.0  | 0           0    / 0          2896 / 32768         |\n+===========================+===============+====================================================+\n| 5     910B4               | OK            | 82.0        47                0    / 0             |\n| 0                         | 0000:81:00.0  | 0           0    / 0          2904 / 32768         |\n+===========================+===============+====================================================+\n+---------------------------+---------------+----------------------------------------------------+\n| NPU     Chip              | Process id    | Process name             | Process memory(MB)      |\n+===========================+===============+====================================================+\n| No running processes found in NPU 2                                                            |\n+===========================+===============+====================================================+\n| No running processes found in NPU 5                                                            |\n+===========================+===============+====================================================+\n",
+      "processes": [],
+      "foreign_npu_processes": [],
+      "selected_card_foreign_npu_processes": [],
+      "other_card_foreign_npu_processes": [],
+      "device_capable_containers": [
+        {
+          "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+          "capability_reasons": [
+            "explicit_device:/dev/davinci0",
+            "explicit_device:/dev/davinci1",
+            "explicit_device:/dev/davinci2",
+            "explicit_device:/dev/davinci3",
+            "explicit_device:/dev/davinci4",
+            "explicit_device:/dev/davinci5",
+            "explicit_device:/dev/davinci_manager",
+            "explicit_device:/dev/devmm_svm",
+            "explicit_device:/dev/hisi_hdc",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+            "name": "gyl_test",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "command": [
+              "/bin/bash"
+            ],
+            "entrypoint": [
+              "/bin/bash",
+              "-c",
+              "    source /usr/local/Ascend/ascend-toolkit/set_env.sh &&     source /usr/local/Ascend/cann-8.5.1/share/info/ascendnpu-ir/bin/set_env.sh &&     source /usr/local/Ascend/nnal/atb/set_env.sh &&     exec \"$@\"",
+              "--"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [
+              {
+                "PathOnHost": "/dev/davinci0",
+                "PathInContainer": "/dev/davinci0",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci1",
+                "PathInContainer": "/dev/davinci1",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci2",
+                "PathInContainer": "/dev/davinci2",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci3",
+                "PathInContainer": "/dev/davinci3",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci4",
+                "PathInContainer": "/dev/davinci4",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci5",
+                "PathInContainer": "/dev/davinci5",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci_manager",
+                "PathInContainer": "/dev/davinci_manager",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/devmm_svm",
+                "PathInContainer": "/dev/devmm_svm",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/hisi_hdc",
+                "PathInContainer": "/dev/hisi_hdc",
+                "CgroupPermissions": "rwm"
+              }
+            ],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/AIdata",
+                "Destination": "/AIdata",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/ascend_install.info",
+                "Destination": "/etc/ascend_install.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home",
+                "Destination": "/home",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/lib64",
+                "Destination": "/usr/local/Ascend/driver/lib64",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/version.info",
+                "Destination": "/usr/local/Ascend/driver/version.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/bin/npu-smi",
+                "Destination": "/usr/local/bin/npu-smi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/dcmi",
+                "Destination": "/usr/local/dcmi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 297920,
+            "started_at": "2026-10-27T03:16:22.7288224Z",
+            "network_mode": "host",
+            "pid_mode": "",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "explicit_device:/dev/davinci5",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "00c916fdedb20874bc869282867451480d1f9ca2031a329820ff9a115070fe9f"
+        },
+        {
+          "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+          "capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+            "name": "catmonitor-demo-control",
+            "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+            "command": [
+              "daemon",
+              "--config",
+              "/etc/catmonitor/catmonitor.yaml"
+            ],
+            "entrypoint": [
+              "/usr/local/bin/catmonitor"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/config-model-merge/catmonitor-stress.yaml",
+                "Destination": "/etc/catmonitor/catmonitor.yaml",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/os-release",
+                "Destination": "/etc/os-release",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/",
+                "Destination": "/host",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/control",
+                "Destination": "/run/catmonitor",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver",
+                "Destination": "/usr/local/Ascend/driver",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/sbin/npu-smi",
+                "Destination": "/usr/local/sbin/npu-smi",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/data",
+                "Destination": "/var/lib/catmonitor/data",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/snapshot",
+                "Destination": "/var/lib/catmonitor/snapshot",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/straggler",
+                "Destination": "/var/lib/catmonitor/straggler",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/state",
+                "Destination": "/var/lib/catmonitor/stress",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/var/run/docker.sock",
+                "Destination": "/var/run/docker.sock",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 2483509,
+            "started_at": "2026-10-15T08:08:13.642231473Z",
+            "network_mode": "host",
+            "pid_mode": "host",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "84f3fcdfbb7dd8f20180ee88d2168348cd374c28dd435ca3e6c05699e211593c"
+        }
+      ],
+      "unapproved_device_capable_containers": [],
+      "idle_allowlist_ids": [
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+      ],
+      "allowlisted_ids_not_running": [],
+      "require_selected_card_idle": false,
+      "selected_card_table_idle": true,
+      "retry_pending_owned_missing_processes": [],
+      "blocking_selected_card_foreign_npu_processes": [],
+      "retired_missing_process_identities": [],
+      "eligible": true,
+      "scope": "Selected-card resource gate; both cards recorded. Explicit idle coexistence is not device exclusivity."
+    },
+    {
+      "epoch": 1793336641.5042386,
+      "selected_card": 5,
+      "monitored_physical_cards": [
+        2,
+        5
+      ],
+      "npu_smi": "+------------------------------------------------------------------------------------------------+\n| npu-smi 25.5.0.b060              Version: 25.5.0.b060                                          |\n+---------------------------+---------------+----------------------------------------------------+\n| NPU   Name                | Health        | Power(W)    Temp(C)           Hugepages-Usage(page)|\n| Chip                      | Bus-Id        | AICore(%)   Memory-Usage(MB)  HBM-Usage(MB)        |\n+===========================+===============+====================================================+\n| 2     910B4               | OK            | 82.6        50                0    / 0             |\n| 0                         | 0000:01:00.0  | 0           0    / 0          2896 / 32768         |\n+===========================+===============+====================================================+\n| 5     910B4               | OK            | 82.0        47                0    / 0             |\n| 0                         | 0000:81:00.0  | 0           0    / 0          3120 / 32768         |\n+===========================+===============+====================================================+\n+---------------------------+---------------+----------------------------------------------------+\n| NPU     Chip              | Process id    | Process name             | Process memory(MB)      |\n+===========================+===============+====================================================+\n| No running processes found in NPU 2                                                            |\n+===========================+===============+====================================================+\n| 5       0                 | 2158507       | python                   | 234                     |\n+===========================+===============+====================================================+\n",
+      "processes": [
+        {
+          "host_pid": 2158507,
+          "process_state": "R",
+          "starttime_ticks": 239405094,
+          "process_flags": 4194304,
+          "pf_exiting": false,
+          "cgroup": "13:pids:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n12:blkio:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n11:hugetlb:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n10:freezer:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n9:memory:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n8:perf_event:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n7:rdma:/\n6:files:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n5:net_cls,net_prio:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n4:cpu,cpuacct:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n3:cpuset:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n2:devices:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n1:name=systemd:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n",
+          "nspid_vector": [
+            2158507,
+            200
+          ],
+          "pid_namespace": "pid:[4026538285]",
+          "state_before_read": "R",
+          "owned": true,
+          "ownership_evidence": "CURRENT_OWNED_CGROUP",
+          "physical_device": 5
+        }
+      ],
+      "foreign_npu_processes": [],
+      "selected_card_foreign_npu_processes": [],
+      "other_card_foreign_npu_processes": [],
+      "device_capable_containers": [
+        {
+          "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+          "capability_reasons": [
+            "explicit_device:/dev/davinci0",
+            "explicit_device:/dev/davinci1",
+            "explicit_device:/dev/davinci2",
+            "explicit_device:/dev/davinci3",
+            "explicit_device:/dev/davinci4",
+            "explicit_device:/dev/davinci5",
+            "explicit_device:/dev/davinci_manager",
+            "explicit_device:/dev/devmm_svm",
+            "explicit_device:/dev/hisi_hdc",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+            "name": "gyl_test",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "command": [
+              "/bin/bash"
+            ],
+            "entrypoint": [
+              "/bin/bash",
+              "-c",
+              "    source /usr/local/Ascend/ascend-toolkit/set_env.sh &&     source /usr/local/Ascend/cann-8.5.1/share/info/ascendnpu-ir/bin/set_env.sh &&     source /usr/local/Ascend/nnal/atb/set_env.sh &&     exec \"$@\"",
+              "--"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [
+              {
+                "PathOnHost": "/dev/davinci0",
+                "PathInContainer": "/dev/davinci0",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci1",
+                "PathInContainer": "/dev/davinci1",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci2",
+                "PathInContainer": "/dev/davinci2",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci3",
+                "PathInContainer": "/dev/davinci3",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci4",
+                "PathInContainer": "/dev/davinci4",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci5",
+                "PathInContainer": "/dev/davinci5",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci_manager",
+                "PathInContainer": "/dev/davinci_manager",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/devmm_svm",
+                "PathInContainer": "/dev/devmm_svm",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/hisi_hdc",
+                "PathInContainer": "/dev/hisi_hdc",
+                "CgroupPermissions": "rwm"
+              }
+            ],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/AIdata",
+                "Destination": "/AIdata",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/ascend_install.info",
+                "Destination": "/etc/ascend_install.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home",
+                "Destination": "/home",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/lib64",
+                "Destination": "/usr/local/Ascend/driver/lib64",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/version.info",
+                "Destination": "/usr/local/Ascend/driver/version.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/bin/npu-smi",
+                "Destination": "/usr/local/bin/npu-smi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/dcmi",
+                "Destination": "/usr/local/dcmi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 297920,
+            "started_at": "2026-10-27T03:16:22.7288224Z",
+            "network_mode": "host",
+            "pid_mode": "",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "explicit_device:/dev/davinci5",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "00c916fdedb20874bc869282867451480d1f9ca2031a329820ff9a115070fe9f"
+        },
+        {
+          "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+          "capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+            "name": "catmonitor-demo-control",
+            "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+            "command": [
+              "daemon",
+              "--config",
+              "/etc/catmonitor/catmonitor.yaml"
+            ],
+            "entrypoint": [
+              "/usr/local/bin/catmonitor"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/config-model-merge/catmonitor-stress.yaml",
+                "Destination": "/etc/catmonitor/catmonitor.yaml",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/os-release",
+                "Destination": "/etc/os-release",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/",
+                "Destination": "/host",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/control",
+                "Destination": "/run/catmonitor",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver",
+                "Destination": "/usr/local/Ascend/driver",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/sbin/npu-smi",
+                "Destination": "/usr/local/sbin/npu-smi",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/data",
+                "Destination": "/var/lib/catmonitor/data",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/snapshot",
+                "Destination": "/var/lib/catmonitor/snapshot",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/straggler",
+                "Destination": "/var/lib/catmonitor/straggler",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/state",
+                "Destination": "/var/lib/catmonitor/stress",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/var/run/docker.sock",
+                "Destination": "/var/run/docker.sock",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 2483509,
+            "started_at": "2026-10-15T08:08:13.642231473Z",
+            "network_mode": "host",
+            "pid_mode": "host",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "84f3fcdfbb7dd8f20180ee88d2168348cd374c28dd435ca3e6c05699e211593c"
+        }
+      ],
+      "unapproved_device_capable_containers": [],
+      "idle_allowlist_ids": [
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+      ],
+      "allowlisted_ids_not_running": [],
+      "require_selected_card_idle": false,
+      "selected_card_table_idle": false,
+      "retry_pending_owned_missing_processes": [],
+      "blocking_selected_card_foreign_npu_processes": [],
+      "retired_missing_process_identities": [],
+      "eligible": true,
+      "scope": "Selected-card resource gate; both cards recorded. Explicit idle coexistence is not device exclusivity."
+    },
+    {
+      "epoch": 1793336644.3771112,
+      "selected_card": 5,
+      "monitored_physical_cards": [
+        2,
+        5
+      ],
+      "npu_smi": "+------------------------------------------------------------------------------------------------+\n| npu-smi 25.5.0.b060              Version: 25.5.0.b060                                          |\n+---------------------------+---------------+----------------------------------------------------+\n| NPU   Name                | Health        | Power(W)    Temp(C)           Hugepages-Usage(page)|\n| Chip                      | Bus-Id        | AICore(%)   Memory-Usage(MB)  HBM-Usage(MB)        |\n+===========================+===============+====================================================+\n| 2     910B4               | OK            | 83.4        49                0    / 0             |\n| 0                         | 0000:01:00.0  | 0           0    / 0          2896 / 32768         |\n+===========================+===============+====================================================+\n| 5     910B4               | OK            | 92.5        47                0    / 0             |\n| 0                         | 0000:81:00.0  | 0           0    / 0          3672 / 32768         |\n+===========================+===============+====================================================+\n+---------------------------+---------------+----------------------------------------------------+\n| NPU     Chip              | Process id    | Process name             | Process memory(MB)      |\n+===========================+===============+====================================================+\n| No running processes found in NPU 2                                                            |\n+===========================+===============+====================================================+\n| 5       0                 | 2158507       | python                   | 786                     |\n+===========================+===============+====================================================+\n",
+      "processes": [
+        {
+          "host_pid": 2158507,
+          "process_state": "R",
+          "starttime_ticks": 239405094,
+          "process_flags": 4194304,
+          "pf_exiting": false,
+          "cgroup": "13:pids:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n12:blkio:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n11:hugetlb:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n10:freezer:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n9:memory:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n8:perf_event:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n7:rdma:/\n6:files:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n5:net_cls,net_prio:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n4:cpu,cpuacct:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n3:cpuset:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n2:devices:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n1:name=systemd:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n",
+          "nspid_vector": [
+            2158507,
+            200
+          ],
+          "pid_namespace": "pid:[4026538285]",
+          "state_before_read": "R",
+          "owned": true,
+          "ownership_evidence": "CURRENT_OWNED_CGROUP",
+          "physical_device": 5
+        }
+      ],
+      "foreign_npu_processes": [],
+      "selected_card_foreign_npu_processes": [],
+      "other_card_foreign_npu_processes": [],
+      "device_capable_containers": [
+        {
+          "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+          "capability_reasons": [
+            "explicit_device:/dev/davinci0",
+            "explicit_device:/dev/davinci1",
+            "explicit_device:/dev/davinci2",
+            "explicit_device:/dev/davinci3",
+            "explicit_device:/dev/davinci4",
+            "explicit_device:/dev/davinci5",
+            "explicit_device:/dev/davinci_manager",
+            "explicit_device:/dev/devmm_svm",
+            "explicit_device:/dev/hisi_hdc",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+            "name": "gyl_test",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "command": [
+              "/bin/bash"
+            ],
+            "entrypoint": [
+              "/bin/bash",
+              "-c",
+              "    source /usr/local/Ascend/ascend-toolkit/set_env.sh &&     source /usr/local/Ascend/cann-8.5.1/share/info/ascendnpu-ir/bin/set_env.sh &&     source /usr/local/Ascend/nnal/atb/set_env.sh &&     exec \"$@\"",
+              "--"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [
+              {
+                "PathOnHost": "/dev/davinci0",
+                "PathInContainer": "/dev/davinci0",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci1",
+                "PathInContainer": "/dev/davinci1",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci2",
+                "PathInContainer": "/dev/davinci2",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci3",
+                "PathInContainer": "/dev/davinci3",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci4",
+                "PathInContainer": "/dev/davinci4",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci5",
+                "PathInContainer": "/dev/davinci5",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci_manager",
+                "PathInContainer": "/dev/davinci_manager",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/devmm_svm",
+                "PathInContainer": "/dev/devmm_svm",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/hisi_hdc",
+                "PathInContainer": "/dev/hisi_hdc",
+                "CgroupPermissions": "rwm"
+              }
+            ],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/AIdata",
+                "Destination": "/AIdata",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/ascend_install.info",
+                "Destination": "/etc/ascend_install.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home",
+                "Destination": "/home",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/lib64",
+                "Destination": "/usr/local/Ascend/driver/lib64",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/version.info",
+                "Destination": "/usr/local/Ascend/driver/version.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/bin/npu-smi",
+                "Destination": "/usr/local/bin/npu-smi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/dcmi",
+                "Destination": "/usr/local/dcmi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 297920,
+            "started_at": "2026-10-27T03:16:22.7288224Z",
+            "network_mode": "host",
+            "pid_mode": "",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "explicit_device:/dev/davinci5",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "00c916fdedb20874bc869282867451480d1f9ca2031a329820ff9a115070fe9f"
+        },
+        {
+          "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+          "capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+            "name": "catmonitor-demo-control",
+            "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+            "command": [
+              "daemon",
+              "--config",
+              "/etc/catmonitor/catmonitor.yaml"
+            ],
+            "entrypoint": [
+              "/usr/local/bin/catmonitor"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/config-model-merge/catmonitor-stress.yaml",
+                "Destination": "/etc/catmonitor/catmonitor.yaml",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/os-release",
+                "Destination": "/etc/os-release",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/",
+                "Destination": "/host",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/control",
+                "Destination": "/run/catmonitor",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver",
+                "Destination": "/usr/local/Ascend/driver",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/sbin/npu-smi",
+                "Destination": "/usr/local/sbin/npu-smi",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/data",
+                "Destination": "/var/lib/catmonitor/data",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/snapshot",
+                "Destination": "/var/lib/catmonitor/snapshot",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/straggler",
+                "Destination": "/var/lib/catmonitor/straggler",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/state",
+                "Destination": "/var/lib/catmonitor/stress",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/var/run/docker.sock",
+                "Destination": "/var/run/docker.sock",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 2483509,
+            "started_at": "2026-10-15T08:08:13.642231473Z",
+            "network_mode": "host",
+            "pid_mode": "host",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "84f3fcdfbb7dd8f20180ee88d2168348cd374c28dd435ca3e6c05699e211593c"
+        }
+      ],
+      "unapproved_device_capable_containers": [],
+      "idle_allowlist_ids": [
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+      ],
+      "allowlisted_ids_not_running": [],
+      "require_selected_card_idle": false,
+      "selected_card_table_idle": false,
+      "retry_pending_owned_missing_processes": [],
+      "blocking_selected_card_foreign_npu_processes": [],
+      "retired_missing_process_identities": [],
+      "eligible": true,
+      "scope": "Selected-card resource gate; both cards recorded. Explicit idle coexistence is not device exclusivity."
+    },
+    {
+      "epoch": 1793336647.2527723,
+      "selected_card": 5,
+      "monitored_physical_cards": [
+        2,
+        5
+      ],
+      "npu_smi": "+------------------------------------------------------------------------------------------------+\n| npu-smi 25.5.0.b060              Version: 25.5.0.b060                                          |\n+---------------------------+---------------+----------------------------------------------------+\n| NPU   Name                | Health        | Power(W)    Temp(C)           Hugepages-Usage(page)|\n| Chip                      | Bus-Id        | AICore(%)   Memory-Usage(MB)  HBM-Usage(MB)        |\n+===========================+===============+====================================================+\n| 2     910B4               | OK            | 83.2        49                0    / 0             |\n| 0                         | 0000:01:00.0  | 0           0    / 0          2896 / 32768         |\n+===========================+===============+====================================================+\n| 5     910B4               | OK            | 82.1        47                0    / 0             |\n| 0                         | 0000:81:00.0  | 0           0    / 0          3182 / 32768         |\n+===========================+===============+====================================================+\n+---------------------------+---------------+----------------------------------------------------+\n| NPU     Chip              | Process id    | Process name             | Process memory(MB)      |\n+===========================+===============+====================================================+\n| No running processes found in NPU 2                                                            |\n+===========================+===============+====================================================+\n| 5       0                 | 2158507       | python                   | 296                     |\n+===========================+===============+====================================================+\n",
+      "processes": [
+        {
+          "host_pid": 2158507,
+          "process_state": "R",
+          "starttime_ticks": 239405094,
+          "process_flags": 4194304,
+          "pf_exiting": false,
+          "cgroup": "13:pids:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n12:blkio:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n11:hugetlb:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n10:freezer:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n9:memory:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n8:perf_event:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n7:rdma:/\n6:files:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n5:net_cls,net_prio:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n4:cpu,cpuacct:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n3:cpuset:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n2:devices:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n1:name=systemd:/docker/1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6\n",
+          "nspid_vector": [
+            2158507,
+            200
+          ],
+          "pid_namespace": "pid:[4026538285]",
+          "state_before_read": "R",
+          "owned": true,
+          "ownership_evidence": "CURRENT_OWNED_CGROUP",
+          "physical_device": 5
+        }
+      ],
+      "foreign_npu_processes": [],
+      "selected_card_foreign_npu_processes": [],
+      "other_card_foreign_npu_processes": [],
+      "device_capable_containers": [
+        {
+          "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+          "capability_reasons": [
+            "explicit_device:/dev/davinci0",
+            "explicit_device:/dev/davinci1",
+            "explicit_device:/dev/davinci2",
+            "explicit_device:/dev/davinci3",
+            "explicit_device:/dev/davinci4",
+            "explicit_device:/dev/davinci5",
+            "explicit_device:/dev/davinci_manager",
+            "explicit_device:/dev/devmm_svm",
+            "explicit_device:/dev/hisi_hdc",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+            "name": "gyl_test",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "command": [
+              "/bin/bash"
+            ],
+            "entrypoint": [
+              "/bin/bash",
+              "-c",
+              "    source /usr/local/Ascend/ascend-toolkit/set_env.sh &&     source /usr/local/Ascend/cann-8.5.1/share/info/ascendnpu-ir/bin/set_env.sh &&     source /usr/local/Ascend/nnal/atb/set_env.sh &&     exec \"$@\"",
+              "--"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [
+              {
+                "PathOnHost": "/dev/davinci0",
+                "PathInContainer": "/dev/davinci0",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci1",
+                "PathInContainer": "/dev/davinci1",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci2",
+                "PathInContainer": "/dev/davinci2",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci3",
+                "PathInContainer": "/dev/davinci3",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci4",
+                "PathInContainer": "/dev/davinci4",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci5",
+                "PathInContainer": "/dev/davinci5",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/davinci_manager",
+                "PathInContainer": "/dev/davinci_manager",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/devmm_svm",
+                "PathInContainer": "/dev/devmm_svm",
+                "CgroupPermissions": "rwm"
+              },
+              {
+                "PathOnHost": "/dev/hisi_hdc",
+                "PathInContainer": "/dev/hisi_hdc",
+                "CgroupPermissions": "rwm"
+              }
+            ],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/AIdata",
+                "Destination": "/AIdata",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/ascend_install.info",
+                "Destination": "/etc/ascend_install.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home",
+                "Destination": "/home",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/lib64",
+                "Destination": "/usr/local/Ascend/driver/lib64",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver/version.info",
+                "Destination": "/usr/local/Ascend/driver/version.info",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/bin/npu-smi",
+                "Destination": "/usr/local/bin/npu-smi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/dcmi",
+                "Destination": "/usr/local/dcmi",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 297920,
+            "started_at": "2026-10-27T03:16:22.7288224Z",
+            "network_mode": "host",
+            "pid_mode": "",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "explicit_device:/dev/davinci5",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "00c916fdedb20874bc869282867451480d1f9ca2031a329820ff9a115070fe9f"
+        },
+        {
+          "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+          "capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "metadata": {
+            "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+            "name": "catmonitor-demo-control",
+            "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+            "command": [
+              "daemon",
+              "--config",
+              "/etc/catmonitor/catmonitor.yaml"
+            ],
+            "entrypoint": [
+              "/usr/local/bin/catmonitor"
+            ],
+            "privileged": true,
+            "device_cgroup_rules": [],
+            "device_requests": [],
+            "devices": [],
+            "mounts": [
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/config-model-merge/catmonitor-stress.yaml",
+                "Destination": "/etc/catmonitor/catmonitor.yaml",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/etc/os-release",
+                "Destination": "/etc/os-release",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/",
+                "Destination": "/host",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rslave"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/control",
+                "Destination": "/run/catmonitor",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/Ascend/driver",
+                "Destination": "/usr/local/Ascend/driver",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/usr/local/sbin/npu-smi",
+                "Destination": "/usr/local/sbin/npu-smi",
+                "Mode": "ro",
+                "RW": false,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/data",
+                "Destination": "/var/lib/catmonitor/data",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/snapshot",
+                "Destination": "/var/lib/catmonitor/snapshot",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/straggler",
+                "Destination": "/var/lib/catmonitor/straggler",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/home/catmonitor/npu-demo-20261012/state",
+                "Destination": "/var/lib/catmonitor/stress",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              },
+              {
+                "Type": "bind",
+                "Source": "/var/run/docker.sock",
+                "Destination": "/var/run/docker.sock",
+                "Mode": "",
+                "RW": true,
+                "Propagation": "rprivate"
+              }
+            ],
+            "init_host_pid": 2483509,
+            "started_at": "2026-10-15T08:08:13.642231473Z",
+            "network_mode": "host",
+            "pid_mode": "host",
+            "ipc_mode": "shareable"
+          },
+          "selected_card_capable": true,
+          "selected_card_capability_reasons": [
+            "device_capable_bind:/",
+            "privileged_all_host_devices_possible"
+          ],
+          "explicit_idle_id_allowed": true,
+          "reviewed_identity_matches": true,
+          "metadata_unchanged": true,
+          "metadata_sha256": "84f3fcdfbb7dd8f20180ee88d2168348cd374c28dd435ca3e6c05699e211593c"
+        }
+      ],
+      "unapproved_device_capable_containers": [],
+      "idle_allowlist_ids": [
+        "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+      ],
+      "allowlisted_ids_not_running": [],
+      "require_selected_card_idle": false,
+      "selected_card_table_idle": false,
+      "retry_pending_owned_missing_processes": [],
+      "blocking_selected_card_foreign_npu_processes": [],
+      "retired_missing_process_identities": [],
+      "eligible": true,
+      "scope": "Selected-card resource gate; both cards recorded. Explicit idle coexistence is not device exclusivity."
+    }
+  ],
+  "pre_case_resources": {
+    "epoch": 1793336631.2939787,
+    "selected_card": 5,
+    "monitored_physical_cards": [
+      2,
+      5
+    ],
+    "npu_smi": "+------------------------------------------------------------------------------------------------+\n| npu-smi 25.5.0.b060              Version: 25.5.0.b060                                          |\n+---------------------------+---------------+----------------------------------------------------+\n| NPU   Name                | Health        | Power(W)    Temp(C)           Hugepages-Usage(page)|\n| Chip                      | Bus-Id        | AICore(%)   Memory-Usage(MB)  HBM-Usage(MB)        |\n+===========================+===============+====================================================+\n| 2     910B4               | OK            | 82.7        49                0    / 0             |\n| 0                         | 0000:01:00.0  | 0           0    / 0          2896 / 32768         |\n+===========================+===============+====================================================+\n| 5     910B4               | OK            | 82.0        47                0    / 0             |\n| 0                         | 0000:81:00.0  | 0           0    / 0          2905 / 32768         |\n+===========================+===============+====================================================+\n+---------------------------+---------------+----------------------------------------------------+\n| NPU     Chip              | Process id    | Process name             | Process memory(MB)      |\n+===========================+===============+====================================================+\n| No running processes found in NPU 2                                                            |\n+===========================+===============+====================================================+\n| No running processes found in NPU 5                                                            |\n+===========================+===============+====================================================+\n",
+    "processes": [],
+    "foreign_npu_processes": [],
+    "selected_card_foreign_npu_processes": [],
+    "other_card_foreign_npu_processes": [],
+    "device_capable_containers": [
+      {
+        "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+        "capability_reasons": [
+          "explicit_device:/dev/davinci0",
+          "explicit_device:/dev/davinci1",
+          "explicit_device:/dev/davinci2",
+          "explicit_device:/dev/davinci3",
+          "explicit_device:/dev/davinci4",
+          "explicit_device:/dev/davinci5",
+          "explicit_device:/dev/davinci_manager",
+          "explicit_device:/dev/devmm_svm",
+          "explicit_device:/dev/hisi_hdc",
+          "privileged_all_host_devices_possible"
+        ],
+        "metadata": {
+          "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+          "name": "gyl_test",
+          "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+          "command": [
+            "/bin/bash"
+          ],
+          "entrypoint": [
+            "/bin/bash",
+            "-c",
+            "    source /usr/local/Ascend/ascend-toolkit/set_env.sh &&     source /usr/local/Ascend/cann-8.5.1/share/info/ascendnpu-ir/bin/set_env.sh &&     source /usr/local/Ascend/nnal/atb/set_env.sh &&     exec \"$@\"",
+            "--"
+          ],
+          "privileged": true,
+          "device_cgroup_rules": [],
+          "device_requests": [],
+          "devices": [
+            {
+              "PathOnHost": "/dev/davinci0",
+              "PathInContainer": "/dev/davinci0",
+              "CgroupPermissions": "rwm"
+            },
+            {
+              "PathOnHost": "/dev/davinci1",
+              "PathInContainer": "/dev/davinci1",
+              "CgroupPermissions": "rwm"
+            },
+            {
+              "PathOnHost": "/dev/davinci2",
+              "PathInContainer": "/dev/davinci2",
+              "CgroupPermissions": "rwm"
+            },
+            {
+              "PathOnHost": "/dev/davinci3",
+              "PathInContainer": "/dev/davinci3",
+              "CgroupPermissions": "rwm"
+            },
+            {
+              "PathOnHost": "/dev/davinci4",
+              "PathInContainer": "/dev/davinci4",
+              "CgroupPermissions": "rwm"
+            },
+            {
+              "PathOnHost": "/dev/davinci5",
+              "PathInContainer": "/dev/davinci5",
+              "CgroupPermissions": "rwm"
+            },
+            {
+              "PathOnHost": "/dev/davinci_manager",
+              "PathInContainer": "/dev/davinci_manager",
+              "CgroupPermissions": "rwm"
+            },
+            {
+              "PathOnHost": "/dev/devmm_svm",
+              "PathInContainer": "/dev/devmm_svm",
+              "CgroupPermissions": "rwm"
+            },
+            {
+              "PathOnHost": "/dev/hisi_hdc",
+              "PathInContainer": "/dev/hisi_hdc",
+              "CgroupPermissions": "rwm"
+            }
+          ],
+          "mounts": [
+            {
+              "Type": "bind",
+              "Source": "/AIdata",
+              "Destination": "/AIdata",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/etc/ascend_install.info",
+              "Destination": "/etc/ascend_install.info",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/home",
+              "Destination": "/home",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rslave"
+            },
+            {
+              "Type": "bind",
+              "Source": "/usr/local/Ascend/driver/lib64",
+              "Destination": "/usr/local/Ascend/driver/lib64",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/usr/local/Ascend/driver/version.info",
+              "Destination": "/usr/local/Ascend/driver/version.info",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/usr/local/bin/npu-smi",
+              "Destination": "/usr/local/bin/npu-smi",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/usr/local/dcmi",
+              "Destination": "/usr/local/dcmi",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            }
+          ],
+          "init_host_pid": 297920,
+          "started_at": "2026-10-27T03:16:22.7288224Z",
+          "network_mode": "host",
+          "pid_mode": "",
+          "ipc_mode": "shareable"
+        },
+        "selected_card_capable": true,
+        "selected_card_capability_reasons": [
+          "explicit_device:/dev/davinci5",
+          "privileged_all_host_devices_possible"
+        ],
+        "explicit_idle_id_allowed": true,
+        "reviewed_identity_matches": true,
+        "metadata_unchanged": true,
+        "metadata_sha256": "00c916fdedb20874bc869282867451480d1f9ca2031a329820ff9a115070fe9f"
+      },
+      {
+        "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+        "capability_reasons": [
+          "device_capable_bind:/",
+          "privileged_all_host_devices_possible"
+        ],
+        "metadata": {
+          "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+          "name": "catmonitor-demo-control",
+          "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+          "command": [
+            "daemon",
+            "--config",
+            "/etc/catmonitor/catmonitor.yaml"
+          ],
+          "entrypoint": [
+            "/usr/local/bin/catmonitor"
+          ],
+          "privileged": true,
+          "device_cgroup_rules": [],
+          "device_requests": [],
+          "devices": [],
+          "mounts": [
+            {
+              "Type": "bind",
+              "Source": "/home/catmonitor/npu-demo-20261012/config-model-merge/catmonitor-stress.yaml",
+              "Destination": "/etc/catmonitor/catmonitor.yaml",
+              "Mode": "ro",
+              "RW": false,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/etc/os-release",
+              "Destination": "/etc/os-release",
+              "Mode": "ro",
+              "RW": false,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/",
+              "Destination": "/host",
+              "Mode": "ro",
+              "RW": false,
+              "Propagation": "rslave"
+            },
+            {
+              "Type": "bind",
+              "Source": "/home/catmonitor/npu-demo-20261012/control",
+              "Destination": "/run/catmonitor",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/usr/local/Ascend/driver",
+              "Destination": "/usr/local/Ascend/driver",
+              "Mode": "ro",
+              "RW": false,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/usr/local/sbin/npu-smi",
+              "Destination": "/usr/local/sbin/npu-smi",
+              "Mode": "ro",
+              "RW": false,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/home/catmonitor/npu-demo-20261012/data",
+              "Destination": "/var/lib/catmonitor/data",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/home/catmonitor/npu-demo-20261012/snapshot",
+              "Destination": "/var/lib/catmonitor/snapshot",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/home/catmonitor/npu-demo-20261012/straggler",
+              "Destination": "/var/lib/catmonitor/straggler",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/home/catmonitor/npu-demo-20261012/state",
+              "Destination": "/var/lib/catmonitor/stress",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            },
+            {
+              "Type": "bind",
+              "Source": "/var/run/docker.sock",
+              "Destination": "/var/run/docker.sock",
+              "Mode": "",
+              "RW": true,
+              "Propagation": "rprivate"
+            }
+          ],
+          "init_host_pid": 2483509,
+          "started_at": "2026-10-15T08:08:13.642231473Z",
+          "network_mode": "host",
+          "pid_mode": "host",
+          "ipc_mode": "shareable"
+        },
+        "selected_card_capable": true,
+        "selected_card_capability_reasons": [
+          "device_capable_bind:/",
+          "privileged_all_host_devices_possible"
+        ],
+        "explicit_idle_id_allowed": true,
+        "reviewed_identity_matches": true,
+        "metadata_unchanged": true,
+        "metadata_sha256": "84f3fcdfbb7dd8f20180ee88d2168348cd374c28dd435ca3e6c05699e211593c"
+      }
+    ],
+    "unapproved_device_capable_containers": [],
+    "idle_allowlist_ids": [
+      "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+      "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+    ],
+    "allowlisted_ids_not_running": [],
+    "require_selected_card_idle": true,
+    "selected_card_table_idle": true,
+    "retry_pending_owned_missing_processes": [],
+    "blocking_selected_card_foreign_npu_processes": [],
+    "retired_missing_process_identities": [],
+    "eligible": true,
+    "scope": "Selected-card resource gate; both cards recorded. Explicit idle coexistence is not device exclusivity."
+  },
+  "command": [
+    "docker",
+    "exec",
+    "1260d464c0391939adc9a929343029db4744b1384d257a2d52cd13ed711b23f6",
+    "bash",
+    "-c",
+    "source /audit/env.sh && exec timeout --signal=TERM --kill-after=5s 300 env ASCEND_GLOBAL_LOG_LEVEL=0 ASCEND_SLOG_PRINT_TO_STDOUT=1 python /audit/vendor_exec.py --case-file /audit/setup/controlled/controlled_key_group_b8_r0.json --output /evidence/controlled_key_group_b8_r0"
+  ],
+  "rc": 0,
+  "end": 1793336649.2533286
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "nes.harness.preparation.v1",
+  "status": "CPU_PREPARATION_ONLY_NOT_NATIVE_VALIDATION",
+  "resource_snapshot_utc": "2026-10-30T03:37:50.349003+00:00",
+  "physical_card": 5,
+  "observed_npu_processes": [],
+  "other_physical_card2_processes": [],
+  "hbm_used_mib": 2890,
+  "hbm_total_mib": 32768,
+  "device_capable_background_containers": [
+    {
+      "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+      "name": "gyl_test",
+      "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+      "privileged": true,
+      "command": [
+        "/bin/bash"
+      ]
+    },
+    {
+      "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+      "name": "catmonitor-demo-control",
+      "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+      "privileged": true,
+      "host_root_mount": "read_only",
+      "command": [
+        "daemon",
+        "--config",
+        "/etc/catmonitor/catmonitor.yaml"
+      ]
+    }
+  ],
+  "coexistence_requires_explicit_full_id_allowlist_and_no_foreign_npu_process": true,
+  "device_exclusive": false,
+  "external_container_mutations": false,
+  "npu_calls": 0,
+  "new_remote_root_exists_at_observation": false,
+  "existing_dependencies": [
+    "/home/fault28-causal-20261029/inputs/manifest.json",
+    "/home/fault28-causal-20261029/inputs/source_call.json",
+    "/home/fault28-native-tiling-20261029/collector_high_a1/stage_manifest.json",
+    "/home/tik-constfold-cann91-overnight-20261022/venv/bin/python",
+    "/home/batch-scale-dynamic-msprobe-20261023/python_packages"
+  ],
+  "files": {
+    "controller.py": "3d80f19e5097857ea64d7a3e7f5fe93962996407b2f7f1b7f4e8849c8fe93b98",
+    "collector_stage.py": "9f9d69750a1ba363c700ce7bb3d3bae1e3eab472179177ef77ac3c825965e9dd",
+    "env.sh": "28652a4f8bade69dc2b3d97387f6947e5af2d0923bf0cc8405bfd14460d8a09f"
+  },
+  "pending": [
+    "core/adapter/native bridge contract",
+    "new vendor build and CPU manifest validation",
+    "new inputs derivation for batch 2 and 4",
+    "real native strategy profile acceptance"
+  ]
+}

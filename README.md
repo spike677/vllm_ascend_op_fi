@@ -2,7 +2,26 @@
 
 这是一个面向 vLLM-Ascend/CANN 的开发者模式原生算子故障注入原型。实现覆盖 CANN repeat executor-cache replay 边界、typed operator adapter 和 temporary device buffer 替换，并提供受控、可审计的输入数值退化、非有限输出代理与 allocation-boundary 写错地址代理。
 
-本仓库仅包含最终运行源码、构建/容器脚本和能力说明。请求响应、token 对比、trace、结构化 evidence、离线测试程序和历史探针不上传。
+本仓库包含运行源码、构建/容器脚本和能力说明；后续实验另提交经过审查的统计证据与验算工具。
+完整私有张量、模型权重和 SDK/kernel 二进制不随统计证据上传。
+
+## 算子执行策略注入（第一期）
+
+新增 [`native_execution_strategy`](native_execution_strategy/README.md)：统一调用上下文、
+逐次触发、合法候选选择、版本/构建证据解析和原生执行验证。首个适配器是
+`FlashAttentionScore/S1S2`，实际在 host 的 M/nRatio 选择完成后、依赖 tiling 生成前原子切换，
+由真实 kernel 产生输出。用户配置选择 `query_tile`、`key_group` 或 `joint`，不写 raw 字段。
+
+原生 Batch 策略发现与受控策略切换分别取证；每次匹配重新选择，没有固定 B8 条件或单次命中上限。
+适配器解释请求数与 token/矩阵语义；未验收的形状不会因发现成功自动进入受控支持范围。
+策略切换、数值变化、模型影响分别验收，允许合法切换后数值完全相同。
+
+124上第一期20组/56次正式调用及4次 `validated` 别名检查通过；B1/B8的连续触发、关闭后完整输出恢复，
+以及独立 msprobe 的 FA 主输出首差均已核验。原生 B1/2/4/8 的 M/nRatio未切换，模型级影响未测。
+本轮状态、真实版本和完整矩阵见
+[124 第一阶段验证](experiments/native_execution_strategy_20261030/README.md)。
+原始 `statistics/mix` 与审计记录见[本轮证据](artifacts/native_execution_strategy/fa_phase1_statistics_20261030/README.md)。
+MatMul、Reduce/Softmax、FIA 和自然模型接入仍待独立适配验收。
 
 ## 已验证能力
 
