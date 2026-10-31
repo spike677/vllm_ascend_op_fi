@@ -1,0 +1,32 @@
+{
+  "schema": "nes.model_coverage.plan.v1",
+  "cases": [
+    {
+      "case_id": "pilot_b1",
+      "file": "pilot_b1.json",
+      "sha256": "6bfc62b9808b457dd79753749b64600ca75681daa6f706c5b4ec7fc00ddacbd6",
+      "sdpa_calls": 56,
+      "pilot": true
+    },
+    {
+      "case_id": "main_b1",
+      "file": "main_b1.json",
+      "sha256": "cf574e7196b776b8770263cda9087dd74863aae358a7d5403dc4618246e0b2a3",
+      "sdpa_calls": 280,
+      "pilot": false
+    },
+    {
+      "case_id": "main_b8",
+      "file": "main_b8.json",
+      "sha256": "4eb0ff5e569b7762302e41ec0f1e034e2786f706469442160c9bd5348c2ed69d",
+      "sdpa_calls": 280,
+      "pilot": false
+    }
+  ],
+  "formal_sdpa_calls": 560,
+  "formal_controlled_prefill_calls_expected": 112,
+  "formal_controlled_decode_passthrough_calls_expected": 112,
+  "formal_controlled_layer_request_pairs_expected": 504,
+  "unknown_eligible_call_blocks_coverage_acceptance": true,
+  "scope": "Current fixed complete Qwen3 model, B1/B8, eight explicit requests. Not arbitrary models/shapes/requests."
+}

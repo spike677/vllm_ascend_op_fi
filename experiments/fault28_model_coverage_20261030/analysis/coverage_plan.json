@@ -1,0 +1,31 @@
+{
+  "schema": "fault28.model_coverage.analysis_plan.v1",
+  "status": "INTERFACE_PROPOSAL_NOT_RUNTIME_ACCEPTANCE",
+  "model_layers": 28,
+  "cases": [
+    {"batch_size": 1, "request_ids": ["P0"]},
+    {"batch_size": 8, "request_ids": ["P0", "P1", "P2", "P3", "P4", "P5", "P6", "P7"]}
+  ],
+  "prefill_tokens_per_request": 2048,
+  "runs": ["calibration", "native", "fault_a", "fault_b", "off"],
+  "harness_mode_literals": ["calibration", "native", "controlled", "controlled", "off"],
+  "phases": ["prefill", "decode"],
+  "proposed_msprobe_step": "2 * run_index + phase_index",
+  "model_calls_planned": 20,
+  "framework_sdpa_calls_planned": 560,
+  "fault_prefill_candidate_calls_planned": 112,
+  "fault_decode_unsupported_calls_planned": 112,
+  "fault_prefill_layer_request_pairs_planned": 504,
+  "controlled_request_counts": [1, 8],
+  "comparisons": [["calibration", "native"], ["native", "fault_a"], ["native", "fault_b"], ["fault_a", "fault_b"], ["native", "off"]],
+  "full_run_comparisons_planned": 10,
+  "phase_comparisons_planned": 20,
+  "coverage_denominator_sources": ["original_msprobe_dump", "original_msprobe_construct", "original_msprobe_stack", "model_config", "named_module_inventory", "unconditional_module_pre_post_events"],
+  "excluded_denominator_sources": ["fault_hit_log", "policy_decision_log", "assumed_selected_kernel"],
+  "per_request_attention_numerics_from_whole_batch_statistics": "UNOBSERVABLE",
+  "native_fa_coverage_verified": false,
+  "strategy_coverage_verified": false,
+  "numerical_effect_verified": false,
+  "model_impact_verified": false,
+  "native_calls_executed_by_this_analysis": 0
+}

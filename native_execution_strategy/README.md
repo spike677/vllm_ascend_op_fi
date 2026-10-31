@@ -13,6 +13,15 @@
 原始 experimental 配方仍独立保留；新源码或新构建必须重新验收，不能继承本次状态。
 证书是版本和证据绑定清单，不是数字签名或跨版本安全保证。
 
+2026-10-31的[完整模型扩展](../experiments/fault28_model_coverage_20261030/README.md)
+在同一构建上通过：HF Qwen3-0.6B、B1/B8共560次SDPA，符合条件的112/112次受控prefill
+全部真实切换，覆盖28层及B8全部8个请求；504个layer/request映射对无遗漏。
+280次范围外decode保留于总分母并原API透传，受控轮占112次。重复fault稳定、关闭后完整恢复，
+独立msprobe首差在第0层SDPA输出Mean，差异传播至全部请求logits。
+此结果仍受下列版本/形状范围约束，未扩展证书。
+[原始statistics/mix与审计子集](../artifacts/native_execution_strategy/fa_model_coverage_statistics_20261031/README.md)
+不包含完整私有张量或整段DEBUG日志。
+
 FA 当前范围是 Ascend 910B4、CANN 9.1 `V100R001C11SPC001B243`，
 源码 `c77c0829f1f0f0b8f882db1d9b051a758b605472` 的 S1S2 分支，FP16 BNSD，
 Q heads=16、KV heads=8、S1=S2=2048、D=128、causal sparse mode=2、keep probability=1。

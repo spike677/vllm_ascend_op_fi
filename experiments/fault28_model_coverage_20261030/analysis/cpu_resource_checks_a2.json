@@ -1,0 +1,67 @@
+{
+  "schema": "nes.model_coverage.cpu_resource_review.v1",
+  "status": "PASS_CPU_PREPARATION_CHECKS",
+  "checks": [
+    {
+      "name": "new_top_python_syntax_without_framework_import",
+      "passed": true
+    },
+    {
+      "name": "card5_only_bounded_resources_readonly_model_and_exact_idle_ids",
+      "passed": true
+    },
+    {
+      "name": "private_route_has_only_validated_launcher_then_model_probe",
+      "passed": true
+    },
+    {
+      "name": "explicit_mapping_and_broad_device_capability_remain_fail_closed",
+      "passed": true
+    },
+    {
+      "name": "foreign_cleanup_identity_rejected",
+      "passed": true
+    },
+    {
+      "name": "live_foreign_pid_reuse_and_unbounded_teardown_rejected",
+      "passed": true
+    },
+    {
+      "name": "exact23_runtime_and_all_model_input_source_metadata_frozen",
+      "passed": true
+    },
+    {
+      "name": "only_unique_task_local_full_model_cases_accepted",
+      "passed": true
+    },
+    {
+      "name": "vendor_pin_path_traversal_and_empty_loader_components_rejected",
+      "passed": true
+    },
+    {
+      "name": "native_uint32_character_concat_all_split_boundaries_preserved",
+      "passed": true
+    },
+    {
+      "name": "native_missing_corrupt_wrong_pid_or_malformed_chunks_rejected_without_output",
+      "passed": true
+    }
+  ],
+  "npu_calls": 0,
+  "containers_started": 0,
+  "source_sha256": {
+    "build_inputs.py": "868983ef02352850780b5fc88d2789205d6835fa55c9218b374d1456a95e2ab9",
+    "collector_stage.py": "9f9d69750a1ba363c700ce7bb3d3bae1e3eab472179177ef77ac3c825965e9dd",
+    "controller.py": "b4c5650bffae4a4c81fa61049070d3723b3cd7f1a82a61b5f24984447e998336",
+    "cpu_resource_checks.py": "f80b02adc74b7e503ed6551e670022ad2731debb9b012682e5ed2b89bc3e3060",
+    "native_evidence.py": "d397311bc03748d8ab09787be20f850d83313c20a716a6a06783a700bc879b30",
+    "runtime_binding.py": "06440ab5bef82b2d27d4ab0f2308405de53e3afb8fd67d65eb6878b333f9fd68",
+    "vendor_exec.py": "d23136e8264c177184c08ca4d6304a33309347db520cad8c38ae73920ce1cb8b"
+  },
+  "not_verified": [
+    "Model execution",
+    "Native eligibility of cached decode",
+    "Actual native raw launch availability",
+    "Full-model coverage or numerical acceptance"
+  ]
+}

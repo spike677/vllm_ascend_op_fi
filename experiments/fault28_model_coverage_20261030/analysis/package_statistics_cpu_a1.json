@@ -1,0 +1,38 @@
+{
+  "schema": "nes.model_statistics_package.cpu.v1",
+  "status": "PASS_TARGETED_CPU_CHECKS",
+  "checks": [
+    {
+      "name": "private_weights_binary_full_logs_and_input_manifest_rejected",
+      "passed": true
+    },
+    {
+      "name": "renaming_source_cannot_bypass_private_suffix_or_directory_guard",
+      "passed": true
+    },
+    {
+      "name": "failed_or_partial_capture_cannot_create_public_output",
+      "passed": true
+    },
+    {
+      "name": "changed_selected_bytes_rejected_before_any_output_created",
+      "passed": true
+    },
+    {
+      "name": "changed_remote_retained_log_rejected_without_copying_it",
+      "passed": true
+    },
+    {
+      "name": "small_file_archive_roundtrip_excludes_full_log_and_discloses_limit",
+      "passed": true
+    }
+  ],
+  "full560_call_selection_fixture_executed": false,
+  "real_capture_packaged": false,
+  "ssh_connections": 0,
+  "npu_calls": 0,
+  "sources": {
+    "package_statistics.py": "bb84755eb748d07e864f0826a5840803e4b0882ed92c2e3b6f49d06beb541b35",
+    "test_package_statistics.py": "0eadcb05bb6193b6f2537279c1e8c1a5d3c741dc7eb41b0e3391be075a4beb14"
+  }
+}

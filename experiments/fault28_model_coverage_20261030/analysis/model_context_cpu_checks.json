@@ -1,0 +1,32 @@
+{
+  "schema": "nes.model_context.cpu_checks.v1",
+  "status": "PASS",
+  "tests_run": 12,
+  "failures": 0,
+  "errors": 0,
+  "native_calls": 0,
+  "model_execution_performed": false,
+  "source_sha256": {
+    "model_context.py": "b4b0e60fb3249087a5443e9d87679ebe2b175bd2e58ccc95762fa40d1682a7e7",
+    "analysis/test_model_context.py": "06f46613c4c484761991d756617a813f41b2daed4a8b50b88e9b63dc42e01d79"
+  },
+  "prior_public_record_schema_reads": [
+    {
+      "source_file": "artifacts/native_execution_strategy/fa_phase1_statistics_20261030/attempts/controlled_query_tile_a1/controlled_query_tile_b1_r1/steps/step0/native_profile/verified_record.json",
+      "source_sha256": "fb664a6d45d86f4424a15c0ec462a17035d2807648741ebae91df9d5305da6cd",
+      "input_contract_fields": 34,
+      "execution_plan_fields": 169,
+      "supported_descriptors": true,
+      "scope": "Prior real operator record schema read with synthetic explicit request-row metadata; not new model evidence"
+    },
+    {
+      "source_file": "artifacts/native_execution_strategy/fa_phase1_statistics_20261030/attempts/validated_alias_a1/validated_alias_b8/steps/step1/native_profile/verified_record.json",
+      "source_sha256": "d243279bc94058cf705fb75f0deea86174a08241d9d1fa964e08061c381fdbad",
+      "input_contract_fields": 34,
+      "execution_plan_fields": 169,
+      "supported_descriptors": true,
+      "scope": "Prior real operator record schema read with synthetic explicit request-row metadata; not new model evidence"
+    }
+  ],
+  "log": "test_all19_ir_indices_required (test_model_context.ContextTests.test_all19_ir_indices_required) ... ok\ntest_bind_exact_original_signature (test_model_context.ContextTests.test_bind_exact_original_signature) ... ok\ntest_current_sdpa_cannot_fold_expanded_kv_or_change_source_semantics (test_model_context.ContextTests.test_current_sdpa_cannot_fold_expanded_kv_or_change_source_semantics) ... ok\ntest_flags_cannot_define_eligibility (test_model_context.ContextTests.test_flags_cannot_define_eligibility) ... ok\ntest_missing_host_or_public_context_is_unknown (test_model_context.ContextTests.test_missing_host_or_public_context_is_unknown) ... ok\ntest_native_actual_context_and_matching_prefill (test_model_context.ContextTests.test_native_actual_context_and_matching_prefill) ... ok\ntest_observed_unsupported_optional_input_is_not_missing_evidence (test_model_context.ContextTests.test_observed_unsupported_optional_input_is_not_missing_evidence) ... ok\ntest_original_host_bytes_must_match (test_model_context.ContextTests.test_original_host_bytes_must_match) ... ok\ntest_raw_pod_and_actual_context_are_bound (test_model_context.ContextTests.test_raw_pod_and_actual_context_are_bound) ... ok\ntest_repeated_native_guards_must_have_same_context (test_model_context.ContextTests.test_repeated_native_guards_must_have_same_context) ... ok\ntest_request_mapping_and_decode_boundary (test_model_context.ContextTests.test_request_mapping_and_decode_boundary) ... ok\ntest_template_is_unverified_and_does_not_cache (test_model_context.ContextTests.test_template_is_unverified_and_does_not_cache) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 0.058s\n\nOK\n"
+}

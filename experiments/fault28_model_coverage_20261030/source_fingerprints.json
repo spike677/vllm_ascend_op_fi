@@ -1,0 +1,130 @@
+{
+  "audit": {
+    "framework_imported": false,
+    "model_loaded": false,
+    "npu_calls": 0
+  },
+  "backend_sources": {
+    "installed_backend_witnesses": {
+      "torch_npu/include/torch_npu/csrc/aten/NPUNativeFunctions.h": {
+        "lines": [
+          65,
+          1348,
+          1435
+        ],
+        "sha256": "392bce15b7f5a0e035002cf3a3b35d01a393b96598e53548981d9726752aad52"
+      },
+      "torch_npu/include/torch_npu/csrc/aten/ops/scaled_dot_product_attention_npu_dispatch.h": {
+        "lines": [
+          20
+        ],
+        "sha256": "ee84462c669f379371a33cc048fda7e79664711cf94ced656fe49210dc09d7f5"
+      },
+      "torch_npu/lib/libtorch_npu.so": {
+        "bytes": 82494777,
+        "evidence": "Read-only strings contain SDPA/FA source filenames and npu_fusion_attention_v3_symint implementation/wrapper names; library was not loaded.",
+        "sha256": "3b43f9530ba124efd1f9cc8ea9f93088171d4493bfd8da9152b9ca547399a68a"
+      }
+    },
+    "native_route": [
+      "Qwen3Attention.forward",
+      "ALL_ATTENTION_FUNCTIONS sdpa interface",
+      "torch.nn.functional.scaled_dot_product_attention",
+      "NPU op_api::scaled_dot_product_attention",
+      "custom_ops::npu_fusion_attention_v3",
+      "op_api::npu_fusion_attention_v3_symint",
+      "EXEC_NPU_CMD(aclnnFlashAttentionScore)"
+    ],
+    "official_sources": {
+      "op_plugin/config/op_plugin_functions.yaml": {
+        "lines": [
+          4473,
+          4480,
+          6187,
+          6189
+        ],
+        "sha256": "85e6ee9781b97cea03ec70cfff02c65a9f523e167e91e05f0b453ecf809a5268",
+        "url": "https://github.com/Ascend/op-plugin/blob/8b9c8534fa41eff367a41c155843daa530ab3a08/op_plugin/config/op_plugin_functions.yaml"
+      },
+      "op_plugin/ops/opapi/FlashAttentionKernelNpuOpApi.cpp": {
+        "lines": [
+          2053,
+          2232,
+          2268,
+          2291,
+          2295
+        ],
+        "sha256": "0df98c0da4e4a5501bb5a87ea36eca4c38c2e86c6c60e5ea82fb41b071bcd7c9",
+        "url": "https://github.com/Ascend/op-plugin/blob/8b9c8534fa41eff367a41c155843daa530ab3a08/op_plugin/ops/opapi/FlashAttentionKernelNpuOpApi.cpp"
+      },
+      "op_plugin/ops/opapi/FusedSdpChoiceKernelNpuOpApi.cpp": {
+        "lines": [
+          21,
+          34
+        ],
+        "sha256": "f9c5c89d9bda0470918cab1460e097ebdbf0406796916beaf068316aca5f090c",
+        "url": "https://github.com/Ascend/op-plugin/blob/8b9c8534fa41eff367a41c155843daa530ab3a08/op_plugin/ops/opapi/FusedSdpChoiceKernelNpuOpApi.cpp"
+      },
+      "op_plugin/ops/opapi/ScaledDotProductAttentionKernelNpuOpApi.cpp": {
+        "lines": [
+          291,
+          321,
+          332,
+          348,
+          357,
+          407
+        ],
+        "sha256": "d8af51a37fd764368d134c618df09ee460c16a8b593a3fe4b4b057e0db8b494a",
+        "url": "https://github.com/Ascend/op-plugin/blob/8b9c8534fa41eff367a41c155843daa530ab3a08/op_plugin/ops/opapi/ScaledDotProductAttentionKernelNpuOpApi.cpp"
+      },
+      "torch_npu/csrc/framework/interface/EnvVariables.cpp": {
+        "lines": [
+          301,
+          302
+        ],
+        "sha256": "c8e0f0bc107f91f499109ccae78550dfecf7a48f45b7c0dd62770bda05990953",
+        "url": "https://github.com/Ascend/pytorch/blob/5dd8ef3f9b375b5ae4a83538d5785754148c3302/torch_npu/csrc/framework/interface/EnvVariables.cpp"
+      }
+    },
+    "qualification": "Pinned source-route evidence; actual execution coverage must be measured by this task.",
+    "source_revision": {
+      "installed_torch_npu_git_version": "5dd8ef3f9b375b5ae4a83538d5785754148c3302",
+      "official_tree": "https://github.com/Ascend/pytorch/tree/5dd8ef3f9b375b5ae4a83538d5785754148c3302/third_party",
+      "op_plugin_submodule_commit": "8b9c8534fa41eff367a41c155843daa530ab3a08",
+      "qualification": "Official submodule revision linked to installed version metadata, corroborated by installed generated declarations and binary source-name strings. This is not a reproducible-build proof of every machine instruction."
+    },
+    "source_route_reference_sha256": "2de2303975b060d485b89da6f7d09bf9d9cc7f2bab3784ee5a6aa6cd5023bb0c"
+  },
+  "modules": {
+    "torch.nn.attention": {
+      "bytes": 6771,
+      "host_path": "/home/tik-constfold-cann91-overnight-20261022/venv/lib/python3.11/site-packages/torch/nn/attention/__init__.py",
+      "path": "/work/venv/lib/python3.11/site-packages/torch/nn/attention/__init__.py",
+      "sha256": "96afe3932505426b14f9511605f31764fa8eab8aa8b7af95fbe2d26f70e8faa6"
+    },
+    "transformers.integrations.sdpa_attention": {
+      "bytes": 4851,
+      "host_path": "/home/tik-constfold-cann91-overnight-20261022/venv/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py",
+      "path": "/work/venv/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py",
+      "sha256": "87f933d1a2d8508df572da5c0748c6b24c22ff2b625796949957dcd86cc57564"
+    },
+    "transformers.masking_utils": {
+      "bytes": 76703,
+      "host_path": "/home/tik-constfold-cann91-overnight-20261022/venv/lib/python3.11/site-packages/transformers/masking_utils.py",
+      "path": "/work/venv/lib/python3.11/site-packages/transformers/masking_utils.py",
+      "sha256": "7fd2bf34f3abc87953a500c0d53e3e633e5efba10aebcc4dc11422e5769092dd"
+    },
+    "transformers.models.qwen3.modeling_qwen3": {
+      "bytes": 23353,
+      "host_path": "/home/tik-constfold-cann91-overnight-20261022/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py",
+      "path": "/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py",
+      "sha256": "fbdcfeeb1b54135ca67ba7df924da92f4b264e1252b517eea2de989289ebaeab"
+    }
+  },
+  "schema": "nes.model_source_fingerprint.v1",
+  "versions": {
+    "torch": "2.10.0",
+    "torch-npu": "2.10.0.post4",
+    "transformers": "5.5.4"
+  }
+}

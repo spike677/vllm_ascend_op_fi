@@ -17,11 +17,16 @@
 策略切换、数值变化、模型影响分别验收，允许合法切换后数值完全相同。
 
 124上第一期20组/56次正式调用及4次 `validated` 别名检查通过；B1/B8的连续触发、关闭后完整输出恢复，
-以及独立 msprobe 的 FA 主输出首差均已核验。原生 B1/2/4/8 的 M/nRatio未切换，模型级影响未测。
+以及独立 msprobe 的 FA 主输出首差均已核验。该阶段原生 B1/2/4/8 的 M/nRatio未切换。
 本轮状态、真实版本和完整矩阵见
 [124 第一阶段验证](experiments/native_execution_strategy_20261030/README.md)。
 原始 `statistics/mix` 与审计记录见[本轮证据](artifacts/native_execution_strategy/fa_phase1_statistics_20261030/README.md)。
-MatMul、Reduce/Softmax、FIA 和自然模型接入仍待独立适配验收。
+**全模型覆盖扩展（2026-10-31）已通过：** 原始 HF Qwen3-0.6B 的 B1/B8 五轮共560次SDPA，
+112/112次符合条件的受控prefill均真实切换，覆盖全部28层、8个请求及504个layer/request映射对。
+280次decode明确范围外透传；重复稳定、关闭后完整恢复。独立msprobe首差均在第0层SDPA输出Mean，
+差异传播至全部请求logits。见[实现与验收](experiments/fault28_model_coverage_20261030/README.md)和
+[statistics/mix证据](artifacts/native_execution_strategy/fa_model_coverage_statistics_20261031/README.md)。
+范围仍限定为已验证的FP16/2048-token FA路径；MatMul、Reduce/Softmax、FIA及更多模型/形状仍待验收。
 
 ## 已验证能力
 
@@ -443,6 +448,11 @@ msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写
 
 
 ## 故障 28：原生 FA Tiling 切分策略异常
+
+**全模型覆盖验收（2026-10-31）已通过：** [完整28层、B1/B8逐请求验证](experiments/fault28_model_coverage_20261030/README.md)
+确认112/112次符合条件的受控prefill均切换原生M/nRatio，504个layer/request映射对无遗漏。
+独立msprobe首差位于第0层SDPA输出，差异传播至全部请求logits；重复及关闭恢复通过。
+范围外decode仍计入560次全量分母并原API透传；不据此声明所有形状、FIA或历史缺陷已复现。
 
 **补充因果验证（2026-10-29）已完成：** [固定真实Q/K/V的实现与机理](experiments/fault28_causal_20261029/README.md)和[32例statistics/mix证据](artifacts/attention_tiling/fault28_causal_matrix_statistics_20261029.md)分离了M、nRatio及交互。M-only改变27个元素，R-only 83,176个，联合83,181个；M差异不在最后query，只看末token会漏检。固定profile时B1/B8完整目标输出逐bit相同；受控C++ batch策略切换后，独立msprobe首个主输出差异在原生FA API输出Mean。该结论不等于默认SDK或历史FIA缺陷复现，也未唯一识别Reduce指令。
 
