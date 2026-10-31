@@ -1,11 +1,13 @@
-# 交接状态：正式验收完成，发布准备中
+# 交接状态：正式验收及 GitHub 发布完成
 
 2026-10-31，`formal_stream_a1` 的 B1/B8 完整模型联合验收已通过：
 `PASS_MODEL_ALL_ELIGIBLE_NATIVE_STRATEGY_COVERAGE`。
 联合报告 SHA256：`16e82c3e072442839465a4e2b604d891430ead77bc2aa018a8f7ce9fe6fed8cf`。
 
-**不要重跑 NPU；后续仅进行证据审查、打包和 GitHub 发布。** 自有容器已移除，设备锁已释放；未停止外部服务。
-GitHub 本轮模型证据发布尚未完成，不能将此前算子 replay 的发布当作本轮模型发布。
+**本轮已完成，不要重跑 NPU 或重复发布。** 自有容器已移除，设备锁已释放；未停止外部服务。
+本轮模型实现及统计证据已发布至 `codex/native-strategy-model-coverage-20261030`，
+主提交为 [`7f6eec8027e776891f5200a2995ace296601fe83`](https://github.com/spike677/vllm_ascend_op_fi/commit/7f6eec8027e776891f5200a2995ace296601fe83)，
+已通过 `git ls-remote` 核对远端提交；该主提交后的收尾提交仅更新交接状态。
 
 ## 已验收结果与范围
 
@@ -41,11 +43,15 @@ GitHub 本轮模型证据发布尚未完成，不能将此前算子 replay 的�
 上述总计739次已返回原始 SDPA 调用，不是739个全部模型算子或 kernel；仅最终560次属于正式矩阵。
 旧代 source 快照、部分采集、停止记录和完整原日志继续保留，不用新源码覆盖旧证据。
 
-## 发布阶段交接
+## 发布记录
 
-1. 依据已通过的正式联合报告审查公开统计、逐调用元数据、来源与独立推断报告；保留 high collector 修改前提及限制。
-2. 校验公开子集清单、原始 JSON/源码 SHA、README 和相对链接；完整 private logits 和巨型原生日志不混入主统计包。
-3. 在已隔离的发布分支完成提交与 GitHub 推送，再更新发布状态。不得因此重启采集、修改已冻结原始证据或核发新的核心证书。
+公开包2,438文件已逐文件核对SHA/bytes，Git暂存原字节也已核验；完整private logits和整段原生日志未上传。
+包内manifest SHA256为`10ed1556accb8eaf46e5798cbc860e566583b303b38a5ea308bfb4a3d78ba0da`。
+保留high collector修改前提、null及公开子集无法重跑完整日志/私有字节验算的边界。
+不得因此重启采集、修改已冻结原始证据或核发新的核心证书。
+
+旧等待自动化`28-5`的停用未确认：原配置未在本地找到，工具view仅展示卡片、没有返回更新所需配置；
+未猜测或覆盖原配置。若后续再次唤醒，本轮仍已完成，禁止重复执行NPU调用。
 
 `local_source_manifest.json` 是当前本地发布审查清单，**不是实机执行快照**。
 实际执行身份以各 attempt 的 `source_manifest.json`、`source/`、completion 及联合报告为准。

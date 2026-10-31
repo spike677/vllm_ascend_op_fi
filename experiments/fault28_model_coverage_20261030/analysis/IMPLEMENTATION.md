@@ -1,6 +1,6 @@
 # 全模型策略注入：实现与验收边界
 
-2026-10-31，正式 `formal_stream_a1` 的 B1/B8 五轮完整模型验收已通过，联合结论为 `PASS_MODEL_ALL_ELIGIBLE_NATIVE_STRATEGY_COVERAGE`，报告 SHA256 为 `16e82c3e072442839465a4e2b604d891430ead77bc2aa018a8f7ce9fe6fed8cf`。本文说明已验收的实现与证据边界；当前仅准备发布，不再重跑 NPU。B1/B8分别在各自模型进程完成五轮。
+2026-10-31，正式 `formal_stream_a1` 的 B1/B8 五轮完整模型验收已通过，联合结论为 `PASS_MODEL_ALL_ELIGIBLE_NATIVE_STRATEGY_COVERAGE`，报告 SHA256 为 `16e82c3e072442839465a4e2b604d891430ead77bc2aa018a8f7ce9fe6fed8cf`。本文说明已验收的实现与证据边界；实现和统计证据已发布，主提交为`7f6eec8027e776891f5200a2995ace296601fe83`，不再重跑 NPU。B1/B8分别在各自模型进程完成五轮。
 
 顺序 reader 新版本已完成 `pilot_stream_a1` 的56次原始 SDPA 校准准入，联合校准报告 SHA256 为 `37e73c33cf47b3023404d17d471ae3831d0219ecde0be6291a7efeaa2994e465`。该校准未开启故障，不计入随后已独立通过的 `formal_stream_a1` 正式560次调用。
 

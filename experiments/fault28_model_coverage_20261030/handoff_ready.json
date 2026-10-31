@@ -1,13 +1,13 @@
 {
   "schema": "nes.model_coverage.handoff.v1",
-  "status": "ACCEPTED_PUBLICATION_PREPARING",
+  "status": "COMPLETE_PUBLISHED_NO_NPU_RESTART",
   "ssh": {
     "alias": "npu-dual",
     "hostname": "123.60.231.86",
     "port": 2125,
     "user": "root"
   },
-  "user_instruction": "Formal full-model validation authorized and completed; continue publication preparation without additional NPU runs.",
+  "user_instruction": "Full-model validation and authorized GitHub publication completed on 2026-10-31.",
   "remote_root": "/home/fault28-model-coverage-20261030",
   "git_branch": "codex/native-strategy-model-coverage-20261030",
   "base_commit": "be302048d77e143228d555fcc582f917cd758088",
@@ -15,7 +15,7 @@
   "pilot_started": true,
   "formal_started": true,
   "model_coverage_accepted": true,
-  "github_model_publication": false,
+  "github_model_publication": true,
   "remote_source_sync_verified": true,
   "remote_source_sync_required": false,
   "current_card5_state": "OWNED_CONTAINER_REMOVED_DEVICE_LOCK_RELEASED",
@@ -30,7 +30,7 @@
     "controlled_decode_passthrough_calls": 112,
     "fault_layer_request_pairs": 504
   },
-  "prerequisite": "Do not rerun NPU. Formal model acceptance is complete; publication only: audit/package the reviewed original evidence, update documentation, then commit and publish to GitHub.",
+  "prerequisite": "Completed. Do not rerun NPU or republish the formal evidence. Refer to the verified GitHub primary commit and accepted original evidence.",
   "local_analysis_prepared": true,
   "complete_real_capture_schema_executed": true,
   "do_not_launch_before_user_network_recovery_notice": false,
@@ -84,5 +84,25 @@
     "original_log_sha256": "c669e9c527c9064b7410e2f1c70f3f1a8e4722c2bb69def9826429ed410e4212",
     "stop_archived_as": "outputs/formal_a1/STOP.saved",
     "external_services_stopped": false
+  },
+  "github_publication": {
+    "branch": "codex/native-strategy-model-coverage-20261030",
+    "primary_commit": "7f6eec8027e776891f5200a2995ace296601fe83",
+    "remote_head_verified": true,
+    "url": "https://github.com/spike677/vllm_ascend_op_fi/commit/7f6eec8027e776891f5200a2995ace296601fe83",
+    "followup_commit_scope": "handoff/documentation status only"
+  },
+  "public_package": {
+    "path": "artifacts/native_execution_strategy/fa_model_coverage_statistics_20261031",
+    "files": 2438,
+    "manifest_sha256": "10ed1556accb8eaf46e5798cbc860e566583b303b38a5ea308bfb4a3d78ba0da",
+    "all_file_bytes_and_git_blobs_verified": true,
+    "remote_only_files": 23
+  },
+  "waiting_automation": {
+    "id": "28-5",
+    "pause_confirmed": false,
+    "configuration_changed": false,
+    "reason": "View rendered a card without update fields; no matching local configuration found. Existing fields were not guessed or overwritten."
   }
 }

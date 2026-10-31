@@ -3,7 +3,7 @@
 本目录只实现只读分析；不修改模型、通用策略核心、证书、collector 或旧实验，不调度设备。
 2026-10-31，`formal_stream_a1` 的完整 B1/B8 实测联合验收已通过，状态为 `PASS_MODEL_ALL_ELIGIBLE_NATIVE_STRATEGY_COVERAGE`。联合报告 SHA256：
 `16e82c3e072442839465a4e2b604d891430ead77bc2aa018a8f7ce9fe6fed8cf`。
-实际560次SDPA、112/112次受控prefill切换、112次受控decode透传及504个layer/request映射均已核验；四组fault首差均为第0层SDPA输出Mean，重复和off恢复通过。当前仅准备发布，不再重跑NPU。
+实际560次SDPA、112/112次受控prefill切换、112次受控decode透传及504个layer/request映射均已核验；四组fault首差均为第0层SDPA输出Mean，重复和off恢复通过。实现及统计证据已发布，主提交为`7f6eec8027e776891f5200a2995ace296601fe83`，不再重跑NPU。
 下文保留预注册规则和分析接口；最新实测结论及范围见 [实验README](../README.md)，不以CPU fixture替代实机证据。
 
 ## 固定矩阵
