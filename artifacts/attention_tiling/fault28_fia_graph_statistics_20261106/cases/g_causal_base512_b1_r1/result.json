@@ -1,0 +1,188 @@
+{
+  "schema": "fault28.fia_graph.capture.v1",
+  "case_id": "g_causal_base512_b1_r1",
+  "status": "CAPTURE_COMPLETED",
+  "npu_mechanism_accepted": false,
+  "calls": [
+    {
+      "call_id": 0,
+      "phase": "compile_warmup",
+      "elapsed_seconds": 41.89933893131092,
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "logical_bnsd_shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "target_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "request_sha256": [
+        "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a"
+      ],
+      "target_file": "private_output/call0_target.fp16.bin",
+      "target_bytes": 8388608,
+      "inputs_unchanged": true,
+      "consumer": {
+        "shape": [
+          1,
+          2048,
+          1024
+        ],
+        "full_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_file": "private_output/call0_projection.fp16.bin",
+        "request_sha256": [
+          "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08"
+        ]
+      }
+    },
+    {
+      "call_id": 1,
+      "phase": "graph_replay",
+      "elapsed_seconds": 0.9562898497097194,
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "logical_bnsd_shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "target_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "request_sha256": [
+        "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a"
+      ],
+      "target_file": "private_output/call1_target.fp16.bin",
+      "target_bytes": 8388608,
+      "inputs_unchanged": true,
+      "consumer": {
+        "shape": [
+          1,
+          2048,
+          1024
+        ],
+        "full_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_file": "private_output/call1_projection.fp16.bin",
+        "request_sha256": [
+          "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08"
+        ]
+      }
+    },
+    {
+      "call_id": 2,
+      "phase": "graph_replay",
+      "elapsed_seconds": 0.11400246201083064,
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "logical_bnsd_shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "target_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "request_sha256": [
+        "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a"
+      ],
+      "target_file": "private_output/call2_target.fp16.bin",
+      "target_bytes": 8388608,
+      "inputs_unchanged": true,
+      "consumer": {
+        "shape": [
+          1,
+          2048,
+          1024
+        ],
+        "full_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_file": "private_output/call2_projection.fp16.bin",
+        "request_sha256": [
+          "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08"
+        ]
+      }
+    }
+  ],
+  "backend_graphs": [
+    {
+      "index": 0,
+      "nodes": 11,
+      "fia_nodes": [
+        "npu_fused_infer_attention_score_default"
+      ]
+    }
+  ],
+  "scope_token": "7087d8c235a24ee59801842ee7ee6e6f",
+  "owner_pid": 87,
+  "owner_starttime_ticks": "301758359",
+  "host_callback_count": 1,
+  "repeated_target_bytes_equal": true,
+  "repeated_all_outputs_equal": true,
+  "deterministic_algorithms": true,
+  "torch_version": "2.10.0+cpu",
+  "torch_npu_version": "2.10.0.post4",
+  "torchair_file": "/work/venv/lib/python3.11/site-packages/torch_npu/dynamo/torchair/__init__.py",
+  "ge_files": [
+    "msprobe_graph/msprobe_ge_dump/dynamo_optimized_graph_1_rank_0_pid_87_ts_20261106101621903632.txt",
+    "msprobe_graph/msprobe_ge_dump/dynamo_original_graph_1_rank_0_pid_87_ts_20261106101621869670.txt",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAny_2_L0.ReduceAny.28.47.1793960217279732.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAny_2_L2.aclnnAny.21.47.1793960217276696.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAll_3_L0.ReduceAll.35.47.1793960217295761.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAll_1_L0.ReduceAll.19.47.1793960217101395.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAll_3_L2.aclnnAll.36.47.1793960217298791.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAll_3_L0.ReduceAll.33.47.1793960217292184.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAny_0_L2.aclnnAny.65535.47.1793960217038424.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAll_1_L2.aclnnAll.20.47.1793960217103344.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAny_0_L2.aclnnAny.15.47.1793960217062556.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAll_1_L0.ReduceAll.17.47.1793960217081722.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAny_0_L0.ReduceAny.12.47.1793960217040656.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAll_3_L2.aclnnAll.32.47.1793960217289347.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAny_0_L0.ReduceAny.14.47.1793960217059570.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAny_2_L2.aclnnAny.31.47.1793960217286390.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAll_1_L2.aclnnAll.16.47.1793960217079115.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/aclnnAny_2_L0.ReduceAny.30.47.1793960217283357.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/2/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1793960217223190.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/2/BatchMatMul.BatchMatMul.3.44.1793960217237661.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/2/Data.arg0_1.1.44.1793960217232036.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/2/Data.arg2_1.1.44.1793960217229475.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/2/Data.arg4_1.3.44.1793960217242720.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/2/ConfusionTransposeD.Reshape_ConfusionTranspose.2.44.1793960217233980.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/2/Data.arg3_1.1.44.1793960217230897.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/2/Data.arg1_1.1.44.1793960217227998.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/1/Data.arg3_1.1.44.1793960216620942.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/1/Data.arg4_1.3.44.1793960216632039.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/1/Data.arg2_1.1.44.1793960216619451.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/1/Data.arg1_1.1.44.1793960216617840.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/1/BatchMatMul.BatchMatMul.3.44.1793960216628092.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/1/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1793960216612768.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/1/Data.arg0_1.1.44.1793960216622031.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/1/ConfusionTransposeD.Reshape_ConfusionTranspose.2.44.1793960216623961.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/0/Data.arg1_1.1.44.1793960216083545.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/0/BatchMatMul.BatchMatMul.3.44.1793960216095684.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/0/Data.arg3_1.1.44.1793960216088021.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/0/Data.arg2_1.1.44.1793960216085302.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/0/Data.arg0_1.1.44.1793960216089400.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/0/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1793960216077662.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/0/Data.arg4_1.3.44.1793960216099822.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106101621/0/graph_1/1/0/ConfusionTransposeD.Reshape_ConfusionTranspose.2.44.1793960216091577.csv"
+  ]
+}

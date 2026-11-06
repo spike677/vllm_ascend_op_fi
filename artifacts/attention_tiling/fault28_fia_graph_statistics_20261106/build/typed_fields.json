@@ -1,0 +1,443 @@
+[
+  {
+    "name": "baseParams.bSize",
+    "group": "baseParams",
+    "field": "bSize",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.n2Size",
+    "group": "baseParams",
+    "field": "n2Size",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.gSize",
+    "group": "baseParams",
+    "field": "gSize",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.s1Size",
+    "group": "baseParams",
+    "field": "s1Size",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.s2Size",
+    "group": "baseParams",
+    "field": "s2Size",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.headDim",
+    "group": "baseParams",
+    "field": "headDim",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.headDimRope",
+    "group": "baseParams",
+    "field": "headDimRope",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.actualSeqS1Dims",
+    "group": "baseParams",
+    "field": "actualSeqS1Dims",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.actualSeqS2Dims",
+    "group": "baseParams",
+    "field": "actualSeqS2Dims",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.accumQSeqFlag",
+    "group": "baseParams",
+    "field": "accumQSeqFlag",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.accumKVSeqFlag",
+    "group": "baseParams",
+    "field": "accumKVSeqFlag",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.scaleValue",
+    "group": "baseParams",
+    "field": "scaleValue",
+    "dtype": "float",
+    "count": 1
+  },
+  {
+    "name": "baseParams.usedCoreNum",
+    "group": "baseParams",
+    "field": "usedCoreNum",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.outputLayout",
+    "group": "baseParams",
+    "field": "outputLayout",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.batchContinuous",
+    "group": "baseParams",
+    "field": "batchContinuous",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.softmaxLseFlag",
+    "group": "baseParams",
+    "field": "softmaxLseFlag",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.needInit",
+    "group": "baseParams",
+    "field": "needInit",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.slidingFlag",
+    "group": "baseParams",
+    "field": "slidingFlag",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.l2CacheOffFlag",
+    "group": "baseParams",
+    "field": "l2CacheOffFlag",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.isLegacyIfa",
+    "group": "baseParams",
+    "field": "isLegacyIfa",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "baseParams.isEmptyBatchOverHalf",
+    "group": "baseParams",
+    "field": "isEmptyBatchOverHalf",
+    "dtype": "bool",
+    "count": 1
+  },
+  {
+    "name": "pageAttenParams.blockSize",
+    "group": "pageAttenParams",
+    "field": "blockSize",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "pageAttenParams.maxBlockNumPerBatch",
+    "group": "pageAttenParams",
+    "field": "maxBlockNumPerBatch",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "maskParams.attenMaskFlag",
+    "group": "maskParams",
+    "field": "attenMaskFlag",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "maskParams.attenMaskBatchStride",
+    "group": "maskParams",
+    "field": "attenMaskBatchStride",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "maskParams.attenMaskStride",
+    "group": "maskParams",
+    "field": "attenMaskStride",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "maskParams.preToken",
+    "group": "maskParams",
+    "field": "preToken",
+    "dtype": "int32_t",
+    "count": 1
+  },
+  {
+    "name": "maskParams.nextToken",
+    "group": "maskParams",
+    "field": "nextToken",
+    "dtype": "int32_t",
+    "count": 1
+  },
+  {
+    "name": "maskParams.isRowInvalid",
+    "group": "maskParams",
+    "field": "isRowInvalid",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "maskParams.isExistRowInvalid",
+    "group": "maskParams",
+    "field": "isExistRowInvalid",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "maskParams.sparseMode",
+    "group": "maskParams",
+    "field": "sparseMode",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "workspaceParams.mm1ResSize",
+    "group": "workspaceParams",
+    "field": "mm1ResSize",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "workspaceParams.mm2ResSize",
+    "group": "workspaceParams",
+    "field": "mm2ResSize",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "workspaceParams.fdAccumOutSize",
+    "group": "workspaceParams",
+    "field": "fdAccumOutSize",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "workspaceParams.fdLogSumExpSize",
+    "group": "workspaceParams",
+    "field": "fdLogSumExpSize",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "innerSplitParams.mBaseSize",
+    "group": "innerSplitParams",
+    "field": "mBaseSize",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "innerSplitParams.s2BaseSize",
+    "group": "innerSplitParams",
+    "field": "s2BaseSize",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "outerSplitParams.bN2End",
+    "group": "outerSplitParams",
+    "field": "bN2End",
+    "dtype": "uint32_t",
+    "count": 26
+  },
+  {
+    "name": "outerSplitParams.gS1End",
+    "group": "outerSplitParams",
+    "field": "gS1End",
+    "dtype": "uint32_t",
+    "count": 26
+  },
+  {
+    "name": "outerSplitParams.s2End",
+    "group": "outerSplitParams",
+    "field": "s2End",
+    "dtype": "uint32_t",
+    "count": 26
+  },
+  {
+    "name": "fdParams.numOfFdHead",
+    "group": "fdParams",
+    "field": "numOfFdHead",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "fdParams.reserved",
+    "group": "fdParams",
+    "field": "reserved",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "fdParams.gS1BaseSizeOfFd",
+    "group": "fdParams",
+    "field": "gS1BaseSizeOfFd",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "fdParams.usedVecNumOfFd",
+    "group": "fdParams",
+    "field": "usedVecNumOfFd",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "fdParams.bN2IdxOfFdHead",
+    "group": "fdParams",
+    "field": "bN2IdxOfFdHead",
+    "dtype": "uint32_t",
+    "count": 26
+  },
+  {
+    "name": "fdParams.gS1IdxOfFdHead",
+    "group": "fdParams",
+    "field": "gS1IdxOfFdHead",
+    "dtype": "uint32_t",
+    "count": 26
+  },
+  {
+    "name": "fdParams.s2SplitNumOfFdHead",
+    "group": "fdParams",
+    "field": "s2SplitNumOfFdHead",
+    "dtype": "uint32_t",
+    "count": 26
+  },
+  {
+    "name": "fdParams.s2SplitStartIdxOfCore",
+    "group": "fdParams",
+    "field": "s2SplitStartIdxOfCore",
+    "dtype": "uint32_t",
+    "count": 26
+  },
+  {
+    "name": "fdParams.gS1SplitNumOfFdHead",
+    "group": "fdParams",
+    "field": "gS1SplitNumOfFdHead",
+    "dtype": "uint32_t",
+    "count": 26
+  },
+  {
+    "name": "fdParams.gS1LastPartSizeOfFdHead",
+    "group": "fdParams",
+    "field": "gS1LastPartSizeOfFdHead",
+    "dtype": "uint32_t",
+    "count": 26
+  },
+  {
+    "name": "fdParams.gS1IdxEndOfFdHead",
+    "group": "fdParams",
+    "field": "gS1IdxEndOfFdHead",
+    "dtype": "uint32_t",
+    "count": 52
+  },
+  {
+    "name": "fdParams.gS1IdxEndOfFdHeadSplit",
+    "group": "fdParams",
+    "field": "gS1IdxEndOfFdHeadSplit",
+    "dtype": "uint32_t",
+    "count": 52
+  },
+  {
+    "name": "prefixParams.prefixMaxLen",
+    "group": "prefixParams",
+    "field": "prefixMaxLen",
+    "dtype": "uint64_t",
+    "count": 1
+  },
+  {
+    "name": "prefixParams.prefixLen",
+    "group": "prefixParams",
+    "field": "prefixLen",
+    "dtype": "uint64_t",
+    "count": 1
+  },
+  {
+    "name": "prefixParams.prefixFlag",
+    "group": "prefixParams",
+    "field": "prefixFlag",
+    "dtype": "bool",
+    "count": 1
+  },
+  {
+    "name": "pseParams.pseShiftFlag",
+    "group": "pseParams",
+    "field": "pseShiftFlag",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "pseParams.pseShiftByBatch",
+    "group": "pseParams",
+    "field": "pseShiftByBatch",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "pseParams.pseShiftS1",
+    "group": "pseParams",
+    "field": "pseShiftS1",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "pseParams.pseShiftS2",
+    "group": "pseParams",
+    "field": "pseShiftS2",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "leftPaddingParams.qPaddingFlag",
+    "group": "leftPaddingParams",
+    "field": "qPaddingFlag",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "leftPaddingParams.kvPaddingFlag",
+    "group": "leftPaddingParams",
+    "field": "kvPaddingFlag",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "postquantParams.isPerChnOut",
+    "group": "postquantParams",
+    "field": "isPerChnOut",
+    "dtype": "uint32_t",
+    "count": 1
+  },
+  {
+    "name": "postquantParams.isOutQuantTypeBf16",
+    "group": "postquantParams",
+    "field": "isOutQuantTypeBf16",
+    "dtype": "uint32_t",
+    "count": 1
+  }
+]

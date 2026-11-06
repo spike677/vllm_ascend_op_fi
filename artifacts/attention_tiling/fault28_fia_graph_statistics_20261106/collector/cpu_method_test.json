@@ -1,0 +1,56 @@
+{
+  "schema": "fault28.collector_cpu_fp64_test.v1",
+  "status": "PASS_ACTUAL_COLLECTOR_CPU_METHOD",
+  "actual_loaded": {
+    "module": "msprobe.core.dump.data_dump.data_processor.pytorch_processor",
+    "path": "/audit/collector_fp64_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+    "sha256": "6688aa3e90849027b12458add4c9da6ac4b334b57e835b742df8403c2fc474b2",
+    "method_code_file": "/audit/collector_fp64_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py"
+  },
+  "cases": [
+    {
+      "dtype": "torch.float16",
+      "statistics": [
+        1.0,
+        -1.0,
+        -0.024979996681213378,
+        1.4415703278034406
+      ],
+      "input_unchanged": true
+    },
+    {
+      "dtype": "torch.bfloat16",
+      "statistics": [
+        1.0,
+        -1.0,
+        -0.02497997283935547,
+        1.4415703278117162
+      ],
+      "input_unchanged": true
+    },
+    {
+      "dtype": "torch.float32",
+      "statistics": [
+        1.0,
+        -1.0,
+        -0.024980000000505244,
+        1.441570327802289
+      ],
+      "input_unchanged": true
+    },
+    {
+      "dtype": "torch.float64",
+      "statistics": [
+        1.0,
+        -1.0,
+        -0.024980000000000002,
+        1.4415703278022893
+      ],
+      "input_unchanged": true
+    }
+  ],
+  "empty_remains_unobservable": true,
+  "source_sha256": "61f32b1e25de369fbbcdf4db7b4ac9d00ef6b90d1a05e9bcef2aa798160fd487",
+  "devices_exposed": [],
+  "npu_executed": false
+}

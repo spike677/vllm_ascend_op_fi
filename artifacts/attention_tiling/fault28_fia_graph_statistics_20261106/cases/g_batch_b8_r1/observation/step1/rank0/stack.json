@@ -1,0 +1,14 @@
+{
+ "0": [
+  [
+   "Module.graph_region.GraphBoundary.forward.0"
+  ],
+  [
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+   "File /audit/graph_probe.py, line 172, in main, \n outputs=boundary(*inputs) if debugger is not None else compiled(*inputs)",
+   "File /audit/graph_probe.py, line 251, in <module>, \n raise SystemExit(main())"
+  ]
+ ]
+}

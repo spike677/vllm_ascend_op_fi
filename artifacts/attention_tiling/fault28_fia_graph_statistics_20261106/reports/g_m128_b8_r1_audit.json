@@ -1,0 +1,779 @@
+{
+  "schema": "fault28.fia_graph.completed_case_audit.v1",
+  "status": "PASS_RECORDED_EXECUTION",
+  "case_id": "g_m128_b8_r1",
+  "attempt": "g_m128_b8_r1_fp64_a1",
+  "batch": 8,
+  "mode": "m128",
+  "completion_sha256": "8e2b148d41a4fa2de5bbf1ad321be6252168237ba56a721563bfe0e48612413f",
+  "result_sha256": "dfc195a5f306847f08f652be63f41d7fe1aa55dba47a630e8537162b25a8d5ef",
+  "preregistered_case_sha256": "996c36145d086dcc6d53055f05ac455883ac6d66c239e63f902bd9c67fc13bc9",
+  "runtime_freeze_sha256": "08de760d5c6e0cede3bfbee2f78f57529322f95ee6de5db61054acfb39491f3a",
+  "native": {
+    "schema": "fault28.actual_graph_native_plan.v1",
+    "log_sha256": "e94a85ef8fd7542999f378c9aa506aa32a74fc2397714b37b515636e520e8f1c",
+    "selected": {
+      "pid": 223,
+      "tid": 223,
+      "node": "FusedInferAttentionScore",
+      "jit_template_key": "103000000000400000",
+      "line": 300109
+    },
+    "binary": {
+      "kernel_name": "te_fusedinferattentionscore_b9c03da2701b6ff5b8d29045bd436393779862b365e855c56ba9be3e6ccb62fd",
+      "node": "FusedInferAttentionScore",
+      "line": 459559
+    },
+    "static_task_launch": {
+      "pid": 88,
+      "stream_id": 44,
+      "runtime_enqueue_task_id": 0,
+      "kernel_name": "te_fusedinferattentionscore_b9c03da2701b6ff5b8d29045bd436393779862b365e855c56ba9be3e6ccb62fd",
+      "block_dim": 16,
+      "schedule_mode": 1,
+      "call_id": 0,
+      "line": 462648
+    },
+    "ge_static_task": {
+      "node": "FusedInferAttentionScore",
+      "ge_task_id": 1,
+      "block_dim": 16,
+      "stream_id": 44,
+      "line": 462697
+    },
+    "graph_calls": [
+      {
+        "call_id": 0,
+        "pid": 88,
+        "enter_line": 92645,
+        "exit_line": 464680,
+        "phase": "compile_warmup"
+      },
+      {
+        "call_id": 1,
+        "pid": 88,
+        "enter_line": 464800,
+        "exit_line": 485191,
+        "phase": "graph_replay"
+      },
+      {
+        "call_id": 2,
+        "pid": 88,
+        "enter_line": 485316,
+        "exit_line": 487193,
+        "phase": "graph_replay"
+      }
+    ],
+    "actual_fia_output_iterations": [
+      {
+        "call_id": 0,
+        "path": "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106102011/0/graph_1/1/0/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1793960440057365.csv",
+        "sha256": "8c1b57d52b62d55b88edaf5c784ff3319a7a7a1885309a2b7ea726bc98e2ab1c"
+      },
+      {
+        "call_id": 1,
+        "path": "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106102011/0/graph_1/1/1/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1793960440995681.csv",
+        "sha256": "8c1b57d52b62d55b88edaf5c784ff3319a7a7a1885309a2b7ea726bc98e2ab1c"
+      },
+      {
+        "call_id": 2,
+        "path": "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261106102011/0/graph_1/1/2/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1793960442477455.csv",
+        "sha256": "8c1b57d52b62d55b88edaf5c784ff3319a7a7a1885309a2b7ea726bc98e2ab1c"
+      }
+    ],
+    "native_excerpts": [
+      {
+        "line": 300109,
+        "text": "[INFO] OP(223,python):2026-11-06-10:20:20.572.579 [fia_tiling_nonquant.cpp:194][OPS_BASE][GenTilingKey][223] OpName:[FusedInferAttentionScore] FIA tilingKey_: 103000000000400000."
+      },
+      {
+        "line": 459559,
+        "text": "[DEBUG] FE(88,python):2026-11-06-10:20:41.302.218 [task_builder.cc:436]838 FillTaskDefAfterGenTask:Set kernel_name[te_fusedinferattentionscore_b9c03da2701b6ff5b8d29045bd436393779862b365e855c56ba9be3e6ccb62fd] for the kernel_def of node[FusedInferAttentionScore, FusedInferAttentionScore]."
+      },
+      {
+        "line": 462648,
+        "text": "[INFO] RUNTIME(88,python):2026-11-06-10:20:41.332.567 [aix_stars.cc:603] 88 StreamLaunchKernelV2: kernel info : device_id=0, stream_id=44, task_id=0, kernelAttrType=3, kernel_name=te_fusedinferattentionscore_b9c03da2701b6ff5b8d29045bd436393779862b365e855c56ba9be3e6ccb62fd, arg_size=312, coreDim=16, taskRation=2, funcType=4, addr1=0x12c04ac69000, addr2=0x12c04ac6b440, mixType=3, kernelFlag=0x2, qos=0, partId=0, schemMode=1, infoAddr=0xfffcd0b63f68, atomicIndex=8192, prefetchCnt1=5, prefetchCnt2=7, isNoNeedH2DCopy=1."
+      },
+      {
+        "line": 462697,
+        "text": "[INFO] GE(88,python):2026-11-06-10:20:41.332.868 [kernel_task_info.cc:659]88 Distribute:KernelTaskInfo Distribute Success, op: FusedInferAttentionScore, taskid: 1, blockdim: 16, streamid: 44, stream: 0x3cf7e0f8, dump_flag: 2"
+      }
+    ],
+    "kernel_argument_raw_observed": false,
+    "scope": "One static GE FIA task instantiated, three completed graph iterations. JIT template key is separate from runtime static key0. Raw kernel args not read."
+  },
+  "public_host": [
+    {
+      "raw_sha256": "a44a4df79229770de8733cc9898648cf65a53e669cd5940bbe0b3a5c37b6e5c7",
+      "sdk_fields": 65,
+      "typed_fields_verified": 63,
+      "actual_host_key": "103000000000400000",
+      "mode": "m128",
+      "kernel_argument_raw_observed": false,
+      "decoded": {
+        "baseParams.FusedInferAttentionBaseParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "baseParams.accumKVSeqFlag": 0,
+        "baseParams.accumQSeqFlag": 0,
+        "baseParams.actualSeqS1Dims": 8,
+        "baseParams.actualSeqS2Dims": 8,
+        "baseParams.bSize": 8,
+        "baseParams.batchContinuous": 1,
+        "baseParams.gSize": 2,
+        "baseParams.headDim": 128,
+        "baseParams.headDimRope": 0,
+        "baseParams.isEmptyBatchOverHalf": false,
+        "baseParams.isLegacyIfa": 0,
+        "baseParams.l2CacheOffFlag": 0,
+        "baseParams.n2Size": 8,
+        "baseParams.needInit": 0,
+        "baseParams.outputLayout": 1,
+        "baseParams.s1Size": 2048,
+        "baseParams.s2Size": 2048,
+        "baseParams.scaleValue": 0.0883883461356163,
+        "baseParams.slidingFlag": 0,
+        "baseParams.softmaxLseFlag": 0,
+        "baseParams.usedCoreNum": 16,
+        "fdParams.bN2IdxOfFdHead": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "fdParams.gS1BaseSizeOfFd": 8,
+        "fdParams.gS1IdxEndOfFdHead": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "fdParams.gS1IdxEndOfFdHeadSplit": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "fdParams.gS1IdxOfFdHead": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "fdParams.gS1LastPartSizeOfFdHead": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "fdParams.gS1SplitNumOfFdHead": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "fdParams.numOfFdHead": 0,
+        "fdParams.reserved": 0,
+        "fdParams.s2SplitNumOfFdHead": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "fdParams.s2SplitStartIdxOfCore": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "fdParams.usedVecNumOfFd": 0,
+        "innerSplitParams.mBaseSize": 128,
+        "innerSplitParams.s2BaseSize": 512,
+        "leftPaddingParams.kvPaddingFlag": 0,
+        "leftPaddingParams.qPaddingFlag": 0,
+        "maskParams.attenMaskBatchStride": 0,
+        "maskParams.attenMaskFlag": 1,
+        "maskParams.attenMaskStride": 2048,
+        "maskParams.isExistRowInvalid": 0,
+        "maskParams.isRowInvalid": 0,
+        "maskParams.nextToken": 0,
+        "maskParams.preToken": 2147483647,
+        "maskParams.sparseMode": 2,
+        "outerSplitParams.bN2End": [
+          4,
+          8,
+          12,
+          16,
+          20,
+          24,
+          28,
+          32,
+          36,
+          40,
+          44,
+          48,
+          52,
+          56,
+          60,
+          64,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "outerSplitParams.gS1End": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "outerSplitParams.s2End": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "pageAttenParams.blockSize": 0,
+        "pageAttenParams.maxBlockNumPerBatch": 0,
+        "postquantParams.isOutQuantTypeBf16": 0,
+        "postquantParams.isPerChnOut": 0,
+        "prefixParams.FusedInferAttentionPrefixParamsPH": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "prefixParams.prefixFlag": false,
+        "prefixParams.prefixLen": 0,
+        "prefixParams.prefixMaxLen": 0,
+        "pseParams.pseShiftByBatch": 0,
+        "pseParams.pseShiftFlag": 0,
+        "pseParams.pseShiftS1": 0,
+        "pseParams.pseShiftS2": 0,
+        "workspaceParams.fdAccumOutSize": 524288,
+        "workspaceParams.fdLogSumExpSize": 65536,
+        "workspaceParams.mm1ResSize": 65536,
+        "workspaceParams.mm2ResSize": 16384
+      },
+      "plan": {
+        "m": 128,
+        "s2_base": 512,
+        "pruned": false,
+        "used_cores": 16,
+        "outer_end_tuples": [
+          [
+            4,
+            0,
+            0
+          ],
+          [
+            8,
+            0,
+            0
+          ],
+          [
+            12,
+            0,
+            0
+          ],
+          [
+            16,
+            0,
+            0
+          ],
+          [
+            20,
+            0,
+            0
+          ],
+          [
+            24,
+            0,
+            0
+          ],
+          [
+            28,
+            0,
+            0
+          ],
+          [
+            32,
+            0,
+            0
+          ],
+          [
+            36,
+            0,
+            0
+          ],
+          [
+            40,
+            0,
+            0
+          ],
+          [
+            44,
+            0,
+            0
+          ],
+          [
+            48,
+            0,
+            0
+          ],
+          [
+            52,
+            0,
+            0
+          ],
+          [
+            56,
+            0,
+            0
+          ],
+          [
+            60,
+            0,
+            0
+          ],
+          [
+            64,
+            0,
+            0
+          ]
+        ],
+        "outer_complete_m_blocks_covered": 2048,
+        "target_queries_verified": 2048,
+        "g_groups": 2,
+        "unmasked_key_coverage": "all target queries exactly once",
+        "target_queries_with_partial_inner_width": 0,
+        "per_query_inner_width_histogram": {
+          "512": 5120
+        },
+        "examples": [
+          {
+            "query": 0,
+            "m_block_start": 0,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512
+            ]
+          },
+          {
+            "query": 63,
+            "m_block_start": 0,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512
+            ]
+          },
+          {
+            "query": 127,
+            "m_block_start": 0,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512
+            ]
+          },
+          {
+            "query": 128,
+            "m_block_start": 128,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512
+            ]
+          },
+          {
+            "query": 255,
+            "m_block_start": 128,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512
+            ]
+          },
+          {
+            "query": 256,
+            "m_block_start": 256,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512
+            ]
+          },
+          {
+            "query": 383,
+            "m_block_start": 256,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512
+            ]
+          },
+          {
+            "query": 384,
+            "m_block_start": 384,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512
+            ]
+          },
+          {
+            "query": 511,
+            "m_block_start": 384,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512
+            ]
+          },
+          {
+            "query": 512,
+            "m_block_start": 512,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512,
+              512
+            ]
+          },
+          {
+            "query": 1023,
+            "m_block_start": 896,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512,
+              512
+            ]
+          },
+          {
+            "query": 2047,
+            "m_block_start": 1920,
+            "m_block_rows": 128,
+            "inner_N_widths": [
+              512,
+              512,
+              512,
+              512
+            ]
+          }
+        ],
+        "evidence_kind": "source-derived from independently decoded public host raw and executed kernel variant; not device trace"
+      },
+      "owner_pid": 88,
+      "host_pid": 223,
+      "ancestry": [
+        {
+          "pid": 223,
+          "starttime_ticks": "301782750"
+        },
+        {
+          "pid": 206,
+          "starttime_ticks": "301782717"
+        },
+        {
+          "pid": 88,
+          "starttime_ticks": "301781351"
+        }
+      ]
+    }
+  ],
+  "compiler_binding": {
+    "actual_template_key": "103000000000400000",
+    "compiler_public_raw_sha256": "a44a4df79229770de8733cc9898648cf65a53e669cd5940bbe0b3a5c37b6e5c7",
+    "compiler_raw_identical_to_final_public_host": true,
+    "isolated_tiling_metadata_sha256": "81a68b774229a71053c0606ccf13747774cbe42d04b95bb94e3df82a9b9b79b3",
+    "kernel_metadata_sha256": "dc34e7832a4f9a97f17385b1aa9523df129565520d38ce6b9221c62644e7fa5c",
+    "binary_sha256": "03cbcf7fd1dcd16cb413dd2553bdcc0a7a14b4074457ac8953da752c2b4427d2",
+    "generated_device_tiling_header_sha256": "949c690625a69e8d071c0b4c47cbed3a444596c115e9b336de764032e1e42671",
+    "kernel_name": "te_fusedinferattentionscore_b9c03da2701b6ff5b8d29045bd436393779862b365e855c56ba9be3e6ccb62fd",
+    "block_dim": 16,
+    "schedule_mode": 1,
+    "runtime_static_key_distinct_from_jit_key": 0,
+    "kernel_argument_raw_observed": false
+  },
+  "numeric_mechanism_accepted": false,
+  "scope": "Execution, full graph, repeated output, actual compiler key/raw and public serializer checks only; statistics localization and cross-case numerical causality are separate."
+}

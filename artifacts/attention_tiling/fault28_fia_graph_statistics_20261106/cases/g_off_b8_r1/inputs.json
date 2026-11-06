@@ -1,0 +1,79 @@
+{
+  "manifest_sha256": "509123dc725e351d6b10840919c2640b327a13eecceba2ca4a888c4a094f8e62",
+  "source": "Actual Qwen3 model layer1 OFF capture; no synthetic values or outlier perturbations.",
+  "original_bnsd": {
+    "query": {
+      "shape": [
+        8,
+        16,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "65f35ab4a415f0e04e902b63b6679331fb68c2cdf626fae8c248916df524234b",
+      "target_sha256": "45755102b0f5ac710aa9ff30ab3bfe2ad69b66041281a1671eaccb144557dc00"
+    },
+    "key": {
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "26506b98f8b7c5985bc3b79f4dd65abea5009d0574602246441976190c7b02fd",
+      "target_sha256": "73d1dec27ffe3873678a9daff7d422d51346997427fbc64279dbc0bfa8156fde"
+    },
+    "value": {
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "44bbc0c316b9522483d1242c0751e395aea588750f9c53cb8d9c30522316e075",
+      "target_sha256": "339fdb463b0ef9ba0931c739b2ee3db1fc705e1b6a5c28f0fd5daf6fea915947"
+    }
+  },
+  "actual_graph_inputs": {
+    "query": {
+      "shape": [
+        8,
+        16,
+        2048,
+        128
+      ],
+      "sha256": "65f35ab4a415f0e04e902b63b6679331fb68c2cdf626fae8c248916df524234b"
+    },
+    "key": {
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "sha256": "26506b98f8b7c5985bc3b79f4dd65abea5009d0574602246441976190c7b02fd"
+    },
+    "value": {
+      "shape": [
+        8,
+        8,
+        2048,
+        128
+      ],
+      "sha256": "44bbc0c316b9522483d1242c0751e395aea588750f9c53cb8d9c30522316e075"
+    }
+  },
+  "mask": {
+    "shape": [
+      2048,
+      2048
+    ],
+    "dtype": "torch.bool",
+    "sha256": "d016ca7be6be829fd102f03317c3eed915d3df3d3fd54279a8858caea2dd57de"
+  },
+  "target_request": 0,
+  "target_queries": "all positions 0..2047",
+  "all_peers_identical_to_target": true
+}

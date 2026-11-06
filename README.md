@@ -449,7 +449,15 @@ msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写
 
 ## 故障 28：原生 FA Tiling 切分策略异常
 
-**按历史原理复核（2026-11-06）：** 当前实现验证了合法 M 选择及其派生执行计划导致的数值变化；M-only 算子证据与 joint 全模型证据需要分开引用。M-only 的末 query 在该固定输入上未变，历史 FIA 图模式和具体 Reduce 指令的唯一归因仍未验收。见[逐项复核与故障 33 的对照设计](experiments/fault33_paged_tiling_20261105/analysis/FAULT28_REVIEW.md)。
+
+**真实 FIA 图子图补齐（2026-11-06）已通过受控机制验收：** [实现、调用链及关键代码](experiments/fault28_fia_graph_20261106/README.md)和[新 B/F statistics/mix 证据](artifacts/attention_tiling/fault28_fia_graph_statistics_20261106/README.md)验证实际 Batch1→M512、Batch8→M128，再由 causal M 块末端改变核内动态 N 宽度。固定真实目标 Q/K/V，固定策略时 B1/B8 的完整 FIA 输出逐 bit 相同；M-only 无差异，同 M 的 causal 变体分别产生 140（M128）和 81（M256）个目标元素差异，均无跨核 KV Reduce。主 B8 对照传播到真实 o_proj 的 6,141 个元素，独立重复和重新编译 OFF 恢复通过。
+
+最终 FP64 统计轮完成 23 组、69 次真实 TorchAir/GE FIA 图执行；原 FP32 轮同矩阵的 69 次计算及 M256 首差观测失败保留。两轮全部计算输出完全一致。独立首差依赖明确披露的任务私有 CPU FP64 四统计，以及原生 GraphBoundary 输出到实际 GE FIA output0 的直接别名映射；原生六位 GE CSV 的首个可见差异仍在下游 MatMul，未改名或掩盖。原始 dump/stack/construct、配置、取证及 SHA 随包交付，无完整张量和编译库。
+
+当前通过的是 CANN9.1、真实 Qwen3 第2层 QKV→FIA→o_proj 的受控子图机制；尚非历史盘古版本或完整模型 FIA 图验收。最后 query 未变，未证明首个生成 token logits 不一致；动态 N 的依据是核验过的实际 key/raw 和 kernel 源码，未唯一分离 BMM1/Softmax/BMM2 内部的指令贡献。
+
+
+**旧 FA 实现的原理复核（本轮 FIA 补齐前）：** 当时实现验证了合法 M 选择及其派生执行计划导致的数值变化；M-only 算子证据与 joint 全模型证据需要分开引用。M-only 的末 query 在该固定输入上未变，历史盘古完整模型 FIA 图模式及具体 Reduce 指令的唯一归因仍未验收。见[逐项复核与故障 33 的对照设计](experiments/fault33_paged_tiling_20261105/analysis/FAULT28_REVIEW.md)。
 
 **全模型覆盖验收（2026-10-31）已通过：** [完整28层、B1/B8逐请求验证](experiments/fault28_model_coverage_20261030/README.md)
 确认112/112次符合条件的受控prefill均切换原生M/nRatio，504个layer/request映射对无遗漏。
