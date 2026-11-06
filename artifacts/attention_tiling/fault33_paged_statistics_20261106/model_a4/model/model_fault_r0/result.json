@@ -1,0 +1,114 @@
+{
+  "schema": "fault33.model_paged_adapter.result.v1",
+  "case_id": "model_fault_r0",
+  "status": "CAPTURE_COMPLETED",
+  "mode": "inner1024",
+  "execution_kind": "model_paged_adapter",
+  "model_forward": true,
+  "scope": "Complete HF model, stock SDPA prefill, explicitly adapted paged-IFA decode. No serving scheduler.",
+  "mechanism_accepted": false,
+  "original_api_calls": 28,
+  "all_layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27
+  ],
+  "original_prefill_sdpa_calls": 28,
+  "eligible_decode_ifa_calls": 28,
+  "request_count": 8,
+  "covered_request_layer_pairs": 224,
+  "deterministic_algorithms": true,
+  "host": {
+    "sha256": "1f6aec95cd0ab45b085c686cab794e429e194fb896f0923532d4797d1e60f442",
+    "callbacks": 28,
+    "applied": 28
+  },
+  "vendor_manifest_sha256": "f48a82e89fdf7bbfafba5ac3e05334dbde01b422c55dc726f786152db5874cfe",
+  "private_logits_file": "private_output/decode_logits.bin",
+  "decode_logits": {
+    "shape": [
+      8,
+      1,
+      151936
+    ],
+    "dtype": "torch.float16",
+    "bytes": 2430976,
+    "sha256": "8dceecfaa9622c1259174b86d73f9ad6de9370f3a0faea7b0a7e27384d178512",
+    "request_sha256": [
+      "f6af7804750e4b4f2f18d8dbd6c84f1a02bb5609230f7be2fe20670cc562c34a",
+      "996faf878433715d91142c8760c8c1995cc58ca123094edf0fc685cadb54e173",
+      "68ae0779a90b9ff045e048d3ca7924140c4ed98475a3854f5fce85eedbcabf71",
+      "43ecbaf0b20b7352908ab2a40a61784deeecd9a6cbde08fbed5d68a1032245fb",
+      "c1e7b70644037dd086cde5e936d71f8894043cca5b0d3f09fbe9b07b1bf0e4b0",
+      "f17bfb43add7597221d176c8bdbcf3c1cbf80c8804ed9efd75834c2562996ae2",
+      "5e495264b641a94a0ebf039c4d987cd05765403b0688d1b3e8fddedc7cf8942d",
+      "e3edbf13a79029d13cc7b56367f226e2a01d5f32cc86e24adf97e28672bc6977"
+    ],
+    "byteorder": "little"
+  },
+  "case_sha256": "db22c6dd1649539aed3e11ac0d0198a08d738fa4a9511135485ad0a9734d87d9",
+  "calls_sha256": "26bd4ac1a60dd7bdcadfd25285341c19910bdb01e4b700e1e1359fa5b90094f6",
+  "memory_bytes": {
+    "loaded": {
+      "memory_allocated": 1193294336,
+      "max_memory_allocated": 1193294336,
+      "memory_reserved": 1300234240,
+      "max_memory_reserved": 1300234240,
+      "mem_get_info": [
+        29965348864,
+        31662800896
+      ]
+    },
+    "prefill": {
+      "memory_allocated": 16225776640,
+      "max_memory_allocated": 19723812864,
+      "memory_reserved": 22819110912,
+      "max_memory_reserved": 22819110912,
+      "mem_get_info": [
+        8341872640,
+        31662800896
+      ]
+    },
+    "decode": {
+      "memory_allocated": 16228345344,
+      "max_memory_allocated": 19723812864,
+      "memory_reserved": 24440209408,
+      "max_memory_reserved": 24440209408,
+      "mem_get_info": [
+        6704091136,
+        31662800896
+      ]
+    }
+  },
+  "runtime_native_maps_sha256": "dc506b01abe7b0e5e47fdae4e62a3e05b3b3c06dec080521b524a41b2b0274c7",
+  "statistics_receipt_sha256": "759e8338ccdc84a60301c29e391ae60140bbcef64e704c0c6fc3897b0701f59e",
+  "prefill_cache_sha256": "9c8d16627034a214b36e93c786da5068c2ee738098fb0b9599d3279bb04071cf",
+  "block_table_sha256": "f533b86b333dae3d3ef6a777d2ff761bfc9f881bce9fd85337c174e2e192e79a",
+  "request_mapping_sha256": "56f005760b8c7bbf54366563bc9f4eb923ee046468b69df1fc9e59f4bb645440",
+  "release_sha256": "3a01eb1beb48437d9f5a3c5118cad4b87e6065b50535a0e8bcc55472ba995b82"
+}

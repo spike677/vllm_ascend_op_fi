@@ -1,0 +1,40 @@
+{
+ "0": [
+  [
+   "NPU.npu_incre_flash_attention.0.forward"
+  ],
+  [
+   "File /audit/replay.py, line 161, in forward, \n attended = torch_npu.npu_incre_flash_attention(query, key, value, **kwargs)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+   "File /audit/replay.py, line 198, in main, \n attended, projected = module(q, k, v)",
+   "File /audit/replay.py, line 241, in <module>, \n main()"
+  ]
+ ],
+ "1": [
+  [
+   "Tensor.__matmul__.0.forward"
+  ],
+  [
+   "File /audit/replay.py, line 162, in forward, \n projected = attended.flatten(1) @ weight",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+   "File /audit/replay.py, line 198, in main, \n attended, projected = module(q, k, v)",
+   "File /audit/replay.py, line 241, in <module>, \n main()"
+  ]
+ ],
+ "2": [
+  [
+   "Module.replay.ReplayModule.forward.0"
+  ],
+  [
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+   "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+   "File /audit/replay.py, line 198, in main, \n attended, projected = module(q, k, v)",
+   "File /audit/replay.py, line 241, in <module>, \n main()"
+  ]
+ ]
+}

@@ -1,0 +1,283 @@
+{
+  "schema": "fault33.public_stock_discovery.v1",
+  "operator": "torch_npu.npu_incre_flash_attention",
+  "hardware": "124 / Ascend 910B4",
+  "records": {
+    "stock_pilot_result_a2.json": {
+      "bytes": 41001,
+      "sha256": "b6577c6807f31dd108ebb3a870800c5652ffdf675be4341f2000a679d35c637f",
+      "source_relative": "experiments/fault33_paged_tiling_20261105/outputs/stock_pilot_result_a2.json"
+    },
+    "stock_pilot_native_a2.json": {
+      "bytes": 100966,
+      "sha256": "422b03fc506d4d5444dc8ca82ecf3ab6df99d709a231959b57e9a6b6c97f773f",
+      "source_relative": "experiments/fault33_paged_tiling_20261105/outputs/stock_pilot_native_a2.json"
+    },
+    "stock_long_b1_result_a2.json": {
+      "bytes": 46061,
+      "sha256": "3023a22a54cfeb18b7339289b81792cc6511399ed220ff1e7ce2df5eb1abfe8c",
+      "source_relative": "experiments/fault33_paged_tiling_20261105/outputs/stock_long_b1_result_a2.json"
+    },
+    "stock_long_b1_native_a2.json": {
+      "bytes": 101044,
+      "sha256": "dc3168a3ab918a34ae8415fe3f1864de43f9c550ab61cb8b909b2a3754142f86",
+      "source_relative": "experiments/fault33_paged_tiling_20261105/outputs/stock_long_b1_native_a2.json"
+    },
+    "stock_long_result_a1.json": {
+      "bytes": 47216,
+      "sha256": "956d17a616ddfb425eaf561e5a474dfd39ff0ca60dbdb32a6185a11b257beaba",
+      "source_relative": "experiments/fault33_paged_tiling_20261105/outputs/stock_long_result_a1.json"
+    },
+    "stock_long_b8_native_a2.json": {
+      "bytes": 104138,
+      "sha256": "0b3ccf18abb2bfbac010dcafaa5b38bb1a92c80e8cb01fb773d55b31575ac976",
+      "source_relative": "experiments/fault33_paged_tiling_20261105/outputs/stock_long_b8_native_a2.json"
+    },
+    "stock_batch_target_comparison.json": {
+      "bytes": 1694,
+      "sha256": "a827d03eaab373d619e8c5666d854ba1a820975bf9f8bfd9de98863f5efd16dc",
+      "source_relative": "experiments/fault33_paged_tiling_20261105/outputs/stock_batch_target_comparison.json"
+    }
+  },
+  "cases": [
+    {
+      "id": "stock_pilot_b1",
+      "batch": 1,
+      "kv_length": 2048,
+      "result": "stock_pilot_result_a2.json",
+      "native_log_extract": "stock_pilot_native_a2.json",
+      "kernel_argument_raw_observed": false,
+      "full_log_file": "stock_pilot_b1_a2.log",
+      "full_log_bytes": 44985229,
+      "full_log_sha256": "c6a0316b1e99ca2b2a7b09fac9e120020138da47450224f44668dff6f3801f9a",
+      "published_source_lines_rechecked": 384,
+      "original_api_calls": 6,
+      "actual_native_deterministic_flag_1_calls_in_full_log": 6,
+      "geometries": [
+        {
+          "block_size": 128,
+          "calls": 2,
+          "same_plan_repeat_bitwise_equal": true,
+          "actual_tiling_key": "10000000000300000",
+          "blocks": 20,
+          "schedule_mode": 1,
+          "BMM1_baseN": 128,
+          "BMM2_baseK": 128
+        },
+        {
+          "block_size": 256,
+          "calls": 2,
+          "same_plan_repeat_bitwise_equal": true,
+          "actual_tiling_key": "10000000000300000",
+          "blocks": 20,
+          "schedule_mode": 1,
+          "BMM1_baseN": 256,
+          "BMM2_baseK": 128
+        },
+        {
+          "block_size": 512,
+          "calls": 2,
+          "same_plan_repeat_bitwise_equal": true,
+          "actual_tiling_key": "10000000000300000",
+          "blocks": 20,
+          "schedule_mode": 1,
+          "BMM1_baseN": 256,
+          "BMM2_baseK": 128
+        }
+      ],
+      "differences_vs_first_block_size": [
+        {
+          "a": "bs128_r0",
+          "b": "bs256_r0",
+          "elements": 2048,
+          "different_elements": 0,
+          "max_abs": 0.0,
+          "request_different_elements": [
+            0
+          ]
+        },
+        {
+          "a": "bs128_r0",
+          "b": "bs512_r0",
+          "elements": 2048,
+          "different_elements": 0,
+          "max_abs": 0.0,
+          "request_different_elements": [
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stock_long_b1",
+      "batch": 1,
+      "kv_length": 16384,
+      "result": "stock_long_b1_result_a2.json",
+      "native_log_extract": "stock_long_b1_native_a2.json",
+      "kernel_argument_raw_observed": false,
+      "full_log_file": "stock_long_b1_a2.log",
+      "full_log_bytes": 44986616,
+      "full_log_sha256": "6f21fcac859e0b57858171dc21a38fca2325ac5c761059d5b0692fef6e5c3c00",
+      "published_source_lines_rechecked": 384,
+      "original_api_calls": 6,
+      "actual_native_deterministic_flag_1_calls_in_full_log": 6,
+      "geometries": [
+        {
+          "block_size": 128,
+          "calls": 2,
+          "same_plan_repeat_bitwise_equal": true,
+          "actual_tiling_key": "10000000000300000",
+          "blocks": 20,
+          "schedule_mode": 1,
+          "BMM1_baseN": 128,
+          "BMM2_baseK": 128
+        },
+        {
+          "block_size": 112,
+          "calls": 2,
+          "same_plan_repeat_bitwise_equal": true,
+          "actual_tiling_key": "10000000000300000",
+          "blocks": 20,
+          "schedule_mode": 1,
+          "BMM1_baseN": 16,
+          "BMM2_baseK": 128
+        },
+        {
+          "block_size": 80,
+          "calls": 2,
+          "same_plan_repeat_bitwise_equal": true,
+          "actual_tiling_key": "10000000000300000",
+          "blocks": 20,
+          "schedule_mode": 1,
+          "BMM1_baseN": 16,
+          "BMM2_baseK": 128
+        }
+      ],
+      "differences_vs_first_block_size": [
+        {
+          "a": "bs128_r0",
+          "b": "bs112_r0",
+          "elements": 2048,
+          "different_elements": 333,
+          "max_abs": 1.52587890625e-05,
+          "request_different_elements": [
+            333
+          ]
+        },
+        {
+          "a": "bs128_r0",
+          "b": "bs80_r0",
+          "elements": 2048,
+          "different_elements": 454,
+          "max_abs": 3.0517578125e-05,
+          "request_different_elements": [
+            454
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stock_long_b8",
+      "batch": 8,
+      "kv_length": 16384,
+      "result": "stock_long_result_a1.json",
+      "native_log_extract": "stock_long_b8_native_a2.json",
+      "kernel_argument_raw_observed": false,
+      "full_log_file": "stock_long_b8_a1.log",
+      "full_log_bytes": 44999701,
+      "full_log_sha256": "636a45e43e96a057bcd5b2fa9e534f87cce2b050d68984e6f3dc55537426b5d0",
+      "published_source_lines_rechecked": 390,
+      "original_api_calls": 6,
+      "actual_native_deterministic_flag_1_calls_in_full_log": 6,
+      "geometries": [
+        {
+          "block_size": 128,
+          "calls": 2,
+          "same_plan_repeat_bitwise_equal": true,
+          "actual_tiling_key": "10000000000200000",
+          "blocks": 20,
+          "schedule_mode": 1,
+          "BMM1_baseN": 128,
+          "BMM2_baseK": 128
+        },
+        {
+          "block_size": 112,
+          "calls": 2,
+          "same_plan_repeat_bitwise_equal": true,
+          "actual_tiling_key": "10000000000200000",
+          "blocks": 20,
+          "schedule_mode": 1,
+          "BMM1_baseN": 16,
+          "BMM2_baseK": 128
+        },
+        {
+          "block_size": 80,
+          "calls": 2,
+          "same_plan_repeat_bitwise_equal": true,
+          "actual_tiling_key": "10000000000200000",
+          "blocks": 20,
+          "schedule_mode": 1,
+          "BMM1_baseN": 16,
+          "BMM2_baseK": 128
+        }
+      ],
+      "differences_vs_first_block_size": [
+        {
+          "a": "bs128_r0",
+          "b": "bs112_r0",
+          "elements": 16384,
+          "different_elements": 435,
+          "max_abs": 3.0517578125e-05,
+          "request_different_elements": [
+            48,
+            47,
+            71,
+            83,
+            36,
+            31,
+            97,
+            22
+          ]
+        },
+        {
+          "a": "bs128_r0",
+          "b": "bs80_r0",
+          "elements": 16384,
+          "different_elements": 540,
+          "max_abs": 3.0517578125e-05,
+          "request_different_elements": [
+            51,
+            51,
+            94,
+            99,
+            37,
+            44,
+            126,
+            38
+          ]
+        }
+      ]
+    }
+  ],
+  "original_call_count": 18,
+  "original_json_count": 7,
+  "captured_inputs": "Synthetic deterministic FP16 Q and logical K/V with an explicit inverse page-table verification",
+  "interpretation": "Stock discovery comparisons change physical KV layout or batch. A controlled fixed-layout strategy comparison, full-model logits and independent msprobe localization belong to separate acceptance evidence.",
+  "retained_elsewhere": [
+    "Full case logs used to check source lines and SHA256",
+    "Private full attention output bytes used to compute differences"
+  ],
+  "package_contents": "Original result, native operator log extract and cross-batch comparison JSON, byte-for-byte. Public extracts contain selected SDK and launch lines. Private tensor bytes and complete logs stay outside this subset. The independent msprobe capture uses a separate evidence package.",
+  "target_batch_comparison": {
+    "file": "stock_batch_target_comparison.json",
+    "length": 16384,
+    "fixed_request": 0,
+    "logical_QKV_bitwise_equal": true,
+    "request_differences_by_block_size": {
+      "128": 912,
+      "112": 910,
+      "80": 927
+    },
+    "observation": "B1 and B8 have different real launch keys. Changing batch can also change FlashDecode/SplitKV scheduling. This comparison does not isolate one SInner change."
+  }
+}

@@ -449,6 +449,8 @@ msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写
 
 ## 故障 28：原生 FA Tiling 切分策略异常
 
+**按历史原理复核（2026-11-06）：** 当前实现验证了合法 M 选择及其派生执行计划导致的数值变化；M-only 算子证据与 joint 全模型证据需要分开引用。M-only 的末 query 在该固定输入上未变，历史 FIA 图模式和具体 Reduce 指令的唯一归因仍未验收。见[逐项复核与故障 33 的对照设计](experiments/fault33_paged_tiling_20261105/analysis/FAULT28_REVIEW.md)。
+
 **全模型覆盖验收（2026-10-31）已通过：** [完整28层、B1/B8逐请求验证](experiments/fault28_model_coverage_20261030/README.md)
 确认112/112次符合条件的受控prefill均切换原生M/nRatio，504个layer/request映射对无遗漏。
 独立msprobe首差位于第0层SDPA输出，差异传播至全部请求logits；重复及关闭恢复通过。
@@ -461,3 +463,13 @@ msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写
 **独立定位通过依赖明确披露的任务私有msprobe FP32统计修正。** 未修改官方26.1.0默认FP16四统计未分辨Attention输出，首差在下游pow输入；失败证据保留，不能当成pow故障。修正统一提高所有FP16/BF16节点的统计归约精度，保持原张量/dtype/shape和模型数值不变，仍使用statistics/mix/summary_mode=statistics及公开precision=high。新B/F两step的独立分析均首先观测到layer1 SDPA输出Mean不同，输入统计匹配；完整输入字节、真实FA身份及tiling由单独证据核验。null仍是不可观测，msprobe本身不唯一证明内部tiling根因。
 
 该实现使用Qwen3-0.6B原checkpoint统一加载为FP16的原生HF SDPA→FlashAttentionScore路径；不是已复现的历史38Bv2、vLLM FIA或TP2缺陷。匹配源码、stock/OFF逐字节兼容、合法计划、保护/重复/恢复、默认统计局限和采集器补丁均见上述README。主交付只有B/F原始JSON，无整批张量、模型权重或编译库。
+
+## 故障 33：分页 Attention Tiling 分支的数值不一致
+
+**124 卡 5 的算子机理与适配后的完整模型验收均已通过（2026-11-06）。** [实现、调用链和关键代码](experiments/fault33_paged_tiling_20261105/README.md)及[原始 statistics/mix 证据](artifacts/attention_tiling/fault33_paged_statistics_20261106/README.md)分开记录原生发现与固定输入的受控注入。Stock 实测中，保持目标逻辑 Q/K/V 相同，物理页大小或 Batch 改变可引起真实计划和输出变化；短序列无差异结果也保留。
+
+正式 B/F 固定 B8、KV 长度 16,384、FP16 和 128-token 物理页，在真实 `IFATiling::CalcInnerSize` 选择边界把 KV 计算分块从 8,192 切至 1,024，依赖 tiling 继续由原生 host 重算，使用原生 IFA kernel。未修改 QKV 或返回值。算子 Attention 的 16,384 个元素中有 5,371 个变化，同策略重复稳定，同进程 OFF/ON/ON/OFF 完整恢复。
+
+真实 Qwen3-0.6B 通过明确的分页 IFA decode 适配器完成 B/F/F/OFF 四组，共 112 次原生 IFA launch。两次 F 中 **56/56 次符合条件的调用全部切换**，覆盖全部 28 层、8 个请求，共 448 个受控层/请求组合。独立 msprobe 两次首差均在第 0 层 `NPU.npu_incre_flash_attention.0.forward` 输出 Mean/Norm，完整首层输入哈希相同；差异经真实 `o_proj` 传播到全部请求 logits。完整 logits 共 1,215,488 个元素中有 1,035,472 个变化，8 个请求 Top-1 均未变。F/F 重复及新进程 OFF 恢复逐 bit 一致。[正式模型验收](artifacts/attention_tiling/fault33_paged_statistics_20261106/reports/model_a4_acceptance.json)
+
+本次采用任务私有 high FP32 统计归约采集器，配置为 `statistics/mix/summary_mode=statistics`，null 保留为不可观测。公共 serializer 只解码 host raw，设备入口参数字节未直接观察；不能单凭统计唯一归因到某条 Reduce 指令。当前通过的是 CANN 9.1.0 的受控机理及显式适配的模型传播，历史 MindIE RC2 B080/ATB PA、自然服务调度和业务质量下降未由此验收。公开交付不含私有完整张量、权重或编译库。

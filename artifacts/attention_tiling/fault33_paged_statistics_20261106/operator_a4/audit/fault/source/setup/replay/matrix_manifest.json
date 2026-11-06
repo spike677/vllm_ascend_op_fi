@@ -1,0 +1,43 @@
+{
+  "schema": "fault33.pa.fixed_geometry.matrix.v1",
+  "cases": [
+    {
+      "case_id": "stock_bridge",
+      "file": "stock_bridge.json",
+      "sha256": "39993cbb0c6d5e43e13505b997ecfbb41eca00935494a4800fd9a2b5fb1be879",
+      "native_calls": 2
+    },
+    {
+      "case_id": "baseline",
+      "file": "baseline.json",
+      "sha256": "c92afa12bdc828ce9f8156db10a2c4f5ed185c037b260857a1ac0cff8d8bca15",
+      "native_calls": 2
+    },
+    {
+      "case_id": "fault",
+      "file": "fault.json",
+      "sha256": "127b0b239e4c91be941a47f7d30b720f5ac67164154d22d9fb45852d8272f233",
+      "native_calls": 2
+    },
+    {
+      "case_id": "restore",
+      "file": "restore.json",
+      "sha256": "87381d5ef136ba2b6c38a88d7ebcdccc58c7edf34e6f3eb0a327307509786f1a",
+      "native_calls": 4
+    }
+  ],
+  "seed_contract": "All cases use identical request-keyed CPU generator and projection seed.",
+  "acceptance_order": "stock/OFF complete outputs and visible plan bridge first; only then fault and restoration.",
+  "formal_statistics_groups": [
+    "baseline",
+    "fault"
+  ],
+  "registered_geometry": {
+    "batch": 8,
+    "q_heads": 16,
+    "kv_heads": 8,
+    "head_dim": 128,
+    "kv_length": 16384,
+    "block_size": 128
+  }
+}

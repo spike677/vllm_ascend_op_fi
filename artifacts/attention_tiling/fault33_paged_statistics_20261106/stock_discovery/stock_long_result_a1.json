@@ -1,0 +1,2467 @@
+{
+  "schema": "fault33.stock_paged_discovery.result.v1",
+  "status": "CAPTURE_COMPLETED",
+  "case_id": "stock_long_b8",
+  "calls": [
+    {
+      "call_id": "bs128_r0",
+      "api": "torch_npu.npu_incre_flash_attention",
+      "original_api_calls": 1,
+      "pid": 46,
+      "tid": 46,
+      "block_size": 128,
+      "deterministic_algorithms": true,
+      "before": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1024,
+            8,
+            128,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            131072,
+            16384,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268435456,
+          "sha256": "4f1c1769580ffc5564ad27e7682043494523b0653ab0ec1ae49a017b7fccdc7e",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1024,
+            8,
+            128,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            131072,
+            16384,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268435456,
+          "sha256": "f3748cb2530da262950426dd51611b39dfebfdea286392e85668e1e66d7ea91c",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            128
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 4096,
+          "sha256": "ca97d5b0f3daf8a4b5eeab278bcda175b5c246ae51f191ee53288c36b58687d7",
+          "byteorder": "little"
+        }
+      },
+      "after": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1024,
+            8,
+            128,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            131072,
+            16384,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268435456,
+          "sha256": "4f1c1769580ffc5564ad27e7682043494523b0653ab0ec1ae49a017b7fccdc7e",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1024,
+            8,
+            128,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            131072,
+            16384,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268435456,
+          "sha256": "f3748cb2530da262950426dd51611b39dfebfdea286392e85668e1e66d7ea91c",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            128
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 4096,
+          "sha256": "ca97d5b0f3daf8a4b5eeab278bcda175b5c246ae51f191ee53288c36b58687d7",
+          "byteorder": "little"
+        }
+      },
+      "output": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "dtype": "torch.float16",
+        "stride": [
+          2048,
+          128,
+          128,
+          1
+        ],
+        "storage_offset": 0,
+        "logical_bytes": 32768,
+        "sha256": "15d2aa58e4b9a78615b3b7be4f5c5d09eff1c13056c97c9b1d93a3c24268a535",
+        "byteorder": "little"
+      },
+      "private_full_output": "private_output/bs128_r0.bin",
+      "reference_comparison": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "elements": 16384,
+        "different_elements": 16382,
+        "bitwise_equal": null,
+        "max_abs": 1.860782504081726e-05,
+        "mean_abs": 2.9160983103793114e-06,
+        "l2": 0.0004822318151127547,
+        "first_indices": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            0,
+            5
+          ],
+          [
+            0,
+            0,
+            0,
+            6
+          ],
+          [
+            0,
+            0,
+            0,
+            7
+          ],
+          [
+            0,
+            0,
+            0,
+            8
+          ],
+          [
+            0,
+            0,
+            0,
+            9
+          ],
+          [
+            0,
+            0,
+            0,
+            10
+          ],
+          [
+            0,
+            0,
+            0,
+            11
+          ],
+          [
+            0,
+            0,
+            0,
+            12
+          ],
+          [
+            0,
+            0,
+            0,
+            13
+          ],
+          [
+            0,
+            0,
+            0,
+            14
+          ],
+          [
+            0,
+            0,
+            0,
+            15
+          ]
+        ],
+        "all_finite": true,
+        "request_different_elements": [
+          2047,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2047
+        ]
+      }
+    },
+    {
+      "call_id": "bs128_r1",
+      "api": "torch_npu.npu_incre_flash_attention",
+      "original_api_calls": 1,
+      "pid": 46,
+      "tid": 46,
+      "block_size": 128,
+      "deterministic_algorithms": true,
+      "before": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1024,
+            8,
+            128,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            131072,
+            16384,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268435456,
+          "sha256": "4f1c1769580ffc5564ad27e7682043494523b0653ab0ec1ae49a017b7fccdc7e",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1024,
+            8,
+            128,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            131072,
+            16384,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268435456,
+          "sha256": "f3748cb2530da262950426dd51611b39dfebfdea286392e85668e1e66d7ea91c",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            128
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 4096,
+          "sha256": "ca97d5b0f3daf8a4b5eeab278bcda175b5c246ae51f191ee53288c36b58687d7",
+          "byteorder": "little"
+        }
+      },
+      "after": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1024,
+            8,
+            128,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            131072,
+            16384,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268435456,
+          "sha256": "4f1c1769580ffc5564ad27e7682043494523b0653ab0ec1ae49a017b7fccdc7e",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1024,
+            8,
+            128,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            131072,
+            16384,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268435456,
+          "sha256": "f3748cb2530da262950426dd51611b39dfebfdea286392e85668e1e66d7ea91c",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            128
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 4096,
+          "sha256": "ca97d5b0f3daf8a4b5eeab278bcda175b5c246ae51f191ee53288c36b58687d7",
+          "byteorder": "little"
+        }
+      },
+      "output": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "dtype": "torch.float16",
+        "stride": [
+          2048,
+          128,
+          128,
+          1
+        ],
+        "storage_offset": 0,
+        "logical_bytes": 32768,
+        "sha256": "15d2aa58e4b9a78615b3b7be4f5c5d09eff1c13056c97c9b1d93a3c24268a535",
+        "byteorder": "little"
+      },
+      "private_full_output": "private_output/bs128_r1.bin",
+      "reference_comparison": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "elements": 16384,
+        "different_elements": 16382,
+        "bitwise_equal": null,
+        "max_abs": 1.860782504081726e-05,
+        "mean_abs": 2.9160983103793114e-06,
+        "l2": 0.0004822318151127547,
+        "first_indices": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            0,
+            5
+          ],
+          [
+            0,
+            0,
+            0,
+            6
+          ],
+          [
+            0,
+            0,
+            0,
+            7
+          ],
+          [
+            0,
+            0,
+            0,
+            8
+          ],
+          [
+            0,
+            0,
+            0,
+            9
+          ],
+          [
+            0,
+            0,
+            0,
+            10
+          ],
+          [
+            0,
+            0,
+            0,
+            11
+          ],
+          [
+            0,
+            0,
+            0,
+            12
+          ],
+          [
+            0,
+            0,
+            0,
+            13
+          ],
+          [
+            0,
+            0,
+            0,
+            14
+          ],
+          [
+            0,
+            0,
+            0,
+            15
+          ]
+        ],
+        "all_finite": true,
+        "request_different_elements": [
+          2047,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2047
+        ]
+      }
+    },
+    {
+      "call_id": "bs112_r0",
+      "api": "torch_npu.npu_incre_flash_attention",
+      "original_api_calls": 1,
+      "pid": 46,
+      "tid": 46,
+      "block_size": 112,
+      "deterministic_algorithms": true,
+      "before": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1176,
+            8,
+            112,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            114688,
+            14336,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 269746176,
+          "sha256": "6d0f0fe1e90bce8e6ea1856f79edd8fbf6c86c9c3b3b911ea5e9da9507d6091b",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1176,
+            8,
+            112,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            114688,
+            14336,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 269746176,
+          "sha256": "c73cf8550788e142001c2bae2f4053648b6b81de09248db249447be9c5c16586",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            147
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            147,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 4704,
+          "sha256": "c0406425e789b4e31c59d5ed3c73d657e1f53df61f2e90c107d14d439bd9451c",
+          "byteorder": "little"
+        }
+      },
+      "after": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1176,
+            8,
+            112,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            114688,
+            14336,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 269746176,
+          "sha256": "6d0f0fe1e90bce8e6ea1856f79edd8fbf6c86c9c3b3b911ea5e9da9507d6091b",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1176,
+            8,
+            112,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            114688,
+            14336,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 269746176,
+          "sha256": "c73cf8550788e142001c2bae2f4053648b6b81de09248db249447be9c5c16586",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            147
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            147,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 4704,
+          "sha256": "c0406425e789b4e31c59d5ed3c73d657e1f53df61f2e90c107d14d439bd9451c",
+          "byteorder": "little"
+        }
+      },
+      "output": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "dtype": "torch.float16",
+        "stride": [
+          2048,
+          128,
+          128,
+          1
+        ],
+        "storage_offset": 0,
+        "logical_bytes": 32768,
+        "sha256": "ad9e261c7e9e67e6023f55358b050df9d300266728022341708c2b49d19fdb17",
+        "byteorder": "little"
+      },
+      "private_full_output": "private_output/bs112_r0.bin",
+      "reference_comparison": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "elements": 16384,
+        "different_elements": 16382,
+        "bitwise_equal": null,
+        "max_abs": 1.860782504081726e-05,
+        "mean_abs": 2.916733137681149e-06,
+        "l2": 0.000482302566524595,
+        "first_indices": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            0,
+            5
+          ],
+          [
+            0,
+            0,
+            0,
+            6
+          ],
+          [
+            0,
+            0,
+            0,
+            7
+          ],
+          [
+            0,
+            0,
+            0,
+            8
+          ],
+          [
+            0,
+            0,
+            0,
+            9
+          ],
+          [
+            0,
+            0,
+            0,
+            10
+          ],
+          [
+            0,
+            0,
+            0,
+            11
+          ],
+          [
+            0,
+            0,
+            0,
+            12
+          ],
+          [
+            0,
+            0,
+            0,
+            13
+          ],
+          [
+            0,
+            0,
+            0,
+            14
+          ],
+          [
+            0,
+            0,
+            0,
+            15
+          ]
+        ],
+        "all_finite": true,
+        "request_different_elements": [
+          2047,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2047
+        ]
+      }
+    },
+    {
+      "call_id": "bs112_r1",
+      "api": "torch_npu.npu_incre_flash_attention",
+      "original_api_calls": 1,
+      "pid": 46,
+      "tid": 46,
+      "block_size": 112,
+      "deterministic_algorithms": true,
+      "before": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1176,
+            8,
+            112,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            114688,
+            14336,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 269746176,
+          "sha256": "6d0f0fe1e90bce8e6ea1856f79edd8fbf6c86c9c3b3b911ea5e9da9507d6091b",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1176,
+            8,
+            112,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            114688,
+            14336,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 269746176,
+          "sha256": "c73cf8550788e142001c2bae2f4053648b6b81de09248db249447be9c5c16586",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            147
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            147,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 4704,
+          "sha256": "c0406425e789b4e31c59d5ed3c73d657e1f53df61f2e90c107d14d439bd9451c",
+          "byteorder": "little"
+        }
+      },
+      "after": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1176,
+            8,
+            112,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            114688,
+            14336,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 269746176,
+          "sha256": "6d0f0fe1e90bce8e6ea1856f79edd8fbf6c86c9c3b3b911ea5e9da9507d6091b",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1176,
+            8,
+            112,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            114688,
+            14336,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 269746176,
+          "sha256": "c73cf8550788e142001c2bae2f4053648b6b81de09248db249447be9c5c16586",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            147
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            147,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 4704,
+          "sha256": "c0406425e789b4e31c59d5ed3c73d657e1f53df61f2e90c107d14d439bd9451c",
+          "byteorder": "little"
+        }
+      },
+      "output": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "dtype": "torch.float16",
+        "stride": [
+          2048,
+          128,
+          128,
+          1
+        ],
+        "storage_offset": 0,
+        "logical_bytes": 32768,
+        "sha256": "ad9e261c7e9e67e6023f55358b050df9d300266728022341708c2b49d19fdb17",
+        "byteorder": "little"
+      },
+      "private_full_output": "private_output/bs112_r1.bin",
+      "reference_comparison": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "elements": 16384,
+        "different_elements": 16382,
+        "bitwise_equal": null,
+        "max_abs": 1.860782504081726e-05,
+        "mean_abs": 2.916733137681149e-06,
+        "l2": 0.000482302566524595,
+        "first_indices": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            0,
+            5
+          ],
+          [
+            0,
+            0,
+            0,
+            6
+          ],
+          [
+            0,
+            0,
+            0,
+            7
+          ],
+          [
+            0,
+            0,
+            0,
+            8
+          ],
+          [
+            0,
+            0,
+            0,
+            9
+          ],
+          [
+            0,
+            0,
+            0,
+            10
+          ],
+          [
+            0,
+            0,
+            0,
+            11
+          ],
+          [
+            0,
+            0,
+            0,
+            12
+          ],
+          [
+            0,
+            0,
+            0,
+            13
+          ],
+          [
+            0,
+            0,
+            0,
+            14
+          ],
+          [
+            0,
+            0,
+            0,
+            15
+          ]
+        ],
+        "all_finite": true,
+        "request_different_elements": [
+          2047,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2047
+        ]
+      }
+    },
+    {
+      "call_id": "bs80_r0",
+      "api": "torch_npu.npu_incre_flash_attention",
+      "original_api_calls": 1,
+      "pid": 46,
+      "tid": 46,
+      "block_size": 80,
+      "deterministic_algorithms": true,
+      "before": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1640,
+            8,
+            80,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            81920,
+            10240,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268697600,
+          "sha256": "1f977d63f11b7ec30de29e04530f0e1efe9b9599fefd9fee66dc46f3406f22dd",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1640,
+            8,
+            80,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            81920,
+            10240,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268697600,
+          "sha256": "49cf9f4899112ffc56abd7ba788ce0878de3ca4c06fa4c2d49dee8519fa5986e",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            205
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            205,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 6560,
+          "sha256": "693f63adca7e1f73022c8bbd2f7a32830fb31948645bc017f9a98eb011a2cdf6",
+          "byteorder": "little"
+        }
+      },
+      "after": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1640,
+            8,
+            80,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            81920,
+            10240,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268697600,
+          "sha256": "1f977d63f11b7ec30de29e04530f0e1efe9b9599fefd9fee66dc46f3406f22dd",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1640,
+            8,
+            80,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            81920,
+            10240,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268697600,
+          "sha256": "49cf9f4899112ffc56abd7ba788ce0878de3ca4c06fa4c2d49dee8519fa5986e",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            205
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            205,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 6560,
+          "sha256": "693f63adca7e1f73022c8bbd2f7a32830fb31948645bc017f9a98eb011a2cdf6",
+          "byteorder": "little"
+        }
+      },
+      "output": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "dtype": "torch.float16",
+        "stride": [
+          2048,
+          128,
+          128,
+          1
+        ],
+        "storage_offset": 0,
+        "logical_bytes": 32768,
+        "sha256": "26ffd9f603cf79de0c97ddf7ced2acfa7469bd7a31798e8ea40b04c0f8d11bd1",
+        "byteorder": "little"
+      },
+      "private_full_output": "private_output/bs80_r0.bin",
+      "reference_comparison": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "elements": 16384,
+        "different_elements": 16382,
+        "bitwise_equal": null,
+        "max_abs": 1.860782504081726e-05,
+        "mean_abs": 2.917443225669558e-06,
+        "l2": 0.00048212625551968813,
+        "first_indices": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            0,
+            5
+          ],
+          [
+            0,
+            0,
+            0,
+            6
+          ],
+          [
+            0,
+            0,
+            0,
+            7
+          ],
+          [
+            0,
+            0,
+            0,
+            8
+          ],
+          [
+            0,
+            0,
+            0,
+            9
+          ],
+          [
+            0,
+            0,
+            0,
+            10
+          ],
+          [
+            0,
+            0,
+            0,
+            11
+          ],
+          [
+            0,
+            0,
+            0,
+            12
+          ],
+          [
+            0,
+            0,
+            0,
+            13
+          ],
+          [
+            0,
+            0,
+            0,
+            14
+          ],
+          [
+            0,
+            0,
+            0,
+            15
+          ]
+        ],
+        "all_finite": true,
+        "request_different_elements": [
+          2047,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2047
+        ]
+      }
+    },
+    {
+      "call_id": "bs80_r1",
+      "api": "torch_npu.npu_incre_flash_attention",
+      "original_api_calls": 1,
+      "pid": 46,
+      "tid": 46,
+      "block_size": 80,
+      "deterministic_algorithms": true,
+      "before": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1640,
+            8,
+            80,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            81920,
+            10240,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268697600,
+          "sha256": "1f977d63f11b7ec30de29e04530f0e1efe9b9599fefd9fee66dc46f3406f22dd",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1640,
+            8,
+            80,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            81920,
+            10240,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268697600,
+          "sha256": "49cf9f4899112ffc56abd7ba788ce0878de3ca4c06fa4c2d49dee8519fa5986e",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            205
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            205,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 6560,
+          "sha256": "693f63adca7e1f73022c8bbd2f7a32830fb31948645bc017f9a98eb011a2cdf6",
+          "byteorder": "little"
+        }
+      },
+      "after": {
+        "query": {
+          "shape": [
+            8,
+            16,
+            1,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            2048,
+            128,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 32768,
+          "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+          "byteorder": "little"
+        },
+        "key": {
+          "shape": [
+            1640,
+            8,
+            80,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            81920,
+            10240,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268697600,
+          "sha256": "1f977d63f11b7ec30de29e04530f0e1efe9b9599fefd9fee66dc46f3406f22dd",
+          "byteorder": "little"
+        },
+        "value": {
+          "shape": [
+            1640,
+            8,
+            80,
+            128
+          ],
+          "dtype": "torch.float16",
+          "stride": [
+            81920,
+            10240,
+            128,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 268697600,
+          "sha256": "49cf9f4899112ffc56abd7ba788ce0878de3ca4c06fa4c2d49dee8519fa5986e",
+          "byteorder": "little"
+        },
+        "table": {
+          "shape": [
+            8,
+            205
+          ],
+          "dtype": "torch.int32",
+          "stride": [
+            205,
+            1
+          ],
+          "storage_offset": 0,
+          "logical_bytes": 6560,
+          "sha256": "693f63adca7e1f73022c8bbd2f7a32830fb31948645bc017f9a98eb011a2cdf6",
+          "byteorder": "little"
+        }
+      },
+      "output": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "dtype": "torch.float16",
+        "stride": [
+          2048,
+          128,
+          128,
+          1
+        ],
+        "storage_offset": 0,
+        "logical_bytes": 32768,
+        "sha256": "26ffd9f603cf79de0c97ddf7ced2acfa7469bd7a31798e8ea40b04c0f8d11bd1",
+        "byteorder": "little"
+      },
+      "private_full_output": "private_output/bs80_r1.bin",
+      "reference_comparison": {
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "elements": 16384,
+        "different_elements": 16382,
+        "bitwise_equal": null,
+        "max_abs": 1.860782504081726e-05,
+        "mean_abs": 2.917443225669558e-06,
+        "l2": 0.00048212625551968813,
+        "first_indices": [
+          [
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            0,
+            0,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            2
+          ],
+          [
+            0,
+            0,
+            0,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            4
+          ],
+          [
+            0,
+            0,
+            0,
+            5
+          ],
+          [
+            0,
+            0,
+            0,
+            6
+          ],
+          [
+            0,
+            0,
+            0,
+            7
+          ],
+          [
+            0,
+            0,
+            0,
+            8
+          ],
+          [
+            0,
+            0,
+            0,
+            9
+          ],
+          [
+            0,
+            0,
+            0,
+            10
+          ],
+          [
+            0,
+            0,
+            0,
+            11
+          ],
+          [
+            0,
+            0,
+            0,
+            12
+          ],
+          [
+            0,
+            0,
+            0,
+            13
+          ],
+          [
+            0,
+            0,
+            0,
+            14
+          ],
+          [
+            0,
+            0,
+            0,
+            15
+          ]
+        ],
+        "all_finite": true,
+        "request_different_elements": [
+          2047,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2048,
+          2047
+        ]
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "bs128_r0",
+      "b": "bs128_r1",
+      "shape": [
+        8,
+        16,
+        1,
+        128
+      ],
+      "elements": 16384,
+      "different_elements": 0,
+      "bitwise_equal": true,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "l2": 0.0,
+      "first_indices": [],
+      "all_finite": true,
+      "request_different_elements": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "a": "bs128_r0",
+      "b": "bs112_r0",
+      "shape": [
+        8,
+        16,
+        1,
+        128
+      ],
+      "elements": 16384,
+      "different_elements": 435,
+      "bitwise_equal": false,
+      "max_abs": 3.0517578125e-05,
+      "mean_abs": 7.343624019995332e-08,
+      "l2": 9.356380178360268e-05,
+      "first_indices": [
+        [
+          0,
+          0,
+          0,
+          28
+        ],
+        [
+          0,
+          0,
+          0,
+          96
+        ],
+        [
+          0,
+          0,
+          0,
+          105
+        ],
+        [
+          0,
+          1,
+          0,
+          42
+        ],
+        [
+          0,
+          1,
+          0,
+          47
+        ],
+        [
+          0,
+          1,
+          0,
+          50
+        ],
+        [
+          0,
+          1,
+          0,
+          73
+        ],
+        [
+          0,
+          1,
+          0,
+          116
+        ],
+        [
+          0,
+          1,
+          0,
+          122
+        ],
+        [
+          0,
+          2,
+          0,
+          34
+        ],
+        [
+          0,
+          2,
+          0,
+          61
+        ],
+        [
+          0,
+          2,
+          0,
+          76
+        ],
+        [
+          0,
+          2,
+          0,
+          89
+        ],
+        [
+          0,
+          6,
+          0,
+          2
+        ],
+        [
+          0,
+          6,
+          0,
+          10
+        ],
+        [
+          0,
+          6,
+          0,
+          20
+        ]
+      ],
+      "all_finite": true,
+      "request_different_elements": [
+        48,
+        47,
+        71,
+        83,
+        36,
+        31,
+        97,
+        22
+      ]
+    },
+    {
+      "a": "bs128_r0",
+      "b": "bs112_r1",
+      "shape": [
+        8,
+        16,
+        1,
+        128
+      ],
+      "elements": 16384,
+      "different_elements": 435,
+      "bitwise_equal": false,
+      "max_abs": 3.0517578125e-05,
+      "mean_abs": 7.343624019995332e-08,
+      "l2": 9.356380178360268e-05,
+      "first_indices": [
+        [
+          0,
+          0,
+          0,
+          28
+        ],
+        [
+          0,
+          0,
+          0,
+          96
+        ],
+        [
+          0,
+          0,
+          0,
+          105
+        ],
+        [
+          0,
+          1,
+          0,
+          42
+        ],
+        [
+          0,
+          1,
+          0,
+          47
+        ],
+        [
+          0,
+          1,
+          0,
+          50
+        ],
+        [
+          0,
+          1,
+          0,
+          73
+        ],
+        [
+          0,
+          1,
+          0,
+          116
+        ],
+        [
+          0,
+          1,
+          0,
+          122
+        ],
+        [
+          0,
+          2,
+          0,
+          34
+        ],
+        [
+          0,
+          2,
+          0,
+          61
+        ],
+        [
+          0,
+          2,
+          0,
+          76
+        ],
+        [
+          0,
+          2,
+          0,
+          89
+        ],
+        [
+          0,
+          6,
+          0,
+          2
+        ],
+        [
+          0,
+          6,
+          0,
+          10
+        ],
+        [
+          0,
+          6,
+          0,
+          20
+        ]
+      ],
+      "all_finite": true,
+      "request_different_elements": [
+        48,
+        47,
+        71,
+        83,
+        36,
+        31,
+        97,
+        22
+      ]
+    },
+    {
+      "a": "bs128_r0",
+      "b": "bs80_r0",
+      "shape": [
+        8,
+        16,
+        1,
+        128
+      ],
+      "elements": 16384,
+      "different_elements": 540,
+      "bitwise_equal": false,
+      "max_abs": 3.0517578125e-05,
+      "mean_abs": 8.9250534074381e-08,
+      "l2": 0.00010573576582828537,
+      "first_indices": [
+        [
+          0,
+          0,
+          0,
+          57
+        ],
+        [
+          0,
+          0,
+          0,
+          96
+        ],
+        [
+          0,
+          0,
+          0,
+          105
+        ],
+        [
+          0,
+          0,
+          0,
+          106
+        ],
+        [
+          0,
+          0,
+          0,
+          120
+        ],
+        [
+          0,
+          1,
+          0,
+          21
+        ],
+        [
+          0,
+          1,
+          0,
+          42
+        ],
+        [
+          0,
+          1,
+          0,
+          47
+        ],
+        [
+          0,
+          1,
+          0,
+          50
+        ],
+        [
+          0,
+          1,
+          0,
+          116
+        ],
+        [
+          0,
+          1,
+          0,
+          122
+        ],
+        [
+          0,
+          2,
+          0,
+          34
+        ],
+        [
+          0,
+          2,
+          0,
+          61
+        ],
+        [
+          0,
+          2,
+          0,
+          64
+        ],
+        [
+          0,
+          2,
+          0,
+          89
+        ],
+        [
+          0,
+          2,
+          0,
+          119
+        ]
+      ],
+      "all_finite": true,
+      "request_different_elements": [
+        51,
+        51,
+        94,
+        99,
+        37,
+        44,
+        126,
+        38
+      ]
+    },
+    {
+      "a": "bs128_r0",
+      "b": "bs80_r1",
+      "shape": [
+        8,
+        16,
+        1,
+        128
+      ],
+      "elements": 16384,
+      "different_elements": 540,
+      "bitwise_equal": false,
+      "max_abs": 3.0517578125e-05,
+      "mean_abs": 8.9250534074381e-08,
+      "l2": 0.00010573576582828537,
+      "first_indices": [
+        [
+          0,
+          0,
+          0,
+          57
+        ],
+        [
+          0,
+          0,
+          0,
+          96
+        ],
+        [
+          0,
+          0,
+          0,
+          105
+        ],
+        [
+          0,
+          0,
+          0,
+          106
+        ],
+        [
+          0,
+          0,
+          0,
+          120
+        ],
+        [
+          0,
+          1,
+          0,
+          21
+        ],
+        [
+          0,
+          1,
+          0,
+          42
+        ],
+        [
+          0,
+          1,
+          0,
+          47
+        ],
+        [
+          0,
+          1,
+          0,
+          50
+        ],
+        [
+          0,
+          1,
+          0,
+          116
+        ],
+        [
+          0,
+          1,
+          0,
+          122
+        ],
+        [
+          0,
+          2,
+          0,
+          34
+        ],
+        [
+          0,
+          2,
+          0,
+          61
+        ],
+        [
+          0,
+          2,
+          0,
+          64
+        ],
+        [
+          0,
+          2,
+          0,
+          89
+        ],
+        [
+          0,
+          2,
+          0,
+          119
+        ]
+      ],
+      "all_finite": true,
+      "request_different_elements": [
+        51,
+        51,
+        94,
+        99,
+        37,
+        44,
+        126,
+        38
+      ]
+    }
+  ],
+  "logical_inputs": {
+    "q": {
+      "shape": [
+        8,
+        16,
+        1,
+        128
+      ],
+      "dtype": "torch.float16",
+      "stride": [
+        2048,
+        128,
+        128,
+        1
+      ],
+      "storage_offset": 0,
+      "logical_bytes": 32768,
+      "sha256": "cfc0965016b5cd9bd13e362042c2f5820092e1609adf6edc3655968a6511477d",
+      "byteorder": "little"
+    },
+    "k": {
+      "shape": [
+        8,
+        8,
+        16384,
+        128
+      ],
+      "dtype": "torch.float16",
+      "stride": [
+        16777216,
+        2097152,
+        128,
+        1
+      ],
+      "storage_offset": 0,
+      "logical_bytes": 268435456,
+      "sha256": "6f065ee002242e0a2bda1adbe6f80c5b76a3a0e0379acbe73a2786695695ae2e",
+      "byteorder": "little"
+    },
+    "v": {
+      "shape": [
+        8,
+        8,
+        16384,
+        128
+      ],
+      "dtype": "torch.float16",
+      "stride": [
+        16777216,
+        2097152,
+        128,
+        1
+      ],
+      "storage_offset": 0,
+      "logical_bytes": 268435456,
+      "sha256": "b33178f935d05a1162fb228f0d4cf9096a27c325944a3046e96fd3b56d816e97",
+      "byteorder": "little"
+    },
+    "target_request_00": {
+      "q": {
+        "shape": [
+          1,
+          16,
+          1,
+          128
+        ],
+        "dtype": "torch.float16",
+        "stride": [
+          2048,
+          128,
+          128,
+          1
+        ],
+        "storage_offset": 0,
+        "logical_bytes": 4096,
+        "sha256": "8df496a6cf8d6556091fc6f8ecc3041a4b470da3615481c35339d28414eb2ec0",
+        "byteorder": "little"
+      },
+      "k": {
+        "shape": [
+          1,
+          8,
+          16384,
+          128
+        ],
+        "dtype": "torch.float16",
+        "stride": [
+          16777216,
+          2097152,
+          128,
+          1
+        ],
+        "storage_offset": 0,
+        "logical_bytes": 33554432,
+        "sha256": "7cbc2f2ad3fee8714d1da6cd1d3265989e51b8ba6dcdf172d4830e41dda87585",
+        "byteorder": "little"
+      },
+      "v": {
+        "shape": [
+          1,
+          8,
+          16384,
+          128
+        ],
+        "dtype": "torch.float16",
+        "stride": [
+          16777216,
+          2097152,
+          128,
+          1
+        ],
+        "storage_offset": 0,
+        "logical_bytes": 33554432,
+        "sha256": "b638b068fe8c25b634ee06441a55ebe4650060fc9a6bb5923db5e315d4b827cb",
+        "byteorder": "little"
+      }
+    }
+  },
+  "mechanism_accepted": false,
+  "software": {
+    "torch": "2.10.0+cpu",
+    "torch_npu": "2.10.0.post4"
+  },
+  "same_plan_repeat_stability": {
+    "128": true,
+    "112": true,
+    "80": true
+  },
+  "same_plan_repeats_stable": true,
+  "scope": "Stock discovery only; different physical layouts require logical mapping and actual tiling verification."
+}

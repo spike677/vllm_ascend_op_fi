@@ -1,0 +1,155 @@
+diff --git a/attention/incre_flash_attention/op_host/incre_flash_attention_tiling.cpp b/attention/incre_flash_attention/op_host/incre_flash_attention_tiling.cpp
+index e724c45..b783bc6 100644
+--- a/attention/incre_flash_attention/op_host/incre_flash_attention_tiling.cpp
++++ b/attention/incre_flash_attention/op_host/incre_flash_attention_tiling.cpp
+@@ -23,6 +23,7 @@
+ #include "register/op_def_registry.h"
+ #include "op_host/tiling_templates_registry.h"
+ #include "../../common/op_host/fia_tiling_templates_registry.h"
++#include "fault33_pa_policy.h"
+ 
+ using namespace ge;
+ using namespace AscendC;
+@@ -2657,6 +2658,42 @@ ge::graphStatus IFATiling::CalcInnerSize(uint32_t seqSize)
+         }
+     }
+ 
++    // Fault 33 controlled policy: select before all dependent native tiling.
++    // No tensor payload or serialized tiling is edited by this hook.
++    // In this exact ordinary PA path ProcessPageAttentionFlag sets inputLayout_
++    // from rank-4 KV but leaves inputKvLayout_ at its BSH_BSND default. Public
++    // BNSD attr and rank-4 KV shapes are checked separately by FixedInputs.
++    const bool fault33NativeScope = fault33pa::NativeScope({
++        {"soc_910b", socVersion_ == IfaSocVersion::SOC_ASCEND_910B},
++        {"page_attention", pageAttentionFlag_}, {"no_split_kv", !splitKVFlag_},
++        {"runtime_tiling", !isWorkspace_}, {"no_antiquant", !antiQuantFlag_},
++        {"no_quant", !quantFlag_}, {"no_rope", !ropeFlag_},
++        {"no_gqa_kv_nz", !gqaKvNZFlag_}, {"no_gqa_mtp", !gqaMtpFlag_},
++        {"no_sys_prefix", !sysPrefixFlag_}, {"no_sliding", !slidingFlag_},
++        {"no_balance", !balanceModeFlag_},
++        {"query_layout_bnsd", inputLayout_ == IfaLayout::BNSD},
++        {"kv_layout_ordinary_pa_default", inputKvLayout_ == IfaLayout::BSH_BSND},
++        {"query_fp16", inputQType_ == ge::DT_FLOAT16},
++        {"kv_fp16", inputKvType_ == ge::DT_FLOAT16},
++        {"output_fp16", outputType_ == ge::DT_FLOAT16},
++        {"inner_precise_0", innerPrecise_ == 0}, {"query_seq_1", qSeqSize_ == 1},
++        {"query_heads_16", numHeads_ == 16}, {"kv_heads_8", numKvHeads_ == 8},
++        {"head_dim_128", headDim_ == 128}, {"head_dim_v_128", headDimV_ == 128},
++        {"block_size_128", blockSize_ == 128}
++    }, {
++        {"soc_version", static_cast<int64_t>(socVersion_)},
++        {"input_layout", static_cast<int64_t>(inputLayout_)},
++        {"input_kv_layout", static_cast<int64_t>(inputKvLayout_)},
++        {"query_dtype", static_cast<int64_t>(inputQType_)},
++        {"kv_dtype", static_cast<int64_t>(inputKvType_)},
++        {"output_dtype", static_cast<int64_t>(outputType_)},
++        {"head_dim", headDim_}, {"head_dim_v", headDimV_},
++        {"query_seq", qSeqSize_}, {"query_heads", numHeads_},
++        {"kv_heads", numKvHeads_}, {"inner_precise", innerPrecise_}
++    });
++    sInnerSize_ = fault33pa::Select(sInnerSize_, seqSize, *ifaContext_, fault33NativeScope,
++        batchSize_, maxActualseq_, blockSize_, static_cast<uint32_t>(perfMode_));
++
+     sInnerLoopTimes_ = (seqSize + sInnerSize_ - 1U) / sInnerSize_;
+     sInnerSizeTail_ = seqSize - (sInnerLoopTimes_ - 1U) * sInnerSize_;
+     // tiling下沉 && flash decoder场景时，sInnerSize_基块大小不按照真实值修改
+@@ -3740,6 +3777,89 @@ ge::graphStatus IFATiling::IncreFlashAttentionSetTilingData(gert::TilingContext
+     } else {
+         tilingData.SaveToBuffer(context.GetRawTilingData()->GetData(), context.GetRawTilingData()->GetCapacity());
+         context.GetRawTilingData()->SetDataSize(tilingData.GetDataSize());
++        if (fault33pa::state.active) {
++            try {
++                auto &base = tilingData.tilingBase;
++                std::ostringstream obs;
++                obs << std::setprecision(17) << "{";
++            obs << "\"baseParams.batchSize\":" << base.baseParams.get_batchSize();
++            obs << ",\"baseParams.seqSize\":" << base.baseParams.get_seqSize();
++            obs << ",\"baseParams.qSeqSize\":" << base.baseParams.get_qSeqSize();
++            obs << ",\"baseParams.headSize\":" << base.baseParams.get_headSize();
++            obs << ",\"baseParams.headSizeV\":" << base.baseParams.get_headSizeV();
++            obs << ",\"baseParams.blockSize\":" << base.baseParams.get_blockSize();
++            obs << ",\"baseParams.maxBlockNumPerBatch\":" << base.baseParams.get_maxBlockNumPerBatch();
++            obs << ",\"baseParams.maxBlockNumPerSeq\":" << base.baseParams.get_maxBlockNumPerSeq();
++            obs << ",\"baseParams.scaleValue\":" << base.baseParams.get_scaleValue();
++            obs << ",\"baseParams.kvHeadNum\":" << base.baseParams.get_kvHeadNum();
++            obs << ",\"baseParams.headNumRatio\":" << base.baseParams.get_headNumRatio();
++            obs << ",\"baseParams.qHeadNum\":" << base.baseParams.get_qHeadNum();
++            obs << ",\"baseParams.nNumOfQInOneGroup\":" << base.baseParams.get_nNumOfQInOneGroup();
++            obs << ",\"baseParams.batchContinuousFlag\":" << base.baseParams.get_batchContinuousFlag();
++            obs << ",\"baseParams.actualLenDims\":" << base.baseParams.get_actualLenDims();
++            obs << ",\"baseParams.attenMaskFlag\":" << base.baseParams.get_attenMaskFlag();
++            obs << ",\"baseParams.totalBlockNum\":" << base.baseParams.get_totalBlockNum();
++            obs << ",\"baseParams.paKvShapeType\":" << base.baseParams.get_paKvShapeType();
++            obs << ",\"baseParams.sparseMode\":" << base.baseParams.get_sparseMode();
++            obs << ",\"baseParams.slidingFlag\":" << base.baseParams.get_slidingFlag();
++            obs << ",\"splitKVParams.s2\":" << base.splitKVParams.get_s2();
++            obs << ",\"splitKVParams.sInnerLoopSize\":" << base.splitKVParams.get_sInnerLoopSize();
++            obs << ",\"splitKVParams.accumOutSize\":" << base.splitKVParams.get_accumOutSize();
++            obs << ",\"splitKVParams.logSumExpSize\":" << base.splitKVParams.get_logSumExpSize();
++            obs << ",\"increFlashAttentionSingleCoreParams.sInnerLoopTimes\":" << base.increFlashAttentionSingleCoreParams.get_sInnerLoopTimes();
++            obs << ",\"increFlashAttentionSingleCoreParams.singleProcessSInnerSize\":" << base.increFlashAttentionSingleCoreParams.get_singleProcessSInnerSize();
++            obs << ",\"increFlashAttentionSingleCoreParams.singleProcessSInnerSizeTail\":" << base.increFlashAttentionSingleCoreParams.get_singleProcessSInnerSizeTail();
++            obs << ",\"increFlashAttentionSingleCoreParams.usedCoreNum\":" << base.increFlashAttentionSingleCoreParams.get_usedCoreNum();
++            obs << ",\"increFlashAttentionSingleCoreParams.formerCoreNum\":" << base.increFlashAttentionSingleCoreParams.get_formerCoreNum();
++            obs << ",\"increFlashAttentionSingleCoreParams.blockSplitBn2Range\":" << base.increFlashAttentionSingleCoreParams.get_blockSplitBn2Range();
++            obs << ",\"increFlashAttentionSingleCoreParams.tailSplitedBatchRange\":" << base.increFlashAttentionSingleCoreParams.get_tailSplitedBatchRange();
++            obs << ",\"increFlashAttentionSingleCoreParams.groupSplitSize\":" << base.increFlashAttentionSingleCoreParams.get_groupSplitSize();
++            obs << ",\"increFlashAttentionSingleCoreParams.s1SplitSize\":" << base.increFlashAttentionSingleCoreParams.get_s1SplitSize();
++            obs << ",\"increFlashAttentionSingleCoreTensorSize.mmResUbSize\":" << base.increFlashAttentionSingleCoreTensorSize.get_mmResUbSize();
++            obs << ",\"increFlashAttentionSingleCoreTensorSize.bmm2ResUbSize\":" << base.increFlashAttentionSingleCoreTensorSize.get_bmm2ResUbSize();
++            obs << ",\"bmm1TilingData.M\":" << base.bmm1TilingData.get_M();
++            obs << ",\"bmm1TilingData.N\":" << base.bmm1TilingData.get_N();
++            obs << ",\"bmm1TilingData.Ka\":" << base.bmm1TilingData.get_Ka();
++            obs << ",\"bmm1TilingData.Kb\":" << base.bmm1TilingData.get_Kb();
++            obs << ",\"bmm1TilingData.singleCoreM\":" << base.bmm1TilingData.get_singleCoreM();
++            obs << ",\"bmm1TilingData.singleCoreN\":" << base.bmm1TilingData.get_singleCoreN();
++            obs << ",\"bmm1TilingData.singleCoreK\":" << base.bmm1TilingData.get_singleCoreK();
++            obs << ",\"bmm1TilingData.baseM\":" << base.bmm1TilingData.get_baseM();
++            obs << ",\"bmm1TilingData.baseN\":" << base.bmm1TilingData.get_baseN();
++            obs << ",\"bmm1TilingData.baseK\":" << base.bmm1TilingData.get_baseK();
++            obs << ",\"bmm2TilingData.M\":" << base.bmm2TilingData.get_M();
++            obs << ",\"bmm2TilingData.N\":" << base.bmm2TilingData.get_N();
++            obs << ",\"bmm2TilingData.Ka\":" << base.bmm2TilingData.get_Ka();
++            obs << ",\"bmm2TilingData.Kb\":" << base.bmm2TilingData.get_Kb();
++            obs << ",\"bmm2TilingData.singleCoreM\":" << base.bmm2TilingData.get_singleCoreM();
++            obs << ",\"bmm2TilingData.singleCoreN\":" << base.bmm2TilingData.get_singleCoreN();
++            obs << ",\"bmm2TilingData.singleCoreK\":" << base.bmm2TilingData.get_singleCoreK();
++            obs << ",\"bmm2TilingData.baseM\":" << base.bmm2TilingData.get_baseM();
++            obs << ",\"bmm2TilingData.baseN\":" << base.bmm2TilingData.get_baseN();
++            obs << ",\"bmm2TilingData.baseK\":" << base.bmm2TilingData.get_baseK();
++            obs << ",\"softmaxFlashTilingData.srcM\":" << base.softmaxFlashTilingData.get_srcM();
++            obs << ",\"softmaxFlashTilingData.srcK\":" << base.softmaxFlashTilingData.get_srcK();
++            obs << ",\"softmaxFlashTilingData.srcSize\":" << base.softmaxFlashTilingData.get_srcSize();
++            obs << ",\"softmaxFlashTilingData.outMaxM\":" << base.softmaxFlashTilingData.get_outMaxM();
++            obs << ",\"softmaxFlashTilingData.outMaxK\":" << base.softmaxFlashTilingData.get_outMaxK();
++            obs << ",\"softmaxFlashTilingData.outMaxSize\":" << base.softmaxFlashTilingData.get_outMaxSize();
++            obs << ",\"softmaxFlashTilingData.splitM\":" << base.softmaxFlashTilingData.get_splitM();
++            obs << ",\"softmaxFlashTilingData.splitK\":" << base.softmaxFlashTilingData.get_splitK();
++            obs << ",\"softmaxFlashTilingData.splitSize\":" << base.softmaxFlashTilingData.get_splitSize();
++            obs << ",\"softmaxFlashTilingData.reduceM\":" << base.softmaxFlashTilingData.get_reduceM();
++            obs << ",\"softmaxFlashTilingData.reduceK\":" << base.softmaxFlashTilingData.get_reduceK();
++            obs << ",\"softmaxFlashTilingData.reduceSize\":" << base.softmaxFlashTilingData.get_reduceSize();
++            obs << ",\"softmaxFlashTilingData.rangeM\":" << base.softmaxFlashTilingData.get_rangeM();
++            obs << ",\"softmaxFlashTilingData.tailM\":" << base.softmaxFlashTilingData.get_tailM();
++            obs << ",\"softmaxFlashTilingData.tailSplitSize\":" << base.softmaxFlashTilingData.get_tailSplitSize();
++            obs << ",\"softmaxFlashTilingData.tailReduceSize\":" << base.softmaxFlashTilingData.get_tailReduceSize();
++                obs << ",\"coreSidxEnd\":[";
++                auto *starts = base.increFlashAttentionCoreParams.get_coreSidxEnd();
++                for (size_t i = 0; i < 50; ++i) { if (i) obs << ','; obs << starts[i]; }
++                obs << "]}";
++                fault33pa::Typed(obs.str(), ifaContext_->workSpaces ? ifaContext_->workSpaces[0] : 0, context);
++            } catch (...) { std::fprintf(stderr, "FAULT33_PA_TYPED_ERROR\n"); }
++        }
+     }
+ 
+     return ge::GRAPH_SUCCESS;
+@@ -3841,7 +3961,9 @@ ge::graphStatus TilingIncreFlashAttentionAdapter(gert::TilingContext *context)
+     OP_CHECK_IF(platformInfoPtr == nullptr,
+         OPS_REPORT_VECTOR_INNER_ERR(context->GetNodeName(), "platformInfoPtr is null!"),
+         return ge::GRAPH_FAILED);
++    fault33pa::Begin(context);
+     auto resultCode = FiaTilingRegistry::GetInstance().DoTilingImpl(context, nullptr);
++    fault33pa::End(context, static_cast<uint32_t>(resultCode));
+     return resultCode;
+ }
+ 

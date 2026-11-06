@@ -1,0 +1,31 @@
+{
+  "schema": "fault33.pa.policy_source.v1",
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "source_release": "v9.1.0",
+  "status": "PATCHED_NOT_BUILT_NOT_NPU_VALIDATED",
+  "policy_kind": "controlled_current_source_host_selector_not_historical_stock_version",
+  "files": [
+    {
+      "path": "attention/incre_flash_attention/op_host/incre_flash_attention_tiling.cpp",
+      "before_sha256": "87514cc5bcd35fe7ffe64f8e67c07d149d3f4a4a71e2791f3fdcd3b2f593c2e8",
+      "after_sha256": "99257af0492cdb6864893346e101dd2f5d3b69030e57b582df99ad52cf23a310",
+      "bytes": 201938
+    },
+    {
+      "path": "attention/incre_flash_attention/op_host/fault33_pa_selector.h",
+      "before_sha256": null,
+      "after_sha256": "01975d187c4824e78fb83b3e776ba751dd211e1e1395afa73dda852cb1055898",
+      "bytes": 1172
+    },
+    {
+      "path": "attention/incre_flash_attention/op_host/fault33_pa_policy.h",
+      "before_sha256": null,
+      "after_sha256": "e864a31271ed9fdc21ee344c294f598cf96d711c7a0bb691bed8b8e1eec234a4",
+      "bytes": 11806
+    }
+  ],
+  "patch_sha256": "87269a6549ca743b7fb25971e88b5b07e76c48a4ae812b2bd5f102b9a791b72a",
+  "kernel_source_modified": false,
+  "off_behavior": "Same binary; FAULT33_PA_MODE=off preserves native SInner selection",
+  "raw_observation": "Final public host TilingContext raw; device kernel argument not directly observed"
+}

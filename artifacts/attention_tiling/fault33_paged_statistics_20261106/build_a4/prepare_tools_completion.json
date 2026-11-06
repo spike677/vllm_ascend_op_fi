@@ -1,0 +1,50 @@
+{
+  "schema": "fault33.pa.private_sdk_packager.v1",
+  "argv": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "--read-only",
+    "--cpus",
+    "1",
+    "--memory",
+    "512m",
+    "--pids-limit",
+    "64",
+    "--name",
+    "fault33-pa-cpu-tools-a4-20261105",
+    "-v",
+    "/home/fault33-paged-tiling-20261105:/audit",
+    "--entrypoint",
+    "bash",
+    "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+    "-lc",
+    "set -euo pipefail\ntest -f /usr/local/Ascend/cann-9.1.0/tools/op_project_templates/op_project_tmpl/cmake/util/makeself/makeself.sh\ntest -f /usr/local/Ascend/cann-9.1.0/tools/op_project_templates/op_project_tmpl/cmake/util/makeself/makeself-header.sh\ntest ! -e /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself.sh\ntest ! -e /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself-header.sh\nmkdir -p /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself\ncp -p /usr/local/Ascend/cann-9.1.0/tools/op_project_templates/op_project_tmpl/cmake/util/makeself/makeself.sh /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself.sh\ncp -p /usr/local/Ascend/cann-9.1.0/tools/op_project_templates/op_project_tmpl/cmake/util/makeself/makeself-header.sh /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself-header.sh\ncmp /usr/local/Ascend/cann-9.1.0/tools/op_project_templates/op_project_tmpl/cmake/util/makeself/makeself.sh /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself.sh\ncmp /usr/local/Ascend/cann-9.1.0/tools/op_project_templates/op_project_tmpl/cmake/util/makeself/makeself-header.sh /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself-header.sh\nchmod 700 /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself.sh /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself-header.sh\nsha256sum /usr/local/Ascend/cann-9.1.0/tools/op_project_templates/op_project_tmpl/cmake/util/makeself/makeself.sh /usr/local/Ascend/cann-9.1.0/tools/op_project_templates/op_project_tmpl/cmake/util/makeself/makeself-header.sh /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself.sh /audit/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself-header.sh\n"
+  ],
+  "origin": "immutable_image_sdk_packaging_scripts",
+  "image": "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+  "source_path": "/usr/local/Ascend/cann-9.1.0/tools/op_project_templates/op_project_tmpl/cmake/util/makeself",
+  "returncode": 0,
+  "container_removed": true,
+  "timeout_seconds": 60,
+  "log_sha256": "90166ece2a91264c7149d8227a7844957c0c7ac07f439120a4a2135af7b00b85",
+  "network_enabled": false,
+  "npu_executed": false,
+  "sdk_headers_or_libraries_copied": false,
+  "files": [
+    {
+      "path": "makeself-header.sh",
+      "bytes": 18257,
+      "sha256": "d0d3109d12135761028ebdd7d49814427f4a711cae6cde62703590b21baaf33f",
+      "mode": "0o700"
+    },
+    {
+      "path": "makeself.sh",
+      "bytes": 21228,
+      "sha256": "ea025ed0be9996885e873e0eafff475ebd5e85cb77dbff858e0c34bd9a1aa85c",
+      "mode": "0o700"
+    }
+  ]
+}

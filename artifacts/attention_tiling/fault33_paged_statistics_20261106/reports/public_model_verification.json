@@ -1,0 +1,284 @@
+{
+  "schema": "fault33.public_model_verification.v1",
+  "status": "VERIFIED_PUBLIC_MODEL_EVIDENCE",
+  "bundle": {
+    "files": 131,
+    "bytes": 25520916,
+    "inventory_sha256": "acf7bbf6ffba31ad2cf7302d6a78159d1d87af7684eb2c8c132f27ec95f8738d",
+    "groups": [
+      "model"
+    ],
+    "integrity_verified": true,
+    "generated_acceptance_decision": false
+  },
+  "original_acceptance_sha256": "e4c3af499ea9081dba7a44e8dac3f5da0bec2de1335157d6e614325e58af8aaf",
+  "frozen_source_manifest_sha256": "90c2dd280ec119793e44738738821ae0577663452d986d97e2e2ac71da14500d",
+  "numerical_localization_uses_only_original_msprobe": true,
+  "all_four_independent_reports_reproduced_exactly": true,
+  "actual_launch_records": 112,
+  "eligible_under_control": 56,
+  "eligible_off_no_intervention": 56,
+  "layer_request_incidences": 896,
+  "intervened_layer_request_incidences": 448,
+  "cases": {
+    "model_baseline": {
+      "actual_launch_records_reparsed_from_numbered_excerpt_lines": 28,
+      "model_attention_module_visits": 28,
+      "distinct_requests": 8,
+      "verified_inverse_K_and_V_layers": 28,
+      "request_layer_incidences": 224,
+      "original_prefill_SDPA_ledger_calls": 28,
+      "host_applied": 0,
+      "public_host_raws_decoded": 28,
+      "bytes_per_public_host_raw": 3000,
+      "fields_verified_per_public_raw": 72,
+      "plan_histogram": [
+        {
+          "sinner": 8192,
+          "loops": 2,
+          "calls": 28
+        }
+      ],
+      "full_original_log_sha256": "c021399f95d19118a8d4aa05ae6b0c9515ea4b5ca06398fd53d948c9bbd75f57",
+      "source_manifest_sha256": "90c2dd280ec119793e44738738821ae0577663452d986d97e2e2ac71da14500d"
+    },
+    "model_fault_r0": {
+      "actual_launch_records_reparsed_from_numbered_excerpt_lines": 28,
+      "model_attention_module_visits": 28,
+      "distinct_requests": 8,
+      "verified_inverse_K_and_V_layers": 28,
+      "request_layer_incidences": 224,
+      "original_prefill_SDPA_ledger_calls": 28,
+      "host_applied": 28,
+      "public_host_raws_decoded": 28,
+      "bytes_per_public_host_raw": 3000,
+      "fields_verified_per_public_raw": 72,
+      "plan_histogram": [
+        {
+          "sinner": 1024,
+          "loops": 16,
+          "calls": 28
+        }
+      ],
+      "full_original_log_sha256": "17773fdaa19d2e9424e5f2663497f999de2c5ff35d606b80541291717ae694b5",
+      "source_manifest_sha256": "90c2dd280ec119793e44738738821ae0577663452d986d97e2e2ac71da14500d"
+    },
+    "model_fault_r1": {
+      "actual_launch_records_reparsed_from_numbered_excerpt_lines": 28,
+      "model_attention_module_visits": 28,
+      "distinct_requests": 8,
+      "verified_inverse_K_and_V_layers": 28,
+      "request_layer_incidences": 224,
+      "original_prefill_SDPA_ledger_calls": 28,
+      "host_applied": 28,
+      "public_host_raws_decoded": 28,
+      "bytes_per_public_host_raw": 3000,
+      "fields_verified_per_public_raw": 72,
+      "plan_histogram": [
+        {
+          "sinner": 1024,
+          "loops": 16,
+          "calls": 28
+        }
+      ],
+      "full_original_log_sha256": "4fa30adfc2049cb10ce584b098ff003db324425e52035cb3d0099c6bc249566d",
+      "source_manifest_sha256": "90c2dd280ec119793e44738738821ae0577663452d986d97e2e2ac71da14500d"
+    },
+    "model_restore": {
+      "actual_launch_records_reparsed_from_numbered_excerpt_lines": 28,
+      "model_attention_module_visits": 28,
+      "distinct_requests": 8,
+      "verified_inverse_K_and_V_layers": 28,
+      "request_layer_incidences": 224,
+      "original_prefill_SDPA_ledger_calls": 28,
+      "host_applied": 0,
+      "public_host_raws_decoded": 28,
+      "bytes_per_public_host_raw": 3000,
+      "fields_verified_per_public_raw": 72,
+      "plan_histogram": [
+        {
+          "sinner": 8192,
+          "loops": 2,
+          "calls": 28
+        }
+      ],
+      "full_original_log_sha256": "eb1c31327064d1c73a6e5682f8cf317b2d29ecfc25ec05fd7ec2fd30fee013ea",
+      "source_manifest_sha256": "90c2dd280ec119793e44738738821ae0577663452d986d97e2e2ac71da14500d"
+    }
+  },
+  "comparisons": {
+    "model_baseline_vs_model_fault_r0": {
+      "status": "ALIGNED_OBSERVED_MODEL_API_DIFFERENCE",
+      "source_stack_and_construct_aligned": true,
+      "compared_nodes": 2510,
+      "compared_fields": {
+        "equal_finite": 12238,
+        "different_finite": 12636,
+        "unobservable": 178,
+        "metadata_differences": 0
+      },
+      "first_model_api": "NPU.npu_incre_flash_attention.0.forward",
+      "first_layer": 0,
+      "boundary": "output",
+      "fields": [
+        {
+          "path": "$[0].Mean",
+          "B": -0.001310580875724554,
+          "F": -0.0013106090482324362,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "path": "$[0].Norm",
+          "B": 14.949091911315918,
+          "F": 14.94908618927002,
+          "B_present": true,
+          "F_present": true
+        }
+      ],
+      "raw_first_api": "NPU.npu_incre_flash_attention.0.forward",
+      "input_summary_at_first": {
+        "different_finite_fields": 0,
+        "equal_finite_fields": 14,
+        "unobservable_fields": 2,
+        "metadata_differences": 0
+      },
+      "exact_match_all_archived_independent_statistics_fields": true,
+      "first_attention_full_hash_difference_layer": 0,
+      "target_request_logits_hash_changed_count": 8,
+      "complete_logit_hash_equal": false,
+      "private_server_numeric_differences": 1035472,
+      "private_server_top1_changes": 0
+    },
+    "model_baseline_vs_model_fault_r1": {
+      "status": "ALIGNED_OBSERVED_MODEL_API_DIFFERENCE",
+      "source_stack_and_construct_aligned": true,
+      "compared_nodes": 2510,
+      "compared_fields": {
+        "equal_finite": 12238,
+        "different_finite": 12636,
+        "unobservable": 178,
+        "metadata_differences": 0
+      },
+      "first_model_api": "NPU.npu_incre_flash_attention.0.forward",
+      "first_layer": 0,
+      "boundary": "output",
+      "fields": [
+        {
+          "path": "$[0].Mean",
+          "B": -0.001310580875724554,
+          "F": -0.0013106090482324362,
+          "B_present": true,
+          "F_present": true
+        },
+        {
+          "path": "$[0].Norm",
+          "B": 14.949091911315918,
+          "F": 14.94908618927002,
+          "B_present": true,
+          "F_present": true
+        }
+      ],
+      "raw_first_api": "NPU.npu_incre_flash_attention.0.forward",
+      "input_summary_at_first": {
+        "different_finite_fields": 0,
+        "equal_finite_fields": 14,
+        "unobservable_fields": 2,
+        "metadata_differences": 0
+      },
+      "exact_match_all_archived_independent_statistics_fields": true,
+      "first_attention_full_hash_difference_layer": 0,
+      "target_request_logits_hash_changed_count": 8,
+      "complete_logit_hash_equal": false,
+      "private_server_numeric_differences": 1035472,
+      "private_server_top1_changes": 0
+    },
+    "model_baseline_vs_model_restore": {
+      "status": "ALIGNED_NO_OBSERVED_FINITE_MODEL_API_DIFFERENCE",
+      "source_stack_and_construct_aligned": true,
+      "compared_nodes": 2510,
+      "compared_fields": {
+        "equal_finite": 24874,
+        "different_finite": 0,
+        "unobservable": 178,
+        "metadata_differences": 0
+      },
+      "first_model_api": null,
+      "first_layer": null,
+      "boundary": null,
+      "fields": null,
+      "raw_first_api": null,
+      "input_summary_at_first": null,
+      "exact_match_all_archived_independent_statistics_fields": true,
+      "first_attention_full_hash_difference_layer": null,
+      "target_request_logits_hash_changed_count": 0,
+      "complete_logit_hash_equal": true,
+      "private_server_numeric_differences": 0,
+      "private_server_top1_changes": 0
+    },
+    "model_fault_r0_vs_model_fault_r1": {
+      "status": "ALIGNED_NO_OBSERVED_FINITE_MODEL_API_DIFFERENCE",
+      "source_stack_and_construct_aligned": true,
+      "compared_nodes": 2510,
+      "compared_fields": {
+        "equal_finite": 24874,
+        "different_finite": 0,
+        "unobservable": 178,
+        "metadata_differences": 0
+      },
+      "first_model_api": null,
+      "first_layer": null,
+      "boundary": null,
+      "fields": null,
+      "raw_first_api": null,
+      "input_summary_at_first": null,
+      "exact_match_all_archived_independent_statistics_fields": true,
+      "first_attention_full_hash_difference_layer": null,
+      "target_request_logits_hash_changed_count": 0,
+      "complete_logit_hash_equal": true,
+      "private_server_numeric_differences": 0,
+      "private_server_top1_changes": 0
+    }
+  },
+  "controller_and_prelaunch": {
+    "model_baseline": {
+      "attempt": "model_baseline_a4_a3",
+      "receipt_sha256": "506d3d2eeb4c54384b79d279327750753d05a264432ccba83ae1469ef5f61464",
+      "prelaunch_stop": "STOP_SUCCEEDED",
+      "selected_card": 5,
+      "controller_reported_external_mutations": false,
+      "cleanup_complete": true
+    },
+    "model_fault_r0": {
+      "attempt": "model_fault_r0_a4_a1",
+      "receipt_sha256": "6e21043b8a2cc5f11ff9f997a92f64d98cd692f1d123998e932364e8d881b41c",
+      "prelaunch_stop": null,
+      "selected_card": 5,
+      "controller_reported_external_mutations": false,
+      "cleanup_complete": true
+    },
+    "model_fault_r1": {
+      "attempt": "model_fault_r1_a4_a1",
+      "receipt_sha256": "6ef02a378585405dd70df61fccabae3c984c8dbef699d28480ccb998a42ca14e",
+      "prelaunch_stop": null,
+      "selected_card": 5,
+      "controller_reported_external_mutations": false,
+      "cleanup_complete": true
+    },
+    "model_restore": {
+      "attempt": "model_restore_a4_a1",
+      "receipt_sha256": "3c5761ef3fc7e8e41dd352604f5048c537e4a81389fb32f38b2e500af51d4b5d",
+      "prelaunch_stop": null,
+      "selected_card": 5,
+      "controller_reported_external_mutations": false,
+      "cleanup_complete": true
+    }
+  },
+  "limits": [
+    "The four versioned msprobe comparisons were recalculated from public decode dump/stack/construct/config/collector/receipt only, before loading any host evidence. Null fields remain unobservable; equal summary statistics do not establish full tensor equality.",
+    "Each included IFA launch was reparsed from original numbered log lines and linked to its layer, host serializer and request map. The original multi-GB logs are held on the verification server; this public check cannot independently exclude extra calls from omitted log lines. The server-side full-log census is hash-bound.",
+    "Original public host raw decodes 72 fields from each 3000-byte record. Device kernel argument bytes were not observed.",
+    "Intermediate tensor equality and per-request comparisons use original full-value hashes. Published artifacts exclude private logits and tensor bytes. Numeric logits counts, per-element differences, and top-1 values were verified on the server by reading private logits and are cited here, not recomputed locally.",
+    "No independent reproduction of historical MindIE/ATB service behavior or task-level accuracy impact is claimed."
+  ]
+}

@@ -1,0 +1,55 @@
+[
+  {
+    "case_id": "stock_bridge",
+    "file": "setup/replay_a4/stock_bridge.json",
+    "case": {
+      "schema": "fault33.pa.replay.case.v1",
+      "batch": 8,
+      "q_heads": 16,
+      "kv_heads": 8,
+      "head_dim": 128,
+      "kv_length": 16384,
+      "dtype": "float16",
+      "block_size": 128,
+      "inner_precise": 0,
+      "repeats": 2,
+      "seed": 330011,
+      "projection_seed": 330012,
+      "deterministic_algorithms": true,
+      "capture_msprobe": false,
+      "statistics_variant": "official_low",
+      "case_id": "stock_bridge",
+      "mode": "off",
+      "operator_variant": "stock"
+    }
+  },
+  {
+    "case_id": "baseline",
+    "file": "setup/replay_a4/baseline.json",
+    "case": {
+      "schema": "fault33.pa.replay.case.v1",
+      "batch": 8,
+      "q_heads": 16,
+      "kv_heads": 8,
+      "head_dim": 128,
+      "kv_length": 16384,
+      "dtype": "float16",
+      "block_size": 128,
+      "inner_precise": 0,
+      "repeats": 2,
+      "seed": 330011,
+      "projection_seed": 330012,
+      "deterministic_algorithms": true,
+      "capture_msprobe": true,
+      "statistics_variant": "task_local_fp32_high_v1",
+      "approved_collector_manifest_file": "/audit/collector_high_a1/stage_manifest.json",
+      "approved_collector_manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+      "case_id": "baseline",
+      "mode": "off",
+      "operator_variant": "private_vendor",
+      "approved_vendor_manifest_file": "/audit/vendor_stage_a4/vendor_manifest.json",
+      "approved_vendor_manifest_sha256": "f48a82e89fdf7bbfafba5ac3e05334dbde01b422c55dc726f786152db5874cfe",
+      "approved_custom_opp_path": "/audit/vendor_stage_a4/vendors/fault33_pa_transformer"
+    }
+  }
+]

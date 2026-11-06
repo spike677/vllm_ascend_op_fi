@@ -1,0 +1,42 @@
+{
+  "schema": "fault33.pa.model.matrix.v1",
+  "cases": [
+    {
+      "case_id": "model_baseline",
+      "mode": "off",
+      "sha256": "2f567b89aa736ffd535f4b0c69a9f4536e83ae6ca90790a46ce9ac72baa1a1d3",
+      "eligible_decode_ifa_calls": 28,
+      "request_layer_pairs": 224
+    },
+    {
+      "case_id": "model_fault_r0",
+      "mode": "inner1024",
+      "sha256": "db22c6dd1649539aed3e11ac0d0198a08d738fa4a9511135485ad0a9734d87d9",
+      "eligible_decode_ifa_calls": 28,
+      "request_layer_pairs": 224
+    },
+    {
+      "case_id": "model_fault_r1",
+      "mode": "inner1024",
+      "sha256": "da3cc30fda15a9042e0c94fac1dbd4df31260051045d116ce83131e8e11a5e62",
+      "eligible_decode_ifa_calls": 28,
+      "request_layer_pairs": 224
+    },
+    {
+      "case_id": "model_restore",
+      "mode": "off",
+      "sha256": "fa136e9d0eb33bdf4a8fd0807d877ef151b2246e1d233de2e9da1a79125cb9f5",
+      "eligible_decode_ifa_calls": 28,
+      "request_layer_pairs": 224
+    }
+  ],
+  "scope": "Real HF model with explicit paged IFA decode adapter, no serving scheduler.",
+  "prefill_tokens": 16383,
+  "teacher_forced_decode_tokens": 1,
+  "requests": 8,
+  "formal_statistics_groups": [
+    "baseline",
+    "fault"
+  ],
+  "repeat_and_restore": "Same frozen prefix and teacher token; two fault fresh processes and separate OFF restoration."
+}

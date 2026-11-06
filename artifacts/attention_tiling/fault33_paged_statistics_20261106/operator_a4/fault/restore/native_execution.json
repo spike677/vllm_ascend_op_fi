@@ -1,0 +1,2355 @@
+{
+  "schema": "fault33.public.native_execution_subset.v1",
+  "case_id": "restore",
+  "source_log": {
+    "source_filename": "restore.log",
+    "bytes": 51761672,
+    "sha256": "9f968fd7e606cbaec79368c788cf2de4e7ad45f84b90954e2d02f7b7b793fe43"
+  },
+  "calls": [
+    {
+      "call_id": "repeat0",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "repeat0",
+        "pid": 133,
+        "tid": 133,
+        "block_size": 128,
+        "deterministic_algorithms": true,
+        "scope_token": "ff455371466b4d6384ffbd6970f8c99b"
+      },
+      "selected": {
+        "pid": 133,
+        "tid": 133,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000200000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 133,
+        "tid": 164,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000200000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "native_flags": {
+        "pid": 133,
+        "tid": 133,
+        "op": "IncreFlashAttention_0",
+        "deterministic": 1,
+        "verbose_high_precision_flag": 0
+      },
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16384,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 8192,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 8,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 4,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 266240,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 8192,
+          "Kb": 16384,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 8192,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 64,
+          "depthB1": 4,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 393216,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 64,
+          "stepKb": 2
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 246881,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:07.666.801 [indv_executor_ext.cpp:974][NNOP][NnopbaseExecutorGenDynamicKey][133] OpName:[IncreFlashAttention_0] Verbose opType is IncreFlashAttention, deterministic value is 1, highPrecision value is 0, verboseLen is 29"
+        },
+        {
+          "line": 247980,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:07.677.085 [incre_flash_attention_tiling.cpp:3022][OPS_BASE][FillTilingSplitKV][133] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 16384, blockSize is 128"
+        },
+        {
+          "line": 248007,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:07.677.228 [incre_flash_attention_tiling.cpp:3098][OPS_BASE][AdjustPABmm1Tiling][133] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm1 baseN is adjusted to 128"
+        },
+        {
+          "line": 248015,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.294 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 248016,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.299 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16384"
+        },
+        {
+          "line": 248017,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.303 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 248018,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.306 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 248019,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.311 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 248020,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.315 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 8192"
+        },
+        {
+          "line": 248021,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.318 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 248022,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.322 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 248023,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.327 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 248024,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.330 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 248025,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.334 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 248026,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.337 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 8"
+        },
+        {
+          "line": 248027,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.341 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 248028,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.345 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 248029,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.348 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 248030,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.354 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 4"
+        },
+        {
+          "line": 248031,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.359 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 248032,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.362 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 248033,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.367 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 248034,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.370 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 248035,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.375 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 266240"
+        },
+        {
+          "line": 248036,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.380 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 248037,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.384 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 248038,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.387 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 248039,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.391 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 248040,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.394 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 248041,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.398 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 248042,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.403 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 248043,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.408 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 248077,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.579 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 248078,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.584 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 248079,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.588 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 8192"
+        },
+        {
+          "line": 248080,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.591 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16384"
+        },
+        {
+          "line": 248081,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.596 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 248082,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.599 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 248083,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.605 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 8192"
+        },
+        {
+          "line": 248084,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.607 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 248085,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.612 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 248086,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.618 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 248087,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.621 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 64"
+        },
+        {
+          "line": 248088,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.625 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 4"
+        },
+        {
+          "line": 248089,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.628 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 248090,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.632 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 248091,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.636 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 248092,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.641 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 248093,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.645 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 248094,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.649 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 248095,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.652 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 248096,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.655 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 248097,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.659 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 393216"
+        },
+        {
+          "line": 248098,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.662 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 248099,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.665 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 248100,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.669 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 248101,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.675 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 248102,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.677 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 248103,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.680 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 248104,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.683 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 64"
+        },
+        {
+          "line": 248105,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:07.677.686 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 2"
+        },
+        {
+          "line": 248106,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:07.677.692 [incre_flash_attention_tiling.cpp:3119][OPS_BASE][AdjustPABmm2Tiling][133] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm2 baseK is adjusted to 128"
+        },
+        {
+          "line": 248111,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:07.678.334 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][133] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000200000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 248193,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:07.679.456 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][164] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 248203,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:07.679.559 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][164] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000200000, scheMode is 1, numBlocks is 20, stream is 0x4c736b58"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false,
+      "whole_log_nnop_ifa_census": {
+        "pid": 133,
+        "calls": 4,
+        "launch_line": 248203,
+        "unscoped_or_unparsed": 0
+      },
+      "public_host": {
+        "schema": "fault33.pa.typed_host.v1",
+        "observation": "final_public_tiling_context",
+        "kernel_argument_raw_observed": false,
+        "pid": 133,
+        "tid": 133,
+        "token": "ff455371466b4d6384ffbd6970f8c99b",
+        "call_id": "repeat0",
+        "phase": "decode",
+        "mode": "off",
+        "caller_declared_deterministic": true,
+        "callback_begin_monotonic_ns": 2991427219303835,
+        "callback_end_monotonic_ns": 2991427220952446,
+        "callback_status": 0,
+        "eligible": true,
+        "policy_applied": false,
+        "selector_checks": 1,
+        "serialized_captures": 1,
+        "guard_reports": [
+          {
+            "fixed_inputs": true,
+            "native_scope": true,
+            "native_checks": {
+              "soc_910b": true,
+              "page_attention": true,
+              "no_split_kv": true,
+              "runtime_tiling": true,
+              "no_antiquant": true,
+              "no_quant": true,
+              "no_rope": true,
+              "no_gqa_kv_nz": true,
+              "no_gqa_mtp": true,
+              "no_sys_prefix": true,
+              "no_sliding": true,
+              "no_balance": true,
+              "query_layout_bnsd": true,
+              "kv_layout_ordinary_pa_default": true,
+              "query_fp16": true,
+              "kv_fp16": true,
+              "output_fp16": true,
+              "inner_precise_0": true,
+              "query_seq_1": true,
+              "query_heads_16": true,
+              "kv_heads_8": true,
+              "head_dim_128": true,
+              "head_dim_v_128": true,
+              "block_size_128": true
+            },
+            "native_values": {
+              "soc_version": 0,
+              "input_layout": 1,
+              "input_kv_layout": 0,
+              "query_dtype": 1,
+              "kv_dtype": 1,
+              "output_dtype": 1,
+              "head_dim": 128,
+              "head_dim_v": 128,
+              "query_seq": 1,
+              "query_heads": 16,
+              "kv_heads": 8,
+              "inner_precise": 0
+            },
+            "actual_lengths_all_equal": true,
+            "batch": 8,
+            "actual_kv_length": 16384,
+            "block_size": 128,
+            "perf_mode": 0,
+            "native_sinner": 8192,
+            "compute_seq_size": 16384,
+            "requested_sinner": 0,
+            "legal_request": true,
+            "eligible": true,
+            "applied": false
+          }
+        ],
+        "tiling_key": "10000000000200000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "workspace_count": 1,
+        "raw_size": 3000,
+        "raw_hex": "010000000200000000400000800000008000000002000000002000008000000010000000800000008000000001000000080000000100000004000000000000000000000001000000000000000010040000200000000000000100000001000000010000000100000001000000010000000000000000000000020000000200000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000020000008000000000200000004000000200000080000000002000001000000080000000800000004000000004000000010000000100000000000000000000000100000000000000000006000020000000000000010000000100000001000000010000004000000002000000000000000000000002000000020000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000400000010000008000000080000000800000008000000000000000f304b53d080000000000000010000000020000000100000000000000000000000000000000000000000000000000000008000000000000000000000001000000010000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffff0000000000400000004000000008000000000000020000000400000006000000080000000a0000000c0000000e00000010000000120000001400000016000000180000001a0000001c0000001e00000020000000220000002400000026000000280000002a0000002c0000002e000000300000003100000032000000330000003400000035000000360000003700000038000000390000003a0000003b0000003c0000003d0000003e0000003f00000040000000400000004000000040000000400000004000000040000000400000004000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000020000000200000280000001800000002000000010000000200000001000000000000000040000000010000010000000020000000200000010000000800000008000000010000000020000000200000010000000800000008000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "typed_matches_final_serialized_raw": true,
+        "workspace_sizes": [
+          20837376
+        ],
+        "typed": {
+          "baseParams.batchSize": 8,
+          "baseParams.seqSize": 16384,
+          "baseParams.qSeqSize": 1,
+          "baseParams.headSize": 128,
+          "baseParams.headSizeV": 128,
+          "baseParams.blockSize": 128,
+          "baseParams.maxBlockNumPerBatch": 128,
+          "baseParams.maxBlockNumPerSeq": 0,
+          "baseParams.scaleValue": 0.0883883461356163,
+          "baseParams.kvHeadNum": 8,
+          "baseParams.headNumRatio": 0,
+          "baseParams.qHeadNum": 16,
+          "baseParams.nNumOfQInOneGroup": 2,
+          "baseParams.batchContinuousFlag": 1,
+          "baseParams.actualLenDims": 8,
+          "baseParams.attenMaskFlag": 0,
+          "baseParams.totalBlockNum": 1024,
+          "baseParams.paKvShapeType": 0,
+          "baseParams.sparseMode": 0,
+          "baseParams.slidingFlag": 0,
+          "splitKVParams.s2": 0,
+          "splitKVParams.sInnerLoopSize": 16384,
+          "splitKVParams.accumOutSize": 16384,
+          "splitKVParams.logSumExpSize": 2048,
+          "increFlashAttentionSingleCoreParams.sInnerLoopTimes": 2,
+          "increFlashAttentionSingleCoreParams.singleProcessSInnerSize": 8192,
+          "increFlashAttentionSingleCoreParams.singleProcessSInnerSizeTail": 8192,
+          "increFlashAttentionSingleCoreParams.usedCoreNum": 40,
+          "increFlashAttentionSingleCoreParams.formerCoreNum": 24,
+          "increFlashAttentionSingleCoreParams.blockSplitBn2Range": 2,
+          "increFlashAttentionSingleCoreParams.tailSplitedBatchRange": 1,
+          "increFlashAttentionSingleCoreParams.groupSplitSize": 2,
+          "increFlashAttentionSingleCoreParams.s1SplitSize": 1,
+          "increFlashAttentionSingleCoreTensorSize.mmResUbSize": 16384,
+          "increFlashAttentionSingleCoreTensorSize.bmm2ResUbSize": 256,
+          "bmm1TilingData.M": 2,
+          "bmm1TilingData.N": 16384,
+          "bmm1TilingData.Ka": 128,
+          "bmm1TilingData.Kb": 128,
+          "bmm1TilingData.singleCoreM": 2,
+          "bmm1TilingData.singleCoreN": 8192,
+          "bmm1TilingData.singleCoreK": 128,
+          "bmm1TilingData.baseM": 16,
+          "bmm1TilingData.baseN": 128,
+          "bmm1TilingData.baseK": 128,
+          "bmm2TilingData.M": 2,
+          "bmm2TilingData.N": 128,
+          "bmm2TilingData.Ka": 8192,
+          "bmm2TilingData.Kb": 16384,
+          "bmm2TilingData.singleCoreM": 2,
+          "bmm2TilingData.singleCoreN": 128,
+          "bmm2TilingData.singleCoreK": 8192,
+          "bmm2TilingData.baseM": 16,
+          "bmm2TilingData.baseN": 128,
+          "bmm2TilingData.baseK": 128,
+          "softmaxFlashTilingData.srcM": 1,
+          "softmaxFlashTilingData.srcK": 8192,
+          "softmaxFlashTilingData.srcSize": 8192,
+          "softmaxFlashTilingData.outMaxM": 1,
+          "softmaxFlashTilingData.outMaxK": 8,
+          "softmaxFlashTilingData.outMaxSize": 8,
+          "softmaxFlashTilingData.splitM": 1,
+          "softmaxFlashTilingData.splitK": 8192,
+          "softmaxFlashTilingData.splitSize": 8192,
+          "softmaxFlashTilingData.reduceM": 1,
+          "softmaxFlashTilingData.reduceK": 8,
+          "softmaxFlashTilingData.reduceSize": 8,
+          "softmaxFlashTilingData.rangeM": 1,
+          "softmaxFlashTilingData.tailM": 0,
+          "softmaxFlashTilingData.tailSplitSize": 0,
+          "softmaxFlashTilingData.tailReduceSize": 0,
+          "coreSidxEnd": [
+            0,
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            26,
+            28,
+            30,
+            32,
+            34,
+            36,
+            38,
+            40,
+            42,
+            44,
+            46,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64
+          ]
+        }
+      },
+      "public_host_raw_sha256": "56f066f20c415d72c3b22a34edac8553814379cfbb2e408bab9fcc724c1308ed"
+    },
+    {
+      "call_id": "repeat1",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "repeat1",
+        "pid": 133,
+        "tid": 133,
+        "block_size": 128,
+        "deterministic_algorithms": true,
+        "scope_token": "a251b31e6099400eb6e9893f869771d2"
+      },
+      "selected": {
+        "pid": 133,
+        "tid": 133,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000200000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 133,
+        "tid": 164,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000200000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "native_flags": {
+        "pid": 133,
+        "tid": 133,
+        "op": "IncreFlashAttention_0",
+        "deterministic": 1,
+        "verbose_high_precision_flag": 0
+      },
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16384,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 1024,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 8,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 8,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 266240,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 1024,
+          "Kb": 16384,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 1024,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 8,
+          "depthB1": 8,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 0,
+          "shareMode": 0,
+          "usedL1Size": 294912,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 8,
+          "stepKb": 8
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 276606,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:08.646.287 [indv_executor_ext.cpp:974][NNOP][NnopbaseExecutorGenDynamicKey][133] OpName:[IncreFlashAttention_0] Verbose opType is IncreFlashAttention, deterministic value is 1, highPrecision value is 0, verboseLen is 29"
+        },
+        {
+          "line": 276668,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:08.646.843 [incre_flash_attention_tiling.cpp:3022][OPS_BASE][FillTilingSplitKV][133] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 16384, blockSize is 128"
+        },
+        {
+          "line": 276695,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:08.646.971 [incre_flash_attention_tiling.cpp:3098][OPS_BASE][AdjustPABmm1Tiling][133] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm1 baseN is adjusted to 128"
+        },
+        {
+          "line": 276705,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.035 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 276706,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.039 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16384"
+        },
+        {
+          "line": 276707,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.044 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 276708,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.047 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 276709,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.050 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 276710,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.054 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 1024"
+        },
+        {
+          "line": 276711,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.057 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 276712,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.062 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 276713,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.066 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 276714,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.069 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 276715,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.074 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 276716,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.079 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 8"
+        },
+        {
+          "line": 276717,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.082 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 276718,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.086 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 276719,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.090 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 276720,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.093 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 8"
+        },
+        {
+          "line": 276721,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.098 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 276722,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.101 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 276723,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.104 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 276724,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.109 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 276725,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.113 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 266240"
+        },
+        {
+          "line": 276726,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.116 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 276727,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.119 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 276728,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.123 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 276729,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.126 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 276730,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.131 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 276731,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.137 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 276732,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.142 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 276733,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.146 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 276769,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.313 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 276770,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.317 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 276771,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.321 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 1024"
+        },
+        {
+          "line": 276772,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.325 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16384"
+        },
+        {
+          "line": 276773,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.331 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 276774,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.335 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 276775,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.338 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 1024"
+        },
+        {
+          "line": 276776,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.342 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 276777,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.345 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 276778,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.348 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 276779,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.353 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 8"
+        },
+        {
+          "line": 276780,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.358 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 8"
+        },
+        {
+          "line": 276781,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.363 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 276782,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.368 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 276783,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.372 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 276784,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.375 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 276785,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.379 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 276786,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.383 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 276787,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.386 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 0"
+        },
+        {
+          "line": 276788,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.390 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 276789,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.394 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 294912"
+        },
+        {
+          "line": 276790,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.398 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 276791,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.401 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 276792,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.406 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 276793,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.410 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 276794,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.413 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 276795,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.417 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 276796,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.420 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 8"
+        },
+        {
+          "line": 276797,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:08.647.424 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 8"
+        },
+        {
+          "line": 276798,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:08.647.429 [incre_flash_attention_tiling.cpp:3119][OPS_BASE][AdjustPABmm2Tiling][133] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm2 baseK is adjusted to 128"
+        },
+        {
+          "line": 276803,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:08.648.005 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][133] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000200000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 276864,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:08.648.416 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][164] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 276876,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:08.648.490 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][164] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000200000, scheMode is 1, numBlocks is 20, stream is 0x4c736b58"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false,
+      "whole_log_nnop_ifa_census": {
+        "pid": 133,
+        "calls": 4,
+        "launch_line": 276876,
+        "unscoped_or_unparsed": 0
+      },
+      "public_host": {
+        "schema": "fault33.pa.typed_host.v1",
+        "observation": "final_public_tiling_context",
+        "kernel_argument_raw_observed": false,
+        "pid": 133,
+        "tid": 133,
+        "token": "a251b31e6099400eb6e9893f869771d2",
+        "call_id": "repeat1",
+        "phase": "decode",
+        "mode": "inner1024",
+        "caller_declared_deterministic": true,
+        "callback_begin_monotonic_ns": 2991428189376972,
+        "callback_end_monotonic_ns": 2991428190692516,
+        "callback_status": 0,
+        "eligible": true,
+        "policy_applied": true,
+        "selector_checks": 1,
+        "serialized_captures": 1,
+        "guard_reports": [
+          {
+            "fixed_inputs": true,
+            "native_scope": true,
+            "native_checks": {
+              "soc_910b": true,
+              "page_attention": true,
+              "no_split_kv": true,
+              "runtime_tiling": true,
+              "no_antiquant": true,
+              "no_quant": true,
+              "no_rope": true,
+              "no_gqa_kv_nz": true,
+              "no_gqa_mtp": true,
+              "no_sys_prefix": true,
+              "no_sliding": true,
+              "no_balance": true,
+              "query_layout_bnsd": true,
+              "kv_layout_ordinary_pa_default": true,
+              "query_fp16": true,
+              "kv_fp16": true,
+              "output_fp16": true,
+              "inner_precise_0": true,
+              "query_seq_1": true,
+              "query_heads_16": true,
+              "kv_heads_8": true,
+              "head_dim_128": true,
+              "head_dim_v_128": true,
+              "block_size_128": true
+            },
+            "native_values": {
+              "soc_version": 0,
+              "input_layout": 1,
+              "input_kv_layout": 0,
+              "query_dtype": 1,
+              "kv_dtype": 1,
+              "output_dtype": 1,
+              "head_dim": 128,
+              "head_dim_v": 128,
+              "query_seq": 1,
+              "query_heads": 16,
+              "kv_heads": 8,
+              "inner_precise": 0
+            },
+            "actual_lengths_all_equal": true,
+            "batch": 8,
+            "actual_kv_length": 16384,
+            "block_size": 128,
+            "perf_mode": 0,
+            "native_sinner": 8192,
+            "compute_seq_size": 16384,
+            "requested_sinner": 1024,
+            "legal_request": true,
+            "eligible": true,
+            "applied": true
+          }
+        ],
+        "tiling_key": "10000000000200000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "workspace_count": 1,
+        "raw_size": 3000,
+        "raw_hex": "010000000200000000400000800000008000000002000000000400008000000010000000800000008000000001000000080000000100000008000000000000000000000001000000000000000010040000200000000000000100000001000000010000000100000001000000010000000000000000000000020000000200000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000020000008000000000040000004000000200000080000000000400001000000080000000800000000800000008000000010000000100000000000000000000000000000000000000008004000020000000000000010000000100000001000000010000000800000008000000000000000000000002000000020000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000400000010000008000000080000000800000008000000000000000f304b53d080000000000000010000000020000000100000000000000000000000000000000000000000000000000000008000000000000000000000001000000010000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffff0000000000400000004000000008000000000000020000000400000006000000080000000a0000000c0000000e00000010000000120000001400000016000000180000001a0000001c0000001e00000020000000220000002400000026000000280000002a0000002c0000002e000000300000003100000032000000330000003400000035000000360000003700000038000000390000003a0000003b0000003c0000003d0000003e0000003f00000040000000400000004000000040000000400000004000000040000000400000004000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000004000000040000280000001800000002000000010000000200000001000000000000000008000000010000010000000004000000040000010000000800000008000000010000000004000000040000010000000800000008000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "typed_matches_final_serialized_raw": true,
+        "workspace_sizes": [
+          17396736
+        ],
+        "typed": {
+          "baseParams.batchSize": 8,
+          "baseParams.seqSize": 16384,
+          "baseParams.qSeqSize": 1,
+          "baseParams.headSize": 128,
+          "baseParams.headSizeV": 128,
+          "baseParams.blockSize": 128,
+          "baseParams.maxBlockNumPerBatch": 128,
+          "baseParams.maxBlockNumPerSeq": 0,
+          "baseParams.scaleValue": 0.0883883461356163,
+          "baseParams.kvHeadNum": 8,
+          "baseParams.headNumRatio": 0,
+          "baseParams.qHeadNum": 16,
+          "baseParams.nNumOfQInOneGroup": 2,
+          "baseParams.batchContinuousFlag": 1,
+          "baseParams.actualLenDims": 8,
+          "baseParams.attenMaskFlag": 0,
+          "baseParams.totalBlockNum": 1024,
+          "baseParams.paKvShapeType": 0,
+          "baseParams.sparseMode": 0,
+          "baseParams.slidingFlag": 0,
+          "splitKVParams.s2": 0,
+          "splitKVParams.sInnerLoopSize": 16384,
+          "splitKVParams.accumOutSize": 16384,
+          "splitKVParams.logSumExpSize": 2048,
+          "increFlashAttentionSingleCoreParams.sInnerLoopTimes": 16,
+          "increFlashAttentionSingleCoreParams.singleProcessSInnerSize": 1024,
+          "increFlashAttentionSingleCoreParams.singleProcessSInnerSizeTail": 1024,
+          "increFlashAttentionSingleCoreParams.usedCoreNum": 40,
+          "increFlashAttentionSingleCoreParams.formerCoreNum": 24,
+          "increFlashAttentionSingleCoreParams.blockSplitBn2Range": 2,
+          "increFlashAttentionSingleCoreParams.tailSplitedBatchRange": 1,
+          "increFlashAttentionSingleCoreParams.groupSplitSize": 2,
+          "increFlashAttentionSingleCoreParams.s1SplitSize": 1,
+          "increFlashAttentionSingleCoreTensorSize.mmResUbSize": 2048,
+          "increFlashAttentionSingleCoreTensorSize.bmm2ResUbSize": 256,
+          "bmm1TilingData.M": 2,
+          "bmm1TilingData.N": 16384,
+          "bmm1TilingData.Ka": 128,
+          "bmm1TilingData.Kb": 128,
+          "bmm1TilingData.singleCoreM": 2,
+          "bmm1TilingData.singleCoreN": 1024,
+          "bmm1TilingData.singleCoreK": 128,
+          "bmm1TilingData.baseM": 16,
+          "bmm1TilingData.baseN": 128,
+          "bmm1TilingData.baseK": 128,
+          "bmm2TilingData.M": 2,
+          "bmm2TilingData.N": 128,
+          "bmm2TilingData.Ka": 1024,
+          "bmm2TilingData.Kb": 16384,
+          "bmm2TilingData.singleCoreM": 2,
+          "bmm2TilingData.singleCoreN": 128,
+          "bmm2TilingData.singleCoreK": 1024,
+          "bmm2TilingData.baseM": 16,
+          "bmm2TilingData.baseN": 128,
+          "bmm2TilingData.baseK": 128,
+          "softmaxFlashTilingData.srcM": 1,
+          "softmaxFlashTilingData.srcK": 1024,
+          "softmaxFlashTilingData.srcSize": 1024,
+          "softmaxFlashTilingData.outMaxM": 1,
+          "softmaxFlashTilingData.outMaxK": 8,
+          "softmaxFlashTilingData.outMaxSize": 8,
+          "softmaxFlashTilingData.splitM": 1,
+          "softmaxFlashTilingData.splitK": 1024,
+          "softmaxFlashTilingData.splitSize": 1024,
+          "softmaxFlashTilingData.reduceM": 1,
+          "softmaxFlashTilingData.reduceK": 8,
+          "softmaxFlashTilingData.reduceSize": 8,
+          "softmaxFlashTilingData.rangeM": 1,
+          "softmaxFlashTilingData.tailM": 0,
+          "softmaxFlashTilingData.tailSplitSize": 0,
+          "softmaxFlashTilingData.tailReduceSize": 0,
+          "coreSidxEnd": [
+            0,
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            26,
+            28,
+            30,
+            32,
+            34,
+            36,
+            38,
+            40,
+            42,
+            44,
+            46,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64
+          ]
+        }
+      },
+      "public_host_raw_sha256": "5b54a312040c9144fb66b7bad92d73b4b50208991c4d6a515d0cbb0a4b59de1d"
+    },
+    {
+      "call_id": "repeat2",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "repeat2",
+        "pid": 133,
+        "tid": 133,
+        "block_size": 128,
+        "deterministic_algorithms": true,
+        "scope_token": "a9cc1f5a170d44eabba7835f72cc50e7"
+      },
+      "selected": {
+        "pid": 133,
+        "tid": 133,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000200000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 133,
+        "tid": 164,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000200000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "native_flags": {
+        "pid": 133,
+        "tid": 133,
+        "op": "IncreFlashAttention_0",
+        "deterministic": 1,
+        "verbose_high_precision_flag": 0
+      },
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16384,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 1024,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 8,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 8,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 266240,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 1024,
+          "Kb": 16384,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 1024,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 8,
+          "depthB1": 8,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 0,
+          "shareMode": 0,
+          "usedL1Size": 294912,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 8,
+          "stepKb": 8
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 277329,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:09.152.685 [indv_executor_ext.cpp:974][NNOP][NnopbaseExecutorGenDynamicKey][133] OpName:[IncreFlashAttention_0] Verbose opType is IncreFlashAttention, deterministic value is 1, highPrecision value is 0, verboseLen is 29"
+        },
+        {
+          "line": 277391,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:09.153.263 [incre_flash_attention_tiling.cpp:3022][OPS_BASE][FillTilingSplitKV][133] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 16384, blockSize is 128"
+        },
+        {
+          "line": 277418,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:09.153.345 [incre_flash_attention_tiling.cpp:3098][OPS_BASE][AdjustPABmm1Tiling][133] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm1 baseN is adjusted to 128"
+        },
+        {
+          "line": 277428,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.396 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 277429,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.399 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16384"
+        },
+        {
+          "line": 277430,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.402 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 277431,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.404 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 277432,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.406 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 277433,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.408 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 1024"
+        },
+        {
+          "line": 277434,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.411 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 277435,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.413 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 277436,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.415 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 277437,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.417 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 277438,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.419 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 277439,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.421 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 8"
+        },
+        {
+          "line": 277440,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.423 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 277441,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.425 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 277442,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.428 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 277443,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.430 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 8"
+        },
+        {
+          "line": 277444,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.432 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 277445,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.434 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 277446,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.436 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 277447,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.439 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 277448,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.441 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 266240"
+        },
+        {
+          "line": 277449,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.443 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 277450,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.445 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 277451,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.447 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 277452,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.449 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 277453,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.452 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 277454,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.454 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 277455,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.456 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 277456,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.458 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 277492,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.555 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 277493,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.557 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 277494,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.560 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 1024"
+        },
+        {
+          "line": 277495,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.562 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16384"
+        },
+        {
+          "line": 277496,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.564 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 277497,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.566 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 277498,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.568 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 1024"
+        },
+        {
+          "line": 277499,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.570 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 277500,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.573 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 277501,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.575 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 277502,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.577 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 8"
+        },
+        {
+          "line": 277503,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.579 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 8"
+        },
+        {
+          "line": 277504,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.581 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 277505,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.583 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 277506,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.585 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 277507,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.587 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 277508,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.589 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 277509,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.591 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 277510,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.593 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 0"
+        },
+        {
+          "line": 277511,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.595 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 277512,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.598 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 294912"
+        },
+        {
+          "line": 277513,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.600 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 277514,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.602 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 277515,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.604 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 277516,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.606 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 277517,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.608 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 277518,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.611 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 277519,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.613 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 8"
+        },
+        {
+          "line": 277520,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.153.615 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 8"
+        },
+        {
+          "line": 277521,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:09.153.617 [incre_flash_attention_tiling.cpp:3119][OPS_BASE][AdjustPABmm2Tiling][133] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm2 baseK is adjusted to 128"
+        },
+        {
+          "line": 277526,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:09.154.192 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][133] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000200000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 277585,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:09.154.547 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][164] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 277597,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:09.154.621 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][164] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000200000, scheMode is 1, numBlocks is 20, stream is 0x4c736b58"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false,
+      "whole_log_nnop_ifa_census": {
+        "pid": 133,
+        "calls": 4,
+        "launch_line": 277597,
+        "unscoped_or_unparsed": 0
+      },
+      "public_host": {
+        "schema": "fault33.pa.typed_host.v1",
+        "observation": "final_public_tiling_context",
+        "kernel_argument_raw_observed": false,
+        "pid": 133,
+        "tid": 133,
+        "token": "a9cc1f5a170d44eabba7835f72cc50e7",
+        "call_id": "repeat2",
+        "phase": "decode",
+        "mode": "inner1024",
+        "caller_declared_deterministic": true,
+        "callback_begin_monotonic_ns": 2991428695802431,
+        "callback_end_monotonic_ns": 2991428696876121,
+        "callback_status": 0,
+        "eligible": true,
+        "policy_applied": true,
+        "selector_checks": 1,
+        "serialized_captures": 1,
+        "guard_reports": [
+          {
+            "fixed_inputs": true,
+            "native_scope": true,
+            "native_checks": {
+              "soc_910b": true,
+              "page_attention": true,
+              "no_split_kv": true,
+              "runtime_tiling": true,
+              "no_antiquant": true,
+              "no_quant": true,
+              "no_rope": true,
+              "no_gqa_kv_nz": true,
+              "no_gqa_mtp": true,
+              "no_sys_prefix": true,
+              "no_sliding": true,
+              "no_balance": true,
+              "query_layout_bnsd": true,
+              "kv_layout_ordinary_pa_default": true,
+              "query_fp16": true,
+              "kv_fp16": true,
+              "output_fp16": true,
+              "inner_precise_0": true,
+              "query_seq_1": true,
+              "query_heads_16": true,
+              "kv_heads_8": true,
+              "head_dim_128": true,
+              "head_dim_v_128": true,
+              "block_size_128": true
+            },
+            "native_values": {
+              "soc_version": 0,
+              "input_layout": 1,
+              "input_kv_layout": 0,
+              "query_dtype": 1,
+              "kv_dtype": 1,
+              "output_dtype": 1,
+              "head_dim": 128,
+              "head_dim_v": 128,
+              "query_seq": 1,
+              "query_heads": 16,
+              "kv_heads": 8,
+              "inner_precise": 0
+            },
+            "actual_lengths_all_equal": true,
+            "batch": 8,
+            "actual_kv_length": 16384,
+            "block_size": 128,
+            "perf_mode": 0,
+            "native_sinner": 8192,
+            "compute_seq_size": 16384,
+            "requested_sinner": 1024,
+            "legal_request": true,
+            "eligible": true,
+            "applied": true
+          }
+        ],
+        "tiling_key": "10000000000200000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "workspace_count": 1,
+        "raw_size": 3000,
+        "raw_hex": "010000000200000000400000800000008000000002000000000400008000000010000000800000008000000001000000080000000100000008000000000000000000000001000000000000000010040000200000000000000100000001000000010000000100000001000000010000000000000000000000020000000200000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000020000008000000000040000004000000200000080000000000400001000000080000000800000000800000008000000010000000100000000000000000000000000000000000000008004000020000000000000010000000100000001000000010000000800000008000000000000000000000002000000020000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000400000010000008000000080000000800000008000000000000000f304b53d080000000000000010000000020000000100000000000000000000000000000000000000000000000000000008000000000000000000000001000000010000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffff0000000000400000004000000008000000000000020000000400000006000000080000000a0000000c0000000e00000010000000120000001400000016000000180000001a0000001c0000001e00000020000000220000002400000026000000280000002a0000002c0000002e000000300000003100000032000000330000003400000035000000360000003700000038000000390000003a0000003b0000003c0000003d0000003e0000003f00000040000000400000004000000040000000400000004000000040000000400000004000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000004000000040000280000001800000002000000010000000200000001000000000000000008000000010000010000000004000000040000010000000800000008000000010000000004000000040000010000000800000008000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "typed_matches_final_serialized_raw": true,
+        "workspace_sizes": [
+          17396736
+        ],
+        "typed": {
+          "baseParams.batchSize": 8,
+          "baseParams.seqSize": 16384,
+          "baseParams.qSeqSize": 1,
+          "baseParams.headSize": 128,
+          "baseParams.headSizeV": 128,
+          "baseParams.blockSize": 128,
+          "baseParams.maxBlockNumPerBatch": 128,
+          "baseParams.maxBlockNumPerSeq": 0,
+          "baseParams.scaleValue": 0.0883883461356163,
+          "baseParams.kvHeadNum": 8,
+          "baseParams.headNumRatio": 0,
+          "baseParams.qHeadNum": 16,
+          "baseParams.nNumOfQInOneGroup": 2,
+          "baseParams.batchContinuousFlag": 1,
+          "baseParams.actualLenDims": 8,
+          "baseParams.attenMaskFlag": 0,
+          "baseParams.totalBlockNum": 1024,
+          "baseParams.paKvShapeType": 0,
+          "baseParams.sparseMode": 0,
+          "baseParams.slidingFlag": 0,
+          "splitKVParams.s2": 0,
+          "splitKVParams.sInnerLoopSize": 16384,
+          "splitKVParams.accumOutSize": 16384,
+          "splitKVParams.logSumExpSize": 2048,
+          "increFlashAttentionSingleCoreParams.sInnerLoopTimes": 16,
+          "increFlashAttentionSingleCoreParams.singleProcessSInnerSize": 1024,
+          "increFlashAttentionSingleCoreParams.singleProcessSInnerSizeTail": 1024,
+          "increFlashAttentionSingleCoreParams.usedCoreNum": 40,
+          "increFlashAttentionSingleCoreParams.formerCoreNum": 24,
+          "increFlashAttentionSingleCoreParams.blockSplitBn2Range": 2,
+          "increFlashAttentionSingleCoreParams.tailSplitedBatchRange": 1,
+          "increFlashAttentionSingleCoreParams.groupSplitSize": 2,
+          "increFlashAttentionSingleCoreParams.s1SplitSize": 1,
+          "increFlashAttentionSingleCoreTensorSize.mmResUbSize": 2048,
+          "increFlashAttentionSingleCoreTensorSize.bmm2ResUbSize": 256,
+          "bmm1TilingData.M": 2,
+          "bmm1TilingData.N": 16384,
+          "bmm1TilingData.Ka": 128,
+          "bmm1TilingData.Kb": 128,
+          "bmm1TilingData.singleCoreM": 2,
+          "bmm1TilingData.singleCoreN": 1024,
+          "bmm1TilingData.singleCoreK": 128,
+          "bmm1TilingData.baseM": 16,
+          "bmm1TilingData.baseN": 128,
+          "bmm1TilingData.baseK": 128,
+          "bmm2TilingData.M": 2,
+          "bmm2TilingData.N": 128,
+          "bmm2TilingData.Ka": 1024,
+          "bmm2TilingData.Kb": 16384,
+          "bmm2TilingData.singleCoreM": 2,
+          "bmm2TilingData.singleCoreN": 128,
+          "bmm2TilingData.singleCoreK": 1024,
+          "bmm2TilingData.baseM": 16,
+          "bmm2TilingData.baseN": 128,
+          "bmm2TilingData.baseK": 128,
+          "softmaxFlashTilingData.srcM": 1,
+          "softmaxFlashTilingData.srcK": 1024,
+          "softmaxFlashTilingData.srcSize": 1024,
+          "softmaxFlashTilingData.outMaxM": 1,
+          "softmaxFlashTilingData.outMaxK": 8,
+          "softmaxFlashTilingData.outMaxSize": 8,
+          "softmaxFlashTilingData.splitM": 1,
+          "softmaxFlashTilingData.splitK": 1024,
+          "softmaxFlashTilingData.splitSize": 1024,
+          "softmaxFlashTilingData.reduceM": 1,
+          "softmaxFlashTilingData.reduceK": 8,
+          "softmaxFlashTilingData.reduceSize": 8,
+          "softmaxFlashTilingData.rangeM": 1,
+          "softmaxFlashTilingData.tailM": 0,
+          "softmaxFlashTilingData.tailSplitSize": 0,
+          "softmaxFlashTilingData.tailReduceSize": 0,
+          "coreSidxEnd": [
+            0,
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            26,
+            28,
+            30,
+            32,
+            34,
+            36,
+            38,
+            40,
+            42,
+            44,
+            46,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64
+          ]
+        }
+      },
+      "public_host_raw_sha256": "5b54a312040c9144fb66b7bad92d73b4b50208991c4d6a515d0cbb0a4b59de1d"
+    },
+    {
+      "call_id": "repeat3",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "repeat3",
+        "pid": 133,
+        "tid": 133,
+        "block_size": 128,
+        "deterministic_algorithms": true,
+        "scope_token": "78df076475d14b15b8c0a43e501c0907"
+      },
+      "selected": {
+        "pid": 133,
+        "tid": 133,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000200000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 133,
+        "tid": 164,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000200000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "native_flags": {
+        "pid": 133,
+        "tid": 133,
+        "op": "IncreFlashAttention_0",
+        "deterministic": 1,
+        "verbose_high_precision_flag": 0
+      },
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16384,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 8192,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 8,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 4,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 266240,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 8192,
+          "Kb": 16384,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 8192,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 64,
+          "depthB1": 4,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 393216,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 64,
+          "stepKb": 2
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 278053,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:09.666.716 [indv_executor_ext.cpp:974][NNOP][NnopbaseExecutorGenDynamicKey][133] OpName:[IncreFlashAttention_0] Verbose opType is IncreFlashAttention, deterministic value is 1, highPrecision value is 0, verboseLen is 29"
+        },
+        {
+          "line": 278115,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:09.667.398 [incre_flash_attention_tiling.cpp:3022][OPS_BASE][FillTilingSplitKV][133] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 16384, blockSize is 128"
+        },
+        {
+          "line": 278142,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:09.667.525 [incre_flash_attention_tiling.cpp:3098][OPS_BASE][AdjustPABmm1Tiling][133] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm1 baseN is adjusted to 128"
+        },
+        {
+          "line": 278150,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.587 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 278151,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.591 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16384"
+        },
+        {
+          "line": 278152,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.595 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 278153,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.598 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 278154,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.602 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 278155,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.606 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 8192"
+        },
+        {
+          "line": 278156,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.610 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 278157,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.613 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 278158,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.615 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 278159,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.618 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 278160,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.622 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 278161,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.626 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 8"
+        },
+        {
+          "line": 278162,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.629 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 278163,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.632 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 278164,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.635 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 278165,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.640 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 4"
+        },
+        {
+          "line": 278166,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.643 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 278167,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.646 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 278168,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.649 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 278169,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.653 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 278170,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.656 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 266240"
+        },
+        {
+          "line": 278171,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.659 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 278172,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.662 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 278173,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.666 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 278174,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.669 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 278175,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.672 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 278176,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.675 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 278177,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.678 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 278178,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.682 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 278212,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.823 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 278213,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.828 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 278214,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.831 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 8192"
+        },
+        {
+          "line": 278215,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.835 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16384"
+        },
+        {
+          "line": 278216,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.839 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 278217,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.843 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 278218,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.847 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 8192"
+        },
+        {
+          "line": 278219,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.852 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 278220,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.855 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 278221,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.860 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 278222,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.865 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 64"
+        },
+        {
+          "line": 278223,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.869 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 4"
+        },
+        {
+          "line": 278224,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.873 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 278225,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.878 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 278226,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.882 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 278227,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.888 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 278228,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.892 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 278229,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.895 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 278230,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.899 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 278231,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.902 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 278232,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.907 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 393216"
+        },
+        {
+          "line": 278233,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.912 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 278234,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.915 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 278235,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.919 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 278236,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.922 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 278237,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.926 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 278238,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.929 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 278239,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.933 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 64"
+        },
+        {
+          "line": 278240,
+          "text": "[INFO] ASCENDCKERNEL(133,python):2026-11-06-03:00:09.667.936 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 2"
+        },
+        {
+          "line": 278241,
+          "text": "[DEBUG] OP(133,python):2026-11-06-03:00:09.667.940 [incre_flash_attention_tiling.cpp:3119][OPS_BASE][AdjustPABmm2Tiling][133] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm2 baseK is adjusted to 128"
+        },
+        {
+          "line": 278246,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:09.668.508 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][133] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000200000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 278309,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:09.668.942 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][164] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 278321,
+          "text": "[INFO] OP(133,python):2026-11-06-03:00:09.669.028 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][164] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000200000, scheMode is 1, numBlocks is 20, stream is 0x4c736b58"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false,
+      "whole_log_nnop_ifa_census": {
+        "pid": 133,
+        "calls": 4,
+        "launch_line": 278321,
+        "unscoped_or_unparsed": 0
+      },
+      "public_host": {
+        "schema": "fault33.pa.typed_host.v1",
+        "observation": "final_public_tiling_context",
+        "kernel_argument_raw_observed": false,
+        "pid": 133,
+        "tid": 133,
+        "token": "78df076475d14b15b8c0a43e501c0907",
+        "call_id": "repeat3",
+        "phase": "decode",
+        "mode": "off",
+        "caller_declared_deterministic": true,
+        "callback_begin_monotonic_ns": 2991429209933915,
+        "callback_end_monotonic_ns": 2991429211193418,
+        "callback_status": 0,
+        "eligible": true,
+        "policy_applied": false,
+        "selector_checks": 1,
+        "serialized_captures": 1,
+        "guard_reports": [
+          {
+            "fixed_inputs": true,
+            "native_scope": true,
+            "native_checks": {
+              "soc_910b": true,
+              "page_attention": true,
+              "no_split_kv": true,
+              "runtime_tiling": true,
+              "no_antiquant": true,
+              "no_quant": true,
+              "no_rope": true,
+              "no_gqa_kv_nz": true,
+              "no_gqa_mtp": true,
+              "no_sys_prefix": true,
+              "no_sliding": true,
+              "no_balance": true,
+              "query_layout_bnsd": true,
+              "kv_layout_ordinary_pa_default": true,
+              "query_fp16": true,
+              "kv_fp16": true,
+              "output_fp16": true,
+              "inner_precise_0": true,
+              "query_seq_1": true,
+              "query_heads_16": true,
+              "kv_heads_8": true,
+              "head_dim_128": true,
+              "head_dim_v_128": true,
+              "block_size_128": true
+            },
+            "native_values": {
+              "soc_version": 0,
+              "input_layout": 1,
+              "input_kv_layout": 0,
+              "query_dtype": 1,
+              "kv_dtype": 1,
+              "output_dtype": 1,
+              "head_dim": 128,
+              "head_dim_v": 128,
+              "query_seq": 1,
+              "query_heads": 16,
+              "kv_heads": 8,
+              "inner_precise": 0
+            },
+            "actual_lengths_all_equal": true,
+            "batch": 8,
+            "actual_kv_length": 16384,
+            "block_size": 128,
+            "perf_mode": 0,
+            "native_sinner": 8192,
+            "compute_seq_size": 16384,
+            "requested_sinner": 0,
+            "legal_request": true,
+            "eligible": true,
+            "applied": false
+          }
+        ],
+        "tiling_key": "10000000000200000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "workspace_count": 1,
+        "raw_size": 3000,
+        "raw_hex": "010000000200000000400000800000008000000002000000002000008000000010000000800000008000000001000000080000000100000004000000000000000000000001000000000000000010040000200000000000000100000001000000010000000100000001000000010000000000000000000000020000000200000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000020000008000000000200000004000000200000080000000002000001000000080000000800000004000000004000000010000000100000000000000000000000100000000000000000006000020000000000000010000000100000001000000010000004000000002000000000000000000000002000000020000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000400000010000008000000080000000800000008000000000000000f304b53d080000000000000010000000020000000100000000000000000000000000000000000000000000000000000008000000000000000000000001000000010000000000000000000000000000000000000000000000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000ffffffffffffffff0000000000400000004000000008000000000000020000000400000006000000080000000a0000000c0000000e00000010000000120000001400000016000000180000001a0000001c0000001e00000020000000220000002400000026000000280000002a0000002c0000002e000000300000003100000032000000330000003400000035000000360000003700000038000000390000003a0000003b0000003c0000003d0000003e0000003f00000040000000400000004000000040000000400000004000000040000000400000004000000040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000020000000200000280000001800000002000000010000000200000001000000000000000040000000010000010000000020000000200000010000000800000008000000010000000020000000200000010000000800000008000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "typed_matches_final_serialized_raw": true,
+        "workspace_sizes": [
+          20837376
+        ],
+        "typed": {
+          "baseParams.batchSize": 8,
+          "baseParams.seqSize": 16384,
+          "baseParams.qSeqSize": 1,
+          "baseParams.headSize": 128,
+          "baseParams.headSizeV": 128,
+          "baseParams.blockSize": 128,
+          "baseParams.maxBlockNumPerBatch": 128,
+          "baseParams.maxBlockNumPerSeq": 0,
+          "baseParams.scaleValue": 0.0883883461356163,
+          "baseParams.kvHeadNum": 8,
+          "baseParams.headNumRatio": 0,
+          "baseParams.qHeadNum": 16,
+          "baseParams.nNumOfQInOneGroup": 2,
+          "baseParams.batchContinuousFlag": 1,
+          "baseParams.actualLenDims": 8,
+          "baseParams.attenMaskFlag": 0,
+          "baseParams.totalBlockNum": 1024,
+          "baseParams.paKvShapeType": 0,
+          "baseParams.sparseMode": 0,
+          "baseParams.slidingFlag": 0,
+          "splitKVParams.s2": 0,
+          "splitKVParams.sInnerLoopSize": 16384,
+          "splitKVParams.accumOutSize": 16384,
+          "splitKVParams.logSumExpSize": 2048,
+          "increFlashAttentionSingleCoreParams.sInnerLoopTimes": 2,
+          "increFlashAttentionSingleCoreParams.singleProcessSInnerSize": 8192,
+          "increFlashAttentionSingleCoreParams.singleProcessSInnerSizeTail": 8192,
+          "increFlashAttentionSingleCoreParams.usedCoreNum": 40,
+          "increFlashAttentionSingleCoreParams.formerCoreNum": 24,
+          "increFlashAttentionSingleCoreParams.blockSplitBn2Range": 2,
+          "increFlashAttentionSingleCoreParams.tailSplitedBatchRange": 1,
+          "increFlashAttentionSingleCoreParams.groupSplitSize": 2,
+          "increFlashAttentionSingleCoreParams.s1SplitSize": 1,
+          "increFlashAttentionSingleCoreTensorSize.mmResUbSize": 16384,
+          "increFlashAttentionSingleCoreTensorSize.bmm2ResUbSize": 256,
+          "bmm1TilingData.M": 2,
+          "bmm1TilingData.N": 16384,
+          "bmm1TilingData.Ka": 128,
+          "bmm1TilingData.Kb": 128,
+          "bmm1TilingData.singleCoreM": 2,
+          "bmm1TilingData.singleCoreN": 8192,
+          "bmm1TilingData.singleCoreK": 128,
+          "bmm1TilingData.baseM": 16,
+          "bmm1TilingData.baseN": 128,
+          "bmm1TilingData.baseK": 128,
+          "bmm2TilingData.M": 2,
+          "bmm2TilingData.N": 128,
+          "bmm2TilingData.Ka": 8192,
+          "bmm2TilingData.Kb": 16384,
+          "bmm2TilingData.singleCoreM": 2,
+          "bmm2TilingData.singleCoreN": 128,
+          "bmm2TilingData.singleCoreK": 8192,
+          "bmm2TilingData.baseM": 16,
+          "bmm2TilingData.baseN": 128,
+          "bmm2TilingData.baseK": 128,
+          "softmaxFlashTilingData.srcM": 1,
+          "softmaxFlashTilingData.srcK": 8192,
+          "softmaxFlashTilingData.srcSize": 8192,
+          "softmaxFlashTilingData.outMaxM": 1,
+          "softmaxFlashTilingData.outMaxK": 8,
+          "softmaxFlashTilingData.outMaxSize": 8,
+          "softmaxFlashTilingData.splitM": 1,
+          "softmaxFlashTilingData.splitK": 8192,
+          "softmaxFlashTilingData.splitSize": 8192,
+          "softmaxFlashTilingData.reduceM": 1,
+          "softmaxFlashTilingData.reduceK": 8,
+          "softmaxFlashTilingData.reduceSize": 8,
+          "softmaxFlashTilingData.rangeM": 1,
+          "softmaxFlashTilingData.tailM": 0,
+          "softmaxFlashTilingData.tailSplitSize": 0,
+          "softmaxFlashTilingData.tailReduceSize": 0,
+          "coreSidxEnd": [
+            0,
+            2,
+            4,
+            6,
+            8,
+            10,
+            12,
+            14,
+            16,
+            18,
+            20,
+            22,
+            24,
+            26,
+            28,
+            30,
+            32,
+            34,
+            36,
+            38,
+            40,
+            42,
+            44,
+            46,
+            48,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64,
+            64
+          ]
+        }
+      },
+      "public_host_raw_sha256": "56f066f20c415d72c3b22a34edac8553814379cfbb2e408bab9fcc724c1308ed"
+    }
+  ],
+  "kernel_argument_raw_observed": false,
+  "public_host_raw_is_tiling_metadata": true,
+  "full_original_log_included": false,
+  "analysis_source_sha256": "66eabe0e12fc4495889cc1d44a885dc962d149ac573de4735a952f73df0c901c"
+}

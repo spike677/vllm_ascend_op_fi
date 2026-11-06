@@ -1,0 +1,555 @@
+{
+  "schema": "fault33.pa.offline_dependencies.v1",
+  "status": "PASS_ENABLED_OFFLINE_INPUT_PREFLIGHT",
+  "review_contract_sha256": "d8b0316f4c3ad78741d9aadc7b99d86bf86b2c4f30f2af65b0b011444cc37c9b",
+  "reviewed_interfaces": [
+    {
+      "repository": "ops-transformer",
+      "path": "CMakeLists.txt",
+      "sha256": "25640707697482e587c30bd5ce4e1be1ad8fcbe089599354150fc62cb09d19d1"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/fetch_cann_cmake.cmake",
+      "sha256": "38d9ec0a0d4c623866c7eda4c6df225140183456391e61a31097c93c958f1b40"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/third_party/opbase.cmake",
+      "sha256": "45d16b30c2dd75c1a6ff6383afc7a51138cf51da7315533eec278f6fcaec2c0f"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/third_party/ops-tensor.cmake",
+      "sha256": "0133e40d3a2f48df21217e73025b308849c8562da6181718ac258ae3eafe5501"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/config.cmake",
+      "sha256": "99a56684763205127b2d059c6686db25faeb4cd577efe47147586539aab60b99"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/variables.cmake",
+      "sha256": "5a18671228013a08c130c1aecc1818005ef2d591c9d0664443142737e8d9c9de"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/custom_build.cmake",
+      "sha256": "7db58faa22dde64bacea1afa7d91f8ac1b55e4da332d2705239dc69a760c5d4c"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/scripts/prepare.sh",
+      "sha256": "4ba35bf2befd32e5d06597b94d00be789be67db8b34c5dc32c39b2d947e7f9fe"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "function/prepare.cmake",
+      "sha256": "454616dfad70fc65c9c36c248de0ba9b3e5ae8d98b11c91a8de1bf19c33df34b"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/json.cmake",
+      "sha256": "46ec0720b17ba1c82dfa987433c711fa1ebf5b738218a8c30673f54ec844b0d1"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/eigen.cmake",
+      "sha256": "00999a0a8617aeda5c0408c59e61070775a46773c228f8527090454a37d50366"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/abseil-cpp.cmake",
+      "sha256": "b590d1ce3e1b6d5aaa849b866adde3d22932f06f41180805d7a737464932f26f"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/protobuf.cmake",
+      "sha256": "5e5a6518bc13952a5571328b9039b2c62c563d8ba82f818fbda94e1eebaeb848"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/makeself-fetch.cmake",
+      "sha256": "f5819286bbae1190b26d9151612e71f8881ce97f924e41d28558047874bd3656"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/protobuf_25.1_change_version.patch",
+      "sha256": "0ffc73d39a6fa31328e920c910fc0453dddff63c82fe31792d7808e8a298c884"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/protobuf-hide_absl_symbols.patch",
+      "sha256": "86574fb2bd592054fb365bf893de8b15f23900080079786361c56a873888ecf3"
+    }
+  ],
+  "ops_declaration_inventory": [
+    {
+      "path": "CMakeLists.txt",
+      "line": 135,
+      "command": "add_cann_third_party",
+      "name": "json"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "line": 140,
+      "command": "add_cann_third_party",
+      "name": "gtest"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "line": 160,
+      "command": "add_cann_third_party",
+      "name": "eigen"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "line": 161,
+      "command": "add_cann_third_party",
+      "name": "abseil-cpp"
+    },
+    {
+      "path": "CMakeLists.txt",
+      "line": 162,
+      "command": "add_cann_third_party",
+      "name": "protobuf"
+    },
+    {
+      "path": "cmake/build_empty_package.cmake",
+      "line": 12,
+      "command": "add_cann_third_party",
+      "name": "makeself-fetch"
+    },
+    {
+      "path": "cmake/custom_build.cmake",
+      "line": 774,
+      "command": "ExternalProject_Add",
+      "name": "extern_opbuild_gen_transformer"
+    },
+    {
+      "path": "cmake/fetch_cann_cmake.cmake",
+      "line": 19,
+      "command": "FetchContent_Declare",
+      "name": "cann-cmake"
+    },
+    {
+      "path": "cmake/fetch_cann_cmake.cmake",
+      "line": 25,
+      "command": "FetchContent_Declare",
+      "name": "cann-cmake"
+    },
+    {
+      "path": "cmake/fetch_cann_cmake.cmake",
+      "line": 34,
+      "command": "FetchContent_Populate",
+      "name": "cann-cmake"
+    },
+    {
+      "path": "cmake/third_party/opbase.cmake",
+      "line": 30,
+      "command": "FetchContent_Declare",
+      "name": "opbase"
+    },
+    {
+      "path": "cmake/third_party/opbase.cmake",
+      "line": 37,
+      "command": "FetchContent_Populate",
+      "name": "opbase"
+    },
+    {
+      "path": "cmake/third_party/ops-tensor.cmake",
+      "line": 65,
+      "command": "FetchContent_Declare",
+      "name": "ops-tensor"
+    },
+    {
+      "path": "cmake/third_party/ops-tensor.cmake",
+      "line": 72,
+      "command": "FetchContent_Populate",
+      "name": "ops-tensor"
+    },
+    {
+      "path": "cmake/ut.cmake",
+      "line": 515,
+      "command": "add_cann_third_party",
+      "name": "gtest"
+    },
+    {
+      "path": "common/CMakeLists.txt",
+      "line": 137,
+      "command": "ExternalProject_Add",
+      "name": "tiling_sink_task"
+    },
+    {
+      "path": "third_party/json/tests/benchmarks/CMakeLists.txt",
+      "line": 11,
+      "command": "FetchContent_Declare",
+      "name": "benchmark"
+    },
+    {
+      "path": "third_party/json/tests/benchmarks/CMakeLists.txt",
+      "line": 20,
+      "command": "FetchContent_Populate",
+      "name": "benchmark"
+    },
+    {
+      "path": "third_party/json/tests/cmake_fetch_content/project/CMakeLists.txt",
+      "line": 8,
+      "command": "FetchContent_Declare",
+      "name": "json"
+    },
+    {
+      "path": "third_party/json/tests/cmake_fetch_content/project/CMakeLists.txt",
+      "line": 12,
+      "command": "FetchContent_Populate",
+      "name": "json"
+    },
+    {
+      "path": "third_party/json/tests/cmake_fetch_content2/project/CMakeLists.txt",
+      "line": 8,
+      "command": "FetchContent_Declare",
+      "name": "json"
+    },
+    {
+      "path": "third_party/json/tests/cmake_fetch_content2/project/CMakeLists.txt",
+      "line": 9,
+      "command": "FetchContent_MakeAvailable",
+      "name": "json"
+    }
+  ],
+  "cann_cmake_declaration_inventory": [
+    {
+      "path": "function/prepare.cmake",
+      "line": 149,
+      "command": "ExternalProject_Add",
+      "name": "cann_device"
+    },
+    {
+      "path": "function/prepare.cmake",
+      "line": 225,
+      "command": "add_cann_third_party",
+      "name": "makeself-fetch"
+    },
+    {
+      "path": "superbuild/CMakeLists.txt",
+      "line": 51,
+      "command": "ExternalProject_Add",
+      "name": "cann_device"
+    },
+    {
+      "path": "superbuild/device.cmake",
+      "line": 14,
+      "command": "ExternalProject_Add",
+      "name": "device"
+    },
+    {
+      "path": "superbuild/host.cmake",
+      "line": 14,
+      "command": "ExternalProject_Add",
+      "name": "host"
+    },
+    {
+      "path": "third_party/abseil-cpp.cmake",
+      "line": 49,
+      "command": "ExternalProject_Add",
+      "name": "abseil_build"
+    },
+    {
+      "path": "third_party/ascend_protobuf.cmake",
+      "line": 56,
+      "command": "ExternalProject_Add",
+      "name": "ascend_protobuf_build_transformer"
+    },
+    {
+      "path": "third_party/benchmark.cmake",
+      "line": 47,
+      "command": "ExternalProject_Add",
+      "name": "benchmark_build"
+    },
+    {
+      "path": "third_party/boost.cmake",
+      "line": 55,
+      "command": "ExternalProject_Add",
+      "name": "third_party_boost"
+    },
+    {
+      "path": "third_party/boost.cmake",
+      "line": 67,
+      "command": "ExternalProject_Add",
+      "name": "third_party_boost_headers"
+    },
+    {
+      "path": "third_party/cares.cmake",
+      "line": 31,
+      "command": "ExternalProject_Add",
+      "name": "cares_build"
+    },
+    {
+      "path": "third_party/csec.cmake",
+      "line": 61,
+      "command": "ExternalProject_Add",
+      "name": "csec_src"
+    },
+    {
+      "path": "third_party/csec.cmake",
+      "line": 82,
+      "command": "ExternalProject_Add",
+      "name": "csec_src"
+    },
+    {
+      "path": "third_party/eigen.cmake",
+      "line": 31,
+      "command": "ExternalProject_Add",
+      "name": "external_eigen"
+    },
+    {
+      "path": "third_party/grpc.cmake",
+      "line": 156,
+      "command": "ExternalProject_Add",
+      "name": "grpc_build"
+    },
+    {
+      "path": "third_party/grpc.cmake",
+      "line": 238,
+      "command": "ExternalProject_Add",
+      "name": "protoc_grpc_build"
+    },
+    {
+      "path": "third_party/gtest.cmake",
+      "line": 111,
+      "command": "ExternalProject_Add",
+      "name": "third_party_gtest"
+    },
+    {
+      "path": "third_party/gtest_shared.cmake",
+      "line": 87,
+      "command": "ExternalProject_Add",
+      "name": "gtest_shared_build"
+    },
+    {
+      "path": "third_party/jpeg.cmake",
+      "line": 25,
+      "command": "ExternalProject_Add",
+      "name": "third_party_jpeg"
+    },
+    {
+      "path": "third_party/json.cmake",
+      "line": 57,
+      "command": "ExternalProject_Add",
+      "name": "third_party_json"
+    },
+    {
+      "path": "third_party/libboundscheck.cmake",
+      "line": 113,
+      "command": "ExternalProject_Add",
+      "name": "ExternalProject_c_sec"
+    },
+    {
+      "path": "third_party/makeself-fetch.cmake",
+      "line": 46,
+      "command": "FetchContent_Declare",
+      "name": "${MAKESELF_NAME}"
+    },
+    {
+      "path": "third_party/makeself-fetch.cmake",
+      "line": 52,
+      "command": "FetchContent_MakeAvailable",
+      "name": "${MAKESELF_NAME}"
+    },
+    {
+      "path": "third_party/mockcpp.cmake",
+      "line": 78,
+      "command": "ExternalProject_Add",
+      "name": "mockcpp_static_build"
+    },
+    {
+      "path": "third_party/openssl.cmake",
+      "line": 117,
+      "command": "ExternalProject_Add",
+      "name": "openssl_project"
+    },
+    {
+      "path": "third_party/protobuf.cmake",
+      "line": 158,
+      "command": "ExternalProject_Add",
+      "name": "protobuf_src"
+    },
+    {
+      "path": "third_party/protobuf.cmake",
+      "line": 186,
+      "command": "ExternalProject_Add",
+      "name": "protobuf_shared_build"
+    },
+    {
+      "path": "third_party/protobuf.cmake",
+      "line": 235,
+      "command": "ExternalProject_Add",
+      "name": "protobuf_host_build"
+    },
+    {
+      "path": "third_party/protobuf.cmake",
+      "line": 277,
+      "command": "ExternalProject_Add",
+      "name": "protobuf_static_build"
+    },
+    {
+      "path": "third_party/protobuf.cmake",
+      "line": 328,
+      "command": "ExternalProject_Add",
+      "name": "protobuf_host_static_build"
+    },
+    {
+      "path": "third_party/rdma-core.cmake",
+      "line": 72,
+      "command": "ExternalProject_Add",
+      "name": "rdma_core_patch"
+    },
+    {
+      "path": "third_party/rdma-core.cmake",
+      "line": 104,
+      "command": "ExternalProject_Add",
+      "name": "rdma_core_src"
+    },
+    {
+      "path": "third_party/rdma-core.cmake",
+      "line": 121,
+      "command": "ExternalProject_Add",
+      "name": "rdma_core_build"
+    },
+    {
+      "path": "third_party/re2.cmake",
+      "line": 35,
+      "command": "ExternalProject_Add",
+      "name": "re2_build"
+    },
+    {
+      "path": "third_party/seccomp.cmake",
+      "line": 35,
+      "command": "ExternalProject_Add",
+      "name": "external_seccomp"
+    },
+    {
+      "path": "third_party/secure_c.cmake",
+      "line": 17,
+      "command": "ExternalProject_Add",
+      "name": "secure_c"
+    },
+    {
+      "path": "third_party/symengine.cmake",
+      "line": 56,
+      "command": "ExternalProject_Add",
+      "name": "symengine_build"
+    },
+    {
+      "path": "third_party/zlib.cmake",
+      "line": 49,
+      "command": "ExternalProject_Add",
+      "name": "zlib_src"
+    },
+    {
+      "path": "third_party/zlib.cmake",
+      "line": 64,
+      "command": "ExternalProject_Add",
+      "name": "zlib_bin_build"
+    }
+  ],
+  "enabled_branches": [
+    {
+      "dependency": "cann-cmake",
+      "interface": "CANN_3RD_LIB_PATH/cann-cmake direct include; explicit FETCHCONTENT_SOURCE_DIR_CANN-CMAKE fallback",
+      "private_path": "/deps/cann-cmake"
+    },
+    {
+      "dependency": "opbase",
+      "interface": "CANN_3RD_LIB_PATH/opbase native local-directory branch; local git checkout only",
+      "private_path": "/deps/opbase"
+    },
+    {
+      "dependency": "ops-tensor",
+      "interface": "PROJECT_SOURCE_DIR/../ops-tensor first branch avoids git fetch; explicit FETCHCONTENT_SOURCE_DIR_OPS-TENSOR fallback",
+      "private_path": "generation-private sibling symlink to copied ops-tensor"
+    },
+    {
+      "dependency": "json",
+      "interface": "CMAKE_PROJECT_INCLUDE creates frozen header-only json INTERFACE target with native namespace macro; native module TARGET guard returns",
+      "private_path": "/deps/json/single_include"
+    },
+    {
+      "dependency": "eigen",
+      "interface": "native ExternalProject URL local-directory branch",
+      "private_path": "/deps/eigen"
+    },
+    {
+      "dependency": "abseil-cpp",
+      "interface": "native ExternalProject URL first local-archive branch; official patch retained",
+      "private_path": "/deps/abseil-cpp/abseil-cpp-20230802.1.tar.gz"
+    },
+    {
+      "dependency": "protobuf",
+      "interface": "native ExternalProject protobuf_src local archive; dependent builds use empty DOWNLOAD_COMMAND and official patches",
+      "private_path": "/deps/protobuf/protobuf-25.1.tar.gz"
+    },
+    {
+      "dependency": "makeself",
+      "interface": "SDK packaging script tools copied and compared in separate read-only CPU container before freeze; no gitcode tar archive claim",
+      "private_path": "new source/third_party/makeself"
+    }
+  ],
+  "disabled_branches": [
+    {
+      "dependency": "gtest",
+      "reason": "ENABLE_TEST=OFF and all UT flags default OFF"
+    },
+    {
+      "dependency": "cann_device",
+      "reason": "host-only open project; no device superbuild"
+    },
+    {
+      "dependency": "extern_opbuild_gen_transformer",
+      "reason": "requires NOT BUILD_OPEN_PROJECT; configured BUILD_OPEN_PROJECT=ON"
+    },
+    {
+      "dependency": "makeself FetchContent_MakeAvailable(${MAKESELF_NAME})",
+      "reason": "packager scripts prepopulated; custom host package uses SDK CPack script"
+    },
+    {
+      "dependency": "other cann-cmake third_party modules",
+      "reason": "not called by the reviewed enabled root dependency chain; full inventory retained separately"
+    }
+  ],
+  "assets": [
+    {
+      "path": "json/single_include/nlohmann/json.hpp",
+      "bytes": 919975,
+      "sha256": "9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6"
+    },
+    {
+      "path": "protobuf/protobuf-25.1.tar.gz",
+      "bytes": 5878124,
+      "sha256": "9bd87b8280ef720d3240514f884e56a712f2218f0d693b48050c836028940a42"
+    },
+    {
+      "path": "abseil-cpp/abseil-cpp-20230802.1.tar.gz",
+      "bytes": 2157158,
+      "sha256": "987ce98f02eefbaf930d6e38ab16aa05737234d7afbab2d5c4ea7adbe50c28ed"
+    },
+    {
+      "path": "/home/fault33-paged-tiling-20261105/dependencies_a4/eigen/Eigen/Core",
+      "bytes": 14466,
+      "sha256": "57d90f31a36d08a8423a736920e000e69b9f7ae043f3b98e728711340c22b897"
+    },
+    {
+      "path": "/home/fault33-paged-tiling-20261105/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself.sh",
+      "bytes": 21228,
+      "sha256": "ea025ed0be9996885e873e0eafff475ebd5e85cb77dbff858e0c34bd9a1aa85c"
+    },
+    {
+      "path": "/home/fault33-paged-tiling-20261105/source_a4/ops-transformer-v9.1.0/third_party/makeself/makeself-header.sh",
+      "bytes": 18257,
+      "sha256": "d0d3109d12135761028ebdd7d49814427f4a711cae6cde62703590b21baaf33f"
+    }
+  ],
+  "network_enabled": false,
+  "npu_executed": false
+}

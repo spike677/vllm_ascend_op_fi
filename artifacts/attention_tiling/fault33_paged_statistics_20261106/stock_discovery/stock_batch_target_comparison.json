@@ -1,0 +1,42 @@
+{
+  "schema": "fault33.stock_target_batch_compare.v1",
+  "target_inputs_bitwise_equal": true,
+  "baseline_result_sha256": "3023a22a54cfeb18b7339289b81792cc6511399ed220ff1e7ce2df5eb1abfe8c",
+  "batch8_result_sha256": "956d17a616ddfb425eaf561e5a474dfd39ff0ca60dbdb32a6185a11b257beaba",
+  "comparisons": [
+    {
+      "block_size": 128,
+      "request": 0,
+      "elements": 2048,
+      "bitwise_equal": false,
+      "different_elements": 912,
+      "max_abs": 3.0517578125e-05,
+      "mean_abs": 2.4311302695423365e-06,
+      "baseline_sha256": "20e6e67fe290bd3ff25468c11785fe1561a83eb3028ded579afab2b0d25b6d18",
+      "fault_target_sha256": "722f877d7297090dec8fe96308ff9bdf1f37a6e25f59407a7990baa8ea62ffb1"
+    },
+    {
+      "block_size": 112,
+      "request": 0,
+      "elements": 2048,
+      "bitwise_equal": false,
+      "different_elements": 910,
+      "max_abs": 3.0517578125e-05,
+      "mean_abs": 2.4409673642367125e-06,
+      "baseline_sha256": "95719b50e456855a7fe42d35b254288d9017b8a7b37f4875e7d96ebc35904170",
+      "fault_target_sha256": "c676a48eb57307f9dff4e35721d22de57eb5b1cbe258b1c478b7f3f80b460493"
+    },
+    {
+      "block_size": 80,
+      "request": 0,
+      "elements": 2048,
+      "bitwise_equal": false,
+      "different_elements": 927,
+      "max_abs": 3.0517578125e-05,
+      "mean_abs": 2.4406472221016884e-06,
+      "baseline_sha256": "ea1afb1c8b4043b6d521f4f006dbec63e10eecb1d136f4fd40b93a3c1d7aa74a",
+      "fault_target_sha256": "57d0cee57a414c8665f572a7b8f7e1219aedee80085a3e740aea28565886b245"
+    }
+  ],
+  "scope": "Target request 0 complete output; stock batch1 vs8, fixed L16384; actual profile evidence separate."
+}

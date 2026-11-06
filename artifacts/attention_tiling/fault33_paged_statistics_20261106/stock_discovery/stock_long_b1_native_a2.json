@@ -1,0 +1,2139 @@
+{
+  "schema": "fault33.pa.actual_native_evidence.v1",
+  "log_sha256": "6f21fcac859e0b57858171dc21a38fca2325ac5c761059d5b0692fef6e5c3c00",
+  "calls": [
+    {
+      "call_id": "bs128_r0",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "bs128_r0",
+        "pid": 46,
+        "tid": 46,
+        "block_size": 128,
+        "deterministic_algorithms": true
+      },
+      "selected": {
+        "pid": 46,
+        "tid": 46,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 46,
+        "tid": 77,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16384,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 3328,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 4,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 2,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 135168,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 3328,
+          "Kb": 16384,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 3328,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 26,
+          "depthB1": 4,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 237568,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 26,
+          "stepKb": 2
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 245742,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:09.858.746 [incre_flash_attention_tiling.cpp:2986][OPS_BASE][FillTilingSplitKV][46] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 3328, blockSize is 128"
+        },
+        {
+          "line": 245769,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:09.858.854 [incre_flash_attention_tiling.cpp:3061][OPS_BASE][AdjustPABmm1Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm1 baseN is adjusted to 128"
+        },
+        {
+          "line": 245777,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.909 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 245778,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.912 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16384"
+        },
+        {
+          "line": 245779,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.914 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 245780,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.917 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 245781,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.920 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 245782,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.923 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 3328"
+        },
+        {
+          "line": 245783,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.925 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 245784,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.928 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 245785,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.930 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 245786,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.933 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 245787,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.935 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 245788,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.937 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 4"
+        },
+        {
+          "line": 245789,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.941 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 245790,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.944 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 245791,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.947 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 245792,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.949 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 2"
+        },
+        {
+          "line": 245793,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.951 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 245794,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.953 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 245795,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.956 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 245796,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.958 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 245797,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.960 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 135168"
+        },
+        {
+          "line": 245798,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.963 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 245799,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.966 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 245800,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.968 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 245801,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.971 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 245802,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.973 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 245803,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.975 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 245804,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.979 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 245805,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.858.981 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 245839,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.099 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 245840,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.102 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 245841,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.105 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 3328"
+        },
+        {
+          "line": 245842,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.107 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16384"
+        },
+        {
+          "line": 245843,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.109 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 245844,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.112 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 245845,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.115 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 3328"
+        },
+        {
+          "line": 245846,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.117 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 245847,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.120 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 245848,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.122 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 245849,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.125 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 26"
+        },
+        {
+          "line": 245850,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.127 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 4"
+        },
+        {
+          "line": 245851,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.129 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 245852,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.132 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 245853,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.134 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 245854,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.136 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 245855,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.139 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 245856,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.142 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 245857,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.144 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 245858,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.146 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 245859,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.149 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 237568"
+        },
+        {
+          "line": 245860,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.151 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 245861,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.154 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 245862,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.157 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 245863,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.159 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 245864,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.162 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 245865,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.164 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 245866,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.167 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 26"
+        },
+        {
+          "line": 245867,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.859.169 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 2"
+        },
+        {
+          "line": 245868,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:09.859.172 [incre_flash_attention_tiling.cpp:3083][OPS_BASE][AdjustPABmm2Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm2 baseK is adjusted to 128"
+        },
+        {
+          "line": 245873,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:09.859.211 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][46] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000300000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 245955,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:09.860.104 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][77] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 245965,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:09.860.182 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][77] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000300000, scheMode is 1, numBlocks is 20, stream is 0x51a591b8"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false
+    },
+    {
+      "call_id": "bs128_r1",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "bs128_r1",
+        "pid": 46,
+        "tid": 46,
+        "block_size": 128,
+        "deterministic_algorithms": true
+      },
+      "selected": {
+        "pid": 46,
+        "tid": 46,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 46,
+        "tid": 77,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16384,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 3328,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 4,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 2,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 135168,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 3328,
+          "Kb": 16384,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 3328,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 26,
+          "depthB1": 4,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 237568,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 26,
+          "stepKb": 2
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 246250,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:09.991.761 [incre_flash_attention_tiling.cpp:2986][OPS_BASE][FillTilingSplitKV][46] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 3328, blockSize is 128"
+        },
+        {
+          "line": 246277,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:09.991.853 [incre_flash_attention_tiling.cpp:3061][OPS_BASE][AdjustPABmm1Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm1 baseN is adjusted to 128"
+        },
+        {
+          "line": 246285,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.906 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 246286,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.908 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16384"
+        },
+        {
+          "line": 246287,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.911 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 246288,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.914 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 246289,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.917 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 246290,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.919 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 3328"
+        },
+        {
+          "line": 246291,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.922 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 246292,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.924 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 246293,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.927 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 246294,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.929 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 246295,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.932 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 246296,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.934 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 4"
+        },
+        {
+          "line": 246297,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.938 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 246298,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.940 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 246299,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.942 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 246300,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.944 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 2"
+        },
+        {
+          "line": 246301,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.947 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 246302,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.951 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 246303,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.953 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 246304,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.956 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 246305,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.958 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 135168"
+        },
+        {
+          "line": 246306,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.961 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 246307,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.963 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 246308,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.965 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 246309,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.968 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 246310,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.970 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 246311,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.972 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 246312,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.975 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 246313,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.991.977 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 246347,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.088 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 246348,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.091 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 246349,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.093 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 3328"
+        },
+        {
+          "line": 246350,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.096 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16384"
+        },
+        {
+          "line": 246351,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.099 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 246352,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.101 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 246353,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.103 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 3328"
+        },
+        {
+          "line": 246354,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.106 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 246355,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.108 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 246356,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.110 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 246357,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.113 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 26"
+        },
+        {
+          "line": 246358,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.115 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 4"
+        },
+        {
+          "line": 246359,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.117 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 246360,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.119 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 246361,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.122 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 246362,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.124 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 246363,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.126 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 246364,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.129 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 246365,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.132 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 246366,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.134 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 246367,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.137 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 237568"
+        },
+        {
+          "line": 246368,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.139 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 246369,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.142 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 246370,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.144 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 246371,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.146 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 246372,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.149 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 246373,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.151 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 246374,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.153 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 26"
+        },
+        {
+          "line": 246375,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:09.992.156 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 2"
+        },
+        {
+          "line": 246376,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:09.992.160 [incre_flash_attention_tiling.cpp:3083][OPS_BASE][AdjustPABmm2Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 128, bmm2 baseK is adjusted to 128"
+        },
+        {
+          "line": 246381,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:09.992.195 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][46] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000300000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 246433,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:09.992.457 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][77] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 246441,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:09.992.515 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][77] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000300000, scheMode is 1, numBlocks is 20, stream is 0x51a591b8"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false
+    },
+    {
+      "call_id": "bs112_r0",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "bs112_r0",
+        "pid": 46,
+        "tid": 46,
+        "block_size": 112,
+        "deterministic_algorithms": true
+      },
+      "selected": {
+        "pid": 46,
+        "tid": 46,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 46,
+        "tid": 77,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16464,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 3360,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 16,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 84,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 42,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 348160,
+          "usedL0CSize": 1024,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 3360,
+          "Kb": 16464,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 3360,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 27,
+          "depthB1": 6,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 307200,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 27,
+          "stepKb": 3
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 246782,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.298.775 [incre_flash_attention_tiling.cpp:2986][OPS_BASE][FillTilingSplitKV][46] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 3360, blockSize is 112"
+        },
+        {
+          "line": 246809,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.298.900 [incre_flash_attention_tiling.cpp:3061][OPS_BASE][AdjustPABmm1Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 112, bmm1 baseN is adjusted to 16"
+        },
+        {
+          "line": 246817,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.959 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 246818,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.962 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16464"
+        },
+        {
+          "line": 246819,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.966 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 246820,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.968 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 246821,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.971 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 246822,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.974 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 3360"
+        },
+        {
+          "line": 246823,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.976 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 246824,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.979 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 246825,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.982 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 16"
+        },
+        {
+          "line": 246826,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.984 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 246827,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.987 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 246828,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.989 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 84"
+        },
+        {
+          "line": 246829,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.992 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 246830,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.995 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 246831,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.298.997 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 246832,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.000 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 42"
+        },
+        {
+          "line": 246833,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.003 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 246834,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.005 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 246835,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.007 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 246836,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.011 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 246837,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.013 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 348160"
+        },
+        {
+          "line": 246838,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.016 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 1024"
+        },
+        {
+          "line": 246839,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.019 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 246840,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.021 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 246841,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.023 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 246842,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.026 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 246843,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.028 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 246844,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.031 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 246845,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.034 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 246879,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.148 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 246880,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.151 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 246881,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.154 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 3360"
+        },
+        {
+          "line": 246882,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.156 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16464"
+        },
+        {
+          "line": 246883,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.158 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 246884,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.161 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 246885,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.163 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 3360"
+        },
+        {
+          "line": 246886,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.166 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 246887,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.168 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 246888,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.171 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 246889,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.173 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 27"
+        },
+        {
+          "line": 246890,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.176 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 6"
+        },
+        {
+          "line": 246891,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.178 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 246892,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.181 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 246893,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.183 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 246894,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.186 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 246895,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.188 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 246896,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.190 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 246897,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.193 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 246898,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.195 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 246899,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.198 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 307200"
+        },
+        {
+          "line": 246900,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.200 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 246901,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.202 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 246902,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.204 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 246903,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.207 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 246904,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.209 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 246905,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.212 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 246906,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.214 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 27"
+        },
+        {
+          "line": 246907,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.299.216 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 3"
+        },
+        {
+          "line": 246908,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.299.219 [incre_flash_attention_tiling.cpp:3083][OPS_BASE][AdjustPABmm2Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 112, bmm2 baseK is adjusted to 16"
+        },
+        {
+          "line": 246913,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.299.258 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][46] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000300000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 246965,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.299.503 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][77] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 246973,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.299.559 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][77] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000300000, scheMode is 1, numBlocks is 20, stream is 0x51a591b8"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false
+    },
+    {
+      "call_id": "bs112_r1",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "bs112_r1",
+        "pid": 46,
+        "tid": 46,
+        "block_size": 112,
+        "deterministic_algorithms": true
+      },
+      "selected": {
+        "pid": 46,
+        "tid": 46,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 46,
+        "tid": 77,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16464,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 3360,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 16,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 84,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 42,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 348160,
+          "usedL0CSize": 1024,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 3360,
+          "Kb": 16464,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 3360,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 27,
+          "depthB1": 6,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 307200,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 27,
+          "stepKb": 3
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 247234,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.432.045 [incre_flash_attention_tiling.cpp:2986][OPS_BASE][FillTilingSplitKV][46] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 3360, blockSize is 112"
+        },
+        {
+          "line": 247261,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.432.138 [incre_flash_attention_tiling.cpp:3061][OPS_BASE][AdjustPABmm1Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 112, bmm1 baseN is adjusted to 16"
+        },
+        {
+          "line": 247269,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.191 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 247270,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.194 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16464"
+        },
+        {
+          "line": 247271,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.197 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 247272,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.199 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 247273,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.202 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 247274,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.204 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 3360"
+        },
+        {
+          "line": 247275,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.208 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 247276,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.210 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 247277,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.214 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 16"
+        },
+        {
+          "line": 247278,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.216 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 247279,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.219 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 247280,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.221 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 84"
+        },
+        {
+          "line": 247281,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.223 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 247282,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.226 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 247283,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.228 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 247284,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.230 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 42"
+        },
+        {
+          "line": 247285,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.233 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 247286,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.235 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 247287,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.238 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 247288,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.240 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 247289,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.242 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 348160"
+        },
+        {
+          "line": 247290,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.245 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 1024"
+        },
+        {
+          "line": 247291,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.247 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 247292,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.250 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 247293,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.252 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 247294,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.255 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 247295,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.257 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 247296,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.260 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 247297,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.262 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 247331,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.376 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 247332,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.379 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 247333,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.382 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 3360"
+        },
+        {
+          "line": 247334,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.384 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16464"
+        },
+        {
+          "line": 247335,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.387 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 247336,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.389 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 247337,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.392 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 3360"
+        },
+        {
+          "line": 247338,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.395 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 247339,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.398 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 247340,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.400 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 247341,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.403 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 27"
+        },
+        {
+          "line": 247342,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.405 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 6"
+        },
+        {
+          "line": 247343,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.408 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 247344,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.410 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 247345,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.413 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 247346,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.416 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 247347,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.418 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 247348,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.421 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 247349,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.423 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 247350,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.425 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 247351,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.428 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 307200"
+        },
+        {
+          "line": 247352,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.430 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 247353,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.433 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 247354,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.435 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 247355,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.438 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 247356,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.440 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 247357,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.443 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 247358,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.445 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 27"
+        },
+        {
+          "line": 247359,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.432.448 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 3"
+        },
+        {
+          "line": 247360,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.432.450 [incre_flash_attention_tiling.cpp:3083][OPS_BASE][AdjustPABmm2Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 112, bmm2 baseK is adjusted to 16"
+        },
+        {
+          "line": 247365,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.432.488 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][46] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000300000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 247417,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.432.757 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][77] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 247425,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.432.814 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][77] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000300000, scheMode is 1, numBlocks is 20, stream is 0x51a591b8"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false
+    },
+    {
+      "call_id": "bs80_r0",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "bs80_r0",
+        "pid": 46,
+        "tid": 46,
+        "block_size": 80,
+        "deterministic_algorithms": true
+      },
+      "selected": {
+        "pid": 46,
+        "tid": 46,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 46,
+        "tid": 77,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16400,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 3280,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 16,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 46,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 23,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 192512,
+          "usedL0CSize": 1024,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 3296,
+          "Kb": 16400,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 3280,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 26,
+          "depthB1": 4,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 237568,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 26,
+          "stepKb": 2
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 247768,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.738.904 [incre_flash_attention_tiling.cpp:2986][OPS_BASE][FillTilingSplitKV][46] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 3280, blockSize is 80"
+        },
+        {
+          "line": 247795,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.738.997 [incre_flash_attention_tiling.cpp:3061][OPS_BASE][AdjustPABmm1Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 80, bmm1 baseN is adjusted to 16"
+        },
+        {
+          "line": 247803,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.054 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 247804,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.058 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16400"
+        },
+        {
+          "line": 247805,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.061 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 247806,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.063 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 247807,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.065 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 247808,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.068 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 3280"
+        },
+        {
+          "line": 247809,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.071 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 247810,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.074 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 247811,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.076 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 16"
+        },
+        {
+          "line": 247812,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.078 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 247813,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.081 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 247814,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.084 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 46"
+        },
+        {
+          "line": 247815,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.086 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 247816,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.089 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 247817,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.091 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 247818,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.093 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 23"
+        },
+        {
+          "line": 247819,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.096 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 247820,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.098 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 247821,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.100 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 247822,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.103 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 247823,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.105 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 192512"
+        },
+        {
+          "line": 247824,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.108 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 1024"
+        },
+        {
+          "line": 247825,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.110 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 247826,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.113 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 247827,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.116 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 247828,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.118 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 247829,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.121 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 247830,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.123 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 247831,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.125 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 247865,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.242 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 247866,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.245 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 247867,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.248 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 3296"
+        },
+        {
+          "line": 247868,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.251 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16400"
+        },
+        {
+          "line": 247869,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.253 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 247870,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.255 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 247871,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.258 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 3280"
+        },
+        {
+          "line": 247872,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.260 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 247873,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.263 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 247874,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.265 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 247875,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.268 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 26"
+        },
+        {
+          "line": 247876,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.271 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 4"
+        },
+        {
+          "line": 247877,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.273 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 247878,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.276 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 247879,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.278 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 247880,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.280 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 247881,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.283 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 247882,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.285 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 247883,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.288 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 247884,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.290 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 247885,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.293 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 237568"
+        },
+        {
+          "line": 247886,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.295 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 247887,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.297 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 247888,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.300 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 247889,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.303 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 247890,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.305 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 247891,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.307 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 247892,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.310 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 26"
+        },
+        {
+          "line": 247893,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.739.312 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 2"
+        },
+        {
+          "line": 247894,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.739.315 [incre_flash_attention_tiling.cpp:3083][OPS_BASE][AdjustPABmm2Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 80, bmm2 baseK is adjusted to 16"
+        },
+        {
+          "line": 247899,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.739.354 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][46] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000300000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 247951,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.739.631 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][77] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 247959,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.739.687 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][77] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000300000, scheMode is 1, numBlocks is 20, stream is 0x51a591b8"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false
+    },
+    {
+      "call_id": "bs80_r1",
+      "enter": {
+        "fault33": "enter",
+        "call_id": "bs80_r1",
+        "pid": 46,
+        "tid": 46,
+        "block_size": 80,
+        "deterministic_algorithms": true
+      },
+      "selected": {
+        "pid": 46,
+        "tid": 46,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "block_dim": 20,
+        "schedule_mode": 1,
+        "need_atomic": 0,
+        "aicpu_blocks": 0,
+        "dyn_buf_size": 0
+      },
+      "launch": {
+        "pid": 46,
+        "tid": 77,
+        "op": "IncreFlashAttention_0",
+        "tiling_key": "10000000000300000",
+        "schedule_mode": 1,
+        "block_dim": 20
+      },
+      "native_raw_size": 3000,
+      "sdk_bmm": [
+        {
+          "M": 2,
+          "N": 16400,
+          "Ka": 128,
+          "Kb": 128,
+          "singleCoreM": 2,
+          "singleCoreN": 3280,
+          "singleCoreK": 128,
+          "baseM": 16,
+          "baseN": 16,
+          "baseK": 128,
+          "depthA1": 1,
+          "depthB1": 46,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 23,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 192512,
+          "usedL0CSize": 1024,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 1,
+          "stepKb": 1
+        },
+        {
+          "M": 2,
+          "N": 128,
+          "Ka": 3296,
+          "Kb": 16400,
+          "singleCoreM": 2,
+          "singleCoreN": 128,
+          "singleCoreK": 3280,
+          "baseM": 16,
+          "baseN": 128,
+          "baseK": 128,
+          "depthA1": 26,
+          "depthB1": 4,
+          "depthAL1CacheUB": 0,
+          "depthBL1CacheUB": 0,
+          "stepM": 1,
+          "stepN": 1,
+          "isBias": 0,
+          "transLength": 0,
+          "iterateOrder": 1,
+          "shareMode": 0,
+          "usedL1Size": 237568,
+          "usedL0CSize": 8192,
+          "usedUBSize": 0,
+          "batchM": 1,
+          "batchN": 1,
+          "singleBatchM": 1,
+          "singleBatchN": 1,
+          "stepKa": 26,
+          "stepKb": 2
+        }
+      ],
+      "native_log_evidence": [
+        {
+          "line": 248220,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.869.731 [incre_flash_attention_tiling.cpp:2986][OPS_BASE][FillTilingSplitKV][46] OpName:[IncreFlashAttention] PA FlashDecode is enabled, sInnerLoopSize is 3280, blockSize is 80"
+        },
+        {
+          "line": 248247,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.869.824 [incre_flash_attention_tiling.cpp:3061][OPS_BASE][AdjustPABmm1Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 80, bmm1 baseN is adjusted to 16"
+        },
+        {
+          "line": 248255,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.877 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 248256,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.880 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 16400"
+        },
+        {
+          "line": 248257,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.883 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 128"
+        },
+        {
+          "line": 248258,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.885 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 128"
+        },
+        {
+          "line": 248259,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.888 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 248260,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.890 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 3280"
+        },
+        {
+          "line": 248261,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.892 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 128"
+        },
+        {
+          "line": 248262,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.895 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 248263,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.897 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 16"
+        },
+        {
+          "line": 248264,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.900 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 248265,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.903 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 1"
+        },
+        {
+          "line": 248266,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.905 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 46"
+        },
+        {
+          "line": 248267,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.908 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 248268,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.910 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 248269,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.912 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 248270,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.915 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 23"
+        },
+        {
+          "line": 248271,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.917 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 248272,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.920 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 248273,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.923 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 248274,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.926 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 248275,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.929 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 192512"
+        },
+        {
+          "line": 248276,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.931 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 1024"
+        },
+        {
+          "line": 248277,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.934 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 248278,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.936 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 248279,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.938 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 248280,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.941 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 248281,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.943 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 248282,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.945 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 1"
+        },
+        {
+          "line": 248283,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.869.947 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 1"
+        },
+        {
+          "line": 248317,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.061 [matmul_tiling_base.cpp:799][PrintTilingDataInfo] MatmulTiling: M             = 2"
+        },
+        {
+          "line": 248318,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.065 [matmul_tiling_base.cpp:800][PrintTilingDataInfo] MatmulTiling: N             = 128"
+        },
+        {
+          "line": 248319,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.068 [matmul_tiling_base.cpp:801][PrintTilingDataInfo] MatmulTiling: Ka            = 3296"
+        },
+        {
+          "line": 248320,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.070 [matmul_tiling_base.cpp:802][PrintTilingDataInfo] MatmulTiling: Kb            = 16400"
+        },
+        {
+          "line": 248321,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.073 [matmul_tiling_base.cpp:803][PrintTilingDataInfo] MatmulTiling: singleCoreM   = 2"
+        },
+        {
+          "line": 248322,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.076 [matmul_tiling_base.cpp:804][PrintTilingDataInfo] MatmulTiling: singleCoreN   = 128"
+        },
+        {
+          "line": 248323,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.078 [matmul_tiling_base.cpp:805][PrintTilingDataInfo] MatmulTiling: singleCoreK   = 3280"
+        },
+        {
+          "line": 248324,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.081 [matmul_tiling_base.cpp:806][PrintTilingDataInfo] MatmulTiling: baseM         = 16"
+        },
+        {
+          "line": 248325,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.085 [matmul_tiling_base.cpp:807][PrintTilingDataInfo] MatmulTiling: baseN         = 128"
+        },
+        {
+          "line": 248326,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.088 [matmul_tiling_base.cpp:808][PrintTilingDataInfo] MatmulTiling: baseK         = 128"
+        },
+        {
+          "line": 248327,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.091 [matmul_tiling_base.cpp:809][PrintTilingDataInfo] MatmulTiling: depthA1       = 26"
+        },
+        {
+          "line": 248328,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.093 [matmul_tiling_base.cpp:810][PrintTilingDataInfo] MatmulTiling: depthB1       = 4"
+        },
+        {
+          "line": 248329,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.100 [matmul_tiling_base.cpp:811][PrintTilingDataInfo] MatmulTiling: depthAL1CacheUB     = 0"
+        },
+        {
+          "line": 248330,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.103 [matmul_tiling_base.cpp:812][PrintTilingDataInfo] MatmulTiling: depthBL1CacheUB     = 0"
+        },
+        {
+          "line": 248331,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.105 [matmul_tiling_base.cpp:813][PrintTilingDataInfo] MatmulTiling: stepM         = 1"
+        },
+        {
+          "line": 248332,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.107 [matmul_tiling_base.cpp:814][PrintTilingDataInfo] MatmulTiling: stepN         = 1"
+        },
+        {
+          "line": 248333,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.110 [matmul_tiling_base.cpp:815][PrintTilingDataInfo] MatmulTiling: isBias        = 0"
+        },
+        {
+          "line": 248334,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.113 [matmul_tiling_base.cpp:816][PrintTilingDataInfo] MatmulTiling: transLength   = 0"
+        },
+        {
+          "line": 248335,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.115 [matmul_tiling_base.cpp:817][PrintTilingDataInfo] MatmulTiling: iterateOrder  = 1"
+        },
+        {
+          "line": 248336,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.119 [matmul_tiling_base.cpp:818][PrintTilingDataInfo] MatmulTiling: shareMode     = 0"
+        },
+        {
+          "line": 248337,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.121 [matmul_tiling_base.cpp:819][PrintTilingDataInfo] MatmulTiling: usedL1Size    = 237568"
+        },
+        {
+          "line": 248338,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.125 [matmul_tiling_base.cpp:820][PrintTilingDataInfo] MatmulTiling: usedL0CSize   = 8192"
+        },
+        {
+          "line": 248339,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.127 [matmul_tiling_base.cpp:821][PrintTilingDataInfo] MatmulTiling: usedUBSize    = 0"
+        },
+        {
+          "line": 248340,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.130 [matmul_tiling_base.cpp:822][PrintTilingDataInfo] MatmulTiling: batchM        = 1"
+        },
+        {
+          "line": 248341,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.133 [matmul_tiling_base.cpp:823][PrintTilingDataInfo] MatmulTiling: batchN        = 1"
+        },
+        {
+          "line": 248342,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.136 [matmul_tiling_base.cpp:824][PrintTilingDataInfo] MatmulTiling: singleBatchM  = 1"
+        },
+        {
+          "line": 248343,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.140 [matmul_tiling_base.cpp:825][PrintTilingDataInfo] MatmulTiling: singleBatchN  = 1"
+        },
+        {
+          "line": 248344,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.143 [matmul_tiling_base.cpp:826][PrintTilingDataInfo] MatmulTiling: stepKa        = 26"
+        },
+        {
+          "line": 248345,
+          "text": "[INFO] ASCENDCKERNEL(46,python):2026-11-06-01:26:10.870.146 [matmul_tiling_base.cpp:827][PrintTilingDataInfo] MatmulTiling: stepKb        = 2"
+        },
+        {
+          "line": 248346,
+          "text": "[DEBUG] OP(46,python):2026-11-06-01:26:10.870.149 [incre_flash_attention_tiling.cpp:3083][OPS_BASE][AdjustPABmm2Tiling][46] OpName:[IncreFlashAttention] PA is enabled, blockSize is 80, bmm2 baseK is adjusted to 16"
+        },
+        {
+          "line": 248351,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.870.191 [indv_executor.cpp:887][NNOP][NnopbaseExecutorDoTiling][46] OpName:[IncreFlashAttention_0] Tiling outputs of IncreFlashAttention are [tilingKey: 10000000000300000, numBlocks: 20, scheMode: 1, needAtomic: 0, aicpuNumBlocks: 0, dynBufSize: 0]."
+        },
+        {
+          "line": 248403,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.870.511 [indv_executor.cpp:570][NNOP][NnopbaseExecutorPrepareParamsExt][77] OpName:[IncreFlashAttention_0] TilingDataSize is 3000 bytes."
+        },
+        {
+          "line": 248411,
+          "text": "[INFO] OP(46,python):2026-11-06-01:26:10.870.574 [indv_executor.cpp:1147][NNOP][NnopbaseExecutorLaunchKernel][77] OpName:[IncreFlashAttention_0] Launch dynamic kernel IncreFlashAttention task, tilingKey is 10000000000300000, scheMode is 1, numBlocks is 20, stream is 0x51a591b8"
+        }
+      ],
+      "kernel_argument_raw_observed": false,
+      "stock_full_raw_observable": false
+    }
+  ],
+  "actual_original_calls": 6,
+  "kernel_argument_raw_observed": false,
+  "scope": "Actual NNOP selection and launch plus SDK BMM; optional final public host raw is independently labeled."
+}
