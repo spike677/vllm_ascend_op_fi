@@ -1,0 +1,95 @@
+{
+  "schema": "fault28.fia_graph.policy_source.v1",
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "source_release": "v9.1.0",
+  "status": "PATCHED_NOT_BUILT_NOT_NPU_VALIDATED",
+  "policy_kind": "controlled_current_source_M_selector_and_legal_causal_tail_variant",
+  "kernel_source_modified": true,
+  "new_keys": [
+    "109000000000000000",
+    "109000000000400000"
+  ],
+  "key_data": "Original public FIA serializer retained; no raw-field patch or tensor payload changes.",
+  "files": [
+    {
+      "path": "attention/common/op_host/arch22/fia_tiling_nonquant.h",
+      "before_sha256": "213e3ca7b3359277cdd7a2369150cde10a5b9657b2fa4a71bf9a3d1bbf06d400",
+      "after_sha256": "c1f73f4a87346a00ad8b9ee7b4ee68d9bc94e17e4fdddf282f4bda7b963ba517",
+      "bytes": 4080
+    },
+    {
+      "path": "attention/common/op_host/arch22/fia_tiling_nonquant.cpp",
+      "before_sha256": "dc1ee4e8e6f3bc82a329e974a8147960db3617e7b17f88afac4b140224eb40f4",
+      "after_sha256": "ff1cab35066e53b948cef11811549048560ef74c696b7e3407c2d86a0a3f294c",
+      "bytes": 32418
+    },
+    {
+      "path": "attention/common/op_kernel/fia_public_define.h",
+      "before_sha256": "8bf065d666a8107fa840f30791c3b565bce77e3f2c7f32f93798e52bd03dea39",
+      "after_sha256": "78b9c81e53995831241c23a4568250498686d8d1e6502604ce844f49d22d70aa",
+      "bytes": 9312
+    },
+    {
+      "path": "attention/common/op_kernel/arch22/fia_kernel_nonquant.h",
+      "before_sha256": "922c479ae19fb574a7ee4c1d818b87c9ea98eb19ff2bb5e937d7204999f34a0b",
+      "after_sha256": "d7352710f721dbd0f0e23b8938cb4d373ca0d31d9d96b8dab0b7643b20a15f57",
+      "bytes": 56403
+    },
+    {
+      "path": "attention/fused_infer_attention_score/op_kernel/fused_infer_attention_score_v3.cpp",
+      "before_sha256": "d87215870dc564ac2bd43578e1da67b548f313a09c07986d028f619f65317544",
+      "after_sha256": "1bdbfb8277add592a9395aa2f63e2d81f43c6ab5157a7bd4e5da63d4423c34e7",
+      "bytes": 304515
+    },
+    {
+      "path": "attention/fused_infer_attention_score/op_host/arch22/fused_infer_attention_score_tiling_v3.cpp",
+      "before_sha256": "32f0e38d0391076e7c82e4700026a2b9db72b8c96b47a78873bbb443d411710f",
+      "after_sha256": "31e80f8a397ef89a9e43a66ba11f806ec4e1eacdc37525b871a037dd32f7d0c7",
+      "bytes": 109128
+    },
+    {
+      "path": "attention/common/op_host/arch22/fault28_fia_policy.h",
+      "before_sha256": null,
+      "after_sha256": "4590bb93bac1424931fd94b60864418006859236f43ced474c19672870fa6f45",
+      "bytes": 9401
+    },
+    {
+      "path": "attention/common/op_host/arch22/fault28_fia_typed.h",
+      "before_sha256": null,
+      "after_sha256": "fa653007c5bae6c7013bbba86ce6813ae7bd56fd65be882b7cd51ec7d78e2c42",
+      "bytes": 6391
+    },
+    {
+      "path": "attention/common/op_kernel/arch22/fault28_causal_tile.h",
+      "before_sha256": null,
+      "after_sha256": "723a3adf76d534187c00a45d5d2a219bc8b112845b8e5b554d98a89723a07406",
+      "bytes": 1284
+    },
+    {
+      "path": "attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling.h",
+      "before_sha256": "47458a0c04c8f66cad53e866de695da0f5c129f9d65500da435f9f51e4619db5",
+      "after_sha256": "47458a0c04c8f66cad53e866de695da0f5c129f9d65500da435f9f51e4619db5",
+      "bytes": 10217
+    },
+    {
+      "path": "attention/fused_infer_attention_score/op_kernel/fused_infer_attention_score.cpp",
+      "before_sha256": "d34068f64e515b4c8ff75f12a2222f22cf9a397fb4e5812dd3dea1c5c573f787",
+      "after_sha256": "d34068f64e515b4c8ff75f12a2222f22cf9a397fb4e5812dd3dea1c5c573f787",
+      "bytes": 88661
+    },
+    {
+      "path": "attention/fused_infer_attention_score/op_kernel/fused_infer_attention_score_tilingkey.h",
+      "before_sha256": "ca5dd685ba91365d0ec9cdc22a4026a71789d54cb3dcc473f4e5c9e987b3e974",
+      "after_sha256": "ca5dd685ba91365d0ec9cdc22a4026a71789d54cb3dcc473f4e5c9e987b3e974",
+      "bytes": 32941
+    },
+    {
+      "path": "attention/common/op_kernel/memory_copy.h",
+      "before_sha256": "02730a0964184ef06628a2bf68ddd2026e166e65cbb5ad147294836ad808ca26",
+      "after_sha256": "02730a0964184ef06628a2bf68ddd2026e166e65cbb5ad147294836ad808ca26",
+      "bytes": 16627
+    }
+  ],
+  "projection_sha256": "c9a53d6c036c1db25432f568340fbf117f7610931f6e7fdeec198c4042f3451b",
+  "typed_field_count": 63
+}

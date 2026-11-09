@@ -1,0 +1,1097 @@
+name: "graph_1"
+op {
+  name: "arg0_1"
+  type: "Data"
+  attr {
+    key: "index"
+    value {
+      i: 0
+    }
+  }
+  input_desc {
+    name: "x"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 16
+      dim: 2048
+      dim: 128
+    }
+    layout: "ND"
+    device_type: "NPU"
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 16
+      dim: 2048
+      dim: 128
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 16, 2048, 128])"
+      }
+    }
+    device_type: "NPU"
+  }
+}
+op {
+  name: "arg1_1"
+  type: "Data"
+  attr {
+    key: "index"
+    value {
+      i: 1
+    }
+  }
+  input_desc {
+    name: "x"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 8
+      dim: 2048
+      dim: 128
+    }
+    layout: "ND"
+    device_type: "NPU"
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 8
+      dim: 2048
+      dim: 128
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 8, 2048, 128])"
+      }
+    }
+    device_type: "NPU"
+  }
+}
+op {
+  name: "arg2_1"
+  type: "Data"
+  attr {
+    key: "index"
+    value {
+      i: 2
+    }
+  }
+  input_desc {
+    name: "x"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 8
+      dim: 2048
+      dim: 128
+    }
+    layout: "ND"
+    device_type: "NPU"
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 8
+      dim: 2048
+      dim: 128
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 8, 2048, 128])"
+      }
+    }
+    device_type: "NPU"
+  }
+}
+op {
+  name: "arg3_1"
+  type: "Data"
+  attr {
+    key: "index"
+    value {
+      i: 3
+    }
+  }
+  input_desc {
+    name: "x"
+    dtype: DT_BOOL
+    shape {
+      dim: 2048
+      dim: 2048
+    }
+    layout: "ND"
+    device_type: "NPU"
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_BOOL
+    shape {
+      dim: 2048
+      dim: 2048
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.bool, shape=torch.Size([2048, 2048])"
+      }
+    }
+    device_type: "NPU"
+  }
+}
+op {
+  name: "arg4_1"
+  type: "Data"
+  attr {
+    key: "index"
+    value {
+      i: 4
+    }
+  }
+  input_desc {
+    name: "x"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 1024
+      dim: 2048
+    }
+    layout: "ND"
+    device_type: "NPU"
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 1024
+      dim: 2048
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([2048, 1024])"
+      }
+    }
+    device_type: "NPU"
+  }
+}
+op {
+  name: "Const"
+  type: "Const"
+  attr {
+    key: "value"
+    value {
+      t {
+        desc {
+          dtype: DT_INT64
+          shape {
+            dim: 4
+          }
+          layout: "ND"
+        }
+        data: "\001\000\000\000\000\000\000\000\001\000\000\000\000\000\000\000\001\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000"
+      }
+    }
+  }
+  attr {
+    key: "_readable_value"
+    value {
+      s: "[1, 1, 1, 8]"
+    }
+  }
+  output_desc {
+    dtype: DT_INT64
+    shape {
+      dim: 4
+    }
+    layout: "ND"
+  }
+}
+op {
+  name: "Const_1"
+  type: "Const"
+  attr {
+    key: "value"
+    value {
+      t {
+        desc {
+          dtype: DT_INT64
+          shape {
+            dim: 8
+          }
+          layout: "ND"
+        }
+        data: "\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000"
+      }
+    }
+  }
+  attr {
+    key: "_readable_value"
+    value {
+      s: "[2048, 2048, 2048, 2048, 2048, 2048, 2048, 2048]"
+    }
+  }
+  output_desc {
+    dtype: DT_INT64
+    shape {
+      dim: 8
+    }
+    layout: "ND"
+  }
+}
+op {
+  name: "Const_2"
+  type: "Const"
+  attr {
+    key: "value"
+    value {
+      t {
+        desc {
+          dtype: DT_INT64
+          shape {
+            dim: 8
+          }
+          layout: "ND"
+        }
+        data: "\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000"
+      }
+    }
+  }
+  attr {
+    key: "_readable_value"
+    value {
+      s: "[2048, 2048, 2048, 2048, 2048, 2048, 2048, 2048]"
+    }
+  }
+  output_desc {
+    dtype: DT_INT64
+    shape {
+      dim: 8
+    }
+    layout: "ND"
+  }
+}
+op {
+  name: "FusedInferAttentionScore"
+  type: "FusedInferAttentionScore"
+  input: "arg0_1:0"
+  input: "arg1_1:0"
+  input: "arg2_1:0"
+  input: ""
+  input: "arg3_1:0"
+  input: "Const_1:0"
+  input: "Const_2:0"
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  input: ""
+  attr {
+    key: "value_antiquant_mode"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "sparse_mode"
+    value {
+      i: 2
+    }
+  }
+  attr {
+    key: "softmax_lse_flag"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "scale"
+    value {
+      f: 0.0883883461
+    }
+  }
+  attr {
+    key: "query_quant_mode"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "pse_type"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "pre_tokens"
+    value {
+      i: 2147483647
+    }
+  }
+  attr {
+    key: "out_dtype"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "num_key_value_heads"
+    value {
+      i: 8
+    }
+  }
+  attr {
+    key: "num_heads"
+    value {
+      i: 16
+    }
+  }
+  attr {
+    key: "next_tokens"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "key_antiquant_mode"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "input_layout"
+    value {
+      s: "BNSD"
+    }
+  }
+  attr {
+    key: "inner_precise"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "block_size"
+    value {
+      i: 0
+    }
+  }
+  attr {
+    key: "antiquant_mode"
+    value {
+      i: 0
+    }
+  }
+  input_desc {
+    name: "query"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 16
+      dim: 2048
+      dim: 128
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 16, 2048, 128])"
+      }
+    }
+    device_type: "NPU"
+  }
+  input_desc {
+    name: "key0"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 8
+      dim: 2048
+      dim: 128
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 8, 2048, 128])"
+      }
+    }
+    device_type: "NPU"
+  }
+  input_desc {
+    name: "value0"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 8
+      dim: 2048
+      dim: 128
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 8, 2048, 128])"
+      }
+    }
+    device_type: "NPU"
+  }
+  input_desc {
+    name: "pse_shift"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "atten_mask"
+    dtype: DT_BOOL
+    shape {
+      dim: 2048
+      dim: 2048
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.bool, shape=torch.Size([2048, 2048])"
+      }
+    }
+    device_type: "NPU"
+  }
+  input_desc {
+    name: "actual_seq_lengths"
+    dtype: DT_INT64
+    shape {
+      dim: 8
+    }
+    layout: "ND"
+  }
+  input_desc {
+    name: "actual_seq_lengths_kv"
+    dtype: DT_INT64
+    shape {
+      dim: 8
+    }
+    layout: "ND"
+  }
+  input_desc {
+    name: "dequant_scale1"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "quant_scale1"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "dequant_scale2"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "quant_scale2"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "quant_offset2"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "antiquant_scale"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "antiquant_offset"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "block_table"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "query_padding_size"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "kv_padding_size"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "key_antiquant_scale"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "key_antiquant_offset"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "value_antiquant_scale"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "value_antiquant_offset"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "key_shared_prefix"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "value_shared_prefix"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "actual_shared_prefix_len"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "learnable_sink"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "q_start_idx"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  input_desc {
+    name: "kv_start_idx"
+    attr {
+      key: "_is_unfed_optional"
+      value {
+        i: 1
+      }
+    }
+  }
+  output_desc {
+    name: "attention_out"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 16, 128])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "npu_fused_infer_attention_score-npu.npu_fused_infer_attention_score.default.OUTPUT.0"
+      }
+    }
+  }
+  output_desc {
+    name: "softmax_lse"
+    dtype: DT_FLOAT
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float32, shape=torch.Size([0])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "npu_fused_infer_attention_score-npu.npu_fused_infer_attention_score.default.OUTPUT.1"
+      }
+    }
+  }
+}
+op {
+  name: "Const_3"
+  type: "Const"
+  attr {
+    key: "value"
+    value {
+      t {
+        desc {
+          dtype: DT_INT64
+          shape {
+            dim: 4
+          }
+          layout: "ND"
+        }
+        data: "\000\000\000\000\000\000\000\000\002\000\000\000\000\000\000\000\001\000\000\000\000\000\000\000\003\000\000\000\000\000\000\000"
+      }
+    }
+  }
+  attr {
+    key: "_readable_value"
+    value {
+      s: "[0, 2, 1, 3]"
+    }
+  }
+  output_desc {
+    dtype: DT_INT64
+    shape {
+      dim: 4
+    }
+    layout: "ND"
+  }
+}
+op {
+  name: "Transpose"
+  type: "Transpose"
+  input: "FusedInferAttentionScore:0"
+  input: "Const_3:0"
+  input_desc {
+    name: "x"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 16, 128])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "npu_fused_infer_attention_score-npu.npu_fused_infer_attention_score.default.OUTPUT.0"
+      }
+    }
+  }
+  input_desc {
+    name: "perm"
+    dtype: DT_INT64
+    shape {
+      dim: 4
+    }
+    layout: "ND"
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 16, 128])"
+      }
+    }
+  }
+}
+op {
+  name: "Identity"
+  type: "Identity"
+  input: "Transpose:0"
+  input_desc {
+    name: "x"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 16, 128])"
+      }
+    }
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 16, 128])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "clone-aten.clone.default.OUTPUT.0"
+      }
+    }
+  }
+}
+op {
+  name: "Const_4"
+  type: "Const"
+  attr {
+    key: "value"
+    value {
+      t {
+        desc {
+          dtype: DT_INT64
+          shape {
+            dim: 3
+          }
+          layout: "ND"
+        }
+        data: "\010\000\000\000\000\000\000\000\000\010\000\000\000\000\000\000\000\010\000\000\000\000\000\000"
+      }
+    }
+  }
+  attr {
+    key: "_readable_value"
+    value {
+      s: "[8, 2048, 2048]"
+    }
+  }
+  output_desc {
+    dtype: DT_INT64
+    shape {
+      dim: 3
+    }
+    layout: "ND"
+  }
+}
+op {
+  name: "Reshape"
+  type: "Reshape"
+  input: "Identity:0"
+  input: "Const_4:0"
+  attr {
+    key: "num_axes"
+    value {
+      i: -1
+    }
+  }
+  attr {
+    key: "axis"
+    value {
+      i: 0
+    }
+  }
+  input_desc {
+    name: "x"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 16, 128])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "clone-aten.clone.default.OUTPUT.0"
+      }
+    }
+  }
+  input_desc {
+    name: "shape"
+    dtype: DT_INT64
+    shape {
+      dim: 3
+    }
+    layout: "ND"
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 2048])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "_unsafe_view-aten._unsafe_view.default.OUTPUT.0"
+      }
+    }
+  }
+}
+op {
+  name: "Const_5"
+  type: "Const"
+  attr {
+    key: "value"
+    value {
+      t {
+        desc {
+          dtype: DT_INT64
+          shape {
+            dim: 2
+          }
+          layout: "ND"
+        }
+        data: "\001\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000"
+      }
+    }
+  }
+  attr {
+    key: "_readable_value"
+    value {
+      s: "[1, 0]"
+    }
+  }
+  output_desc {
+    dtype: DT_INT64
+    shape {
+      dim: 2
+    }
+    layout: "ND"
+  }
+}
+op {
+  name: "Transpose_1"
+  type: "Transpose"
+  input: "arg4_1:0"
+  input: "Const_5:0"
+  input_desc {
+    name: "x"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 1024
+      dim: 2048
+    }
+    layout: "ND"
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([2048, 1024])"
+      }
+    }
+    device_type: "NPU"
+  }
+  input_desc {
+    name: "perm"
+    dtype: DT_INT64
+    shape {
+      dim: 2
+    }
+    layout: "ND"
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([2048, 1024])"
+      }
+    }
+  }
+}
+op {
+  name: "BatchMatMul"
+  type: "BatchMatMul"
+  input: "Reshape:0"
+  input: "Transpose_1:0"
+  attr {
+    key: "adj_x2"
+    value {
+      b: false
+    }
+  }
+  attr {
+    key: "adj_x1"
+    value {
+      b: false
+    }
+  }
+  input_desc {
+    name: "x1"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 2048])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "_unsafe_view-aten._unsafe_view.default.OUTPUT.0"
+      }
+    }
+  }
+  input_desc {
+    name: "x2"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([2048, 1024])"
+      }
+    }
+  }
+  output_desc {
+    name: "y"
+    dtype: DT_FLOAT16
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 1024])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "matmul-aten.matmul.default.OUTPUT.0"
+      }
+    }
+  }
+}
+op {
+  name: "NetOutput"
+  type: "NetOutput"
+  input: "FusedInferAttentionScore:0"
+  input: "BatchMatMul:0"
+  input_desc {
+    name: "input0"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 16
+      dim: 2048
+      dim: 128
+    }
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 16, 128])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "npu_fused_infer_attention_score-npu.npu_fused_infer_attention_score.default.OUTPUT.0"
+      }
+    }
+  }
+  input_desc {
+    name: "input1"
+    dtype: DT_FLOAT16
+    shape {
+      dim: 8
+      dim: 2048
+      dim: 1024
+    }
+    attr {
+      key: "_meta"
+      value {
+        s: "Tensor(dtype=torch.float16, shape=torch.Size([8, 2048, 1024])"
+      }
+    }
+    attr {
+      key: "_fx_tensor_name"
+      value {
+        s: "matmul-aten.matmul.default.OUTPUT.0"
+      }
+    }
+  }
+}

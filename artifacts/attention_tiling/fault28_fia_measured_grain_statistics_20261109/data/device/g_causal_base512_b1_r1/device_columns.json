@@ -1,0 +1,996 @@
+{
+  "schema": "fault28.fia.measured_softmax_columns.v1",
+  "status": "PASS_MEASURED_DEVICE_SOFTMAX_COLUMNS",
+  "case_id": "g_causal_base512_b1_r1",
+  "actual_m": 512,
+  "actual_key": "109000000000000000",
+  "actual_causal_variant": true,
+  "sampled_queries": [
+    63,
+    255,
+    511,
+    767,
+    1023,
+    1535,
+    2047
+  ],
+  "query_tiles": [
+    {
+      "query": 63,
+      "s2_index": 0,
+      "key_begin": 0,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 0,
+      "query_tile_rows": 512,
+      "vector_row_begin": 48,
+      "vector_rows": 16,
+      "device_aiv_block": 0
+    },
+    {
+      "query": 255,
+      "s2_index": 0,
+      "key_begin": 0,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 0,
+      "query_tile_rows": 512,
+      "vector_row_begin": 240,
+      "vector_rows": 16,
+      "device_aiv_block": 0
+    },
+    {
+      "query": 767,
+      "s2_index": 0,
+      "key_begin": 0,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 512,
+      "query_tile_rows": 512,
+      "vector_row_begin": 752,
+      "vector_rows": 16,
+      "device_aiv_block": 0
+    },
+    {
+      "query": 767,
+      "s2_index": 1,
+      "key_begin": 512,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 512,
+      "query_tile_rows": 512,
+      "vector_row_begin": 752,
+      "vector_rows": 16,
+      "device_aiv_block": 0
+    },
+    {
+      "query": 511,
+      "s2_index": 0,
+      "key_begin": 0,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 0,
+      "query_tile_rows": 512,
+      "vector_row_begin": 496,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    },
+    {
+      "query": 1023,
+      "s2_index": 0,
+      "key_begin": 0,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 512,
+      "query_tile_rows": 512,
+      "vector_row_begin": 1008,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    },
+    {
+      "query": 1023,
+      "s2_index": 1,
+      "key_begin": 512,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 512,
+      "query_tile_rows": 512,
+      "vector_row_begin": 1008,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    },
+    {
+      "query": 1535,
+      "s2_index": 0,
+      "key_begin": 0,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 1024,
+      "query_tile_rows": 512,
+      "vector_row_begin": 1520,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    },
+    {
+      "query": 1535,
+      "s2_index": 1,
+      "key_begin": 512,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 1024,
+      "query_tile_rows": 512,
+      "vector_row_begin": 1520,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    },
+    {
+      "query": 1535,
+      "s2_index": 2,
+      "key_begin": 1024,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 1024,
+      "query_tile_rows": 512,
+      "vector_row_begin": 1520,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    },
+    {
+      "query": 2047,
+      "s2_index": 0,
+      "key_begin": 0,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 1536,
+      "query_tile_rows": 512,
+      "vector_row_begin": 2032,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    },
+    {
+      "query": 2047,
+      "s2_index": 1,
+      "key_begin": 512,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 1536,
+      "query_tile_rows": 512,
+      "vector_row_begin": 2032,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    },
+    {
+      "query": 2047,
+      "s2_index": 2,
+      "key_begin": 1024,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 1536,
+      "query_tile_rows": 512,
+      "vector_row_begin": 2032,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    },
+    {
+      "query": 2047,
+      "s2_index": 3,
+      "key_begin": 1536,
+      "measured_columns": 512,
+      "measured_actual_columns": 512,
+      "query_tile_begin": 1536,
+      "query_tile_rows": 512,
+      "vector_row_begin": 2032,
+      "vector_rows": 16,
+      "device_aiv_block": 1
+    }
+  ],
+  "actual_graph_calls": [
+    {
+      "call_id": 0,
+      "pid": 88,
+      "enter_line": 92595,
+      "exit_line": 457572,
+      "phase": "compile_warmup"
+    },
+    {
+      "call_id": 1,
+      "pid": 88,
+      "enter_line": 457663,
+      "exit_line": 478625,
+      "phase": "graph_replay"
+    },
+    {
+      "call_id": 2,
+      "pid": 88,
+      "enter_line": 478710,
+      "exit_line": 480750,
+      "phase": "graph_replay"
+    }
+  ],
+  "scalar_shape_multiplicities": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+  ],
+  "individual_scalar_to_graph_call_pairing_proven": false,
+  "canonical_scalar_records": 42,
+  "runtime_log_sha256": "2cb7b1dd02062b794a188bae4d1470a518beb6cbe7900501dd131f351c6215d1",
+  "runtime_records": [
+    {
+      "line": 457716,
+      "sha256": "0f37d52ef0973b55621f6f76924535b2b8ab6047a252ed20d16df72c07518349",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 0,
+        "row": 48,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457723,
+      "sha256": "b5b14f19a2cb4c8b6565379e9e5e02521112cfb70e9581024d7a4d996147018c",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 0,
+        "row": 240,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457730,
+      "sha256": "2c572aeedbaa5d319893b95dda1a543e57f302fca7ca823749f872ee52184c4c",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 512,
+        "row": 752,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457737,
+      "sha256": "7d7d9d1a7bb9fd9e63e777c6e4465c9cb0db245942881eaa3f36f38a48f41ae3",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 512,
+        "row": 752,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457761,
+      "sha256": "3f9f120edfaa73d99f47b44317efe09653ac342223ea81a1d48062afc2795e41",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 0,
+        "row": 496,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457768,
+      "sha256": "d6b976106d0d7788ff0ca3ce5774c75e86cee7cc4092da24b4e94f9bb1c05565",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 512,
+        "row": 1008,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457775,
+      "sha256": "65ea1bf363066fc3f645c221409781b2154b6579a13cd22ef128248f5a952725",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 512,
+        "row": 1008,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457782,
+      "sha256": "8d212bc1e2cf6e5360c796a314af4a2191bc440dd367456823e780156dd4d1ca",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1024,
+        "row": 1520,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457789,
+      "sha256": "0c0d9fc0c88bc0865a4cefad7d95551cc0618c38a1b01effe71e963dbea3c411",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1024,
+        "row": 1520,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457796,
+      "sha256": "bff3b40970b47a3c68d370be66878f0c3abbd6cbe5d5f96838acd8ef4256855c",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1024,
+        "row": 1520,
+        "rows": 16,
+        "s2": 2,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457805,
+      "sha256": "c51d4f69236f433be5fd6a50555da7b435939c6e0751b4fcf91fed22e95c4a58",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457812,
+      "sha256": "5c4d1cbdd40a16088e04e92c92bfebccf3adc8c694b58abb721c371a84e12ecd",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457820,
+      "sha256": "d27fec9e574d2c803a997a2597c7cb30cc58fe0905d284f066ef2b37f13d85fe",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 2,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 457827,
+      "sha256": "d498c96ae7d10a13eb58c8604e4be5b77900aee4de92b57f36ac9bf9123a73f2",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 3,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458380,
+      "sha256": "6a514d070bb7b352a9934539f408001fb15b9f90baf3bbd90a23c927a7f3a3f6",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 0,
+        "row": 48,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458387,
+      "sha256": "ad9ab4875aa667b284a63b5820b37a9be664c56d5810be81dfcb2c66e0772d72",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 0,
+        "row": 240,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458394,
+      "sha256": "07b1dd27b37482b65f661116c144cc6294c2b7671203605fd50dcf26178ea68a",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 512,
+        "row": 752,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458401,
+      "sha256": "c4db7d05e0b3f11364113e396ed3ab243b9c0cc0156f0d420610c6cbe07ebfec",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 512,
+        "row": 752,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458427,
+      "sha256": "d9bc7b47add811d23d4519e59d00870873c4c805a4ef7aad6cc03933ba744d0a",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 0,
+        "row": 496,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458435,
+      "sha256": "576bbb85cd7cb8648c7051de532e9345393f95aac8121ea0ac1e75b3c69f58bd",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 512,
+        "row": 1008,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458442,
+      "sha256": "a6363c3ee67d644f6588a6541f238ccb5f51b7f5005a1891d35b26b173cafdf3",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 512,
+        "row": 1008,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458449,
+      "sha256": "6a2308d13cd87ce9b828004b3c336ac65867f671660a9c3a6bab222228c9e307",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1024,
+        "row": 1520,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458456,
+      "sha256": "350971d5b978fe16dd73bee8c22de24d0c53ee9f06589951977a66fd38a762de",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1024,
+        "row": 1520,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458463,
+      "sha256": "091b884d26b746bdd9f6ef53bbc4f379acaf86189ca8a606cf9b3f51e180c7e0",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1024,
+        "row": 1520,
+        "rows": 16,
+        "s2": 2,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458470,
+      "sha256": "4eaabf2f356bcb4e32f909f428b977cdb114f504977b43da6a0c3102e299957a",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458477,
+      "sha256": "6dafa0608649327ae76f15455b9b1a5f4b59aa7171acbc4b123f37cd18127c79",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458484,
+      "sha256": "88d67cd234cf671a1ceb3ddcbc2121662d31dada166ca7973411f062a306a2c6",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 2,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 458491,
+      "sha256": "3efb3dd14a46d34a46ae51c27c4a7d6fd7924a7d6b2babf94e90ad6b315f09c3",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 3,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479180,
+      "sha256": "d99d39accf75db8a3afe0298b08942f5587a0f4dc4567c797659e5cb9ecc850f",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 0,
+        "row": 48,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479187,
+      "sha256": "7f435d994c215734c13402a72d13d4e77677afe216006d219ca7448c537cb7dd",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 0,
+        "row": 240,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479194,
+      "sha256": "e1d39b22fecc446f6d2a9ce63088458a8027fdd13a06f9fe0c3fb830d74e6799",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 512,
+        "row": 752,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479201,
+      "sha256": "7b18051127d9802fd64f3afa5cefa34a082b88a0272a069daa3f0957acda6479",
+      "values": {
+        "block": 0,
+        "m": 512,
+        "tile": 512,
+        "row": 752,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479227,
+      "sha256": "bda81073d3675e701d92ecc675277d12d2c9d9d79771b185995306550e50dfb9",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 0,
+        "row": 496,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479234,
+      "sha256": "96ce4d3827120749c9b8e7ac7a4521f37ea81cf5fa38f47da588af615a1860a6",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 512,
+        "row": 1008,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479242,
+      "sha256": "7c01ade02a3d6b6f93dec5879d9d249bec2fe41bfd782f06df8a9f3e41000d1c",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 512,
+        "row": 1008,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479249,
+      "sha256": "8c9dc4a550fb4304fa7339533b90ce0f6b9de78c18a8c613c8211600dff4b32f",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1024,
+        "row": 1520,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479256,
+      "sha256": "55255e9d8d9ca4a4f62d45f43bdae5c101b72968741728d3bd1e8aaa81cd333e",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1024,
+        "row": 1520,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479263,
+      "sha256": "d1c4eef9a8186d4a78085b6a43019832057bd4cfa02651eeb4e24403fe197647",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1024,
+        "row": 1520,
+        "rows": 16,
+        "s2": 2,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479270,
+      "sha256": "efe657ae366d699097191f2f98b01228483dd22ff152a98f8559460a7bff8e5b",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 0,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479277,
+      "sha256": "444ce9023494c0d9d90e6c8abf8daa1c61549440266c8de5e014816ea550b83b",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 1,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479284,
+      "sha256": "668718581b9d336ba56c7c00475f134980f5bdff8f6b567efffecd80d87a748e",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 2,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    },
+    {
+      "line": 479291,
+      "sha256": "8c6a53ec3b479c3c727d988b178e2288ab8891ee5c5508c90394b7b15a140305",
+      "values": {
+        "block": 1,
+        "m": 512,
+        "tile": 1536,
+        "row": 2032,
+        "rows": 16,
+        "s2": 3,
+        "base": 512,
+        "columns": 512,
+        "actual": 512,
+        "prune": 1,
+        "brc": 0
+      }
+    }
+  ],
+  "sdk_receipt_sha256": "c9ee519f140817942a477ff2b0a46e8b01fac8d89440c7293d8837e554f9b254",
+  "sdk_parsed_outputs": [
+    {
+      "file": "/home/fault28-fia-grain-20261109/outputs/device_audits_a1/g_causal_base512_b1_r1/official_decode/official_sdk_stdout.txt",
+      "bytes": 5989,
+      "sha256": "da2d709fc1f2d6f1b6aadb47b18e0cb23815f4ff450b864e2f6637f8034db349"
+    }
+  ],
+  "raw_scalar_buffers": [
+    {
+      "file": "/home/fault28-fia-grain-20261109/outputs/g_causal_base512_b1_r1_grain_a2/g_causal_base512_b1_r1/private_device_debug/printf/20261109113905/asc_kernel_data_aiv_38.bin",
+      "bytes": 1328,
+      "sha256": "6c4c73da72e98539dd76f64e881518631e750d495dcf6a3d40ff72b314f69731"
+    },
+    {
+      "file": "/home/fault28-fia-grain-20261109/outputs/g_causal_base512_b1_r1_grain_a2/g_causal_base512_b1_r1/private_device_debug/printf/20261109113905/asc_kernel_data_aiv_39.bin",
+      "bytes": 3104,
+      "sha256": "5c5186252430ccf297635c152c152b3698c3974f0a70afd29961188631117ab3"
+    },
+    {
+      "file": "/home/fault28-fia-grain-20261109/outputs/g_causal_base512_b1_r1_grain_a2/g_causal_base512_b1_r1/private_device_debug/printf/20261109113905/asc_kernel_data_aiv_46.bin",
+      "bytes": 1328,
+      "sha256": "9556735d3ac5a58f33f450470f11089998466bdf7b2829c6fb10eb3c04adefa0"
+    },
+    {
+      "file": "/home/fault28-fia-grain-20261109/outputs/g_causal_base512_b1_r1_grain_a2/g_causal_base512_b1_r1/private_device_debug/printf/20261109113905/asc_kernel_data_aiv_47.bin",
+      "bytes": 3104,
+      "sha256": "b41ab709267a9e7fb8c9a79d36d4e27bab5c362afe301fa4ea9f79f0ce07be74"
+    },
+    {
+      "file": "/home/fault28-fia-grain-20261109/outputs/g_causal_base512_b1_r1_grain_a2/g_causal_base512_b1_r1/private_device_debug/printf/20261109113905/asc_kernel_data_aiv_68.bin",
+      "bytes": 1328,
+      "sha256": "1729cf006708e522181c548a1368ed37e0231302449b9258bf27d91292661723"
+    },
+    {
+      "file": "/home/fault28-fia-grain-20261109/outputs/g_causal_base512_b1_r1_grain_a2/g_causal_base512_b1_r1/private_device_debug/printf/20261109113905/asc_kernel_data_aiv_69.bin",
+      "bytes": 3104,
+      "sha256": "9e29e2bfa719cdc986e81937b118ab476c2ade9bcc36c830151e6503d4bed01f"
+    }
+  ],
+  "actual_binary_sha256": "0816f750c8b11e0c670d0192c5ffa86155ea59165035016eba4e9d6d27b1f3a7",
+  "numeric_output_neutrality_accepted_here": false,
+  "source_derived_observations": false,
+  "limits": [
+    "Measured Softmax entry columnCount/actualColumnCount, not a device instruction or Reduce tree trace.",
+    "Static-graph printf is flushed asynchronously. Device buffers and own-process runtime text match in aggregate; individual records are not assigned to a replay.",
+    "Only seven preregistered query positions of request0/head0 sampled; complete numeric outputs checked separately.",
+    "Same N also participates in BMM1/Softmax/BMM2; no isolated contribution of a single Reduce instruction."
+  ],
+  "execution_report_sha256": "044612e863c304b6bc3b85b896428f3c0a44e97e585cd315043ddf2072df2860",
+  "analysis_source_sha256": "c17eac6f80774e9e92d43fa014f2ff0e4d2adfa86a62312ec6c21cd116bbe42c"
+}

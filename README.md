@@ -457,6 +457,10 @@ msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写
 
 ## 故障 28：原生 FA Tiling 切分策略异常
 
+**真实 FIA 图设备端粒度补验（2026-11-09）通过受控机制验收：** [实现与调用链](experiments/fault28_fia_grain_20261109/README.md)及[本轮 B/F statistics/mix 与设备标量](artifacts/attention_tiling/fault28_fia_measured_grain_statistics_20261109/README.md)在124卡5完成23组、69次真实图调用。固定同一目标Q/K/V，实际Batch1→8、M512→128对应query63设备Softmax列数512→128；19组官方SDK解码共798条标量与本进程runtime记录一致。相同causal规则下的同B8主对照产生140个Attention、6,141个o_proj差异，F/F稳定且OFF精确恢复。仅凭原始统计与实际图的物理盲验，两步×两个F均独立定位FIA output0 Mean/Norm；依赖明确披露的统一CPU FP64增强与真实GE输出别名，原生GE CSV显示精度限制保留。
+
+本次补齐了此前由源码推导的Softmax列粒度观测，范围仍是当前版本受控FIA→o_proj图子图。printf异步刷出，仅证明进程/图级汇总，不声称逐replay配对；只采request0/head0七个query，完整目标另逐元素核验。N同时影响BMM1/Softmax/BMM2，未唯一分离Reduce指令贡献，也未复现历史盘古完整模型或首token logits现象。
+
 
 **真实 FIA 图子图补齐（2026-11-06）已通过受控机制验收：** [实现、调用链及关键代码](experiments/fault28_fia_graph_20261106/README.md)和[新 B/F statistics/mix 证据](artifacts/attention_tiling/fault28_fia_graph_statistics_20261106/README.md)验证实际 Batch1→M512、Batch8→M128，再由 causal M 块末端改变核内动态 N 宽度。固定真实目标 Q/K/V，固定策略时 B1/B8 的完整 FIA 输出逐 bit 相同；M-only 无差异，同 M 的 causal 变体分别产生 140（M128）和 81（M256）个目标元素差异，均无跨核 KV Reduce。主 B8 对照传播到真实 o_proj 的 6,141 个元素，独立重复和重新编译 OFF 恢复通过。
 

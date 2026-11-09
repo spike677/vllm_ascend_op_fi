@@ -1,0 +1,106 @@
+{
+  "schema": "fault28.fia_graph.completed_case_audit.v1",
+  "status": "PASS_RECORDED_EXECUTION",
+  "case_id": "g_stock_b8_r2",
+  "attempt": "g_stock_b8_r2_grain_a2",
+  "batch": 8,
+  "mode": "off",
+  "completion_sha256": "3a5ebffd71f4393ccf6db295bf242837dc1f7c2a25cd109cfdd7db9f545021e4",
+  "result_sha256": "1f89d1cbb3e7da8ed73a16f70db8151e8f7e47bbb8f1b2882a5d51868f2f1f26",
+  "preregistered_case_sha256": "95eaa8b33041e6585140d3e9a8a34486bad8691c34d7233db249dbf74c39fe76",
+  "runtime_freeze_sha256": "c9fa52c9ddba6e59a07707479ef0bf6bacb2ac3d8ade8fdc35244e79eae2cbd7",
+  "native": {
+    "schema": "fault28.actual_graph_native_plan.v1",
+    "log_sha256": "bf64bf21569c2cb83b1a0dca25cc97bb2fca2d3c04fe3d937fd72311987e3e26",
+    "selected": {
+      "pid": 88,
+      "tid": 463,
+      "node": "FusedInferAttentionScore",
+      "jit_template_key": "103000000000000000",
+      "line": 358689
+    },
+    "binary": {
+      "kernel_name": "FusedInferAttentionScore_8cd36e66e4ceb2d60ef96db29a147347",
+      "node": "FusedInferAttentionScore",
+      "line": 381943,
+      "source": "Actual runtime-selected builtin entry; no custom JIT binary metadata observed"
+    },
+    "static_task_launch": {
+      "pid": 88,
+      "stream_id": 44,
+      "runtime_enqueue_task_id": 0,
+      "kernel_name": "FusedInferAttentionScore_8cd36e66e4ceb2d60ef96db29a147347_103000000000000000",
+      "block_dim": 16,
+      "schedule_mode": 1,
+      "call_id": 0,
+      "line": 381943
+    },
+    "ge_static_task": {
+      "node": "FusedInferAttentionScore",
+      "ge_task_id": 1,
+      "block_dim": 16,
+      "stream_id": 44,
+      "line": 381982
+    },
+    "graph_calls": [
+      {
+        "call_id": 0,
+        "pid": 88,
+        "enter_line": 82834,
+        "exit_line": 384006,
+        "phase": "compile_warmup"
+      },
+      {
+        "call_id": 1,
+        "pid": 88,
+        "enter_line": 384133,
+        "exit_line": 404395,
+        "phase": "graph_replay"
+      },
+      {
+        "call_id": 2,
+        "pid": 88,
+        "enter_line": 404522,
+        "exit_line": 406365,
+        "phase": "graph_replay"
+      }
+    ],
+    "actual_fia_output_iterations": [
+      {
+        "call_id": 0,
+        "path": "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109113444/0/graph_1/1/0/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1794224098631247.csv",
+        "sha256": "8c1b57d52b62d55b88edaf5c784ff3319a7a7a1885309a2b7ea726bc98e2ab1c"
+      },
+      {
+        "call_id": 1,
+        "path": "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109113444/0/graph_1/1/1/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1794224099595873.csv",
+        "sha256": "8c1b57d52b62d55b88edaf5c784ff3319a7a7a1885309a2b7ea726bc98e2ab1c"
+      },
+      {
+        "call_id": 2,
+        "path": "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109113444/0/graph_1/1/2/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1794224101039174.csv",
+        "sha256": "8c1b57d52b62d55b88edaf5c784ff3319a7a7a1885309a2b7ea726bc98e2ab1c"
+      }
+    ],
+    "native_excerpts": [
+      {
+        "line": 358689,
+        "text": "[INFO] OP(88,python):2026-11-09-11:34:59.538.782 [fia_tiling_nonquant.cpp:192][OPS_BASE][GenTilingKey][463] OpName:[FusedInferAttentionScore] FIA tilingKey_: 103000000000000000."
+      },
+      {
+        "line": 381943,
+        "text": "[INFO] RUNTIME(88,python):2026-11-09-11:34:59.676.493 [aix_stars.cc:603] 88 StreamLaunchKernelV2: kernel info : device_id=0, stream_id=44, task_id=0, kernelAttrType=3, kernel_name=FusedInferAttentionScore_8cd36e66e4ceb2d60ef96db29a147347_103000000000000000, arg_size=520, coreDim=16, taskRation=2, funcType=4, addr1=0x12c057d872cc, addr2=0x12c057d8b0f8, mixType=3, kernelFlag=0x2, qos=0, partId=0, schemMode=1, infoAddr=0xfffc12c63f68, atomicIndex=8192, prefetchCnt1=8, prefetchCnt2=8, isNoNeedH2DCopy=1."
+      },
+      {
+        "line": 381982,
+        "text": "[INFO] GE(88,python):2026-11-09-11:34:59.676.755 [kernel_task_info.cc:659]88 Distribute:KernelTaskInfo Distribute Success, op: FusedInferAttentionScore, taskid: 1, blockdim: 16, streamid: 44, stream: 0x2d2e2778, dump_flag: 2"
+      }
+    ],
+    "kernel_argument_raw_observed": false,
+    "scope": "One static GE FIA task instantiated, three completed graph iterations. JIT template key is separate from runtime static key0. Raw kernel args not read."
+  },
+  "public_host": null,
+  "compiler_binding": null,
+  "numeric_mechanism_accepted": false,
+  "scope": "Execution, full graph, repeated output, actual compiler key/raw and public serializer checks only; statistics localization and cross-case numerical causality are separate."
+}

@@ -1,0 +1,4 @@
+# Preserve exported runtime, statistics and SDK diagnostic bytes exactly.
+* -text !eol whitespace=cr-at-eol,-blank-at-eof
+# Native CSV/SDK text can contain significant original trailing whitespace.
+data/** -whitespace

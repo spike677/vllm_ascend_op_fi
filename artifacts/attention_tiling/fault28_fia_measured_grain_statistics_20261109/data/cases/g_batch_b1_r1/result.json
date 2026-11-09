@@ -1,0 +1,188 @@
+{
+  "schema": "fault28.fia_graph.capture.v1",
+  "case_id": "g_batch_b1_r1",
+  "status": "CAPTURE_COMPLETED",
+  "npu_mechanism_accepted": false,
+  "calls": [
+    {
+      "call_id": 0,
+      "phase": "compile_warmup",
+      "elapsed_seconds": 41.511254131328315,
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "logical_bnsd_shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "target_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "request_sha256": [
+        "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a"
+      ],
+      "target_file": "private_output/call0_target.fp16.bin",
+      "target_bytes": 8388608,
+      "inputs_unchanged": true,
+      "consumer": {
+        "shape": [
+          1,
+          2048,
+          1024
+        ],
+        "full_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_file": "private_output/call0_projection.fp16.bin",
+        "request_sha256": [
+          "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08"
+        ]
+      }
+    },
+    {
+      "call_id": 1,
+      "phase": "graph_replay",
+      "elapsed_seconds": 0.9328181548044086,
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "logical_bnsd_shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "target_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "request_sha256": [
+        "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a"
+      ],
+      "target_file": "private_output/call1_target.fp16.bin",
+      "target_bytes": 8388608,
+      "inputs_unchanged": true,
+      "consumer": {
+        "shape": [
+          1,
+          2048,
+          1024
+        ],
+        "full_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_file": "private_output/call1_projection.fp16.bin",
+        "request_sha256": [
+          "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08"
+        ]
+      }
+    },
+    {
+      "call_id": 2,
+      "phase": "graph_replay",
+      "elapsed_seconds": 0.10597925307229161,
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "logical_bnsd_shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "target_sha256": "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a",
+      "request_sha256": [
+        "52ae6157aae12de433b0fe016b161ebbb1ae252508990cfacf79128793b9550a"
+      ],
+      "target_file": "private_output/call2_target.fp16.bin",
+      "target_bytes": 8388608,
+      "inputs_unchanged": true,
+      "consumer": {
+        "shape": [
+          1,
+          2048,
+          1024
+        ],
+        "full_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_sha256": "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08",
+        "target_file": "private_output/call2_projection.fp16.bin",
+        "request_sha256": [
+          "77f9ab5875ef749fb43f932bcd57ce34f9005394593fa54dace90cbfce298f08"
+        ]
+      }
+    }
+  ],
+  "backend_graphs": [
+    {
+      "index": 0,
+      "nodes": 11,
+      "fia_nodes": [
+        "npu_fused_infer_attention_score_default"
+      ]
+    }
+  ],
+  "scope_token": "6eb7b201b94a4f589828b99765596d20",
+  "owner_pid": 88,
+  "owner_starttime_ticks": "328245391",
+  "host_callback_count": 1,
+  "repeated_target_bytes_equal": true,
+  "repeated_all_outputs_equal": true,
+  "deterministic_algorithms": true,
+  "torch_version": "2.10.0+cpu",
+  "torch_npu_version": "2.10.0.post4",
+  "torchair_file": "/work/venv/lib/python3.11/site-packages/torch_npu/dynamo/torchair/__init__.py",
+  "ge_files": [
+    "msprobe_graph/msprobe_ge_dump/dynamo_original_graph_1_rank_0_pid_88_ts_20261109115051896373.txt",
+    "msprobe_graph/msprobe_ge_dump/dynamo_optimized_graph_1_rank_0_pid_88_ts_20261109115051930511.txt",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAny_0_L2.aclnnAny.15.47.1794225088220902.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAny_2_L2.aclnnAny.31.47.1794225088429414.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAll_3_L2.aclnnAll.36.47.1794225088438375.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAny_0_L2.aclnnAny.65535.47.1794225088197372.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAll_3_L0.ReduceAll.33.47.1794225088434300.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAll_3_L0.ReduceAll.35.47.1794225088436593.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAll_3_L2.aclnnAll.32.47.1794225088431408.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAny_0_L0.ReduceAny.14.47.1794225088217810.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAny_2_L0.ReduceAny.30.47.1794225088426661.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAll_1_L0.ReduceAll.19.47.1794225088257054.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAll_1_L0.ReduceAll.17.47.1794225088240319.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAll_1_L2.aclnnAll.16.47.1794225088237366.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAny_2_L0.ReduceAny.28.47.1794225088423428.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAny_0_L0.ReduceAny.12.47.1794225088199457.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAll_1_L2.aclnnAll.20.47.1794225088258819.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/aclnnAny_2_L2.aclnnAny.21.47.1794225088421437.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/2/Data.arg3_1.1.44.1794225088377676.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/2/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1794225088370192.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/2/Data.arg0_1.1.44.1794225088379971.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/2/BatchMatMul.BatchMatMul.3.44.1794225088385774.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/2/Data.arg1_1.1.44.1794225088374347.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/2/ConfusionTransposeD.Reshape_ConfusionTranspose.2.44.1794225088381956.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/2/Data.arg2_1.1.44.1794225088376028.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/2/Data.arg4_1.3.44.1794225088389663.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/1/Data.arg2_1.1.44.1794225087790273.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/1/Data.arg3_1.1.44.1794225087791974.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/1/Data.arg1_1.1.44.1794225087788614.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/1/Data.arg0_1.1.44.1794225087794262.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/1/BatchMatMul.BatchMatMul.3.44.1794225087801193.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/1/ConfusionTransposeD.Reshape_ConfusionTranspose.2.44.1794225087797317.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/1/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1794225087783244.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/1/Data.arg4_1.3.44.1794225087805109.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/0/Data.arg2_1.1.44.1794225087269792.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/0/ConfusionTransposeD.Reshape_ConfusionTranspose.2.44.1794225087274311.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/0/Data.arg3_1.1.44.1794225087271323.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/0/Data.arg1_1.1.44.1794225087268226.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/0/FusedInferAttentionScore.FusedInferAttentionScore.1.44.1794225087262598.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/0/Data.arg4_1.3.44.1794225087282435.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/0/BatchMatMul.BatchMatMul.3.44.1794225087278258.csv",
+    "msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0/20261109115051/0/graph_1/1/0/Data.arg0_1.1.44.1794225087272416.csv"
+  ]
+}

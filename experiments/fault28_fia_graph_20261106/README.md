@@ -1,5 +1,7 @@
 # 故障 28：真实 FIA 图模式的 Batch/M/causal 归约验证
 
+**后续补验（2026-11-09）：** [设备端归约粒度实验](../fault28_fia_grain_20261109/README.md)在同一数值矩阵重新完成23组/69次图调用，19组采集798条官方SDK解码的实际Softmax列数，并通过完整输出观测中性及独立statistics/mix首差验收。它补齐了本文动态N只依赖源码推导的缺口；只采七个query、按进程/图汇总，不代表逐replay时间配对或Reduce指令树。本文原始结果、限制和失败记录保持不变。
+
 **124 物理卡 5 已通过受控 FIA 图子图机制验收（2026-11-06）。** 最终 CPU FP64 统计轮完成 23 组、69 次真实 FIA 图执行；原 FP32 轮的 23 组、69 次计算及其首差验收失败结果保留。两轮 69 对调用的完整目标输出、全部请求输出哈希及私有 host raw/key 完全一致，统计增强没有改变算子计算。
 
 [正式验收及原始统计](../../artifacts/attention_tiling/fault28_fia_graph_statistics_20261106/README.md) · [完整验收报告](../../artifacts/attention_tiling/fault28_fia_graph_statistics_20261106/reports/acceptance.json) · [独立分析方法](analysis/README.md)

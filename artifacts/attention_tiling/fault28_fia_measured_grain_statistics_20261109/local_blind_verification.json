@@ -1,0 +1,427 @@
+{
+  "schema": "fault28.fia.public_measured_evidence_review.v1",
+  "status": "PASS_PUBLIC_BYTES_ABI_SCALARS_AND_BLIND_FIRST",
+  "files": 1514,
+  "bytes": 31108919,
+  "mapped_originals": 1492,
+  "source_mapping_sha256": "03948b772eb9bf87c110d317c98d55c1797863f93458c80d4f08b3c37e3dbd52",
+  "formal_statistics_triplets": 46,
+  "measured_private_cases": 19,
+  "actual_scalar_records": 798,
+  "blind_reviews": [
+    {
+      "role": "fault",
+      "report_file": "\\\\?\\C:\\Users\\admin\\.codex\\worktrees\\batch-outlier-msprobe-publish\\demoncatpfi\\.publish\\fault28-causal-20261029\\experiments\\fault28_fia_grain_20261109\\outputs\\blind_review_a1\\fault_blind_first.json",
+      "sha256": "616b00eb84acd1476c0860426df9a18d6921377794c200641fb3ed9c771ae04f",
+      "first": [
+        {
+          "status": "ALIGNED_OBSERVED_FIRST_DIFFERENCE",
+          "first": {
+            "node": "FusedInferAttentionScore",
+            "type": "FusedInferAttentionScore",
+            "boundary": "output",
+            "index": 0,
+            "fields": [
+              {
+                "path": "$[0].Mean",
+                "B": 0.0002203156135607287,
+                "F": 0.0002203156356586078,
+                "B_present": true,
+                "F_present": true
+              },
+              {
+                "path": "$[0].Norm",
+                "B": 339.158837192348,
+                "F": 339.15883705920237,
+                "B_present": true,
+                "F_present": true
+              }
+            ],
+            "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+            "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+            "raw_module_output_slot": 0,
+            "graph_edge": "FusedInferAttentionScore:0"
+          },
+          "ordered_candidates": [
+            {
+              "node": "FusedInferAttentionScore",
+              "type": "FusedInferAttentionScore",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "path": "$[0].Mean",
+                  "B": 0.0002203156135607287,
+                  "F": 0.0002203156356586078,
+                  "B_present": true,
+                  "F_present": true
+                },
+                {
+                  "path": "$[0].Norm",
+                  "B": 339.158837192348,
+                  "F": 339.15883705920237,
+                  "B_present": true,
+                  "F_present": true
+                }
+              ],
+              "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+              "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+              "raw_module_output_slot": 0,
+              "graph_edge": "FusedInferAttentionScore:0"
+            },
+            {
+              "node": "BatchMatMul",
+              "type": "BatchMatMul",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "field": "AvgValue",
+                  "B": "0.000546055",
+                  "F": "0.000546056"
+                }
+              ],
+              "source": "native_msprobe_GE_CSV"
+            },
+            {
+              "node": "BatchMatMul",
+              "type": "BatchMatMul",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "path": "$[1].Mean",
+                  "B": 0.0005460550585496549,
+                  "F": 0.0005460555793490585,
+                  "B_present": true,
+                  "F_present": true
+                },
+                {
+                  "path": "$[1].Norm",
+                  "B": 337.07481727089043,
+                  "F": 337.07481446475816,
+                  "B_present": true,
+                  "F_present": true
+                }
+              ],
+              "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+              "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+              "raw_module_output_slot": 1,
+              "graph_edge": "BatchMatMul:0"
+            }
+          ],
+          "scope": "First observed producer in this actual graph, joining native GE rows and high precision module output aliases. Summary equality is not tensor equality."
+        },
+        {
+          "status": "ALIGNED_OBSERVED_FIRST_DIFFERENCE",
+          "first": {
+            "node": "FusedInferAttentionScore",
+            "type": "FusedInferAttentionScore",
+            "boundary": "output",
+            "index": 0,
+            "fields": [
+              {
+                "path": "$[0].Mean",
+                "B": 0.0002203156135607287,
+                "F": 0.0002203156356586078,
+                "B_present": true,
+                "F_present": true
+              },
+              {
+                "path": "$[0].Norm",
+                "B": 339.158837192348,
+                "F": 339.15883705920237,
+                "B_present": true,
+                "F_present": true
+              }
+            ],
+            "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+            "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+            "raw_module_output_slot": 0,
+            "graph_edge": "FusedInferAttentionScore:0"
+          },
+          "ordered_candidates": [
+            {
+              "node": "FusedInferAttentionScore",
+              "type": "FusedInferAttentionScore",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "path": "$[0].Mean",
+                  "B": 0.0002203156135607287,
+                  "F": 0.0002203156356586078,
+                  "B_present": true,
+                  "F_present": true
+                },
+                {
+                  "path": "$[0].Norm",
+                  "B": 339.158837192348,
+                  "F": 339.15883705920237,
+                  "B_present": true,
+                  "F_present": true
+                }
+              ],
+              "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+              "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+              "raw_module_output_slot": 0,
+              "graph_edge": "FusedInferAttentionScore:0"
+            },
+            {
+              "node": "BatchMatMul",
+              "type": "BatchMatMul",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "field": "AvgValue",
+                  "B": "0.000546055",
+                  "F": "0.000546056"
+                }
+              ],
+              "source": "native_msprobe_GE_CSV"
+            },
+            {
+              "node": "BatchMatMul",
+              "type": "BatchMatMul",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "path": "$[1].Mean",
+                  "B": 0.0005460550585496549,
+                  "F": 0.0005460555793490585,
+                  "B_present": true,
+                  "F_present": true
+                },
+                {
+                  "path": "$[1].Norm",
+                  "B": 337.07481727089043,
+                  "F": 337.07481446475816,
+                  "B_present": true,
+                  "F_present": true
+                }
+              ],
+              "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+              "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+              "raw_module_output_slot": 1,
+              "graph_edge": "BatchMatMul:0"
+            }
+          ],
+          "scope": "First observed producer in this actual graph, joining native GE rows and high precision module output aliases. Summary equality is not tensor equality."
+        }
+      ]
+    },
+    {
+      "role": "fault_repeat",
+      "report_file": "\\\\?\\C:\\Users\\admin\\.codex\\worktrees\\batch-outlier-msprobe-publish\\demoncatpfi\\.publish\\fault28-causal-20261029\\experiments\\fault28_fia_grain_20261109\\outputs\\blind_review_a1\\fault_repeat_blind_first.json",
+      "sha256": "1afc386732d345e24cdf18bbe96b5edb417bab60764e0fd928060547a89e4403",
+      "first": [
+        {
+          "status": "ALIGNED_OBSERVED_FIRST_DIFFERENCE",
+          "first": {
+            "node": "FusedInferAttentionScore",
+            "type": "FusedInferAttentionScore",
+            "boundary": "output",
+            "index": 0,
+            "fields": [
+              {
+                "path": "$[0].Mean",
+                "B": 0.0002203156135607287,
+                "F": 0.0002203156356586078,
+                "B_present": true,
+                "F_present": true
+              },
+              {
+                "path": "$[0].Norm",
+                "B": 339.158837192348,
+                "F": 339.15883705920237,
+                "B_present": true,
+                "F_present": true
+              }
+            ],
+            "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+            "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+            "raw_module_output_slot": 0,
+            "graph_edge": "FusedInferAttentionScore:0"
+          },
+          "ordered_candidates": [
+            {
+              "node": "FusedInferAttentionScore",
+              "type": "FusedInferAttentionScore",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "path": "$[0].Mean",
+                  "B": 0.0002203156135607287,
+                  "F": 0.0002203156356586078,
+                  "B_present": true,
+                  "F_present": true
+                },
+                {
+                  "path": "$[0].Norm",
+                  "B": 339.158837192348,
+                  "F": 339.15883705920237,
+                  "B_present": true,
+                  "F_present": true
+                }
+              ],
+              "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+              "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+              "raw_module_output_slot": 0,
+              "graph_edge": "FusedInferAttentionScore:0"
+            },
+            {
+              "node": "BatchMatMul",
+              "type": "BatchMatMul",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "field": "AvgValue",
+                  "B": "0.000546055",
+                  "F": "0.000546056"
+                }
+              ],
+              "source": "native_msprobe_GE_CSV"
+            },
+            {
+              "node": "BatchMatMul",
+              "type": "BatchMatMul",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "path": "$[1].Mean",
+                  "B": 0.0005460550585496549,
+                  "F": 0.0005460555793490585,
+                  "B_present": true,
+                  "F_present": true
+                },
+                {
+                  "path": "$[1].Norm",
+                  "B": 337.07481727089043,
+                  "F": 337.07481446475816,
+                  "B_present": true,
+                  "F_present": true
+                }
+              ],
+              "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+              "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+              "raw_module_output_slot": 1,
+              "graph_edge": "BatchMatMul:0"
+            }
+          ],
+          "scope": "First observed producer in this actual graph, joining native GE rows and high precision module output aliases. Summary equality is not tensor equality."
+        },
+        {
+          "status": "ALIGNED_OBSERVED_FIRST_DIFFERENCE",
+          "first": {
+            "node": "FusedInferAttentionScore",
+            "type": "FusedInferAttentionScore",
+            "boundary": "output",
+            "index": 0,
+            "fields": [
+              {
+                "path": "$[0].Mean",
+                "B": 0.0002203156135607287,
+                "F": 0.0002203156356586078,
+                "B_present": true,
+                "F_present": true
+              },
+              {
+                "path": "$[0].Norm",
+                "B": 339.158837192348,
+                "F": 339.15883705920237,
+                "B_present": true,
+                "F_present": true
+              }
+            ],
+            "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+            "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+            "raw_module_output_slot": 0,
+            "graph_edge": "FusedInferAttentionScore:0"
+          },
+          "ordered_candidates": [
+            {
+              "node": "FusedInferAttentionScore",
+              "type": "FusedInferAttentionScore",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "path": "$[0].Mean",
+                  "B": 0.0002203156135607287,
+                  "F": 0.0002203156356586078,
+                  "B_present": true,
+                  "F_present": true
+                },
+                {
+                  "path": "$[0].Norm",
+                  "B": 339.158837192348,
+                  "F": 339.15883705920237,
+                  "B_present": true,
+                  "F_present": true
+                }
+              ],
+              "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+              "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+              "raw_module_output_slot": 0,
+              "graph_edge": "FusedInferAttentionScore:0"
+            },
+            {
+              "node": "BatchMatMul",
+              "type": "BatchMatMul",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "field": "AvgValue",
+                  "B": "0.000546055",
+                  "F": "0.000546056"
+                }
+              ],
+              "source": "native_msprobe_GE_CSV"
+            },
+            {
+              "node": "BatchMatMul",
+              "type": "BatchMatMul",
+              "boundary": "output",
+              "index": 0,
+              "fields": [
+                {
+                  "path": "$[1].Mean",
+                  "B": 0.0005460550585496549,
+                  "F": 0.0005460555793490585,
+                  "B_present": true,
+                  "F_present": true
+                },
+                {
+                  "path": "$[1].Norm",
+                  "B": 337.07481727089043,
+                  "F": 337.07481446475816,
+                  "B_present": true,
+                  "F_present": true
+                }
+              ],
+              "source": "native_msprobe_statistics_mix_via_direct_GE_NetOutput_alias",
+              "raw_module_node": "Module.graph_region.GraphBoundary.forward.0",
+              "raw_module_output_slot": 1,
+              "graph_edge": "BatchMatMul:0"
+            }
+          ],
+          "scope": "First observed producer in this actual graph, joining native GE rows and high precision module output aliases. Summary equality is not tensor equality."
+        }
+      ]
+    }
+  ],
+  "blind_inputs_exclude_control_and_device_metadata": true,
+  "private_tensor_files_opened": 0,
+  "native_calls": 0,
+  "limits": [
+    "Public review does not reread private complete DEBUG logs, binary code, scalar buffers or target tensors.",
+    "Scalar records remain aggregate process/graph observations, not per-replay timing assignments."
+  ],
+  "analysis_source_sha256": "8102d75ebd1c351620a997fc62c159d3b71185eaf7d91fc3224cd2e01416e8c8"
+}

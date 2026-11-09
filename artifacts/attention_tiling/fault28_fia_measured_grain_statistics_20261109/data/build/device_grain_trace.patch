@@ -1,0 +1,32 @@
+--- a/fia_block_vec_nonquant.h
++++ b/fia_block_vec_nonquant.h
+@@ -21,6 +21,7 @@
+ #else
+ #include "kernel_operator.h"
+ #endif
++#include "kernel_operator.h" // AscendC::printf diagnostic interface
+ #include "kernel_operator_list_tensor_intf.h"
+ #include "kernel_tiling/kernel_tiling.h"
+ #include "lib/matrix/matmul/tiling.h"
+@@ -648,6 +649,21 @@
+     const RunInfo &info, LocalTensor<MM1_OUT_T> &mmResUb, LocalTensor<uint8_t> &softmaxTmpUb,
+     uint32_t startRow, uint32_t dealRowCount, uint32_t columnCount, uint32_t actualColumnCount)
+ {
++    // Diagnostic only: scalars actually consumed by SoftmaxFlashV2 below.
++    // Sample request0/KVhead0/G0 and fixed query positions, never payloads.
++    if (info.bIdx == 0 && info.n2Idx == 0 && info.gS1Idx < info.actS1Size) {
++        const uint32_t f28Start = info.gS1Idx + mSplitInfo.nBufferStartM + mSplitInfo.vecStartM + startRow;
++        const uint32_t f28End = f28Start + dealRowCount;
++        if ((f28Start <= 63 && 63 < f28End) || (f28Start <= 255 && 255 < f28End) ||
++            (f28Start <= 511 && 511 < f28End) || (f28Start <= 767 && 767 < f28End) ||
++            (f28Start <= 1023 && 1023 < f28End) || (f28Start <= 1535 && 1535 < f28End) ||
++            (f28Start <= 2047 && 2047 < f28End)) {
++            AscendC::printf("F28_GRAIN_V1 block=%u m=%u tile=%u row=%u rows=%u s2=%u base=%u columns=%u actual=%u prune=%u brc=%u\n",
++                uint32_t(GetBlockIdx()), uint32_t(info.actMBaseSize), uint32_t(info.gS1Idx),
++                f28Start, dealRowCount, uint32_t(info.s2Idx), uint32_t(constInfo.s2BaseSize),
++                columnCount, actualColumnCount, uint32_t(FIAT::fault28CausalPrune), uint32_t(SOFTMAX_WITH_BRC));
++        }
++    }
+     SoftMaxShapeInfo srcShape{dealRowCount, columnCount, dealRowCount, actualColumnCount};
+     SoftMaxTiling newTiling =
+         SoftMaxFlashV2TilingFunc(srcShape, sizeof(COMPUTE_T), sizeof(COMPUTE_T), softmaxTmpUb.GetSize(), true, false);

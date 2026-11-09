@@ -1,0 +1,174 @@
+{
+  "schema": "fault28.fia.measured_causal_chain.v1",
+  "status": "PASS_CONTROLLED_FIA_GRAPH_MEASURED_CAUSAL_CHAIN",
+  "preregistered_cases": 23,
+  "actual_graph_calls": 69,
+  "measured_private_cases": 19,
+  "device_scalar_records": 798,
+  "primary_same_rule_BF": [
+    {
+      "baseline": "g_causal_base512_b8_r1",
+      "fault": "g_batch_b8_r1",
+      "input_file_sha256": "8e3577185a562524944ce3ba443c9d1ebadf8e6377f5a0e06fb5e71db6ef4166",
+      "same_causal_kernel_rule": true,
+      "B_actual_m": 512,
+      "F_actual_m": 128,
+      "B_query63_columns": 512,
+      "F_query63_columns": 128,
+      "attention_changed_elements": 140,
+      "attention_max_abs": 0.000244140625,
+      "last_query_changed": 0,
+      "projection_changed_elements": 6141,
+      "all_request_hash_differences": [
+        {
+          "call_id": 0,
+          "changed_request_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "call_id": 1,
+          "changed_request_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "call_id": 2,
+          "changed_request_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      ],
+      "independent_first_report": "primary_g_batch_b8_r1_msprobe.json",
+      "independent_first_report_sha256": "321114196deb53d8c2fb2e76a1f73a1f644f19cd87c7b9c56f1030845029f422",
+      "complete_report": "primary_g_batch_b8_r1_complete.json",
+      "complete_report_sha256": "8724add889a8cc1a31363a797ea7f734cb38d3f5b91d0338cf93934b4b95fc6c"
+    },
+    {
+      "baseline": "g_causal_base512_b8_r1",
+      "fault": "g_batch_b8_r2",
+      "input_file_sha256": "8e3577185a562524944ce3ba443c9d1ebadf8e6377f5a0e06fb5e71db6ef4166",
+      "same_causal_kernel_rule": true,
+      "B_actual_m": 512,
+      "F_actual_m": 128,
+      "B_query63_columns": 512,
+      "F_query63_columns": 128,
+      "attention_changed_elements": 140,
+      "attention_max_abs": 0.000244140625,
+      "last_query_changed": 0,
+      "projection_changed_elements": 6141,
+      "all_request_hash_differences": [
+        {
+          "call_id": 0,
+          "changed_request_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "call_id": 1,
+          "changed_request_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        },
+        {
+          "call_id": 2,
+          "changed_request_slots": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ]
+        }
+      ],
+      "independent_first_report": "primary_g_batch_b8_r2_msprobe.json",
+      "independent_first_report_sha256": "4d1fae67b548086e8cacebfeb9122b1d08ecae901797a786f8b6c4e5e50442f3",
+      "complete_report": "primary_g_batch_b8_r2_complete.json",
+      "complete_report_sha256": "ca3397d7045ee2bdfc000db7a2a95cea38fc0d32a7c1bbb1b705b3a9d182eb89"
+    }
+  ],
+  "automatic_batch": [
+    {
+      "repeat": 1,
+      "B1_actual_batch": 1,
+      "B8_actual_batch": 8,
+      "B1_actual_M": 512,
+      "B8_actual_M": 128,
+      "same_complete_target_QKV": true,
+      "B1_query63_columns": [
+        512
+      ],
+      "B8_query63_columns": [
+        128
+      ]
+    },
+    {
+      "repeat": 2,
+      "B1_actual_batch": 1,
+      "B8_actual_batch": 8,
+      "B1_actual_M": 512,
+      "B8_actual_M": 128,
+      "same_complete_target_QKV": true,
+      "B1_query63_columns": [
+        512
+      ],
+      "B8_query63_columns": [
+        128
+      ]
+    }
+  ],
+  "all_request_attention_and_projection_repeat_off_hashes_equal": true,
+  "execution_acceptance_sha256": "c46b74e2817813e84f31bbb1d403fa5e7378322405c595a2ec04f811a3225ae2",
+  "device_matrix_sha256": "a145708c9450654dc4fdaf459a3a1b2286a3cbeca46c203f9063e819878fe43b",
+  "observer_neutrality_sha256": "ca745058602626e0d3028af6e00d5d2c44a6ed4349494bb51974342da842f824",
+  "analysis_source_sha256": "7b872bee69b1da859872ff50022b4ed8adf4fa380c61704d855d293fe4fd42f4",
+  "individual_scalar_to_replay_pairing_proven": false,
+  "historical_Pangu_version_reproduced": false,
+  "scope": "Fixed actual Qwen3 layer1 QKV and real o_proj in a real TorchAir fullgraph FIA subgraph.",
+  "limits": [
+    "Controlled current-version batch selector and legitimate causal variant; not an unmodified native default Batch switch.",
+    "Measured Softmax column granularity; not a Reduce instruction tree or unique instruction-level error contribution.",
+    "Seven query positions of request0/head0 observed; full numerical output checked separately.",
+    "Asynchronous scalar flush is verified in aggregate across each process; replay pairing not established.",
+    "statistics/mix GraphBoundary output0 maps through actual GE NetOutput to FIA0; not a relabeled eager API dump.",
+    "Not a complete Pangu/Qwen3 model graph, natural all-layer FIA path or first-generated-token logits reproduction."
+  ]
+}

@@ -1,0 +1,178 @@
+--- a/attention/common/op_host/arch22/fia_tiling_nonquant.h
++++ b/attention/common/op_host/arch22/fia_tiling_nonquant.h
+@@ -21,6 +21,8 @@
+ #include "../fia_tiling_info.h"
+ #include "../split_core.h"
+ #include "../../../fused_infer_attention_score/op_host/fused_infer_attention_score_tiling.h"
++
++#include "fault28_fia_policy.h"
+ 
+ namespace optiling {
+ 
+@@ -77,6 +79,7 @@
+                          int64_t &safePreToken, int64_t &safeNextToken) const;
+     bool IsExistRowInvalid(const BaseInfo &baseInfo) const;
+     bool GetIsEmptyBatchOverHalf() const;       // 临时操作，用于检查是否超过一半的batch为空batch
++    fault28_fia::State fault28State_;
+     bool splitKVFlag_ = false;
+ 
+     uint32_t coreNum_ = 0;
+--- a/attention/common/op_host/arch22/fia_tiling_nonquant.cpp
++++ b/attention/common/op_host/arch22/fia_tiling_nonquant.cpp
+@@ -189,6 +189,8 @@
+     tilingKey_ = baseOffset + FIA_GET_TILINGKEY(layoutVal, inputQVal, inputKvVal, outputVal, originVal,
+         (softmaxBrcbFlagVal + paVal + splitKvVal), antiquantModeVal, kvLayoutVal, enableTreeVal);
+ 
++    fault28State_.preExtensionKey = tilingKey_;
++    if (fault28State_.eligible && fault28State_.prune) tilingKey_ += 6000000000000000ULL;
+     OP_LOGI(fiaInfo_->opName, "FIA tilingKey_: %lu.", tilingKey_);
+ }
+ 
+@@ -318,6 +320,8 @@
+             mBaseSize_ = M_BASE_SIZE_512;
+         }
+     }
++    fault28State_ = fault28_fia::Select(*fiaInfo_, context_, aicNum_, aivNum_, mBaseSize_, sInnerSize_);
++    mBaseSize_ = fault28State_.selectedM;
+     softmaxWithBrcbFlag_ = (mBaseSize_ <= M_BASE_SIZE_128);
+ 
+     OP_LOGI(fiaInfo_->opName, "FIA sInnerSize_:%u sInnerSizeAlign_:%u mBaseSize_:%u softmaxWithBrcbFlag_:%u.",
+@@ -749,6 +753,10 @@
+         CalcNumBlocks(usedCoreNum_);
+         CalcScheduleMode();
+         CalcWorkspaceSize();
++        if (fault28State_.eligible && IsFlashDecode()) {
++            OP_LOGE(fiaInfo_->opName, "Fault28 requires complete in-core KV reduction; SplitKV rejected.");
++            return ge::GRAPH_FAILED;
++        }
+         GenTilingKey();
+     }
+ 
+@@ -760,6 +768,7 @@
+         return ge::GRAPH_FAILED;
+     }
+ 
++    fault28_fia::Capture(fault28State_, context_, tilingData_, fault28State_.preExtensionKey, workspaceSize_, aicNum_, aivNum_);
+     return ge::GRAPH_SUCCESS;
+ }
+ 
+--- a/attention/common/op_kernel/fia_public_define.h
++++ b/attention/common/op_kernel/fia_public_define.h
+@@ -70,6 +70,7 @@
+     static constexpr FIA_LAYOUT kvLayout = KV_LAYOUT_T;
+     static constexpr bool softmaxWithBrc = SOFTMAX_WITH_BRC;
+     static constexpr bool enableTree = ENABLE_TREE;
++    static constexpr bool fault28CausalPrune = false;
+ };
+ 
+ struct FDparams {
+--- a/attention/common/op_kernel/arch22/fia_kernel_nonquant.h
++++ b/attention/common/op_kernel/arch22/fia_kernel_nonquant.h
+@@ -35,6 +35,8 @@
+ #include "fia_block_vec_nonquant.h"
+ #include "fia_block_vec_flashdecode.h"
+ #include "../const_def.h"
++
++#include "fault28_causal_tile.h"
+ 
+ using namespace matmul;
+ using namespace AttentionCommon;
+@@ -617,6 +619,12 @@
+     info.actualSingleProcessSInnerSize = constInfo.s2BaseSize;
+     if (((s2Cur + 1) * constInfo.s2BaseSize) > info.actS2Size) {
+         info.actualSingleProcessSInnerSize = info.actS2Size - s2Cur * constInfo.s2BaseSize;
++    }
++    if constexpr (FIAT::fault28CausalPrune) {
++        static_assert(LAYOUT_T == FIA_LAYOUT::BNSD && !PAGE_ATTENTION && !FLASH_DECODE && !ENABLE_TREE, "Fault28 scope");
++        info.actualSingleProcessSInnerSize = fault28_causal_tile::InnerWidth(
++            info.gS1Idx, info.actMBaseSize, info.actS1Size, s2Cur, constInfo.s2BaseSize,
++            info.actualSingleProcessSInnerSize);
+     }
+     info.actualSingleProcessSInnerSizeAlign =
+         AttentionCommon::Align((uint32_t)info.actualSingleProcessSInnerSize, (uint32_t)AttentionCommon::BYTE_BLOCK);
+--- a/attention/fused_infer_attention_score/op_kernel/fused_infer_attention_score_v3.cpp
++++ b/attention/fused_infer_attention_score/op_kernel/fused_infer_attention_score_v3.cpp
+@@ -46,6 +46,8 @@
+ 
+ using namespace AscendC;
+ 
++template <class Base> struct Fault28CausalFIAType : Base { static constexpr bool fault28CausalPrune = true; };
++
+ #define INVOKE_FIA_OP_GENERAL_IMPL(templateClass, CubeBlockType, VecBlockType, FdBlockType, ...)                         \
+     do {                                                                                                                 \
+         using CubeBlockTypeT = typename std::conditional<g_coreType == AscendC::AIC,                                     \
+@@ -55,6 +57,24 @@
+         using FdBlockTypeT = typename std::conditional<g_coreType == AscendC::AIC,                                       \
+                              FdBlockType##Dummy<FIAType<__VA_ARGS__>>, FdBlockType<FIAType<__VA_ARGS__>>>::type;         \
+         templateClass<FIAType<__VA_ARGS__>, CubeBlockTypeT, VecBlockTypeT, FdBlockTypeT> op;                             \
++        FIA_COPY_TILING_DATA(FusedInferAttentionScoreTilingData, tiling);                                                \
++        op.Init(query, key, value, pseShift, attenMask, actualSeqLengthsQ, actualSeqLengths, deqScale1, quantScale1,     \
++                deqScale2, quantScale2, quantOffset2, antiquantScale, antiquantOffset, blockTable, queryPaddingSize,     \
++                kvPaddingSize, keyAntiquantScale, keyAntiquantOffset, valueAntiquantScale, valueAntiquantOffset,         \
++                keySharedPrefix, valueSharedPrefix, actualSharedPrefixLen, queryRope, keyRope, keyRopeAntiquantScale,    \
++                learnableSink, attentionOut, softmaxLse, user, tiling_data, tiling, &tPipe);                             \
++        op.Process();                                                                                                    \
++    } while (0)
++
++#define INVOKE_FAULT28_FIA_PRUNED(templateClass, CubeBlockType, VecBlockType, FdBlockType, ...)                         \
++    do {                                                                                                                 \
++        using CubeBlockTypeT = typename std::conditional<g_coreType == AscendC::AIC,                                     \
++                               CubeBlockType<Fault28CausalFIAType<FIAType<__VA_ARGS__>>>, CubeBlockType##Dummy<Fault28CausalFIAType<FIAType<__VA_ARGS__>>>>::type;   \
++        using VecBlockTypeT = typename std::conditional<g_coreType == AscendC::AIC,                                      \
++                              VecBlockType##Dummy<Fault28CausalFIAType<FIAType<__VA_ARGS__>>>, VecBlockType<Fault28CausalFIAType<FIAType<__VA_ARGS__>>>>::type;      \
++        using FdBlockTypeT = typename std::conditional<g_coreType == AscendC::AIC,                                       \
++                             FdBlockType##Dummy<Fault28CausalFIAType<FIAType<__VA_ARGS__>>>, FdBlockType<Fault28CausalFIAType<FIAType<__VA_ARGS__>>>>::type;         \
++        templateClass<Fault28CausalFIAType<FIAType<__VA_ARGS__>>, CubeBlockTypeT, VecBlockTypeT, FdBlockTypeT> op;                             \
+         FIA_COPY_TILING_DATA(FusedInferAttentionScoreTilingData, tiling);                                                \
+         op.Init(query, key, value, pseShift, attenMask, actualSeqLengthsQ, actualSeqLengths, deqScale1, quantScale1,     \
+                 deqScale2, quantScale2, quantOffset2, antiquantScale, antiquantOffset, blockTable, queryPaddingSize,     \
+@@ -298,6 +318,7 @@
+     TILING_KEY_IS(103000000220300005);
+ 
+     // Gqa NoQuant Non PA Non Perf
++    TILING_KEY_IS(109000000000000000);
+     TILING_KEY_IS(103000000000000000);
+     TILING_KEY_IS(103000000200000000);
+     TILING_KEY_IS(103000000010000001);
+@@ -314,6 +335,7 @@
+     TILING_KEY_IS(103000000230100003);
+     TILING_KEY_IS(103000000050100005);
+     TILING_KEY_IS(103000000250100005);
++    TILING_KEY_IS(109000000000400000);
+     TILING_KEY_IS(103000000000400000);
+     TILING_KEY_IS(103000000200400000);
+     TILING_KEY_IS(103000000010400001);
+@@ -896,6 +918,10 @@
+                                half, half, half, half, true, true, FIA_LAYOUT::NTD, false, false, FIA_LAYOUT::NZ,
+                                false, true);
+ // Gqa NoQuant Non PA Non Perf
++#elif TILING_KEY_VAR == 109000000000000000
++    INVOKE_FAULT28_FIA_PRUNED(FiaKernelNonQuant, FiaBlockCubeNonQuantGqa, FiaBlockVecNonQuant, FiaBlockVecFlashDecode,
++                               half, half, half, half, false, false, FIA_LAYOUT::BNSD, false, false, FIA_LAYOUT::BNSD,
++                               false);
+ #elif TILING_KEY_VAR == 103000000000000000
+     INVOKE_FIA_OP_GENERAL_IMPL(FiaKernelNonQuant, FiaBlockCubeNonQuantGqa, FiaBlockVecNonQuant, FiaBlockVecFlashDecode,
+                                half, half, half, half, false, false, FIA_LAYOUT::BNSD, false, false, FIA_LAYOUT::BNSD,
+@@ -960,6 +986,10 @@
+     INVOKE_FIA_OP_GENERAL_IMPL(FiaKernelNonQuant, FiaBlockCubeNonQuantGqa, FiaBlockVecNonQuant, FiaBlockVecFlashDecode,
+                                half, half, half, half, false, true, FIA_LAYOUT::NTD, false, false, FIA_LAYOUT::NTD,
+                                false, true);
++#elif TILING_KEY_VAR == 109000000000400000
++    INVOKE_FAULT28_FIA_PRUNED(FiaKernelNonQuant, FiaBlockCubeNonQuantGqa, FiaBlockVecNonQuant, FiaBlockVecFlashDecode,
++                               half, half, half, half, false, false, FIA_LAYOUT::BNSD, false, false, FIA_LAYOUT::BNSD,
++                               true);
+ #elif TILING_KEY_VAR == 103000000000400000
+     INVOKE_FIA_OP_GENERAL_IMPL(FiaKernelNonQuant, FiaBlockCubeNonQuantGqa, FiaBlockVecNonQuant, FiaBlockVecFlashDecode,
+                                half, half, half, half, false, false, FIA_LAYOUT::BNSD, false, false, FIA_LAYOUT::BNSD,
+--- a/attention/fused_infer_attention_score/op_host/arch22/fused_infer_attention_score_tiling_v3.cpp
++++ b/attention/fused_infer_attention_score/op_host/arch22/fused_infer_attention_score_tiling_v3.cpp
+@@ -899,6 +899,9 @@
+ constexpr int64_t HEAD_DIM_192 = 192;
+ constexpr int64_t HEAD_DIM_64 = 64;
+ 
++REGISTER_TILING_DATA_CLASS(FusedInferAttentionScore_109000000000000000, FusedInferAttentionScoreTilingData)
++REGISTER_TILING_DATA_CLASS(FusedInferAttentionScore_109000000000400000, FusedInferAttentionScoreTilingData)
++
+ FIA_EXTERN_C ge::graphStatus TilingFusedInferAttentionScoreV3(gert::TilingContext *context)
+ {
+     FiaTilingInfo fiaInfo;

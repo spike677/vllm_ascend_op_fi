@@ -1,0 +1,54 @@
+{
+  "schema": "fault28.fia_graph.cpu_inventory.v1",
+  "npu_calls": 0,
+  "python": "3.11.14 (main, Feb 26 2026, 04:49:14) [GCC 11.4.0]",
+  "torch": "2.9.0+cpu",
+  "torch_npu": "2.9.0.post1+gitee7ba04",
+  "torch_npu_root": "/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu",
+  "sys_path": [
+    "/audit",
+    "/usr/local/Ascend/cann-8.5.1/python/site-packages",
+    "/usr/local/Ascend/cann-8.5.1/opp/built-in/op_impl/ai_core/tbe",
+    "/usr/local/Ascend/ascend-toolkit/latest/python/site-packages",
+    "/usr/local/Ascend/ascend-toolkit/latest/opp/built-in/op_impl/ai_core/tbe",
+    "/workspace",
+    "/usr/local/python3.11.14/lib/python311.zip",
+    "/usr/local/python3.11.14/lib/python3.11",
+    "/usr/local/python3.11.14/lib/python3.11/lib-dynload",
+    "/usr/local/python3.11.14/lib/python3.11/site-packages",
+    "__editable__.vllm-0.18.0+empty.finder.__path_hook__",
+    "/tmp/tmprawxzj_k",
+    "/usr/local/python3.11.14/lib/python3.11/site-packages/setuptools/_vendor"
+  ],
+  "packages": {
+    "torch": "2.9.0+cpu",
+    "torch-npu": "2.9.0.post1+gitee7ba04",
+    "torchair": null,
+    "torch-air": null,
+    "vllm": "0.18.0+empty",
+    "transformers": "4.57.6"
+  },
+  "operators": {
+    "npu_fused_infer_attention_score": {
+      "available": true,
+      "schema": "{'': npu::npu_fused_infer_attention_score(Tensor query, Tensor key, Tensor value, *, Tensor? pse_shift=None, Tensor? atten_mask=None, SymInt[]? actual_seq_lengths=None, SymInt[]? actual_seq_lengths_kv=None, Tensor? dequant_scale1=None, Tensor? quant_scale1=None, Tensor? dequant_scale2=None, Tensor? quant_scale2=None, Tensor? quant_offset2=None, Tensor? antiquant_scale=None, Tensor? antiquant_offset=None, Tensor? key_antiquant_scale=None, Tensor? key_antiquant_offset=None, Tensor? value_antiquant_scale=None, Tensor? value_antiquant_offset=None, Tensor? block_table=None, Tensor? query_padding_size=None, Tensor? kv_padding_size=None, Tensor? key_shared_prefix=None, Tensor? value_shared_prefix=None, SymInt[]? actual_shared_prefix_len=None, Tensor? query_rope=None, Tensor? key_rope=None, Tensor? key_rope_antiquant_scale=None, int num_heads=1, float scale=1., int pre_tokens=2147483647, int next_tokens=2147483647, str input_layout=\"BSH\", int num_key_value_heads=0, int sparse_mode=0, int inner_precise=0, int block_size=0, int antiquant_mode=0, int key_antiquant_mode=0, int value_antiquant_mode=0, bool softmax_lse_flag=False) -> (Tensor, Tensor), 'out': npu::npu_fused_infer_attention_score.out(Tensor query, Tensor key, Tensor value, *, Tensor? pse_shift=None, Tensor? atten_mask=None, SymInt[]? actual_seq_lengths=None, SymInt[]? actual_seq_lengths_kv=None, Tensor? dequant_scale1=None, Tensor? quant_scale1=None, Tensor? dequant_scale2=None, Tensor? quant_scale2=None, Tensor? quant_offset2=None, Tensor? antiquant_scale=None, Tensor? antiquant_offset=None, Tensor? key_antiquant_scale=None, Tensor? key_antiquant_offset=None, Tensor? value_antiquant_scale=None, Tensor? value_antiquant_offset=None, Tensor? block_table=None, Tensor? query_padding_size=None, Tensor? kv_padding_size=None, Tensor? key_shared_prefix=None, Tensor? value_shared_prefix=None, SymInt[]? actual_shared_prefix_len=None, Tensor? query_rope=None, Tensor? key_rope=None, Tensor? key_rope_antiquant_scale=None, int num_heads=1, float scale=1., int pre_tokens=2147483647, int next_tokens=2147483647, str input_layout=\"BSH\", int num_key_value_heads=0, int sparse_mode=0, int inner_precise=0, int block_size=0, int antiquant_mode=0, int key_antiquant_mode=0, int value_antiquant_mode=0, bool softmax_lse_flag=False, Tensor? workspace=None, Tensor[] out) -> (Tensor, Tensor)}"
+    },
+    "npu_prompt_flash_attention": {
+      "available": true,
+      "schema": "{'': npu::npu_prompt_flash_attention(Tensor query, Tensor key, Tensor value, *, Tensor? padding_mask=None, Tensor? atten_mask=None, Tensor? pse_shift=None, int[]? actual_seq_lengths=None, Tensor? deq_scale1=None, Tensor? quant_scale1=None, Tensor? deq_scale2=None, Tensor? quant_scale2=None, Tensor? quant_offset2=None, int num_heads=1, float scale_value=1., int pre_tokens=2147483647, int next_tokens=0, str input_layout=\"BSH\", int num_key_value_heads=0, int[]? actual_seq_lengths_kv=None, int sparse_mode=0) -> Tensor}"
+    }
+  },
+  "torchair_candidates": [
+    "/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu/dynamo/torchair"
+  ],
+  "torchair_spec": "/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu/dynamo/torchair/__init__.py",
+  "cann_versions": {
+    "/usr/local/Ascend/driver/version.info": "Version=25.5.0.b060\nascendhal_version=7.35.23\naicpu_version=1.0\ntdt_version=1.0\nlog_version=1.0\nprof_version=2.0\ndvppkernels_version=1.1\ntsfw_version=1.0\nInnerversion=V100R001C23SPC003B219\ncompatible_version=[V100R001C19],[V100R001C20],[V100R001C21],[V100R001C22],[V100R001C23]\ncompatible_version_fw=[7.0.0,8.9.9]\npackage_version=25.5.0.b060\n",
+    "/usr/local/Ascend/cann-8.5.1/mindstudio-toolkit/version.info": "Version=8.3.0.B010\n",
+    "/usr/local/Ascend/cann-8.5.1/opp/version.info": "Version=8.5.1\nversion_dir=cann\nrequired_package_runtime_version=\">=8.5\"\nrequired_package_ge-executor_version=\">=8.5\"\nrequired_package_metadef_version=\">=8.5\"\nrequired_package_asc-devkit_version=\">=8.5\"\nrequired_package_bisheng-compiler_version=\">=8.5\"\n",
+    "/usr/local/Ascend/cann-8.5.1/compiler/version.info": "Version=8.5.1\nversion_dir=cann\nrequired_package_runtime_version=\"8.5\"\nrequired_package_metadef_version=\"8.5\"\nrequired_package_opbase_version=\"8.5\"\nrequired_package_bisheng-compiler_version=\"8.5\"\nrequired_package_ge-executor_version=\"8.5\"\nrequired_package_tbe-tik_version=\"8.5\"\ntimestamp=20250725_000000000\n",
+    "/usr/local/Ascend/cann/mindstudio-toolkit/version.info": "Version=8.3.0.B010\n",
+    "/usr/local/Ascend/cann/opp/version.info": "Version=8.5.1\nversion_dir=cann\nrequired_package_runtime_version=\">=8.5\"\nrequired_package_ge-executor_version=\">=8.5\"\nrequired_package_metadef_version=\">=8.5\"\nrequired_package_asc-devkit_version=\">=8.5\"\nrequired_package_bisheng-compiler_version=\">=8.5\"\n",
+    "/usr/local/Ascend/cann/compiler/version.info": "Version=8.5.1\nversion_dir=cann\nrequired_package_runtime_version=\"8.5\"\nrequired_package_metadef_version=\"8.5\"\nrequired_package_opbase_version=\"8.5\"\nrequired_package_bisheng-compiler_version=\"8.5\"\nrequired_package_ge-executor_version=\"8.5\"\nrequired_package_tbe-tik_version=\"8.5\"\ntimestamp=20250725_000000000\n"
+  }
+}
