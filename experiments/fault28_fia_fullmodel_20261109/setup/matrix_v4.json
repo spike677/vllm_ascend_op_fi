@@ -1,0 +1,66 @@
+{
+  "schema": "fault28.fia_fullmodel.matrix.v1",
+  "case_ids": [
+    "model_b1_baseline",
+    "model_b1_fault_r1",
+    "model_b1_fault_r2",
+    "model_b1_restore",
+    "model_b8_baseline",
+    "model_b8_fault_r1",
+    "model_b8_fault_r2",
+    "model_b8_restore",
+    "model_b8_noalias_baseline",
+    "model_b8_noalias_fault"
+  ],
+  "case_sha256": {
+    "model_b1_baseline": "4c8ba5d632b37440ef493d4a01a4d6393ab187fd5694f594cd72a37aec22ad07",
+    "model_b1_fault_r1": "b66cf2c495eaa4dc5a855c1cc359fb4e62d2a3cc0b093f7e0f3aeef323c71ef7",
+    "model_b1_fault_r2": "67a8e54ffdfdfc40e45e33d3dd9a1cc0eff71452a08576ffaf5e4c5f27f1289a",
+    "model_b1_restore": "016fa751891df2d3a56167c3a600c9cb520e7deda473b84c036fdc9592f12c8b",
+    "model_b8_baseline": "902d5d3a0ba831354a9599ba7f58144fc3e8f415c302fe653c5a4a0d9a33db11",
+    "model_b8_fault_r1": "dcc086e8571aae705e6c46adc5d6d72e66ec227270603ecbadbf5e34a1e3bcd0",
+    "model_b8_fault_r2": "3a1e3408e781e52103fa3e7010c78e2a74b897a9ed2ca47628f73ccfa1a0fcc2",
+    "model_b8_restore": "c5eb4cf61e96d141dcfc1e1160b473c93046578af635d4b461a6966637147d25",
+    "model_b8_noalias_baseline": "c0413df047de3f3de71fa28f47b8224b5b38dc2cad4ad2de5d466b5f5da17225",
+    "model_b8_noalias_fault": "189a57749eeb954114c28e88341b8ac38828390c55f239fbf5a021d33dd18689"
+  },
+  "formal_alias_cases": 8,
+  "neutrality_cases": 2,
+  "model_forwards_per_case": 3,
+  "expected_fia_nodes_per_graph": 28,
+  "expected_formal_node_executions": 672,
+  "total_model_forwards": 30,
+  "total_node_executions": 840,
+  "request_ids": {
+    "b1": [
+      "request_00"
+    ],
+    "b8": [
+      "request_00",
+      "request_01",
+      "request_02",
+      "request_03",
+      "request_04",
+      "request_05",
+      "request_06",
+      "request_07"
+    ]
+  },
+  "runtime_sha256": {
+    "env.sh": "641a77e717f61f6a97ce78feffdb8f9dc155386fb2bfe005ee7411ce498bb27e",
+    "vendor_exec.py": "c85ee7513aa69317ca0409bcb02c164e0fd4867b6204c6ceae5aa41e7f814d0a",
+    "controller.py": "a923714cf872890d6f2593a2a59577d4ef55f506e3186597fc47272b9871540c",
+    "collector_stage.py": "1d8d788820d99639c5eb137d5646fc9946c91a9ca3de3986de947a50289afb3f",
+    "graph_probe.py": "ef0a7ee89cd9d365254523de36a92543150756934442ff4c8250b21d35c308e4",
+    "build_cases.py": "91168138a67f46053b03ae8a91d0f8b478a8649ac54f40335298c4f875ca32e1",
+    "prepare_remote.py": "0d862368559979cc1c7670f35b2ad37160d554f7fab9516a2f43d4cb247d7403",
+    "graph_statistics.py": "c697ecdb0280e9712e82c4f8152ccf8dacecd0d6bfa34999c179130dfc6ce633",
+    "inspect_cpu.py": "8300532c4b235dd192a11a75203139e5c89699a84e3d4532e07462669ce7bcaa",
+    "cpu_export_host.py": "c5aacff3e229922d2993e10d369da178459a7a9c07104b0a1565211ffbee4a9d",
+    "model_adapter.py": "140077ece5fff5ea6d59e6a1e6c97512f2c59642b2d4dfc678306e5092babcd4"
+  },
+  "acceptance": "Coverage, complete per-request Attention/logits, repeat/OFF and independently inferred first producer; no expected difference is fabricated.",
+  "preregistered_before_npu_execution": true,
+  "prior_matrix_sha256": "ad3e55aba16fabb51d753e7c223e8943e05ea7432272deaff25112324fccfefa",
+  "revision_reason": "Correct O_EXCL raw-file open before creating evidence symlink; no numerical changes. Actual Linux log storage tests passed."
+}

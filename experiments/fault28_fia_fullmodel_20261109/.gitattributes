@@ -1,0 +1,6 @@
+# Preserve the source/config bytes used by the recorded runtime and build.
+* -text !eol whitespace=cr-at-eol,-blank-at-eof
+# These two as-executed files include native trailing whitespace; their hashes
+# are part of the runtime freeze and are preserved instead of reformatted.
+graph_probe.py -whitespace
+vendor_exec.py -whitespace

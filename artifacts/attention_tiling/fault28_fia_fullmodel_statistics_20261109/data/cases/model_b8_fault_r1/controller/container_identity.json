@@ -1,0 +1,32 @@
+{
+  "id": "9a5a3f12193ec3d06c272c9635e044eeaa623d43a35dfe66ed864b1744823045",
+  "name": "dcat-f28-fia-model_b8_fault_r1_a5",
+  "image": "sha256:8988c3cd3a971a72ebb2e5baae24e0091cde55146f96d2b4c8229448210735b9",
+  "labels": {
+    "demoncat.controller_token": "2c4cbfd11b6d448580fff28ec087996f",
+    "demoncat.task": "fault28-fia-fullmodel-20261109",
+    "org.opencontainers.image.version": "22.04"
+  },
+  "devices": [
+    {
+      "PathOnHost": "/dev/davinci5",
+      "PathInContainer": "/dev/davinci5",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/davinci_manager",
+      "PathInContainer": "/dev/davinci_manager",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/devmm_svm",
+      "PathInContainer": "/dev/devmm_svm",
+      "CgroupPermissions": "rwm"
+    },
+    {
+      "PathOnHost": "/dev/hisi_hdc",
+      "PathInContainer": "/dev/hisi_hdc",
+      "CgroupPermissions": "rwm"
+    }
+  ]
+}

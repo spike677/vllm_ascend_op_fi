@@ -1,0 +1,147 @@
+{
+  "schema": "fault28.fia_fullmodel.complete_comparison.v1",
+  "status": "COMPLETE_ALL_REQUEST_COMPARISON",
+  "B": "/home/fault28-fia-fullmodel-20261109/outputs/model_b8_fault_r1_a5/model_b8_fault_r1",
+  "F": "/home/fault28-fia-fullmodel-20261109/outputs/model_b8_noalias_fault_a5/model_b8_noalias_fault",
+  "request_rows": [
+    {
+      "slot": 0,
+      "request_id": "request_00",
+      "prompt_length": 2048,
+      "token_sha256": "66612c13facd9c24a04c4ea8865c72e9afcc378eb841bfba2c1ef023b3a8db04"
+    },
+    {
+      "slot": 1,
+      "request_id": "request_01",
+      "prompt_length": 2048,
+      "token_sha256": "0d876b77bf4ad5dd3fb502aa35e4055400fdda996f8fd47bea5f133007b5ad21"
+    },
+    {
+      "slot": 2,
+      "request_id": "request_02",
+      "prompt_length": 2048,
+      "token_sha256": "b4fa49f5c4e57b9ff42ffd39843c5556d13c659e93ce7226f39f803b26a82e4c"
+    },
+    {
+      "slot": 3,
+      "request_id": "request_03",
+      "prompt_length": 2048,
+      "token_sha256": "eb776f2d6ad28d76451605e7d1b7c400b7b6087ff524dcf4d437d28dfd3bd3b2"
+    },
+    {
+      "slot": 4,
+      "request_id": "request_04",
+      "prompt_length": 2048,
+      "token_sha256": "6b9396464565b95ef28a5c333f0e5bc2b8e797741d3fcd0922109b61bcf58d45"
+    },
+    {
+      "slot": 5,
+      "request_id": "request_05",
+      "prompt_length": 2048,
+      "token_sha256": "ccfa4798b7da92c0d0a7f2cc0c87514be494ad2dc6cd4f3ca9b77e3719822365"
+    },
+    {
+      "slot": 6,
+      "request_id": "request_06",
+      "prompt_length": 2048,
+      "token_sha256": "f58094df13933e64c26c31ea66ad6e7706d19d15f5983aea6169705f2bb3ede6"
+    },
+    {
+      "slot": 7,
+      "request_id": "request_07",
+      "prompt_length": 2048,
+      "token_sha256": "c447959eeb76adb95b8943f2a62f53e429f0cea418b11698f43c0f2da8bd7e49"
+    }
+  ],
+  "B_result_sha256": "dff42de353d4f95e8ab8985baa0d1693fccaa23d21836c2c3268bad8e22e491e",
+  "F_result_sha256": "13c19e04bc9f2fd2f1ec36b64a11ef515903c072d6ace9ebb5106d0c583fda75",
+  "first_changed_attention_layer": null,
+  "first_changed_last_query_attention_layer": null,
+  "first_changed_attention_inputs_equal": null,
+  "logits_changed_requests": 0,
+  "top1_changed_requests": 0,
+  "all_observed_elements_equal": true,
+  "comparisons": [
+    {
+      "layer": null,
+      "kind": "logits",
+      "shape": [
+        8,
+        1,
+        151936
+      ],
+      "B_sha256": "0582de6f3ca382e31df5ac4dd750737cbb87fe1ba5a9fbc7b5331247747dec64",
+      "F_sha256": "0582de6f3ca382e31df5ac4dd750737cbb87fe1ba5a9fbc7b5331247747dec64",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 151936,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "B_top1": 1119,
+          "F_top1": 1119
+        },
+        {
+          "request_slot": 1,
+          "elements": 151936,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "B_top1": 6467,
+          "F_top1": 6467
+        },
+        {
+          "request_slot": 2,
+          "elements": 151936,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "B_top1": 3234,
+          "F_top1": 3234
+        },
+        {
+          "request_slot": 3,
+          "elements": 151936,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "B_top1": 24034,
+          "F_top1": 24034
+        },
+        {
+          "request_slot": 4,
+          "elements": 151936,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "B_top1": 279,
+          "F_top1": 279
+        },
+        {
+          "request_slot": 5,
+          "elements": 151936,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "B_top1": 11618,
+          "F_top1": 11618
+        },
+        {
+          "request_slot": 6,
+          "elements": 151936,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "B_top1": 5612,
+          "F_top1": 5612
+        },
+        {
+          "request_slot": 7,
+          "elements": 151936,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "B_top1": 448,
+          "F_top1": 448
+        }
+      ]
+    }
+  ],
+  "private_tensor_payload_exported": false,
+  "logits_only": true,
+  "scope": "All request rows and all output elements in the first completed fullgraph call. Subsequent two calls separately verify synchronized full/request hashes. Same-batch numerical evidence, independent of statistical localization."
+}

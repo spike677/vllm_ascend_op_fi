@@ -1,0 +1,553 @@
+{
+  "schema": "fault28.fia_fullmodel.capture.v1",
+  "case_id": "model_b8_noalias_baseline",
+  "status": "CAPTURE_COMPLETED",
+  "calls": [
+    {
+      "call_id": 0,
+      "phase": "compile_warmup",
+      "values": [
+        {
+          "slot": 0,
+          "kind": "logits",
+          "layer": null,
+          "shape": [
+            8,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "bd6e21a063510a465ca77c06e4077d3725e7b35a0350eec82dee381cb4cff060",
+          "target_sha256": "ecc62e2be9a06e24426bf918276e2a9ac4a42d347a28bdd8ae3528170fdba6e7",
+          "request_sha256": [
+            "ecc62e2be9a06e24426bf918276e2a9ac4a42d347a28bdd8ae3528170fdba6e7",
+            "073486c7dcf8dbc22d40102df229aee241702ee328fde5619edef7c6f99efddc",
+            "efc7b9eb113f3fc404c82b2c64d42557472fa8a6d88a5e45ddca6ea2b3f18165",
+            "1b8e65e29cca2141bf4191cfaa0cff0a7fe784c48b5be1864393f0b96789fb9f",
+            "ea81066a7f371d440ce27fbb1e7c76e378e012bb46e8b519201a961988121d0b",
+            "0f6693844a4a0de695d660d8bff1427f2df22264e297772637e928d2c9c8e3c9",
+            "534b123e743399497f4a2d749e49a2a3eab1f85cf2ced8f659a30c14732d7930",
+            "a02c9370ebf4d0406551f1218db24c4d3de9a94bd9bb21fc55297d596c1771bd"
+          ],
+          "target_file": "private_output/value_000.fp16.bin",
+          "private_batch_relative": null
+        }
+      ],
+      "logits_top1": [
+        1119,
+        6467,
+        3234,
+        24034,
+        279,
+        11618,
+        5612,
+        448
+      ],
+      "inputs_unchanged": true,
+      "elapsed_seconds": 98.28094427287579
+    },
+    {
+      "call_id": 1,
+      "phase": "graph_replay",
+      "values": [
+        {
+          "slot": 0,
+          "kind": "logits",
+          "layer": null,
+          "shape": [
+            8,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "bd6e21a063510a465ca77c06e4077d3725e7b35a0350eec82dee381cb4cff060",
+          "target_sha256": "ecc62e2be9a06e24426bf918276e2a9ac4a42d347a28bdd8ae3528170fdba6e7",
+          "request_sha256": [
+            "ecc62e2be9a06e24426bf918276e2a9ac4a42d347a28bdd8ae3528170fdba6e7",
+            "073486c7dcf8dbc22d40102df229aee241702ee328fde5619edef7c6f99efddc",
+            "efc7b9eb113f3fc404c82b2c64d42557472fa8a6d88a5e45ddca6ea2b3f18165",
+            "1b8e65e29cca2141bf4191cfaa0cff0a7fe784c48b5be1864393f0b96789fb9f",
+            "ea81066a7f371d440ce27fbb1e7c76e378e012bb46e8b519201a961988121d0b",
+            "0f6693844a4a0de695d660d8bff1427f2df22264e297772637e928d2c9c8e3c9",
+            "534b123e743399497f4a2d749e49a2a3eab1f85cf2ced8f659a30c14732d7930",
+            "a02c9370ebf4d0406551f1218db24c4d3de9a94bd9bb21fc55297d596c1771bd"
+          ],
+          "target_file": "private_output/value_000.fp16.bin",
+          "private_batch_relative": null
+        }
+      ],
+      "logits_top1": [
+        1119,
+        6467,
+        3234,
+        24034,
+        279,
+        11618,
+        5612,
+        448
+      ],
+      "inputs_unchanged": true,
+      "elapsed_seconds": 10.914000547956675
+    },
+    {
+      "call_id": 2,
+      "phase": "graph_replay",
+      "values": [
+        {
+          "slot": 0,
+          "kind": "logits",
+          "layer": null,
+          "shape": [
+            8,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "bd6e21a063510a465ca77c06e4077d3725e7b35a0350eec82dee381cb4cff060",
+          "target_sha256": "ecc62e2be9a06e24426bf918276e2a9ac4a42d347a28bdd8ae3528170fdba6e7",
+          "request_sha256": [
+            "ecc62e2be9a06e24426bf918276e2a9ac4a42d347a28bdd8ae3528170fdba6e7",
+            "073486c7dcf8dbc22d40102df229aee241702ee328fde5619edef7c6f99efddc",
+            "efc7b9eb113f3fc404c82b2c64d42557472fa8a6d88a5e45ddca6ea2b3f18165",
+            "1b8e65e29cca2141bf4191cfaa0cff0a7fe784c48b5be1864393f0b96789fb9f",
+            "ea81066a7f371d440ce27fbb1e7c76e378e012bb46e8b519201a961988121d0b",
+            "0f6693844a4a0de695d660d8bff1427f2df22264e297772637e928d2c9c8e3c9",
+            "534b123e743399497f4a2d749e49a2a3eab1f85cf2ced8f659a30c14732d7930",
+            "a02c9370ebf4d0406551f1218db24c4d3de9a94bd9bb21fc55297d596c1771bd"
+          ],
+          "target_file": "private_output/value_000.fp16.bin",
+          "private_batch_relative": null
+        }
+      ],
+      "logits_top1": [
+        1119,
+        6467,
+        3234,
+        24034,
+        279,
+        11618,
+        5612,
+        448
+      ],
+      "inputs_unchanged": true,
+      "elapsed_seconds": 10.362409580033273
+    }
+  ],
+  "backend_graphs": [
+    {
+      "index": 0,
+      "nodes": 2388,
+      "fia_nodes": [
+        {
+          "name": "npu_fused_infer_attention_score_default",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465761183056': (\"L['self'].model.model.layers.0\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465754114320': (\"L['self'].model.model.layers.0.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 0,
+          "input_nodes": [
+            "q",
+            "k",
+            "v",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_1",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733311824': (\"L['self'].model.model.layers.1\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733312336': (\"L['self'].model.model.layers.1.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 1,
+          "input_nodes": [
+            "q_1",
+            "k_1",
+            "v_1",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_2",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465745583184': (\"L['self'].model.model.layers.2\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733367760': (\"L['self'].model.model.layers.2.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 2,
+          "input_nodes": [
+            "q_2",
+            "k_2",
+            "v_2",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_3",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733374224': (\"L['self'].model.model.layers.3\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733372048': (\"L['self'].model.model.layers.3.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 3,
+          "input_nodes": [
+            "q_3",
+            "k_3",
+            "v_3",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_4",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733381392': (\"L['self'].model.model.layers.4\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733381584': (\"L['self'].model.model.layers.4.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 4,
+          "input_nodes": [
+            "q_4",
+            "k_4",
+            "v_4",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_5",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733486992': (\"L['self'].model.model.layers.5\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733487120': (\"L['self'].model.model.layers.5.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 5,
+          "input_nodes": [
+            "q_5",
+            "k_5",
+            "v_5",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_6",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465761212304': (\"L['self'].model.model.layers.6\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465769173200': (\"L['self'].model.model.layers.6.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 6,
+          "input_nodes": [
+            "q_6",
+            "k_6",
+            "v_6",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_7",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733581264': (\"L['self'].model.model.layers.7\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733582352': (\"L['self'].model.model.layers.7.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 7,
+          "input_nodes": [
+            "q_7",
+            "k_7",
+            "v_7",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_8",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733490960': (\"L['self'].model.model.layers.8\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733588752': (\"L['self'].model.model.layers.8.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 8,
+          "input_nodes": [
+            "q_8",
+            "k_8",
+            "v_8",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_9",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733485840': (\"L['self'].model.model.layers.9\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733661776': (\"L['self'].model.model.layers.9.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 9,
+          "input_nodes": [
+            "q_9",
+            "k_9",
+            "v_9",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_10",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465753592976': (\"L['self'].model.model.layers.10\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733373584': (\"L['self'].model.model.layers.10.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 10,
+          "input_nodes": [
+            "q_10",
+            "k_10",
+            "v_10",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_11",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733314512': (\"L['self'].model.model.layers.11\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733675600': (\"L['self'].model.model.layers.11.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 11,
+          "input_nodes": [
+            "q_11",
+            "k_11",
+            "v_11",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_12",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733763984': (\"L['self'].model.model.layers.12\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733764176': (\"L['self'].model.model.layers.12.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 12,
+          "input_nodes": [
+            "q_12",
+            "k_12",
+            "v_12",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_13",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733672016': (\"L['self'].model.model.layers.13\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733770128': (\"L['self'].model.model.layers.13.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 13,
+          "input_nodes": [
+            "q_13",
+            "k_13",
+            "v_13",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_14",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733842192': (\"L['self'].model.model.layers.14\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733841616': (\"L['self'].model.model.layers.14.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 14,
+          "input_nodes": [
+            "q_14",
+            "k_14",
+            "v_14",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_15",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733848464': (\"L['self'].model.model.layers.15\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733848912': (\"L['self'].model.model.layers.15.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 15,
+          "input_nodes": [
+            "q_15",
+            "k_15",
+            "v_15",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_16",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733852816': (\"L['self'].model.model.layers.16\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733854928': (\"L['self'].model.model.layers.16.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 16,
+          "input_nodes": [
+            "q_16",
+            "k_16",
+            "v_16",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_17",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465569250384': (\"L['self'].model.model.layers.17\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465569250256': (\"L['self'].model.model.layers.17.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 17,
+          "input_nodes": [
+            "q_17",
+            "k_17",
+            "v_17",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_18",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733483856': (\"L['self'].model.model.layers.18\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281466007816144': (\"L['self'].model.model.layers.18.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 18,
+          "input_nodes": [
+            "q_18",
+            "k_18",
+            "v_18",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_19",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733773200': (\"L['self'].model.model.layers.19\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281466007615760': (\"L['self'].model.model.layers.19.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 19,
+          "input_nodes": [
+            "q_19",
+            "k_19",
+            "v_19",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_20",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465930202512': (\"L['self'].model.model.layers.20\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465569254352': (\"L['self'].model.model.layers.20.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 20,
+          "input_nodes": [
+            "q_20",
+            "k_20",
+            "v_20",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_21",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733852624': (\"L['self'].model.model.layers.21\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733491536': (\"L['self'].model.model.layers.21.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 21,
+          "input_nodes": [
+            "q_21",
+            "k_21",
+            "v_21",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_22",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465569258960': (\"L['self'].model.model.layers.22\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733367824': (\"L['self'].model.model.layers.22.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 22,
+          "input_nodes": [
+            "q_22",
+            "k_22",
+            "v_22",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_23",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733762448': (\"L['self'].model.model.layers.23\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465733307984': (\"L['self'].model.model.layers.23.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 23,
+          "input_nodes": [
+            "q_23",
+            "k_23",
+            "v_23",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_24",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733314768': (\"L['self'].model.model.layers.24\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465569441936': (\"L['self'].model.model.layers.24.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 24,
+          "input_nodes": [
+            "q_24",
+            "k_24",
+            "v_24",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_25",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733769296': (\"L['self'].model.model.layers.25\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465569512016': (\"L['self'].model.model.layers.25.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 25,
+          "input_nodes": [
+            "q_25",
+            "k_25",
+            "v_25",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_26",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465733488208': (\"L['self'].model.model.layers.26\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465569517584': (\"L['self'].model.model.layers.26.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 26,
+          "input_nodes": [
+            "q_26",
+            "k_26",
+            "v_26",
+            "l_causal_mask_"
+          ]
+        },
+        {
+          "name": "npu_fused_infer_attention_score_default_27",
+          "op": "call_function",
+          "target": "npu.npu_fused_infer_attention_score.default",
+          "stack_trace": "  File \"/audit/model_adapter.py\", line 48, in forward\n    reply = self.model(input_ids=input_ids, position_ids=position_ids,\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 876, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 492, in forward\n    outputs: BaseModelOutputWithPast = self.model(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/generic.py\", line 952, in wrapper\n    output = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py\", line 248, in wrapper\n    outputs = func(self, *args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 424, in forward\n    hidden_states = decoder_layer(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py\", line 93, in __call__\n    return super().__call__(*args, **kwargs)\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 318, in forward\n    hidden_states, _ = self.self_attn(\n  File \"/work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py\", line 277, in forward\n    attn_output, attn_weights = attention_interface(\n  File \"/audit/model_adapter.py\", line 20, in attention\n    output, _ = FIA(q, k, v, atten_mask=attention_mask,\n",
+          "nn_module_stack": "{'281465733281040': (\"L['self'].model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3ForCausalLM'>), '281465745699664': (\"L['self'].model.model\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Model'>), '281465569524048': (\"L['self'].model.model.layers.27\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3DecoderLayer'>), '281465569524240': (\"L['self'].model.model.layers.27.self_attn\", <class 'transformers.models.qwen3.modeling_qwen3.Qwen3Attention'>)}",
+          "layer": 27,
+          "input_nodes": [
+            "q_27",
+            "k_27",
+            "v_27",
+            "l_causal_mask_"
+          ]
+        }
+      ]
+    }
+  ],
+  "mechanism_accepted": false,
+  "owner_pid": 46,
+  "owner_starttime_ticks": "328977756",
+  "scope_token": "23780221179045c79c2404b8430e0c20",
+  "versions": {
+    "torch": "2.10.0",
+    "torch-npu": "2.10.0.post4",
+    "transformers": "5.5.4"
+  },
+  "torch_version": "2.10.0+cpu",
+  "torch_npu_version": "2.10.0.post4",
+  "host_callback_count": 1,
+  "repeated_all_outputs_equal": true,
+  "parameters_unchanged": true,
+  "actual_backend_calls": 3,
+  "single_graph_backend_replay": true,
+  "deterministic_algorithms": true
+}

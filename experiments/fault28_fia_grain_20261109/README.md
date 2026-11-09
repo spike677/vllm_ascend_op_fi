@@ -1,5 +1,7 @@
 # 故障28：真实 FIA 图的设备端归约粒度补验
 
+**后续完整模型补验：** [完整Qwen3 FIA图](../fault28_fia_fullmodel_20261109/README.md)已在同版本接入28层，完成10组/30次完整模型执行与840次FIA节点执行，证明全部匹配层/请求覆盖、独立FIA首差及8/8请求首token logits传播。本文件的原始子图结果与适用范围保持不变；完整模型结果以新证据单独验收。
+
 **124 物理卡5的受控 FIA 图子图机制验收通过（2026-11-09）。** 固定真实 Qwen3 第2层（index1）的完整目标 Q/K/V，完成23组、69次真实 TorchAir/GE FIA 图调用。实际 Batch1→8 对应 M512→128；在同一 query63 上，设备端实际送入 Softmax 的列数从512变为128。两个独立 F 的 `statistics/mix` 首个可观测生产者均为 FIA output0。
 
 [原始统计、设备标量和验收报告](../../artifacts/attention_tiling/fault28_fia_measured_grain_statistics_20261109/README.md) · [联合验收](../../artifacts/attention_tiling/fault28_fia_measured_grain_statistics_20261109/data/reports/measured_chain/acceptance.json) · [独立分析说明](analysis/README.md)

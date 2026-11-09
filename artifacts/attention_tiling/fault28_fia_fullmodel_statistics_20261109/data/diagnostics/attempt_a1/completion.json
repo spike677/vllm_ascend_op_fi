@@ -1,0 +1,29 @@
+{
+  "status": "FAIL_CLEANUP",
+  "card": 5,
+  "cases": [],
+  "cleanup_errors": [
+    "Traceback (most recent call last):\n  File \"/home/fault28-fia-fullmodel-20261109/controller.py\", line 660, in main\n    owned = recover_owned_id(token, name, recovery)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/fault28-fia-fullmodel-20261109/controller.py\", line 245, in recover_owned_id\n    raise RuntimeError('Uncertain container-create outcome remains unresolved after bounded recovery; '\nRuntimeError: Uncertain container-create outcome remains unresolved after bounded recovery; no absence or cleanup is proven\n"
+  ],
+  "start_epoch": 1794228856.024439,
+  "probe": "graph_probe.py",
+  "capture": "native-logs",
+  "scope": "Native-path capture only; numerical mechanism acceptance is separate",
+  "mechanism_accepted": false,
+  "idle_allowlist_ids": [
+    "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+    "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+  ],
+  "external_container_mutations": false,
+  "traceback": "Traceback (most recent call last):\n  File \"/home/fault28-fia-fullmodel-20261109/controller.py\", line 599, in main\n    returned_id = run(command, 40).strip()\n                  ^^^^^^^^^^^^^^^^\n  File \"/home/fault28-fia-fullmodel-20261109/controller.py\", line 52, in run\n    raise RuntimeError(details)\nRuntimeError: ['docker', 'run', '-d']: rc=125: docker: Error response from daemon: OCI runtime create failed: container_linux.go:341: starting container process caused \"process_linux.go:380: container init caused \\\"rootfs_linux.go:62: mounting \\\\\\\"/home/fault28-native-tiling-20261029/collector_high_a1\\\\\\\" to rootfs \\\\\\\"/home/docker-system/overlay2/869a4da9e8267c7a627706c518dc6ee7b3b6d7e92bafed632db8aefc29a3a335/merged\\\\\\\" at \\\\\\\"/home/docker-system/overlay2/869a4da9e8267c7a627706c518dc6ee7b3b6d7e92bafed632db8aefc29a3a335/merged/audit/collector_high_a1\\\\\\\" caused \\\\\\\"mkdir /home/docker-system/overlay2/869a4da9e8267c7a627706c518dc6ee7b3b6d7e92bafed632db8aefc29a3a335/merged/audit/collector_high_a1: read-only file system\\\\\\\"\\\"\": unknown.\n\n",
+  "owned_container_removed": false,
+  "uncertain_create_recovery": {
+    "status": "UNRESOLVED_CREATE_OUTCOME",
+    "ownership_verified": false,
+    "receipt_file": "uncertain_create_recovery.json"
+  },
+  "device_lock_acquired": true,
+  "device_lock_released": true,
+  "owned_container_id": null,
+  "end_epoch": 1794228918.8521316
+}

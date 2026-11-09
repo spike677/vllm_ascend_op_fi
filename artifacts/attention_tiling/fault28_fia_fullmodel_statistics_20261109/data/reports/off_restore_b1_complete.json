@@ -1,0 +1,2513 @@
+{
+  "schema": "fault28.fia_fullmodel.complete_comparison.v1",
+  "status": "COMPLETE_ALL_REQUEST_COMPARISON",
+  "B": "/home/fault28-fia-fullmodel-20261109/outputs/model_b1_baseline_a5/model_b1_baseline",
+  "F": "/home/fault28-fia-fullmodel-20261109/outputs/model_b1_restore_a5/model_b1_restore",
+  "request_rows": [
+    {
+      "slot": 0,
+      "request_id": "request_00",
+      "prompt_length": 2048,
+      "token_sha256": "66612c13facd9c24a04c4ea8865c72e9afcc378eb841bfba2c1ef023b3a8db04"
+    }
+  ],
+  "B_result_sha256": "bd23a3a15a6a18b266679e4d93c6d6d864b8819201ea812ed8784110b0b37b7f",
+  "F_result_sha256": "e01269e880bcaf6fd25c4999c03f99ae16e03fa53ceedc9d634b385afdecfc6b",
+  "first_changed_attention_layer": null,
+  "first_changed_last_query_attention_layer": null,
+  "first_changed_attention_inputs_equal": null,
+  "logits_changed_requests": 0,
+  "top1_changed_requests": 0,
+  "all_observed_elements_equal": true,
+  "comparisons": [
+    {
+      "layer": null,
+      "kind": "logits",
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "B_sha256": "a06ee3ad9eacb52934f83d58a0dc23f39873cf15d0bc7cef19e9d4d0aef1d9fa",
+      "F_sha256": "a06ee3ad9eacb52934f83d58a0dc23f39873cf15d0bc7cef19e9d4d0aef1d9fa",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 151936,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "B_top1": 1119,
+          "F_top1": 1119
+        }
+      ]
+    },
+    {
+      "layer": 0,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "b966097376de6b984203b92b5fe939c43c8fada14d915543bed120688449dfd1",
+      "F_sha256": "b966097376de6b984203b92b5fe939c43c8fada14d915543bed120688449dfd1",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 0,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "d42bd3e7e848efca13c8893c7f713437828b9bca33bac34aa23094337c303f8e",
+      "F_sha256": "d42bd3e7e848efca13c8893c7f713437828b9bca33bac34aa23094337c303f8e",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 0,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "9c1caa253c9110e37fd77fc894bf4de6b73d71b1a5b239d547a9cccf0639b99e",
+      "F_sha256": "9c1caa253c9110e37fd77fc894bf4de6b73d71b1a5b239d547a9cccf0639b99e",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 0,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "a808e52dcd3099243c6de9cfa2153c159a6263bbf039678b65314f4026401c2a",
+      "F_sha256": "a808e52dcd3099243c6de9cfa2153c159a6263bbf039678b65314f4026401c2a",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 1,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "c84e92b519e528f54deb63d39fda29b3f68c498922ff6eced2b37680adbdbff7",
+      "F_sha256": "c84e92b519e528f54deb63d39fda29b3f68c498922ff6eced2b37680adbdbff7",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 1,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "8bfd0ca75dd05d93c08027336177886497e164b77da681ec9c5be1f9a1eea439",
+      "F_sha256": "8bfd0ca75dd05d93c08027336177886497e164b77da681ec9c5be1f9a1eea439",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 1,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "8d2bb934b631f9882320565673a1ff3b371d0ca12a2dd5b88b86c65a7aa59ac7",
+      "F_sha256": "8d2bb934b631f9882320565673a1ff3b371d0ca12a2dd5b88b86c65a7aa59ac7",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 1,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "6423be252dd8bceafbb3a98950d730d26ae9800786e1fa5986351afa3fbf3dae",
+      "F_sha256": "6423be252dd8bceafbb3a98950d730d26ae9800786e1fa5986351afa3fbf3dae",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 2,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "ed80f815fff93bd95046a9da44b79b284279b993d8814809ee3b87832669a217",
+      "F_sha256": "ed80f815fff93bd95046a9da44b79b284279b993d8814809ee3b87832669a217",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 2,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "14500c703802c8fbf7b1228bb6b6508ff0d43c9d939ded5fc4a834b3268c5b26",
+      "F_sha256": "14500c703802c8fbf7b1228bb6b6508ff0d43c9d939ded5fc4a834b3268c5b26",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 2,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "3a45fd3ceb930c7f0dcc804d919063b80a19d0ada797382da3290073aa1c5955",
+      "F_sha256": "3a45fd3ceb930c7f0dcc804d919063b80a19d0ada797382da3290073aa1c5955",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 2,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "5a2879d709a129e37794dd4bf412acf5bfc6e5e93507be518de8f3c3c8ba50c6",
+      "F_sha256": "5a2879d709a129e37794dd4bf412acf5bfc6e5e93507be518de8f3c3c8ba50c6",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 3,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "fdc3e9cb51635016c9f90c632b7c58e53ea5a4820088af7f7eedf5d4edef84ca",
+      "F_sha256": "fdc3e9cb51635016c9f90c632b7c58e53ea5a4820088af7f7eedf5d4edef84ca",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 3,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "7ba2105ff9b36c4f6646d0cdfb337b54875e06de544ff52b3753f924248d5c19",
+      "F_sha256": "7ba2105ff9b36c4f6646d0cdfb337b54875e06de544ff52b3753f924248d5c19",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 3,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "495c350c8245af4912ea27b90bf2687af0ac81a22f60860dada3b51fb1639d9d",
+      "F_sha256": "495c350c8245af4912ea27b90bf2687af0ac81a22f60860dada3b51fb1639d9d",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 3,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "c0cc72bd2983b9a019459bf70f409984270c39437b1e21d79ba88dda59b23e86",
+      "F_sha256": "c0cc72bd2983b9a019459bf70f409984270c39437b1e21d79ba88dda59b23e86",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 4,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "b1e08088323558b9d8b94f599a923b1c96799f88bffab3ab5ebec00f11746fce",
+      "F_sha256": "b1e08088323558b9d8b94f599a923b1c96799f88bffab3ab5ebec00f11746fce",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 4,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "9ae020fd682e043e3300977fac2fe94ca94c3601f270f05808653ad9fa31e780",
+      "F_sha256": "9ae020fd682e043e3300977fac2fe94ca94c3601f270f05808653ad9fa31e780",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 4,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "d95028b065f67b49f602392350423b84c19540e880cbc6c4499d79b57072c552",
+      "F_sha256": "d95028b065f67b49f602392350423b84c19540e880cbc6c4499d79b57072c552",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 4,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "6dc866afb1e4c6a046ccc9856299d1b4bfe9510d7bcafd995d899df1b22ec6d1",
+      "F_sha256": "6dc866afb1e4c6a046ccc9856299d1b4bfe9510d7bcafd995d899df1b22ec6d1",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 5,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "25e0a896100530258ea90c2477f6a03355950d7c17a0d258cffc0af27c688d10",
+      "F_sha256": "25e0a896100530258ea90c2477f6a03355950d7c17a0d258cffc0af27c688d10",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 5,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "07ce12573dc00e9cb14895e8d783f6cde7a43e60579f8682ad32715aa5c45d91",
+      "F_sha256": "07ce12573dc00e9cb14895e8d783f6cde7a43e60579f8682ad32715aa5c45d91",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 5,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "c4180029ef0aee6249a8049ac26ae62b1ddcc54e9d667b3d93d853df06ab8124",
+      "F_sha256": "c4180029ef0aee6249a8049ac26ae62b1ddcc54e9d667b3d93d853df06ab8124",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 5,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "85bfc5abd64d1875d21fc93991c480e34d63c41782fc9994034254262747cc4c",
+      "F_sha256": "85bfc5abd64d1875d21fc93991c480e34d63c41782fc9994034254262747cc4c",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 6,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "c5e88bd91eb5e8316e3038b3fe951cb49e7b3284dd3ebfa3cd9cced398c5d429",
+      "F_sha256": "c5e88bd91eb5e8316e3038b3fe951cb49e7b3284dd3ebfa3cd9cced398c5d429",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 6,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "01478e4ea1f0c0fef9f684ff5846c85278f411486c17161bce2ae8e8c84a7728",
+      "F_sha256": "01478e4ea1f0c0fef9f684ff5846c85278f411486c17161bce2ae8e8c84a7728",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 6,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "b68cf99fbf0d00608e3c66112649db6206a18e0fb12ffaa2b660184bca9b6853",
+      "F_sha256": "b68cf99fbf0d00608e3c66112649db6206a18e0fb12ffaa2b660184bca9b6853",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 6,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "2e02425ebadd6624d569737d948b080fc2f0407a75111d3f111b1078f08c84be",
+      "F_sha256": "2e02425ebadd6624d569737d948b080fc2f0407a75111d3f111b1078f08c84be",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 7,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "56c042fe3334a700747ac4f5d1c687fc79bfaba4a89388f631c70049dc236907",
+      "F_sha256": "56c042fe3334a700747ac4f5d1c687fc79bfaba4a89388f631c70049dc236907",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 7,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "69aec2324b8354a254416cccf9f00c2757e0c4ae0e7a41741f21899b002f2e98",
+      "F_sha256": "69aec2324b8354a254416cccf9f00c2757e0c4ae0e7a41741f21899b002f2e98",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 7,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "59d2ace2b35be342d9729f012a44fb3e605345eb5b5d7817d6d2ec5b747a3d96",
+      "F_sha256": "59d2ace2b35be342d9729f012a44fb3e605345eb5b5d7817d6d2ec5b747a3d96",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 7,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "f58c47d6a0a481bfc624a0e753b658619915efd41cb7e58656eab04aabf2ad6b",
+      "F_sha256": "f58c47d6a0a481bfc624a0e753b658619915efd41cb7e58656eab04aabf2ad6b",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 8,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "deef63f28a6836087268290f00bc78cf61a6f0596f1aca1bcbfa7f9b157740bc",
+      "F_sha256": "deef63f28a6836087268290f00bc78cf61a6f0596f1aca1bcbfa7f9b157740bc",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 8,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "432916eb3bd23213a177b87350274e2e06077dedcc616121ff6d702f54084020",
+      "F_sha256": "432916eb3bd23213a177b87350274e2e06077dedcc616121ff6d702f54084020",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 8,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "23d74f1351082d3be750428c642fcf1206246de6d50e6341ba9376e96698e366",
+      "F_sha256": "23d74f1351082d3be750428c642fcf1206246de6d50e6341ba9376e96698e366",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 8,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "b3716de836ab04fe2cee2eab8dc97a4e9aab27e04adb864d279176456e32e848",
+      "F_sha256": "b3716de836ab04fe2cee2eab8dc97a4e9aab27e04adb864d279176456e32e848",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 9,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "c696e52b35f638cf097dca0d5d8300eaae114480701722ffb2df3c3c819081e2",
+      "F_sha256": "c696e52b35f638cf097dca0d5d8300eaae114480701722ffb2df3c3c819081e2",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 9,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "408161e2c2970ff7d5825c0a80d65dfde3f7935e203152b8b5dd74839adf2a06",
+      "F_sha256": "408161e2c2970ff7d5825c0a80d65dfde3f7935e203152b8b5dd74839adf2a06",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 9,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "102e985819b4cac5f4cfb43558a748ce56db16eb325d46899bb27a241859fcf9",
+      "F_sha256": "102e985819b4cac5f4cfb43558a748ce56db16eb325d46899bb27a241859fcf9",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 9,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "9c642d4532db8a6bc28091772d9f1b891393752904120ea1662a8cdf6b87cc05",
+      "F_sha256": "9c642d4532db8a6bc28091772d9f1b891393752904120ea1662a8cdf6b87cc05",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 10,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "2b284346c91f44dcbd87407bfb5ee4e844a35bb9bd378c6fa7d90e846afe4790",
+      "F_sha256": "2b284346c91f44dcbd87407bfb5ee4e844a35bb9bd378c6fa7d90e846afe4790",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 10,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "9f8446dd849f7bb96f373f0609d19adb20e4b5c71d0e9cb0cde94fd1d78f6d1c",
+      "F_sha256": "9f8446dd849f7bb96f373f0609d19adb20e4b5c71d0e9cb0cde94fd1d78f6d1c",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 10,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "607d8884f776b5d083eb8db0c7a7ff123a85b61b9a1658caa6318678da1b7a1f",
+      "F_sha256": "607d8884f776b5d083eb8db0c7a7ff123a85b61b9a1658caa6318678da1b7a1f",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 10,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "cb91c7899e2bda05358a7fdc6057c13499c9ad910405b6f0fee6c0ccb6eb2e80",
+      "F_sha256": "cb91c7899e2bda05358a7fdc6057c13499c9ad910405b6f0fee6c0ccb6eb2e80",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 11,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "9344ca7b6a0f8d1203b82f57719e02c6a2df4119f90121d47ab19be8d7239bcc",
+      "F_sha256": "9344ca7b6a0f8d1203b82f57719e02c6a2df4119f90121d47ab19be8d7239bcc",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 11,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "efd7c7611354dc2b4cfdad803a8d118aee46101b3141efb347876825472cff4e",
+      "F_sha256": "efd7c7611354dc2b4cfdad803a8d118aee46101b3141efb347876825472cff4e",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 11,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "26492ebce424b3d0416a17e40ae536a57b9936dee092ffa81db7c8631e0179e1",
+      "F_sha256": "26492ebce424b3d0416a17e40ae536a57b9936dee092ffa81db7c8631e0179e1",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 11,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "286bf33878815c820e9a702f02cd03501c05408eec0af4a03fdc7e58beaa18c7",
+      "F_sha256": "286bf33878815c820e9a702f02cd03501c05408eec0af4a03fdc7e58beaa18c7",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 12,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "9057f80bc0be008c5d270df5e14752bd6225bdbdb5e2159817f43837ba433dab",
+      "F_sha256": "9057f80bc0be008c5d270df5e14752bd6225bdbdb5e2159817f43837ba433dab",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 12,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "275e0b63a37f1f336e1fbaf5c20c9f3e81a8667e68ca653407e73f2ec9982617",
+      "F_sha256": "275e0b63a37f1f336e1fbaf5c20c9f3e81a8667e68ca653407e73f2ec9982617",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 12,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "497e69bba0e3c384943859a2face47b8956e8586dca3ee29fa7fec0d5f53d2d3",
+      "F_sha256": "497e69bba0e3c384943859a2face47b8956e8586dca3ee29fa7fec0d5f53d2d3",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 12,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "830b628978245f501eb5318123492679552c04d2a23497228f24bdc2f19ce4bb",
+      "F_sha256": "830b628978245f501eb5318123492679552c04d2a23497228f24bdc2f19ce4bb",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 13,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "ec4c612b10d5466e21e7f4514d8a7cf67eb6403fae4e7ab558919b26d53cb57a",
+      "F_sha256": "ec4c612b10d5466e21e7f4514d8a7cf67eb6403fae4e7ab558919b26d53cb57a",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 13,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "e522f3de0a4ad73c128868ddb57a80561c503df8bc735f2408f3f2f11fe5d26f",
+      "F_sha256": "e522f3de0a4ad73c128868ddb57a80561c503df8bc735f2408f3f2f11fe5d26f",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 13,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "634c6350eeceebd5d4691b8192ffe187e4959fbf5394efcc158e84b017191569",
+      "F_sha256": "634c6350eeceebd5d4691b8192ffe187e4959fbf5394efcc158e84b017191569",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 13,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "1d33c01c89d7f242ff440e35a5704186baf894701e2c4c6d34fd172197df1469",
+      "F_sha256": "1d33c01c89d7f242ff440e35a5704186baf894701e2c4c6d34fd172197df1469",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 14,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "9967a8ecf72444347addb606f7b63ef3b01e2ce0398f0becf6dbb19a1a74f7f7",
+      "F_sha256": "9967a8ecf72444347addb606f7b63ef3b01e2ce0398f0becf6dbb19a1a74f7f7",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 14,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "58ffab416b6ac54f654a4667390a30e49bd0de0b23691b23959d2ac85ba0d44b",
+      "F_sha256": "58ffab416b6ac54f654a4667390a30e49bd0de0b23691b23959d2ac85ba0d44b",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 14,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "11d570f640986d1ca076a93da2356ee8601a8b7e4f6d1e8ef6dae03558cc8bb7",
+      "F_sha256": "11d570f640986d1ca076a93da2356ee8601a8b7e4f6d1e8ef6dae03558cc8bb7",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 14,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "c3a9c319af8e50d32aea2ffd2bce4f38dfa38e1c4b40a7a2417419ea87143805",
+      "F_sha256": "c3a9c319af8e50d32aea2ffd2bce4f38dfa38e1c4b40a7a2417419ea87143805",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 15,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "4186b529c96590e41f5ca8a63d8c01f1ea6e6c612d1419d3f7342b9b09b57979",
+      "F_sha256": "4186b529c96590e41f5ca8a63d8c01f1ea6e6c612d1419d3f7342b9b09b57979",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 15,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "961c257b2e0759c8d9e372de871570979070dc08552fcdd01ab168384305792b",
+      "F_sha256": "961c257b2e0759c8d9e372de871570979070dc08552fcdd01ab168384305792b",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 15,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "0f81d6418a934ace60a195b7781a00a0bd8f515f69afc7b57c93e7a2c6f376ab",
+      "F_sha256": "0f81d6418a934ace60a195b7781a00a0bd8f515f69afc7b57c93e7a2c6f376ab",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 15,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "b6ea03c43afe96bda0bf6b96cec18af348246cfb3d8e4df0c8cd0b7bffc3c421",
+      "F_sha256": "b6ea03c43afe96bda0bf6b96cec18af348246cfb3d8e4df0c8cd0b7bffc3c421",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 16,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "edb3d38bf66b60d7e44b9cc09ab87d3ddea6f6868bf719e15940abdedcbf0a58",
+      "F_sha256": "edb3d38bf66b60d7e44b9cc09ab87d3ddea6f6868bf719e15940abdedcbf0a58",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 16,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "cb4a3649cc10736937be90c00955730f84d6c1eafa9e4feeee63966a0eece6e5",
+      "F_sha256": "cb4a3649cc10736937be90c00955730f84d6c1eafa9e4feeee63966a0eece6e5",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 16,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "5a7f89f13158421a9d2c17139e1c4029c5c2bf47d0d7ba43423240e4b822f29f",
+      "F_sha256": "5a7f89f13158421a9d2c17139e1c4029c5c2bf47d0d7ba43423240e4b822f29f",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 16,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "4dc607701a0cba5990a164c58ef23f0db5cd2c184b423501f135596de26e876e",
+      "F_sha256": "4dc607701a0cba5990a164c58ef23f0db5cd2c184b423501f135596de26e876e",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 17,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "bc1ddb52d0d3aec326eb4aa94bbf9ef49215872b3d2366631844eb884dd87f80",
+      "F_sha256": "bc1ddb52d0d3aec326eb4aa94bbf9ef49215872b3d2366631844eb884dd87f80",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 17,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "b85bc81147e74318bb406eada7fa32c477544e2194a4dee19c7434b637ead1d3",
+      "F_sha256": "b85bc81147e74318bb406eada7fa32c477544e2194a4dee19c7434b637ead1d3",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 17,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "f3a16374b36144b0604288df32c161720dd4ecc96de0de3edc5a8c4b39b5cb56",
+      "F_sha256": "f3a16374b36144b0604288df32c161720dd4ecc96de0de3edc5a8c4b39b5cb56",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 17,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "920c8772db195ac864de21e21b30b98532e5eb229b555f3ced80afb708becbf4",
+      "F_sha256": "920c8772db195ac864de21e21b30b98532e5eb229b555f3ced80afb708becbf4",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 18,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "489e5a8234386035f0d37876f999daa1dc74e5abe888b553e85de3a0f5fd0d12",
+      "F_sha256": "489e5a8234386035f0d37876f999daa1dc74e5abe888b553e85de3a0f5fd0d12",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 18,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "6659a577ce940e3fa79f3722511e60102a24a08061fa582ade68ed123371a9ad",
+      "F_sha256": "6659a577ce940e3fa79f3722511e60102a24a08061fa582ade68ed123371a9ad",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 18,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "64317c2aae0ff5379c964f1fa3f100a5e3e97017161864d3d824960c49e4ac20",
+      "F_sha256": "64317c2aae0ff5379c964f1fa3f100a5e3e97017161864d3d824960c49e4ac20",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 18,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "8557a0b9b804ed8dc02f02a62268d9271c5cd22d48010582dc5fd788edfa2c3d",
+      "F_sha256": "8557a0b9b804ed8dc02f02a62268d9271c5cd22d48010582dc5fd788edfa2c3d",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 19,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "b325c4a37b3e34b389375561aaf449c24d5787f1cdabb8dd720209061b9b6ed1",
+      "F_sha256": "b325c4a37b3e34b389375561aaf449c24d5787f1cdabb8dd720209061b9b6ed1",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 19,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "0fd23e5e335cf872fdbe032a6c0a1deec37fc7587cecd304ee19c4d00166b5c2",
+      "F_sha256": "0fd23e5e335cf872fdbe032a6c0a1deec37fc7587cecd304ee19c4d00166b5c2",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 19,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "874fd703262fdb62b7a1a40b4e86f987df5806c10fa17dd47f7cf046e2ebd524",
+      "F_sha256": "874fd703262fdb62b7a1a40b4e86f987df5806c10fa17dd47f7cf046e2ebd524",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 19,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "400e7781460496e544cc6fe831f49d8cef6672b92eb95fdc575f9de1a3fd8e29",
+      "F_sha256": "400e7781460496e544cc6fe831f49d8cef6672b92eb95fdc575f9de1a3fd8e29",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 20,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "cf9cfd1472996673c8fd477e90f697eabdd0e5d081523ee2d92f7e765397c819",
+      "F_sha256": "cf9cfd1472996673c8fd477e90f697eabdd0e5d081523ee2d92f7e765397c819",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 20,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "a41aa4b8d098f5fd0b012a956dd7bdb7baecd43314fc8fe1dce5be31ec8fd74c",
+      "F_sha256": "a41aa4b8d098f5fd0b012a956dd7bdb7baecd43314fc8fe1dce5be31ec8fd74c",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 20,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "f2da0f25ef643b4404223c5c2e33dfb20db6bba7a87521152ba69adb4588c355",
+      "F_sha256": "f2da0f25ef643b4404223c5c2e33dfb20db6bba7a87521152ba69adb4588c355",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 20,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "c68b31810f0e49e544d07b9335e37da51308880b26a056927af52762bb7eb3ac",
+      "F_sha256": "c68b31810f0e49e544d07b9335e37da51308880b26a056927af52762bb7eb3ac",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 21,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "183515f42975fdc3d7aa8a64b9c6cd3ef1f2925197de9e1c2e36f3b25ec2b1ec",
+      "F_sha256": "183515f42975fdc3d7aa8a64b9c6cd3ef1f2925197de9e1c2e36f3b25ec2b1ec",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 21,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "ed42a4bd12aa63850edb9cbd1e37062b6ff33f3460e5297b969d42456b51831b",
+      "F_sha256": "ed42a4bd12aa63850edb9cbd1e37062b6ff33f3460e5297b969d42456b51831b",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 21,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "e84eaa7633e812b8f503c8430dcb6a547388b8442c1b6a297137a686c28cc8b3",
+      "F_sha256": "e84eaa7633e812b8f503c8430dcb6a547388b8442c1b6a297137a686c28cc8b3",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 21,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "bfe21769f978a2afbb43676c00278d24953dd282f6da8b50ce8061db52f63046",
+      "F_sha256": "bfe21769f978a2afbb43676c00278d24953dd282f6da8b50ce8061db52f63046",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 22,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "be44ae6a5a376357bda46710320e7c74a182e8b16da4d901e39547e2ceab362a",
+      "F_sha256": "be44ae6a5a376357bda46710320e7c74a182e8b16da4d901e39547e2ceab362a",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 22,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "197263aefa394093fd3ae5a319b81f67870c8f707106bb4ecd8c0594419a8b94",
+      "F_sha256": "197263aefa394093fd3ae5a319b81f67870c8f707106bb4ecd8c0594419a8b94",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 22,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "4a251eb9e4ea69f2eb01e9ddc6ca5eb4db7378f82fbb686bba6a25fc33de3ef6",
+      "F_sha256": "4a251eb9e4ea69f2eb01e9ddc6ca5eb4db7378f82fbb686bba6a25fc33de3ef6",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 22,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "4d547a04e6acac901f1117c4f7b943a615c26eebb051ccd385bdce452d776b0d",
+      "F_sha256": "4d547a04e6acac901f1117c4f7b943a615c26eebb051ccd385bdce452d776b0d",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 23,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "acce5628627ff56828d15f5aa3685bc3e16b4b6127861372e847acc9d1dc1e89",
+      "F_sha256": "acce5628627ff56828d15f5aa3685bc3e16b4b6127861372e847acc9d1dc1e89",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 23,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "d58af2c35182ae097147444c4b420d4ffeac53fa5903b8e8a593f740d621c840",
+      "F_sha256": "d58af2c35182ae097147444c4b420d4ffeac53fa5903b8e8a593f740d621c840",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 23,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "209b5653a68a19a5d26ce8d2cb77274ca8035615d8921836e15dffff57add9fd",
+      "F_sha256": "209b5653a68a19a5d26ce8d2cb77274ca8035615d8921836e15dffff57add9fd",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 23,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "58447c9eb1e74363d9acbbf80893d0087ee5ed86cefef5186711cc86768b7364",
+      "F_sha256": "58447c9eb1e74363d9acbbf80893d0087ee5ed86cefef5186711cc86768b7364",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 24,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "ff77ccaebd750cf669abe8368ccddfc82d5d199045adbc6532e8178707bc8c0c",
+      "F_sha256": "ff77ccaebd750cf669abe8368ccddfc82d5d199045adbc6532e8178707bc8c0c",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 24,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "8a5241b47608ddd70b20a71a325d14eafa0a9f3862212e0f707008d3e1dceff1",
+      "F_sha256": "8a5241b47608ddd70b20a71a325d14eafa0a9f3862212e0f707008d3e1dceff1",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 24,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "d2d6edd4715e42e3af410c18b765ec54dd142fc61ba88844fe23d4fde5757b95",
+      "F_sha256": "d2d6edd4715e42e3af410c18b765ec54dd142fc61ba88844fe23d4fde5757b95",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 24,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "db98e15b65a6f3db32f8421c775280b3ea1cf51238c08ce049ca87e1dd466c3e",
+      "F_sha256": "db98e15b65a6f3db32f8421c775280b3ea1cf51238c08ce049ca87e1dd466c3e",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 25,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "33bdc2d6abedcee596ecee52f7a520315eae075ec7d48478c94313cc47c8669c",
+      "F_sha256": "33bdc2d6abedcee596ecee52f7a520315eae075ec7d48478c94313cc47c8669c",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 25,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "24456457cf1b885cb94e44b4e45a2315792a18648d895d137b6f73fb418d7708",
+      "F_sha256": "24456457cf1b885cb94e44b4e45a2315792a18648d895d137b6f73fb418d7708",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 25,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "48d2b5c9996c9701b5a0078f80983e8260b673c4a8ae1c72b33f8d5240379139",
+      "F_sha256": "48d2b5c9996c9701b5a0078f80983e8260b673c4a8ae1c72b33f8d5240379139",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 25,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "9bccb68f8ba4bfc1a47dd89f32ee801dc420acf0f6ef0e1ac3a1dfcdb0a26424",
+      "F_sha256": "9bccb68f8ba4bfc1a47dd89f32ee801dc420acf0f6ef0e1ac3a1dfcdb0a26424",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 26,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "dd7f314ea2aff41007ba880b4ab19ce02e4c8f43d16350a4a5041480cf840038",
+      "F_sha256": "dd7f314ea2aff41007ba880b4ab19ce02e4c8f43d16350a4a5041480cf840038",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 26,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "65f2c4b002261d5d619339d129cf0070e1cf4a67ed4fe288dce1957993356f0b",
+      "F_sha256": "65f2c4b002261d5d619339d129cf0070e1cf4a67ed4fe288dce1957993356f0b",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 26,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "a312c1ba2887294842628e8ee1be4bc7cc675a5308958dd59fea17aa73d26b0f",
+      "F_sha256": "a312c1ba2887294842628e8ee1be4bc7cc675a5308958dd59fea17aa73d26b0f",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 26,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "b9d25a5e5fa237c83a84f449a1404cc43952256536149ed6fe6efb8723f424ac",
+      "F_sha256": "b9d25a5e5fa237c83a84f449a1404cc43952256536149ed6fe6efb8723f424ac",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    },
+    {
+      "layer": 27,
+      "kind": "query",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "0fc5541cd6220aafdaecc5e19b9ff7ab1dc7f64f5106531914c4dd4cafa0af33",
+      "F_sha256": "0fc5541cd6220aafdaecc5e19b9ff7ab1dc7f64f5106531914c4dd4cafa0af33",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 27,
+      "kind": "key",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "febfd2f2abdaa71a05eb313e5e4a8db3827645ed29c9de84de6913c3d709ebd9",
+      "F_sha256": "febfd2f2abdaa71a05eb313e5e4a8db3827645ed29c9de84de6913c3d709ebd9",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 27,
+      "kind": "value",
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "B_sha256": "bd5f19a275db1f83ea7586a2b86220f104c523b53f88aedd26b5f9cd69e9f3e9",
+      "F_sha256": "bd5f19a275db1f83ea7586a2b86220f104c523b53f88aedd26b5f9cd69e9f3e9",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 2097152,
+          "changed_elements": 0,
+          "max_abs": 0.0
+        }
+      ]
+    },
+    {
+      "layer": 27,
+      "kind": "attention",
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "B_sha256": "a583e13570095c89b55d23eb834cfc007072c31432e8d722b9c80da73233b823",
+      "F_sha256": "a583e13570095c89b55d23eb834cfc007072c31432e8d722b9c80da73233b823",
+      "all_request_changed_elements": 0,
+      "requests": [
+        {
+          "request_slot": 0,
+          "elements": 4194304,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "changed_queries": 0,
+          "first_changed_query": null,
+          "last_changed_query": null,
+          "last_query_changed": 0
+        }
+      ]
+    }
+  ],
+  "private_tensor_payload_exported": false,
+  "logits_only": false,
+  "scope": "All request rows and all output elements in the first completed fullgraph call. Subsequent two calls separately verify synchronized full/request hashes. Same-batch numerical evidence, independent of statistical localization."
+}

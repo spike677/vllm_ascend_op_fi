@@ -1,0 +1,33 @@
+{
+  "schema": "fault28.fia.device_scalar_observer.v1",
+  "status": "CPU_STAGED_NOT_NPU_VALIDATED",
+  "original_vendor_manifest_sha256": "140ca2d1d2a5d1ebe8ae0c03598bc697c556a88ade483d714276f25c67e391dd",
+  "changes": [
+    {
+      "path": "op_impl/ai_core/tbe/fault28_fia_graph_transformer_impl/ascendc/common/arch22/fia_block_vec_nonquant.h",
+      "before_sha256": "312bca72ac4f9ae8ee0b862427ead1aa44d7d047998c4bcd17c4b3bbbb6ceeb2",
+      "after_sha256": "9e81d1af06d9f9913699670cabc881457ef29d47387cdd700c0dc200d076484a",
+      "bytes": 72781
+    },
+    {
+      "path": "op_impl/ai_core/tbe/fault28_fia_graph_transformer_impl/common/op_kernel/arch22/fia_block_vec_nonquant.h",
+      "before_sha256": "312bca72ac4f9ae8ee0b862427ead1aa44d7d047998c4bcd17c4b3bbbb6ceeb2",
+      "after_sha256": "9e81d1af06d9f9913699670cabc881457ef29d47387cdd700c0dc200d076484a",
+      "bytes": 72781
+    }
+  ],
+  "observation": "Actual SoftmaxFlashV2Compute scalar columnCount and actualColumnCount before unchanged srcShape/tiling/call.",
+  "fixed_queries": [
+    63,
+    255,
+    511,
+    767,
+    1023,
+    1535,
+    2047
+  ],
+  "tensor_payload_written": false,
+  "host_binary_changed": false,
+  "numerical_neutrality_requires_actual_NPU_comparison": true,
+  "helper_sha256": "de0a9d778e2863e9a26f5fc114b9dc8073f9e65ab1d5e34efb12cbdf1319df6e"
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "fault28.fia_fullmodel.byte_digest_control_review.v1",
+  "status": "PASS_DENSE_COMPARISONS_AND_ALL_REQUEST_BYTE_DIGESTS",
+  "checks": [
+    {
+      "label": "fault_repeat",
+      "comparison_sha256": "d8c45656fdeffe5f408f8fdaf9a3dd9d571b9199724d99bc2cc20581e9e008de",
+      "full_byte_sha256_equal": true,
+      "per_request_byte_sha256_equal": true,
+      "observed_tensor_count": 113
+    },
+    {
+      "label": "off_restore_b8",
+      "comparison_sha256": "097f77ac6d2a5360fcd2b3aca24817f959fec0aeb1d0e5167dac5dca488e1a42",
+      "full_byte_sha256_equal": true,
+      "per_request_byte_sha256_equal": true,
+      "observed_tensor_count": 113
+    },
+    {
+      "label": "b1_guard_r1",
+      "comparison_sha256": "714a2aba1b7fbb50f7eed29b3141e561eec36361cd7b7a54a9d7bba8af1ad305",
+      "full_byte_sha256_equal": true,
+      "per_request_byte_sha256_equal": true,
+      "observed_tensor_count": 113
+    },
+    {
+      "label": "b1_guard_r2",
+      "comparison_sha256": "bafc0791862740497ba2e84e8f2162cb6d971ea496aa237346df175202a18907",
+      "full_byte_sha256_equal": true,
+      "per_request_byte_sha256_equal": true,
+      "observed_tensor_count": 113
+    },
+    {
+      "label": "off_restore_b1",
+      "comparison_sha256": "dc7ee958b994d0fd79884ecc296d1a4aa3f7c86319682f8a939eba3a64bb3d7c",
+      "full_byte_sha256_equal": true,
+      "per_request_byte_sha256_equal": true,
+      "observed_tensor_count": 113
+    },
+    {
+      "label": "baseline_alias_neutrality",
+      "comparison_sha256": "43441c56ea8aae41e89e36c5f06473395b397beb093b08ea1f65461fcd1d8ec4",
+      "full_byte_sha256_equal": true,
+      "per_request_byte_sha256_equal": true,
+      "observed_tensor_count": 1
+    },
+    {
+      "label": "fault_alias_neutrality",
+      "comparison_sha256": "8557568b720a67b920ccb0e6aff14aaa9db2bd73a527b96e192e8915a4dace8c",
+      "full_byte_sha256_equal": true,
+      "per_request_byte_sha256_equal": true,
+      "observed_tensor_count": 1
+    },
+    {
+      "label": "fault_r1",
+      "first_changed_attention_layer": 0,
+      "complete_comparison_sha256": "ce315759219d74963bc02a0a2ce9168c8e23004e279d06cb9dce2aeb3e70f387",
+      "first_attention_QKV_byte_sha_equal_all_requests": true
+    },
+    {
+      "label": "fault_r2",
+      "first_changed_attention_layer": 0,
+      "complete_comparison_sha256": "7658820d4548d93f52e6bd91c1bda55267c466e880277086899bb6330fa65907",
+      "first_attention_QKV_byte_sha_equal_all_requests": true
+    }
+  ],
+  "private_tensor_files_opened": 0,
+  "analysis_source_sha256": "dafdfab265f3a49df9c7d211e8123ce0f1ef167aad866224fdd4ca8a4dfb6eec",
+  "scope": "Dense comparisons already checked every element. This additional review binds their SHA fields to original capture full/request digests, including signed-zero distinctions."
+}

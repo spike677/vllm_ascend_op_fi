@@ -457,6 +457,10 @@ msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写
 
 ## 故障 28：原生 FA Tiling 切分策略异常
 
+**完整Qwen3 FIA图补验（2026-11-09）已通过：** [实现、调用链与覆盖口径](experiments/fault28_fia_fullmodel_20261109/README.md)及[本轮B/F statistics/mix原始证据](artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109/README.md)在124卡5完成10组、30次完整28层模型图执行、840次FIA节点执行。两组B8 F全部28层、8请求持续使用实际M128；独立首差均为第0层FIA output0，全部请求该处Q/K/V完整一致。第0层末query不变，第1层末query起变化，8/8请求首token logits有差异（最大绝对差0.0546875），Top-1均未变。F/F、B1保护与OFF精确恢复通过；无中间别名图的logits与观测图完全一致。
+
+28个同形状FIA节点共享一份JIT kernel，覆盖由每个实际GE节点的二进制/任务/三次CSV及请求行证明，不能把一次host回调当作28次命中。统一CPU FP64增强与真实输出别名下的物理盲验通过；原生六位CSV首差为Mul_13输入1，缺失/gaps保留。本轮使用AttentionInterface将原始HF完整Qwen3接到真实FIA；限定当前受控causal策略与prefill形状，不等同HF默认路由、历史盘古默认策略或decode复现。
+
 **真实 FIA 图设备端粒度补验（2026-11-09）通过受控机制验收：** [实现与调用链](experiments/fault28_fia_grain_20261109/README.md)及[本轮 B/F statistics/mix 与设备标量](artifacts/attention_tiling/fault28_fia_measured_grain_statistics_20261109/README.md)在124卡5完成23组、69次真实图调用。固定同一目标Q/K/V，实际Batch1→8、M512→128对应query63设备Softmax列数512→128；19组官方SDK解码共798条标量与本进程runtime记录一致。相同causal规则下的同B8主对照产生140个Attention、6,141个o_proj差异，F/F稳定且OFF精确恢复。仅凭原始统计与实际图的物理盲验，两步×两个F均独立定位FIA output0 Mean/Norm；依赖明确披露的统一CPU FP64增强与真实GE输出别名，原生GE CSV显示精度限制保留。
 
 本次补齐了此前由源码推导的Softmax列粒度观测，范围仍是当前版本受控FIA→o_proj图子图。printf异步刷出，仅证明进程/图级汇总，不声称逐replay配对；只采request0/head0七个query，完整目标另逐元素核验。N同时影响BMM1/Softmax/BMM2，未唯一分离Reduce指令贡献，也未复现历史盘古完整模型或首token logits现象。
