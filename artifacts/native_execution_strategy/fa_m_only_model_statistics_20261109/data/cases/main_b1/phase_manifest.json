@@ -1,0 +1,2003 @@
+{
+  "schema": "nes.model_phases.v1",
+  "phases": [
+    {
+      "step": 0,
+      "run_index": 0,
+      "mode": "calibration",
+      "stage": "prefill",
+      "cache_observation_file": "phases/step0/cache.json",
+      "cache_observation_sha256": "c2e1ca4907aa81c26a474d8ba37da0174cd351cabcfc5a8fcfd7cf4ff9520104",
+      "request_mapping_file": "phases/step0/request_mapping.json",
+      "request_mapping_sha256": "c82d7a1764bfd59fce1589b94534f0b1131253de4bc45e35bcd26e2a12a340e5",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s0_l0_7eba14ad1e814d04894f202655e0cf73",
+        "model_s0_l1_05786dc764d04306970d7d63cb41f324",
+        "model_s0_l2_e2c7ac7b907a46c4b31f44d47665a192",
+        "model_s0_l3_306e6c1afe434f2688cbcbceedc3ab09",
+        "model_s0_l4_9e986c48fab64cc593db2a87f6f16181",
+        "model_s0_l5_8ee743ed653943bdae81bea56862f982",
+        "model_s0_l6_91c4247eb9b7445f8be01818b04886f5",
+        "model_s0_l7_94775eb6f28344f4988b8731a97ba8a9",
+        "model_s0_l8_17fff8d1d82248e2b180e71ed38add8d",
+        "model_s0_l9_f6502cc4def74d1b9f38ddca549cc177",
+        "model_s0_l10_b4413677f82a4d07803acdbb845787d5",
+        "model_s0_l11_769f0d459ab041bfa169b533cb86b8be",
+        "model_s0_l12_7bf6fde10dfe4ccfbad5558ad1760d72",
+        "model_s0_l13_c3790b9ff85d40b5bfea49cb9d4d2bcb",
+        "model_s0_l14_2792ff2b8dfd4452949ccca16362799c",
+        "model_s0_l15_2de31ea7c1b74836846cc67e178abf83",
+        "model_s0_l16_002041dc22714ed8ac56230de047c21d",
+        "model_s0_l17_7cd7eba432af401abb830bf97ea6a6a7",
+        "model_s0_l18_106fa7ad092f41f5837065d2e850e36a",
+        "model_s0_l19_b08707468716462da41042527d88abcf",
+        "model_s0_l20_79cbc1656fe74605ab0ba7c77db2fc43",
+        "model_s0_l21_5dcc72fa95884e268d3f5e37fab7977e",
+        "model_s0_l22_618230bfe74a4787a733f0fd5bbda450",
+        "model_s0_l23_d382a5a71ef44c5d9b93d1404fb667f2",
+        "model_s0_l24_0e081649737d4981984430337b8d352e",
+        "model_s0_l25_6103fca0ad164c05a0c96574c2693914",
+        "model_s0_l26_26c7810511af43a5a68d4a75b0fc4d49",
+        "model_s0_l27_e835a3af74ae4977a8b5a246f520bc91"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463741081440,
+        "data_ptr": 20617269294592,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "calibration",
+          "stage": "prefill",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+          "last_query_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+          "private_reference_file": "/evidence/main_b1/private_reference/prefill/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "CALIBRATION_NO_REFERENCE"
+        }
+      },
+      "private_logits_file": "private_output/step0_logits.bin",
+      "cache_length_before": 0,
+      "cache_length_after": 2048,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272047533767479,
+        "reset_completed_monotonic_ns": 3272047533775909,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 43.439854542,
+          "peak_memory_bytes": 1534429696
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272047580797686,
+          "exit_after_synchronize": 3272091020652228,
+          "elapsed": 43439854542
+        },
+        "sample_started_monotonic_ns": 3272091020765030,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1534429696,
+          "max_memory_allocated_bytes": 1534429696
+        },
+        "sample_completed_monotonic_ns": 3272091021065716,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214628037937696,
+        "monotonic_ns": 3272047580797686,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 0,
+        "run_index": 0,
+        "mode": "calibration",
+        "stage": "prefill"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214671477792658,
+        "monotonic_ns": 3272091020652228,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 0,
+        "run_index": 0,
+        "mode": "calibration",
+        "stage": "prefill"
+      }
+    },
+    {
+      "step": 1,
+      "run_index": 0,
+      "mode": "calibration",
+      "stage": "decode",
+      "cache_observation_file": "phases/step1/cache.json",
+      "cache_observation_sha256": "cb941770c1157413f50d9eda787bc823209ecee7903ec759ab9406f2c483b0e9",
+      "request_mapping_file": "phases/step1/request_mapping.json",
+      "request_mapping_sha256": "4589957c6a6cb8395f5325317bb8e192fc2e53855ae4ccbbb0fdcd2d8b80deca",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s1_l0_12ad0f34f9ac4beea00a94eb0411b2be",
+        "model_s1_l1_bc7bd80a9bef4607b08ae397b9bee2d7",
+        "model_s1_l2_01553713d9ae4f20811ee71f356fd112",
+        "model_s1_l3_6ff3d9ecb80a47af929a5b369bc3b7d8",
+        "model_s1_l4_ca44685b1029406b8ac0188e3d994cda",
+        "model_s1_l5_3cef0e1e6bf944b9a8facdb50ad7f32a",
+        "model_s1_l6_7bd43d24e1d84030a3fef4950b0e3bba",
+        "model_s1_l7_9927109ed25741c69a74d27f0161deae",
+        "model_s1_l8_2bc0f81633b84d58b86c646c6c7547f3",
+        "model_s1_l9_38d92fede8414faca2bf85d79458f3a1",
+        "model_s1_l10_27a7907b632f481f82dfeba65fe8b588",
+        "model_s1_l11_d1c02e4886f348ce8a3e4ec69564b841",
+        "model_s1_l12_060a85a70985499f843dfa4ea2e1d487",
+        "model_s1_l13_28d2aed465e84868bb9665998f9310a6",
+        "model_s1_l14_a0dd31e65de74470aa047f0191e66d9e",
+        "model_s1_l15_ca68aa30691b4288b9c9a2aaa950a24d",
+        "model_s1_l16_1eb573c4e8f74887a4eb09979c7f8a59",
+        "model_s1_l17_c188a2182e39430bbac20522de3689f3",
+        "model_s1_l18_c56de634ede443cd855cbc385260614f",
+        "model_s1_l19_3b58bc0469c0412b8605f4a6b66550cd",
+        "model_s1_l20_428ba4757ecd4863aee331d6ce620214",
+        "model_s1_l21_d3ce96aa18ed41cb99f738c8c692ff65",
+        "model_s1_l22_11421a15c17e418d8bd393d5f00d7a07",
+        "model_s1_l23_9557cb8a3b6c4bd4b33a62eddedd69e1",
+        "model_s1_l24_1fa17b2e2f734af99a765b235004d90e",
+        "model_s1_l25_0ed9e4488ee94512beb9739695c619bc",
+        "model_s1_l26_d9364cd0231646f3abc8aa5996d89c61",
+        "model_s1_l27_0a0b511de2804f298801fdbb47965ac6"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463432373552,
+        "data_ptr": 20617269641728,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "calibration",
+          "stage": "decode",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+          "last_query_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+          "private_reference_file": "/evidence/main_b1/private_reference/decode/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "CALIBRATION_NO_REFERENCE"
+        }
+      },
+      "private_logits_file": "private_output/step1_logits.bin",
+      "cache_length_before": 2048,
+      "cache_length_after": 2049,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272092016362339,
+        "reset_completed_monotonic_ns": 3272092016375939,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 11.243181206,
+          "peak_memory_bytes": 1457797632
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272092019033240,
+          "exit_after_synchronize": 3272103262214446,
+          "elapsed": 11243181206
+        },
+        "sample_started_monotonic_ns": 3272103262343239,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1457797632,
+          "max_memory_allocated_bytes": 1457797632
+        },
+        "sample_completed_monotonic_ns": 3272103262623074,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214672476173710,
+        "monotonic_ns": 3272092019033240,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 1,
+        "run_index": 0,
+        "mode": "calibration",
+        "stage": "decode"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214683719354826,
+        "monotonic_ns": 3272103262214446,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 1,
+        "run_index": 0,
+        "mode": "calibration",
+        "stage": "decode"
+      }
+    },
+    {
+      "step": 2,
+      "run_index": 1,
+      "mode": "native",
+      "stage": "prefill",
+      "cache_observation_file": "phases/step2/cache.json",
+      "cache_observation_sha256": "6524cdc0efde2e513e1f2d0f04cc1716e973b6973c11f736e8a25ca1fb457a78",
+      "request_mapping_file": "phases/step2/request_mapping.json",
+      "request_mapping_sha256": "f15f94a3ff2815d0c93ef5422c01c1f883d0c24c1e76ea2e0ac547743a534b1f",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s2_l0_99c0bb299f7f42659cbe280bca71c910",
+        "model_s2_l1_f60a07d2362d46b88b7b5116eb60af08",
+        "model_s2_l2_5061539983da4d089b31383d202619aa",
+        "model_s2_l3_2b823dfb458543ddbac96b4e75edda3f",
+        "model_s2_l4_5ea5d5c3522842ebb459a8fd3abc4995",
+        "model_s2_l5_b45c8114ecdf4492857695d444818c6a",
+        "model_s2_l6_1faa0f5128b7426094e9bb10a19fdcd6",
+        "model_s2_l7_6675fffdf4064d048418c423545958ac",
+        "model_s2_l8_7a40daa0cf834f038f9ecbd14b84eb4d",
+        "model_s2_l9_56c9ff3601f6438fbb67505db6925b26",
+        "model_s2_l10_08201148509a45a1b0cc8ed21119bc45",
+        "model_s2_l11_89b73e781bc44346a815d33151b2c1bb",
+        "model_s2_l12_47117efceb394fccaae31adbdbfc9f1e",
+        "model_s2_l13_322933ffb6174fe48d37b7fd61470d92",
+        "model_s2_l14_ea6ed7d4e6c54e4dace7bebe55b6c377",
+        "model_s2_l15_f390bd1b2f9a45fa8a2651ddb1686da6",
+        "model_s2_l16_2eaa57cfd05549b48886e0930af4b5dc",
+        "model_s2_l17_aa7f8834f43a46ef9a0b9f9ecd9a9d5c",
+        "model_s2_l18_824cea14855a4f3f8083f9bf13dbf4db",
+        "model_s2_l19_14c09c84ec0f487c85234dc51101e0ad",
+        "model_s2_l20_a438163a088c478c8a385d3d43edcd6e",
+        "model_s2_l21_f34ec5c7514a45c1a47d4ffd50065d7b",
+        "model_s2_l22_706c24f3a3dc426486359e28e7c42214",
+        "model_s2_l23_ebf229df6618447084bd63892f8eb5a0",
+        "model_s2_l24_0af3a31f8bdb4515869267e24abd4be7",
+        "model_s2_l25_b45c9e77338948f5a8c6d51da6acacd3",
+        "model_s2_l26_598020e1fe414cc299424b0bfdb4ce9a",
+        "model_s2_l27_7272669b92e84330ae50984b06d1688b"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463739075952,
+        "data_ptr": 20617269294592,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "native",
+          "stage": "prefill",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+          "last_query_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+          "private_reference_file": "/evidence/main_b1/private_reference/prefill/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "BASELINE_REFERENCE_SAVED",
+          "reference_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53"
+        }
+      },
+      "private_logits_file": "private_output/step2_logits.bin",
+      "cache_length_before": 0,
+      "cache_length_after": 2048,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272104258881826,
+        "reset_completed_monotonic_ns": 3272104258889536,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 44.354661309,
+          "peak_memory_bytes": 1542827520
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272104260970706,
+          "exit_after_synchronize": 3272148615632015,
+          "elapsed": 44354661309
+        },
+        "sample_started_monotonic_ns": 3272148615746577,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1542827520,
+          "max_memory_allocated_bytes": 1542827520
+        },
+        "sample_completed_monotonic_ns": 3272148616050263,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214684718111376,
+        "monotonic_ns": 3272104260970706,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 2,
+        "run_index": 1,
+        "mode": "native",
+        "stage": "prefill"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214729072772085,
+        "monotonic_ns": 3272148615632015,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 2,
+        "run_index": 1,
+        "mode": "native",
+        "stage": "prefill"
+      }
+    },
+    {
+      "step": 3,
+      "run_index": 1,
+      "mode": "native",
+      "stage": "decode",
+      "cache_observation_file": "phases/step3/cache.json",
+      "cache_observation_sha256": "08a8ebd5ca4423dc96ccf3bb3c3bb2615b0ffecd85069b88cfa2813a9162e74c",
+      "request_mapping_file": "phases/step3/request_mapping.json",
+      "request_mapping_sha256": "c15e6c11c5bf50003d880376b471a6eb91e6fbe1fab4a1bbf35e274d50ce50a9",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s3_l0_99ddec40039d4f06a96d0e629bedeb26",
+        "model_s3_l1_782407f6df72466e94d4ed3c7030b661",
+        "model_s3_l2_959e352eb1b04f9cbe1b3e21406cc6fa",
+        "model_s3_l3_aa2d153396ff4b14b44075ba598e3081",
+        "model_s3_l4_544f502fde9e4fbe89dd6d76d8aa6510",
+        "model_s3_l5_7c94c94a5f02496fa10254ffb0b48a1f",
+        "model_s3_l6_ac3c4f5277be4660a1526c0de7b44f61",
+        "model_s3_l7_45b8938f6feb41318d42c87e6b682835",
+        "model_s3_l8_f72def881ece47cea838fd8c52b41325",
+        "model_s3_l9_3c10fbf6fa4f42a3a4de2b28e9b72f47",
+        "model_s3_l10_2068496c8c634543a5a38f4754fcaa65",
+        "model_s3_l11_f408ff9a038b4049a8caa0aa4782166f",
+        "model_s3_l12_487625b971ab4262bc64022ca06f1616",
+        "model_s3_l13_2442712bc6b84a9e9241d5bf29eb253c",
+        "model_s3_l14_8327d6a3373643a093b483d00e1702d0",
+        "model_s3_l15_ca822d7cc5bb400fad62d9022a1de559",
+        "model_s3_l16_d9b691f878c043988e1b93ed7f69310f",
+        "model_s3_l17_e764ae9d5b674159915902e14cf59efe",
+        "model_s3_l18_239b8a64a59b42918e75deca5ffc7b1b",
+        "model_s3_l19_6f21ba1fca314fd78b177164f536f1eb",
+        "model_s3_l20_bef0cad1b2cd47309b594c8cfc9f338b",
+        "model_s3_l21_30ca621253714ebab4dbc588e90bc0f6",
+        "model_s3_l22_bb9d67fcc5964afea5cb568c63d653af",
+        "model_s3_l23_5be094e499bb47eaa31ab345979dd426",
+        "model_s3_l24_69f40e3f5d8b4877a951b3140e6e4a10",
+        "model_s3_l25_3eec8c00c6394ad1831d97ad7265c896",
+        "model_s3_l26_ec173fe347d44d0c827df1dd117738cb",
+        "model_s3_l27_2328d08fec9547009a292419e4b2f062"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463431295728,
+        "data_ptr": 20617269641728,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "native",
+          "stage": "decode",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+          "last_query_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+          "private_reference_file": "/evidence/main_b1/private_reference/decode/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "BASELINE_REFERENCE_SAVED",
+          "reference_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496"
+        }
+      },
+      "private_logits_file": "private_output/step3_logits.bin",
+      "cache_length_before": 2048,
+      "cache_length_after": 2049,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272150033882380,
+        "reset_completed_monotonic_ns": 3272150033889840,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 10.716891573,
+          "peak_memory_bytes": 1457799680
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272150035901838,
+          "exit_after_synchronize": 3272160752793411,
+          "elapsed": 10716891573
+        },
+        "sample_started_monotonic_ns": 3272160752907923,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1457799680,
+          "max_memory_allocated_bytes": 1457799680
+        },
+        "sample_completed_monotonic_ns": 3272160753196938,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214730493042488,
+        "monotonic_ns": 3272150035901838,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 3,
+        "run_index": 1,
+        "mode": "native",
+        "stage": "decode"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214741209933691,
+        "monotonic_ns": 3272160752793411,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 3,
+        "run_index": 1,
+        "mode": "native",
+        "stage": "decode"
+      }
+    },
+    {
+      "step": 4,
+      "run_index": 2,
+      "mode": "controlled",
+      "stage": "prefill",
+      "cache_observation_file": "phases/step4/cache.json",
+      "cache_observation_sha256": "7a6197ea8b9e33278e3be1faae03c2bd7596cee41b42a82d8ab4ff4935db0def",
+      "request_mapping_file": "phases/step4/request_mapping.json",
+      "request_mapping_sha256": "6746485667c5634307ee905b6476c066c1dffd2c1edeb867531fde95df36c476",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s4_l0_f60dd9f89f964ff19cdd4c7e82948126",
+        "model_s4_l1_06b2f21666394a41a16392bc1590f42b",
+        "model_s4_l2_9b5940a7b2d74d23a3591ddd191514a7",
+        "model_s4_l3_748dd9df31b340088e8cfa5e055bdf1f",
+        "model_s4_l4_6de70ac2e7f34af0b0156852ea25993e",
+        "model_s4_l5_0bda87ee5b53442cbfcd87d97679ef1f",
+        "model_s4_l6_ec9bceb3f72f491c920d6ade5de4e439",
+        "model_s4_l7_b19e8ef89e66432c86e5726b1b2d16c5",
+        "model_s4_l8_da65c6d327384770b8539f0f4e4edcb2",
+        "model_s4_l9_d5b5e7f054ce4c998c496c4bf3b91de7",
+        "model_s4_l10_3dda9def8894434b9dc50c7b93e33bd1",
+        "model_s4_l11_523b6d4cab2a4cc0a367553b5d7c32c1",
+        "model_s4_l12_3504bf63f49a4df69cef5d074abccad2",
+        "model_s4_l13_54ac21cf56b1451ea95d7de60de23a02",
+        "model_s4_l14_1a7a37ac64114b208497c7fdfc46416f",
+        "model_s4_l15_85e7e5ff700c47d4a05b416d99f5dd4a",
+        "model_s4_l16_007b563909ba442eb15fa898c8f63e48",
+        "model_s4_l17_ecb4a7190247475e98e1b626d7e54d30",
+        "model_s4_l18_e8ae378bb6d34987a7a36cf03f208fea",
+        "model_s4_l19_fa2b9d3088384cb1b52f2fa398a0ade8",
+        "model_s4_l20_8ba1a5650da24b3cb4140337dedb130d",
+        "model_s4_l21_cf466c5661cc475887422ddb0875a95b",
+        "model_s4_l22_4ed37ac1712c47ac8e95c440fc729013",
+        "model_s4_l23_c6e3341ae6e6407483cbc428aa13053f",
+        "model_s4_l24_93f500f7c3d44007a6fbea2c4b828b9e",
+        "model_s4_l25_23ff812411cc4a009e2ed940aa7a61a2",
+        "model_s4_l26_5afc3fdf091a4e73bbfcb40cce56c3a6",
+        "model_s4_l27_2db2ac97288e499c85bde4fb4d15ee95"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463430207184,
+        "data_ptr": 20617269294592,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "controlled",
+          "stage": "prefill",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b",
+          "last_query_sha256": "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b",
+          "private_reference_file": "/evidence/main_b1/private_reference/prefill/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "COMPLETE_ELEMENTWISE_COMPARISON",
+          "reference_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+          "comparison": {
+            "bitwise_equal": false,
+            "elements": 151936,
+            "changed_elements": 138344,
+            "per_request_changed_elements": [
+              138344
+            ],
+            "per_query_changed_elements": [
+              138344
+            ],
+            "queries_with_changes": 1,
+            "max_abs": 0.03515625,
+            "mean_abs": 0.006761429481453121,
+            "last_query_changed_elements": 138344,
+            "last_query_B_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+            "last_query_F_sha256": "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b",
+            "small_samples": [
+              {
+                "index": [
+                  0,
+                  0,
+                  0
+                ],
+                "B": 5.5234375,
+                "F": 5.515625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  1
+                ],
+                "B": 1.7197265625,
+                "F": 1.712890625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  2
+                ],
+                "B": 4.12890625,
+                "F": 4.13671875
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  4
+                ],
+                "B": 2.087890625,
+                "F": 2.083984375
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  5
+                ],
+                "B": -0.6220703125,
+                "F": -0.63330078125
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  6
+                ],
+                "B": 1.1669921875,
+                "F": 1.1650390625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  8
+                ],
+                "B": 4.6796875,
+                "F": 4.68359375
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  10
+                ],
+                "B": 5.00390625,
+                "F": 5.0
+              }
+            ]
+          }
+        }
+      },
+      "private_logits_file": "private_output/step4_logits.bin",
+      "cache_length_before": 0,
+      "cache_length_after": 2048,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272162052728408,
+        "reset_completed_monotonic_ns": 3272162052735898,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 51.460063763,
+          "peak_memory_bytes": 1516609024
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272162054738026,
+          "exit_after_synchronize": 3272213514801789,
+          "elapsed": 51460063763
+        },
+        "sample_started_monotonic_ns": 3272213514922351,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1516609024,
+          "max_memory_allocated_bytes": 1516609024
+        },
+        "sample_completed_monotonic_ns": 3272213515226027,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214742511878696,
+        "monotonic_ns": 3272162054738026,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 4,
+        "run_index": 2,
+        "mode": "controlled",
+        "stage": "prefill"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214793971941789,
+        "monotonic_ns": 3272213514801789,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 4,
+        "run_index": 2,
+        "mode": "controlled",
+        "stage": "prefill"
+      }
+    },
+    {
+      "step": 5,
+      "run_index": 2,
+      "mode": "controlled",
+      "stage": "decode",
+      "cache_observation_file": "phases/step5/cache.json",
+      "cache_observation_sha256": "6dcaed129ffb5e97442a18d75a311abe5d61580b3805007b2aa3b3bcb70e5f1f",
+      "request_mapping_file": "phases/step5/request_mapping.json",
+      "request_mapping_sha256": "27d931acc1255ce99eb9fcafda4d713b1f3220232fb79c2cc8f95b24c9d094c6",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s5_l0_cafa7ba31b064099b2bfe568e6f3da51",
+        "model_s5_l1_edf90f56887944ab9cb8bf19dea53b46",
+        "model_s5_l2_bd1c8790618b4b28a564f1c78b8580bf",
+        "model_s5_l3_0ae7f5cf627e4fb698c4c826d3679774",
+        "model_s5_l4_156605c1ab8146e0918ec32c43273b02",
+        "model_s5_l5_5e2aba4ae79c448285ade368de74c3ce",
+        "model_s5_l6_fe3a128425544c66921fe01103e304fa",
+        "model_s5_l7_7488ca9188534c598c59fe1c10908901",
+        "model_s5_l8_6b05c84535644b59bbbb26ecedf2376f",
+        "model_s5_l9_9caf5215620e416795b3e68961df43f6",
+        "model_s5_l10_bbe087917b4e48b5aaa2f5ed7ac34246",
+        "model_s5_l11_e81f27cf220a4974bcb83f0eae44c398",
+        "model_s5_l12_65e8d2ce2fcd401fb10e3d033357ea90",
+        "model_s5_l13_e676ea02022c42738d256f7328377d44",
+        "model_s5_l14_8c7a7d73aecb4dd4bf44c93f21845187",
+        "model_s5_l15_f3f4d06f62774f0a863b2293f3f05936",
+        "model_s5_l16_1892f21b67fd47c887c7413ec9bc93e3",
+        "model_s5_l17_938ca74df4a84a28969717124d2e8a64",
+        "model_s5_l18_1360f716295a453e926a782bc07d645c",
+        "model_s5_l19_6a4371db83e04598b0d7203120548a21",
+        "model_s5_l20_2f90089d342946b69c20ab29aa56442f",
+        "model_s5_l21_60566238bcf4474fa43d85024c43ac8a",
+        "model_s5_l22_c998eaca63df47fcad98618bf674519b",
+        "model_s5_l23_2cc70708e4fd4820bb173487a4fa8bd2",
+        "model_s5_l24_59ea6de393804539afc1343e9cc14027",
+        "model_s5_l25_b7e7fda7245444b5b8532f2b992da285",
+        "model_s5_l26_b8226292344c44338f019f0b44eec5ce",
+        "model_s5_l27_55e18b87fe374fe098107b6c62ec29ee"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463430202944,
+        "data_ptr": 20617269641728,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "controlled",
+          "stage": "decode",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133",
+          "last_query_sha256": "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133",
+          "private_reference_file": "/evidence/main_b1/private_reference/decode/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "COMPLETE_ELEMENTWISE_COMPARISON",
+          "reference_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+          "comparison": {
+            "bitwise_equal": false,
+            "elements": 151936,
+            "changed_elements": 121320,
+            "per_request_changed_elements": [
+              121320
+            ],
+            "per_query_changed_elements": [
+              121320
+            ],
+            "queries_with_changes": 1,
+            "max_abs": 0.0234375,
+            "mean_abs": 0.003898794751021173,
+            "last_query_changed_elements": 121320,
+            "last_query_B_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+            "last_query_F_sha256": "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133",
+            "small_samples": [
+              {
+                "index": [
+                  0,
+                  0,
+                  0
+                ],
+                "B": 6.26953125,
+                "F": 6.265625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  2
+                ],
+                "B": 2.62890625,
+                "F": 2.625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  3
+                ],
+                "B": 4.66796875,
+                "F": 4.6640625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  4
+                ],
+                "B": 4.984375,
+                "F": 4.98828125
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  5
+                ],
+                "B": 2.5390625,
+                "F": 2.54296875
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  6
+                ],
+                "B": 3.921875,
+                "F": 3.923828125
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  8
+                ],
+                "B": 6.0234375,
+                "F": 6.01953125
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  14
+                ],
+                "B": 5.7265625,
+                "F": 5.72265625
+              }
+            ]
+          }
+        }
+      },
+      "private_logits_file": "private_output/step5_logits.bin",
+      "cache_length_before": 2048,
+      "cache_length_after": 2049,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272220401978169,
+        "reset_completed_monotonic_ns": 3272220401994779,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 10.62401998,
+          "peak_memory_bytes": 1457797632
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272220404567978,
+          "exit_after_synchronize": 3272231028587958,
+          "elapsed": 10624019980
+        },
+        "sample_started_monotonic_ns": 3272231028692360,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1457797632,
+          "max_memory_allocated_bytes": 1457797632
+        },
+        "sample_completed_monotonic_ns": 3272231029036017,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214800861708678,
+        "monotonic_ns": 3272220404567978,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 5,
+        "run_index": 2,
+        "mode": "controlled",
+        "stage": "decode"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214811485727938,
+        "monotonic_ns": 3272231028587958,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 5,
+        "run_index": 2,
+        "mode": "controlled",
+        "stage": "decode"
+      }
+    },
+    {
+      "step": 6,
+      "run_index": 3,
+      "mode": "controlled",
+      "stage": "prefill",
+      "cache_observation_file": "phases/step6/cache.json",
+      "cache_observation_sha256": "94683a166a776bb55bd4ef59c4e9c74600c4ad1a2f0553739012b236247f3671",
+      "request_mapping_file": "phases/step6/request_mapping.json",
+      "request_mapping_sha256": "20aa3b47d15065b9b37b1f729d34c41d5094414ca73d386c75b24a9df8fad202",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s6_l0_8a3a84b8159d43a194270fd73f3186c8",
+        "model_s6_l1_f7f8d85bf420452c8b6913920a37dbdf",
+        "model_s6_l2_9e5340e470424af1b0b2f4ba0cb69d98",
+        "model_s6_l3_08b2021560354e1a818d5d09fb6c8434",
+        "model_s6_l4_8d5af90b49c8444383574c6b9557aa1d",
+        "model_s6_l5_c9275bc2d6cb4b18a319d06419da0170",
+        "model_s6_l6_e001cd903da648bcad91663aaf017cb4",
+        "model_s6_l7_aa513592dc7e4564b70c0f8cfeaea662",
+        "model_s6_l8_d314acfd4db542acbe6816a8a0face9d",
+        "model_s6_l9_a270739875864fa1b917f0f119321d96",
+        "model_s6_l10_3df4de041f434894a8956a107042f53e",
+        "model_s6_l11_425541175c8a413fa89b42e40e8fc39d",
+        "model_s6_l12_979459e369b0472487938afbf4115638",
+        "model_s6_l13_4b941746e6694d0ca0d1498fb76caf67",
+        "model_s6_l14_b0d75b26e839460aaa12a220a87e127b",
+        "model_s6_l15_4eecd472ed224338bf03daeb1a3ec32c",
+        "model_s6_l16_d3d138d411c040bdbd48b097fdbabc75",
+        "model_s6_l17_b5631ec17bdd44c4adefface14405fc5",
+        "model_s6_l18_e11d93719bbd4a1eaebe7b9de732086f",
+        "model_s6_l19_856766dd1562415cabecbaacfb7f1b52",
+        "model_s6_l20_8caf543a828d4c4a9714777e21847b6c",
+        "model_s6_l21_9beb449f4df04921ac2e13e9ba0e228c",
+        "model_s6_l22_2a52756031834524923bf30dcb5d8b52",
+        "model_s6_l23_e3c4f9a267254fcc8950800bef3f06db",
+        "model_s6_l24_3d445afe1d9b47af8a656c3dad85bdc1",
+        "model_s6_l25_993220767cd84debb3d561df335f9392",
+        "model_s6_l26_3f2d24befe5e4f6cadba3448a556f77f",
+        "model_s6_l27_93701205e2f3484681d107ccbcca7a2b"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463635586384,
+        "data_ptr": 20617269294592,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "controlled",
+          "stage": "prefill",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b",
+          "last_query_sha256": "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b",
+          "private_reference_file": "/evidence/main_b1/private_reference/prefill/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "COMPLETE_ELEMENTWISE_COMPARISON",
+          "reference_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+          "comparison": {
+            "bitwise_equal": false,
+            "elements": 151936,
+            "changed_elements": 138344,
+            "per_request_changed_elements": [
+              138344
+            ],
+            "per_query_changed_elements": [
+              138344
+            ],
+            "queries_with_changes": 1,
+            "max_abs": 0.03515625,
+            "mean_abs": 0.006761429481453121,
+            "last_query_changed_elements": 138344,
+            "last_query_B_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+            "last_query_F_sha256": "53187299c0c22c33b5e1db5690a6f0421ddac07bafbf14251fe2bd32db5e058b",
+            "small_samples": [
+              {
+                "index": [
+                  0,
+                  0,
+                  0
+                ],
+                "B": 5.5234375,
+                "F": 5.515625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  1
+                ],
+                "B": 1.7197265625,
+                "F": 1.712890625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  2
+                ],
+                "B": 4.12890625,
+                "F": 4.13671875
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  4
+                ],
+                "B": 2.087890625,
+                "F": 2.083984375
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  5
+                ],
+                "B": -0.6220703125,
+                "F": -0.63330078125
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  6
+                ],
+                "B": 1.1669921875,
+                "F": 1.1650390625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  8
+                ],
+                "B": 4.6796875,
+                "F": 4.68359375
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  10
+                ],
+                "B": 5.00390625,
+                "F": 5.0
+              }
+            ]
+          }
+        }
+      },
+      "private_logits_file": "private_output/step6_logits.bin",
+      "cache_length_before": 0,
+      "cache_length_after": 2048,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272237873003512,
+        "reset_completed_monotonic_ns": 3272237873019012,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 49.297141998,
+          "peak_memory_bytes": 1516609024
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272237875217564,
+          "exit_after_synchronize": 3272287172359562,
+          "elapsed": 49297141998
+        },
+        "sample_started_monotonic_ns": 3272287172451883,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1516609024,
+          "max_memory_allocated_bytes": 1516609024
+        },
+        "sample_completed_monotonic_ns": 3272287172745139,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214818332358334,
+        "monotonic_ns": 3272237875217564,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 6,
+        "run_index": 3,
+        "mode": "controlled",
+        "stage": "prefill"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214867629499592,
+        "monotonic_ns": 3272287172359562,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 6,
+        "run_index": 3,
+        "mode": "controlled",
+        "stage": "prefill"
+      }
+    },
+    {
+      "step": 7,
+      "run_index": 3,
+      "mode": "controlled",
+      "stage": "decode",
+      "cache_observation_file": "phases/step7/cache.json",
+      "cache_observation_sha256": "1d824ca95265d0c987431256d991c416d6efde8e62ce373d527c8ff4df89546e",
+      "request_mapping_file": "phases/step7/request_mapping.json",
+      "request_mapping_sha256": "def1b324ad5c675b827472840716949937002fdb3c1a7ccc2533edebd08f3f9e",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s7_l0_d61d7c22635e4f7f8d83faee81a777ea",
+        "model_s7_l1_5c967a23e42d4f249b5a9863219eae5f",
+        "model_s7_l2_f86a1762758444f5b2a1abe7ea2cd42b",
+        "model_s7_l3_2d0c4ff976d4457a878f2bcfc014b13c",
+        "model_s7_l4_742f15cc5daf45f08d61e953198d2030",
+        "model_s7_l5_0285329e3e8e453e93c17eb2e25ae30f",
+        "model_s7_l6_f2a2b1d9a923476f9f4704c4d71b472d",
+        "model_s7_l7_f2c23b9c03644f7594c72fad989fe7f1",
+        "model_s7_l8_4e8332233e89490ea23b71f306389c76",
+        "model_s7_l9_993062104aaa458db0ffcaf5296ed5a7",
+        "model_s7_l10_a8c9a6239fa3471fa197e412853cd604",
+        "model_s7_l11_15fe06a782714cbea71d5b18ed4889b4",
+        "model_s7_l12_127e70e443dc4c1c93507533212e10c1",
+        "model_s7_l13_409648643efd422391116096783b8399",
+        "model_s7_l14_3a8032f1ca0d470489519a24d5d22e3a",
+        "model_s7_l15_653d2ec207a041e2ab23f11ee6f7cfa8",
+        "model_s7_l16_4557f621bf1e40d684e18f273cffc4ec",
+        "model_s7_l17_d71276eebf8a4fe280a23272d9cfcfb3",
+        "model_s7_l18_76fb0f11e4c6425bba32c1a1a51f594d",
+        "model_s7_l19_0f201da6e3284f1b9beec8b27f14d2e3",
+        "model_s7_l20_2edec72592e84444918fdffe4f92278d",
+        "model_s7_l21_64ce50a2f988437387ef764cc6d5fe66",
+        "model_s7_l22_37a1827a04a0492e9885a2e3b7ca884f",
+        "model_s7_l23_7cb69b040f044c4794c19721b5057d57",
+        "model_s7_l24_c3e04ebbb8f3443f81e29672c8662c77",
+        "model_s7_l25_0aad7290ba3148e2a55dc59e31cb1593",
+        "model_s7_l26_085e24b0e5be42acb088732a1fab7436",
+        "model_s7_l27_16152f31a1074bca9dc09708a470b67f"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463739076352,
+        "data_ptr": 20617269641728,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "controlled",
+          "stage": "decode",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133",
+          "last_query_sha256": "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133",
+          "private_reference_file": "/evidence/main_b1/private_reference/decode/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "COMPLETE_ELEMENTWISE_COMPARISON",
+          "reference_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+          "comparison": {
+            "bitwise_equal": false,
+            "elements": 151936,
+            "changed_elements": 121320,
+            "per_request_changed_elements": [
+              121320
+            ],
+            "per_query_changed_elements": [
+              121320
+            ],
+            "queries_with_changes": 1,
+            "max_abs": 0.0234375,
+            "mean_abs": 0.003898794751021173,
+            "last_query_changed_elements": 121320,
+            "last_query_B_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+            "last_query_F_sha256": "2f59b04210b7cb323213a9f70b3b678024b1af75399936bb7603c75499b9f133",
+            "small_samples": [
+              {
+                "index": [
+                  0,
+                  0,
+                  0
+                ],
+                "B": 6.26953125,
+                "F": 6.265625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  2
+                ],
+                "B": 2.62890625,
+                "F": 2.625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  3
+                ],
+                "B": 4.66796875,
+                "F": 4.6640625
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  4
+                ],
+                "B": 4.984375,
+                "F": 4.98828125
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  5
+                ],
+                "B": 2.5390625,
+                "F": 2.54296875
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  6
+                ],
+                "B": 3.921875,
+                "F": 3.923828125
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  8
+                ],
+                "B": 6.0234375,
+                "F": 6.01953125
+              },
+              {
+                "index": [
+                  0,
+                  0,
+                  14
+                ],
+                "B": 5.7265625,
+                "F": 5.72265625
+              }
+            ]
+          }
+        }
+      },
+      "private_logits_file": "private_output/step7_logits.bin",
+      "cache_length_before": 2048,
+      "cache_length_after": 2049,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272294005682173,
+        "reset_completed_monotonic_ns": 3272294005695744,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 10.544519823,
+          "peak_memory_bytes": 1457797632
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272294007892616,
+          "exit_after_synchronize": 3272304552412439,
+          "elapsed": 10544519823
+        },
+        "sample_started_monotonic_ns": 3272304552515671,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1457797632,
+          "max_memory_allocated_bytes": 1457797632
+        },
+        "sample_completed_monotonic_ns": 3272304552795496,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214874465033276,
+        "monotonic_ns": 3272294007892616,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 7,
+        "run_index": 3,
+        "mode": "controlled",
+        "stage": "decode"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214885009552679,
+        "monotonic_ns": 3272304552412439,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 7,
+        "run_index": 3,
+        "mode": "controlled",
+        "stage": "decode"
+      }
+    },
+    {
+      "step": 8,
+      "run_index": 4,
+      "mode": "off",
+      "stage": "prefill",
+      "cache_observation_file": "phases/step8/cache.json",
+      "cache_observation_sha256": "21a7eb9974b6a0615d864f9ba4d304e0e54330d60145dab8508917bf79f2483c",
+      "request_mapping_file": "phases/step8/request_mapping.json",
+      "request_mapping_sha256": "2aded712538337bdc3318a6fbc8c85aa0ca89619772d298bf390964b07ab0932",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s8_l0_407d55bd2fb24772b02a03a24ff0e972",
+        "model_s8_l1_af890e1a2e6044498501f24449d4273d",
+        "model_s8_l2_878b706bc48e4645828bc0ff6af76b67",
+        "model_s8_l3_428777a1a93b4d668634412d858c1636",
+        "model_s8_l4_cf7191562f6f43eab195e7bc9cde9ce9",
+        "model_s8_l5_8783137a67474c6e9908e78ac294a4fe",
+        "model_s8_l6_ecf8793e281a4856b73451097b410022",
+        "model_s8_l7_7f96664b737c4b4aa2fa80ba117fbc0a",
+        "model_s8_l8_0ae4e88cbac44635915bd9dbf0191136",
+        "model_s8_l9_7a4ca093f9df4ec2aed3d045eca2a561",
+        "model_s8_l10_20e6609c941346558f241c63610e3dfc",
+        "model_s8_l11_454431b1f4e44629b1ead106f1d403c2",
+        "model_s8_l12_ca40bfd693a0478ca69a300cf525f23f",
+        "model_s8_l13_2ebec2994e494588b8551d2d4fcb6c1c",
+        "model_s8_l14_578f34747a63422e86119b26bf1039f6",
+        "model_s8_l15_8e6b3c1d864e4551b35481dcddadcc2a",
+        "model_s8_l16_09f4ee0d759a4b46a9bd4bd3d2ea6cb8",
+        "model_s8_l17_f5603530c39f416d87078af6ed00bc20",
+        "model_s8_l18_1008182b1c974562b9cc451a09c5a3b3",
+        "model_s8_l19_457ce5a3527e480b9e47f57d38d44337",
+        "model_s8_l20_cce5ea1dfa7540ee907e4883c2a14e66",
+        "model_s8_l21_c452d3d571a84380a6df926f8973a217",
+        "model_s8_l22_257e6a4b911a4d8cb731ecf59c552b15",
+        "model_s8_l23_e3b2bf9ab9614fb0a95294147837d373",
+        "model_s8_l24_ccf6cabdbe85433ab836174146bcd144",
+        "model_s8_l25_5cdb5401ef45410e8ad5bd38696aedce",
+        "model_s8_l26_6549c973c8ad49c4a276178ec992cb27",
+        "model_s8_l27_81d20417320c410f8ce727ca0793e99a"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463636448896,
+        "data_ptr": 20617269294592,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "off",
+          "stage": "prefill",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+          "last_query_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+          "private_reference_file": "/evidence/main_b1/private_reference/prefill/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "COMPLETE_ELEMENTWISE_COMPARISON",
+          "reference_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+          "comparison": {
+            "bitwise_equal": true,
+            "elements": 151936,
+            "changed_elements": 0,
+            "per_request_changed_elements": [
+              0
+            ],
+            "per_query_changed_elements": [
+              0
+            ],
+            "queries_with_changes": 0,
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "last_query_changed_elements": 0,
+            "last_query_B_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+            "last_query_F_sha256": "236f9711ae783a31ff38b062643ab5b4fc649922f29194d841ae6f6ea6c77d53",
+            "small_samples": []
+          }
+        }
+      },
+      "private_logits_file": "private_output/step8_logits.bin",
+      "cache_length_before": 0,
+      "cache_length_after": 2048,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272311334324559,
+        "reset_completed_monotonic_ns": 3272311334337050,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 46.353323601,
+          "peak_memory_bytes": 1542830592
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272311336422639,
+          "exit_after_synchronize": 3272357689746240,
+          "elapsed": 46353323601
+        },
+        "sample_started_monotonic_ns": 3272357689872082,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1542830592,
+          "max_memory_allocated_bytes": 1542830592
+        },
+        "sample_completed_monotonic_ns": 3272357690225389,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214891793563459,
+        "monotonic_ns": 3272311336422639,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 8,
+        "run_index": 4,
+        "mode": "off",
+        "stage": "prefill"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214938146886219,
+        "monotonic_ns": 3272357689746240,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 8,
+        "run_index": 4,
+        "mode": "off",
+        "stage": "prefill"
+      }
+    },
+    {
+      "step": 9,
+      "run_index": 4,
+      "mode": "off",
+      "stage": "decode",
+      "cache_observation_file": "phases/step9/cache.json",
+      "cache_observation_sha256": "ce304b22b4f6ca172a03206c7332cdf88c288c24ba41d8e8985d668415a54fae",
+      "request_mapping_file": "phases/step9/request_mapping.json",
+      "request_mapping_sha256": "486d289f89a65a4b530ac3a9c797f3531b425cca206659efaac1d3c9414d3d3c",
+      "layer_count": 28,
+      "sdpa_call_ids": [
+        "model_s9_l0_afb884917b1646d7a33b5b9e13d0bb84",
+        "model_s9_l1_883586c5225846bc9c939bb91853acaa",
+        "model_s9_l2_d0e5381e4c2a4cd38bae52301c4bec09",
+        "model_s9_l3_8ba6c2ad63a6452ab79e7e846c950dce",
+        "model_s9_l4_65316cc597f44338882df5c56a414abf",
+        "model_s9_l5_cef52dd502eb48e7bb33ea8c3124adce",
+        "model_s9_l6_9067736852e341cbbeb1c230c3bc56c6",
+        "model_s9_l7_a7f2f3ba68cf4ef8ba4ab96688fd1ab4",
+        "model_s9_l8_85805c537a3a44c9b91a06469a7612ce",
+        "model_s9_l9_84f220191530472abb01b3ac49d22bc6",
+        "model_s9_l10_97f0cacbd613492da482837ceb405810",
+        "model_s9_l11_ae13c7bd6f0c42c4b2adf179d3315f33",
+        "model_s9_l12_bddc1953a8dc45a183a26772ab98494a",
+        "model_s9_l13_76400a6dd2ea48aaaafab747c6d47105",
+        "model_s9_l14_f04ca106a3974f9abb85ddc166892c9c",
+        "model_s9_l15_e2b4b2e281ef446e86dc3a15838f6dd1",
+        "model_s9_l16_14b6c20dc9644e79b41e7f9b151003c7",
+        "model_s9_l17_4809075c64974af59dadcffcf06840fd",
+        "model_s9_l18_8b3a3235b0214f9d9a54a7ea2297e767",
+        "model_s9_l19_18043006df714694acc4c9420dd533fe",
+        "model_s9_l20_1b2701da22114e43a98f947eebabf138",
+        "model_s9_l21_d8a3f8b898804c67b6a7e972bf0228bc",
+        "model_s9_l22_e0d201b38d75471588d324fb803414ea",
+        "model_s9_l23_4b177094fe684c8c999e66be0db3f27d",
+        "model_s9_l24_b99114bef89a4fd09098867cf6c8936c",
+        "model_s9_l25_22a1cf45a1ac48a3a659e40735e31d83",
+        "model_s9_l26_c3e887e976174d36a1da60089fcb4538",
+        "model_s9_l27_cf75e6ae05294b789dc59c49f93f29df"
+      ],
+      "logits": {
+        "shape": [
+          1,
+          1,
+          151936
+        ],
+        "stride": [
+          151936,
+          151936,
+          1
+        ],
+        "dtype": "torch.float16",
+        "device": "npu:0",
+        "object_id": 281463420275040,
+        "data_ptr": 20617269641728,
+        "storage_offset": 0,
+        "actual_format": 2,
+        "full_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+        "bytes": 303872,
+        "per_batch_sha256": [
+          "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496"
+        ],
+        "raw_order": "C-contiguous logical elements",
+        "byteorder": "little",
+        "exact_numeric_observation": {
+          "schema": "fault28.m_only.exact_observation.v1",
+          "mode": "off",
+          "stage": "decode",
+          "kind": "logits",
+          "layer_index": null,
+          "shape": [
+            1,
+            1,
+            151936
+          ],
+          "dtype": "torch.float16",
+          "full_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+          "last_query_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+          "private_reference_file": "/evidence/main_b1/private_reference/decode/logits.fp16.bin",
+          "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+          "comparison_status": "COMPLETE_ELEMENTWISE_COMPARISON",
+          "reference_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+          "comparison": {
+            "bitwise_equal": true,
+            "elements": 151936,
+            "changed_elements": 0,
+            "per_request_changed_elements": [
+              0
+            ],
+            "per_query_changed_elements": [
+              0
+            ],
+            "queries_with_changes": 0,
+            "max_abs": 0.0,
+            "mean_abs": 0.0,
+            "last_query_changed_elements": 0,
+            "last_query_B_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+            "last_query_F_sha256": "b8c044141c3b80690e5ad467a42ea13fabdb5a2edd8ee31c0840b69b23c11496",
+            "small_samples": []
+          }
+        }
+      },
+      "private_logits_file": "private_output/step9_logits.bin",
+      "cache_length_before": 2048,
+      "cache_length_after": 2049,
+      "resource_measurement": {
+        "schema": "nes.resource_measurement.v1",
+        "logical_device": 0,
+        "public_api_available": {
+          "reset_peak_memory_stats": true,
+          "memory_stats": true,
+          "max_memory_allocated": true
+        },
+        "reset_outside_msprobe_capture": true,
+        "peak_reset_completed": true,
+        "audited_memory_module_sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+        "allocator_metric": "allocated_bytes.all.peak",
+        "allocator_scope": "Current process, selected logical NPU, allocated tensor bytes; includes already-live inputs.",
+        "whole_card_hbm_measured": false,
+        "container_host_memory_measured": false,
+        "device_seconds_semantics": "Conservative device-acquisition wall seconds: original API entry through synchronized completion; includes Python/collection overhead, not kernel execution time.",
+        "errors": [],
+        "actual_memory_module": {
+          "path": "/work/venv/lib/python3.11/site-packages/torch_npu/npu/memory.py",
+          "sha256": "b489a7dc22b77d5f50b3329801fe64cb4c7f908cf2abaea75c0efbd7f4c436c1",
+          "matches_audited_source": true
+        },
+        "reset_started_monotonic_ns": 3272362759488586,
+        "reset_completed_monotonic_ns": 3272362759499667,
+        "sample_outside_msprobe_capture": true,
+        "resources": {
+          "device_seconds": 10.61821745,
+          "peak_memory_bytes": 1457797632
+        },
+        "call_window_monotonic_ns": {
+          "enter": 3272362761604447,
+          "exit_after_synchronize": 3272373379821897,
+          "elapsed": 10618217450
+        },
+        "sample_started_monotonic_ns": 3272373379914298,
+        "allocator_observations": {
+          "memory_stats_peak_bytes": 1457797632,
+          "max_memory_allocated_bytes": 1457797632
+        },
+        "sample_completed_monotonic_ns": 3272373380199924,
+        "allocator_window_semantics": "Reset before capture through post-stop sampling; conservative peak including any collection allocations and already-live input tensors.",
+        "accounting_complete": true,
+        "accounting_status": "MEASURED_WINDOW_AND_ALLOCATOR_PEAK",
+        "hard_limits_verified_by_this_meter": false
+      },
+      "model_enter": {
+        "event": "model_phase_enter",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214943218745247,
+        "monotonic_ns": 3272362761604447,
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 9,
+        "run_index": 4,
+        "mode": "off",
+        "stage": "decode"
+      },
+      "model_exit": {
+        "event": "model_phase_exit",
+        "pid": 46,
+        "thread_id": 46,
+        "epoch_ns": 1794214953836962196,
+        "monotonic_ns": 3272373379821897,
+        "status": "returned",
+        "case_id": "main_b1",
+        "batch_size": 1,
+        "step": 9,
+        "run_index": 4,
+        "mode": "off",
+        "stage": "decode"
+      }
+    }
+  ]
+}

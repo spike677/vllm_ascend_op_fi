@@ -1,0 +1,262 @@
+{
+  "schema": "fault28.m_only.independent_private_logits.v1",
+  "status": "PASS_COMPLETE_LOGITS_BYTES_REVIEW",
+  "case_id": "main_b1",
+  "case_result_sha256": "c42e31ceeb4b986f3b6681e2e12ba6ea3c24fe0e0bfbadb42b70c33678a88a35",
+  "phase_manifest_sha256": "d51d604fb5d32a0ed39ce40218d7c55370cf644e85b5034adeed57e728519683",
+  "comparisons": [
+    {
+      "comparison": "calibration_native_prefill",
+      "B_step": 0,
+      "F_step": 2,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": true,
+      "changed_elements": 0,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "B_top1_token_id": 1119,
+          "F_top1_token_id": 1119,
+          "top1_changed": false
+        }
+      ]
+    },
+    {
+      "comparison": "calibration_native_decode",
+      "B_step": 1,
+      "F_step": 3,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": true,
+      "changed_elements": 0,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "B_top1_token_id": 5662,
+          "F_top1_token_id": 5662,
+          "top1_changed": false
+        }
+      ]
+    },
+    {
+      "comparison": "native_fault_a_prefill",
+      "B_step": 2,
+      "F_step": 4,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": false,
+      "changed_elements": 138344,
+      "max_abs": 0.03515625,
+      "mean_abs": 0.006761429481453121,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 138344,
+          "max_abs": 0.03515625,
+          "mean_abs": 0.006761429481453121,
+          "B_top1_token_id": 1119,
+          "F_top1_token_id": 1119,
+          "top1_changed": false
+        }
+      ]
+    },
+    {
+      "comparison": "native_fault_a_decode",
+      "B_step": 3,
+      "F_step": 5,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": false,
+      "changed_elements": 121320,
+      "max_abs": 0.0234375,
+      "mean_abs": 0.003898794751021173,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 121320,
+          "max_abs": 0.0234375,
+          "mean_abs": 0.003898794751021173,
+          "B_top1_token_id": 5662,
+          "F_top1_token_id": 5662,
+          "top1_changed": false
+        }
+      ]
+    },
+    {
+      "comparison": "native_fault_b_prefill",
+      "B_step": 2,
+      "F_step": 6,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": false,
+      "changed_elements": 138344,
+      "max_abs": 0.03515625,
+      "mean_abs": 0.006761429481453121,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 138344,
+          "max_abs": 0.03515625,
+          "mean_abs": 0.006761429481453121,
+          "B_top1_token_id": 1119,
+          "F_top1_token_id": 1119,
+          "top1_changed": false
+        }
+      ]
+    },
+    {
+      "comparison": "native_fault_b_decode",
+      "B_step": 3,
+      "F_step": 7,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": false,
+      "changed_elements": 121320,
+      "max_abs": 0.0234375,
+      "mean_abs": 0.003898794751021173,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 121320,
+          "max_abs": 0.0234375,
+          "mean_abs": 0.003898794751021173,
+          "B_top1_token_id": 5662,
+          "F_top1_token_id": 5662,
+          "top1_changed": false
+        }
+      ]
+    },
+    {
+      "comparison": "fault_repeat_prefill",
+      "B_step": 4,
+      "F_step": 6,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": true,
+      "changed_elements": 0,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "B_top1_token_id": 1119,
+          "F_top1_token_id": 1119,
+          "top1_changed": false
+        }
+      ]
+    },
+    {
+      "comparison": "fault_repeat_decode",
+      "B_step": 5,
+      "F_step": 7,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": true,
+      "changed_elements": 0,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "B_top1_token_id": 5662,
+          "F_top1_token_id": 5662,
+          "top1_changed": false
+        }
+      ]
+    },
+    {
+      "comparison": "native_off_prefill",
+      "B_step": 2,
+      "F_step": 8,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": true,
+      "changed_elements": 0,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "B_top1_token_id": 1119,
+          "F_top1_token_id": 1119,
+          "top1_changed": false
+        }
+      ]
+    },
+    {
+      "comparison": "native_off_decode",
+      "B_step": 3,
+      "F_step": 9,
+      "shape": [
+        1,
+        1,
+        151936
+      ],
+      "bitwise_equal": true,
+      "changed_elements": 0,
+      "max_abs": 0.0,
+      "mean_abs": 0.0,
+      "per_request": [
+        {
+          "request_slot": 0,
+          "changed_elements": 0,
+          "max_abs": 0.0,
+          "mean_abs": 0.0,
+          "B_top1_token_id": 5662,
+          "F_top1_token_id": 5662,
+          "top1_changed": false
+        }
+      ]
+    }
+  ],
+  "private_logits_published": false,
+  "limit": "Logit changes and top-1 changes do not establish answer quality or accuracy loss.",
+  "analysis_source_sha256": "2ea73e4904475ac463f40009e429d84dc7997c2e7f75a96ffdc0d2cd557675c0"
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "nes.model_coverage.case.v1",
+  "case_id": "main_b1",
+  "phase": "model_coverage",
+  "operator_variant": "private_vendor",
+  "batch_size": 1,
+  "mode_sequence": [
+    "calibration",
+    "native",
+    "controlled",
+    "controlled",
+    "off"
+  ],
+  "request_ids": [
+    "request_00"
+  ],
+  "physical_device": "Ascend910B4",
+  "model_config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+  "input_manifest_file": "/audit/inputs/manifest.json",
+  "input_manifest_sha256": "ed6b27940c3336efe8cd941fda9da191edcbd8257c34587396345f24d7994fe1",
+  "runtime_manifest_file": "/audit/runtime_manifest.json",
+  "runtime_manifest_sha256": "ca0bf188bdc031ea3e4249c03ac13a9a8f751cd5ae8485655d9048c9f6cdba3b",
+  "model_manifest_file": "/audit/model_manifest.json",
+  "model_manifest_sha256": "12707e0b213b8ad5ea6a6486edaea02cea0ab38a137025fd01d9e49c493b9abc",
+  "tokenizer_manifest_file": "/audit/tokenizer_manifest.json",
+  "tokenizer_manifest_sha256": "b4da0ec49f113d7ac20b560349b34c3f40e79ec372937570dd5e84d548dbcfdb",
+  "source_fingerprints_file": "/audit/source_fingerprints.json",
+  "source_fingerprints_sha256": "aa1f6e72a58e51a166cf2a9418fa512b3ef46c55774a5edd37ca0201ac88b50c",
+  "approved_pod_schema_file": "/audit/runtime/native_execution_strategy/adapters/fa_cann91_schema.json",
+  "approved_pod_schema_sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+  "approved_vendor_manifest_file": "/audit/native_vendor_stage_a1/vendor_manifest.json",
+  "approved_vendor_manifest_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1",
+  "approved_custom_opp_path": "/audit/native_vendor_stage_a1/vendors/native_execution_strategy_transformer",
+  "capture_msprobe": true,
+  "statistics_variant": "task_local_cpu_fp64_high_v1",
+  "approved_collector_manifest_file": "/audit/collector_fp64_a1/stage_manifest.json",
+  "approved_collector_manifest_sha256": "06ce36bae3463f44a143047d184f53915dbea4dd04b39d79960518e6878d8010",
+  "execution_config": {
+    "mechanism": "native_execution_strategy",
+    "adapter": {
+      "operator": "FlashAttentionScore",
+      "version": "validated",
+      "route": "S1S2",
+      "on_unsupported": "reject"
+    },
+    "selection": {
+      "target": "query_tile",
+      "policy": "legal_alternative"
+    },
+    "trigger": {
+      "mode": "every_match",
+      "condition": "adaptive"
+    },
+    "observation": {
+      "verify_native_launch": true,
+      "compare_complete_target": true,
+      "msprobe": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics"
+      }
+    }
+  },
+  "expected_model_layers": 28,
+  "phases_per_run": [
+    "prefill",
+    "decode"
+  ],
+  "prefill_length": 2048,
+  "decode_length": 1,
+  "teacher_forced_decode": true,
+  "controller_limits": {
+    "card": 5,
+    "case_seconds": 3600,
+    "controller_seconds": 4000,
+    "max_log_mib": 16384,
+    "host_memory_gib": 16,
+    "cpus": 8
+  },
+  "expected_sdpa_calls": 280,
+  "not_an_acceptance": true
+}

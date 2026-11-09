@@ -28,6 +28,14 @@
 [statistics/mix证据](artifacts/native_execution_strategy/fa_model_coverage_statistics_20261031/README.md)。
 范围仍限定为已验证的FP16/2048-token FA路径；MatMul、Reduce/Softmax、FIA及更多模型/形状仍待验收。
 
+**M-only 全模型补验（2026-11-09）已通过：** 124卡5重新采集B1/B8的560次SDPA，
+112/112次受控prefill只将M128切为64，实际nRatio始终为8，覆盖全部28层和504个层/请求映射对。
+第0层末query不变，后续层末query、KV和全部请求logits发生稳定差异；关闭后完整恢复。
+统一CPU FP64 high统计下，独立msprobe首差均在第0层SDPA输出Mean/Norm，Top-1均未变。
+见[M-only实现与验收](experiments/fault28_m_only_model_20261109/README.md)和
+[本次statistics/mix证据](artifacts/native_execution_strategy/fa_m_only_model_statistics_20261109/README.md)。
+跨Batch原生目标Q/K/V在第0层已不同，故本轮证明各自Batch内的M-only传播，不等同于历史FIA图模式复现。
+
 ## 已验证能力
 
 | 项目 | 状态 |
@@ -457,7 +465,7 @@ msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写
 当前通过的是 CANN9.1、真实 Qwen3 第2层 QKV→FIA→o_proj 的受控子图机制；尚非历史盘古版本或完整模型 FIA 图验收。最后 query 未变，未证明首个生成 token logits 不一致；动态 N 的依据是核验过的实际 key/raw 和 kernel 源码，未唯一分离 BMM1/Softmax/BMM2 内部的指令贡献。
 
 
-**旧 FA 实现的原理复核（本轮 FIA 补齐前）：** 当时实现验证了合法 M 选择及其派生执行计划导致的数值变化；M-only 算子证据与 joint 全模型证据需要分开引用。M-only 的末 query 在该固定输入上未变，历史盘古完整模型 FIA 图模式及具体 Reduce 指令的唯一归因仍未验收。见[逐项复核与故障 33 的对照设计](experiments/fault33_paged_tiling_20261105/analysis/FAULT28_REVIEW.md)。
+**旧 FA 实现的原理复核：** 原单算子 M-only 的末 query 不变，不能由 joint 模型结果推断 M 的作用；[2026-11-09 的 M-only 全模型补验](experiments/fault28_m_only_model_20261109/README.md)现已独立闭合 M 到 logits 的传播。它仍不唯一归因 kernel 内某条 Reduce 指令，也不等同于历史盘古 FIA 图模式。早期逐项边界见[原理复核及故障 33 对照设计](experiments/fault33_paged_tiling_20261105/analysis/FAULT28_REVIEW.md)。
 
 **全模型覆盖验收（2026-10-31）已通过：** [完整28层、B1/B8逐请求验证](experiments/fault28_model_coverage_20261030/README.md)
 确认112/112次符合条件的受控prefill均切换原生M/nRatio，504个layer/request映射对无遗漏。

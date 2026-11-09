@@ -1,0 +1,311 @@
+{
+  "schema": "nes.model_sdpa_call.v1",
+  "call_id": "model_s3_l20_bef0cad1b2cd47309b594c8cfc9f338b",
+  "call_index": 104,
+  "step": 3,
+  "run_index": 1,
+  "mode": "native",
+  "stage": "decode",
+  "layer_index": 20,
+  "layer_name": "model.layers.20.self_attn",
+  "module_call_id": "step3.layer20.visit0",
+  "request_mapping_file": "phases/step3/request_mapping.json",
+  "request_mapping_sha256": "c15e6c11c5bf50003d880376b471a6eb91e6fbe1fab4a1bbf35e274d50ce50a9",
+  "request_ids": [
+    "request_00"
+  ],
+  "status": "CAPTURE_COMPLETED",
+  "eligibility": "UNSUPPORTED_SHAPE_OBSERVED",
+  "sdpa_metadata": {
+    "query": {
+      "shape": [
+        1,
+        16,
+        1,
+        128
+      ],
+      "dtype": "torch.float16"
+    },
+    "key": {
+      "shape": [
+        1,
+        8,
+        2049,
+        128
+      ],
+      "dtype": "torch.float16"
+    },
+    "value": {
+      "shape": [
+        1,
+        8,
+        2049,
+        128
+      ],
+      "dtype": "torch.float16"
+    },
+    "dropout_p": 0.0,
+    "is_causal": false,
+    "scale": 0.08838834764831845,
+    "enable_gqa": true,
+    "attn_mask": null
+  },
+  "inputs_before": {
+    "query": {
+      "shape": [
+        1,
+        16,
+        1,
+        128
+      ],
+      "stride": [
+        2048,
+        128,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463432598448,
+      "data_ptr": 20617269626368,
+      "storage_offset": 0,
+      "actual_format": 0,
+      "full_sha256": "3b5e0ab28c86db0b36e772c2e713d963784c8c322a41afdf4dbf559f707f2d8a",
+      "bytes": 4096,
+      "per_batch_sha256": [
+        "3b5e0ab28c86db0b36e772c2e713d963784c8c322a41afdf4dbf559f707f2d8a"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    },
+    "key": {
+      "shape": [
+        1,
+        8,
+        2049,
+        128
+      ],
+      "stride": [
+        2098176,
+        262272,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463636531776,
+      "data_ptr": 20622662978560,
+      "storage_offset": 0,
+      "actual_format": 0,
+      "full_sha256": "c9001c8fd345dd802233a46c21c83c119e163d84c6782a17a823f06931e3231b",
+      "bytes": 4196352,
+      "per_batch_sha256": [
+        "c9001c8fd345dd802233a46c21c83c119e163d84c6782a17a823f06931e3231b"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    },
+    "value": {
+      "shape": [
+        1,
+        8,
+        2049,
+        128
+      ],
+      "stride": [
+        2098176,
+        262272,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463636739968,
+      "data_ptr": 20622790886912,
+      "storage_offset": 0,
+      "actual_format": 0,
+      "full_sha256": "e3679d8aca7d5e61396820422644dc3d4d439c5f03e8e0c533582e2532e4b590",
+      "bytes": 4196352,
+      "per_batch_sha256": [
+        "e3679d8aca7d5e61396820422644dc3d4d439c5f03e8e0c533582e2532e4b590"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    }
+  },
+  "unsupported_reason": "query_length1/key_length2049 outside certified2048 scope",
+  "session": null,
+  "expected_injection": false,
+  "inputs_after": {
+    "query": {
+      "shape": [
+        1,
+        16,
+        1,
+        128
+      ],
+      "stride": [
+        2048,
+        128,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463432598448,
+      "data_ptr": 20617269626368,
+      "storage_offset": 0,
+      "actual_format": 2,
+      "full_sha256": "3b5e0ab28c86db0b36e772c2e713d963784c8c322a41afdf4dbf559f707f2d8a",
+      "bytes": 4096,
+      "per_batch_sha256": [
+        "3b5e0ab28c86db0b36e772c2e713d963784c8c322a41afdf4dbf559f707f2d8a"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    },
+    "key": {
+      "shape": [
+        1,
+        8,
+        2049,
+        128
+      ],
+      "stride": [
+        2098176,
+        262272,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463636531776,
+      "data_ptr": 20622662978560,
+      "storage_offset": 0,
+      "actual_format": 2,
+      "full_sha256": "c9001c8fd345dd802233a46c21c83c119e163d84c6782a17a823f06931e3231b",
+      "bytes": 4196352,
+      "per_batch_sha256": [
+        "c9001c8fd345dd802233a46c21c83c119e163d84c6782a17a823f06931e3231b"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    },
+    "value": {
+      "shape": [
+        1,
+        8,
+        2049,
+        128
+      ],
+      "stride": [
+        2098176,
+        262272,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463636739968,
+      "data_ptr": 20622790886912,
+      "storage_offset": 0,
+      "actual_format": 2,
+      "full_sha256": "e3679d8aca7d5e61396820422644dc3d4d439c5f03e8e0c533582e2532e4b590",
+      "bytes": 4196352,
+      "per_batch_sha256": [
+        "e3679d8aca7d5e61396820422644dc3d4d439c5f03e8e0c533582e2532e4b590"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    }
+  },
+  "allowed_input_format_normalizations": [
+    {
+      "input": "query",
+      "from": 0,
+      "to": 2,
+      "logical_bytes_unchanged": true
+    },
+    {
+      "input": "key",
+      "from": 0,
+      "to": 2,
+      "logical_bytes_unchanged": true
+    },
+    {
+      "input": "value",
+      "from": 0,
+      "to": 2,
+      "logical_bytes_unchanged": true
+    }
+  ],
+  "output": {
+    "shape": [
+      1,
+      16,
+      1,
+      128
+    ],
+    "stride": [
+      2048,
+      128,
+      128,
+      1
+    ],
+    "dtype": "torch.float16",
+    "device": "npu:0",
+    "object_id": 281463433321904,
+    "data_ptr": 20617269619200,
+    "storage_offset": 0,
+    "actual_format": 0,
+    "full_sha256": "93fbd0ad764d28feb8fe1da0108fa138c2a5104b835f073056bc9d0741b518ad",
+    "bytes": 4096,
+    "per_batch_sha256": [
+      "93fbd0ad764d28feb8fe1da0108fa138c2a5104b835f073056bc9d0741b518ad"
+    ],
+    "raw_order": "C-contiguous logical elements",
+    "byteorder": "little",
+    "exact_numeric_observation": {
+      "schema": "fault28.m_only.exact_observation.v1",
+      "mode": "native",
+      "stage": "decode",
+      "kind": "attention",
+      "layer_index": 20,
+      "shape": [
+        1,
+        16,
+        1,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "93fbd0ad764d28feb8fe1da0108fa138c2a5104b835f073056bc9d0741b518ad",
+      "last_query_sha256": "93fbd0ad764d28feb8fe1da0108fa138c2a5104b835f073056bc9d0741b518ad",
+      "private_reference_file": "/evidence/main_b1/private_reference/decode/attention_l20.fp16.bin",
+      "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+      "comparison_status": "BASELINE_REFERENCE_SAVED",
+      "reference_sha256": "93fbd0ad764d28feb8fe1da0108fa138c2a5104b835f073056bc9d0741b518ad"
+    }
+  },
+  "native_call": {
+    "case_id": "main_b1",
+    "call_id": "model_s3_l20_bef0cad1b2cd47309b594c8cfc9f338b",
+    "api": "torch.nn.functional.scaled_dot_product_attention",
+    "pid": 46,
+    "thread_id": 46,
+    "phase": "operator_execution",
+    "step": 3,
+    "mode": "native",
+    "batch_size": 1,
+    "scope_token": null,
+    "layer_index": 20,
+    "model_stage": "decode",
+    "run_index": 1,
+    "enter_epoch_ns": 1794214737818470581,
+    "enter_monotonic_ns": 3272157361330581,
+    "status": "returned",
+    "exit_epoch_ns": 1794214737838607765,
+    "exit_monotonic_ns": 3272157381467695
+  },
+  "original_api_calls": 1,
+  "original_return_identity_preserved": true
+}

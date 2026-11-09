@@ -1,0 +1,38 @@
+{
+  "status": "FAIL_CLEANUP",
+  "card": 5,
+  "cases": [],
+  "cleanup_errors": [
+    "Traceback (most recent call last):\n  File \"/home/fault28-m-only-model-20261109/controller.py\", line 736, in main\n    owned = recover_owned_id(token, name)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/fault28-m-only-model-20261109/controller.py\", line 320, in recover_owned_id\n    raise RuntimeError('Uncertain container-create outcome remains unresolved after bounded recovery; '\nRuntimeError: Uncertain container-create outcome remains unresolved after bounded recovery; no absence or cleanup is proven\n"
+  ],
+  "start_epoch": 1794214157.8003724,
+  "probe": "model_probe.py",
+  "capture": "native-logs",
+  "scope": "Full-model coverage capture only; per-layer native eligibility, strategy effects and model effects require independent acceptance",
+  "mechanism_accepted": false,
+  "idle_allowlist_ids": [
+    "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+    "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+  ],
+  "external_container_mutations": false,
+  "execution_budget": {
+    "case_seconds": 3600,
+    "controller_seconds": 4000,
+    "max_log_mib_per_case": 16384,
+    "max_log_bytes_per_case": 17179869184,
+    "case_count": 1,
+    "sidecar_reserve_bytes_per_case": 6442450944,
+    "disk_safety_reserve_bytes": 8589934592,
+    "maximum_supported_case_seconds": 3600,
+    "maximum_supported_controller_seconds": 7200,
+    "maximum_supported_log_mib_per_case": 16384,
+    "pre_case_disk_formula": "remaining_cases * (log_cap_bytes + sidecar_reserve_bytes) + safety_reserve_bytes",
+    "running_disk_formula": "free_bytes >= safety_reserve_bytes",
+    "disk_budget_is_reservation_estimate_not_filesystem_quota": true
+  },
+  "traceback": "Traceback (most recent call last):\n  File \"/home/fault28-m-only-model-20261109/controller.py\", line 667, in main\n    returned_id = run(command, 40).strip()\n                  ^^^^^^^^^^^^^^^^\n  File \"/home/fault28-m-only-model-20261109/controller.py\", line 55, in run\n    raise RuntimeError(details)\nRuntimeError: ['docker', 'run', '-d']: rc=125: docker: Error response from daemon: OCI runtime create failed: container_linux.go:341: starting container process caused \"process_linux.go:380: container init caused \\\"rootfs_linux.go:62: mounting \\\\\\\"/home/fault28-native-tiling-20261029/collector_high_a1\\\\\\\" to rootfs \\\\\\\"/home/docker-system/overlay2/86cb60a8c89075f442ebc5535feb3df95851f1fdba915b2cd69435f206a9d02c/merged\\\\\\\" at \\\\\\\"/home/docker-system/overlay2/86cb60a8c89075f442ebc5535feb3df95851f1fdba915b2cd69435f206a9d02c/merged/audit/collector_high_a1\\\\\\\" caused \\\\\\\"mkdir /home/docker-system/overlay2/86cb60a8c89075f442ebc5535feb3df95851f1fdba915b2cd69435f206a9d02c/merged/audit/collector_high_a1: read-only file system\\\\\\\"\\\"\": unknown.\n\n",
+  "device_lock_acquired": true,
+  "device_lock_released": true,
+  "owned_container_id": null,
+  "end_epoch": 1794214221.250211
+}

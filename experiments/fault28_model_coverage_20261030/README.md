@@ -2,6 +2,10 @@
 
 [实现方式、真实调用链与关键函数](analysis/IMPLEMENTATION.md)
 
+本文为 M/nRatio 联合切换实验。仅改变 M、实际 nRatio 始终为 8 的模型传播已在
+[2026-11-09 的独立 B1/B8 补验](../fault28_m_only_model_20261109/README.md)通过，两轮 M-only 稳定、OFF 精确恢复；
+对应证据为新采集，不以本文 joint 结果替代 M-only 归因。
+
 状态：2026-10-31，124物理卡5完成完整 HF Qwen3-0.6B 的 B1/B8 验收，
 联合结论为 `PASS_MODEL_ALL_ELIGIBLE_NATIVE_STRATEGY_COVERAGE`。
 **本次矩阵内所有符合条件的受控 prefill 调用均实际切换：112/112，覆盖全部28层和8个请求。**

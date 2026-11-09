@@ -1,0 +1,776 @@
+{
+  "schema": "nes.model_coverage.independent_statistics.v1",
+  "status": "FORMAL_COMPARISONS_COMPLETE",
+  "case_identity": {
+    "case_id": "main_b1",
+    "case_sha256": "adff31686348f0ee2160d7d81e5534da5c498c2e32180ffac0df35b8b8b8bd16",
+    "runtime_manifest_sha256": "ca0bf188bdc031ea3e4249c03ac13a9a8f751cd5ae8485655d9048c9f6cdba3b",
+    "checkpoint_manifest_sha256": "12707e0b213b8ad5ea6a6486edaea02cea0ab38a137025fd01d9e49c493b9abc",
+    "tokenizer_manifest_sha256": "b4da0ec49f113d7ac20b560349b34c3f40e79ec372937570dd5e84d548dbcfdb",
+    "source_fingerprints_sha256": "aa1f6e72a58e51a166cf2a9418fa512b3ef46c55774a5edd37ca0201ac88b50c",
+    "versions": {
+      "torch": "2.10.0",
+      "torch-npu": "2.10.0.post4",
+      "transformers": "5.5.4"
+    }
+  },
+  "evidence_files": {
+    "result": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/result.json",
+    "config": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/config.json",
+    "receipt": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/receipt.json",
+    "collector": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/collector_provenance.json",
+    "phases": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phase_manifest.json",
+    "inventory": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/module_inventory.json",
+    "completion": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/completion.json",
+    "step0_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step0/request_mapping.json",
+    "step0_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step0/rank0/dump.json",
+    "step0_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step0/rank0/stack.json",
+    "step0_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step0/rank0/construct.json",
+    "step1_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step1/request_mapping.json",
+    "step1_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step1/rank0/dump.json",
+    "step1_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step1/rank0/stack.json",
+    "step1_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step1/rank0/construct.json",
+    "step2_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step2/request_mapping.json",
+    "step2_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step2/rank0/dump.json",
+    "step2_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step2/rank0/stack.json",
+    "step2_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step2/rank0/construct.json",
+    "step3_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step3/request_mapping.json",
+    "step3_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step3/rank0/dump.json",
+    "step3_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step3/rank0/stack.json",
+    "step3_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step3/rank0/construct.json",
+    "step4_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step4/request_mapping.json",
+    "step4_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step4/rank0/dump.json",
+    "step4_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step4/rank0/stack.json",
+    "step4_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step4/rank0/construct.json",
+    "step5_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step5/request_mapping.json",
+    "step5_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step5/rank0/dump.json",
+    "step5_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step5/rank0/stack.json",
+    "step5_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step5/rank0/construct.json",
+    "step6_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step6/request_mapping.json",
+    "step6_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step6/rank0/dump.json",
+    "step6_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step6/rank0/stack.json",
+    "step6_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step6/rank0/construct.json",
+    "step7_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step7/request_mapping.json",
+    "step7_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step7/rank0/dump.json",
+    "step7_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step7/rank0/stack.json",
+    "step7_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step7/rank0/construct.json",
+    "step8_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step8/request_mapping.json",
+    "step8_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step8/rank0/dump.json",
+    "step8_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step8/rank0/stack.json",
+    "step8_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step8/rank0/construct.json",
+    "step9_request_mapping": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/phases/step9/request_mapping.json",
+    "step9_dump": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step9/rank0/dump.json",
+    "step9_stack": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step9/rank0/stack.json",
+    "step9_construct": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/observation/step9/rank0/construct.json",
+    "module_events": "/home/fault28-m-only-model-20261109/outputs/formal_b1_a4/main_b1/module_events.jsonl"
+  },
+  "evidence_sha256": {
+    "result": "c42e31ceeb4b986f3b6681e2e12ba6ea3c24fe0e0bfbadb42b70c33678a88a35",
+    "config": "f2fa0d64a89311fce5ca758c2eb3df00c4a078de826ec587d4933e22671bfa9e",
+    "receipt": "a8ccf0a43dd3f888bbec1836736416109e4071c95a3a720ea7314ac87976b6df",
+    "collector": "654930940c2e0df6da8788b08830046717f5ec919878d9cbdc267d317d3a4c9f",
+    "phases": "d51d604fb5d32a0ed39ce40218d7c55370cf644e85b5034adeed57e728519683",
+    "inventory": "3a28206a4eb475aa749ad0665d58d380630261f524616d90990b5f1a4c2faf28",
+    "completion": "57644384110b5d6b1438dea606038e7fd5bdac81c66e68a95e42601e104c2cd3",
+    "step0_request_mapping": "c82d7a1764bfd59fce1589b94534f0b1131253de4bc45e35bcd26e2a12a340e5",
+    "step0_dump": "de3648db3cf80259a21a57a0a4dfa37578e746960824be01b0e3531bbd1ece45",
+    "step0_stack": "fc5582fd121f6b1113201b2b9e86d3316b48fe6ae50ab8a3550e691658a64fc2",
+    "step0_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "step1_request_mapping": "4589957c6a6cb8395f5325317bb8e192fc2e53855ae4ccbbb0fdcd2d8b80deca",
+    "step1_dump": "a10b9d72428c92bc76228d2978fd90442d27f62aa86ed535fd8b363a593f6195",
+    "step1_stack": "f682a93d60addf849a4b2a13d2266bb87a34d806f0ce311d8513c91b0b727389",
+    "step1_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "step2_request_mapping": "f15f94a3ff2815d0c93ef5422c01c1f883d0c24c1e76ea2e0ac547743a534b1f",
+    "step2_dump": "de3648db3cf80259a21a57a0a4dfa37578e746960824be01b0e3531bbd1ece45",
+    "step2_stack": "5a39fc87efcb802c8ca0e87b5ad2d8c6f7c2d5cdc245a1bc61b44cedbb603b72",
+    "step2_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "step3_request_mapping": "c15e6c11c5bf50003d880376b471a6eb91e6fbe1fab4a1bbf35e274d50ce50a9",
+    "step3_dump": "a10b9d72428c92bc76228d2978fd90442d27f62aa86ed535fd8b363a593f6195",
+    "step3_stack": "f682a93d60addf849a4b2a13d2266bb87a34d806f0ce311d8513c91b0b727389",
+    "step3_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "step4_request_mapping": "6746485667c5634307ee905b6476c066c1dffd2c1edeb867531fde95df36c476",
+    "step4_dump": "2334d7b6dcf66e0606a424e64795296ab777dbf991131933c65394705c42a445",
+    "step4_stack": "5a39fc87efcb802c8ca0e87b5ad2d8c6f7c2d5cdc245a1bc61b44cedbb603b72",
+    "step4_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "step5_request_mapping": "27d931acc1255ce99eb9fcafda4d713b1f3220232fb79c2cc8f95b24c9d094c6",
+    "step5_dump": "d4abded67bf415e229c361be1e9fd17a25b718a4944ab948f6454bbc46a775db",
+    "step5_stack": "f682a93d60addf849a4b2a13d2266bb87a34d806f0ce311d8513c91b0b727389",
+    "step5_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "step6_request_mapping": "20aa3b47d15065b9b37b1f729d34c41d5094414ca73d386c75b24a9df8fad202",
+    "step6_dump": "2334d7b6dcf66e0606a424e64795296ab777dbf991131933c65394705c42a445",
+    "step6_stack": "5a39fc87efcb802c8ca0e87b5ad2d8c6f7c2d5cdc245a1bc61b44cedbb603b72",
+    "step6_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "step7_request_mapping": "def1b324ad5c675b827472840716949937002fdb3c1a7ccc2533edebd08f3f9e",
+    "step7_dump": "d4abded67bf415e229c361be1e9fd17a25b718a4944ab948f6454bbc46a775db",
+    "step7_stack": "f682a93d60addf849a4b2a13d2266bb87a34d806f0ce311d8513c91b0b727389",
+    "step7_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "step8_request_mapping": "2aded712538337bdc3318a6fbc8c85aa0ca89619772d298bf390964b07ab0932",
+    "step8_dump": "de3648db3cf80259a21a57a0a4dfa37578e746960824be01b0e3531bbd1ece45",
+    "step8_stack": "5a39fc87efcb802c8ca0e87b5ad2d8c6f7c2d5cdc245a1bc61b44cedbb603b72",
+    "step8_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "step9_request_mapping": "486d289f89a65a4b530ac3a9c797f3531b425cca206659efaac1d3c9414d3d3c",
+    "step9_dump": "a10b9d72428c92bc76228d2978fd90442d27f62aa86ed535fd8b363a593f6195",
+    "step9_stack": "f682a93d60addf849a4b2a13d2266bb87a34d806f0ce311d8513c91b0b727389",
+    "step9_construct": "530e87bd1fe5efa3ea15246860519fdeb8ae6276c2f149b58257f2e3f052d915",
+    "module_events": "823d7dfb5a23b29642d91bb92f6985f0e5770972b5b570dec7a9532d329bfd1a"
+  },
+  "collector_disclosure": {
+    "precision": "high",
+    "variant": "task_local_cpu_fp64_high_v1",
+    "modified_official_collector": true,
+    "actual_processor_sha256": "6688aa3e90849027b12458add4c9da6ac4b334b57e835b742df8403c2fc474b2",
+    "actual_processor_path": "/audit/collector_fp64_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+    "stage_manifest_sha256": "06ce36bae3463f44a143047d184f53915dbea4dd04b39d79960518e6878d8010",
+    "declared_policy": {
+      "scope": "all real floating tensors when precision=high, synchronous only",
+      "statistics": [
+        "Max",
+        "Min",
+        "Mean",
+        "Norm"
+      ],
+      "tensor_metadata_changed": false,
+      "operator_data_changed": false,
+      "tensor_payload_saved": false,
+      "reason": "Actual 81-element FIA difference was hidden at its output by FP32 summary reduction."
+    },
+    "provenance": "Official msprobe26.1.0 processor plus uniform synchronous CPU FP64 summary branch; dependencies copied from verified prior task-local stage.",
+    "stage_rehashed_by_this_tool": false
+  },
+  "run_comparison_count": 5,
+  "phase_comparison_count": 10,
+  "runs": [
+    {
+      "comparison_id": "calibration_vs_native",
+      "B_run_index": 0,
+      "F_run_index": 1,
+      "alignment_complete": false,
+      "phases": [
+        {
+          "file": "calibration_vs_native_prefill.json",
+          "sha256": "1787ef7c9f80b4b72d0a7dbb7af3aaefe05c89a764eb9076884efb6887520414",
+          "B_step": 0,
+          "F_step": 2,
+          "stage": "prefill",
+          "status": "INCONCLUSIVE_ALIGNMENT_OR_METADATA",
+          "alignment_complete": false,
+          "first_observed_model_api": null,
+          "first_boundary": null,
+          "layer_classifications": {
+            "INCONCLUSIVE_ALIGNMENT_OR_METADATA": 28
+          },
+          "unobservable_fields": 122
+        },
+        {
+          "file": "calibration_vs_native_decode.json",
+          "sha256": "5ff8260a0de6cc9856f7b7cb48c378b4f9247e35154a8fe6de1536a935f0c800",
+          "B_step": 1,
+          "F_step": 3,
+          "stage": "decode",
+          "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+          "alignment_complete": true,
+          "first_observed_model_api": null,
+          "first_boundary": null,
+          "layer_classifications": {
+            "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+          },
+          "unobservable_fields": 122
+        }
+      ],
+      "first_observed_model_api_difference": null,
+      "interpretation": "Ordered prefill then fixed teacher-forced decode; one global first difference only when both complete traces align.",
+      "tensor_equality_proven": false,
+      "physical_fault_location_proven": false
+    },
+    {
+      "comparison_id": "native_vs_fault_a",
+      "B_run_index": 1,
+      "F_run_index": 2,
+      "alignment_complete": true,
+      "phases": [
+        {
+          "file": "native_vs_fault_a_prefill.json",
+          "sha256": "0e230d16cc10463909d40fcf8dcb55c06867b33e6a0a77d83da1cee8c42bdd88",
+          "B_step": 2,
+          "F_step": 4,
+          "stage": "prefill",
+          "status": "ALIGNED_OBSERVED_MODEL_API_STATISTICAL_DIFFERENCE",
+          "alignment_complete": true,
+          "first_observed_model_api": "Functional.scaled_dot_product_attention.0.forward",
+          "first_boundary": "output",
+          "layer_classifications": {
+            "OUTPUT_DIFFERENCE_WITH_NO_OBSERVED_INPUT_STATISTICAL_DIFFERENCE": 1,
+            "INPUT_ALREADY_DIFFERENT_WITH_OUTPUT_DIFFERENCE": 27
+          },
+          "unobservable_fields": 122
+        },
+        {
+          "file": "native_vs_fault_a_decode.json",
+          "sha256": "e6ba3e9ed284417d7121d7aa65c95da2a69b42ecf425ade25493b6e89b6c2fc2",
+          "B_step": 3,
+          "F_step": 5,
+          "stage": "decode",
+          "status": "ALIGNED_OBSERVED_MODEL_API_STATISTICAL_DIFFERENCE",
+          "alignment_complete": true,
+          "first_observed_model_api": "Functional.scaled_dot_product_attention.1.forward",
+          "first_boundary": "input",
+          "layer_classifications": {
+            "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 1,
+            "INPUT_ALREADY_DIFFERENT_WITH_OUTPUT_DIFFERENCE": 27
+          },
+          "unobservable_fields": 122
+        }
+      ],
+      "first_observed_model_api_difference": {
+        "stage": "prefill",
+        "B_step": 2,
+        "F_step": 4,
+        "boundary": "output",
+        "node": {
+          "B": {
+            "name": "Functional.scaled_dot_product_attention.0.forward",
+            "ordinal": 41,
+            "parents": [
+              "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+              "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+              "Module.model.Qwen3Model.forward.0"
+            ],
+            "stack": [
+              "File /audit/model_probe.py, line 154, in invoke_original, \n returned = self.original(*args, **kwargs)",
+              "File /audit/runtime/native_execution_strategy/session.py, line 95, in execute, \n value = invoke_original()",
+              "File /audit/model_probe.py, line 196, in observe, \n result = session.execute(context, invoke_original, observer, token, folder, mode=session_mode)",
+              "File /audit/model_probe.py, line 88, in observed, \n return self.observe(args, kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py, line 92, in sdpa_attention_forward, \n attn_output = torch.nn.functional.scaled_dot_product_attention(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 277, in forward, \n attn_output, attn_weights = attention_interface(",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 318, in forward, \n hidden_states, _ = self.self_attn(",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py, line 93, in __call__, \n return super().__call__(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py, line 248, in wrapper, \n outputs = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 952, in wrapper, \n output = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 876, in wrapper, \n output = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /audit/model_probe.py, line 356, in main, \n replies = model(input_ids=actual_ids, position_ids=positions[stage], attention_mask=None,",
+              "File /audit/model_probe.py, line 434, in <module>, \n raise SystemExit(main())"
+            ],
+            "layer_index": 0
+          },
+          "F": {
+            "name": "Functional.scaled_dot_product_attention.0.forward",
+            "ordinal": 41,
+            "parents": [
+              "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+              "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+              "Module.model.Qwen3Model.forward.0"
+            ],
+            "stack": [
+              "File /audit/model_probe.py, line 154, in invoke_original, \n returned = self.original(*args, **kwargs)",
+              "File /audit/runtime/native_execution_strategy/session.py, line 95, in execute, \n value = invoke_original()",
+              "File /audit/model_probe.py, line 196, in observe, \n result = session.execute(context, invoke_original, observer, token, folder, mode=session_mode)",
+              "File /audit/model_probe.py, line 88, in observed, \n return self.observe(args, kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py, line 92, in sdpa_attention_forward, \n attn_output = torch.nn.functional.scaled_dot_product_attention(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 277, in forward, \n attn_output, attn_weights = attention_interface(",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 318, in forward, \n hidden_states, _ = self.self_attn(",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py, line 93, in __call__, \n return super().__call__(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py, line 248, in wrapper, \n outputs = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 952, in wrapper, \n output = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 876, in wrapper, \n output = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /audit/model_probe.py, line 356, in main, \n replies = model(input_ids=actual_ids, position_ids=positions[stage], attention_mask=None,",
+              "File /audit/model_probe.py, line 434, in <module>, \n raise SystemExit(main())"
+            ],
+            "layer_index": 0
+          },
+          "input": {
+            "differences": [],
+            "metadata_differences": [],
+            "unobservable": [],
+            "matching_finite_statistics": 12,
+            "tensor_slots": 3
+          },
+          "output": {
+            "differences": [
+              {
+                "slot": ".0.Mean",
+                "B": -0.0019010795821259308,
+                "F": -0.0019010795563190186,
+                "B_present": true,
+                "F_present": true,
+                "kind": "finite_statistic_difference"
+              },
+              {
+                "slot": ".0.Norm",
+                "B": 231.40056068343438,
+                "F": 231.4005593584048,
+                "B_present": true,
+                "F_present": true,
+                "kind": "finite_statistic_difference"
+              }
+            ],
+            "metadata_differences": [],
+            "unobservable": [],
+            "matching_finite_statistics": 2,
+            "tensor_slots": 1
+          }
+        }
+      },
+      "interpretation": "Ordered prefill then fixed teacher-forced decode; one global first difference only when both complete traces align.",
+      "tensor_equality_proven": false,
+      "physical_fault_location_proven": false
+    },
+    {
+      "comparison_id": "native_vs_fault_b",
+      "B_run_index": 1,
+      "F_run_index": 3,
+      "alignment_complete": true,
+      "phases": [
+        {
+          "file": "native_vs_fault_b_prefill.json",
+          "sha256": "1def07ab091cbb7e2392fedd35c22703703c96d3e66c46d57f0bf3885fed63fb",
+          "B_step": 2,
+          "F_step": 6,
+          "stage": "prefill",
+          "status": "ALIGNED_OBSERVED_MODEL_API_STATISTICAL_DIFFERENCE",
+          "alignment_complete": true,
+          "first_observed_model_api": "Functional.scaled_dot_product_attention.0.forward",
+          "first_boundary": "output",
+          "layer_classifications": {
+            "OUTPUT_DIFFERENCE_WITH_NO_OBSERVED_INPUT_STATISTICAL_DIFFERENCE": 1,
+            "INPUT_ALREADY_DIFFERENT_WITH_OUTPUT_DIFFERENCE": 27
+          },
+          "unobservable_fields": 122
+        },
+        {
+          "file": "native_vs_fault_b_decode.json",
+          "sha256": "7778d913f7953d4b0cf063ddc62dfca635806f3ba500eac402708cb16e7f403c",
+          "B_step": 3,
+          "F_step": 7,
+          "stage": "decode",
+          "status": "ALIGNED_OBSERVED_MODEL_API_STATISTICAL_DIFFERENCE",
+          "alignment_complete": true,
+          "first_observed_model_api": "Functional.scaled_dot_product_attention.1.forward",
+          "first_boundary": "input",
+          "layer_classifications": {
+            "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 1,
+            "INPUT_ALREADY_DIFFERENT_WITH_OUTPUT_DIFFERENCE": 27
+          },
+          "unobservable_fields": 122
+        }
+      ],
+      "first_observed_model_api_difference": {
+        "stage": "prefill",
+        "B_step": 2,
+        "F_step": 6,
+        "boundary": "output",
+        "node": {
+          "B": {
+            "name": "Functional.scaled_dot_product_attention.0.forward",
+            "ordinal": 41,
+            "parents": [
+              "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+              "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+              "Module.model.Qwen3Model.forward.0"
+            ],
+            "stack": [
+              "File /audit/model_probe.py, line 154, in invoke_original, \n returned = self.original(*args, **kwargs)",
+              "File /audit/runtime/native_execution_strategy/session.py, line 95, in execute, \n value = invoke_original()",
+              "File /audit/model_probe.py, line 196, in observe, \n result = session.execute(context, invoke_original, observer, token, folder, mode=session_mode)",
+              "File /audit/model_probe.py, line 88, in observed, \n return self.observe(args, kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py, line 92, in sdpa_attention_forward, \n attn_output = torch.nn.functional.scaled_dot_product_attention(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 277, in forward, \n attn_output, attn_weights = attention_interface(",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 318, in forward, \n hidden_states, _ = self.self_attn(",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py, line 93, in __call__, \n return super().__call__(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py, line 248, in wrapper, \n outputs = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 952, in wrapper, \n output = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 876, in wrapper, \n output = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /audit/model_probe.py, line 356, in main, \n replies = model(input_ids=actual_ids, position_ids=positions[stage], attention_mask=None,",
+              "File /audit/model_probe.py, line 434, in <module>, \n raise SystemExit(main())"
+            ],
+            "layer_index": 0
+          },
+          "F": {
+            "name": "Functional.scaled_dot_product_attention.0.forward",
+            "ordinal": 41,
+            "parents": [
+              "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+              "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+              "Module.model.Qwen3Model.forward.0"
+            ],
+            "stack": [
+              "File /audit/model_probe.py, line 154, in invoke_original, \n returned = self.original(*args, **kwargs)",
+              "File /audit/runtime/native_execution_strategy/session.py, line 95, in execute, \n value = invoke_original()",
+              "File /audit/model_probe.py, line 196, in observe, \n result = session.execute(context, invoke_original, observer, token, folder, mode=session_mode)",
+              "File /audit/model_probe.py, line 88, in observed, \n return self.observe(args, kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py, line 92, in sdpa_attention_forward, \n attn_output = torch.nn.functional.scaled_dot_product_attention(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 277, in forward, \n attn_output, attn_weights = attention_interface(",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 318, in forward, \n hidden_states, _ = self.self_attn(",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py, line 93, in __call__, \n return super().__call__(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py, line 248, in wrapper, \n outputs = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 952, in wrapper, \n output = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model(",
+              "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 876, in wrapper, \n output = func(self, *args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+              "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+              "File /audit/model_probe.py, line 356, in main, \n replies = model(input_ids=actual_ids, position_ids=positions[stage], attention_mask=None,",
+              "File /audit/model_probe.py, line 434, in <module>, \n raise SystemExit(main())"
+            ],
+            "layer_index": 0
+          },
+          "input": {
+            "differences": [],
+            "metadata_differences": [],
+            "unobservable": [],
+            "matching_finite_statistics": 12,
+            "tensor_slots": 3
+          },
+          "output": {
+            "differences": [
+              {
+                "slot": ".0.Mean",
+                "B": -0.0019010795821259308,
+                "F": -0.0019010795563190186,
+                "B_present": true,
+                "F_present": true,
+                "kind": "finite_statistic_difference"
+              },
+              {
+                "slot": ".0.Norm",
+                "B": 231.40056068343438,
+                "F": 231.4005593584048,
+                "B_present": true,
+                "F_present": true,
+                "kind": "finite_statistic_difference"
+              }
+            ],
+            "metadata_differences": [],
+            "unobservable": [],
+            "matching_finite_statistics": 2,
+            "tensor_slots": 1
+          }
+        }
+      },
+      "interpretation": "Ordered prefill then fixed teacher-forced decode; one global first difference only when both complete traces align.",
+      "tensor_equality_proven": false,
+      "physical_fault_location_proven": false
+    },
+    {
+      "comparison_id": "fault_repeat",
+      "B_run_index": 2,
+      "F_run_index": 3,
+      "alignment_complete": true,
+      "phases": [
+        {
+          "file": "fault_repeat_prefill.json",
+          "sha256": "052f6496aaf1d9c9294acb7a40c29b2498cb25615fa612030070d9f573733b7a",
+          "B_step": 4,
+          "F_step": 6,
+          "stage": "prefill",
+          "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+          "alignment_complete": true,
+          "first_observed_model_api": null,
+          "first_boundary": null,
+          "layer_classifications": {
+            "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+          },
+          "unobservable_fields": 122
+        },
+        {
+          "file": "fault_repeat_decode.json",
+          "sha256": "65caa20c4a467a8e227a0ab01d818d9f0fb9c566eefcd810c635d59827902768",
+          "B_step": 5,
+          "F_step": 7,
+          "stage": "decode",
+          "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+          "alignment_complete": true,
+          "first_observed_model_api": null,
+          "first_boundary": null,
+          "layer_classifications": {
+            "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+          },
+          "unobservable_fields": 122
+        }
+      ],
+      "first_observed_model_api_difference": null,
+      "interpretation": "Ordered prefill then fixed teacher-forced decode; one global first difference only when both complete traces align.",
+      "tensor_equality_proven": false,
+      "physical_fault_location_proven": false
+    },
+    {
+      "comparison_id": "native_vs_off",
+      "B_run_index": 1,
+      "F_run_index": 4,
+      "alignment_complete": true,
+      "phases": [
+        {
+          "file": "native_vs_off_prefill.json",
+          "sha256": "50d58fec3c27a294dbaa557ade56bedcb84df1f973763d27dd11c0cf06038bc4",
+          "B_step": 2,
+          "F_step": 8,
+          "stage": "prefill",
+          "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+          "alignment_complete": true,
+          "first_observed_model_api": null,
+          "first_boundary": null,
+          "layer_classifications": {
+            "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+          },
+          "unobservable_fields": 122
+        },
+        {
+          "file": "native_vs_off_decode.json",
+          "sha256": "7e796246cb693f8156d5df7b32c09536363c32a4cc8efe507f999a5c56005764",
+          "B_step": 3,
+          "F_step": 9,
+          "stage": "decode",
+          "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+          "alignment_complete": true,
+          "first_observed_model_api": null,
+          "first_boundary": null,
+          "layer_classifications": {
+            "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+          },
+          "unobservable_fields": 122
+        }
+      ],
+      "first_observed_model_api_difference": null,
+      "interpretation": "Ordered prefill then fixed teacher-forced decode; one global first difference only when both complete traces align.",
+      "tensor_equality_proven": false,
+      "physical_fault_location_proven": false
+    }
+  ],
+  "phase_reports": [
+    {
+      "file": "calibration_vs_native_prefill.json",
+      "sha256": "1787ef7c9f80b4b72d0a7dbb7af3aaefe05c89a764eb9076884efb6887520414",
+      "B_step": 0,
+      "F_step": 2,
+      "stage": "prefill",
+      "status": "INCONCLUSIVE_ALIGNMENT_OR_METADATA",
+      "alignment_complete": false,
+      "first_observed_model_api": null,
+      "first_boundary": null,
+      "layer_classifications": {
+        "INCONCLUSIVE_ALIGNMENT_OR_METADATA": 28
+      },
+      "unobservable_fields": 122
+    },
+    {
+      "file": "calibration_vs_native_decode.json",
+      "sha256": "5ff8260a0de6cc9856f7b7cb48c378b4f9247e35154a8fe6de1536a935f0c800",
+      "B_step": 1,
+      "F_step": 3,
+      "stage": "decode",
+      "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+      "alignment_complete": true,
+      "first_observed_model_api": null,
+      "first_boundary": null,
+      "layer_classifications": {
+        "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+      },
+      "unobservable_fields": 122
+    },
+    {
+      "file": "native_vs_fault_a_prefill.json",
+      "sha256": "0e230d16cc10463909d40fcf8dcb55c06867b33e6a0a77d83da1cee8c42bdd88",
+      "B_step": 2,
+      "F_step": 4,
+      "stage": "prefill",
+      "status": "ALIGNED_OBSERVED_MODEL_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "first_observed_model_api": "Functional.scaled_dot_product_attention.0.forward",
+      "first_boundary": "output",
+      "layer_classifications": {
+        "OUTPUT_DIFFERENCE_WITH_NO_OBSERVED_INPUT_STATISTICAL_DIFFERENCE": 1,
+        "INPUT_ALREADY_DIFFERENT_WITH_OUTPUT_DIFFERENCE": 27
+      },
+      "unobservable_fields": 122
+    },
+    {
+      "file": "native_vs_fault_a_decode.json",
+      "sha256": "e6ba3e9ed284417d7121d7aa65c95da2a69b42ecf425ade25493b6e89b6c2fc2",
+      "B_step": 3,
+      "F_step": 5,
+      "stage": "decode",
+      "status": "ALIGNED_OBSERVED_MODEL_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "first_observed_model_api": "Functional.scaled_dot_product_attention.1.forward",
+      "first_boundary": "input",
+      "layer_classifications": {
+        "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 1,
+        "INPUT_ALREADY_DIFFERENT_WITH_OUTPUT_DIFFERENCE": 27
+      },
+      "unobservable_fields": 122
+    },
+    {
+      "file": "native_vs_fault_b_prefill.json",
+      "sha256": "1def07ab091cbb7e2392fedd35c22703703c96d3e66c46d57f0bf3885fed63fb",
+      "B_step": 2,
+      "F_step": 6,
+      "stage": "prefill",
+      "status": "ALIGNED_OBSERVED_MODEL_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "first_observed_model_api": "Functional.scaled_dot_product_attention.0.forward",
+      "first_boundary": "output",
+      "layer_classifications": {
+        "OUTPUT_DIFFERENCE_WITH_NO_OBSERVED_INPUT_STATISTICAL_DIFFERENCE": 1,
+        "INPUT_ALREADY_DIFFERENT_WITH_OUTPUT_DIFFERENCE": 27
+      },
+      "unobservable_fields": 122
+    },
+    {
+      "file": "native_vs_fault_b_decode.json",
+      "sha256": "7778d913f7953d4b0cf063ddc62dfca635806f3ba500eac402708cb16e7f403c",
+      "B_step": 3,
+      "F_step": 7,
+      "stage": "decode",
+      "status": "ALIGNED_OBSERVED_MODEL_API_STATISTICAL_DIFFERENCE",
+      "alignment_complete": true,
+      "first_observed_model_api": "Functional.scaled_dot_product_attention.1.forward",
+      "first_boundary": "input",
+      "layer_classifications": {
+        "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 1,
+        "INPUT_ALREADY_DIFFERENT_WITH_OUTPUT_DIFFERENCE": 27
+      },
+      "unobservable_fields": 122
+    },
+    {
+      "file": "fault_repeat_prefill.json",
+      "sha256": "052f6496aaf1d9c9294acb7a40c29b2498cb25615fa612030070d9f573733b7a",
+      "B_step": 4,
+      "F_step": 6,
+      "stage": "prefill",
+      "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+      "alignment_complete": true,
+      "first_observed_model_api": null,
+      "first_boundary": null,
+      "layer_classifications": {
+        "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+      },
+      "unobservable_fields": 122
+    },
+    {
+      "file": "fault_repeat_decode.json",
+      "sha256": "65caa20c4a467a8e227a0ab01d818d9f0fb9c566eefcd810c635d59827902768",
+      "B_step": 5,
+      "F_step": 7,
+      "stage": "decode",
+      "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+      "alignment_complete": true,
+      "first_observed_model_api": null,
+      "first_boundary": null,
+      "layer_classifications": {
+        "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+      },
+      "unobservable_fields": 122
+    },
+    {
+      "file": "native_vs_off_prefill.json",
+      "sha256": "50d58fec3c27a294dbaa557ade56bedcb84df1f973763d27dd11c0cf06038bc4",
+      "B_step": 2,
+      "F_step": 8,
+      "stage": "prefill",
+      "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+      "alignment_complete": true,
+      "first_observed_model_api": null,
+      "first_boundary": null,
+      "layer_classifications": {
+        "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+      },
+      "unobservable_fields": 122
+    },
+    {
+      "file": "native_vs_off_decode.json",
+      "sha256": "7e796246cb693f8156d5df7b32c09536363c32a4cc8efe507f999a5c56005764",
+      "B_step": 3,
+      "F_step": 9,
+      "stage": "decode",
+      "status": "ALIGNED_NO_OBSERVED_DIFFERENCE_WITH_UNOBSERVABLE_FIELDS",
+      "alignment_complete": true,
+      "first_observed_model_api": null,
+      "first_boundary": null,
+      "layer_classifications": {
+        "NO_OBSERVED_SDPA_STATISTICAL_DIFFERENCE": 28
+      },
+      "unobservable_fields": 122
+    }
+  ],
+  "localization_inputs_only": [
+    "config.json",
+    "original dump.json",
+    "original stack.json",
+    "original construct.json"
+  ],
+  "integrity_inputs": [
+    "result status/receipt/phase and source bindings",
+    "completion",
+    "receipt",
+    "collector provenance",
+    "phase manifest"
+  ],
+  "not_opened": [
+    "native_calls per-call files",
+    "host/hit/profile logs",
+    "private tensors",
+    "policy/Session decisions"
+  ],
+  "limits": [
+    "Whole-batch statistics cannot locate which request changed or prove tensor equality.",
+    "Later layers can inherit differences from earlier layers; a changed layer is not an independently established origin.",
+    "Calibration/manual-scope and Session stacks can differ and are never forced into alignment.",
+    "Diagnostic classification is restricted to the reviewed tensor_snapshot function; original SDPA records are preserved.",
+    "Native launch coverage, actual strategy switches and model output hashes require separate evidence."
+  ],
+  "mechanism_accepted": false,
+  "physical_fault_location_proven": false,
+  "native_calls": 0,
+  "analysis_source_sha256": {
+    "compare_model_statistics.py": "c46cb747e1219941ba08c062266b67f15f4efd5fd2f1f4a65c54603424df8234",
+    "model_statistics_io.py": "8fafac57a67c27939c0085c44af56f2c64fbedd17f4ac00d3673d74c44a9574c",
+    "statistics_values.py": "3fc7c616e3e00fac01cf47d140e469d93492185697246bf92e196fc86bd9d620"
+  }
+}

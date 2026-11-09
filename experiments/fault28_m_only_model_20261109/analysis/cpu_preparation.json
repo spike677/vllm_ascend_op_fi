@@ -1,0 +1,275 @@
+{
+  "schema": "fault28.m_only.cpu_preparation.v1",
+  "npu_executed": false,
+  "source_root": "/home/fault28-model-coverage-20261030",
+  "new_root": "/home/fault28-m-only-model-20261109",
+  "runtime_manifest_sha256": "ca0bf188bdc031ea3e4249c03ac13a9a8f751cd5ae8485655d9048c9f6cdba3b",
+  "vendor_manifest_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1",
+  "input_manifest_sha256": "ed6b27940c3336efe8cd941fda9da191edcbd8257c34587396345f24d7994fe1",
+  "containers": [
+    {
+      "id": "e55c62ed7220f9f7c0613c19906057901ef043ff50e957bb04bf71c28e04457c",
+      "name": "atk_npu_bridge",
+      "image": "sha256:9008234fbe4948ce9e0383c34972044b369e42dc7711d44d5878f52267b8614a",
+      "command": [
+        "sleep",
+        "infinity"
+      ],
+      "privileged": false,
+      "devices": [],
+      "device_requests": null,
+      "mounts": []
+    },
+    {
+      "id": "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+      "name": "gyl_test",
+      "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+      "command": [
+        "/bin/bash"
+      ],
+      "privileged": true,
+      "devices": [
+        {
+          "PathOnHost": "/dev/davinci0",
+          "PathInContainer": "/dev/davinci0",
+          "CgroupPermissions": "rwm"
+        },
+        {
+          "PathOnHost": "/dev/davinci1",
+          "PathInContainer": "/dev/davinci1",
+          "CgroupPermissions": "rwm"
+        },
+        {
+          "PathOnHost": "/dev/davinci2",
+          "PathInContainer": "/dev/davinci2",
+          "CgroupPermissions": "rwm"
+        },
+        {
+          "PathOnHost": "/dev/davinci3",
+          "PathInContainer": "/dev/davinci3",
+          "CgroupPermissions": "rwm"
+        },
+        {
+          "PathOnHost": "/dev/davinci4",
+          "PathInContainer": "/dev/davinci4",
+          "CgroupPermissions": "rwm"
+        },
+        {
+          "PathOnHost": "/dev/davinci5",
+          "PathInContainer": "/dev/davinci5",
+          "CgroupPermissions": "rwm"
+        },
+        {
+          "PathOnHost": "/dev/davinci_manager",
+          "PathInContainer": "/dev/davinci_manager",
+          "CgroupPermissions": "rwm"
+        },
+        {
+          "PathOnHost": "/dev/devmm_svm",
+          "PathInContainer": "/dev/devmm_svm",
+          "CgroupPermissions": "rwm"
+        },
+        {
+          "PathOnHost": "/dev/hisi_hdc",
+          "PathInContainer": "/dev/hisi_hdc",
+          "CgroupPermissions": "rwm"
+        }
+      ],
+      "device_requests": null,
+      "mounts": [
+        {
+          "source": "/AIdata",
+          "destination": "/AIdata",
+          "rw": true
+        },
+        {
+          "source": "/usr/local/dcmi",
+          "destination": "/usr/local/dcmi",
+          "rw": true
+        },
+        {
+          "source": "/usr/local/bin/npu-smi",
+          "destination": "/usr/local/bin/npu-smi",
+          "rw": true
+        },
+        {
+          "source": "/usr/local/Ascend/driver/lib64",
+          "destination": "/usr/local/Ascend/driver/lib64",
+          "rw": true
+        },
+        {
+          "source": "/usr/local/Ascend/driver/version.info",
+          "destination": "/usr/local/Ascend/driver/version.info",
+          "rw": true
+        },
+        {
+          "source": "/etc/ascend_install.info",
+          "destination": "/etc/ascend_install.info",
+          "rw": true
+        },
+        {
+          "source": "/home",
+          "destination": "/home",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "9601770294cfc53858ff5846882f4a8d3174af2f5e54bc41c694b9504853ece3",
+      "name": "catmonitor-demo-dfee",
+      "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+      "command": [
+        "-addr=:19323",
+        "-snapshot-dir=/var/lib/catmonitor/snapshot",
+        "-exporter=enabled",
+        "-exporter-port=9333",
+        "-csv=disabled"
+      ],
+      "privileged": false,
+      "devices": [],
+      "device_requests": null,
+      "mounts": [
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/csv",
+          "destination": "/var/lib/catmonitor/csv",
+          "rw": true
+        },
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/snapshot",
+          "destination": "/var/lib/catmonitor/snapshot",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "7d7d07a5c089a479a18fb0bbf342354d4a37961321a7999e000b00a2ec5019fe",
+      "name": "catmonitor-demo-web",
+      "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+      "command": [
+        "-addr=:5001",
+        "-snapshot-dir=/var/lib/catmonitor/snapshot",
+        "-control-socket=/run/catmonitor/control.sock"
+      ],
+      "privileged": false,
+      "devices": [],
+      "device_requests": null,
+      "mounts": [
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/control",
+          "destination": "/run/catmonitor",
+          "rw": false
+        },
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/snapshot",
+          "destination": "/var/lib/catmonitor/snapshot",
+          "rw": false
+        }
+      ]
+    },
+    {
+      "id": "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1",
+      "name": "catmonitor-demo-control",
+      "image": "sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc",
+      "command": [
+        "daemon",
+        "--config",
+        "/etc/catmonitor/catmonitor.yaml"
+      ],
+      "privileged": true,
+      "devices": [],
+      "device_requests": null,
+      "mounts": [
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/snapshot",
+          "destination": "/var/lib/catmonitor/snapshot",
+          "rw": true
+        },
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/straggler",
+          "destination": "/var/lib/catmonitor/straggler",
+          "rw": true
+        },
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/state",
+          "destination": "/var/lib/catmonitor/stress",
+          "rw": true
+        },
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/config-model-merge/catmonitor-stress.yaml",
+          "destination": "/etc/catmonitor/catmonitor.yaml",
+          "rw": false
+        },
+        {
+          "source": "/etc/os-release",
+          "destination": "/etc/os-release",
+          "rw": false
+        },
+        {
+          "source": "/",
+          "destination": "/host",
+          "rw": false
+        },
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/control",
+          "destination": "/run/catmonitor",
+          "rw": true
+        },
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/data",
+          "destination": "/var/lib/catmonitor/data",
+          "rw": true
+        },
+        {
+          "source": "/usr/local/Ascend/driver",
+          "destination": "/usr/local/Ascend/driver",
+          "rw": false
+        },
+        {
+          "source": "/usr/local/sbin/npu-smi",
+          "destination": "/usr/local/sbin/npu-smi",
+          "rw": false
+        },
+        {
+          "source": "/var/run/docker.sock",
+          "destination": "/var/run/docker.sock",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "5bc0b7e5e5e341cf8a0901c12946ebd48cf5b28d9accd27495dcd439aea48bbb",
+      "name": "catmonitor-demo-cpu",
+      "image": "sha256:758577a1677ff407d126635ee113ab35b5d99302aab10b3aefcc08c37033259a",
+      "command": [
+        "__serve__"
+      ],
+      "privileged": false,
+      "devices": [],
+      "device_requests": null,
+      "mounts": [
+        {
+          "source": "/home/catmonitor/npu-demo-20261012/cpu-state",
+          "destination": "/var/lib/catmonitor/stress",
+          "rw": true
+        }
+      ]
+    },
+    {
+      "id": "cdd5724ca45e0eaca94d48813762a7250fd31cfd05647a7c2e23f820ea0f97e9",
+      "name": "grafana",
+      "image": "sha256:6ab635abac7deacbd439a1aaaa9eecda701af8088308054cefd19b2e800ec397",
+      "command": null,
+      "privileged": false,
+      "devices": [],
+      "device_requests": null,
+      "mounts": [
+        {
+          "source": "/root/wyx/grafana-storage",
+          "destination": "/var/lib/grafana",
+          "rw": true
+        }
+      ]
+    }
+  ],
+  "free_disk_bytes": 50057605120
+}

@@ -1,0 +1,1098 @@
+{
+  "schema": "nes.model_sdpa_call.v1",
+  "call_id": "model_s0_l6_91c4247eb9b7445f8be01818b04886f5",
+  "call_index": 6,
+  "step": 0,
+  "run_index": 0,
+  "mode": "calibration",
+  "stage": "prefill",
+  "layer_index": 6,
+  "layer_name": "model.layers.6.self_attn",
+  "module_call_id": "step0.layer6.visit0",
+  "request_mapping_file": "phases/step0/request_mapping.json",
+  "request_mapping_sha256": "c82d7a1764bfd59fce1589b94534f0b1131253de4bc45e35bcd26e2a12a340e5",
+  "request_ids": [
+    "request_00"
+  ],
+  "status": "CAPTURE_COMPLETED",
+  "eligibility": "ACTUAL_NATIVE_VALIDATED",
+  "sdpa_metadata": {
+    "query": {
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16"
+    },
+    "key": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16"
+    },
+    "value": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16"
+    },
+    "dropout_p": 0.0,
+    "is_causal": true,
+    "scale": 0.08838834764831845,
+    "enable_gqa": true,
+    "attn_mask": null
+  },
+  "inputs_before": {
+    "query": {
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463432755504,
+      "data_ptr": 20622662960640,
+      "storage_offset": 0,
+      "actual_format": 0,
+      "full_sha256": "086487a6d974fff620d050b4193276d048efe2e0c9c6d6737d6c39323e38a603",
+      "bytes": 8388608,
+      "per_batch_sha256": [
+        "086487a6d974fff620d050b4193276d048efe2e0c9c6d6737d6c39323e38a603"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    },
+    "key": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463432755184,
+      "data_ptr": 20622671349760,
+      "storage_offset": 0,
+      "actual_format": 0,
+      "full_sha256": "8e120e0d738f13f5236f98e5c34af1392a719f20dc75e352810a8b62f006c872",
+      "bytes": 4194304,
+      "per_batch_sha256": [
+        "8e120e0d738f13f5236f98e5c34af1392a719f20dc75e352810a8b62f006c872"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    },
+    "value": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463432597248,
+      "data_ptr": 20622675544576,
+      "storage_offset": 0,
+      "actual_format": 0,
+      "full_sha256": "d09c2073b41d3652fb7ace4446246f3d8af9c1881a35501863bc63fe1eeb0dbf",
+      "bytes": 4194304,
+      "per_batch_sha256": [
+        "d09c2073b41d3652fb7ace4446246f3d8af9c1881a35501863bc63fe1eeb0dbf"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    }
+  },
+  "native_descriptor_provenance": {
+    "kind": "ACTUAL_NATIVE_PUBLIC_DESCRIPTOR_AND_LAUNCHED_POD",
+    "host_original_sha256": "f26f7d072f826f979a5c8b653acd28a03f6d4b227fc65a3c9683c9331e68c270",
+    "native_raw_sha256": "7cef6de7ad3aaf69c3676d1e84f7011206fa44cc61594da9ca018da23468e862",
+    "public_context_sha256": "88be897c0b3e27c0e0db19fa755ea4f13dd3227c6723abf8b61397d5899f9b66",
+    "public_context": {
+      "attrs": {
+        "heads": 16,
+        "keep_prob": 1,
+        "layout": "BNSD",
+        "next_tokens": 0,
+        "pre_tokens": 2147483647,
+        "precision": 0,
+        "scale": 0.0883883461356163,
+        "sparse_mode": 2
+      },
+      "ir_inputs": [
+        {
+          "dtype": 1,
+          "ir_index": 0,
+          "shape": {
+            "elements": 4194304,
+            "origin": [
+              1,
+              16,
+              2048,
+              128
+            ],
+            "rank": 4,
+            "storage": [
+              1,
+              16,
+              2048,
+              128
+            ]
+          }
+        },
+        {
+          "dtype": 1,
+          "ir_index": 1,
+          "shape": {
+            "elements": 2097152,
+            "origin": [
+              1,
+              8,
+              2048,
+              128
+            ],
+            "rank": 4,
+            "storage": [
+              1,
+              8,
+              2048,
+              128
+            ]
+          }
+        },
+        {
+          "dtype": 1,
+          "ir_index": 2,
+          "shape": {
+            "elements": 2097152,
+            "origin": [
+              1,
+              8,
+              2048,
+              128
+            ],
+            "rank": 4,
+            "storage": [
+              1,
+              8,
+              2048,
+              128
+            ]
+          }
+        },
+        {
+          "dtype": 1,
+          "ir_index": 3,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": 4,
+          "ir_index": 4,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": 1,
+          "ir_index": 5,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": 12,
+          "ir_index": 6,
+          "shape": {
+            "elements": 4194304,
+            "origin": [
+              2048,
+              2048
+            ],
+            "rank": 2,
+            "storage": [
+              2048,
+              2048
+            ]
+          }
+        },
+        {
+          "dtype": 9,
+          "ir_index": 7,
+          "shape": {
+            "elements": 0,
+            "origin": [
+              0
+            ],
+            "rank": 1,
+            "storage": [
+              0
+            ]
+          }
+        },
+        {
+          "dtype": 9,
+          "ir_index": 8,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": 9,
+          "ir_index": 9,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": 9,
+          "ir_index": 10,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": 9,
+          "ir_index": 11,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": 0,
+          "ir_index": 12,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": 0,
+          "ir_index": 13,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": 0,
+          "ir_index": 14,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        },
+        {
+          "dtype": null,
+          "ir_index": 15,
+          "shape": null
+        },
+        {
+          "dtype": null,
+          "ir_index": 16,
+          "shape": null
+        },
+        {
+          "dtype": null,
+          "ir_index": 17,
+          "shape": null
+        },
+        {
+          "dtype": 0,
+          "ir_index": 18,
+          "shape": {
+            "elements": 1,
+            "origin": [],
+            "rank": 0,
+            "storage": []
+          }
+        }
+      ]
+    },
+    "input_contract": {
+      "inputParams.bSize": 1,
+      "inputParams.n2Size": 8,
+      "inputParams.gSize": 2,
+      "inputParams.s1Size": 2048,
+      "inputParams.s2Size": 2048,
+      "inputParams.alignedS2": 2048,
+      "inputParams.dSize": 128,
+      "inputParams.keepProb": 1.0,
+      "inputParams.scaleValue": 0.0883883461356163,
+      "inputParams.preTokens": 2048,
+      "inputParams.nextTokens": 0,
+      "inputParams.pseS1Size": 0,
+      "inputParams.pseS2Size": 0,
+      "inputParams.pseBSize": 0,
+      "inputParams.bandIndex": 0,
+      "inputParams.layoutType": 3,
+      "inputParams.pseShapeType": 1,
+      "inputParams.attenMaskShapeType": 2,
+      "inputParams.attenMaskDataType": 1,
+      "inputParams.attenMaskCompressMode": 1,
+      "inputParams.implMode": 0,
+      "inputParams.sparseType": 3,
+      "inputParams.needDropMaskOp": 0,
+      "inputParams.pseEncodeType": 0,
+      "inputParams.rsv": 0,
+      "inputParams.needL1Carry": 0,
+      "inputParams.remain": 0,
+      "inputParams.attenMaskS2Size": 2048,
+      "inputParams.pseType": 1,
+      "inputParams.rsv1": 0,
+      "inputParams.qStartIdx": 0,
+      "inputParams.kvStartIdx": 0,
+      "inputParams.tndSoftmaxOut": 0,
+      "inputParams.needSinkOp": 0
+    },
+    "execution_plan": {
+      "bmm1TilingData.usedCoreNum": 1,
+      "bmm1TilingData.M": 2048,
+      "bmm1TilingData.N": 1024,
+      "bmm1TilingData.Ka": 128,
+      "bmm1TilingData.Kb": 128,
+      "bmm1TilingData.singleCoreM": 128,
+      "bmm1TilingData.singleCoreN": 1024,
+      "bmm1TilingData.singleCoreK": 128,
+      "bmm1TilingData.baseM": 128,
+      "bmm1TilingData.baseN": 128,
+      "bmm1TilingData.baseK": 128,
+      "bmm1TilingData.depthA1": 1,
+      "bmm1TilingData.depthB1": 8,
+      "bmm1TilingData.stepM": 1,
+      "bmm1TilingData.stepN": 8,
+      "bmm1TilingData.isBias": 0,
+      "bmm1TilingData.transLength": 0,
+      "bmm1TilingData.iterateOrder": 0,
+      "bmm1TilingData.shareMode": 0,
+      "bmm1TilingData.shareL1Size": 524032,
+      "bmm1TilingData.shareL0CSize": 131072,
+      "bmm1TilingData.shareUbSize": 0,
+      "bmm1TilingData.batchM": 1,
+      "bmm1TilingData.batchN": 1,
+      "bmm1TilingData.singleBatchM": 1,
+      "bmm1TilingData.singleBatchN": 1,
+      "bmm1TilingData.stepKa": 1,
+      "bmm1TilingData.stepKb": 1,
+      "bmm1TilingData.depthAL1CacheUB": 0,
+      "bmm1TilingData.depthBL1CacheUB": 0,
+      "bmm1TilingData.dbL0A": 2,
+      "bmm1TilingData.dbL0B": 2,
+      "bmm1TilingData.dbL0C": 1,
+      "bmm1TilingData.ALayoutInfoB": 0,
+      "bmm1TilingData.ALayoutInfoS": 0,
+      "bmm1TilingData.ALayoutInfoN": 0,
+      "bmm1TilingData.ALayoutInfoG": 0,
+      "bmm1TilingData.ALayoutInfoD": 0,
+      "bmm1TilingData.BLayoutInfoB": 0,
+      "bmm1TilingData.BLayoutInfoS": 0,
+      "bmm1TilingData.BLayoutInfoN": 0,
+      "bmm1TilingData.BLayoutInfoG": 0,
+      "bmm1TilingData.BLayoutInfoD": 0,
+      "bmm1TilingData.CLayoutInfoB": 0,
+      "bmm1TilingData.CLayoutInfoS1": 0,
+      "bmm1TilingData.CLayoutInfoN": 0,
+      "bmm1TilingData.CLayoutInfoG": 0,
+      "bmm1TilingData.CLayoutInfoS2": 0,
+      "bmm1TilingData.BatchNum": 0,
+      "bmm1TilingData.mxTypePara": 0,
+      "bmm2TilingData.usedCoreNum": 1,
+      "bmm2TilingData.M": 2048,
+      "bmm2TilingData.N": 128,
+      "bmm2TilingData.Ka": 1024,
+      "bmm2TilingData.Kb": 128,
+      "bmm2TilingData.singleCoreM": 128,
+      "bmm2TilingData.singleCoreN": 128,
+      "bmm2TilingData.singleCoreK": 1024,
+      "bmm2TilingData.baseM": 128,
+      "bmm2TilingData.baseN": 128,
+      "bmm2TilingData.baseK": 128,
+      "bmm2TilingData.depthA1": 4,
+      "bmm2TilingData.depthB1": 8,
+      "bmm2TilingData.stepM": 1,
+      "bmm2TilingData.stepN": 1,
+      "bmm2TilingData.isBias": 0,
+      "bmm2TilingData.transLength": 0,
+      "bmm2TilingData.iterateOrder": 0,
+      "bmm2TilingData.shareMode": 0,
+      "bmm2TilingData.shareL1Size": 524032,
+      "bmm2TilingData.shareL0CSize": 131072,
+      "bmm2TilingData.shareUbSize": 0,
+      "bmm2TilingData.batchM": 1,
+      "bmm2TilingData.batchN": 1,
+      "bmm2TilingData.singleBatchM": 1,
+      "bmm2TilingData.singleBatchN": 1,
+      "bmm2TilingData.stepKa": 2,
+      "bmm2TilingData.stepKb": 8,
+      "bmm2TilingData.depthAL1CacheUB": 0,
+      "bmm2TilingData.depthBL1CacheUB": 0,
+      "bmm2TilingData.dbL0A": 2,
+      "bmm2TilingData.dbL0B": 2,
+      "bmm2TilingData.dbL0C": 1,
+      "bmm2TilingData.ALayoutInfoB": 0,
+      "bmm2TilingData.ALayoutInfoS": 0,
+      "bmm2TilingData.ALayoutInfoN": 0,
+      "bmm2TilingData.ALayoutInfoG": 0,
+      "bmm2TilingData.ALayoutInfoD": 0,
+      "bmm2TilingData.BLayoutInfoB": 0,
+      "bmm2TilingData.BLayoutInfoS": 0,
+      "bmm2TilingData.BLayoutInfoN": 0,
+      "bmm2TilingData.BLayoutInfoG": 0,
+      "bmm2TilingData.BLayoutInfoD": 0,
+      "bmm2TilingData.CLayoutInfoB": 0,
+      "bmm2TilingData.CLayoutInfoS1": 0,
+      "bmm2TilingData.CLayoutInfoN": 0,
+      "bmm2TilingData.CLayoutInfoG": 0,
+      "bmm2TilingData.CLayoutInfoS2": 0,
+      "bmm2TilingData.BatchNum": 0,
+      "bmm2TilingData.mxTypePara": 0,
+      "multiCoreParams.coreNum": 40,
+      "multiCoreParams.reserve": 0,
+      "multiCoreParams.totalSize": 256,
+      "multiCoreParams.splitFactorSize": 14,
+      "multiCoreParams.splitFactorTailSize": 4,
+      "multiCoreParams.sparseStartIdx": [
+        0,
+        10,
+        14,
+        22,
+        28,
+        32,
+        42,
+        46,
+        54,
+        60,
+        64,
+        74,
+        78,
+        86,
+        92,
+        96,
+        106,
+        110,
+        118,
+        124,
+        128,
+        138,
+        142,
+        150,
+        156,
+        160,
+        170,
+        174,
+        182,
+        188,
+        192,
+        202,
+        206,
+        214,
+        220,
+        224,
+        234,
+        238,
+        246,
+        252,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256,
+        256
+      ],
+      "coreParams.s1BaseSize": 128,
+      "coreParams.s1BaseTailSize": 128,
+      "coreParams.s1OuterSize": 16,
+      "coreParams.s1Vec2BaseSize": 64,
+      "coreParams.s1Vec2BaseTailSize": 0,
+      "coreParams.s1Vec2OuterSize": 0,
+      "coreParams.s2BaseSize": 128,
+      "coreParams.s2BaseTailSize": 128,
+      "coreParams.s2OuterSize": 2,
+      "coreParams.dBaseSize": 128,
+      "coreParams.dBaseTailSize": 128,
+      "coreParams.dOuterSize": 1,
+      "coreParams.bBaseSize": 1,
+      "coreParams.bBaseTailSize": 1,
+      "coreParams.bOuterSize": 1,
+      "coreParams.n2BaseSize": 1,
+      "coreParams.n2BaseTailSize": 1,
+      "coreParams.n2OuterSize": 8,
+      "coreParams.gBaseSize": 1,
+      "coreParams.gBaseTailSize": 1,
+      "coreParams.gOuterSize": 2,
+      "coreParams.nRatio": 8,
+      "coreParams.dRopeSize": 0,
+      "coreParams.d2Size": 128,
+      "coreParams.s1SparseValidSize": 2048,
+      "coreParams.s2SparseValidSize": 0,
+      "coreParams.pseAlibiBaseS1": 0,
+      "coreParams.pseAlibiBaseS2": 0,
+      "tensorSizeParams.bmm1ResUbSize": 16384,
+      "tensorSizeParams.attenMaskUbSize": 16384,
+      "tensorSizeParams.pseUbSize": 0,
+      "tensorSizeParams.dropMaskUbSize": 0,
+      "tensorSizeParams.castUbSize": 16384,
+      "tensorSizeParams.softmaxMaxUbSize": 1024,
+      "tensorSizeParams.softmaxSumUbSize": 1024,
+      "tensorSizeParams.softmaxExpUbSize": 1024,
+      "tensorSizeParams.apiTmpBufferBytes": 131072,
+      "tensorSizeParams.bmm2ResUbSize": 16384,
+      "tensorSizeParams.inputQueBytes": 0,
+      "tensorSizeParams.outputQueBytes": 0,
+      "tensorSizeParams.tmpBufBytes": 0,
+      "tensorSizeParams.softmaxMaxOffsetBytes": 0,
+      "tensorSizeParams.softmaxSumOffsetBytes": 0,
+      "tensorSizeParams.maxSumApiOffsetBytes": 0,
+      "tensorSizeParams.customSoftmaxApiOffsetBytes": 0,
+      "tensorSizeParams.pseTbufOffsetBytes": 0,
+      "tensorSizeParams.dropoutApiOffsetBytes": 0,
+      "tensorSizeParams.maxSumApiSize": 0,
+      "tensorSizeParams.customSoftmaxApiSize": 0,
+      "tensorSizeParams.dropoutApiSize": 0,
+      "tensorSizeParams.attenMaskApiSize": 0,
+      "tensorSizeParams.attenMaskApiOffsetBytes": 0,
+      "tensorSizeParams.bmm1ProcessTInStage2Size": 0,
+      "tensorSizeParams.bmm1ProcessTInStage2OffsetBytes": 0,
+      "tensorSizeParams.wkspSection1OffsetBytes": 0,
+      "tensorSizeParams.wkspSection2OffsetBytes": 0,
+      "dropmaskParams.multiCoreFactorSize": 0,
+      "dropmaskParams.baseUbCalSize": 0,
+      "dropmaskParams.multiCoreTotalSize": 0,
+      "dropmaskParams.shapeTotalSize": 0,
+      "@raw.softmaxFlashTilingData": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+      "@raw.transposeTilingData": "01000000010000008000000080000000800000000100000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+      "@raw.transposeTilingDataTailCore": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "independent_descriptor_supported": true,
+    "unsupported_reasons": [],
+    "controlled_certificate_support_not_decided_by_this_helper": true,
+    "request_mapping_source": "Explicit frozen request IDs and actual model batch slots, not inferred from shape[0]",
+    "request_rows_sha256": "211387a76513a93a1e80ebd58d7f6555492a777cf5331c44a3c5667ffa332bd9",
+    "device_source": "Caller-observed public device identity",
+    "mask_observation": "Actual native shape/dtype descriptor only; no Python mask tensor or internal mask values captured",
+    "tensor_values_observed_by_this_helper": false,
+    "native_calls_executed": 0
+  },
+  "calibration_template_is_intent_only": true,
+  "session": null,
+  "actual_native_context": {
+    "operator": "FlashAttentionScore",
+    "request_count": 1,
+    "token_count": 2048,
+    "matrix_dims": {
+      "query_heads": 16,
+      "kv_heads": 8,
+      "query_length": 2048,
+      "key_length": 2048,
+      "head_dim": 128,
+      "value_dim": 128
+    },
+    "seq_lens": [
+      2048
+    ],
+    "dtype": "float16",
+    "layout": "BNSD",
+    "attributes": {
+      "scale": 0.0883883461356163,
+      "keep_prob": 1,
+      "pre_tokens": 2147483647,
+      "next_tokens": 0,
+      "heads": 16,
+      "inner_precise": 0,
+      "sparse_mode": 2,
+      "optional_inputs_absent": true,
+      "device": "Ascend910B4",
+      "tensor_shapes": {
+        "query": [
+          1,
+          16,
+          2048,
+          128
+        ],
+        "key": [
+          1,
+          8,
+          2048,
+          128
+        ],
+        "value": [
+          1,
+          8,
+          2048,
+          128
+        ],
+        "atten_mask": [
+          2048,
+          2048
+        ]
+      },
+      "tensor_dtypes": {
+        "query": "float16",
+        "key": "float16",
+        "value": "float16",
+        "atten_mask": "bool"
+      }
+    }
+  },
+  "actual_strategy": {
+    "strategy_id": "fa.s1s2.m128.r8",
+    "parameters": {
+      "query_tile": 128,
+      "key_group_ratio": 8,
+      "key_tile": 128,
+      "execution_plan": {
+        "bmm1TilingData.usedCoreNum": 1,
+        "bmm1TilingData.M": 2048,
+        "bmm1TilingData.N": 1024,
+        "bmm1TilingData.Ka": 128,
+        "bmm1TilingData.Kb": 128,
+        "bmm1TilingData.singleCoreM": 128,
+        "bmm1TilingData.singleCoreN": 1024,
+        "bmm1TilingData.singleCoreK": 128,
+        "bmm1TilingData.baseM": 128,
+        "bmm1TilingData.baseN": 128,
+        "bmm1TilingData.baseK": 128,
+        "bmm1TilingData.depthA1": 1,
+        "bmm1TilingData.depthB1": 8,
+        "bmm1TilingData.stepM": 1,
+        "bmm1TilingData.stepN": 8,
+        "bmm1TilingData.isBias": 0,
+        "bmm1TilingData.transLength": 0,
+        "bmm1TilingData.iterateOrder": 0,
+        "bmm1TilingData.shareMode": 0,
+        "bmm1TilingData.shareL1Size": 524032,
+        "bmm1TilingData.shareL0CSize": 131072,
+        "bmm1TilingData.shareUbSize": 0,
+        "bmm1TilingData.batchM": 1,
+        "bmm1TilingData.batchN": 1,
+        "bmm1TilingData.singleBatchM": 1,
+        "bmm1TilingData.singleBatchN": 1,
+        "bmm1TilingData.stepKa": 1,
+        "bmm1TilingData.stepKb": 1,
+        "bmm1TilingData.depthAL1CacheUB": 0,
+        "bmm1TilingData.depthBL1CacheUB": 0,
+        "bmm1TilingData.dbL0A": 2,
+        "bmm1TilingData.dbL0B": 2,
+        "bmm1TilingData.dbL0C": 1,
+        "bmm1TilingData.ALayoutInfoB": 0,
+        "bmm1TilingData.ALayoutInfoS": 0,
+        "bmm1TilingData.ALayoutInfoN": 0,
+        "bmm1TilingData.ALayoutInfoG": 0,
+        "bmm1TilingData.ALayoutInfoD": 0,
+        "bmm1TilingData.BLayoutInfoB": 0,
+        "bmm1TilingData.BLayoutInfoS": 0,
+        "bmm1TilingData.BLayoutInfoN": 0,
+        "bmm1TilingData.BLayoutInfoG": 0,
+        "bmm1TilingData.BLayoutInfoD": 0,
+        "bmm1TilingData.CLayoutInfoB": 0,
+        "bmm1TilingData.CLayoutInfoS1": 0,
+        "bmm1TilingData.CLayoutInfoN": 0,
+        "bmm1TilingData.CLayoutInfoG": 0,
+        "bmm1TilingData.CLayoutInfoS2": 0,
+        "bmm1TilingData.BatchNum": 0,
+        "bmm1TilingData.mxTypePara": 0,
+        "bmm2TilingData.usedCoreNum": 1,
+        "bmm2TilingData.M": 2048,
+        "bmm2TilingData.N": 128,
+        "bmm2TilingData.Ka": 1024,
+        "bmm2TilingData.Kb": 128,
+        "bmm2TilingData.singleCoreM": 128,
+        "bmm2TilingData.singleCoreN": 128,
+        "bmm2TilingData.singleCoreK": 1024,
+        "bmm2TilingData.baseM": 128,
+        "bmm2TilingData.baseN": 128,
+        "bmm2TilingData.baseK": 128,
+        "bmm2TilingData.depthA1": 4,
+        "bmm2TilingData.depthB1": 8,
+        "bmm2TilingData.stepM": 1,
+        "bmm2TilingData.stepN": 1,
+        "bmm2TilingData.isBias": 0,
+        "bmm2TilingData.transLength": 0,
+        "bmm2TilingData.iterateOrder": 0,
+        "bmm2TilingData.shareMode": 0,
+        "bmm2TilingData.shareL1Size": 524032,
+        "bmm2TilingData.shareL0CSize": 131072,
+        "bmm2TilingData.shareUbSize": 0,
+        "bmm2TilingData.batchM": 1,
+        "bmm2TilingData.batchN": 1,
+        "bmm2TilingData.singleBatchM": 1,
+        "bmm2TilingData.singleBatchN": 1,
+        "bmm2TilingData.stepKa": 2,
+        "bmm2TilingData.stepKb": 8,
+        "bmm2TilingData.depthAL1CacheUB": 0,
+        "bmm2TilingData.depthBL1CacheUB": 0,
+        "bmm2TilingData.dbL0A": 2,
+        "bmm2TilingData.dbL0B": 2,
+        "bmm2TilingData.dbL0C": 1,
+        "bmm2TilingData.ALayoutInfoB": 0,
+        "bmm2TilingData.ALayoutInfoS": 0,
+        "bmm2TilingData.ALayoutInfoN": 0,
+        "bmm2TilingData.ALayoutInfoG": 0,
+        "bmm2TilingData.ALayoutInfoD": 0,
+        "bmm2TilingData.BLayoutInfoB": 0,
+        "bmm2TilingData.BLayoutInfoS": 0,
+        "bmm2TilingData.BLayoutInfoN": 0,
+        "bmm2TilingData.BLayoutInfoG": 0,
+        "bmm2TilingData.BLayoutInfoD": 0,
+        "bmm2TilingData.CLayoutInfoB": 0,
+        "bmm2TilingData.CLayoutInfoS1": 0,
+        "bmm2TilingData.CLayoutInfoN": 0,
+        "bmm2TilingData.CLayoutInfoG": 0,
+        "bmm2TilingData.CLayoutInfoS2": 0,
+        "bmm2TilingData.BatchNum": 0,
+        "bmm2TilingData.mxTypePara": 0,
+        "multiCoreParams.coreNum": 40,
+        "multiCoreParams.reserve": 0,
+        "multiCoreParams.totalSize": 256,
+        "multiCoreParams.splitFactorSize": 14,
+        "multiCoreParams.splitFactorTailSize": 4,
+        "multiCoreParams.sparseStartIdx": [
+          0,
+          10,
+          14,
+          22,
+          28,
+          32,
+          42,
+          46,
+          54,
+          60,
+          64,
+          74,
+          78,
+          86,
+          92,
+          96,
+          106,
+          110,
+          118,
+          124,
+          128,
+          138,
+          142,
+          150,
+          156,
+          160,
+          170,
+          174,
+          182,
+          188,
+          192,
+          202,
+          206,
+          214,
+          220,
+          224,
+          234,
+          238,
+          246,
+          252,
+          256,
+          256,
+          256,
+          256,
+          256,
+          256,
+          256,
+          256
+        ],
+        "coreParams.s1BaseSize": 128,
+        "coreParams.s1BaseTailSize": 128,
+        "coreParams.s1OuterSize": 16,
+        "coreParams.s1Vec2BaseSize": 64,
+        "coreParams.s1Vec2BaseTailSize": 0,
+        "coreParams.s1Vec2OuterSize": 0,
+        "coreParams.s2BaseSize": 128,
+        "coreParams.s2BaseTailSize": 128,
+        "coreParams.s2OuterSize": 2,
+        "coreParams.dBaseSize": 128,
+        "coreParams.dBaseTailSize": 128,
+        "coreParams.dOuterSize": 1,
+        "coreParams.bBaseSize": 1,
+        "coreParams.bBaseTailSize": 1,
+        "coreParams.bOuterSize": 1,
+        "coreParams.n2BaseSize": 1,
+        "coreParams.n2BaseTailSize": 1,
+        "coreParams.n2OuterSize": 8,
+        "coreParams.gBaseSize": 1,
+        "coreParams.gBaseTailSize": 1,
+        "coreParams.gOuterSize": 2,
+        "coreParams.nRatio": 8,
+        "coreParams.dRopeSize": 0,
+        "coreParams.d2Size": 128,
+        "coreParams.s1SparseValidSize": 2048,
+        "coreParams.s2SparseValidSize": 0,
+        "coreParams.pseAlibiBaseS1": 0,
+        "coreParams.pseAlibiBaseS2": 0,
+        "tensorSizeParams.bmm1ResUbSize": 16384,
+        "tensorSizeParams.attenMaskUbSize": 16384,
+        "tensorSizeParams.pseUbSize": 0,
+        "tensorSizeParams.dropMaskUbSize": 0,
+        "tensorSizeParams.castUbSize": 16384,
+        "tensorSizeParams.softmaxMaxUbSize": 1024,
+        "tensorSizeParams.softmaxSumUbSize": 1024,
+        "tensorSizeParams.softmaxExpUbSize": 1024,
+        "tensorSizeParams.apiTmpBufferBytes": 131072,
+        "tensorSizeParams.bmm2ResUbSize": 16384,
+        "tensorSizeParams.inputQueBytes": 0,
+        "tensorSizeParams.outputQueBytes": 0,
+        "tensorSizeParams.tmpBufBytes": 0,
+        "tensorSizeParams.softmaxMaxOffsetBytes": 0,
+        "tensorSizeParams.softmaxSumOffsetBytes": 0,
+        "tensorSizeParams.maxSumApiOffsetBytes": 0,
+        "tensorSizeParams.customSoftmaxApiOffsetBytes": 0,
+        "tensorSizeParams.pseTbufOffsetBytes": 0,
+        "tensorSizeParams.dropoutApiOffsetBytes": 0,
+        "tensorSizeParams.maxSumApiSize": 0,
+        "tensorSizeParams.customSoftmaxApiSize": 0,
+        "tensorSizeParams.dropoutApiSize": 0,
+        "tensorSizeParams.attenMaskApiSize": 0,
+        "tensorSizeParams.attenMaskApiOffsetBytes": 0,
+        "tensorSizeParams.bmm1ProcessTInStage2Size": 0,
+        "tensorSizeParams.bmm1ProcessTInStage2OffsetBytes": 0,
+        "tensorSizeParams.wkspSection1OffsetBytes": 0,
+        "tensorSizeParams.wkspSection2OffsetBytes": 0,
+        "dropmaskParams.multiCoreFactorSize": 0,
+        "dropmaskParams.baseUbCalSize": 0,
+        "dropmaskParams.multiCoreTotalSize": 0,
+        "dropmaskParams.shapeTotalSize": 0,
+        "@raw.softmaxFlashTilingData": "10000000000400000040000010000000080000008000000008000000000400000020000008000000080000004000000002000000000000000000000000000000",
+        "@raw.transposeTilingData": "01000000010000008000000080000000800000000100000010000000000800000008000000100000004000008000000000800000000000008000000000000000",
+        "@raw.transposeTilingDataTailCore": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+      }
+    }
+  },
+  "inputs_after": {
+    "query": {
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "stride": [
+        4194304,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463432755504,
+      "data_ptr": 20622662960640,
+      "storage_offset": 0,
+      "actual_format": 2,
+      "full_sha256": "086487a6d974fff620d050b4193276d048efe2e0c9c6d6737d6c39323e38a603",
+      "bytes": 8388608,
+      "per_batch_sha256": [
+        "086487a6d974fff620d050b4193276d048efe2e0c9c6d6737d6c39323e38a603"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    },
+    "key": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463432755184,
+      "data_ptr": 20622671349760,
+      "storage_offset": 0,
+      "actual_format": 2,
+      "full_sha256": "8e120e0d738f13f5236f98e5c34af1392a719f20dc75e352810a8b62f006c872",
+      "bytes": 4194304,
+      "per_batch_sha256": [
+        "8e120e0d738f13f5236f98e5c34af1392a719f20dc75e352810a8b62f006c872"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    },
+    "value": {
+      "shape": [
+        1,
+        8,
+        2048,
+        128
+      ],
+      "stride": [
+        2097152,
+        262144,
+        128,
+        1
+      ],
+      "dtype": "torch.float16",
+      "device": "npu:0",
+      "object_id": 281463432597248,
+      "data_ptr": 20622675544576,
+      "storage_offset": 0,
+      "actual_format": 2,
+      "full_sha256": "d09c2073b41d3652fb7ace4446246f3d8af9c1881a35501863bc63fe1eeb0dbf",
+      "bytes": 4194304,
+      "per_batch_sha256": [
+        "d09c2073b41d3652fb7ace4446246f3d8af9c1881a35501863bc63fe1eeb0dbf"
+      ],
+      "raw_order": "C-contiguous logical elements",
+      "byteorder": "little"
+    }
+  },
+  "allowed_input_format_normalizations": [
+    {
+      "input": "query",
+      "from": 0,
+      "to": 2,
+      "logical_bytes_unchanged": true
+    },
+    {
+      "input": "key",
+      "from": 0,
+      "to": 2,
+      "logical_bytes_unchanged": true
+    },
+    {
+      "input": "value",
+      "from": 0,
+      "to": 2,
+      "logical_bytes_unchanged": true
+    }
+  ],
+  "output": {
+    "shape": [
+      1,
+      16,
+      2048,
+      128
+    ],
+    "stride": [
+      4194304,
+      262144,
+      128,
+      1
+    ],
+    "dtype": "torch.float16",
+    "device": "npu:0",
+    "object_id": 281463432801936,
+    "data_ptr": 20622621016064,
+    "storage_offset": 0,
+    "actual_format": 0,
+    "full_sha256": "5c5b5710cd46f7526caac7df521e8ba6ef2a9a821bd283555f83700c3ef83381",
+    "bytes": 8388608,
+    "per_batch_sha256": [
+      "5c5b5710cd46f7526caac7df521e8ba6ef2a9a821bd283555f83700c3ef83381"
+    ],
+    "raw_order": "C-contiguous logical elements",
+    "byteorder": "little",
+    "exact_numeric_observation": {
+      "schema": "fault28.m_only.exact_observation.v1",
+      "mode": "calibration",
+      "stage": "prefill",
+      "kind": "attention",
+      "layer_index": 6,
+      "shape": [
+        1,
+        16,
+        2048,
+        128
+      ],
+      "dtype": "torch.float16",
+      "full_sha256": "5c5b5710cd46f7526caac7df521e8ba6ef2a9a821bd283555f83700c3ef83381",
+      "last_query_sha256": "49919ed986e86adbef12ddacb335b7e6e40f9e6cf61f2cb4a09c8175bb8da794",
+      "private_reference_file": "/evidence/main_b1/private_reference/prefill/attention_l6.fp16.bin",
+      "numeric_data_source": "Logical bytes copied by common tensor_snapshot; CPU comparison only.",
+      "comparison_status": "CALIBRATION_NO_REFERENCE"
+    }
+  },
+  "native_call": {
+    "case_id": "main_b1",
+    "call_id": "model_s0_l6_91c4247eb9b7445f8be01818b04886f5",
+    "api": "torch.nn.functional.scaled_dot_product_attention",
+    "pid": 46,
+    "thread_id": 46,
+    "phase": "operator_execution",
+    "step": 0,
+    "mode": "calibration",
+    "batch_size": 1,
+    "scope_token": "model_s0_l6_91c4247eb9b7445f8be01818b04886f5",
+    "layer_index": 6,
+    "model_stage": "prefill",
+    "run_index": 0,
+    "enter_epoch_ns": 1794214639142004217,
+    "enter_monotonic_ns": 3272058684864247,
+    "status": "returned",
+    "exit_epoch_ns": 1794214639185379265,
+    "exit_monotonic_ns": 3272058728239315
+  },
+  "original_api_calls": 1,
+  "original_return_identity_preserved": true,
+  "native_record_file": "native_calls/call_0006/native_profile/verified_record.json",
+  "native_record_sha256": "1231d6226fd08159a29b64bb53b5daaba1ac536bb8ea4521a0c78eae461a952e"
+}

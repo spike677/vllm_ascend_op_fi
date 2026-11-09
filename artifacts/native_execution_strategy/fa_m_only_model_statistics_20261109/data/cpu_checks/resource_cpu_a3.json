@@ -1,0 +1,50 @@
+{
+  "schema": "nes.model_coverage.budget_cpu.v1",
+  "status": "PASS_CPU_BUDGET_CHECKS",
+  "checks": [
+    {
+      "name": "duration_lower_upper_edges_and_invalid_types",
+      "passed": true
+    },
+    {
+      "name": "finite_log_and_case_count_bounds",
+      "passed": true
+    },
+    {
+      "name": "pilot_default900_1800_2048_unchanged",
+      "passed": true
+    },
+    {
+      "name": "initial_disk_exact52GiB_threshold_and_one_byte_rejection",
+      "passed": true
+    },
+    {
+      "name": "remaining_case_reservation_reduces_only_after_completed_case",
+      "passed": true
+    },
+    {
+      "name": "running_disk8GiB_floor_inclusive",
+      "passed": true
+    },
+    {
+      "name": "disk_unknown_phase_and_remaining_count_rejected",
+      "passed": true
+    },
+    {
+      "name": "census16GiB_finite_edges_preserve_streamed_byte_hashing",
+      "passed": true
+    },
+    {
+      "name": "seven_original_gates_and_later_bounded_recovery_unchanged",
+      "passed": true
+    }
+  ],
+  "npu_calls": 0,
+  "containers_started": 0,
+  "ssh_connections": 0,
+  "sources": {
+    "controller.py": "ed73a3b31995ffafe8e4c250a0de16b2ab935765de561b80be7622ad3b1d49e5",
+    "analysis/native_launch_census.py": "a30f24b71513649383c96de22fd73cd51eb2b50904078206caf84285db1b1a90",
+    "analysis/test_resource_budget.py": "a8471be923dbd87473f6fd0f1979aa1c7160722aa216fa0569feca640cd00c6e"
+  }
+}

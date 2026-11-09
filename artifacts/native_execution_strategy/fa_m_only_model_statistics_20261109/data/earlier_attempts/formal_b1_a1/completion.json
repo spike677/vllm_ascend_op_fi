@@ -1,0 +1,36 @@
+{
+  "status": "FAIL",
+  "card": 5,
+  "cases": [],
+  "cleanup_errors": [],
+  "start_epoch": 1794214124.2777643,
+  "probe": "model_probe.py",
+  "capture": "native-logs",
+  "scope": "Full-model coverage capture only; per-layer native eligibility, strategy effects and model effects require independent acceptance",
+  "mechanism_accepted": false,
+  "idle_allowlist_ids": [
+    "a8eeda3a5db34389fbcc83fdd8cabc99d687ac1db5aa4011a0586f2a9f0ddc4c",
+    "db21bd452c30c64dfd61152b6cf0a98bebfcea468a0f1c8a18452d2cb0e99de1"
+  ],
+  "external_container_mutations": false,
+  "execution_budget": {
+    "case_seconds": 3600,
+    "controller_seconds": 4000,
+    "max_log_mib_per_case": 16384,
+    "max_log_bytes_per_case": 17179869184,
+    "case_count": 1,
+    "sidecar_reserve_bytes_per_case": 6442450944,
+    "disk_safety_reserve_bytes": 8589934592,
+    "maximum_supported_case_seconds": 3600,
+    "maximum_supported_controller_seconds": 7200,
+    "maximum_supported_log_mib_per_case": 16384,
+    "pre_case_disk_formula": "remaining_cases * (log_cap_bytes + sidecar_reserve_bytes) + safety_reserve_bytes",
+    "running_disk_formula": "free_bytes >= safety_reserve_bytes",
+    "disk_budget_is_reservation_estimate_not_filesystem_quota": true
+  },
+  "traceback": "Traceback (most recent call last):\n  File \"/home/fault28-m-only-model-20261109/controller.py\", line 617, in main\n    save(evidence / 'before.json', resources(args.card))\n                                   ^^^^^^^^^^^^^^^^^^^^\n  File \"/home/fault28-m-only-model-20261109/controller.py\", line 497, in resources\n    raise RuntimeError('Resource gate rejected: ' + json.dumps({\nRuntimeError: Resource gate rejected: {\"unapproved_container_ids\": [\"7dd4a91dad2eb2b840f7785c83519b3033ed91a5e92e2c98bf2ea191e0b541af\"], \"selected_card\": 5, \"foreign_npu_pids\": [], \"require_selected_card_idle\": false, \"selected_card_table_idle\": true}\n",
+  "device_lock_acquired": true,
+  "device_lock_released": true,
+  "owned_container_id": null,
+  "end_epoch": 1794214125.2248218
+}
