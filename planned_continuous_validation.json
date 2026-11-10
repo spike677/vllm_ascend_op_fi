@@ -1,0 +1,39 @@
+{
+  "schema": "fault33.continuous.preregistered.v1",
+  "date": "2026-11-10",
+  "case_ids": [
+    "model_baseline",
+    "model_fault_r0"
+  ],
+  "max_new_tokens": 32,
+  "batch": 8,
+  "original_seed_workloads": true,
+  "prefill_length": 16383,
+  "same_known_teacher_token_on_first_decode": true,
+  "later_input_tokens": "each arm feeds its own greedy next tokens, not teacher forced",
+  "injection_support": "unchanged a4 vendor; only KV length 16384, all 28 layers /8 requests on that step",
+  "later_lengths": "original paged IFA without injection scope; valid lengths mask zero-filled partial pages",
+  "no_external_stop": true,
+  "physical_card": 5,
+  "max_cases_per_controller": 1,
+  "msprobe": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "precision": "high",
+    "steps": "all actually executed decode steps"
+  },
+  "expected_outcome": "Record token/text differences or equality without requiring a flip.",
+  "causal_limits": "After token or KV divergence, later per-step first differences may be propagation rather than another fault location.",
+  "publication_branch": "codex/fault33-statistics-data-20261110",
+  "publication_groups_only": [
+    "model_baseline",
+    "model_fault_r0"
+  ],
+  "status": "NOT_EXECUTED_DEFERRED_BY_USER",
+  "implementation_status": "Design only; continuous adapter and acceptance implementation are unfinished. The local copied single-step runtime is scaffolding, not a working continuous-generation implementation.",
+  "instruction": "Do not wait for the device or start the NPU test until the user explicitly resumes.",
+  "actual_new_npu_calls": 0,
+  "actual_new_msprobe_captures": 0,
+  "statement": "All generation/coverage settings below are planned requirements, not measured results."
+}

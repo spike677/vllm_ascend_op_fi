@@ -11,6 +11,12 @@
 
 [独立首差摘要](first_difference.json) · [完整独立首差报告](reports/independent_first_difference.json) · [推理结果复核](inference_result.json) · [CPU作业回执](inference_recheck_receipt.json) · [归档与复算校验](verification.json) · [文件清单](manifest.json)
 
+## 连续生成补测状态（2026-11-10）
+
+按用户最新指令，**本轮停止等待卡5，不执行新的实机补测，直接提交当前方案与状态说明**。[32-token连续生成补测方案](planned_continuous_validation.json)仅为待实施设计，连续生成适配和验收实现尚未完成，尚无新的NPU调用或msprobe采集。
+
+当前B/F两组原始数据、独立首差及下述推理比较均保持原有单步decode范围，**不能据此判断连续生成token或完整文本是否变化**。方案拟在现有a4支持的KV长度16,384处核验全部28层实际命中，再沿各组自己生成的token继续decode；后续超出匹配范围的调用必须单独记录为未匹配。此流程尚未实测，不作为通过结论；恢复补测需用户重新指示。
+
 ## 注入前后的推理结果
 
 2026-11-10在124复读两组正式实机采集对应的完整FP16 logits，逐文件及逐请求校验SHA，再用该模型同一tokenizer解码贪心下一token。结果为：
