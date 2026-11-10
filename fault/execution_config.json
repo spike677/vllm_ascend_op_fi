@@ -1,0 +1,18 @@
+{
+  "mode": "eager",
+  "torch_compile_forbidden": true,
+  "torchair_backend_requested": false,
+  "model_graph_compilation_requested": false,
+  "core_limit_before": {
+    "cube_core_num": 20,
+    "vector_core_num": 40
+  },
+  "actual_process_core_limit": {
+    "cube_core_num": 16,
+    "vector_core_num": 32
+  },
+  "jit_compile": false,
+  "deterministic_algorithms": true,
+  "route": "torch_npu.npu_fused_infer_attention_score / native ACLNN",
+  "scope": "Python eager execution; native ACLNN may internally build its own operator executor."
+}

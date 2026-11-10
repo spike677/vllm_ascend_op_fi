@@ -1,0 +1,123 @@
+{
+  "schema": "fault28.eager.two_group_statistics_publication.v1",
+  "branch": "codex/fault28-fia-eager-statistics-data-20261110",
+  "group_names": [
+    "baseline",
+    "fault"
+  ],
+  "actual_steps": [
+    0
+  ],
+  "execution_mode": "eager",
+  "physical_card": 2,
+  "capture_date": "2026-11-10",
+  "archives": [
+    {
+      "role": "baseline",
+      "path": "downloads/baseline.zip",
+      "bytes": 1311123,
+      "sha256": "5cc5f05579375ec28004035c2e1bffa31b87ecd3150c4a2c1f1cd79c03011b5d",
+      "files": 89,
+      "uncompressed_bytes": 18359456,
+      "includes_common_reports_and_source": true
+    },
+    {
+      "role": "fault",
+      "path": "downloads/fault.zip",
+      "bytes": 536250,
+      "sha256": "4a56f1eb7c3feb6b05265591ba113991bac27180a3a7aae1188463a28daa27cb",
+      "files": 21,
+      "uncompressed_bytes": 9522671,
+      "includes_common_reports_and_source": false
+    }
+  ],
+  "native_statistics": [
+    {
+      "role": "baseline",
+      "actual_steps": [
+        0
+      ],
+      "original_records": 1616,
+      "raw_dump_bytes": 2543415,
+      "raw_dump_sha256": "c0175027cc09a02328a852710ac632f43058702bf3a7b8a7715d6ebe4f047127",
+      "original_FIA_API_records": 28
+    },
+    {
+      "role": "fault",
+      "actual_steps": [
+        0
+      ],
+      "original_records": 1616,
+      "raw_dump_bytes": 2542822,
+      "raw_dump_sha256": "56e1784eb4a23a62940b27b664531ff2428c69dbd94cc1562f393c790c7f1f78",
+      "original_FIA_API_records": 28
+    }
+  ],
+  "data_files": 110,
+  "data_bytes": 27882127,
+  "data_sha256sums_sha256": "827648a26d80e6b36e88f5ad7fe57374e3208ea112bc12c2e525abb329d6cced",
+  "raw_statistics_bytes_changed": false,
+  "all_source_execution_manifests_B_F_OFF_identical": true,
+  "temporary_card2_lease": {
+    "schema": "fault28.eager.resource_operation_summary.v1",
+    "restored": true,
+    "windows": [
+      {
+        "window": "active-a1",
+        "authorized_max_seconds": 2700,
+        "installed_at": 1794314477.043517,
+        "restored_at": 1794316940.8830962,
+        "actual_seconds": 2463.839579105377,
+        "original_binary_sha256": "e95b17c978781194139f48cc1998826ae16b6851fadd4699df677dcafedf8a65",
+        "restored": true,
+        "denied_operations_including_CPU_selftest": {
+          "stop": 7,
+          "kill": 1,
+          "rm": 1,
+          "exec": 1,
+          "create": 1,
+          "run": 11
+        },
+        "install_receipt_sha256": "2024864801fb7e93dfd8e51fb830433c94507ee774f3aee4fa728288029805ba",
+        "restore_receipt_sha256": "59f2b3b51cbd91f1dc5a69a2085bb0b1118463a62677258aaa7b980927797cbb",
+        "private_credential_removed": true
+      },
+      {
+        "window": "active-a2",
+        "authorized_max_seconds": 1200,
+        "installed_at": 1794317016.2545455,
+        "restored_at": 1794317693.3593786,
+        "actual_seconds": 677.1048331260681,
+        "original_binary_sha256": "e95b17c978781194139f48cc1998826ae16b6851fadd4699df677dcafedf8a65",
+        "restored": true,
+        "denied_operations_including_CPU_selftest": {
+          "stop": 4,
+          "kill": 1,
+          "rm": 1,
+          "exec": 1,
+          "create": 1
+        },
+        "install_receipt_sha256": "83de20aa8f920b30d10dd0f010647c15ab43c36c103202e5b293b7d268c17b6a",
+        "restore_receipt_sha256": "458181fcb9deb18c75b7d44c410eb334186100ab676cd70afe72248cfe11d729",
+        "private_credential_removed": true
+      }
+    ],
+    "second_window_explicit_user_approval": true,
+    "raw_credential_exported": false,
+    "daemon_or_SSH_configuration_changed": false,
+    "card5_stopped_by_this_task": false,
+    "scope": "Observed Docker CLI allocation/cleanup callers only; no direct Docker API/host-PID protection claim."
+  },
+  "full_private_tensors_present": false,
+  "scope_limits": [
+    "This is fixed B8/2048-token FP16 causal FIA eager prefill and first-token logits; no continuous generation or task-quality acceptance.",
+    "The existing controlled common causal-tail variant is used in B/F; this is not a claim that stock current CANN naturally chooses these strategies across batches.",
+    "No new eager B1/B8 same-query matrix or historical Pangu-version reproduction is claimed.",
+    "All matching layers/requests within this fixed supported geometry are covered; arbitrary shapes/models/FIA branches are not validated.",
+    "CPU-FP64 high statistics use a disclosed task-local modified official collector uniformly on every real floating tensor.",
+    "Null/empty/nonfloating-statistics remain unobservable. Summaries alone do not prove complete tensor equality or a unique physical root.",
+    "Actual public host raw/POD plus native launch corroborate the mechanism; inner Reduce grain is source-derived, not an instruction-level device trace.",
+    "M128 also selects the legal M-dependent Brcb template; this experiment does not uniquely separate Reduce-grain rounding from other M-dependent template effects.",
+    "Top-1 stability or change at one prefill does not establish generated-text correctness or business impact."
+  ]
+}
