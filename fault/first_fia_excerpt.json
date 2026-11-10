@@ -1,0 +1,201 @@
+{
+  "generated_excerpt": true,
+  "source_dump_sha256": "56e1784eb4a23a62940b27b664531ff2428c69dbd94cc1562f393c790c7f1f78",
+  "api": "NPU.npu_fused_infer_attention_score.0.forward",
+  "raw_api_record": {
+    "input_args": [
+      {
+        "type": "torch.Tensor",
+        "dtype": "torch.float16",
+        "shape": [
+          8,
+          16,
+          2048,
+          128
+        ],
+        "Max": 36.1875,
+        "Min": -31.21875,
+        "Mean": 0.0021203912345928444,
+        "Norm": 13120.213414717235,
+        "requires_grad": false
+      },
+      {
+        "type": "torch.Tensor",
+        "dtype": "torch.float16",
+        "shape": [
+          8,
+          8,
+          2048,
+          128
+        ],
+        "Max": 452.75,
+        "Min": -486.0,
+        "Mean": 0.06645657573720243,
+        "Norm": 84857.62705510658,
+        "requires_grad": false
+      },
+      {
+        "type": "torch.Tensor",
+        "dtype": "torch.float16",
+        "shape": [
+          8,
+          8,
+          2048,
+          128
+        ],
+        "Max": 1.3408203125,
+        "Min": -1.396484375,
+        "Mean": -0.0017367212817909206,
+        "Norm": 600.2508697135349,
+        "requires_grad": false
+      }
+    ],
+    "input_kwargs": {
+      "atten_mask": {
+        "type": "torch.Tensor",
+        "dtype": "torch.bool",
+        "shape": [
+          2048,
+          2048
+        ],
+        "Max": true,
+        "Min": false,
+        "Mean": null,
+        "Norm": null,
+        "requires_grad": false
+      },
+      "actual_seq_lengths": [
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        }
+      ],
+      "actual_seq_lengths_kv": [
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        },
+        {
+          "type": "int",
+          "value": 2048
+        }
+      ],
+      "num_heads": {
+        "type": "int",
+        "value": 16
+      },
+      "num_key_value_heads": {
+        "type": "int",
+        "value": 8
+      },
+      "scale": {
+        "type": "float",
+        "value": 0.08838834764831845
+      },
+      "input_layout": {
+        "type": "str",
+        "value": "BNSD"
+      },
+      "pre_tokens": {
+        "type": "int",
+        "value": 2147483647
+      },
+      "next_tokens": {
+        "type": "int",
+        "value": 0
+      },
+      "sparse_mode": {
+        "type": "int",
+        "value": 2
+      },
+      "inner_precise": {
+        "type": "int",
+        "value": 0
+      }
+    },
+    "output": [
+      {
+        "type": "torch.Tensor",
+        "dtype": "torch.float16",
+        "shape": [
+          8,
+          16,
+          2048,
+          128
+        ],
+        "Max": 1.3310546875,
+        "Min": -1.388671875,
+        "Mean": -0.002108109450752238,
+        "Norm": 660.572120054888,
+        "requires_grad": false
+      },
+      {
+        "type": "torch.Tensor",
+        "dtype": "torch.float32",
+        "shape": [
+          0
+        ],
+        "Max": null,
+        "Min": null,
+        "Mean": null,
+        "Norm": null,
+        "requires_grad": false
+      }
+    ]
+  },
+  "scope": "One original API record excerpt only; complete unmodified dump/stack/construct are published alongside and in the ZIP.",
+  "source_dump_path": "data/cases/fault/observation/step0/rank0/dump.json",
+  "capture_case_id": "fault"
+}

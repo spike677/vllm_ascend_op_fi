@@ -1,5 +1,5 @@
 {
-  "schema": "fault28.eager.two_group_statistics_publication.v1",
+  "schema": "fault28.eager.two_group_statistics_publication.v2",
   "branch": "codex/fault28-fia-eager-statistics-data-20261110",
   "group_names": [
     "baseline",
@@ -19,7 +19,11 @@
       "sha256": "5cc5f05579375ec28004035c2e1bffa31b87ecd3150c4a2c1f1cd79c03011b5d",
       "files": 89,
       "uncompressed_bytes": 18359456,
-      "includes_common_reports_and_source": true
+      "includes_common_reports_and_source": true,
+      "group": "baseline",
+      "case_id": "baseline",
+      "data_directory": "cases/baseline",
+      "includes_common_materials": true
     },
     {
       "role": "fault",
@@ -28,7 +32,11 @@
       "sha256": "4a56f1eb7c3feb6b05265591ba113991bac27180a3a7aae1188463a28daa27cb",
       "files": 21,
       "uncompressed_bytes": 9522671,
-      "includes_common_reports_and_source": false
+      "includes_common_reports_and_source": false,
+      "group": "fault",
+      "case_id": "fault",
+      "data_directory": "cases/fault",
+      "includes_common_materials": false
     }
   ],
   "native_statistics": [
@@ -119,5 +127,152 @@
     "Actual public host raw/POD plus native launch corroborate the mechanism; inner Reduce grain is source-derived, not an instruction-level device trace.",
     "M128 also selects the legal M-dependent Brcb template; this experiment does not uniquely separate Reduce-grain rounding from other M-dependent template effects.",
     "Top-1 stability or change at one prefill does not establish generated-text correctness or business impact."
-  ]
+  ],
+  "previews": [
+    {
+      "published": "baseline/case.json",
+      "original": "cases/baseline/case.json",
+      "sha256": "88e980a06d9062536a4fdaea5aefa018a03100e2bc54cd379d01262cd248916a"
+    },
+    {
+      "published": "baseline/config.json",
+      "original": "cases/baseline/config.json",
+      "sha256": "286014f405a501ae3ecaae59fa0506df4c88e3060141a2f5c1d6b0f6016d85eb"
+    },
+    {
+      "published": "baseline/collector_provenance.json",
+      "original": "cases/baseline/collector_provenance.json",
+      "sha256": "3282e88c9392b052fa7a1c4865d2b2590c256a6c31b5d25f309074f6c885a04c"
+    },
+    {
+      "published": "baseline/statistics_receipt.json",
+      "original": "cases/baseline/statistics_receipt.json",
+      "sha256": "0bbfe0acda0311384dafca041e1f802e9c1414fd5e522fb29bd354641000b166"
+    },
+    {
+      "published": "baseline/execution_config.json",
+      "original": "cases/baseline/execution_config.json",
+      "sha256": "d6b5c6af2e67994f00d82dc2bab310a184eca0b70dc3057b0665d98ab01dbe33"
+    },
+    {
+      "published": "baseline/observation/step0/rank0/dump.json",
+      "original": "cases/baseline/observation/step0/rank0/dump.json",
+      "sha256": "c0175027cc09a02328a852710ac632f43058702bf3a7b8a7715d6ebe4f047127"
+    },
+    {
+      "published": "baseline/observation/step0/rank0/stack.json",
+      "original": "cases/baseline/observation/step0/rank0/stack.json",
+      "sha256": "95e2c5ea445fb66c6626b8602c4ed823579a3d83880a5b593e85e5afad0bfebe"
+    },
+    {
+      "published": "baseline/observation/step0/rank0/construct.json",
+      "original": "cases/baseline/observation/step0/rank0/construct.json",
+      "sha256": "1874f284dd6588022dfff7ea2d721c824b05d98691a620a13bd7b381fc7f753b"
+    },
+    {
+      "published": "fault/case.json",
+      "original": "cases/fault/case.json",
+      "sha256": "a4b96a99c90a15e23b94d412a1bb20f33802677198f650bebbc3d8bb5dc7d0c8"
+    },
+    {
+      "published": "fault/config.json",
+      "original": "cases/fault/config.json",
+      "sha256": "9cefd8709dc286dfc53d447790801c41ac302ff3fd8c7d238cf7825049c82d3f"
+    },
+    {
+      "published": "fault/collector_provenance.json",
+      "original": "cases/fault/collector_provenance.json",
+      "sha256": "3282e88c9392b052fa7a1c4865d2b2590c256a6c31b5d25f309074f6c885a04c"
+    },
+    {
+      "published": "fault/statistics_receipt.json",
+      "original": "cases/fault/statistics_receipt.json",
+      "sha256": "0277d60ea6cbc007196c6a8083b92d2ecee67b50ab167c4a18b4de92b1fcfd13"
+    },
+    {
+      "published": "fault/execution_config.json",
+      "original": "cases/fault/execution_config.json",
+      "sha256": "d6b5c6af2e67994f00d82dc2bab310a184eca0b70dc3057b0665d98ab01dbe33"
+    },
+    {
+      "published": "fault/observation/step0/rank0/dump.json",
+      "original": "cases/fault/observation/step0/rank0/dump.json",
+      "sha256": "56e1784eb4a23a62940b27b664531ff2428c69dbd94cc1562f393c790c7f1f78"
+    },
+    {
+      "published": "fault/observation/step0/rank0/stack.json",
+      "original": "cases/fault/observation/step0/rank0/stack.json",
+      "sha256": "95e2c5ea445fb66c6626b8602c4ed823579a3d83880a5b593e85e5afad0bfebe"
+    },
+    {
+      "published": "fault/observation/step0/rank0/construct.json",
+      "original": "cases/fault/observation/step0/rank0/construct.json",
+      "sha256": "1874f284dd6588022dfff7ea2d721c824b05d98691a620a13bd7b381fc7f753b"
+    }
+  ],
+  "generated_excerpts": [
+    {
+      "published": "baseline/first_fia_excerpt.json",
+      "original_dump": "cases/baseline/observation/step0/rank0/dump.json",
+      "archive": "downloads/baseline.zip"
+    },
+    {
+      "published": "fault/first_fia_excerpt.json",
+      "original_dump": "cases/fault/observation/step0/rank0/dump.json",
+      "archive": "downloads/fault.zip"
+    }
+  ],
+  "groups": [
+    {
+      "name": "baseline",
+      "case_id": "baseline",
+      "directory": "baseline",
+      "data_directory": "cases/baseline",
+      "archive": "downloads/baseline.zip",
+      "steps": [
+        0
+      ],
+      "web_statistics_directory": "baseline/observation/step0/rank0"
+    },
+    {
+      "name": "fault",
+      "case_id": "fault",
+      "directory": "fault",
+      "data_directory": "cases/fault",
+      "archive": "downloads/fault.zip",
+      "steps": [
+        0
+      ],
+      "web_statistics_directory": "fault/observation/step0/rank0"
+    }
+  ],
+  "case_ids": [
+    "baseline",
+    "fault"
+  ],
+  "only_two_statistics_capture_groups": true,
+  "web_original_statistics_triplets": true,
+  "web_full_independent_first_report": true,
+  "packaging_date": "2026-11-10",
+  "new_npu_calls": 0,
+  "inference_review_kind": "CPU consistency check of published complete-array comparison and capture result metadata; no private arrays reread",
+  "continuous_generation_validation": {
+    "status": "NOT_TESTED_IN_THIS_PREFILL_CAPTURE",
+    "new_npu_calls": 0
+  },
+  "source": {
+    "publication_parent_commit": "91bfbfe3c542d8426e4950a4020f5961218f0b4a",
+    "format_reference_commit": "12f4c806af35f32279881bb4e08457b9c786fb23",
+    "data_sha256sums_sha256": "827648a26d80e6b36e88f5ad7fe57374e3208ea112bc12c2e525abb329d6cced",
+    "source_mapping_sha256": "664b06be9bd4af1aefbac3d24b5b363bf402ef295d7e0d789bbcf7d9d6927ec2"
+  },
+  "layout_migration": {
+    "parent_commit": "91bfbfe3c542d8426e4950a4020f5961218f0b4a",
+    "new_npu_calls": 0,
+    "archive_payloads_unchanged": true,
+    "original_statistics_files_published": 6,
+    "actual_steps_per_group": [
+      0
+    ]
+  }
 }

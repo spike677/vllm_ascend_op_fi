@@ -38,6 +38,43 @@ def verify_data(data):
     assert lease['restored'] and not lease['raw_credential_exported']
     return {'files':len(actual),'bytes':sum(p.stat().st_size for p in actual.values())}
 
+def verify_presentation(data,root,manifest):
+    """The web files must reproduce the same originals as the two archives."""
+    previews=manifest.get('previews',[])
+    if manifest.get('web_original_statistics_triplets'):
+        required={role+'/observation/step0/rank0/'+kind+'.json' for role in ('baseline','fault') for kind in ('dump','stack','construct')}
+        assert required <= {row['published'] for row in previews}
+    for row in previews:
+        original=data/row['original'];published=root/row['published']
+        assert published.read_bytes()==original.read_bytes() and sha(published)==row['sha256']
+    for row in manifest.get('generated_excerpts',[]):
+        excerpt=json.loads((root/row['published']).read_bytes())
+        original=data/row['original_dump'];raw=json.loads(original.read_bytes())
+        assert excerpt['generated_excerpt'] is True and excerpt['source_dump_sha256']==sha(original)
+        assert excerpt['raw_api_record']==raw['data'][excerpt['api']]
+    full=root/'reports/independent_first_difference.json'
+    summary=json.loads((root/'first_difference.json').read_bytes())
+    if manifest.get('web_full_independent_first_report'):
+        assert full.read_bytes()==(data/'reports/independent_first_difference_full.json').read_bytes()
+        assert summary['full_report_sha256']==sha(full)
+    for original,published in [('reports/complete_output_comparison.json','reports/complete_output_comparison.json'),
+        ('reports/acceptance.json','reports/acceptance.json'),('reports/mechanism_review.json','reports/mechanism_review.json')]:
+        assert (data/original).read_bytes()==(root/published).read_bytes()
+    if (root/'inference_result.json').exists():
+        inference=json.loads((root/'inference_result.json').read_bytes())
+        numerical=json.loads((data/'reports/complete_output_comparison.json').read_bytes())
+        logits=next(r for r in numerical['comparisons'] if r['kind']=='logits')
+        assert inference['changed_logit_elements']==logits['all_request_changed_elements']
+        assert inference['logits_changed_requests']==numerical['logits_changed_requests']
+        assert inference['top1_changed_requests']==numerical['top1_changed_requests']
+        assert inference['max_abs']==max(r['max_abs'] for r in logits['requests'])
+        for row,source in zip(inference['requests'],logits['requests']):
+            assert all(row[key]==source[key] for key in ('request_slot','B_top1','F_top1','changed_elements','max_abs'))
+        assert len(inference['requests'])==len(logits['requests'])==8
+        assert inference['continuous_generation_tested'] is False and inference['tokenizer_decode_performed'] is False
+    return {'web_preview_files':len(previews),'web_original_triplets':bool(manifest.get('web_original_statistics_triplets')),
+        'web_full_independent_report':bool(manifest.get('web_full_independent_first_report'))}
+
 def restore(root,destination):
     destination=extended(destination);assert not destination.exists()
     destination.mkdir(parents=True)
@@ -63,10 +100,12 @@ def verify(root,extract_to=None):
         with tempfile.TemporaryDirectory(prefix='fault28-eager-data-verify-',dir=root.parent) as temp:
             assert Path(temp).resolve().parent==root.parent.resolve()
             data=restore(root,Path(temp)/'restored');details=verify_data(data);check_localizer(data,root)
+            presentation=verify_presentation(data,root,manifest)
     else:
         data=restore(root,extract_to);details=verify_data(data);check_localizer(data,root)
+        presentation=verify_presentation(data,root,manifest)
     return {'status':'PASS_TWO_ZIPS_ORIGINAL_BYTES_AND_INDEPENDENT_RECHECK',**details,
-        'actual_steps':[0],'main_groups':['baseline','fault'],'complete_tensors_present':False}
+        'actual_steps':[0],'main_groups':['baseline','fault'],'complete_tensors_present':False,**presentation}
 
 def check_localizer(data,root):
     # Only copied original statistics and the disclosed collector metadata feed
@@ -84,6 +123,8 @@ def check_localizer(data,root):
         assert new['first_observed_api_difference']==old['first_observed_api_difference']
         assert new['all_aligned_records']==old['all_aligned_records'] and new['unobservable_fields']==old['unobservable_fields']
         assert new['evidence']==old['evidence']
+        if json.loads((root/'manifest.json').read_bytes()).get('web_full_independent_first_report'):
+            assert new==json.loads((root/'reports/independent_first_difference.json').read_bytes())
     finally:
         sys.path[:]=old_path
         if previous is None:sys.modules.pop('statistics_values',None)

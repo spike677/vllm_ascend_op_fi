@@ -81,7 +81,7 @@
   "unobservable_fields": 416,
   "tensor_equality_proven": false,
   "physical_fault_location_proven": false,
-  "full_report": "data/reports/independent_first_difference_full.json",
+  "full_report": "reports/independent_first_difference.json",
   "full_report_sha256": "0d8abcfb1c15c9a1b0ca623e559cf9b5a567ba7d18286fc23e8952934f27da16",
   "limits": [
     "First is the first finite numerical difference in aligned raw leaf API record order, inputs before outputs.",
@@ -90,5 +90,18 @@
     "Null/missing/nonfinite statistics stay unobservable. Equal summaries do not prove tensor equality.",
     "All-request statistics alone cannot prove a difference for each individual request.",
     "Native strategy/launch, complete QKV equality and model propagation need separate runtime evidence."
-  ]
+  ],
+  "archived_full_report": "data/reports/independent_first_difference_full.json",
+  "publication_paths": {
+    "baseline_dump": "data/cases/baseline/observation/step0/rank0/dump.json",
+    "fault_dump": "data/cases/fault/observation/step0/rank0/dump.json",
+    "baseline_web_dump": "baseline/observation/step0/rank0/dump.json",
+    "fault_web_dump": "fault/observation/step0/rank0/dump.json",
+    "baseline_excerpt": "baseline/first_fia_excerpt.json",
+    "fault_excerpt": "fault/first_fia_excerpt.json",
+    "baseline_archive": "downloads/baseline.zip",
+    "fault_archive": "downloads/fault.zip",
+    "full_report": "reports/independent_first_difference.json",
+    "archived_full_report": "data/reports/independent_first_difference_full.json"
+  }
 }
