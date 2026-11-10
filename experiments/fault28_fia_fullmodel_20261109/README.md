@@ -2,7 +2,9 @@
 
 **124卡5已通过完整Qwen3图的覆盖、独立首差及首token logits传播验收（2026-11-09）。** 10组、30次完整模型图执行，840次实际FIA节点执行全部核验。B8两组独立F均覆盖28/28层和8/8请求；独立msprobe首差为第0层FIA output0，其Q/K/V在全部请求上逐元素一致。差异经后续层传播至8/8请求的首token logits，Top-1均未变。
 
-[B/F原始statistics/mix与公开复核](../../artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109/README.md) · [联合验收](../../artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109/data/reports/acceptance.json) · [分析方法](analysis/README.md)
+**2026-11-10交付范围调整：只保留正常FIA B和故障FIA F两组msprobe数据。** 两组均显式注册真实FIA，均为同输入B8；B为共同causal规则下的M512，F为M128。B不是原默认SDPA，也不是额外的SDPA/FIA比较。当前交付为6次完整图执行、168次FIA节点执行、4套step/rank统计三件套；10组完整矩阵及重复/OFF/B1/无别名对照仍可在[原始发布提交](https://github.com/spike677/vllm_ascend_op_fi/tree/2aa4432ce92a2c878f6fb6ce3a648b1049df4b48/artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109)追溯。本次仅整理已完成采集并复核，未重新执行NPU。
+
+[仅两组B/F的原始statistics/mix与公开复核](../../artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109/README.md) · [两组验收摘要](../../artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109/data/reports/acceptance.json) · [历史完整矩阵验收](https://github.com/spike677/vllm_ascend_op_fi/blob/2aa4432ce92a2c878f6fb6ce3a648b1049df4b48/artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109/data/reports/acceptance.json) · [分析方法](analysis/README.md)
 
 ## 接入方式与实际调用链
 
@@ -40,7 +42,7 @@
 | **全部10组** | **30** | **840** | **4,368** |
 | 其中B8两组F、全部M128 | 6 | 168 | 1,344 |
 
-每个图28/28层有证据；B8每层覆盖8/8请求、全部2048位置。840份实际FIA迭代CSV及逐层/请求映射随包交付。请求不是单独的一次FIA launch；不能把一次B8节点伪计为8次独立launch。当前固定形状内全部节点匹配，不能据此宣称所有模型、形状或decode路径已覆盖。
+每个图28/28层有证据；B8每层覆盖8/8请求、全部2048位置。历史完整矩阵公开840份实际FIA迭代CSV；当前仅B/F两组保留其中168份及对应逐层/请求映射，两组的全部原生图CSV均保留。请求不是单独的一次FIA launch；不能把一次B8节点伪计为8次独立launch。当前固定形状内全部节点匹配，不能据此宣称所有模型、形状或decode路径已覆盖。
 
 ## 数值传播与控制结果
 
@@ -63,7 +65,7 @@
 
 ## msprobe独立首差及其边界
 
-两边统一 `task=statistics, level=mix, summary_mode=statistics, precision=high, async_dump=false`。保留20套step0/1、rank0的原生dump/stack/construct、配置及完成回执。step0/1是同一prefill图的两次回放，不是两个decode token。
+两边统一 `task=statistics, level=mix, summary_mode=statistics, precision=high, async_dump=false`。历史完整矩阵保留20套原生dump/stack/construct；当前交付只含B/F各step0/1、rank0，共4套及其配置、完成回执。step0/1是同一prefill图的两次回放，不是两个decode token。
 
 继续使用已披露、统一处理真实浮点张量的CPU FP64四统计增强，不按算子、shape、mode或故障位置选择张量。原始module记录为GraphBoundary；列表输出的原生JSON结构是 `[[logits,Q0,K0,V0,A0,...]]`。由实际张量叶子路径 `$[0][4]` 对应实际GE `FusedInferAttentionScore:0`，没有把module记录改名为eager FIA API。
 
@@ -71,7 +73,7 @@
 
 原生GE CSV本轮首先观察到 `Mul_13` 输入1，之前有326个无唯一CSV的节点；这些融合/缺失观测保留为gaps。默认六位CSV不能直接分辨FIA首差，高精度module输出及真实图别名补足该观测。共享embedding/lm_head在同执行组重复dump：保留全部原件，只合并完整CSV行完全一致的观测；跨组或值冲突继续拒绝定位。null、空LSE和缺失项不判相等。
 
-发布包在本地再次做**物理盲验**：只复制配置、采集器身份、FX/GE图、原始统计及CSV，移除case/result、host、策略和数值报告。两个F的两步均独立定位FIA output0。完整元素比较还确认该层真实输入相同、输出首先变化；统计定位仍不是对某条Reduce指令的唯一物理根因证明。
+发布包在本地再次做**物理盲验**：只复制配置、采集器身份、FX/GE图、原始统计及CSV，移除case/result、host、策略和数值报告。历史两个F的两步均独立定位FIA output0；当前两组交付重新核验所选F的两步，结论一致。完整元素比较还确认该层真实输入相同、输出首先变化；统计定位仍不是对某条Reduce指令的唯一物理根因证明。
 
 ## 关键代码
 
@@ -81,6 +83,7 @@
 - [coverage.py](analysis/coverage.py#L68)：真实节点/二进制/任务/三次CSV、请求映射、公开ABI及编译器最终raw/key；不是只看host日志。
 - [graph_evidence.py](analysis/graph_evidence.py#L177)：实际输出树与GE别名、重复CSV、独立拓扑首差；[完整数值比较](analysis/compare_model.py#L62)单独读取私有完整数组。
 - [analyze_matrix.py](analysis/analyze_matrix.py)、[字节摘要复核](analysis/verify_bitwise_controls.py)、[公开包盲验](analysis/verify_public_bundle.py)：联合验收、全部请求SHA和发布原字节复核。
+- [两组交付选择器](analysis/select_bf_evidence.py)：校验原发布包后仅复制B8 B/F，保留原始统计字节和来源映射；`verify_public_bundle.py --primary-bf-only`严格拒绝额外采集组，重新验证168份FIA CSV与独立首差。
 
 ## 环境、范围与保留记录
 

@@ -459,6 +459,8 @@ msprobe 对每个新 base 的第一次调用，首个被观测数值差异在写
 
 **完整Qwen3 FIA图补验（2026-11-09）已通过：** [实现、调用链与覆盖口径](experiments/fault28_fia_fullmodel_20261109/README.md)及[本轮B/F statistics/mix原始证据](artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109/README.md)在124卡5完成10组、30次完整28层模型图执行、840次FIA节点执行。两组B8 F全部28层、8请求持续使用实际M128；独立首差均为第0层FIA output0，全部请求该处Q/K/V完整一致。第0层末query不变，第1层末query起变化，8/8请求首token logits有差异（最大绝对差0.0546875），Top-1均未变。F/F、B1保护与OFF精确恢复通过；无中间别名图的logits与观测图完全一致。
 
+**2026-11-10交付收敛为两组：** 上述原始证据入口现仅保留正常FIA B（`model_b8_baseline`，M512）和故障FIA F（`model_b8_fault_r1`，M128）。两组均显式接入FIA，并非默认SDPA与FIA对比；同B8输入、同causal规则、同`statistics/mix`配置。原始采集字节未改，子集重新盲验首差为FIA输出；其余控制组及完整矩阵留在[历史提交](https://github.com/spike677/vllm_ascend_op_fi/tree/2aa4432ce92a2c878f6fb6ce3a648b1049df4b48/artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109)，不随当前两组交付。
+
 28个同形状FIA节点共享一份JIT kernel，覆盖由每个实际GE节点的二进制/任务/三次CSV及请求行证明，不能把一次host回调当作28次命中。统一CPU FP64增强与真实输出别名下的物理盲验通过；原生六位CSV首差为Mul_13输入1，缺失/gaps保留。本轮使用AttentionInterface将原始HF完整Qwen3接到真实FIA；限定当前受控causal策略与prefill形状，不等同HF默认路由、历史盘古默认策略或decode复现。
 
 **真实 FIA 图设备端粒度补验（2026-11-09）通过受控机制验收：** [实现与调用链](experiments/fault28_fia_grain_20261109/README.md)及[本轮 B/F statistics/mix 与设备标量](artifacts/attention_tiling/fault28_fia_measured_grain_statistics_20261109/README.md)在124卡5完成23组、69次真实图调用。固定同一目标Q/K/V，实际Batch1→8、M512→128对应query63设备Softmax列数512→128；19组官方SDK解码共798条标量与本进程runtime记录一致。相同causal规则下的同B8主对照产生140个Attention、6,141个o_proj差异，F/F稳定且OFF精确恢复。仅凭原始统计与实际图的物理盲验，两步×两个F均独立定位FIA output0 Mean/Norm；依赖明确披露的统一CPU FP64增强与真实GE输出别名，原生GE CSV显示精度限制保留。

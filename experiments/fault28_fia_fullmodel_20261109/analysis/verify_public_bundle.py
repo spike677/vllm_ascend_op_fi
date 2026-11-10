@@ -22,6 +22,7 @@ def extended(path):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--bundle',type=Path,required=True)
     p.add_argument('--blind-work',type=Path,required=True);p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--primary-bf-only',action='store_true',help='Require exactly the two selected B8 FIA groups.')
     a=p.parse_args();root=extended(a.bundle).resolve(strict=True);work=extended(a.blind_work)
     assert not work.exists() and not work.resolve().is_relative_to(root);work.mkdir(parents=True)
     sums={}
@@ -41,18 +42,42 @@ def main():
         assert file.stat().st_size==r['bytes'] and sha(file)==r['sha256'] and r['original_bytes_preserved']
         assert r['source'] not in by_source;by_source[r['source']]=r
     acceptance=json.loads((root/'reports/acceptance.json').read_bytes())
-    assert acceptance['status']=='PASS_FULLMODEL_FIA_COVERAGE_FIRST_DIFFERENCE_AND_RESTORE'
-    assert acceptance['cases']==10 and acceptance['fia_node_executions']==840
+    if a.primary_bf_only:
+        assert acceptance['schema']=='fault28.fia_fullmodel.primary_bf_acceptance.v1'
+        assert acceptance['status']=='PASS_PRIMARY_BF_FIA_COVERAGE_FIRST_DIFFERENCE_AND_LOGITS'
+        expected_cases,expected_executions,expected_participations=2,168,1344
+        scope=json.loads((root/'publication_scope.json').read_bytes())
+        assert scope['case_ids']==['model_b8_baseline','model_b8_fault_r1'] and scope['native_calls']==0
+        assert scope['all_retained_capture_bytes_unchanged']
+        pair=acceptance['primary_pairs'];assert len(pair)==1
+        assert pair[0]['baseline']=='model_b8_baseline' and pair[0]['fault']=='model_b8_fault_r1'
+        for field in ('statistics','complete'):
+            assert sha(root/'reports'/pair[0][field+'_report'])==pair[0][field+'_report_sha256']
+    else:
+        assert acceptance['status']=='PASS_FULLMODEL_FIA_COVERAGE_FIRST_DIFFERENCE_AND_RESTORE'
+        expected_cases,expected_executions,expected_participations=10,840,4368
+    assert acceptance['cases']==expected_cases and acceptance['fia_node_executions']==expected_executions
     assert acceptance['first_token_logits_propagation'] and acceptance['all_eight_request_logits_changed']
     sys.path.insert(0,str(root/'analysis'))
     import graph_evidence,public_plan,coverage
     schema=json.loads((root/'build/fia_abi_schema.json').read_bytes())
-    cases=list((root/'cases').iterdir());assert len(cases)==10
+    cases=sorted((root/'cases').iterdir());assert len(cases)==expected_cases
+    if a.primary_bf_only:
+        assert {c.name for c in cases}=={'model_b8_baseline','model_b8_fault_r1'}
+        expected_reports={'acceptance.json','fault_r1_msprobe.json','fault_r1_complete.json',
+                          'coverage/model_b8_baseline.json','coverage/model_b8_fault_r1.json'}
+        assert {f.relative_to(root/'reports').as_posix() for f in (root/'reports').rglob('*') if f.is_file()}==expected_reports
     executions=0;participations=0;csv_count=0
     for case_folder in cases:
         name=case_folder.name
         result=json.loads((case_folder/'result.json').read_bytes())
         case=json.loads((case_folder/'case.json').read_bytes())
+        if a.primary_bf_only:
+            assert case['batch']==8 and case['capture_aliases'] and case['capture_msprobe']
+            assert case['mode']==('causal_base512' if name=='model_b8_baseline' else 'batch_causal_m128')
+            selection=json.loads((case_folder/'public_ge_selection.json').read_bytes())
+            assert selection['selection']=='all graph nodes'
+            assert selection['available_actual_graph_csv']==selection['published_csv']
         captured=json.loads((case_folder/'controller/completion.json').read_bytes())
         assert captured['status']=='CAPTURE_COMPLETED' and captured['owned_container_removed']
         assert captured['device_lock_acquired'] and captured['device_lock_released'] and not captured['cleanup_errors']
@@ -101,16 +126,19 @@ def main():
             assert row['request_slots']==list(range(case['batch']));csv_count+=1
         assert report['actual_fia_node_executions']==84
         executions+=report['actual_fia_node_executions'];participations+=report['layer_request_executions']
-    assert executions==csv_count==840 and participations==4368
+    assert executions==csv_count==expected_executions and participations==expected_participations
     roles=json.loads((root/'primary_BF.json').read_bytes());blind={}
-    for role in ('baseline','fault','fault_repeat'):
+    if a.primary_bf_only:
+        assert roles['delivery']=='primary_bf_only' and 'fault_repeat' not in roles and 'off_restore' not in roles
+    selected_roles=('baseline','fault') if a.primary_bf_only else ('baseline','fault','fault_repeat')
+    for role in selected_roles:
         source=root/roles[role];target=work/source.name;target.mkdir()
         for name in ('config.json','collector_provenance.json','fx_graph_0.json'):shutil.copyfile(source/name,target/name)
         shutil.copytree(source/'observation',target/'observation')
         shutil.copytree(source/'msprobe_graph',target/'msprobe_graph')
         blind[role]=target
     reviews=[]
-    for role in ('fault','fault_repeat'):
+    for role in selected_roles[1:]:
         report=graph_evidence.compare(blind['baseline'],blind[role])
         first=report['independent_first_producer']
         assert all(r['status']=='ALIGNED_OBSERVED_FIRST_DIFFERENCE' and r['first']['type']=='FusedInferAttentionScore'
@@ -122,12 +150,13 @@ def main():
         'status':'PASS_PUBLIC_BYTES_ALL_NODE_REQUEST_CENSUS_ABI_AND_BLIND_FIRST',
         'files':len(files),'bytes':sum(f.stat().st_size for f in files.values()),
         'mapped_originals':len(mapping['files']),'source_mapping_sha256':sha(root/'source_mapping.json'),
-        'cases':10,'statistics_triplets':20,'actual_fia_node_executions':executions,
+        'cases':expected_cases,'statistics_triplets':2*expected_cases,'actual_fia_node_executions':executions,
         'layer_request_executions':participations,'bound_actual_fia_csv_files':csv_count,
         'physical_blind_reviews':reviews,'blind_inputs_exclude_control_and_numeric_evidence':True,
         'private_tensor_files_opened':0,'native_calls':0,'analysis_source_sha256':sha(Path(__file__)),
         'limits':['Public data cannot reread private complete tensors, raw logs or binary machine code.',
-            'Primary B/F/F2 include all native graph CSV. Other controls retain every FIA CSV plus original statistics/graphs; full private comparisons are reports.',
+            ('Exactly two FIA groups include all native graph CSV; controls remain in the parent commit.' if a.primary_bf_only else
+             'Primary B/F/F2 include all native graph CSV. Other controls retain every FIA CSV plus original statistics/graphs; full private comparisons are reports.'),
             'Four-statistic equality does not establish element equality, and observed first producer is not a unique physical root cause.']}
     output=extended(a.output);assert not output.exists() and not output.resolve().is_relative_to(root)
     output.parent.mkdir(parents=True,exist_ok=True)

@@ -22,10 +22,15 @@ python analysis/graph_evidence.py \
 
 `package_evidence.py`只复制审查白名单。主B8 B/F/F2含全部原生图CSV，其余7组保留全部FIA CSV、原始statistics/mix、完整图和私有全量验算报告；不冒称公开包包含控制组每个算子的全部CSV。多个Data观测均保留，以source_mapping记录原路径和字节SHA。编译器字段摘录与原始文件明确区分。
 
-`verify_public_bundle.py`检查15,119个导出文件及15,096份原始文件映射，重新校验10组public ABI、所有真实任务与840份FIA CSV，再构造物理盲验目录，只放统计、配置、采集器身份及FX/GE图/CSV。case/result、host、策略及完整数值报告物理缺席时，两步×两个F仍独立定位FIA output0。
+原10组公开包及其15,119文件/840份FIA CSV复核保留在[历史提交](https://github.com/spike677/vllm_ascend_op_fi/tree/2aa4432ce92a2c878f6fb6ce3a648b1049df4b48/artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109)。**当前仅交付两组：`model_b8_baseline`和`model_b8_fault_r1`。** 两组都使用真实FIA，分别M512和M128，未附默认SDPA、B1、独立F、OFF或无别名组的数据。
+
+`select_bf_evidence.py`先验证原包全部校验和与来源映射，再按固定白名单复制两组及必要公共材料，原始统计字节不变。新建的两组摘要、范围和来源清单明确标注为子集整理，未冒充新的NPU采集；历史运行源码清单仍保留原指纹，仅随包提供两组运行配置。
+
+`verify_public_bundle.py --primary-bf-only`严格核验两组身份、4套统计三件套、168次真实FIA节点执行及1,344个层/请求/执行组合；同时校验public ABI、所有真实任务、全图CSV保留范围、原始来源字节及完整比较报告绑定。再构造只含统计、配置、采集器身份及真实图/CSV的物理盲验目录，case/result、host、策略和数值报告物理缺席；所选F两步均独立定位FIA output0。
 
 ```bash
 python analysis/verify_public_bundle.py \
+  --primary-bf-only \
   --bundle /path/to/public/data \
   --blind-work /path/to/new-empty-review \
   --output /path/to/new-verification.json
