@@ -4,8 +4,8 @@
 
 | 采集组 | 真实控制 | 网页预览 | 完整原始数据 |
 | --- | --- | --- | --- |
-| `baseline`（B） | OFF，KV计算分块8192、2轮 | [首个IFA原始记录的摘录](baseline/first_ifa_excerpt.json) | [baseline.zip](downloads/baseline.zip)，0.55 MiB |
-| `fault`（F） | inner1024，KV计算分块1024、16轮 | [首个IFA原始记录的摘录](fault/first_ifa_excerpt.json) | [fault.zip](downloads/fault.zip)，0.33 MiB |
+| `baseline`（B） | OFF，KV计算分块8192、2轮 | [step0原始三件套](baseline/observation/step0/rank0/) / [首个IFA摘录](baseline/first_ifa_excerpt.json) | [baseline.zip](downloads/baseline.zip)，0.55 MiB |
+| `fault`（F） | inner1024，KV计算分块1024、16轮 | [step0原始三件套](fault/observation/step0/rank0/) / [首个IFA摘录](fault/first_ifa_excerpt.json) | [fault.zip](downloads/fault.zip)，0.33 MiB |
 
 目录已按故障28的方式统一：网页分组为`baseline/`、`fault/`，下载包为`downloads/baseline.zip`、`downloads/fault.zip`；两包解压到同一目录后，原始统计分别位于：
 
@@ -16,7 +16,7 @@ data/cases/fault/observation/step0/rank0/{dump,stack,construct}.json
 
 两组实际均只有step0。原始case ID分别为`model_baseline`与`model_fault_r0`，其原始配置、dump_path、统计回执、栈及构造记录按采集时字节保留，通过manifest与source_mapping映射到当前目录。首差报告附带新路径索引，定位数值核心未变；这是文件整理，不是重新采集或连续生成验收。
 
-原始完整dump每组约2.2 MB，连同原始`stack.json`、`construct.json`、配置、采集器身份及完成回执保存在ZIP中，字节未改。网页摘录明确标记`generated_excerpt=true`并绑定源dump的SHA，**不是完整dump**。每组只有step0/rank0；这里的step0是一次decode的采集编号。
+网页现已提供`baseline/observation/step0/rank0/`与`fault/observation/step0/rank0/`的原始dump/stack/construct，与故障28采用相同层级。原始完整dump每组约2.2 MB，三件套也随ZIP保存，网页与ZIP中的文件字节一致。配置、采集器身份及完成回执保持原样。网页摘录明确标记`generated_excerpt=true`并绑定源dump的SHA，**不是完整dump**。每组只有step0/rank0；这里的step0是一次decode的采集编号。
 
 [独立首差摘要](first_difference.json) · [完整独立首差报告](reports/independent_first_difference.json) · [推理结果复核](inference_result.json) · [CPU作业回执](inference_recheck_receipt.json) · [归档与复算校验](verification.json) · [文件清单](manifest.json)
 
