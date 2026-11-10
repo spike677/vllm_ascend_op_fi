@@ -27,13 +27,21 @@
   "causal_limits": "After token or KV divergence, later per-step first differences may be propagation rather than another fault location.",
   "publication_branch": "codex/fault33-statistics-data-20261110",
   "publication_groups_only": [
-    "model_baseline",
-    "model_fault_r0"
+    "baseline",
+    "fault"
   ],
   "status": "NOT_EXECUTED_DEFERRED_BY_USER",
   "implementation_status": "Design only; continuous adapter and acceptance implementation are unfinished. The local copied single-step runtime is scaffolding, not a working continuous-generation implementation.",
   "instruction": "Do not wait for the device or start the NPU test until the user explicitly resumes.",
   "actual_new_npu_calls": 0,
   "actual_new_msprobe_captures": 0,
-  "statement": "All generation/coverage settings below are planned requirements, not measured results."
+  "statement": "All generation/coverage settings below are planned requirements, not measured results.",
+  "publication_layout": {
+    "baseline": "data/cases/baseline",
+    "fault": "data/cases/fault"
+  },
+  "original_capture_case_ids": {
+    "baseline": "model_baseline",
+    "fault": "model_fault_r0"
+  }
 }

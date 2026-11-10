@@ -20,7 +20,7 @@ def extended(path):
 def verify(root, destination=None):
     root = extended(root).resolve(strict=True)
     manifest = json.loads((root / 'manifest.json').read_bytes())
-    assert manifest['schema'] == 'fault33.statistics.data_branch.v1'
+    assert manifest['schema'] == 'fault33.statistics.data_branch.v2'
     assert manifest['case_ids'] == ['model_baseline', 'model_fault_r0']
     assert len(manifest['archives']) == 2
     target = extended(destination) if destination is not None else None
@@ -84,15 +84,18 @@ def verify(root, destination=None):
         view = json.loads((root / excerpt['published']).read_bytes())
         assert view['generated_excerpt'] is True
         assert view['source_dump_sha256'] == digests['data/' + excerpt['original_dump']]
+        assert view['source_dump_path'] == 'data/' + excerpt['original_dump']
         with zipfile.ZipFile(root / excerpt['archive']) as bundle:
             raw = json.loads(bundle.read('data/' + excerpt['original_dump']))
         assert view['raw_api_record'] == raw['data'][view['api']]
     case_ids = {PurePosixPath(name).parts[2] for name in digests
-                if name.startswith('data/model/')}
-    assert case_ids == set(manifest['case_ids'])
+                if name.startswith('data/cases/')}
+    assert case_ids == {'baseline', 'fault'}
+    assert manifest['group_names'] == ['baseline', 'fault']
+    assert {g['name']: g['case_id'] for g in manifest['groups']} == {'baseline': 'model_baseline', 'fault': 'model_fault_r0'}
     return {'status': 'PASS_TWO_ARCHIVES_EXACT_ORIGINAL_DATA_AND_PREVIEWS',
             'data_files': len(digests), 'data_bytes': total_bytes, 'archives': 2,
-            'preview_files': len(manifest['previews']), 'case_ids': sorted(case_ids),
+            'preview_files': len(manifest['previews']), 'groups': sorted(case_ids), 'case_ids': manifest['case_ids'],
             'extracted': target is not None, 'native_calls': 0}
 
 

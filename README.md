@@ -1,11 +1,20 @@
 # 故障33：两组完整模型 statistics/mix 数据
 
-本分支只保留 **`model_baseline` 与 `model_fault_r0`** 两组采集，附独立首差报告、推理结果复核及必要来源材料。分支使用独立根提交，不继承实现仓库历史。
+本分支只保留 **`baseline` 与 `fault`** 两组采集，附独立首差报告、推理结果复核及必要来源材料。分支使用独立根提交，不继承实现仓库历史。
 
 | 采集组 | 真实控制 | 网页预览 | 完整原始数据 |
 | --- | --- | --- | --- |
-| `model_baseline`（B） | OFF，KV计算分块8192、2轮 | [首个IFA原始记录的摘录](model_baseline/first_ifa_excerpt.json) | [model_baseline.zip](downloads/model_baseline.zip)，0.55 MiB |
-| `model_fault_r0`（F） | inner1024，KV计算分块1024、16轮 | [首个IFA原始记录的摘录](model_fault_r0/first_ifa_excerpt.json) | [model_fault_r0.zip](downloads/model_fault_r0.zip)，0.33 MiB |
+| `baseline`（B） | OFF，KV计算分块8192、2轮 | [首个IFA原始记录的摘录](baseline/first_ifa_excerpt.json) | [baseline.zip](downloads/baseline.zip)，0.55 MiB |
+| `fault`（F） | inner1024，KV计算分块1024、16轮 | [首个IFA原始记录的摘录](fault/first_ifa_excerpt.json) | [fault.zip](downloads/fault.zip)，0.33 MiB |
+
+目录已按故障28的方式统一：网页分组为`baseline/`、`fault/`，下载包为`downloads/baseline.zip`、`downloads/fault.zip`；两包解压到同一目录后，原始统计分别位于：
+
+```text
+data/cases/baseline/observation/step0/rank0/{dump,stack,construct}.json
+data/cases/fault/observation/step0/rank0/{dump,stack,construct}.json
+```
+
+两组实际均只有step0。原始case ID分别为`model_baseline`与`model_fault_r0`，其原始配置、dump_path、统计回执、栈及构造记录按采集时字节保留，通过manifest与source_mapping映射到当前目录。首差报告附带新路径索引，定位数值核心未变；这是文件整理，不是重新采集或连续生成验收。
 
 原始完整dump每组约2.2 MB，连同原始`stack.json`、`construct.json`、配置、采集器身份及完成回执保存在ZIP中，字节未改。网页摘录明确标记`generated_excerpt=true`并绑定源dump的SHA，**不是完整dump**。每组只有step0/rank0；这里的step0是一次decode的采集编号。
 
@@ -68,7 +77,7 @@ Max=1.328125、Min=-0.75927734375两侧相同。该节点14项有限输入统计
 
 ## 下载及复算
 
-下载两个ZIP后解压到同一目录；B包含公共核验材料，F包只含F组，两个包路径不重叠。完整恢复71个文件、13,293,841字节。也可下载本分支并执行：
+下载两个ZIP后解压到同一目录；B包含公共核验材料，F包只含F组，两个包路径不重叠。完整恢复71个文件、13,294,265字节。也可下载本分支并执行：
 
 ```bash
 python verify_downloads.py
@@ -79,8 +88,8 @@ python verify_downloads.py --extract-to /path/to/new-directory
 
 ```bash
 python data/analysis/compare_model.py \
-  --baseline data/model/model_baseline/observation/step0/rank0/dump.json \
-  --fault data/model/model_fault_r0/observation/step0/rank0/dump.json \
+  --baseline data/cases/baseline/observation/step0/rank0/dump.json \
+  --fault data/cases/fault/observation/step0/rank0/dump.json \
   --output /path/to/new-first-difference.json
 ```
 

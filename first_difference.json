@@ -176,7 +176,7 @@
       "File /audit/model_probe.py, line 306, in <module>, \n main()"
     ]
   },
-  "full_report_sha256": "ab6174da8577be34a289d0bfd2f8a6cf64c83537fe8201d36e51171e78eec373",
+  "full_report_sha256": "b67d1636093a6a2f5c0115e46c16db4cb7e12df8c2c48fe2c33e3b61d8fda027",
   "physical_fault_location_proven": false,
   "tensor_equality_proven": false,
   "limits": [
@@ -185,5 +185,15 @@
     "A metadata mismatch before the first finite difference suppresses localization. Later input differences may reflect propagation.",
     "Null/missing/nonfinite summaries remain unobservable. Equal summaries may correspond to different full tensors.",
     "Each layer is one actual framework IFA API record over a whole batch. Dispatch, per-request differences and model accuracy require separate evidence."
-  ]
+  ],
+  "publication_paths": {
+    "baseline_dump": "data/cases/baseline/observation/step0/rank0/dump.json",
+    "fault_dump": "data/cases/fault/observation/step0/rank0/dump.json",
+    "baseline_preview": "baseline/first_ifa_excerpt.json",
+    "fault_preview": "fault/first_ifa_excerpt.json",
+    "baseline_archive": "downloads/baseline.zip",
+    "fault_archive": "downloads/fault.zip",
+    "full_report": "reports/independent_first_difference.json",
+    "archived_full_report": "data/reports/independent_first_difference.json"
+  }
 }
