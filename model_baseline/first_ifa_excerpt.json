@@ -1,0 +1,145 @@
+{
+  "generated_excerpt": true,
+  "source_dump_sha256": "d150cc451bd58ba4848fe28eb55fcf9e3369ed9fbe3db3eb7644490e188c6422",
+  "api": "NPU.npu_incre_flash_attention.0.forward",
+  "raw_api_record": {
+    "input_args": [
+      {
+        "type": "torch.Tensor",
+        "dtype": "torch.float16",
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "Max": 22.03125,
+        "Min": -25.109375,
+        "Mean": 0.011296970769762993,
+        "Norm": 292.2259826660156,
+        "requires_grad": false
+      },
+      {
+        "type": "torch.Tensor",
+        "dtype": "torch.float16",
+        "shape": [
+          1024,
+          8,
+          128,
+          128
+        ],
+        "Max": 452.75,
+        "Min": -486.0,
+        "Mean": 0.09787841141223907,
+        "Norm": 240015.890625,
+        "requires_grad": false
+      },
+      {
+        "type": "torch.Tensor",
+        "dtype": "torch.float16",
+        "shape": [
+          1024,
+          8,
+          128,
+          128
+        ],
+        "Max": 1.3408203125,
+        "Min": -1.396484375,
+        "Mean": -0.001738294493407011,
+        "Norm": 1697.76416015625,
+        "requires_grad": false
+      }
+    ],
+    "input_kwargs": {
+      "block_table": {
+        "type": "torch.Tensor",
+        "dtype": "torch.int32",
+        "shape": [
+          8,
+          128
+        ],
+        "Max": 1023,
+        "Min": 0,
+        "Mean": null,
+        "Norm": null,
+        "requires_grad": false
+      },
+      "actual_seq_lengths": [
+        {
+          "type": "int",
+          "value": 16384
+        },
+        {
+          "type": "int",
+          "value": 16384
+        },
+        {
+          "type": "int",
+          "value": 16384
+        },
+        {
+          "type": "int",
+          "value": 16384
+        },
+        {
+          "type": "int",
+          "value": 16384
+        },
+        {
+          "type": "int",
+          "value": 16384
+        },
+        {
+          "type": "int",
+          "value": 16384
+        },
+        {
+          "type": "int",
+          "value": 16384
+        }
+      ],
+      "num_heads": {
+        "type": "int",
+        "value": 16
+      },
+      "num_key_value_heads": {
+        "type": "int",
+        "value": 8
+      },
+      "input_layout": {
+        "type": "str",
+        "value": "BNSD"
+      },
+      "scale_value": {
+        "type": "float",
+        "value": 0.08838834764831845
+      },
+      "block_size": {
+        "type": "int",
+        "value": 128
+      },
+      "inner_precise": {
+        "type": "int",
+        "value": 0
+      }
+    },
+    "output": [
+      {
+        "type": "torch.Tensor",
+        "dtype": "torch.float16",
+        "shape": [
+          8,
+          16,
+          1,
+          128
+        ],
+        "Max": 1.328125,
+        "Min": -0.75927734375,
+        "Mean": -0.001310580875724554,
+        "Norm": 14.949091911315918,
+        "requires_grad": false
+      }
+    ]
+  },
+  "scope": "One original API record excerpt; not the full native dump. The complete unmodified triplet is in the ZIP."
+}

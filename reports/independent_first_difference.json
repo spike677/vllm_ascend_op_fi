@@ -1,0 +1,3647 @@
+{
+  "schema": "fault33.model.independent_msprobe.v1",
+  "status": "ALIGNED_OBSERVED_MODEL_API_DIFFERENCE",
+  "ordered_full_stack_construct_match": true,
+  "config_and_collector_match": true,
+  "sources": {
+    "B": {
+      "config": "46eeff42d23637918f05781e13dbc15b2329c349b26e0ebb22a65bf4e8df6a03",
+      "receipt": "ea662a08753e32710558ed9d4bca4af8016071b1d405f476dd651f13e25f374f",
+      "dump": "d150cc451bd58ba4848fe28eb55fcf9e3369ed9fbe3db3eb7644490e188c6422",
+      "stack": "b78f40ad29547ff35f8de937f2bc1556ceb07806787b9a15c209c07564dbdaa3",
+      "construct": "f23bac2bec9f39cd96f146eda213c401e2fe675600971adfe147a8699c372ba9",
+      "collector_provenance": "3629ccd54a74a89ff7072fc59cedfc69bf161f94c07fdcdcd8174a5ee7cd5d6b"
+    },
+    "F": {
+      "config": "29fd7a7a64569e8b8c9c18df37464a7b387cffc285786b49158d041a10c5113e",
+      "receipt": "759e8338ccdc84a60301c29e391ae60140bbcef64e704c0c6fc3897b0701f59e",
+      "dump": "96dc415d031d72a2623a603631847dfc1bb051e0513e8844716fbab6a60eee96",
+      "stack": "b78f40ad29547ff35f8de937f2bc1556ceb07806787b9a15c209c07564dbdaa3",
+      "construct": "f23bac2bec9f39cd96f146eda213c401e2fe675600971adfe147a8699c372ba9",
+      "collector_provenance": "3629ccd54a74a89ff7072fc59cedfc69bf161f94c07fdcdcd8174a5ee7cd5d6b"
+    }
+  },
+  "collectors": {
+    "B": {
+      "configured_precision": "high",
+      "variant": "task_local_fp32_high_v1",
+      "actual_loaded": {
+        "module": "msprobe.core.dump.data_dump.data_processor.pytorch_processor",
+        "path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+        "sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+        "method_code_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py"
+      },
+      "modified_official_collector": true,
+      "manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+      "implementation_verified": false,
+      "verification": "Reported import/code identity, no independent rehash of installed package"
+    },
+    "F": {
+      "configured_precision": "high",
+      "variant": "task_local_fp32_high_v1",
+      "actual_loaded": {
+        "module": "msprobe.core.dump.data_dump.data_processor.pytorch_processor",
+        "path": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py",
+        "sha256": "3aa7ede049bc6cb4d54a572a85f907214a98890a3c9544ed7f75e25df1306141",
+        "method_code_file": "/audit/collector_high_a1/packages/msprobe/core/dump/data_dump/data_processor/pytorch_processor.py"
+      },
+      "modified_official_collector": true,
+      "manifest_sha256": "743354feff5a5f91a17e68695bad167fa2584a48d257ec227d0973d071f185af",
+      "implementation_verified": false,
+      "verification": "Reported import/code identity, no independent rehash of installed package"
+    }
+  },
+  "native_layer_inventory": {
+    "B": [
+      {
+        "step": 0,
+        "layer_index": 0,
+        "api": "NPU.npu_incre_flash_attention.0.forward",
+        "parent": "Module.model.layers.0.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 1,
+        "api": "NPU.npu_incre_flash_attention.1.forward",
+        "parent": "Module.model.layers.1.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 2,
+        "api": "NPU.npu_incre_flash_attention.2.forward",
+        "parent": "Module.model.layers.2.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 3,
+        "api": "NPU.npu_incre_flash_attention.3.forward",
+        "parent": "Module.model.layers.3.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 4,
+        "api": "NPU.npu_incre_flash_attention.4.forward",
+        "parent": "Module.model.layers.4.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 5,
+        "api": "NPU.npu_incre_flash_attention.5.forward",
+        "parent": "Module.model.layers.5.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 6,
+        "api": "NPU.npu_incre_flash_attention.6.forward",
+        "parent": "Module.model.layers.6.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 7,
+        "api": "NPU.npu_incre_flash_attention.7.forward",
+        "parent": "Module.model.layers.7.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 8,
+        "api": "NPU.npu_incre_flash_attention.8.forward",
+        "parent": "Module.model.layers.8.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 9,
+        "api": "NPU.npu_incre_flash_attention.9.forward",
+        "parent": "Module.model.layers.9.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 10,
+        "api": "NPU.npu_incre_flash_attention.10.forward",
+        "parent": "Module.model.layers.10.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 11,
+        "api": "NPU.npu_incre_flash_attention.11.forward",
+        "parent": "Module.model.layers.11.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 12,
+        "api": "NPU.npu_incre_flash_attention.12.forward",
+        "parent": "Module.model.layers.12.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 13,
+        "api": "NPU.npu_incre_flash_attention.13.forward",
+        "parent": "Module.model.layers.13.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 14,
+        "api": "NPU.npu_incre_flash_attention.14.forward",
+        "parent": "Module.model.layers.14.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 15,
+        "api": "NPU.npu_incre_flash_attention.15.forward",
+        "parent": "Module.model.layers.15.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 16,
+        "api": "NPU.npu_incre_flash_attention.16.forward",
+        "parent": "Module.model.layers.16.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 17,
+        "api": "NPU.npu_incre_flash_attention.17.forward",
+        "parent": "Module.model.layers.17.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 18,
+        "api": "NPU.npu_incre_flash_attention.18.forward",
+        "parent": "Module.model.layers.18.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 19,
+        "api": "NPU.npu_incre_flash_attention.19.forward",
+        "parent": "Module.model.layers.19.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 20,
+        "api": "NPU.npu_incre_flash_attention.20.forward",
+        "parent": "Module.model.layers.20.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 21,
+        "api": "NPU.npu_incre_flash_attention.21.forward",
+        "parent": "Module.model.layers.21.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 22,
+        "api": "NPU.npu_incre_flash_attention.22.forward",
+        "parent": "Module.model.layers.22.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 23,
+        "api": "NPU.npu_incre_flash_attention.23.forward",
+        "parent": "Module.model.layers.23.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 24,
+        "api": "NPU.npu_incre_flash_attention.24.forward",
+        "parent": "Module.model.layers.24.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 25,
+        "api": "NPU.npu_incre_flash_attention.25.forward",
+        "parent": "Module.model.layers.25.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 26,
+        "api": "NPU.npu_incre_flash_attention.26.forward",
+        "parent": "Module.model.layers.26.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 27,
+        "api": "NPU.npu_incre_flash_attention.27.forward",
+        "parent": "Module.model.layers.27.self_attn.Qwen3Attention.forward.0"
+      }
+    ],
+    "F": [
+      {
+        "step": 0,
+        "layer_index": 0,
+        "api": "NPU.npu_incre_flash_attention.0.forward",
+        "parent": "Module.model.layers.0.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 1,
+        "api": "NPU.npu_incre_flash_attention.1.forward",
+        "parent": "Module.model.layers.1.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 2,
+        "api": "NPU.npu_incre_flash_attention.2.forward",
+        "parent": "Module.model.layers.2.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 3,
+        "api": "NPU.npu_incre_flash_attention.3.forward",
+        "parent": "Module.model.layers.3.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 4,
+        "api": "NPU.npu_incre_flash_attention.4.forward",
+        "parent": "Module.model.layers.4.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 5,
+        "api": "NPU.npu_incre_flash_attention.5.forward",
+        "parent": "Module.model.layers.5.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 6,
+        "api": "NPU.npu_incre_flash_attention.6.forward",
+        "parent": "Module.model.layers.6.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 7,
+        "api": "NPU.npu_incre_flash_attention.7.forward",
+        "parent": "Module.model.layers.7.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 8,
+        "api": "NPU.npu_incre_flash_attention.8.forward",
+        "parent": "Module.model.layers.8.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 9,
+        "api": "NPU.npu_incre_flash_attention.9.forward",
+        "parent": "Module.model.layers.9.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 10,
+        "api": "NPU.npu_incre_flash_attention.10.forward",
+        "parent": "Module.model.layers.10.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 11,
+        "api": "NPU.npu_incre_flash_attention.11.forward",
+        "parent": "Module.model.layers.11.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 12,
+        "api": "NPU.npu_incre_flash_attention.12.forward",
+        "parent": "Module.model.layers.12.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 13,
+        "api": "NPU.npu_incre_flash_attention.13.forward",
+        "parent": "Module.model.layers.13.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 14,
+        "api": "NPU.npu_incre_flash_attention.14.forward",
+        "parent": "Module.model.layers.14.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 15,
+        "api": "NPU.npu_incre_flash_attention.15.forward",
+        "parent": "Module.model.layers.15.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 16,
+        "api": "NPU.npu_incre_flash_attention.16.forward",
+        "parent": "Module.model.layers.16.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 17,
+        "api": "NPU.npu_incre_flash_attention.17.forward",
+        "parent": "Module.model.layers.17.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 18,
+        "api": "NPU.npu_incre_flash_attention.18.forward",
+        "parent": "Module.model.layers.18.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 19,
+        "api": "NPU.npu_incre_flash_attention.19.forward",
+        "parent": "Module.model.layers.19.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 20,
+        "api": "NPU.npu_incre_flash_attention.20.forward",
+        "parent": "Module.model.layers.20.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 21,
+        "api": "NPU.npu_incre_flash_attention.21.forward",
+        "parent": "Module.model.layers.21.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 22,
+        "api": "NPU.npu_incre_flash_attention.22.forward",
+        "parent": "Module.model.layers.22.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 23,
+        "api": "NPU.npu_incre_flash_attention.23.forward",
+        "parent": "Module.model.layers.23.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 24,
+        "api": "NPU.npu_incre_flash_attention.24.forward",
+        "parent": "Module.model.layers.24.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 25,
+        "api": "NPU.npu_incre_flash_attention.25.forward",
+        "parent": "Module.model.layers.25.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 26,
+        "api": "NPU.npu_incre_flash_attention.26.forward",
+        "parent": "Module.model.layers.26.self_attn.Qwen3Attention.forward.0"
+      },
+      {
+        "step": 0,
+        "layer_index": 27,
+        "api": "NPU.npu_incre_flash_attention.27.forward",
+        "parent": "Module.model.layers.27.self_attn.Qwen3Attention.forward.0"
+      }
+    ]
+  },
+  "first_observed_model_api_difference": {
+    "B": {
+      "name": "NPU.npu_incre_flash_attention.0.forward",
+      "ordinal": 57,
+      "parents": [
+        "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+        "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+        "Module.model.Qwen3Model.forward.0"
+      ],
+      "layer": 0,
+      "diagnostic": false,
+      "native": true
+    },
+    "F": {
+      "name": "NPU.npu_incre_flash_attention.0.forward",
+      "ordinal": 57,
+      "parents": [
+        "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+        "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+        "Module.model.Qwen3Model.forward.0"
+      ],
+      "layer": 0,
+      "diagnostic": false,
+      "native": true
+    },
+    "boundary": "output",
+    "fields": [
+      {
+        "path": "$[0].Mean",
+        "B": -0.001310580875724554,
+        "F": -0.0013106090482324362,
+        "B_present": true,
+        "F_present": true
+      },
+      {
+        "path": "$[0].Norm",
+        "B": 14.949091911315918,
+        "F": 14.94908618927002,
+        "B_present": true,
+        "F_present": true
+      }
+    ],
+    "input_summary": {
+      "different_finite_fields": 0,
+      "equal_finite_fields": 14,
+      "unobservable_fields": 2,
+      "metadata_differences": 0
+    },
+    "output_summary": {
+      "different_finite_fields": 2,
+      "equal_finite_fields": 2,
+      "unobservable_fields": 0,
+      "metadata_differences": 0
+    },
+    "source_stack": [
+      "File /audit/model_adapter.py, line 239, in call, \n attended = self.npu.npu_incre_flash_attention(",
+      "File /audit/model_adapter.py, line 261, in <lambda>, \n wrapper = functools.wraps(original)(lambda *args, **kwargs: self.call(*args, **kwargs))",
+      "File /work/venv/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py, line 92, in sdpa_attention_forward, \n attn_output = torch.nn.functional.scaled_dot_product_attention(",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 277, in forward, \n attn_output, attn_weights = attention_interface(",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 318, in forward, \n hidden_states, _ = self.self_attn(",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py, line 93, in __call__, \n return super().__call__(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+      "File /work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py, line 248, in wrapper, \n outputs = func(self, *args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 952, in wrapper, \n output = func(self, *args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model(",
+      "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 876, in wrapper, \n output = func(self, *args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /audit/model_probe.py, line 268, in main, \n reply = model(input_ids=next_ids, position_ids=torch.tensor([[16383]], device='npu:0'),",
+      "File /audit/model_probe.py, line 306, in <module>, \n main()"
+    ]
+  },
+  "first_observed_raw_api_difference": {
+    "B": {
+      "name": "NPU.npu_incre_flash_attention.0.forward",
+      "ordinal": 57,
+      "parents": [
+        "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+        "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+        "Module.model.Qwen3Model.forward.0"
+      ],
+      "layer": 0,
+      "diagnostic": false,
+      "native": true
+    },
+    "F": {
+      "name": "NPU.npu_incre_flash_attention.0.forward",
+      "ordinal": 57,
+      "parents": [
+        "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+        "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+        "Module.model.Qwen3Model.forward.0"
+      ],
+      "layer": 0,
+      "diagnostic": false,
+      "native": true
+    },
+    "boundary": "output",
+    "fields": [
+      {
+        "path": "$[0].Mean",
+        "B": -0.001310580875724554,
+        "F": -0.0013106090482324362,
+        "B_present": true,
+        "F_present": true
+      },
+      {
+        "path": "$[0].Norm",
+        "B": 14.949091911315918,
+        "F": 14.94908618927002,
+        "B_present": true,
+        "F_present": true
+      }
+    ],
+    "input_summary": {
+      "different_finite_fields": 0,
+      "equal_finite_fields": 14,
+      "unobservable_fields": 2,
+      "metadata_differences": 0
+    },
+    "output_summary": {
+      "different_finite_fields": 2,
+      "equal_finite_fields": 2,
+      "unobservable_fields": 0,
+      "metadata_differences": 0
+    },
+    "source_stack": [
+      "File /audit/model_adapter.py, line 239, in call, \n attended = self.npu.npu_incre_flash_attention(",
+      "File /audit/model_adapter.py, line 261, in <lambda>, \n wrapper = functools.wraps(original)(lambda *args, **kwargs: self.call(*args, **kwargs))",
+      "File /work/venv/lib/python3.11/site-packages/transformers/integrations/sdpa_attention.py, line 92, in sdpa_attention_forward, \n attn_output = torch.nn.functional.scaled_dot_product_attention(",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 277, in forward, \n attn_output, attn_weights = attention_interface(",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 318, in forward, \n hidden_states, _ = self.self_attn(",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py, line 93, in __call__, \n return super().__call__(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+      "File /work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py, line 248, in wrapper, \n outputs = func(self, *args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 952, in wrapper, \n output = func(self, *args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model(",
+      "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 876, in wrapper, \n output = func(self, *args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /audit/model_probe.py, line 268, in main, \n reply = model(input_ids=next_ids, position_ids=torch.tensor([[16383]], device='npu:0'),",
+      "File /audit/model_probe.py, line 306, in <module>, \n main()"
+    ]
+  },
+  "first_observed_module_difference": {
+    "B": {
+      "name": "Module.model.layers.0.self_attn.o_proj.Linear.forward.0",
+      "ordinal": 75,
+      "parents": [
+        "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+        "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+        "Module.model.Qwen3Model.forward.0"
+      ],
+      "layer": 0,
+      "diagnostic": false,
+      "native": false
+    },
+    "F": {
+      "name": "Module.model.layers.0.self_attn.o_proj.Linear.forward.0",
+      "ordinal": 75,
+      "parents": [
+        "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+        "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+        "Module.model.Qwen3Model.forward.0"
+      ],
+      "layer": 0,
+      "diagnostic": false,
+      "native": false
+    },
+    "boundary": "input",
+    "fields": [
+      {
+        "path": "$.input_args[0].Mean",
+        "B": -0.001310580875724554,
+        "F": -0.0013106090482324362,
+        "B_present": true,
+        "F_present": true
+      },
+      {
+        "path": "$.input_args[0].Norm",
+        "B": 14.949091911315918,
+        "F": 14.94908618927002,
+        "B_present": true,
+        "F_present": true
+      }
+    ],
+    "input_summary": {
+      "different_finite_fields": 2,
+      "equal_finite_fields": 6,
+      "unobservable_fields": 0,
+      "metadata_differences": 0
+    },
+    "output_summary": {
+      "different_finite_fields": 2,
+      "equal_finite_fields": 2,
+      "unobservable_fields": 0,
+      "metadata_differences": 0
+    },
+    "source_stack": [
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1841, in inner, \n hook_result = hook(self, args, kwargs, result)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 290, in forward, \n attn_output = self.o_proj(attn_output)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 318, in forward, \n hidden_states, _ = self.self_attn(",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/modeling_layers.py, line 93, in __call__, \n return super().__call__(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+      "File /work/venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py, line 248, in wrapper, \n outputs = func(self, *args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 952, in wrapper, \n output = func(self, *args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1830, in inner, \n result = forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1882, in _call_impl, \n return inner()",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model(",
+      "File /work/venv/lib/python3.11/site-packages/transformers/utils/generic.py, line 876, in wrapper, \n output = func(self, *args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1787, in _call_impl, \n return forward_call(*args, **kwargs)",
+      "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1776, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+      "File /audit/model_probe.py, line 268, in main, \n reply = model(input_ids=next_ids, position_ids=torch.tensor([[16383]], device='npu:0'),",
+      "File /audit/model_probe.py, line 306, in <module>, \n main()"
+    ]
+  },
+  "first_model_metadata_mismatch": null,
+  "native_layers": [
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.0.forward",
+        "ordinal": 57,
+        "parents": [
+          "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 0,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.0.forward",
+        "ordinal": 57,
+        "parents": [
+          "Module.model.layers.0.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.0.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 0,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 14
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.001310580875724554,
+            "F": -0.0013106090482324362,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 14.949091911315918,
+            "F": 14.94908618927002,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.1.forward",
+        "ordinal": 146,
+        "parents": [
+          "Module.model.layers.1.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.1.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 1,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.1.forward",
+        "ordinal": 146,
+        "parents": [
+          "Module.model.layers.1.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.1.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 1,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.01436646655201912,
+            "F": 0.014368977397680283,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 201.5884552001953,
+            "F": 201.5906219482422,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 12
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": 0.0001350340317003429,
+            "F": 0.00013495748862624168,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 7.375364780426025,
+            "F": 7.375315189361572,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.2.forward",
+        "ordinal": 235,
+        "parents": [
+          "Module.model.layers.2.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.2.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 2,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.2.forward",
+        "ordinal": 235,
+        "parents": [
+          "Module.model.layers.2.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.2.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 2,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.007264932617545128,
+            "F": -0.007278643548488617,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 172.66607666015625,
+            "F": 172.67007446289062,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 12
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.0010715065291151404,
+            "F": -0.001071097911335528,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 12.134011268615723,
+            "F": 12.134300231933594,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.3.forward",
+        "ordinal": 324,
+        "parents": [
+          "Module.model.layers.3.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.3.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 3,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.3.forward",
+        "ordinal": 324,
+        "parents": [
+          "Module.model.layers.3.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.3.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 3,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Min",
+            "B": -17.046875,
+            "F": -17.03125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.03898860514163971,
+            "F": -0.03898382931947708,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 224.64105224609375,
+            "F": 224.63783264160156,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.0029247207567095757,
+            "F": -0.0029247202910482883,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 10
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": 0.0008800236973911524,
+            "F": 0.0008820146322250366,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 16.05718421936035,
+            "F": 16.05586051940918,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.4.forward",
+        "ordinal": 413,
+        "parents": [
+          "Module.model.layers.4.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.4.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 4,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.4.forward",
+        "ordinal": 413,
+        "parents": [
+          "Module.model.layers.4.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.4.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 4,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 13.3515625,
+            "F": 13.359375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.06997703015804291,
+            "F": 0.06996917724609375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 174.3118438720703,
+            "F": 174.30589294433594,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": -0.04783574119210243,
+            "F": -0.047835737466812134,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 10
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.0029351338744163513,
+            "F": -0.0029352835845202208,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 25.566425323486328,
+            "F": 25.56629753112793,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.5.forward",
+        "ordinal": 502,
+        "parents": [
+          "Module.model.layers.5.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.5.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 5,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.5.forward",
+        "ordinal": 502,
+        "parents": [
+          "Module.model.layers.5.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.5.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 5,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Min",
+            "B": -13.15625,
+            "F": -13.1484375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.0074137235060334206,
+            "F": 0.007404007017612457,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 236.5492706298828,
+            "F": 236.54800415039062,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 11
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.00034634076291695237,
+            "F": -0.0003459013532847166,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 18.29050064086914,
+            "F": 18.286029815673828,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.6.forward",
+        "ordinal": 591,
+        "parents": [
+          "Module.model.layers.6.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.6.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 6,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.6.forward",
+        "ordinal": 591,
+        "parents": [
+          "Module.model.layers.6.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.6.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 6,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 9.46875,
+            "F": 9.4765625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.03496682643890381,
+            "F": -0.03497129678726196,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 201.52069091796875,
+            "F": 201.52084350585938,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 11
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.009797105565667152,
+            "F": -0.009798521175980568,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 37.12431716918945,
+            "F": 37.12218475341797,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.7.forward",
+        "ordinal": 680,
+        "parents": [
+          "Module.model.layers.7.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.7.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 7,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.7.forward",
+        "ordinal": 680,
+        "parents": [
+          "Module.model.layers.7.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.7.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 7,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Min",
+            "B": -20.984375,
+            "F": -21.0,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.025689639151096344,
+            "F": 0.025696303695440292,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 217.82745361328125,
+            "F": 217.833740234375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": -0.06098402291536331,
+            "F": -0.06098403036594391,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Norm",
+            "B": 4480.5244140625,
+            "F": 4480.52490234375,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 9
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 2.064453125,
+            "F": 2.06640625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": -4.826637450605631e-05,
+            "F": -4.9284426495432854e-05,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 23.321378707885742,
+            "F": 23.32463264465332,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.8.forward",
+        "ordinal": 769,
+        "parents": [
+          "Module.model.layers.8.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.8.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 8,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.8.forward",
+        "ordinal": 769,
+        "parents": [
+          "Module.model.layers.8.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.8.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 8,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.009416481480002403,
+            "F": -0.009371597319841385,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 216.89170837402344,
+            "F": 216.87449645996094,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": -0.04906725138425827,
+            "F": -0.049067240208387375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.003630351973697543,
+            "F": -0.0036303524393588305,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Norm",
+            "B": 5611.14306640625,
+            "F": 5611.142578125,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 9
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 1.8203125,
+            "F": 1.8193359375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": -0.003014310961589217,
+            "F": -0.003014370333403349,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 29.252243041992188,
+            "F": 29.241724014282227,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.9.forward",
+        "ordinal": 858,
+        "parents": [
+          "Module.model.layers.9.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.9.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 9,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.9.forward",
+        "ordinal": 858,
+        "parents": [
+          "Module.model.layers.9.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.9.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 9,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 18.5625,
+            "F": 18.546875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Min",
+            "B": -13.8125,
+            "F": -13.8203125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.014432867988944054,
+            "F": -0.01443275436758995,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 220.50967407226562,
+            "F": 220.5038604736328,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.06797704100608826,
+            "F": 0.06797705590724945,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.02362113818526268,
+            "F": 0.02362114004790783,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Norm",
+            "B": 6616.27978515625,
+            "F": 6616.279296875,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 7
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Min",
+            "B": -3.423828125,
+            "F": -3.421875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": 0.0016747956397011876,
+            "F": 0.0017347924876958132,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 39.02092361450195,
+            "F": 38.96174240112305,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.10.forward",
+        "ordinal": 947,
+        "parents": [
+          "Module.model.layers.10.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.10.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 10,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.10.forward",
+        "ordinal": 947,
+        "parents": [
+          "Module.model.layers.10.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.10.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 10,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.044599831104278564,
+            "F": 0.044533565640449524,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 253.9898223876953,
+            "F": 254.01519775390625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.07559140026569366,
+            "F": 0.07559141516685486,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.004272035788744688,
+            "F": 0.00427203020080924,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Norm",
+            "B": 6068.18798828125,
+            "F": 6068.1865234375,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 9
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 2.75390625,
+            "F": 2.7421875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Min",
+            "B": -2.482421875,
+            "F": -2.470703125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": -0.0003798363031819463,
+            "F": -0.00039829162415117025,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 31.113239288330078,
+            "F": 31.08450698852539,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 0
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.11.forward",
+        "ordinal": 1036,
+        "parents": [
+          "Module.model.layers.11.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.11.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 11,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.11.forward",
+        "ordinal": 1036,
+        "parents": [
+          "Module.model.layers.11.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.11.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 11,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 9.3203125,
+            "F": 9.375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Min",
+            "B": -6.92578125,
+            "F": -6.921875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.020964274182915688,
+            "F": 0.02066807635128498,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 165.53018188476562,
+            "F": 165.54904174804688,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.02197645604610443,
+            "F": 0.021976454183459282,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 9
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": 0.01488443836569786,
+            "F": 0.014856120571494102,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 67.63900756835938,
+            "F": 67.60231018066406,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.12.forward",
+        "ordinal": 1125,
+        "parents": [
+          "Module.model.layers.12.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.12.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 12,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.12.forward",
+        "ordinal": 1125,
+        "parents": [
+          "Module.model.layers.12.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.12.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 12,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 8.1640625,
+            "F": 8.125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Min",
+            "B": -7.296875,
+            "F": -7.24609375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.012218699790537357,
+            "F": 0.01229274831712246,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 175.11436462402344,
+            "F": 175.1566162109375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": -0.012208189815282822,
+            "F": -0.012208200059831142,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Norm",
+            "B": 51390.71875,
+            "F": 51390.71484375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.00033197313314303756,
+            "F": -0.0003319788374938071,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Norm",
+            "B": 8622.4580078125,
+            "F": 8622.45703125,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 6
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 3.8046875,
+            "F": 3.798828125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": -0.0040189786814153194,
+            "F": -0.00404189620167017,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 40.60934829711914,
+            "F": 40.596683502197266,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.13.forward",
+        "ordinal": 1214,
+        "parents": [
+          "Module.model.layers.13.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.13.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 13,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.13.forward",
+        "ordinal": 1214,
+        "parents": [
+          "Module.model.layers.13.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.13.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 13,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.002479835646227002,
+            "F": 0.0025521363131701946,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 208.05006408691406,
+            "F": 208.15072631835938,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": -0.011917421594262123,
+            "F": -0.01191744301468134,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.014696205034852028,
+            "F": -0.014696208760142326,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 10
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Min",
+            "B": -7.0546875,
+            "F": -7.05078125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": -0.023418402299284935,
+            "F": -0.02343032881617546,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 67.78535461425781,
+            "F": 67.76952362060547,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.14.forward",
+        "ordinal": 1303,
+        "parents": [
+          "Module.model.layers.14.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.14.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 14,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.14.forward",
+        "ordinal": 1303,
+        "parents": [
+          "Module.model.layers.14.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.14.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 14,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.0036104624159634113,
+            "F": -0.0036145607009530067,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 231.2787322998047,
+            "F": 231.10057067871094,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.16869843006134033,
+            "F": 0.16869845986366272,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.030894124880433083,
+            "F": 0.030894126743078232,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 10
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 3.513671875,
+            "F": 3.51953125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Min",
+            "B": -3.7265625,
+            "F": -3.724609375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": 0.02299603819847107,
+            "F": 0.022957975044846535,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 51.983787536621094,
+            "F": 52.03559494018555,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 0
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.15.forward",
+        "ordinal": 1392,
+        "parents": [
+          "Module.model.layers.15.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.15.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 15,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.15.forward",
+        "ordinal": 1392,
+        "parents": [
+          "Module.model.layers.15.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.15.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 15,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.021360041573643684,
+            "F": -0.021264128386974335,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 150.1295166015625,
+            "F": 150.17269897460938,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": -0.0656546950340271,
+            "F": -0.06565466523170471,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.007259603124111891,
+            "F": -0.00725959800183773,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 10
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 7.17578125,
+            "F": 7.1796875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": 0.0021220743656158447,
+            "F": 0.002194189466536045,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 63.05925369262695,
+            "F": 63.106937408447266,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.16.forward",
+        "ordinal": 1481,
+        "parents": [
+          "Module.model.layers.16.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.16.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 16,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.16.forward",
+        "ordinal": 1481,
+        "parents": [
+          "Module.model.layers.16.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.16.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 16,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.045976199209690094,
+            "F": 0.045889340341091156,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 151.98187255859375,
+            "F": 151.96163940429688,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": -0.028952792286872864,
+            "F": -0.02895282208919525,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.010643691755831242,
+            "F": 0.010643690824508667,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 10
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": 0.00205258559435606,
+            "F": 0.001988491043448448,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 91.70692443847656,
+            "F": 91.7744369506836,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.17.forward",
+        "ordinal": 1570,
+        "parents": [
+          "Module.model.layers.17.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.17.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 17,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.17.forward",
+        "ordinal": 1570,
+        "parents": [
+          "Module.model.layers.17.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.17.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 17,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 18.125,
+            "F": 18.296875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Min",
+            "B": -9.6484375,
+            "F": -9.65625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.022487029433250427,
+            "F": -0.022347737103700638,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 166.6668243408203,
+            "F": 166.59890747070312,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.004606942180544138,
+            "F": 0.004606914706528187,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Norm",
+            "B": 47082.48828125,
+            "F": 47082.4921875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.008263355121016502,
+            "F": 0.00826335046440363,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 7
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 8.09375,
+            "F": 8.1015625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": 0.006624600850045681,
+            "F": 0.006661639548838139,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 124.6798324584961,
+            "F": 124.64470672607422,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.18.forward",
+        "ordinal": 1659,
+        "parents": [
+          "Module.model.layers.18.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.18.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 18,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.18.forward",
+        "ordinal": 1659,
+        "parents": [
+          "Module.model.layers.18.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.18.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 18,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 7.90234375,
+            "F": 7.9140625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.04168108478188515,
+            "F": 0.04166432097554207,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 148.9414825439453,
+            "F": 148.98052978515625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.035253118723630905,
+            "F": 0.0352531298995018,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Norm",
+            "B": 28161.396484375,
+            "F": 28161.39453125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.0900268703699112,
+            "F": -0.09002688527107239,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 8
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Min",
+            "B": -6.25,
+            "F": -6.2578125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": -0.04304869845509529,
+            "F": -0.04314154386520386,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 127.9947738647461,
+            "F": 128.0706024169922,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.19.forward",
+        "ordinal": 1748,
+        "parents": [
+          "Module.model.layers.19.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.19.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 19,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.19.forward",
+        "ordinal": 1748,
+        "parents": [
+          "Module.model.layers.19.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.19.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 19,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.04100927710533142,
+            "F": 0.04104379564523697,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 145.95068359375,
+            "F": 145.97329711914062,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.11290799081325531,
+            "F": 0.1129080057144165,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Norm",
+            "B": 30417.51953125,
+            "F": 30417.521484375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.0597173273563385,
+            "F": 0.059717342257499695,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 9
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 11.9921875,
+            "F": 12.03125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": 0.030143266543745995,
+            "F": 0.030201300978660583,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 144.5585174560547,
+            "F": 144.62403869628906,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.20.forward",
+        "ordinal": 1837,
+        "parents": [
+          "Module.model.layers.20.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.20.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 20,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.20.forward",
+        "ordinal": 1837,
+        "parents": [
+          "Module.model.layers.20.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.20.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 20,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Min",
+            "B": -11.5234375,
+            "F": -11.515625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.020426686853170395,
+            "F": -0.020436521619558334,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 164.44993591308594,
+            "F": 164.4293975830078,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.10713113099336624,
+            "F": 0.10713110864162445,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 10
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": 0.05251415818929672,
+            "F": 0.05256368964910507,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 203.89903259277344,
+            "F": 203.9617919921875,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.21.forward",
+        "ordinal": 1926,
+        "parents": [
+          "Module.model.layers.21.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.21.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 21,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.21.forward",
+        "ordinal": 1926,
+        "parents": [
+          "Module.model.layers.21.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.21.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 21,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 6.890625,
+            "F": 6.88671875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.017812218517065048,
+            "F": 0.0177072174847126,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 136.3256072998047,
+            "F": 136.34364318847656,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": -0.04743149131536484,
+            "F": -0.04743148386478424,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.029294895008206367,
+            "F": -0.029294904321432114,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 9
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": 0.007723626680672169,
+            "F": 0.007620763964951038,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 216.0579833984375,
+            "F": 216.33836364746094,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.22.forward",
+        "ordinal": 2015,
+        "parents": [
+          "Module.model.layers.22.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.22.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 22,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.22.forward",
+        "ordinal": 2015,
+        "parents": [
+          "Module.model.layers.22.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.22.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 22,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 21.171875,
+            "F": 21.1875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Min",
+            "B": -14.4609375,
+            "F": -14.46875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.04682130366563797,
+            "F": 0.046806931495666504,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 190.3524627685547,
+            "F": 190.37713623046875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.04861730337142944,
+            "F": 0.04861731082201004,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.1282651573419571,
+            "F": 0.12826518714427948,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 8
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 12.1640625,
+            "F": 12.15625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Min",
+            "B": -13.6796875,
+            "F": -13.640625,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": 0.0416596345603466,
+            "F": 0.04166506603360176,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 129.2144012451172,
+            "F": 129.09251403808594,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 0
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.23.forward",
+        "ordinal": 2104,
+        "parents": [
+          "Module.model.layers.23.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.23.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 23,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.23.forward",
+        "ordinal": 2104,
+        "parents": [
+          "Module.model.layers.23.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.23.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 23,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.003104519098997116,
+            "F": -0.0031287670135498047,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 155.1220703125,
+            "F": 155.15272521972656,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.008936472237110138,
+            "F": 0.00893645454198122,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.02321041189134121,
+            "F": -0.023210417479276657,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 10
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Min",
+            "B": -20.84375,
+            "F": -20.796875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": -0.028837958350777626,
+            "F": -0.0288676880300045,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 199.7554931640625,
+            "F": 199.78958129882812,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.24.forward",
+        "ordinal": 2193,
+        "parents": [
+          "Module.model.layers.24.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.24.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 24,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.24.forward",
+        "ordinal": 2193,
+        "parents": [
+          "Module.model.layers.24.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.24.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 24,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Min",
+            "B": -6.79296875,
+            "F": -6.80078125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": 0.045506205409765244,
+            "F": 0.04555869102478027,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 125.10585021972656,
+            "F": 125.13341522216797,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": -0.06901276111602783,
+            "F": -0.06901274621486664,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.030530503019690514,
+            "F": -0.03053048998117447,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 9
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": 0.01838460937142372,
+            "F": 0.01840692013502121,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 238.953125,
+            "F": 238.97511291503906,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 2
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.25.forward",
+        "ordinal": 2282,
+        "parents": [
+          "Module.model.layers.25.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.25.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 25,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.25.forward",
+        "ordinal": 2282,
+        "parents": [
+          "Module.model.layers.25.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.25.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 25,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 5.42578125,
+            "F": 5.4296875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Min",
+            "B": -7.234375,
+            "F": -7.23828125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.01743285544216633,
+            "F": -0.017477234825491905,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 118.7325210571289,
+            "F": 118.75255584716797,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Norm",
+            "B": 33995.40234375,
+            "F": 33995.3984375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": -0.08841156214475632,
+            "F": -0.08841155469417572,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 8
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 18.9375,
+            "F": 18.921875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Min",
+            "B": -17.953125,
+            "F": -17.984375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": -0.06105813384056091,
+            "F": -0.06111937016248703,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 232.3306121826172,
+            "F": 232.2152099609375,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 0
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.26.forward",
+        "ordinal": 2371,
+        "parents": [
+          "Module.model.layers.26.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.26.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 26,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.26.forward",
+        "ordinal": 2371,
+        "parents": [
+          "Module.model.layers.26.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.26.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 26,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 11.7109375,
+            "F": 11.71875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.013571115210652351,
+            "F": -0.013579643331468105,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 136.61123657226562,
+            "F": 136.6214141845703,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.046756185591220856,
+            "F": 0.04675617814064026,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.10049423575401306,
+            "F": 0.10049424320459366,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 9
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 31.03125,
+            "F": 31.046875,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Min",
+            "B": -23.796875,
+            "F": -23.78125,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": -0.027103746309876442,
+            "F": -0.027066398411989212,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 357.4892578125,
+            "F": 357.3755798339844,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 0
+      }
+    },
+    {
+      "B": {
+        "name": "NPU.npu_incre_flash_attention.27.forward",
+        "ordinal": 2460,
+        "parents": [
+          "Module.model.layers.27.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.27.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 27,
+        "diagnostic": false,
+        "native": true
+      },
+      "F": {
+        "name": "NPU.npu_incre_flash_attention.27.forward",
+        "ordinal": 2460,
+        "parents": [
+          "Module.model.layers.27.self_attn.Qwen3Attention.forward.0",
+          "Module.model.layers.27.Qwen3DecoderLayer.forward.0",
+          "Module.model.Qwen3Model.forward.0"
+        ],
+        "layer": 27,
+        "diagnostic": false,
+        "native": true
+      },
+      "input": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$.input_args[0].Max",
+            "B": 21.234375,
+            "F": 21.25,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Min",
+            "B": -23.421875,
+            "F": -23.4375,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Mean",
+            "B": -0.08761155605316162,
+            "F": -0.08762384951114655,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[0].Norm",
+            "B": 278.65985107421875,
+            "F": 278.6760559082031,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[1].Mean",
+            "B": 0.05545787885785103,
+            "F": 0.05545788258314133,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_args[2].Mean",
+            "B": 0.03950195014476776,
+            "F": 0.039501987397670746,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [
+          {
+            "path": "$.input_kwargs.block_table.Mean",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$.input_kwargs.block_table.Norm",
+            "B": null,
+            "F": null,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "matching_finite_statistics": 8
+      },
+      "output": {
+        "metadata_differences": [],
+        "statistical_differences": [
+          {
+            "path": "$[0].Max",
+            "B": 23.984375,
+            "F": 24.0,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Mean",
+            "B": 0.006307515781372786,
+            "F": 0.0063447970896959305,
+            "B_present": true,
+            "F_present": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 170.9334716796875,
+            "F": 170.97093200683594,
+            "B_present": true,
+            "F_present": true
+          }
+        ],
+        "unobservable": [],
+        "matching_finite_statistics": 1
+      }
+    }
+  ],
+  "node_counts": {
+    "B": 2510,
+    "F": 2510
+  },
+  "compared_fields": {
+    "equal_finite": 12238,
+    "different_finite": 12636,
+    "unobservable": 178,
+    "metadata_differences": 0
+  },
+  "diagnostic_node_count": 896,
+  "diagnostic_source_rule": {
+    "file": "/audit/model_adapter.py",
+    "functions": [
+      "array_digest",
+      "cpu_array",
+      "physical_report",
+      "physical_rows_after",
+      "tensor_report"
+    ]
+  },
+  "analysis_uses_hit_or_policy": false,
+  "physical_fault_location_proven": false,
+  "tensor_equality_proven": false,
+  "limits": [
+    "Independent first difference in original finite API summaries in dump order. Module boundaries are reported separately.",
+    "Model ranking excludes only exact diagnostic source frames. Unfiltered first raw API difference is separately retained.",
+    "A metadata mismatch before the first finite difference suppresses localization. Later input differences may reflect propagation.",
+    "Null/missing/nonfinite summaries remain unobservable. Equal summaries may correspond to different full tensors.",
+    "Each layer is one actual framework IFA API record over a whole batch. Dispatch, per-request differences and model accuracy require separate evidence."
+  ]
+}

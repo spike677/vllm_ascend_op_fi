@@ -1,0 +1,55 @@
+{
+  "status": "PASS_TWO_ARCHIVES_EXACT_ORIGINAL_DATA_AND_PREVIEWS",
+  "data_files": 71,
+  "data_bytes": 13293841,
+  "archives": 2,
+  "preview_files": 6,
+  "case_ids": [
+    "model_baseline",
+    "model_fault_r0"
+  ],
+  "extracted": true,
+  "native_calls": 0,
+  "restored_independent_statistics_review": {
+    "status": "ALIGNED_OBSERVED_MODEL_API_DIFFERENCE",
+    "full_report_reproduced_byte_for_byte": true,
+    "report_sha256": "ab6174da8577be34a289d0bfd2f8a6cf64c83537fe8201d36e51171e78eec373",
+    "node_counts": {
+      "B": 2510,
+      "F": 2510
+    },
+    "compared_fields": {
+      "equal_finite": 12238,
+      "different_finite": 12636,
+      "unobservable": 178,
+      "metadata_differences": 0
+    },
+    "first_layer": 0,
+    "first_api": "NPU.npu_incre_flash_attention.0.forward",
+    "boundary": "output",
+    "fields": [
+      {
+        "path": "$[0].Mean",
+        "B": -0.001310580875724554,
+        "F": -0.0013106090482324362,
+        "B_present": true,
+        "F_present": true
+      },
+      {
+        "path": "$[0].Norm",
+        "B": 14.949091911315918,
+        "F": 14.94908618927002,
+        "B_present": true,
+        "F_present": true
+      }
+    ],
+    "input_summary": {
+      "different_finite_fields": 0,
+      "equal_finite_fields": 14,
+      "unobservable_fields": 2,
+      "metadata_differences": 0
+    },
+    "policy_or_hit_records_used": false,
+    "new_npu_calls": 0
+  }
+}

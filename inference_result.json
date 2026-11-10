@@ -1,0 +1,600 @@
+{
+  "schema": "fault33.published_BF.inference_output_recheck.v1",
+  "status": "PASS_COMPLETE_LOGITS_AND_TOKENIZER_RECHECK",
+  "test_kind": "CPU reread of the original completed NPU inference outputs, not a fresh NPU run",
+  "source_commit": "c1dcb0f22438362bfdd7100f834b0be62cd425c9",
+  "review_date": "2026-11-10",
+  "model": "Qwen3-0.6B FP16 TP1, original SDPA prefill plus explicit paged IFA decode",
+  "request_count": 8,
+  "known_prefix_decode_steps": 1,
+  "kv_length": 16384,
+  "physical_block_size": 128,
+  "B_sinner": 8192,
+  "F_sinner": 1024,
+  "changed_logits": 1035472,
+  "logit_elements": 1215488,
+  "max_abs_logit_difference": 0.1171875,
+  "requests_with_changed_logits": 8,
+  "changed_greedy_next_tokens": 0,
+  "changed_decoded_fragments": 0,
+  "rows": [
+    {
+      "request_id": "request_00",
+      "request_slot": 0,
+      "known_prefix_sha256": "7e58d661776f987ec34532e90734675a9c34d064e1d9c2b1d2359483f1d6b384",
+      "teacher_token_id": 264,
+      "changed_logits": 138093,
+      "logit_elements": 151936,
+      "max_abs_logit_difference": 0.03125,
+      "B_next_token_id": 19415,
+      "F_next_token_id": 19415,
+      "B_next_token_text": " compiler",
+      "F_next_token_text": " compiler",
+      "next_token_changed": false,
+      "decoded_fragment_changed": false,
+      "B_top5": [
+        {
+          "id": 19415,
+          "logit": 26.6875,
+          "text": " compiler"
+        },
+        {
+          "id": 33620,
+          "logit": 17.390625,
+          "text": "compiler"
+        },
+        {
+          "id": 87075,
+          "logit": 17.078125,
+          "text": " compilers"
+        },
+        {
+          "id": 80910,
+          "logit": 16.296875,
+          "text": "_compiler"
+        },
+        {
+          "id": 45631,
+          "logit": 16.09375,
+          "text": " Compiler"
+        }
+      ],
+      "F_top5": [
+        {
+          "id": 19415,
+          "logit": 26.671875,
+          "text": " compiler"
+        },
+        {
+          "id": 33620,
+          "logit": 17.390625,
+          "text": "compiler"
+        },
+        {
+          "id": 87075,
+          "logit": 17.078125,
+          "text": " compilers"
+        },
+        {
+          "id": 80910,
+          "logit": 16.296875,
+          "text": "_compiler"
+        },
+        {
+          "id": 45631,
+          "logit": 16.09375,
+          "text": " Compiler"
+        }
+      ]
+    },
+    {
+      "request_id": "request_01",
+      "request_slot": 1,
+      "known_prefix_sha256": "c39c45e83ae0a00f5ec0e13cd0a947129fdce0a03929075bea126a8b4f7a44a5",
+      "teacher_token_id": 279,
+      "changed_logits": 120883,
+      "logit_elements": 151936,
+      "max_abs_logit_difference": 0.0234375,
+      "B_next_token_id": 15311,
+      "F_next_token_id": 15311,
+      "B_next_token_text": " titles",
+      "F_next_token_text": " titles",
+      "next_token_changed": false,
+      "decoded_fragment_changed": false,
+      "B_top5": [
+        {
+          "id": 15311,
+          "logit": 27.109375,
+          "text": " titles"
+        },
+        {
+          "id": 34523,
+          "logit": 17.953125,
+          "text": "titles"
+        },
+        {
+          "id": 84387,
+          "logit": 16.515625,
+          "text": " Titles"
+        },
+        {
+          "id": 8142,
+          "logit": 16.34375,
+          "text": " tit"
+        },
+        {
+          "id": 2265,
+          "logit": 16.046875,
+          "text": " title"
+        }
+      ],
+      "F_top5": [
+        {
+          "id": 15311,
+          "logit": 27.109375,
+          "text": " titles"
+        },
+        {
+          "id": 34523,
+          "logit": 17.9375,
+          "text": "titles"
+        },
+        {
+          "id": 84387,
+          "logit": 16.515625,
+          "text": " Titles"
+        },
+        {
+          "id": 8142,
+          "logit": 16.34375,
+          "text": " tit"
+        },
+        {
+          "id": 2265,
+          "logit": 16.046875,
+          "text": " title"
+        }
+      ]
+    },
+    {
+      "request_id": "request_02",
+      "request_slot": 2,
+      "known_prefix_sha256": "31a45b200a4220adcd8e33036656cd8da5c9e0b1900aecb68e84009df40ae972",
+      "teacher_token_id": 35156,
+      "changed_logits": 118007,
+      "logit_elements": 151936,
+      "max_abs_logit_difference": 0.03125,
+      "B_next_token_id": 46876,
+      "F_next_token_id": 46876,
+      "B_next_token_text": " algebra",
+      "F_next_token_text": " algebra",
+      "next_token_changed": false,
+      "decoded_fragment_changed": false,
+      "B_top5": [
+        {
+          "id": 46876,
+          "logit": 27.046875,
+          "text": " algebra"
+        },
+        {
+          "id": 76443,
+          "logit": 17.203125,
+          "text": " Algebra"
+        },
+        {
+          "id": 452,
+          "logit": 17.015625,
+          "text": " al"
+        },
+        {
+          "id": 34784,
+          "logit": 15.328125,
+          "text": " arithmetic"
+        },
+        {
+          "id": 12111,
+          "logit": 15.0703125,
+          "text": " algorithm"
+        }
+      ],
+      "F_top5": [
+        {
+          "id": 46876,
+          "logit": 27.0625,
+          "text": " algebra"
+        },
+        {
+          "id": 76443,
+          "logit": 17.203125,
+          "text": " Algebra"
+        },
+        {
+          "id": 452,
+          "logit": 17.015625,
+          "text": " al"
+        },
+        {
+          "id": 34784,
+          "logit": 15.328125,
+          "text": " arithmetic"
+        },
+        {
+          "id": 12111,
+          "logit": 15.0703125,
+          "text": " algorithm"
+        }
+      ]
+    },
+    {
+      "request_id": "request_03",
+      "request_slot": 3,
+      "known_prefix_sha256": "66375cf95df4eb1bff9b3b84a2f2bbec0983a63c081639bf4c69fad54fcb3115",
+      "teacher_token_id": 13027,
+      "changed_logits": 147270,
+      "logit_elements": 151936,
+      "max_abs_logit_difference": 0.03125,
+      "B_next_token_id": 729,
+      "F_next_token_id": 729,
+      "B_next_token_text": " function",
+      "F_next_token_text": " function",
+      "next_token_changed": false,
+      "decoded_fragment_changed": false,
+      "B_top5": [
+        {
+          "id": 729,
+          "logit": 24.359375,
+          "text": " function"
+        },
+        {
+          "id": 5746,
+          "logit": 15.390625,
+          "text": " functions"
+        },
+        {
+          "id": 5712,
+          "logit": 14.59375,
+          "text": " Function"
+        },
+        {
+          "id": 1688,
+          "logit": 14.234375,
+          "text": "function"
+        },
+        {
+          "id": 33401,
+          "logit": 13.5390625,
+          "text": " fonction"
+        }
+      ],
+      "F_top5": [
+        {
+          "id": 729,
+          "logit": 24.390625,
+          "text": " function"
+        },
+        {
+          "id": 5746,
+          "logit": 15.4140625,
+          "text": " functions"
+        },
+        {
+          "id": 5712,
+          "logit": 14.6171875,
+          "text": " Function"
+        },
+        {
+          "id": 1688,
+          "logit": 14.2421875,
+          "text": "function"
+        },
+        {
+          "id": 33401,
+          "logit": 13.546875,
+          "text": " fonction"
+        }
+      ]
+    },
+    {
+      "request_id": "request_04",
+      "request_slot": 4,
+      "known_prefix_sha256": "59cf13c117d3ecb6d0836fb29e8f7e3c2db3c7759a4f031fe5fb4ae935099272",
+      "teacher_token_id": 52858,
+      "changed_logits": 119311,
+      "logit_elements": 151936,
+      "max_abs_logit_difference": 0.015625,
+      "B_next_token_id": 323,
+      "F_next_token_id": 323,
+      "B_next_token_text": " and",
+      "F_next_token_text": " and",
+      "next_token_changed": false,
+      "decoded_fragment_changed": false,
+      "B_top5": [
+        {
+          "id": 323,
+          "logit": 24.8125,
+          "text": " and"
+        },
+        {
+          "id": 7587,
+          "logit": 13.6875,
+          "text": " и"
+        },
+        {
+          "id": 47742,
+          "logit": 13.6640625,
+          "text": " và"
+        },
+        {
+          "id": 33108,
+          "logit": 11.5078125,
+          "text": "和"
+        },
+        {
+          "id": 609,
+          "logit": 11.0234375,
+          "text": " &"
+        }
+      ],
+      "F_top5": [
+        {
+          "id": 323,
+          "logit": 24.8125,
+          "text": " and"
+        },
+        {
+          "id": 7587,
+          "logit": 13.6875,
+          "text": " и"
+        },
+        {
+          "id": 47742,
+          "logit": 13.6640625,
+          "text": " và"
+        },
+        {
+          "id": 33108,
+          "logit": 11.5078125,
+          "text": "和"
+        },
+        {
+          "id": 609,
+          "logit": 11.0234375,
+          "text": " &"
+        }
+      ]
+    },
+    {
+      "request_id": "request_05",
+      "request_slot": 5,
+      "known_prefix_sha256": "069923857aed07469e1deec14028780c0023fbdf300173de43afa19add457f3d",
+      "teacher_token_id": 10224,
+      "changed_logits": 136197,
+      "logit_elements": 151936,
+      "max_abs_logit_difference": 0.0244140625,
+      "B_next_token_id": 279,
+      "F_next_token_id": 279,
+      "B_next_token_text": " the",
+      "F_next_token_text": " the",
+      "next_token_changed": false,
+      "decoded_fragment_changed": false,
+      "B_top5": [
+        {
+          "id": 279,
+          "logit": 26.328125,
+          "text": " the"
+        },
+        {
+          "id": 4357,
+          "logit": 14.1484375,
+          "text": " events"
+        },
+        {
+          "id": 264,
+          "logit": 11.9375,
+          "text": " a"
+        },
+        {
+          "id": 1782,
+          "logit": 11.8984375,
+          "text": "the"
+        },
+        {
+          "id": 323,
+          "logit": 11.5703125,
+          "text": " and"
+        }
+      ],
+      "F_top5": [
+        {
+          "id": 279,
+          "logit": 26.328125,
+          "text": " the"
+        },
+        {
+          "id": 4357,
+          "logit": 14.140625,
+          "text": " events"
+        },
+        {
+          "id": 264,
+          "logit": 11.9453125,
+          "text": " a"
+        },
+        {
+          "id": 1782,
+          "logit": 11.8984375,
+          "text": "the"
+        },
+        {
+          "id": 323,
+          "logit": 11.5625,
+          "text": " and"
+        }
+      ]
+    },
+    {
+      "request_id": "request_06",
+      "request_slot": 6,
+      "known_prefix_sha256": "7343cf196a30053232b66fbc7b69af9e702b1a5c01018406eca746d46b1fb612",
+      "teacher_token_id": 911,
+      "changed_logits": 109528,
+      "logit_elements": 151936,
+      "max_abs_logit_difference": 0.0197906494140625,
+      "B_next_token_id": 6008,
+      "F_next_token_id": 6008,
+      "B_next_token_text": " plant",
+      "F_next_token_text": " plant",
+      "next_token_changed": false,
+      "decoded_fragment_changed": false,
+      "B_top5": [
+        {
+          "id": 6008,
+          "logit": 27.03125,
+          "text": " plant"
+        },
+        {
+          "id": 10779,
+          "logit": 15.5390625,
+          "text": " plants"
+        },
+        {
+          "id": 20827,
+          "logit": 14.6796875,
+          "text": "plant"
+        },
+        {
+          "id": 104155,
+          "logit": 13.8203125,
+          "text": "植物"
+        },
+        {
+          "id": 279,
+          "logit": 13.8046875,
+          "text": " the"
+        }
+      ],
+      "F_top5": [
+        {
+          "id": 6008,
+          "logit": 27.046875,
+          "text": " plant"
+        },
+        {
+          "id": 10779,
+          "logit": 15.5546875,
+          "text": " plants"
+        },
+        {
+          "id": 20827,
+          "logit": 14.6875,
+          "text": "plant"
+        },
+        {
+          "id": 104155,
+          "logit": 13.828125,
+          "text": "植物"
+        },
+        {
+          "id": 279,
+          "logit": 13.8125,
+          "text": " the"
+        }
+      ]
+    },
+    {
+      "request_id": "request_07",
+      "request_slot": 7,
+      "known_prefix_sha256": "e8579deeb73850d04529e7cfd9f520bc272081421126a7ce7f75d30f91248893",
+      "teacher_token_id": 264,
+      "changed_logits": 146183,
+      "logit_elements": 151936,
+      "max_abs_logit_difference": 0.1171875,
+      "B_next_token_id": 6439,
+      "F_next_token_id": 6439,
+      "B_next_token_text": " worked",
+      "F_next_token_text": " worked",
+      "next_token_changed": false,
+      "decoded_fragment_changed": false,
+      "B_top5": [
+        {
+          "id": 6439,
+          "logit": 26.46875,
+          "text": " worked"
+        },
+        {
+          "id": 70114,
+          "logit": 18.109375,
+          "text": "worked"
+        },
+        {
+          "id": 3238,
+          "logit": 17.65625,
+          "text": " working"
+        },
+        {
+          "id": 975,
+          "logit": 16.09375,
+          "text": " work"
+        },
+        {
+          "id": 14858,
+          "logit": 15.234375,
+          "text": " walked"
+        }
+      ],
+      "F_top5": [
+        {
+          "id": 6439,
+          "logit": 26.5,
+          "text": " worked"
+        },
+        {
+          "id": 70114,
+          "logit": 18.140625,
+          "text": "worked"
+        },
+        {
+          "id": 3238,
+          "logit": 17.671875,
+          "text": " working"
+        },
+        {
+          "id": 975,
+          "logit": 16.09375,
+          "text": " work"
+        },
+        {
+          "id": 14858,
+          "logit": 15.25,
+          "text": " walked"
+        }
+      ]
+    }
+  ],
+  "sources": {
+    "model_baseline": {
+      "result_sha256": "36f5a93ace77571b92f034972f6de04c8f6eedf59bf42341d9cb4c6eef18ea1c",
+      "logits_sha256": "c3fdb5deb61baf55845ec0cfd77660687c7540fbc691a2de3431f7d6e274fcf2"
+    },
+    "model_fault_r0": {
+      "result_sha256": "bc37bba1aaa7eab20f124b1a0fd19725f48e5dc94a7ca90bd422ec603b79e44f",
+      "logits_sha256": "8dceecfaa9622c1259174b86d73f9ad6de9370f3a0faea7b0a7e27384d178512"
+    }
+  },
+  "tokenizer_files_sha256": {
+    "tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+    "tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101",
+    "vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  },
+  "new_npu_calls": 0,
+  "cpu_only": true,
+  "continuous_generation_tested": false,
+  "private_tensor_payload_exported": false,
+  "limits": [
+    "Only one greedy next-token prediction at the fixed known prefixes is compared.",
+    "Equal next-token results do not imply equal logits, equal later continuations or equal model quality.",
+    "The source prompts are the original long repeated-seed workloads; this is not a new short chat prompt.",
+    "Physical block size stays 128; the controlled intervention changes KV computation grouping.",
+    "The original complete logits remain private on 124; public output contains only scalar metrics and token IDs/text."
+  ]
+}
