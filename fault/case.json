@@ -1,6 +1,6 @@
 {
   "schema": "fault28.fia_fullmodel.case.v1",
-  "case_id": "model_b8_fault_r1",
+  "case_id": "fault",
   "operator_variant": "private_vendor",
   "model_family": "qwen3_fullmodel",
   "mode": "batch_causal_m128",
@@ -31,11 +31,11 @@
     "request_06",
     "request_07"
   ],
-  "input_manifest": "/audit/private/requests.json",
+  "input_manifest": "/audit_shared/private/requests.json",
   "input_manifest_sha256": "ed6b27940c3336efe8cd941fda9da191edcbd8257c34587396345f24d7994fe1",
-  "model_manifest": "/audit/model_manifest.json",
+  "model_manifest": "/audit_shared/model_manifest.json",
   "model_manifest_sha256": "12707e0b213b8ad5ea6a6486edaea02cea0ab38a137025fd01d9e49c493b9abc",
-  "cpu_inventory": "/audit/outputs/cpu_export_a2/inventory.json",
+  "cpu_inventory": "/audit_shared/outputs/cpu_export_a2/inventory.json",
   "cpu_inventory_sha256": "8ac534594fac30470324f6800f6b55cd6d71b0b5f7da8fe7f62d8fbcd91655c8",
   "statistics_variant": "task_local_cpu_fp64_high_v1",
   "approved_collector_manifest_file": "/audit/collector_fp64_a1/stage_manifest.json",
@@ -43,5 +43,7 @@
   "approved_vendor_manifest_file": "/audit/vendor_stage_a5/vendor_manifest.json",
   "approved_vendor_manifest_sha256": "205988e230b901421f14eb0844ce435b66647a5846324608d768d313a66f8cd2",
   "approved_custom_opp_path": "/audit/vendor_stage_a5/vendors/fault28_fia_graph_transformer",
-  "scope": "Full Qwen3 prefill through registered FIA attention, not default HF SDPA route or decode."
+  "scope": "Full Qwen3 prefill through registered FIA attention, not default HF SDPA route or decode.",
+  "fusion_switch_file": "/audit/setup/fusion_off.json",
+  "capture_intent": "Capability/collection with the real single GE fullgraph; GE per-operator originals are not Python API records."
 }

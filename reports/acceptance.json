@@ -1,0 +1,63 @@
+{
+  "schema": "fault28.fullgraph_per_operator_recollection_acceptance.v1",
+  "status": "PASS_RECOLLECTION_WITH_OBSERVABILITY_LIMITS",
+  "cases": 2,
+  "roles": [
+    "baseline",
+    "fault"
+  ],
+  "physical_card": 2,
+  "attempts": {
+    "baseline": "ge_card2_baseline_a1",
+    "fault": "ge_card2_fault_a1"
+  },
+  "real_single_ge_fullgraph": true,
+  "eager_fx_dump_used": false,
+  "graph_and_UB_fusion": "OFF in both arms for per-operator visibility",
+  "same_checkpoint_inputs_fusion_and_collector": true,
+  "same_parameters_before_after": true,
+  "repeated_all_returned_outputs_equal": true,
+  "native_finite_statistics_repeat_identical": {
+    "baseline": true,
+    "fault": true
+  },
+  "model_graph_executions": 6,
+  "fia_node_executions": 168,
+  "layer_request_executions": 1344,
+  "all_28_layers_all_8_request_rows_covered": true,
+  "baseline_m": 512,
+  "fault_m": 128,
+  "independent_first_observed_at_fia_output": true,
+  "first_changed_attention_layer": 0,
+  "first_attention_QKV_exactly_equal": true,
+  "logits_changed_requests": 8,
+  "top1_changed_requests": 0,
+  "independent_report_sha256": "f2668a4503ff25f6259ef335e534e2e2be43d8f63393d9f1d3ddf8995af7bc14",
+  "complete_comparison_sha256": "580d5c2bc6016094db09f5fb2a6aea3549efb916aa9d415eae0d5e6648a42246",
+  "independent_falsification_controls_sha256": "782204fa09ddc043b6df831252e9405059c05988cbe9ea626ba14c29a5a1a352",
+  "analysis_source_sha256": {
+    "extract_native.py": "65a8a68a7ac95500fec6e5af12664f53629d0736ff94deb2721551b3774f7950",
+    "export_pair.py": "190b1f2628089f0eb9b0983b56492262e52350a46ca0fce34700b506b13b805d",
+    "derive_operators.py": "9dc0c2d50b8a68a5ceb511a373408ff50dcd9cda3e82add3a17f78d5d279feda",
+    "analysis_checks.py": "ee721e9f0ec8f4cc957dfd4d4193505d5f8682533b85cd102c880346ecbe5181",
+    "publish_data_branch.py": "92010f85bb38b54266271858f1a2c7a46514824e40af9062b460926b887d02c4",
+    "make_data_branch.py": "f227c2c6ed873292ac044508b1e817e35bb833cf9b84f18eadd44e5308d82a3a",
+    "statistics_values.py": "76d93533f967c8b857bf47143f8b909fcecc8baffee12dd50d00e7ef4cd03f29",
+    "public_plan.py": "8d40f476634bcf5ebc65edf6cd24d5e1134cacbeb516877026a4b07498d8dd55",
+    "review_pair.py": "4982672e775339044fa4a2211ab24e5b1085ee8ab00c5cf564ff38d1c65fc983",
+    "coverage.py": "2c23896b0a8fe9a75d947f379d9d7a751230b4d64dd4509f4b52fc4d2bdc5fc4",
+    "verify_downloads.py": "a33ea2d75d364dcaadd47ea99a1a8980936d40f0de8e8adb81e4f220dbc8c207",
+    "compare_model.py": "54fd7d4ae98ba30ffb0f5a4a034f8584fcc0e8ce5cf3470e72c56041932987e7",
+    "graph_evidence.py": "83ccbf1198126cdb634a4685a55ce6d47246088ad702c725e2fcd557862aeb86"
+  },
+  "limits": [
+    "Earliest OBSERVED statistic, with missing/unobservable boundaries preserved; not a proof of equality of all prior tensors.",
+    "Original statistics/mix module triplets are not per-Python-API records inside GE. Native GE CSV provides the per-op route, with explicitly derived JSON.",
+    "Native CSV finite summaries are rounded. Uniform disclosed CPU-FP64 module output statistics need direct GE output-edge mapping.",
+    "This same-B8 B/F recollection verifies the controlled M strategy and propagation; it does not repeat the prior B1/B8 causal matrix.",
+    "Both arms disable GraphFusion/UBFusion, a disclosed observation configuration change from the old collection.",
+    "No new OFF case or continuous generation is included; the two replays test repeat stability within each arm.",
+    "M changes causal inner reduction widths and other native BMM paths; no unique Reduce-instruction or historical Pangu attribution.",
+    "Default SDPA equivalence, model task accuracy and continuous text generation are outside this recollection."
+  ]
+}

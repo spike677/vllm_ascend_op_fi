@@ -21,10 +21,11 @@
     },
     {
       "ge.exec.enableDump": "1",
-      "ge.exec.dumpPath": "/evidence/model_b8_fault_r1/msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0",
+      "ge.exec.dumpPath": "/evidence/fault/msprobe_graph/msprobe_ge_dump/worldsize1_global_rank0",
       "ge.exec.dumpMode": "all",
       "ge.quant_dumpable": "0",
       "ge.exec.dumpData": "stats",
+      "ge.fusionSwitchFile": "/audit/setup/fusion_off.json",
       "ge.exec.enableEngineParallel": "0",
       "ge.aicoreNum": "16|32",
       "ge.enableSingleStream": "false",
@@ -34,5 +35,9 @@
   ],
   "attention_route": "fault28_fia_fullgraph",
   "capture_aliases": true,
-  "use_cache": false
+  "use_cache": false,
+  "capture_route": "native_GE_stats_with_graph_and_UB_fusion_disabled",
+  "fusion_switch_file": "/audit/setup/fusion_off.json",
+  "fusion_switch_sha256": "f3110b4cc39288f639af79803997e562a76bf008106373160139dfd0cea6703e",
+  "FX_eager_dump_forbidden": true
 }

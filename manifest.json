@@ -1,175 +1,299 @@
 {
-  "schema": "fault28.fia_statistics.data_branch.v1",
+  "schema": "fault28.fia_fullgraph_operator_statistics.data_branch.v2",
   "branch": "codex/fault28-fia-statistics-data-20261110",
-  "case_ids": [
-    "model_b8_baseline",
-    "model_b8_fault_r1"
+  "group_names": [
+    "baseline",
+    "fault"
   ],
-  "source": {
-    "commit": "6dad85c480255829b0a4e74657a7e2ff2ce390b3",
-    "artifact": "artifacts/attention_tiling/fault28_fia_fullmodel_statistics_20261109/data",
-    "data_sha256sums_sha256": "b2d026a76a7418bb1d0aff9ac92c4e40bea835e5932c4ba3fac7f6208e0efb9d",
-    "source_mapping_sha256": "01a7e3741bbfbe00ba7ebdc4cd63bb272f3f96cbf95404f35d03c0383b28d519"
+  "case_ids": [
+    "baseline",
+    "fault"
+  ],
+  "actual_steps": [
+    0,
+    1
+  ],
+  "actual_warmup_calls": [
+    0
+  ],
+  "actual_compiled_graph_calls": [
+    0,
+    1,
+    2
+  ],
+  "physical_card": 2,
+  "temporary_card2_lease": {
+    "schema": "fault28.card2_lease.redacted_summary.v1",
+    "explicit_user_approval": true,
+    "selected_card": 2,
+    "restored": true,
+    "original_binary_sha256": "e95b17c978781194139f48cc1998826ae16b6851fadd4699df677dcafedf8a65",
+    "all_rejected_operations": {
+      "stop": 9,
+      "kill": 1,
+      "rm": 1,
+      "exec": 1,
+      "create": 1
+    },
+    "after_validation_rejected_operations": {
+      "stop": 7
+    },
+    "private_rejection_log_sha256": "24c32950fb84db5fbda14d230b32ccaf18547f96bf135f228ad53bc4bbbd58ea",
+    "raw_credential_exported": false,
+    "original_executable_exported": false,
+    "scope": "Temporary local Docker-CLI lease; no change to model math, Docker daemon or SSH. Completed capture containers and unrelated devices use original runtime."
   },
-  "data_files": 9486,
-  "data_bytes": 51822225,
+  "source": {
+    "implementation_parent_commit": "6dad85c480255829b0a4e74657a7e2ff2ce390b3",
+    "data_sha256sums_sha256": "72a37fab642877bf9ead32899487fe176c8861089f2c4d71031fdd52d0e24ffe",
+    "source_mapping_sha256": "8706eae27bf4991e1d5529bb1361fa685d824a77c8ba4cb3b12c0cb4a3a117ca"
+  },
+  "data_files": 14004,
+  "data_bytes": 157991759,
   "archives": [
     {
       "role": "baseline",
-      "case_id": "model_b8_baseline",
       "path": "downloads/baseline.zip",
-      "bytes": 4642282,
-      "sha256": "659141963dc4dfd544261f574c5d898175af66d1bd76d37ba1c0c94e8144d6d9",
-      "files": 4765,
+      "bytes": 8503754,
+      "sha256": "d779620e701440e082eb68d4ff7d7cb78dad3a59fa45e159fc2e25b2827caf4e",
+      "files": 7030,
       "includes_common_verification_files": true
     },
     {
       "role": "fault",
-      "case_id": "model_b8_fault_r1",
       "path": "downloads/fault.zip",
-      "bytes": 2868189,
-      "sha256": "9a029752bee69eb442e7e3fdea7bc4d62e71828aed1693fde74d2af78de3679a",
-      "files": 4721,
+      "bytes": 4832932,
+      "sha256": "7629336233dad7b86e9a02c30f3ee7c5428dd5ef454c7513e4ec1d5a6ae792ad",
+      "files": 6974,
       "includes_common_verification_files": false
     }
   ],
   "previews": [
     {
       "published": "baseline/case.json",
-      "original": "cases/model_b8_baseline/case.json",
-      "bytes": 1827,
-      "sha256": "902d5d3a0ba831354a9599ba7f58144fc3e8f415c302fe653c5a4a0d9a33db11"
+      "original": "cases/baseline/case.json",
+      "bytes": 2029,
+      "sha256": "90ff5cda5eaa1a894cd600df4fc84972275673bd60dda11c81b0c11d049bc96e"
+    },
+    {
+      "published": "baseline/config.json",
+      "original": "cases/baseline/config.json",
+      "bytes": 334,
+      "sha256": "184722328dc2827710325be04c346b989ade51a164728573383aa8ce70bb3082"
+    },
+    {
+      "published": "baseline/graph_config.json",
+      "original": "cases/baseline/graph_config.json",
+      "bytes": 1424,
+      "sha256": "487ae5cee0d6834d998737a51079a1af386deddf70108b890b13e7e489203052"
     },
     {
       "published": "baseline/collector_provenance.json",
-      "original": "cases/model_b8_baseline/collector_provenance.json",
+      "original": "cases/baseline/collector_provenance.json",
       "bytes": 1817,
       "sha256": "654930940c2e0df6da8788b08830046717f5ec919878d9cbdc267d317d3a4c9f"
     },
     {
-      "published": "baseline/config.json",
-      "original": "cases/model_b8_baseline/config.json",
-      "bytes": 343,
-      "sha256": "6c75a715ab0f8f3cc4f91562e1ced01807bf788d707c57cd61f795eb4785325f"
+      "published": "baseline/statistics_receipt.json",
+      "original": "cases/baseline/statistics_receipt.json",
+      "bytes": 1709,
+      "sha256": "5cde5b25b33a28b8059afe9d31ee9978e8a7cb877080e5e837eeb86803a0cc36"
     },
     {
-      "published": "baseline/graph_config.json",
-      "original": "cases/model_b8_baseline/graph_config.json",
-      "bytes": 1115,
-      "sha256": "294c7df4ef66a7022e9f38ca5e81fdfc81fc498d5e94ad7c78a1b27d02837913"
-    },
-    {
-      "published": "baseline/observation/step0/rank0/construct.json",
-      "original": "cases/model_b8_baseline/observation/step0/rank0/construct.json",
-      "bytes": 56,
-      "sha256": "761ae6f79faf18b6c480357c50b5f176be9736e92fd480ecd85635aedce0a35a"
+      "published": "baseline/native_csv_inventory.json",
+      "original": "cases/baseline/native_csv_inventory.json",
+      "bytes": 527,
+      "sha256": "34ff99e605a5af971168465ce957e77a350c5e6abacec1f764fc8daa883eb2bf"
     },
     {
       "published": "baseline/observation/step0/rank0/dump.json",
-      "original": "cases/model_b8_baseline/observation/step0/rank0/dump.json",
-      "bytes": 34068,
-      "sha256": "000c59568dcb81895b68ea8a1ad40a988894c036c299cedf4c59f9e0bb43b2e0"
+      "original": "cases/baseline/observation/step0/rank0/dump.json",
+      "bytes": 34011,
+      "sha256": "0b97a61af131ae35e37098a36a3166b147e5a8ab2514fbf961359567bbea3a46"
     },
     {
       "published": "baseline/observation/step0/rank0/stack.json",
-      "original": "cases/model_b8_baseline/observation/step0/rank0/stack.json",
+      "original": "cases/baseline/observation/step0/rank0/stack.json",
       "bytes": 746,
-      "sha256": "7807e4befdbcd1fbc9ad8dc175114ef10ba7e957179419c13767999eef90101b"
+      "sha256": "6e134425c57f2f83d8da9a7e0a03d3c51bd8297d77b7925c0dcda6afceef55e3"
     },
     {
-      "published": "baseline/observation/step1/rank0/construct.json",
-      "original": "cases/model_b8_baseline/observation/step1/rank0/construct.json",
+      "published": "baseline/observation/step0/rank0/construct.json",
+      "original": "cases/baseline/observation/step0/rank0/construct.json",
       "bytes": 56,
       "sha256": "761ae6f79faf18b6c480357c50b5f176be9736e92fd480ecd85635aedce0a35a"
     },
     {
       "published": "baseline/observation/step1/rank0/dump.json",
-      "original": "cases/model_b8_baseline/observation/step1/rank0/dump.json",
-      "bytes": 34068,
-      "sha256": "000c59568dcb81895b68ea8a1ad40a988894c036c299cedf4c59f9e0bb43b2e0"
+      "original": "cases/baseline/observation/step1/rank0/dump.json",
+      "bytes": 34011,
+      "sha256": "0b97a61af131ae35e37098a36a3166b147e5a8ab2514fbf961359567bbea3a46"
     },
     {
       "published": "baseline/observation/step1/rank0/stack.json",
-      "original": "cases/model_b8_baseline/observation/step1/rank0/stack.json",
+      "original": "cases/baseline/observation/step1/rank0/stack.json",
       "bytes": 746,
-      "sha256": "7807e4befdbcd1fbc9ad8dc175114ef10ba7e957179419c13767999eef90101b"
+      "sha256": "6e134425c57f2f83d8da9a7e0a03d3c51bd8297d77b7925c0dcda6afceef55e3"
     },
     {
-      "published": "baseline/statistics_receipt.json",
-      "original": "cases/model_b8_baseline/statistics_receipt.json",
-      "bytes": 1709,
-      "sha256": "d3a961c2ec5d590caee318c0a09f951c6dd1d2b7036ddbe15c11157768ec661d"
-    },
-    {
-      "published": "fault/case.json",
-      "original": "cases/model_b8_fault_r1/case.json",
-      "bytes": 1830,
-      "sha256": "dcc086e8571aae705e6c46adc5d6d72e66ec227270603ecbadbf5e34a1e3bcd0"
-    },
-    {
-      "published": "fault/collector_provenance.json",
-      "original": "cases/model_b8_fault_r1/collector_provenance.json",
-      "bytes": 1817,
-      "sha256": "654930940c2e0df6da8788b08830046717f5ec919878d9cbdc267d317d3a4c9f"
-    },
-    {
-      "published": "fault/config.json",
-      "original": "cases/model_b8_fault_r1/config.json",
-      "bytes": 343,
-      "sha256": "8f0e6abed05a9ad51176438a78860cd998e91286a7d02d2e0aec430656e4b5b3"
-    },
-    {
-      "published": "fault/graph_config.json",
-      "original": "cases/model_b8_fault_r1/graph_config.json",
-      "bytes": 1115,
-      "sha256": "307cbdfbb7d3c340e0eeb716ce2bd8edb601439ad0bc0b0e9492ea9185c52ace"
-    },
-    {
-      "published": "fault/observation/step0/rank0/construct.json",
-      "original": "cases/model_b8_fault_r1/observation/step0/rank0/construct.json",
+      "published": "baseline/observation/step1/rank0/construct.json",
+      "original": "cases/baseline/observation/step1/rank0/construct.json",
       "bytes": 56,
       "sha256": "761ae6f79faf18b6c480357c50b5f176be9736e92fd480ecd85635aedce0a35a"
     },
     {
+      "published": "fault/case.json",
+      "original": "cases/fault/case.json",
+      "bytes": 2029,
+      "sha256": "67f32b83a43bb43c59bd6892d53fd0ef7b57cac22028612174427554ffe6b540"
+    },
+    {
+      "published": "fault/config.json",
+      "original": "cases/fault/config.json",
+      "bytes": 331,
+      "sha256": "5ef7e6c3f1357ccea45c0d6c5efe781cbff77b27bd60bc280b3ef3c98dc34778"
+    },
+    {
+      "published": "fault/graph_config.json",
+      "original": "cases/fault/graph_config.json",
+      "bytes": 1421,
+      "sha256": "22aa16f7883748208dca9d7d3c5426a095b7b7f102230316bee085115e4223ea"
+    },
+    {
+      "published": "fault/collector_provenance.json",
+      "original": "cases/fault/collector_provenance.json",
+      "bytes": 1817,
+      "sha256": "654930940c2e0df6da8788b08830046717f5ec919878d9cbdc267d317d3a4c9f"
+    },
+    {
+      "published": "fault/statistics_receipt.json",
+      "original": "cases/fault/statistics_receipt.json",
+      "bytes": 1709,
+      "sha256": "8c1c9d0ac6488474c011ee2076519406a21d81b0f0cebe8f0a25add193c7c07d"
+    },
+    {
+      "published": "fault/native_csv_inventory.json",
+      "original": "cases/fault/native_csv_inventory.json",
+      "bytes": 527,
+      "sha256": "34ff99e605a5af971168465ce957e77a350c5e6abacec1f764fc8daa883eb2bf"
+    },
+    {
       "published": "fault/observation/step0/rank0/dump.json",
-      "original": "cases/model_b8_fault_r1/observation/step0/rank0/dump.json",
-      "bytes": 34050,
-      "sha256": "2795cf21700faee2fc69a2b4e74538293a277d4da422dd5d4da71645e57c4b23"
+      "original": "cases/fault/observation/step0/rank0/dump.json",
+      "bytes": 34026,
+      "sha256": "67e4d514a1b6ad897ffd83e0fffbd9a4aeab902c18ff0ff2853dfb319373d01f"
     },
     {
       "published": "fault/observation/step0/rank0/stack.json",
-      "original": "cases/model_b8_fault_r1/observation/step0/rank0/stack.json",
+      "original": "cases/fault/observation/step0/rank0/stack.json",
       "bytes": 746,
-      "sha256": "7807e4befdbcd1fbc9ad8dc175114ef10ba7e957179419c13767999eef90101b"
+      "sha256": "6e134425c57f2f83d8da9a7e0a03d3c51bd8297d77b7925c0dcda6afceef55e3"
     },
     {
-      "published": "fault/observation/step1/rank0/construct.json",
-      "original": "cases/model_b8_fault_r1/observation/step1/rank0/construct.json",
+      "published": "fault/observation/step0/rank0/construct.json",
+      "original": "cases/fault/observation/step0/rank0/construct.json",
       "bytes": 56,
       "sha256": "761ae6f79faf18b6c480357c50b5f176be9736e92fd480ecd85635aedce0a35a"
     },
     {
       "published": "fault/observation/step1/rank0/dump.json",
-      "original": "cases/model_b8_fault_r1/observation/step1/rank0/dump.json",
-      "bytes": 34050,
-      "sha256": "2795cf21700faee2fc69a2b4e74538293a277d4da422dd5d4da71645e57c4b23"
+      "original": "cases/fault/observation/step1/rank0/dump.json",
+      "bytes": 34026,
+      "sha256": "67e4d514a1b6ad897ffd83e0fffbd9a4aeab902c18ff0ff2853dfb319373d01f"
     },
     {
       "published": "fault/observation/step1/rank0/stack.json",
-      "original": "cases/model_b8_fault_r1/observation/step1/rank0/stack.json",
+      "original": "cases/fault/observation/step1/rank0/stack.json",
       "bytes": 746,
-      "sha256": "7807e4befdbcd1fbc9ad8dc175114ef10ba7e957179419c13767999eef90101b"
+      "sha256": "6e134425c57f2f83d8da9a7e0a03d3c51bd8297d77b7925c0dcda6afceef55e3"
     },
     {
-      "published": "fault/statistics_receipt.json",
-      "original": "cases/model_b8_fault_r1/statistics_receipt.json",
-      "bytes": 1709,
-      "sha256": "d26fe3fef0146befe39af083a3176b44c625cf11de4fcc1560248e1e80064188"
+      "published": "fault/observation/step1/rank0/construct.json",
+      "original": "cases/fault/observation/step1/rank0/construct.json",
+      "bytes": 56,
+      "sha256": "761ae6f79faf18b6c480357c50b5f176be9736e92fd480ecd85635aedce0a35a"
+    },
+    {
+      "published": "reports/acceptance.json",
+      "original": "reports/acceptance.json",
+      "bytes": 3696,
+      "sha256": "76be63346ff7f7e2c0763c5457fde70abb999d1bb591cf569f97cec416af58f4"
+    },
+    {
+      "published": "reports/complete_output_comparison.json",
+      "original": "reports/complete_output_comparison.json",
+      "bytes": 824980,
+      "sha256": "580d5c2bc6016094db09f5fb2a6aea3549efb916aa9d415eae0d5e6648a42246"
     }
   ],
-  "capture_date": "2026-11-09",
-  "packaging_date": "2026-11-10",
-  "native_calls": 0,
-  "raw_statistic_bytes_changed": false,
-  "scope": "Exactly two explicit FIA groups: controlled M512 baseline and M128 fault, same B8 input. ZIPs restore the complete previous two-group public data; previews are unchanged original small JSON files."
+  "derived_indexes": [
+    {
+      "published": "baseline/derived/step0/rank0/index.json",
+      "original": "cases/baseline/derived/step0/rank0/operators.json"
+    },
+    {
+      "published": "baseline/derived/step1/rank0/index.json",
+      "original": "cases/baseline/derived/step1/rank0/operators.json"
+    },
+    {
+      "published": "fault/derived/step0/rank0/index.json",
+      "original": "cases/fault/derived/step0/rank0/operators.json"
+    },
+    {
+      "published": "fault/derived/step1/rank0/index.json",
+      "original": "cases/fault/derived/step1/rank0/operators.json"
+    }
+  ],
+  "capture_date": "2026-11-10",
+  "raw_statistics_bytes_changed": false,
+  "real_single_FIA_graph": true,
+  "converted_JSON_is_native_msprobe_dump": false,
+  "observation_coverage": {
+    "baseline": {
+      "all_optimized_graph_nodes": 4281,
+      "model_graph_native_csv_files": 2296,
+      "status_counts": {
+        "NATIVE_CSV": 2097,
+        "UNOBSERVABLE": 2100,
+        "DIRECT_OUTPUT_ALIAS_ONLY": 84
+      },
+      "unobservable_node_types": {
+        "Const": 1359,
+        "Unsqueeze": 59,
+        "Reshape": 114,
+        "Cast": 483,
+        "Transpose": 56,
+        "Identity": 28,
+        "NetOutput": 1
+      }
+    },
+    "fault": {
+      "all_optimized_graph_nodes": 4281,
+      "model_graph_native_csv_files": 2296,
+      "status_counts": {
+        "NATIVE_CSV": 2097,
+        "UNOBSERVABLE": 2100,
+        "DIRECT_OUTPUT_ALIAS_ONLY": 84
+      },
+      "unobservable_node_types": {
+        "Const": 1359,
+        "Unsqueeze": 59,
+        "Reshape": 114,
+        "Cast": 483,
+        "Transpose": 56,
+        "Identity": 28,
+        "NetOutput": 1
+      }
+    }
+  },
+  "limits": [
+    "Earliest OBSERVED statistic, with missing/unobservable boundaries preserved; not a proof of equality of all prior tensors.",
+    "Original statistics/mix module triplets are not per-Python-API records inside GE. Native GE CSV provides the per-op route, with explicitly derived JSON.",
+    "Native CSV finite summaries are rounded. Uniform disclosed CPU-FP64 module output statistics need direct GE output-edge mapping.",
+    "This same-B8 B/F recollection verifies the controlled M strategy and propagation; it does not repeat the prior B1/B8 causal matrix.",
+    "Both arms disable GraphFusion/UBFusion, a disclosed observation configuration change from the old collection.",
+    "No new OFF case or continuous generation is included; the two replays test repeat stability within each arm.",
+    "M changes causal inner reduction widths and other native BMM paths; no unique Reduce-instruction or historical Pangu attribution.",
+    "Default SDPA equivalence, model task accuracy and continuous text generation are outside this recollection."
+  ]
 }
