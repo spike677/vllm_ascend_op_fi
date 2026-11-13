@@ -1,0 +1,184 @@
+{
+  "schema": "fault28.visible.fullmodel_review.v1",
+  "status": "PASS_FULLMODEL_REQUIRES_RESTART_OFF_AND_BATCH_CONTROLS",
+  "accepted_before_controls": true,
+  "candidate_id": "denominator_replay_m128",
+  "statistics_only_gate": [
+    true,
+    true,
+    true
+  ],
+  "same_qualifying_fields_all_steps": [
+    "$[0].Norm"
+  ],
+  "first_observed_FIA_layers": [
+    0,
+    0,
+    0
+  ],
+  "first_observed_FIA_complete_QKV_byte_equal": true,
+  "actual_M_S2": {
+    "baseline": [
+      [
+        128,
+        128
+      ]
+    ],
+    "fault": [
+      [
+        128,
+        128
+      ]
+    ]
+  },
+  "logits": {
+    "requests": [
+      {
+        "request_slot": 0,
+        "elements": 151936,
+        "changed_elements": 151903,
+        "max_abs": 6.07421875,
+        "max_abs_index": [
+          0,
+          108333
+        ],
+        "B_at_max_abs": -8.34375,
+        "F_at_max_abs": -2.26953125,
+        "point_relative_at_max_abs": 0.727996254681648,
+        "relative_L2": 0.43527640489026376,
+        "B_top1": 1119,
+        "F_top1": 1119
+      },
+      {
+        "request_slot": 1,
+        "elements": 151936,
+        "changed_elements": 151910,
+        "max_abs": 6.3642578125,
+        "max_abs_index": [
+          0,
+          61388
+        ],
+        "B_at_max_abs": -5.3125,
+        "F_at_max_abs": 1.0517578125,
+        "point_relative_at_max_abs": 1.1979779411764706,
+        "relative_L2": 0.4553216142713657,
+        "B_top1": 6467,
+        "F_top1": 6467
+      },
+      {
+        "request_slot": 2,
+        "elements": 151936,
+        "changed_elements": 151891,
+        "max_abs": 6.111328125,
+        "max_abs_index": [
+          0,
+          126690
+        ],
+        "B_at_max_abs": -2.697265625,
+        "F_at_max_abs": 3.4140625,
+        "point_relative_at_max_abs": 2.265749456915279,
+        "relative_L2": 0.4542692217314555,
+        "B_top1": 3234,
+        "F_top1": 3234
+      },
+      {
+        "request_slot": 3,
+        "elements": 151936,
+        "changed_elements": 151886,
+        "max_abs": 5.848419189453125,
+        "max_abs_index": [
+          0,
+          114443
+        ],
+        "B_at_max_abs": 0.061737060546875,
+        "F_at_max_abs": 5.91015625,
+        "point_relative_at_max_abs": 94.73109243697479,
+        "relative_L2": 0.35775616741241306,
+        "B_top1": 24034,
+        "F_top1": 24034
+      },
+      {
+        "request_slot": 4,
+        "elements": 151936,
+        "changed_elements": 151931,
+        "max_abs": 6.248046875,
+        "max_abs_index": [
+          0,
+          63551
+        ],
+        "B_at_max_abs": 2.712890625,
+        "F_at_max_abs": 8.9609375,
+        "point_relative_at_max_abs": 2.303095752339813,
+        "relative_L2": 0.9435578055022731,
+        "B_top1": 279,
+        "F_top1": 279
+      },
+      {
+        "request_slot": 5,
+        "elements": 151936,
+        "changed_elements": 151869,
+        "max_abs": 7.431640625,
+        "max_abs_index": [
+          0,
+          98179
+        ],
+        "B_at_max_abs": -3.353515625,
+        "F_at_max_abs": 4.078125,
+        "point_relative_at_max_abs": 2.2160745486313336,
+        "relative_L2": 0.35907492644584726,
+        "B_top1": 11618,
+        "F_top1": 11618
+      },
+      {
+        "request_slot": 6,
+        "elements": 151936,
+        "changed_elements": 151805,
+        "max_abs": 8.4716796875,
+        "max_abs_index": [
+          0,
+          52356
+        ],
+        "B_at_max_abs": -9.7265625,
+        "F_at_max_abs": -1.2548828125,
+        "point_relative_at_max_abs": 0.8709839357429718,
+        "relative_L2": 0.327930084433629,
+        "B_top1": 5612,
+        "F_top1": 5612
+      },
+      {
+        "request_slot": 7,
+        "elements": 151936,
+        "changed_elements": 151932,
+        "max_abs": 6.1993408203125,
+        "max_abs_index": [
+          0,
+          43467
+        ],
+        "B_at_max_abs": -6.10546875,
+        "F_at_max_abs": 0.0938720703125,
+        "point_relative_at_max_abs": 1.0153750799744081,
+        "relative_L2": 0.7445988403546051,
+        "B_top1": 448,
+        "F_top1": 448
+      }
+    ],
+    "changed_requests": 8,
+    "top1_changed_requests": 0,
+    "max_abs": 8.4716796875,
+    "used_to_select_statistics_first": false
+  },
+  "actual_steps": [
+    0,
+    1,
+    2
+  ],
+  "rtol": 1e-05,
+  "atol": 1e-08,
+  "minimum_relative_change": 0.001,
+  "limits": [
+    "Independent localization used only raw statistics/config/stack/construct and collector identity.",
+    "Complete array/hash/native evidence is separate, after localization.",
+    "Top1 change is not required. No continuous-generation or task-quality acceptance.",
+    "Inner grain is decoded raw plus executed source, not an instruction-level device trace."
+  ]
+}

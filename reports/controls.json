@@ -1,0 +1,56 @@
+{
+  "status": "PASS_RESTART_OFF_AND_FIXED_QKV_BATCH_CONTROLS",
+  "restart_all_113_arrays_all_8_requests_exact": true,
+  "OFF_all_113_arrays_all_8_requests_exact": true,
+  "OFF_definition": "disable denominator replay; hold M128/S2=128",
+  "same_QKV_fixed_healthy_strategy_B1_B8_exact": true,
+  "same_QKV_fixed_fault_strategy_B1_B8_exact": true,
+  "auto_B8_equals_fixed_fault_exact": true,
+  "auto_B1_actual_M_S2": [
+    512,
+    512
+  ],
+  "auto_B1_replay_enabled": false,
+  "auto_B8_actual_M_S2": [
+    128,
+    128
+  ],
+  "auto_B8_replay_enabled": true,
+  "per_case": {
+    "healthy1": {
+      "status": "PASS_ACTUAL_EAGER_NATIVE_COVERAGE",
+      "actual_FIA_executions": 2,
+      "layer_request_executions": 2
+    },
+    "fault1": {
+      "status": "PASS_ACTUAL_EAGER_NATIVE_COVERAGE",
+      "actual_FIA_executions": 2,
+      "layer_request_executions": 2
+    },
+    "auto1": {
+      "status": "PASS_ACTUAL_EAGER_NATIVE_COVERAGE",
+      "actual_FIA_executions": 2,
+      "layer_request_executions": 2
+    },
+    "healthy8": {
+      "status": "PASS_ACTUAL_EAGER_NATIVE_COVERAGE",
+      "actual_FIA_executions": 2,
+      "layer_request_executions": 16
+    },
+    "fault8": {
+      "status": "PASS_ACTUAL_EAGER_NATIVE_COVERAGE",
+      "actual_FIA_executions": 2,
+      "layer_request_executions": 16
+    },
+    "auto8": {
+      "status": "PASS_ACTUAL_EAGER_NATIVE_COVERAGE",
+      "actual_FIA_executions": 2,
+      "layer_request_executions": 16
+    }
+  },
+  "limits": [
+    "Controlled new arithmetic error; historical default FIA root cause not reproduced.",
+    "AUTO mixes M change and denominator error; fixed-M B/F isolates the arithmetic error.",
+    "Prefill only; no continuous decode/task accuracy acceptance."
+  ]
+}

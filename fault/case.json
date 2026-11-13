@@ -1,9 +1,9 @@
 {
-  "schema": "fault28.eager.case.v1",
-  "case_id": "fault",
+  "schema": "fault28.visible.case.v1",
+  "case_id": "formal_F",
   "operator_variant": "private_vendor",
   "model_family": "qwen3_fullmodel",
-  "mode": "batch_causal_m128",
+  "mode": "coupled_replay_m128",
   "batch": 8,
   "sequence_length": 2048,
   "layout": "BNSD",
@@ -14,7 +14,7 @@
   "vectorcore_num": 32,
   "sparse_mode": 2,
   "inner_precise": 0,
-  "repeats": 2,
+  "repeats": 3,
   "capture_aliases": true,
   "capture_msprobe": true,
   "deterministic_algorithms": true,
@@ -29,8 +29,8 @@
     "request_06",
     "request_07"
   ],
-  "input_manifest": "/audit_shared/private/requests.json",
-  "input_manifest_sha256": "ed6b27940c3336efe8cd941fda9da191edcbd8257c34587396345f24d7994fe1",
+  "input_manifest": "/audit/private/input_bank/input_00.json",
+  "input_manifest_sha256": "bb1bda2866ed7e451a862a05bfe9c2ef6995d25afbecb2e0f735517cd1d6dde0",
   "model_manifest": "/audit_shared/model_manifest.json",
   "model_manifest_sha256": "12707e0b213b8ad5ea6a6486edaea02cea0ab38a137025fd01d9e49c493b9abc",
   "cpu_inventory": "/audit_shared/outputs/cpu_export_a2/inventory.json",
@@ -38,15 +38,17 @@
   "statistics_variant": "task_local_cpu_fp64_high_v1",
   "approved_collector_manifest_file": "/audit/collector_fp64_a1/stage_manifest.json",
   "approved_collector_manifest_sha256": "06ce36bae3463f44a143047d184f53915dbea4dd04b39d79960518e6878d8010",
-  "approved_vendor_manifest_file": "/audit/vendor_eager_a5/vendor_manifest.json",
-  "approved_vendor_manifest_sha256": "88b06b9d30c24a7120332f9a4dbcf38e6db01fbc004cdcddd788b10575f0adc3",
-  "approved_custom_opp_path": "/audit/vendor_eager_a5/vendors/fault28_fia_graph_transformer",
-  "scope": "Full Qwen3 eager prefill through public torch_npu FIA, not torch.compile/GE fullgraph or decode",
+  "approved_vendor_manifest_file": "/audit/vendor_visible_a1/vendor_manifest.json",
+  "approved_vendor_manifest_sha256": "0ce1bfe8e4722b965efb328c7242e0ca1aa9f69769a0a27cc28e80b9403e4e14",
+  "approved_custom_opp_path": "/audit/vendor_visible_a1/vendors/fault28_fia_graph_transformer",
+  "scope": "Full Qwen3 eager prefill through native FIA; captured steps are repeated prefill, not decode.",
   "execution_mode": "eager",
   "capture_scope": "model",
   "pilot_reference": "/audit_graph_reference/outputs/ge_card2_baseline_a1/baseline",
   "eager_forwards": 3,
   "statistics_steps": [
-    0
+    0,
+    1,
+    2
   ]
 }

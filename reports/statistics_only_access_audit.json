@@ -1,0 +1,261 @@
+{
+  "schema": "fault28.visible.statistics_only_read_audit.v1",
+  "status": "STATISTICS_ONLY_FILE_ACCESS_AUDIT_COMPLETED",
+  "actual_steps": [
+    0,
+    1,
+    2
+  ],
+  "rtol": 1e-05,
+  "atol": 1e-08,
+  "read_allowlist_types": [
+    "dump.json",
+    "stack.json",
+    "construct.json",
+    "config.json",
+    "collector_provenance.json"
+  ],
+  "unique_files_read": 22,
+  "read_operations": 60,
+  "read_paths": [
+    "baseline/collector_provenance.json",
+    "baseline/config.json",
+    "baseline/observation/step0/rank0/construct.json",
+    "baseline/observation/step0/rank0/dump.json",
+    "baseline/observation/step0/rank0/stack.json",
+    "baseline/observation/step1/rank0/construct.json",
+    "baseline/observation/step1/rank0/dump.json",
+    "baseline/observation/step1/rank0/stack.json",
+    "baseline/observation/step2/rank0/construct.json",
+    "baseline/observation/step2/rank0/dump.json",
+    "baseline/observation/step2/rank0/stack.json",
+    "fault/collector_provenance.json",
+    "fault/config.json",
+    "fault/observation/step0/rank0/construct.json",
+    "fault/observation/step0/rank0/dump.json",
+    "fault/observation/step0/rank0/stack.json",
+    "fault/observation/step1/rank0/construct.json",
+    "fault/observation/step1/rank0/dump.json",
+    "fault/observation/step1/rank0/stack.json",
+    "fault/observation/step2/rank0/construct.json",
+    "fault/observation/step2/rank0/dump.json",
+    "fault/observation/step2/rank0/stack.json"
+  ],
+  "forbidden_reads": 0,
+  "model_injector_runtime_log_or_tensor_read": false,
+  "results": [
+    {
+      "step": 0,
+      "status": "ALIGNED_ABOVE_TOLERANCE_API_DIFFERENCE",
+      "alignment": {
+        "ordered_source_stack_and_construct_match": true,
+        "config_collector_match": true
+      },
+      "first_exact": {
+        "B_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "F_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "boundary": "output",
+        "field_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.002108109610034603,
+            "F": -0.0020515850427109683,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.6524567323634756e-05,
+            "relative_delta_B": 0.026812916678799707,
+            "allowed_delta": 3.108109610034604e-08,
+            "exceeds_tolerance": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 660.572120626524,
+            "F": 655.3088952891358,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.263225337388235,
+            "relative_delta_B": 0.007967677068169777,
+            "allowed_delta": 0.00660573120626524,
+            "exceeds_tolerance": true
+          }
+        ]
+      },
+      "first_above": {
+        "B_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "F_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "boundary": "output",
+        "field_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.002108109610034603,
+            "F": -0.0020515850427109683,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.6524567323634756e-05,
+            "relative_delta_B": 0.026812916678799707,
+            "allowed_delta": 3.108109610034604e-08,
+            "exceeds_tolerance": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 660.572120626524,
+            "F": 655.3088952891358,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.263225337388235,
+            "relative_delta_B": 0.007967677068169777,
+            "allowed_delta": 0.00660573120626524,
+            "exceeds_tolerance": true
+          }
+        ]
+      },
+      "accepted": true,
+      "unobservable_fields": 416,
+      "baseline_self_comparison_exact": true
+    },
+    {
+      "step": 1,
+      "status": "ALIGNED_ABOVE_TOLERANCE_API_DIFFERENCE",
+      "alignment": {
+        "ordered_source_stack_and_construct_match": true,
+        "config_collector_match": true
+      },
+      "first_exact": {
+        "B_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "F_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "boundary": "output",
+        "field_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.002108109610034603,
+            "F": -0.0020515850427109683,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.6524567323634756e-05,
+            "relative_delta_B": 0.026812916678799707,
+            "allowed_delta": 3.108109610034604e-08,
+            "exceeds_tolerance": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 660.572120626524,
+            "F": 655.3088952891358,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.263225337388235,
+            "relative_delta_B": 0.007967677068169777,
+            "allowed_delta": 0.00660573120626524,
+            "exceeds_tolerance": true
+          }
+        ]
+      },
+      "first_above": {
+        "B_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "F_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "boundary": "output",
+        "field_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.002108109610034603,
+            "F": -0.0020515850427109683,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.6524567323634756e-05,
+            "relative_delta_B": 0.026812916678799707,
+            "allowed_delta": 3.108109610034604e-08,
+            "exceeds_tolerance": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 660.572120626524,
+            "F": 655.3088952891358,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.263225337388235,
+            "relative_delta_B": 0.007967677068169777,
+            "allowed_delta": 0.00660573120626524,
+            "exceeds_tolerance": true
+          }
+        ]
+      },
+      "accepted": true,
+      "unobservable_fields": 416,
+      "baseline_self_comparison_exact": true
+    },
+    {
+      "step": 2,
+      "status": "ALIGNED_ABOVE_TOLERANCE_API_DIFFERENCE",
+      "alignment": {
+        "ordered_source_stack_and_construct_match": true,
+        "config_collector_match": true
+      },
+      "first_exact": {
+        "B_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "F_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "boundary": "output",
+        "field_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.002108109610034603,
+            "F": -0.0020515850427109683,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.6524567323634756e-05,
+            "relative_delta_B": 0.026812916678799707,
+            "allowed_delta": 3.108109610034604e-08,
+            "exceeds_tolerance": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 660.572120626524,
+            "F": 655.3088952891358,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.263225337388235,
+            "relative_delta_B": 0.007967677068169777,
+            "allowed_delta": 0.00660573120626524,
+            "exceeds_tolerance": true
+          }
+        ]
+      },
+      "first_above": {
+        "B_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "F_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "boundary": "output",
+        "field_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.002108109610034603,
+            "F": -0.0020515850427109683,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.6524567323634756e-05,
+            "relative_delta_B": 0.026812916678799707,
+            "allowed_delta": 3.108109610034604e-08,
+            "exceeds_tolerance": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 660.572120626524,
+            "F": 655.3088952891358,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.263225337388235,
+            "relative_delta_B": 0.007967677068169777,
+            "allowed_delta": 0.00660573120626524,
+            "exceeds_tolerance": true
+          }
+        ]
+      },
+      "accepted": true,
+      "unobservable_fields": 416,
+      "baseline_self_comparison_exact": true
+    }
+  ],
+  "source_sha256": {
+    "compare_statistics.py": "b6aef8f52e038f6a2d51c3c156367280321dd6c11120d90998e27d873a7387c4",
+    "accept_statistics.py": "4b0df1676ef52519ea737fd703c0d1c5a6ae0b59e19b17ac4207a1a64e410bc9",
+    "statistics_values.py": "884fcb805b623f0fbde3a63ddb644919de92e38d65a122c27316a7a0ac6d520e"
+  },
+  "auditor_sha256": "144b374756668513ea40494f923cf44f92796253969028865fcf76a45b6b1e72"
+}

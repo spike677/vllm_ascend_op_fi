@@ -1,0 +1,155 @@
+{
+  "status": "PASS_NEW_REDUCTION_ERROR_VARIANT_ONLY",
+  "steps": [
+    {
+      "step": 0,
+      "first": {
+        "B_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "F_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "boundary": "output",
+        "field_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.002108109610034603,
+            "F": -0.0020515850427109683,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.6524567323634756e-05,
+            "relative_delta_B": 0.026812916678799707,
+            "allowed_delta": 3.108109610034604e-08,
+            "exceeds_tolerance": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 660.572120626524,
+            "F": 655.3088952891358,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.263225337388235,
+            "relative_delta_B": 0.007967677068169777,
+            "allowed_delta": 0.00660573120626524,
+            "exceeds_tolerance": true
+          }
+        ]
+      },
+      "qualifying_fields": [
+        {
+          "path": "$[0].Norm",
+          "B": 660.572120626524,
+          "F": 655.3088952891358,
+          "B_present": true,
+          "F_present": true,
+          "absolute_delta": 5.263225337388235,
+          "relative_delta_B": 0.007967677068169777,
+          "allowed_delta": 0.00660573120626524,
+          "exceeds_tolerance": true
+        }
+      ],
+      "unobservable_fields": 416,
+      "all_aligned_records": 1616,
+      "native_API_records": 1189
+    },
+    {
+      "step": 1,
+      "first": {
+        "B_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "F_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "boundary": "output",
+        "field_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.002108109610034603,
+            "F": -0.0020515850427109683,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.6524567323634756e-05,
+            "relative_delta_B": 0.026812916678799707,
+            "allowed_delta": 3.108109610034604e-08,
+            "exceeds_tolerance": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 660.572120626524,
+            "F": 655.3088952891358,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.263225337388235,
+            "relative_delta_B": 0.007967677068169777,
+            "allowed_delta": 0.00660573120626524,
+            "exceeds_tolerance": true
+          }
+        ]
+      },
+      "qualifying_fields": [
+        {
+          "path": "$[0].Norm",
+          "B": 660.572120626524,
+          "F": 655.3088952891358,
+          "B_present": true,
+          "F_present": true,
+          "absolute_delta": 5.263225337388235,
+          "relative_delta_B": 0.007967677068169777,
+          "allowed_delta": 0.00660573120626524,
+          "exceeds_tolerance": true
+        }
+      ],
+      "unobservable_fields": 416,
+      "all_aligned_records": 1616,
+      "native_API_records": 1189
+    },
+    {
+      "step": 2,
+      "first": {
+        "B_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "F_node": "NPU.npu_fused_infer_attention_score.0.forward",
+        "boundary": "output",
+        "field_differences": [
+          {
+            "path": "$[0].Mean",
+            "B": -0.002108109610034603,
+            "F": -0.0020515850427109683,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.6524567323634756e-05,
+            "relative_delta_B": 0.026812916678799707,
+            "allowed_delta": 3.108109610034604e-08,
+            "exceeds_tolerance": true
+          },
+          {
+            "path": "$[0].Norm",
+            "B": 660.572120626524,
+            "F": 655.3088952891358,
+            "B_present": true,
+            "F_present": true,
+            "absolute_delta": 5.263225337388235,
+            "relative_delta_B": 0.007967677068169777,
+            "allowed_delta": 0.00660573120626524,
+            "exceeds_tolerance": true
+          }
+        ]
+      },
+      "qualifying_fields": [
+        {
+          "path": "$[0].Norm",
+          "B": 660.572120626524,
+          "F": 655.3088952891358,
+          "B_present": true,
+          "F_present": true,
+          "absolute_delta": 5.263225337388235,
+          "relative_delta_B": 0.007967677068169777,
+          "allowed_delta": 0.00660573120626524,
+          "exceeds_tolerance": true
+        }
+      ],
+      "unobservable_fields": 416,
+      "all_aligned_records": 1616,
+      "native_API_records": 1189
+    }
+  ],
+  "rtol": 1e-05,
+  "atol": 1e-08,
+  "reference": "baseline",
+  "minimum_relative_change": 0.001,
+  "historical_fault28_root_cause_reproduced": false,
+  "runtime_or_private_arrays_used_for_first": false
+}

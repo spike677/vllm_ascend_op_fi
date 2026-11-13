@@ -1,0 +1,67 @@
+{
+  "status": "PASS_ANALYTIC_NATIVE_OPERATOR",
+  "elements_checked": 33554432,
+  "baseline_all_exactly_one": true,
+  "q0_127_unchanged": true,
+  "outside_one_fp16_ulp": 0,
+  "max_abs_from_fp16_rounded_formula": 0.0,
+  "exact_rounded_formula_elements": 33554432,
+  "formula": "q<128:1; else (q+1)/(q+1+128)",
+  "samples": [
+    {
+      "q": 0,
+      "B": 1.0,
+      "F": 1.0,
+      "expected_fp16": 1.0
+    },
+    {
+      "q": 127,
+      "B": 1.0,
+      "F": 1.0,
+      "expected_fp16": 1.0
+    },
+    {
+      "q": 128,
+      "B": 1.0,
+      "F": 0.501953125,
+      "expected_fp16": 0.501953125
+    },
+    {
+      "q": 255,
+      "B": 1.0,
+      "F": 0.66650390625,
+      "expected_fp16": 0.66650390625
+    },
+    {
+      "q": 511,
+      "B": 1.0,
+      "F": 0.7998046875,
+      "expected_fp16": 0.7998046875
+    },
+    {
+      "q": 1023,
+      "B": 1.0,
+      "F": 0.888671875,
+      "expected_fp16": 0.888671875
+    },
+    {
+      "q": 2047,
+      "B": 1.0,
+      "F": 0.94140625,
+      "expected_fp16": 0.94140625
+    }
+  ],
+  "scope": "Synthetic diagnostic only, not natural-model acceptance",
+  "native_runtime": {
+    "B": {
+      "status": "PASS_ACTUAL_EAGER_NATIVE_COVERAGE",
+      "actual_FIA_executions": 2,
+      "private_binary_sha256": "de9a06881992d171ebb58f6a301650b53053fbb5fe66a55329b616041a6d734f"
+    },
+    "F": {
+      "status": "PASS_ACTUAL_EAGER_NATIVE_COVERAGE",
+      "actual_FIA_executions": 2,
+      "private_binary_sha256": "de9a06881992d171ebb58f6a301650b53053fbb5fe66a55329b616041a6d734f"
+    }
+  }
+}
