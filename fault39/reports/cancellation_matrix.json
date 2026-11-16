@@ -1,0 +1,148 @@
+{
+  "stage": "P4",
+  "scope": "real standalone operator; model responses recorded separately",
+  "finite_includes_zero": true,
+  "cases": [
+    {
+      "pattern": "half",
+      "status": "PASS",
+      "verdict": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+      "shape": {
+        "M": 1,
+        "K": 12800,
+        "N": 5120
+      },
+      "exponent": 58,
+      "output": {
+        "total": 5120,
+        "finite": 1024,
+        "zero": 1024,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 2048,
+        "neginf": 2048,
+        "min": 0,
+        "max": 0,
+        "max_abs": 0,
+        "mean_abs": 0
+      },
+      "exact_cancellation_verified": true,
+      "off_equal": true,
+      "source": "../evidence/124_20261116/native/p4_half.json"
+    },
+    {
+      "pattern": "block256",
+      "status": "PASS",
+      "verdict": "REAL_OPERATOR_HIT_VERIFIED",
+      "shape": {
+        "M": 1,
+        "K": 12800,
+        "N": 5120
+      },
+      "exponent": 58,
+      "output": {
+        "total": 5120,
+        "finite": 5120,
+        "zero": 5120,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 0,
+        "neginf": 0,
+        "min": 0,
+        "max": 0,
+        "max_abs": 0,
+        "mean_abs": 0
+      },
+      "exact_cancellation_verified": true,
+      "off_equal": true,
+      "source": "../evidence/124_20261116/native/p4_block256.json"
+    },
+    {
+      "pattern": "block512",
+      "status": "PASS",
+      "verdict": "REAL_OPERATOR_HIT_VERIFIED",
+      "shape": {
+        "M": 1,
+        "K": 12800,
+        "N": 5120
+      },
+      "exponent": 58,
+      "output": {
+        "total": 5120,
+        "finite": 5120,
+        "zero": 5120,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 0,
+        "neginf": 0,
+        "min": 0,
+        "max": 0,
+        "max_abs": 0,
+        "mean_abs": 0
+      },
+      "exact_cancellation_verified": true,
+      "off_equal": true,
+      "source": "../evidence/124_20261116/native/p4_block512.json"
+    },
+    {
+      "pattern": "block1024",
+      "status": "PASS",
+      "verdict": "REAL_OPERATOR_HIT_VERIFIED",
+      "shape": {
+        "M": 1,
+        "K": 12800,
+        "N": 5120
+      },
+      "exponent": 58,
+      "output": {
+        "total": 5120,
+        "finite": 5120,
+        "zero": 5120,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 0,
+        "neginf": 0,
+        "min": 0,
+        "max": 0,
+        "max_abs": 0,
+        "mean_abs": 0
+      },
+      "exact_cancellation_verified": true,
+      "off_equal": true,
+      "source": "../evidence/124_20261116/native/p4_block1024.json"
+    },
+    {
+      "pattern": "alternating",
+      "status": "PASS",
+      "verdict": "REAL_OPERATOR_HIT_VERIFIED",
+      "shape": {
+        "M": 1,
+        "K": 12800,
+        "N": 5120
+      },
+      "exponent": 58,
+      "output": {
+        "total": 5120,
+        "finite": 5120,
+        "zero": 5120,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 0,
+        "neginf": 0,
+        "min": 0,
+        "max": 0,
+        "max_abs": 0,
+        "mean_abs": 0
+      },
+      "exact_cancellation_verified": true,
+      "off_equal": true,
+      "source": "../evidence/124_20261116/native/p4_alternating.json"
+    }
+  ],
+  "historical_distribution_is_not_acceptance_threshold": true
+}

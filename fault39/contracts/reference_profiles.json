@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "fault_id": 39,
+  "purpose": "Historical comparison only; these counts are not acceptance thresholds for other hardware, kernels, shapes or new builds.",
+  "count_semantics": {
+    "finite_includes_zero": true,
+    "zero_is_subset_of_finite": true,
+    "total_formula": "finite + nan + positive_inf + negative_inf",
+    "nonzero_finite_formula": "finite - zero"
+  },
+  "shared_historical_input": {
+    "api": "aclnnMatmul",
+    "dtype": "BF16",
+    "m": 1,
+    "k": 12800,
+    "n": 5120,
+    "self_strides": [12800, 1],
+    "mat2_strides": [1, 12800],
+    "amplitude": {"kind": "power_of_two", "exponent": 58, "positive_bf16_bits": "0x5c80", "negative_bf16_bits": "0xdc80"},
+    "positive_terms_per_output": 6400,
+    "negative_terms_per_output": 6400,
+    "theoretical_output_exact_zero": true,
+    "pattern_definition": {
+      "half": "first K/2 positive, remaining K/2 negative",
+      "block256_mirrored": "alternate blocks of 256 within the first half; pointwise sign inversion in the second half",
+      "block512_mirrored": "alternate blocks of 512 within the first half; pointwise sign inversion in the second half",
+      "block1024_mirrored": "alternate blocks of 1024 within the first half; pointwise sign inversion in the second half",
+      "alternating": "positive at even k and negative at odd k"
+    }
+  },
+  "profiles": [
+    {
+      "id": "a2_historical_cann851",
+      "environment_label": "A2",
+      "provenance_status": "locally_verified",
+      "verification_scope": "Local Git source and historical Markdown report verified; no NPU rerun in this audit.",
+      "raw_run_trace_available_locally": false,
+      "report_path": "fault20_fast_validation/reports/fault39_float_matmul_cancellation_validation.md",
+      "report_sha256": "d13f441c29543c617364e97eeef243610f21295839360198ac037b32e4ae3624",
+      "report_introducing_commit": "abf690117233062435df73bb66e829017a17c365",
+      "cann": "8.5.1",
+      "model": "Qwen3-32B-w8a8-nopdmix",
+      "execution": "TP2 eager, rank0, fixed-shape decode candidate, single-hit",
+      "reported_build_artifact_sha256": {
+        "runtime_v18": "dd870d5ac11b2bddcd1a329a06a0ba3ae9d00d9ee1c69dc52099393177ce8b00",
+        "typed_proxy": "d2ce5d48948ab57bdc375dbb4420d49e056dcbf455ebf25eb43e125137665393",
+        "verification_scope": "Hash strings in the local historical report; binary artifacts were not obtained or rehashed."
+      },
+      "outputs": [
+        {"pattern": "half", "total": 5120, "finite": 1024, "zero": 1024, "nonzero_finite": 0, "positive_inf": 2048, "negative_inf": 2048, "nan": 0},
+        {"pattern": "block256_mirrored", "total": 5120, "finite": 5120, "zero": 5120, "nonzero_finite": 0, "positive_inf": 0, "negative_inf": 0, "nan": 0},
+        {"pattern": "block512_mirrored", "total": 5120, "finite": 5120, "zero": 5120, "nonzero_finite": 0, "positive_inf": 0, "negative_inf": 0, "nan": 0},
+        {"pattern": "block1024_mirrored", "total": 5120, "finite": 5120, "zero": 5120, "nonzero_finite": 0, "positive_inf": 0, "negative_inf": 0, "nan": 0},
+        {"pattern": "alternating", "total": 5120, "finite": 5120, "zero": 5120, "nonzero_finite": 0, "positive_inf": 0, "negative_inf": 0, "nan": 0}
+      ],
+      "historical_verdict": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+      "accumulator_overflow_proven": false
+    },
+    {
+      "id": "a3_user_provided_historical_reference",
+      "environment_label": "A3",
+      "provenance_status": "user_provided_history_claim",
+      "verification_scope": "Counts and completed-stage claims preserved from the user attachment; the named original A3 report/json and binaries were not located.",
+      "raw_run_trace_available_locally": false,
+      "claimed_report_paths": ["fault39_a3_matmul_cancellation_validation.md", "fault39_a3_matmul_cancellation_validation.json"],
+      "attachment_id": "f166ff77-01c4-44b1-a547-c0fda9bfcf73",
+      "attachment_sha256": "58cf917386f0ec40622fd12854e798272cdc3a0f26acc6797ad26b1df4ab71ab",
+      "claimed_api_info": "aclnnMatmul_5015",
+      "claimed_control_abi": 13,
+      "claimed_source_diff_lines_from_a2": 0,
+      "source_and_binary_equality_verified_locally": false,
+      "outputs": [
+        {"pattern": "half", "total": 5120, "finite": 1120, "zero": 1120, "nonzero_finite": 0, "positive_inf": 2208, "negative_inf": 1792, "nan": 0},
+        {"pattern": "block256_mirrored", "total": 5120, "finite": 5120, "zero": 5120, "nonzero_finite": 0, "positive_inf": 0, "negative_inf": 0, "nan": 0},
+        {"pattern": "block512_mirrored", "total": 5120, "finite": 5120, "zero": 5120, "nonzero_finite": 0, "positive_inf": 0, "negative_inf": 0, "nan": 0},
+        {"pattern": "block1024_mirrored", "total": 5120, "finite": 5120, "zero": 5120, "nonzero_finite": 0, "positive_inf": 0, "negative_inf": 0, "nan": 0},
+        {"pattern": "alternating", "total": 5120, "finite": 5120, "zero": 5120, "nonzero_finite": 0, "positive_inf": 0, "negative_inf": 0, "nan": 0}
+      ],
+      "claimed_historical_verdicts": ["MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED", "MATMUL_REDUCTION_BEHAVIOR_DIFFERS_FROM_A2"],
+      "accumulator_overflow_proven": false
+    }
+  ]
+}

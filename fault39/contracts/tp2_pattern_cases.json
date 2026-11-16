@@ -1,0 +1,24 @@
+[
+  {
+    "id": "tp2_half",
+    "tool": "vllm_validate.py",
+    "args": [
+      "--model",
+      "/model",
+      "--tp",
+      "2",
+      "--ranks",
+      "0",
+      "--stage",
+      "pattern",
+      "--target-policy",
+      "max_k_min_m_unique",
+      "--max-tokens",
+      "8",
+      "--lossless-receipt",
+      "/validation/lossless.json",
+      "--output",
+      "/evidence/model"
+    ]
+  }
+]

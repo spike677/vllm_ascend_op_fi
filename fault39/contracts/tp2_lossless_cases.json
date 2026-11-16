@@ -1,0 +1,22 @@
+[
+  {
+    "id": "tp2_lossless",
+    "tool": "vllm_validate.py",
+    "args": [
+      "--model",
+      "/model",
+      "--tp",
+      "2",
+      "--ranks",
+      "0",
+      "--stage",
+      "lossless",
+      "--target-policy",
+      "max_k_min_m_unique",
+      "--max-tokens",
+      "8",
+      "--output",
+      "/evidence/model"
+    ]
+  }
+]

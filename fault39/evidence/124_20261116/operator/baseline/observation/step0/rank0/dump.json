@@ -1,0 +1,68 @@
+{
+ "task": "statistics",
+ "level": "mix",
+ "framework": "pytorch",
+ "dump_data_dir": null,
+ "data": {
+  "Torch.matmul.0.forward": {
+   "input_args": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      1,
+      12800
+     ],
+     "Max": 0.375,
+     "Min": -0.375,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    },
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      12800,
+      5120
+     ],
+     "Max": 0.5,
+     "Min": -0.5,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ],
+   "input_kwargs": {
+    "out": {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      1,
+      5120
+     ],
+     "Max": -0.3359375,
+     "Min": -0.3359375,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   },
+   "output": [
+    {
+     "type": "torch.Tensor",
+     "dtype": "torch.bfloat16",
+     "shape": [
+      1,
+      5120
+     ],
+     "Max": -0.3359375,
+     "Min": -0.3359375,
+     "Mean": null,
+     "Norm": null,
+     "requires_grad": false
+    }
+   ]
+  }
+ }
+}

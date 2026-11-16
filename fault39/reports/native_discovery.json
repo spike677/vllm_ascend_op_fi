@@ -1,0 +1,22 @@
+{
+  "stage": "P2",
+  "status": "PASS",
+  "source": "../evidence/124_20261116/native/discovery_native_discovery.json",
+  "shape": {
+    "M": 1,
+    "K": 12800,
+    "N": 5120
+  },
+  "verdict": "STABLE_UNIQUE_REAL_TARGET_DISCOVERED",
+  "boundary": "actual BF16 aclnnMatmul typed GWS, repeated cache observations and observer-only live self/mat2/out address proof; no input substitution in discovery",
+  "not_equivalent_to": "historical QMM lossless evidence",
+  "final_build_reconfirmation": {
+    "build": "build-a10",
+    "attempt": "attempt-statistics-a2",
+    "sources": [
+      "../evidence/124_20261116/operator/native_baseline.json",
+      "../evidence/124_20261116/operator/native_fault.json"
+    ],
+    "scope": "Each B/F case independently repeated typed discovery, observer-only live slots, self/mat2/dual lossless and OFF gates."
+  }
+}

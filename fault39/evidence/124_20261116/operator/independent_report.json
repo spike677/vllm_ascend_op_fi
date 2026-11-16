@@ -1,0 +1,71 @@
+{
+  "baseline": {
+    "dump.json": "ee3369faa471f045b6e349721e94c377bec5465f5843fb654f8491f329408e15",
+    "stack.json": "cc6a6abf5281c7bd8d5315dc0717dd27a3cfc30733008a30e908b8e29f406564",
+    "construct.json": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217"
+  },
+  "fault": {
+    "dump.json": "c4ea6a9db1e04858ed0693d0179561c9dcb0d62708383cc5168f75b0b55d5adc",
+    "stack.json": "cc6a6abf5281c7bd8d5315dc0717dd27a3cfc30733008a30e908b8e29f406564",
+    "construct.json": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217"
+  },
+  "source": "RAW_MSPROBE_STATISTICS_MIX",
+  "native_logs_read": false,
+  "private_tensors_read": false,
+  "baseline_config_sha256": "6d90033ccaaf1989d50e9e3b6eb088054c406e43d46a217b7c4eb2da8156fc75",
+  "fault_config_sha256": "685b6f2f9e1e439c8705505a6ed5bbc32ed2ea4b5dd8f6fc68c3b34ccf34ee75",
+  "baseline_collector_sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+  "fault_collector_sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+  "comparison": {
+    "schema_version": 1,
+    "source": "MSPROBE_STATISTICS_ONLY",
+    "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+    "tensor_payloads": false,
+    "comparison_policy": {
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-05,
+      "rule": "abs(F-B) > atol + rtol*abs(B)"
+    },
+    "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "index": 3,
+    "identity": "Torch.matmul.0.forward/output/0",
+    "difference": {
+      "field": "/Max",
+      "reason": "STATISTIC_DIFFERS",
+      "baseline": -0.3359375,
+      "fault": "+Inf"
+    },
+    "unobservable_fields": [
+      {
+        "index": 0,
+        "identity": "Torch.matmul.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 0,
+        "identity": "Torch.matmul.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 1,
+        "identity": "Torch.matmul.0.forward/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 1,
+        "identity": "Torch.matmul.0.forward/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 2,
+        "identity": "Torch.matmul.0.forward/input_kwargs/out",
+        "field": "/Mean"
+      },
+      {
+        "index": 2,
+        "identity": "Torch.matmul.0.forward/input_kwargs/out",
+        "field": "/Norm"
+      }
+    ]
+  }
+}

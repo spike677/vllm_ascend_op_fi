@@ -1,0 +1,1261 @@
+{
+  "baseline": {
+    "dump.json": "82123d5c65023f421c6664751ddda416a25af4a302e4a664d76f0c4964785311",
+    "stack.json": "dd65a7335042a4e84d574d4f56fb48560dbdcb24b071520b6bb8a4b772130af3",
+    "construct.json": "9566f47641cc331ac94adb7065b43aad0679729f7c1772c6843fb5f75a672c85"
+  },
+  "fault": {
+    "dump.json": "c320839c4f759058d6172577020d2a2e0ffa475d28b4defb54aa30b1ff716489",
+    "stack.json": "dd65a7335042a4e84d574d4f56fb48560dbdcb24b071520b6bb8a4b772130af3",
+    "construct.json": "9566f47641cc331ac94adb7065b43aad0679729f7c1772c6843fb5f75a672c85"
+  },
+  "source": "RAW_MSPROBE_STATISTICS_MIX",
+  "native_logs_read": false,
+  "private_tensors_read": false,
+  "baseline_config_sha256": "144732da4075cc12e73d832d66f5338e34aa7b46a6771c00119999096c6fb88a",
+  "fault_config_sha256": "a7f20355077a19db319492a7c34dc6bf4f2a08516d14504b630a518e1abd28c6",
+  "baseline_collector_sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+  "fault_collector_sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+  "comparison": {
+    "schema_version": 1,
+    "source": "MSPROBE_STATISTICS_ONLY",
+    "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+    "tensor_payloads": false,
+    "comparison_policy": {
+      "absolute_tolerance": 1e-08,
+      "relative_tolerance": 1e-05,
+      "rule": "abs(F-B) > atol + rtol*abs(B)"
+    },
+    "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "index": 116,
+    "identity": "Functional.linear.3.forward/output/0",
+    "difference": {
+      "field": "/Max",
+      "reason": "STATISTIC_DIFFERS",
+      "baseline": 30.5,
+      "fault": "+Inf"
+    },
+    "unobservable_fields": [
+      {
+        "index": 0,
+        "identity": "Torch.index_select.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 0,
+        "identity": "Torch.index_select.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 1,
+        "identity": "Torch.index_select.0.forward/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 1,
+        "identity": "Torch.index_select.0.forward/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 2,
+        "identity": "Torch.index_select.0.forward/input_kwargs/out",
+        "field": "/Mean"
+      },
+      {
+        "index": 2,
+        "identity": "Torch.index_select.0.forward/input_kwargs/out",
+        "field": "/Norm"
+      },
+      {
+        "index": 3,
+        "identity": "Torch.index_select.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 3,
+        "identity": "Torch.index_select.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 4,
+        "identity": "Tensor.fill_.0.forward/input_args/0",
+        "field": "/Max"
+      },
+      {
+        "index": 4,
+        "identity": "Tensor.fill_.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 4,
+        "identity": "Tensor.fill_.0.forward/input_args/0",
+        "field": "/Min"
+      },
+      {
+        "index": 4,
+        "identity": "Tensor.fill_.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 5,
+        "identity": "Tensor.fill_.0.forward/output/0",
+        "field": "/Max"
+      },
+      {
+        "index": 5,
+        "identity": "Tensor.fill_.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 5,
+        "identity": "Tensor.fill_.0.forward/output/0",
+        "field": "/Min"
+      },
+      {
+        "index": 5,
+        "identity": "Tensor.fill_.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 6,
+        "identity": "Tensor.fill_.1.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 6,
+        "identity": "Tensor.fill_.1.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 7,
+        "identity": "Tensor.fill_.1.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 7,
+        "identity": "Tensor.fill_.1.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 8,
+        "identity": "Tensor.__sub__.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 8,
+        "identity": "Tensor.__sub__.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 9,
+        "identity": "Tensor.__sub__.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 9,
+        "identity": "Tensor.__sub__.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 10,
+        "identity": "Tensor.fill_.2.forward/input_args/0",
+        "field": "/Max"
+      },
+      {
+        "index": 10,
+        "identity": "Tensor.fill_.2.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 10,
+        "identity": "Tensor.fill_.2.forward/input_args/0",
+        "field": "/Min"
+      },
+      {
+        "index": 10,
+        "identity": "Tensor.fill_.2.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 11,
+        "identity": "Tensor.fill_.2.forward/output/0",
+        "field": "/Max"
+      },
+      {
+        "index": 11,
+        "identity": "Tensor.fill_.2.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 11,
+        "identity": "Tensor.fill_.2.forward/output/0",
+        "field": "/Min"
+      },
+      {
+        "index": 11,
+        "identity": "Tensor.fill_.2.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 12,
+        "identity": "Tensor.fill_.3.forward/input_args/0",
+        "field": "/Max"
+      },
+      {
+        "index": 12,
+        "identity": "Tensor.fill_.3.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 12,
+        "identity": "Tensor.fill_.3.forward/input_args/0",
+        "field": "/Min"
+      },
+      {
+        "index": 12,
+        "identity": "Tensor.fill_.3.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 13,
+        "identity": "Tensor.fill_.3.forward/output/0",
+        "field": "/Max"
+      },
+      {
+        "index": 13,
+        "identity": "Tensor.fill_.3.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 13,
+        "identity": "Tensor.fill_.3.forward/output/0",
+        "field": "/Min"
+      },
+      {
+        "index": 13,
+        "identity": "Tensor.fill_.3.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 14,
+        "identity": "Tensor.__sub__.1.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 14,
+        "identity": "Tensor.__sub__.1.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 15,
+        "identity": "Tensor.__sub__.1.forward/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 15,
+        "identity": "Tensor.__sub__.1.forward/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 16,
+        "identity": "Tensor.__sub__.1.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 16,
+        "identity": "Tensor.__sub__.1.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 17,
+        "identity": "Tensor.__gt__.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 17,
+        "identity": "Tensor.__gt__.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 18,
+        "identity": "Tensor.__gt__.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 18,
+        "identity": "Tensor.__gt__.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 19,
+        "identity": "Torch.any.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 19,
+        "identity": "Torch.any.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 20,
+        "identity": "Torch.any.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 20,
+        "identity": "Torch.any.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 21,
+        "identity": "Tensor.argmax.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 21,
+        "identity": "Tensor.argmax.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 23,
+        "identity": "Tensor.index_select.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 23,
+        "identity": "Tensor.index_select.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 24,
+        "identity": "Tensor.index_select.0.forward/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 24,
+        "identity": "Tensor.index_select.0.forward/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 25,
+        "identity": "Tensor.index_select.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 25,
+        "identity": "Tensor.index_select.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 26,
+        "identity": "Tensor.__setitem__.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 26,
+        "identity": "Tensor.__setitem__.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 27,
+        "identity": "Tensor.__setitem__.0.forward/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 27,
+        "identity": "Tensor.__setitem__.0.forward/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 28,
+        "identity": "Tensor.index_select.1.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 28,
+        "identity": "Tensor.index_select.1.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 29,
+        "identity": "Tensor.index_select.1.forward/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 29,
+        "identity": "Tensor.index_select.1.forward/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 30,
+        "identity": "Tensor.index_select.1.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 30,
+        "identity": "Tensor.index_select.1.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 31,
+        "identity": "Tensor.__setitem__.1.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 31,
+        "identity": "Tensor.__setitem__.1.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 32,
+        "identity": "Tensor.__setitem__.1.forward/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 32,
+        "identity": "Tensor.__setitem__.1.forward/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 33,
+        "identity": "Functional.embedding.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 33,
+        "identity": "Functional.embedding.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 34,
+        "identity": "Functional.embedding.0.forward/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 34,
+        "identity": "Functional.embedding.0.forward/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 35,
+        "identity": "Functional.embedding.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 35,
+        "identity": "Functional.embedding.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 36,
+        "identity": "Module.model.embed_tokens.AscendVocabParallelEmbedding.forward.0/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 36,
+        "identity": "Module.model.embed_tokens.AscendVocabParallelEmbedding.forward.0/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 37,
+        "identity": "Module.model.embed_tokens.AscendVocabParallelEmbedding.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 37,
+        "identity": "Module.model.embed_tokens.AscendVocabParallelEmbedding.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 38,
+        "identity": "Module.model.embed_tokens.AscendVocabParallelEmbedding.forward.0/parameters/weight",
+        "field": "/Mean"
+      },
+      {
+        "index": 38,
+        "identity": "Module.model.embed_tokens.AscendVocabParallelEmbedding.forward.0/parameters/weight",
+        "field": "/Norm"
+      },
+      {
+        "index": 39,
+        "identity": "NPU.npu_rms_norm.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 39,
+        "identity": "NPU.npu_rms_norm.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 40,
+        "identity": "NPU.npu_rms_norm.0.forward/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 40,
+        "identity": "NPU.npu_rms_norm.0.forward/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 41,
+        "identity": "NPU.npu_rms_norm.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 41,
+        "identity": "NPU.npu_rms_norm.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 42,
+        "identity": "NPU.npu_rms_norm.0.forward/output/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 42,
+        "identity": "NPU.npu_rms_norm.0.forward/output/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 43,
+        "identity": "Module.model.layers.0.input_layernorm.AscendRMSNorm.forward.0/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 43,
+        "identity": "Module.model.layers.0.input_layernorm.AscendRMSNorm.forward.0/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 44,
+        "identity": "Module.model.layers.0.input_layernorm.AscendRMSNorm.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 44,
+        "identity": "Module.model.layers.0.input_layernorm.AscendRMSNorm.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 45,
+        "identity": "Module.model.layers.0.input_layernorm.AscendRMSNorm.forward.0/parameters/weight",
+        "field": "/Mean"
+      },
+      {
+        "index": 45,
+        "identity": "Module.model.layers.0.input_layernorm.AscendRMSNorm.forward.0/parameters/weight",
+        "field": "/Norm"
+      },
+      {
+        "index": 46,
+        "identity": "Functional.linear.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 46,
+        "identity": "Functional.linear.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 47,
+        "identity": "Functional.linear.0.forward/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 47,
+        "identity": "Functional.linear.0.forward/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 48,
+        "identity": "Functional.linear.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 48,
+        "identity": "Functional.linear.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 49,
+        "identity": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 49,
+        "identity": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 50,
+        "identity": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 50,
+        "identity": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 51,
+        "identity": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0/parameters/weight",
+        "field": "/Mean"
+      },
+      {
+        "index": 51,
+        "identity": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0/parameters/weight",
+        "field": "/Norm"
+      },
+      {
+        "index": 52,
+        "identity": "Triton._triton_rope.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 52,
+        "identity": "Triton._triton_rope.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 53,
+        "identity": "Triton._triton_rope.0.forward/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 53,
+        "identity": "Triton._triton_rope.0.forward/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 54,
+        "identity": "Triton._triton_rope.0.forward/input_args/8",
+        "field": "/Mean"
+      },
+      {
+        "index": 54,
+        "identity": "Triton._triton_rope.0.forward/input_args/8",
+        "field": "/Norm"
+      },
+      {
+        "index": 55,
+        "identity": "Triton._triton_rope.0.forward/input_args/10",
+        "field": "/Mean"
+      },
+      {
+        "index": 55,
+        "identity": "Triton._triton_rope.0.forward/input_args/10",
+        "field": "/Norm"
+      },
+      {
+        "index": 56,
+        "identity": "Triton._triton_rope.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 56,
+        "identity": "Triton._triton_rope.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 57,
+        "identity": "Triton._triton_rope.0.forward/output/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 57,
+        "identity": "Triton._triton_rope.0.forward/output/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 58,
+        "identity": "Triton._triton_rope.0.forward/output/8",
+        "field": "/Mean"
+      },
+      {
+        "index": 58,
+        "identity": "Triton._triton_rope.0.forward/output/8",
+        "field": "/Norm"
+      },
+      {
+        "index": 59,
+        "identity": "Triton._triton_rope.0.forward/output/10",
+        "field": "/Mean"
+      },
+      {
+        "index": 59,
+        "identity": "Triton._triton_rope.0.forward/output/10",
+        "field": "/Norm"
+      },
+      {
+        "index": 60,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 60,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 61,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 61,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 62,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 62,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 63,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 63,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 64,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/output/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 64,
+        "identity": "Module.model.layers.0.self_attn.rotary_emb.AscendRotaryEmbedding.forward.0/output/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 65,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/key",
+        "field": "/Mean"
+      },
+      {
+        "index": 65,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/key",
+        "field": "/Norm"
+      },
+      {
+        "index": 66,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/value",
+        "field": "/Mean"
+      },
+      {
+        "index": 66,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/value",
+        "field": "/Norm"
+      },
+      {
+        "index": 67,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/key_cache",
+        "field": "/Mean"
+      },
+      {
+        "index": 67,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/key_cache",
+        "field": "/Norm"
+      },
+      {
+        "index": 68,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/value_cache",
+        "field": "/Mean"
+      },
+      {
+        "index": 68,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/value_cache",
+        "field": "/Norm"
+      },
+      {
+        "index": 69,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/slot_indices",
+        "field": "/Mean"
+      },
+      {
+        "index": 69,
+        "identity": "NPU._npu_reshape_and_cache.0.forward/input_kwargs/slot_indices",
+        "field": "/Norm"
+      },
+      {
+        "index": 70,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/query",
+        "field": "/Mean"
+      },
+      {
+        "index": 70,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/query",
+        "field": "/Norm"
+      },
+      {
+        "index": 71,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/key",
+        "field": "/Mean"
+      },
+      {
+        "index": 71,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/key",
+        "field": "/Norm"
+      },
+      {
+        "index": 72,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/value",
+        "field": "/Mean"
+      },
+      {
+        "index": 72,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/value",
+        "field": "/Norm"
+      },
+      {
+        "index": 73,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+        "field": "/Mean"
+      },
+      {
+        "index": 73,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+        "field": "/Norm"
+      },
+      {
+        "index": 74,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 74,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 75,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/output/1",
+        "field": "/Max"
+      },
+      {
+        "index": 75,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/output/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 75,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/output/1",
+        "field": "/Min"
+      },
+      {
+        "index": 75,
+        "identity": "NPU.npu_fused_infer_attention_score.0.forward/output/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 76,
+        "identity": "Tensor.__setitem__.2.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 76,
+        "identity": "Tensor.__setitem__.2.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 77,
+        "identity": "Tensor.__setitem__.2.forward/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 77,
+        "identity": "Tensor.__setitem__.2.forward/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 78,
+        "identity": "Tensor.__setitem__.3.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 78,
+        "identity": "Tensor.__setitem__.3.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 79,
+        "identity": "Tensor.__setitem__.3.forward/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 79,
+        "identity": "Tensor.__setitem__.3.forward/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 80,
+        "identity": "Module.model.layers.0.self_attn.attn.Attention.forward.0/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 80,
+        "identity": "Module.model.layers.0.self_attn.attn.Attention.forward.0/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 81,
+        "identity": "Module.model.layers.0.self_attn.attn.Attention.forward.0/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 81,
+        "identity": "Module.model.layers.0.self_attn.attn.Attention.forward.0/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 82,
+        "identity": "Module.model.layers.0.self_attn.attn.Attention.forward.0/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 82,
+        "identity": "Module.model.layers.0.self_attn.attn.Attention.forward.0/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 83,
+        "identity": "Module.model.layers.0.self_attn.attn.Attention.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 83,
+        "identity": "Module.model.layers.0.self_attn.attn.Attention.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 84,
+        "identity": "Functional.linear.1.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 84,
+        "identity": "Functional.linear.1.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 85,
+        "identity": "Functional.linear.1.forward/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 85,
+        "identity": "Functional.linear.1.forward/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 86,
+        "identity": "Functional.linear.1.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 86,
+        "identity": "Functional.linear.1.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 87,
+        "identity": "Module.model.layers.0.self_attn.o_proj.AscendRowParallelLinear.forward.0/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 87,
+        "identity": "Module.model.layers.0.self_attn.o_proj.AscendRowParallelLinear.forward.0/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 88,
+        "identity": "Module.model.layers.0.self_attn.o_proj.AscendRowParallelLinear.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 88,
+        "identity": "Module.model.layers.0.self_attn.o_proj.AscendRowParallelLinear.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 89,
+        "identity": "Module.model.layers.0.self_attn.o_proj.AscendRowParallelLinear.forward.0/parameters/weight",
+        "field": "/Mean"
+      },
+      {
+        "index": 89,
+        "identity": "Module.model.layers.0.self_attn.o_proj.AscendRowParallelLinear.forward.0/parameters/weight",
+        "field": "/Norm"
+      },
+      {
+        "index": 90,
+        "identity": "Module.model.layers.0.self_attn.LlamaAttention.forward.0/input_kwargs/positions",
+        "field": "/Mean"
+      },
+      {
+        "index": 90,
+        "identity": "Module.model.layers.0.self_attn.LlamaAttention.forward.0/input_kwargs/positions",
+        "field": "/Norm"
+      },
+      {
+        "index": 91,
+        "identity": "Module.model.layers.0.self_attn.LlamaAttention.forward.0/input_kwargs/hidden_states",
+        "field": "/Mean"
+      },
+      {
+        "index": 91,
+        "identity": "Module.model.layers.0.self_attn.LlamaAttention.forward.0/input_kwargs/hidden_states",
+        "field": "/Norm"
+      },
+      {
+        "index": 92,
+        "identity": "Module.model.layers.0.self_attn.LlamaAttention.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 92,
+        "identity": "Module.model.layers.0.self_attn.LlamaAttention.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 93,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 93,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 94,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 94,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 95,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/input_args/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 95,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/input_args/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 96,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 96,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 97,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/output/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 97,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/output/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 98,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/output/2",
+        "field": "/Mean"
+      },
+      {
+        "index": 98,
+        "identity": "_C_ascend.npu_add_rms_norm_bias.0.forward/output/2",
+        "field": "/Norm"
+      },
+      {
+        "index": 99,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 99,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 100,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 100,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 101,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 101,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 102,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/output/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 102,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/output/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 103,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/parameters/weight",
+        "field": "/Mean"
+      },
+      {
+        "index": 103,
+        "identity": "Module.model.layers.0.post_attention_layernorm.AscendRMSNorm.forward.0/parameters/weight",
+        "field": "/Norm"
+      },
+      {
+        "index": 104,
+        "identity": "Functional.linear.2.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 104,
+        "identity": "Functional.linear.2.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 105,
+        "identity": "Functional.linear.2.forward/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 105,
+        "identity": "Functional.linear.2.forward/input_args/1",
+        "field": "/Norm"
+      },
+      {
+        "index": 106,
+        "identity": "Functional.linear.2.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 106,
+        "identity": "Functional.linear.2.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 107,
+        "identity": "Module.model.layers.0.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 107,
+        "identity": "Module.model.layers.0.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 108,
+        "identity": "Module.model.layers.0.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 108,
+        "identity": "Module.model.layers.0.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 109,
+        "identity": "Module.model.layers.0.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0/parameters/weight",
+        "field": "/Mean"
+      },
+      {
+        "index": 109,
+        "identity": "Module.model.layers.0.mlp.gate_up_proj.AscendMergedColumnParallelLinear.forward.0/parameters/weight",
+        "field": "/Norm"
+      },
+      {
+        "index": 110,
+        "identity": "NPU.npu_swiglu.0.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 110,
+        "identity": "NPU.npu_swiglu.0.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 111,
+        "identity": "NPU.npu_swiglu.0.forward/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 111,
+        "identity": "NPU.npu_swiglu.0.forward/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 112,
+        "identity": "Module.model.layers.0.mlp.act_fn.AscendSiluAndMul.forward.0/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 112,
+        "identity": "Module.model.layers.0.mlp.act_fn.AscendSiluAndMul.forward.0/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 113,
+        "identity": "Module.model.layers.0.mlp.act_fn.AscendSiluAndMul.forward.0/output/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 113,
+        "identity": "Module.model.layers.0.mlp.act_fn.AscendSiluAndMul.forward.0/output/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 114,
+        "identity": "Functional.linear.3.forward/input_args/0",
+        "field": "/Mean"
+      },
+      {
+        "index": 114,
+        "identity": "Functional.linear.3.forward/input_args/0",
+        "field": "/Norm"
+      },
+      {
+        "index": 115,
+        "identity": "Functional.linear.3.forward/input_args/1",
+        "field": "/Mean"
+      },
+      {
+        "index": 115,
+        "identity": "Functional.linear.3.forward/input_args/1",
+        "field": "/Norm"
+      }
+    ]
+  }
+}

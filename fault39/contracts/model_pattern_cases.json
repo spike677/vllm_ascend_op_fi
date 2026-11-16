@@ -1,0 +1,112 @@
+[
+  {
+    "id": "pattern_half",
+    "tool": "vllm_validate.py",
+    "args": [
+      "--model",
+      "/model",
+      "--tp",
+      "1",
+      "--stage",
+      "pattern",
+      "--target-policy",
+      "max_k_min_m_unique",
+      "--pattern",
+      "half",
+      "--max-tokens",
+      "8",
+      "--lossless-receipt",
+      "/validation/lossless.json",
+      "--output",
+      "/evidence/model"
+    ]
+  },
+  {
+    "id": "pattern_block256",
+    "tool": "vllm_validate.py",
+    "args": [
+      "--model",
+      "/model",
+      "--tp",
+      "1",
+      "--stage",
+      "pattern",
+      "--target-policy",
+      "max_k_min_m_unique",
+      "--pattern",
+      "block256",
+      "--max-tokens",
+      "8",
+      "--lossless-receipt",
+      "/validation/lossless.json",
+      "--output",
+      "/evidence/model"
+    ]
+  },
+  {
+    "id": "pattern_block512",
+    "tool": "vllm_validate.py",
+    "args": [
+      "--model",
+      "/model",
+      "--tp",
+      "1",
+      "--stage",
+      "pattern",
+      "--target-policy",
+      "max_k_min_m_unique",
+      "--pattern",
+      "block512",
+      "--max-tokens",
+      "8",
+      "--lossless-receipt",
+      "/validation/lossless.json",
+      "--output",
+      "/evidence/model"
+    ]
+  },
+  {
+    "id": "pattern_block1024",
+    "tool": "vllm_validate.py",
+    "args": [
+      "--model",
+      "/model",
+      "--tp",
+      "1",
+      "--stage",
+      "pattern",
+      "--target-policy",
+      "max_k_min_m_unique",
+      "--pattern",
+      "block1024",
+      "--max-tokens",
+      "8",
+      "--lossless-receipt",
+      "/validation/lossless.json",
+      "--output",
+      "/evidence/model"
+    ]
+  },
+  {
+    "id": "pattern_alternating",
+    "tool": "vllm_validate.py",
+    "args": [
+      "--model",
+      "/model",
+      "--tp",
+      "1",
+      "--stage",
+      "pattern",
+      "--target-policy",
+      "max_k_min_m_unique",
+      "--pattern",
+      "alternating",
+      "--max-tokens",
+      "8",
+      "--lossless-receipt",
+      "/validation/lossless.json",
+      "--output",
+      "/evidence/model"
+    ]
+  }
+]

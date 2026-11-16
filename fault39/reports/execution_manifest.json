@@ -1,0 +1,375 @@
+{
+  "schema": "fault39.execution_manifest.v1",
+  "remote_root": "/home/fault39-integration-20261116-a1",
+  "controller_receipts": "retained in remote attempts; this table is derived from actual receipts",
+  "final_native_build": "build-a10",
+  "final_runner_source": "source-a19",
+  "attempts": [
+    {
+      "attempt": "attempt-p2-a8",
+      "controller_sha256": "f8e52b5efd7187a39167f82ea3fe379ecb4412b69968992bb64792118b8f3d06",
+      "source_manifest_sha256": "b1f90416dfef64988d2e21d97c04b8c90cb0c6712b650835e6419247a73be38b",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "p2_discovery",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:44:23.044830+00:00",
+          "source_snapshot": "source-a9",
+          "native_build": "build-a9"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-p3-a1",
+      "controller_sha256": "bf4a1f9639db52bdf226777ac230bd85d8e91cf73d3e804fe83a3e5e4063cc93",
+      "source_manifest_sha256": "b1f90416dfef64988d2e21d97c04b8c90cb0c6712b650835e6419247a73be38b",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "p3_self",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:45:09.017596+00:00",
+          "source_snapshot": "source-a9",
+          "native_build": "build-a9"
+        },
+        {
+          "id": "p3_mat2",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:45:29.150634+00:00",
+          "source_snapshot": "source-a9",
+          "native_build": "build-a9"
+        },
+        {
+          "id": "p3_dual",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:45:48.850924+00:00",
+          "source_snapshot": "source-a9",
+          "native_build": "build-a9"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-p4-a1",
+      "controller_sha256": "6a7b65aea98432096cfdb0572ac4267088afb8903774b7a43018ea07b298b2b0",
+      "source_manifest_sha256": "b1f90416dfef64988d2e21d97c04b8c90cb0c6712b650835e6419247a73be38b",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "p4_half",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:46:48.234280+00:00",
+          "source_snapshot": "source-a9",
+          "native_build": "build-a9"
+        },
+        {
+          "id": "p4_block256",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:47:14.987188+00:00",
+          "source_snapshot": "source-a9",
+          "native_build": "build-a9"
+        },
+        {
+          "id": "p4_block512",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:47:47.094717+00:00",
+          "source_snapshot": "source-a9",
+          "native_build": "build-a9"
+        },
+        {
+          "id": "p4_block1024",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:48:13.968313+00:00",
+          "source_snapshot": "source-a9",
+          "native_build": "build-a9"
+        },
+        {
+          "id": "p4_alternating",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:48:41.319098+00:00",
+          "source_snapshot": "source-a9",
+          "native_build": "build-a9"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-statistics-a2",
+      "controller_sha256": "34a70f5cef12599c02d84a096abe0cbabf4224fe67d9a179f42b352777be4b5f",
+      "source_manifest_sha256": "4336de68a09db83f658343f696529ada783040dafd10256f85981428979ab1fa",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "operator_baseline",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:58:01.337234+00:00",
+          "source_snapshot": "source-a13",
+          "native_build": "build-a10"
+        },
+        {
+          "id": "operator_fault",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:58:28.509201+00:00",
+          "source_snapshot": "source-a13",
+          "native_build": "build-a10"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-model-qwen-a1",
+      "controller_sha256": "7eee167bd49b4e8ba08b6e0b849af9bae08fdfa7bc5064836257c015d5474069",
+      "source_manifest_sha256": "478052ff5514a91fca3942948a5cae0b113c58bf75788d1126f9701dcd92ee15",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASE_FAILED",
+      "cases": [
+        {
+          "id": "model_discovery",
+          "exit_code": 2,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:49:59.937999+00:00",
+          "source_snapshot": "source-a10",
+          "native_build": "build-a10"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-model-qwen-a3",
+      "controller_sha256": "f7e3b343f76be387ebb97d32081a0ac8c2f09ee01a6c8f3d7d7d276a2df4fc68",
+      "source_manifest_sha256": "836bb9f1e3dca3675ca19a76d9745008986bb0f37c8037249b318784048ae7ce",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "model_lossless",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T03:59:52.209997+00:00",
+          "source_snapshot": "source-a14",
+          "native_build": "build-a10"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-model-qwen-stat-a1",
+      "controller_sha256": "52ad033e370ecb94f1e8d03121d7d762e54f8f7e2406cf73784598ddad7402ef",
+      "source_manifest_sha256": "4f1dcc64b579c34ddf1198c164498aa5c0dacec6c89b54b241ea9c4e29bc0918",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "model_baseline",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:03:28.101898+00:00",
+          "source_snapshot": "source-a15",
+          "native_build": "build-a10"
+        },
+        {
+          "id": "model_fault",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:05:53.028207+00:00",
+          "source_snapshot": "source-a15",
+          "native_build": "build-a10"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-llama-lossless-a1",
+      "controller_sha256": "6bfd1d2d60d5b4e13d508a2310c198776e82ecba8e3ca38274dc9bd74a1cd481",
+      "source_manifest_sha256": "c728a955de9d072aa4c08663464222cb8fca19567fa553821492a6acb995fdb4",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "model_lossless",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:19:06.394102+00:00",
+          "source_snapshot": "source-a16",
+          "native_build": "build-a10"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-qwen-patterns-a2",
+      "controller_sha256": "5bca13644009279b55a4c1c177740c5b83f092b308253393ab4764baaedb5d02",
+      "source_manifest_sha256": "a2e8c4bcb175441a6ba72c9387deae5cf7a67a12bd26db1abc48912b9d39a277",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "pattern_half",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:27:43.857217+00:00",
+          "source_snapshot": "source-a17",
+          "native_build": "build-a10"
+        },
+        {
+          "id": "pattern_block256",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:29:58.650011+00:00",
+          "source_snapshot": "source-a17",
+          "native_build": "build-a10"
+        },
+        {
+          "id": "pattern_block512",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:32:21.335654+00:00",
+          "source_snapshot": "source-a17",
+          "native_build": "build-a10"
+        },
+        {
+          "id": "pattern_block1024",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:34:35.801903+00:00",
+          "source_snapshot": "source-a17",
+          "native_build": "build-a10"
+        },
+        {
+          "id": "pattern_alternating",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:37:06.139696+00:00",
+          "source_snapshot": "source-a17",
+          "native_build": "build-a10"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-dynamic-owner-a1",
+      "controller_sha256": "cc7eceeeb98da58a04db2d5da8f281d01590dde448581658823d03233cd0247a",
+      "source_manifest_sha256": "a2e8c4bcb175441a6ba72c9387deae5cf7a67a12bd26db1abc48912b9d39a277",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "dynamic_owner",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:26:21.751003+00:00",
+          "source_snapshot": "source-a17",
+          "native_build": "build-a10"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-tp2-lossless-a5",
+      "controller_sha256": "e7c7fec7404bb22fd570370691152e82b57280a1b995c6c1b75be784a4a61b32",
+      "source_manifest_sha256": "8dced87f0e7d032b13493f00544f3f7b89bc21f6971db9c1d6316904ea088a3b",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        2,
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "tp2_lossless",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:46:24.909813+00:00",
+          "source_snapshot": "source-a18",
+          "native_build": "build-a10"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-tp2-pattern-a1",
+      "controller_sha256": "2f25455466c8d4344e9717a865c7484995c938d116544948252e7105eef41f4e",
+      "source_manifest_sha256": "0a2ec9d65216549a87df5c544f9846b83db46313b8dbcb36cbb876668175f07e",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        2,
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "tp2_half",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:49:13.520790+00:00",
+          "source_snapshot": "source-a19",
+          "native_build": "build-a10"
+        }
+      ]
+    },
+    {
+      "attempt": "attempt-llama-stat-a3",
+      "controller_sha256": "989a4c57aaafdc58e43fcbb185f8f67c3f267905021800331f2cf8bab57a070b",
+      "source_manifest_sha256": "0a2ec9d65216549a87df5c544f9846b83db46313b8dbcb36cbb876668175f07e",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "physical_cards": [
+        5
+      ],
+      "status": "CASES_COMPLETED",
+      "cases": [
+        {
+          "id": "model_baseline",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:52:55.945566+00:00",
+          "source_snapshot": "source-a19",
+          "native_build": "build-a10"
+        },
+        {
+          "id": "model_fault",
+          "exit_code": 0,
+          "idle_at_gate": true,
+          "started_utc": "2026-11-16T04:54:58.201827+00:00",
+          "source_snapshot": "source-a19",
+          "native_build": "build-a10"
+        }
+      ]
+    }
+  ]
+}

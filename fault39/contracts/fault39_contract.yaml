@@ -1,0 +1,81 @@
+schema: demoncat_fault39.execution_contract.v1
+scope:
+  mechanism: FLOAT_MATMUL_CANCELLATION
+  integration: INNER_FRAMEWORK_INTEGRATION_PENDING
+  native_source: historical_CANN_8_5_1_metadata_and_executor_cache
+  operator: aclnnMatmul
+  execution: eager_repeat_executor_cache
+  hardware_acceptance: blue_124_only_until_separately_verified
+  output_proxy: false
+geometry:
+  dtype: BF16
+  format: ND
+  self: [M, K]
+  mat2: [K, N]
+  output: [M, N]
+  positive_dimensions: true
+  even_K: true
+  positive_nonoverlapping_strides: true
+  logical_view_bounds_and_storage_bytes_checked: true
+  live_input_output_alias_rejected: true
+patterns:
+  half: first_K_over_2_positive_then_negative
+  block256: first_half_block_alternation_then_pointwise_negated_second_half
+  block512: first_half_block_alternation_then_pointwise_negated_second_half
+  block1024: first_half_block_alternation_then_pointwise_negated_second_half
+  alternating: positive_even_k_negative_odd_k
+amplitude:
+  historical: power_of_two_exponent_58
+  generalized: smallest_integer_exponent_satisfying_reference_pressure
+  search_integer_exponents: [0, 63]
+  constraints:
+    - A_and_A_squared_finite_in_reference_FP32_range
+    - K_over_2_times_A_squared_exceeds_reference_FP32_max
+    - every_pattern_in_a_comparison_uses_same_A
+  no_solution: NO_OVERFLOW_SOLUTION
+  caveat: reference_FP32_pressure_does_not_identify_actual_accumulator_or_guarantee_nonfinite
+target:
+  user_supplies_layer_path: false
+  selection: actual_metadata_signature_unique_and_stable_across_repeated_workloads
+  default_policy: unique
+  optional_policy:
+    name: max_k_min_m_unique
+    order: [largest_actual_K, smallest_actual_M, require_single_signature_and_cache]
+    rationale: maximize_reduction_pressure_then_minimize_self_working_set
+    tie: AMBIGUOUS_TARGET
+    added_after_strict_Qwen3_discovery: five_distinguishable_geometries_observed_on_124
+  ambiguous: AMBIGUOUS_TARGET
+  unknown_request: UNPROVEN_REQUEST_MAPPING
+  rank_filter: actual_worker_identity_and_native_target_filter
+  device_filter: actual_ACL_logical_device_with_recorded_physical_mapping
+lifecycle:
+  default: disabled
+  isolated_versioned_control: true
+  disable: close_admission_then_drain_inflight_and_buffer_leases
+  timeout: DISABLE_PENDING
+  sync_or_cleanup_failure: RECOVERY_FAILED
+  global_reload_weights: forbidden
+  other_fault_owners: preserved
+observation:
+  finite_includes_zero: true
+  total: finite_plus_positive_inf_plus_negative_inf_plus_nan
+  zero_is_subset_of_finite: true
+  full_native_logical_output_counts: true
+  device_readback_distinct_from_host_construction: true
+  msprobe:
+    task: statistics
+    level: mix
+    summary_mode: statistics
+    comparison_inputs: [baseline_raw_dump_stack_construct, fault_raw_dump_stack_construct, config, collector_identity]
+    injection_logs_select_first_difference: forbidden
+    null: unobservable
+acceptance:
+  P0: provenance_and_contract_frozen
+  P1: standalone_core_and_contract_mock_tests
+  P2: real_typed_metadata_cache_and_live_slot_proof
+  P3: self_only_mat2_only_and_dual_lossless_with_exact_recovery
+  P4: five_pattern_matrix_with_actual_results_including_no_anomaly
+  P5: two_distinct_real_model_architectures_not_just_two_shapes
+  P6: TP2_filter_drain_owner_isolation_and_GitHub_delivery
+  TP4: mock_control_only
+  inner_framework: yellow_integration_pending

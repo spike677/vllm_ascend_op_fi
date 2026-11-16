@@ -1,0 +1,17 @@
+{
+ "0": [
+  [
+   "Torch.matmul.0.forward"
+  ],
+  [
+   "File /source/fault39/tools/native_probe.py, line 192, in forward, \n return torch.matmul(left, right, out=destination)",
+   "File /usr/local/python3.11.14/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1786, in _call_impl, \n return forward_call(*args, **kwargs)",
+   "File /usr/local/python3.11.14/lib/python3.11/site-packages/torch/nn/modules/module.py, line 1775, in _wrapped_call_impl, \n return self._call_impl(*args, **kwargs)",
+   "File /source/fault39/tools/native_probe.py, line 224, in execute, \n probe_module(self_npu, mat2_npu, output)",
+   "File /source/fault39/tools/native_probe.py, line 295, in selected_case, \n actual, evidence = execute(label)",
+   "File /source/fault39/tools/native_probe.py, line 327, in run_probe, \n result[\"pattern\"] = selected_case(selected_mode, 3, \"pattern-\" + args.pattern)",
+   "File /source/fault39/tools/native_probe.py, line 370, in main, \n run_probe(args, result)",
+   "File /source/fault39/tools/native_probe.py, line 385, in <module>, \n raise SystemExit(main())"
+  ]
+ ]
+}

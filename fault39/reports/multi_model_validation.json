@@ -1,0 +1,234 @@
+{
+  "stage": "P5",
+  "status": "PASS_TWO_REAL_ARCHITECTURES_WITH_DISCLOSED_STATISTICS_SCOPE",
+  "models": [
+    {
+      "model": "Qwen3-0.6B",
+      "architecture": [
+        "Qwen3ForCausalLM"
+      ],
+      "model_identity": {
+        "config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        "model_type": "qwen3",
+        "architectures": [
+          "Qwen3ForCausalLM"
+        ],
+        "weights": {
+          "model.safetensors": {
+            "bytes": 1503300328,
+            "sha256": "f47f71177f32bcd101b7573ec9171e6a57f4f4d31148d38e382306f42996874b"
+          }
+        }
+      },
+      "tp": 1,
+      "ranks": [
+        0
+      ],
+      "target_policy": "max_k_min_m_unique",
+      "targets": {
+        "0": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,3072,3072,1,0,6144:27,2,3072,1024,1,3072,0,6291456:27,2,1,1024,1024,1,0,2048"
+      },
+      "native_status": "PATTERN_NATIVE_VALIDATED_MSPROBE_ANALYSIS_PENDING",
+      "native_validated": true,
+      "recovery": true,
+      "actual_shape": [
+        [
+          1,
+          3072
+        ],
+        [
+          3072,
+          1024
+        ],
+        [
+          1,
+          1024
+        ]
+      ],
+      "exponent": 59,
+      "output": {
+        "total": 1024,
+        "finite": 0,
+        "zero": 0,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 1024,
+        "neginf": 0,
+        "min": null,
+        "max": null,
+        "max_abs": null,
+        "mean_abs": null
+      },
+      "baseline_response": [
+        {
+          "text": " Also, explain why it is important to",
+          "token_ids": [
+            7281,
+            11,
+            10339,
+            3170,
+            432,
+            374,
+            2989,
+            311
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "fault_response": [
+        {
+          "text": " Also!!!!!!!",
+          "token_ids": [
+            7281,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "response_digest_changed": true,
+      "whole_capture_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "baseline_steps": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "fault_steps": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "native_source": "../evidence/124_20261116/model_qwen/native_fault.json",
+      "independent_report": "../evidence/124_20261116/model_qwen/independent_report.json"
+    },
+    {
+      "model": "SmolLM2-135M-Instruct",
+      "architecture": [
+        "LlamaForCausalLM"
+      ],
+      "model_identity": {
+        "config_sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+        "model_type": "llama",
+        "architectures": [
+          "LlamaForCausalLM"
+        ],
+        "weights": {
+          "model.safetensors": {
+            "bytes": 269060552,
+            "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+          }
+        }
+      },
+      "tp": 1,
+      "ranks": [
+        0
+      ],
+      "target_policy": "max_k_min_m_unique",
+      "targets": {
+        "0": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040"
+      },
+      "native_status": "PATTERN_NATIVE_VALIDATED_MSPROBE_ANALYSIS_PENDING",
+      "native_validated": true,
+      "recovery": true,
+      "actual_shape": [
+        [
+          20,
+          1536
+        ],
+        [
+          1536,
+          576
+        ],
+        [
+          20,
+          576
+        ]
+      ],
+      "exponent": 60,
+      "output": {
+        "total": 11520,
+        "finite": 0,
+        "zero": 0,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 11520,
+        "neginf": 0,
+        "min": null,
+        "max": null,
+        "max_abs": null,
+        "mean_abs": null
+      },
+      "baseline_response": [
+        {
+          "text": "",
+          "token_ids": [
+            2
+          ],
+          "finish_reason": "stop",
+          "stop_reason": null
+        }
+      ],
+      "fault_response": [
+        {
+          "text": "",
+          "token_ids": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "response_digest_changed": true,
+      "whole_capture_status": "STEP_SET_MISMATCH",
+      "baseline_steps": [
+        0
+      ],
+      "fault_steps": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "native_source": "../evidence/124_20261116/model_llama/native_fault.json",
+      "independent_report": "../evidence/124_20261116/model_llama/independent_report.json"
+    }
+  ],
+  "llama_common_prefill_report": "../evidence/124_20261116/model_llama/step0_independent_report.json",
+  "llama_decoded_text_changed": false,
+  "not_claimed": [
+    "arbitrary architecture support",
+    "model task accuracy",
+    "all layer or all request coverage",
+    "full step alignment after different stopping times"
+  ]
+}

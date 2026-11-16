@@ -1,0 +1,302 @@
+{
+  "model": "Qwen3ForCausalLM",
+  "shape": [
+    1,
+    3072,
+    1024
+  ],
+  "amplitude_policy": "auto",
+  "common_exponent": 59,
+  "tp": 1,
+  "ranks": [
+    0
+  ],
+  "cases": [
+    {
+      "pattern": "half",
+      "native_verdict": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+      "validated": true,
+      "recovery": true,
+      "exponent": 59,
+      "output": {
+        "total": 1024,
+        "finite": 0,
+        "zero": 0,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 1024,
+        "neginf": 0,
+        "min": null,
+        "max": null,
+        "max_abs": null,
+        "mean_abs": null
+      },
+      "baseline_response": [
+        {
+          "text": " Also, explain why it is important to",
+          "token_ids": [
+            7281,
+            11,
+            10339,
+            3170,
+            432,
+            374,
+            2989,
+            311
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "fault_response": [
+        {
+          "text": " Also!!!!!!!",
+          "token_ids": [
+            7281,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "response_changed": true,
+      "source": "../evidence/124_20261116/model_qwen/pattern_matrix/half.json"
+    },
+    {
+      "pattern": "block256",
+      "native_verdict": "REAL_OPERATOR_HIT_VERIFIED",
+      "validated": true,
+      "recovery": true,
+      "exponent": 59,
+      "output": {
+        "total": 1024,
+        "finite": 1024,
+        "zero": 1024,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 0,
+        "neginf": 0,
+        "min": 0,
+        "max": 0,
+        "max_abs": 0,
+        "mean_abs": 0
+      },
+      "baseline_response": [
+        {
+          "text": " Also, explain why it is important to",
+          "token_ids": [
+            7281,
+            11,
+            10339,
+            3170,
+            432,
+            374,
+            2989,
+            311
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "fault_response": [
+        {
+          "text": " Also, explain why it is important to",
+          "token_ids": [
+            7281,
+            11,
+            10339,
+            3170,
+            432,
+            374,
+            2989,
+            311
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "response_changed": false,
+      "source": "../evidence/124_20261116/model_qwen/pattern_matrix/block256.json"
+    },
+    {
+      "pattern": "block512",
+      "native_verdict": "REAL_OPERATOR_HIT_VERIFIED",
+      "validated": true,
+      "recovery": true,
+      "exponent": 59,
+      "output": {
+        "total": 1024,
+        "finite": 1024,
+        "zero": 1024,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 0,
+        "neginf": 0,
+        "min": 0,
+        "max": 0,
+        "max_abs": 0,
+        "mean_abs": 0
+      },
+      "baseline_response": [
+        {
+          "text": " Also, explain why it is important to",
+          "token_ids": [
+            7281,
+            11,
+            10339,
+            3170,
+            432,
+            374,
+            2989,
+            311
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "fault_response": [
+        {
+          "text": " Also, explain why it is important to",
+          "token_ids": [
+            7281,
+            11,
+            10339,
+            3170,
+            432,
+            374,
+            2989,
+            311
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "response_changed": false,
+      "source": "../evidence/124_20261116/model_qwen/pattern_matrix/block512.json"
+    },
+    {
+      "pattern": "block1024",
+      "native_verdict": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+      "validated": true,
+      "recovery": true,
+      "exponent": 59,
+      "output": {
+        "total": 1024,
+        "finite": 0,
+        "zero": 0,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 1024,
+        "neginf": 0,
+        "min": null,
+        "max": null,
+        "max_abs": null,
+        "mean_abs": null
+      },
+      "baseline_response": [
+        {
+          "text": " Also, explain why it is important to",
+          "token_ids": [
+            7281,
+            11,
+            10339,
+            3170,
+            432,
+            374,
+            2989,
+            311
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "fault_response": [
+        {
+          "text": " Also!!!!!!!",
+          "token_ids": [
+            7281,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "response_changed": true,
+      "source": "../evidence/124_20261116/model_qwen/pattern_matrix/block1024.json"
+    },
+    {
+      "pattern": "alternating",
+      "native_verdict": "REAL_OPERATOR_HIT_VERIFIED",
+      "validated": true,
+      "recovery": true,
+      "exponent": 59,
+      "output": {
+        "total": 1024,
+        "finite": 1024,
+        "zero": 1024,
+        "positive": 0,
+        "negative": 0,
+        "nan": 0,
+        "posinf": 0,
+        "neginf": 0,
+        "min": 0,
+        "max": 0,
+        "max_abs": 0,
+        "mean_abs": 0
+      },
+      "baseline_response": [
+        {
+          "text": " Also, explain why it is important to",
+          "token_ids": [
+            7281,
+            11,
+            10339,
+            3170,
+            432,
+            374,
+            2989,
+            311
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "fault_response": [
+        {
+          "text": " Also, explain why it is important to",
+          "token_ids": [
+            7281,
+            11,
+            10339,
+            3170,
+            432,
+            374,
+            2989,
+            311
+          ],
+          "finish_reason": "length",
+          "stop_reason": null
+        }
+      ],
+      "response_changed": false,
+      "source": "../evidence/124_20261116/model_qwen/pattern_matrix/alternating.json"
+    }
+  ],
+  "msprobe": "formal half B/F stored separately; these five cases use native and response evidence"
+}

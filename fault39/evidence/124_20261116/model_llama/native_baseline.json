@@ -1,0 +1,4730 @@
+{
+  "schema_version": 1,
+  "stage": "pattern",
+  "status": "BASELINE_MODEL_CAPTURED",
+  "model": "/model",
+  "tp": 1,
+  "ranks": [
+    0
+  ],
+  "config": {
+    "fault_id": 39,
+    "pattern": "half",
+    "amplitude_policy": "auto",
+    "target": "auto",
+    "target_policy": "max_k_min_m_unique",
+    "ranks": [
+      0
+    ],
+    "devices": [],
+    "max_hits": 1,
+    "max_bytes": 536870912,
+    "schema_version": 1
+  },
+  "environment": {
+    "packages": {
+      "vllm": "0.18.0+empty",
+      "vllm-ascend": "0.18.0",
+      "torch": "2.9.0+cpu",
+      "torch-npu": "2.9.0.post1+gitee7ba04"
+    },
+    "preload_files": {
+      "/native/libfault39_native_v1.so": "bb34017e548b31e2dc2e29c7eb59678e813d58e115b9189d08ca04e01112c935",
+      "/native/libopapi.so": "b39393d0cce659e27809a0d63d07a4fcb86b9667ee50574522f6f62d86b16306"
+    },
+    "worker_extension": "demoncat_fault39.vllm_worker.Fault39WorkerExtension",
+    "enforce_eager": true,
+    "dtype": "bfloat16",
+    "max_model_len": 512,
+    "task_queue_enable": "0",
+    "async_scheduling": false,
+    "seed": 0,
+    "max_tokens": 8,
+    "model_identity": {
+      "config_sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+      "model_type": "llama",
+      "architectures": [
+        "LlamaForCausalLM"
+      ],
+      "weights": {
+        "model.safetensors": {
+          "bytes": 269060552,
+          "sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c"
+        }
+      }
+    }
+  },
+  "worker_identities": {
+    "0": {
+      "rank": 0,
+      "logical_device": 0,
+      "pid": 1,
+      "visible_devices": null,
+      "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+      "provider": {
+        "abi_version": 1,
+        "runtime_loaded": true,
+        "runtime_ready": true,
+        "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+        "owner": "",
+        "generation": 0,
+        "enabled": false,
+        "mode": 0,
+        "exponent": 0,
+        "pattern": 0,
+        "input_mask": 0,
+        "rank": 0,
+        "device": 0,
+        "inflight": 0,
+        "leases": 0,
+        "status": "DISABLED",
+        "last_error": 0,
+        "target_signature": "",
+        "interposed_run_calls": 462,
+        "last_run_api": "aclnnInplaceZero_602",
+        "typed_metadata_calls": 5,
+        "hits": 0,
+        "substituted": 0,
+        "completed": 0,
+        "rejected": 0,
+        "actual_request_ids_json": "[]",
+        "worker_rank": 0,
+        "observer": {
+          "total": 0,
+          "finite": 0,
+          "zero": 0,
+          "positive": 0,
+          "negative": 0,
+          "nan": 0,
+          "posinf": 0,
+          "neginf": 0,
+          "min": null,
+          "max": null,
+          "max_abs": null,
+          "mean_abs": null
+        },
+        "last_observation": {
+          "generation": 0,
+          "owner": "",
+          "hit": 0,
+          "exponent": 0,
+          "pattern": 0,
+          "self_constant_positive_verified": false,
+          "per_column_sign_counts_verified": false,
+          "amplitude_equal": false,
+          "theoretical_output_exact_zero": false,
+          "actual_request_ids_json": "[]",
+          "temporary_source": "host_constructed",
+          "output_source": "post_run_device_readback",
+          "input_device_readback_verified": false,
+          "original_self": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "original_mat2": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "temporary_self": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "temporary_mat2": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "output": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "changed": [
+            0,
+            0
+          ],
+          "unchanged": [
+            0,
+            0
+          ],
+          "proof": {},
+          "pre_sync_status": -2147483647,
+          "copy_status": -2147483647,
+          "run_status": -2147483647,
+          "post_sync_status": -2147483647,
+          "free_status": -2147483647
+        },
+        "candidates": [],
+        "provider_evidence_kind": "NATIVE_ATTACHMENT_UNVERIFIED",
+        "attachment_verified": true,
+        "interception_verified": false
+      },
+      "integration": "BLUE_VLLM_EXTENSION_NOT_INTERNAL_DEMONCAT"
+    }
+  },
+  "phases": [
+    {
+      "label": "baseline1/prompt0",
+      "response": {
+        "request_id": "0",
+        "prompt": "Explain what a checksum is and why it is useful in software systems. Answer in one concise paragraph.",
+        "prompt_token_ids": [
+          36971,
+          732,
+          253,
+          48612,
+          314,
+          284,
+          1701,
+          357,
+          314,
+          3465,
+          281,
+          3197,
+          1734,
+          30,
+          19842,
+          281,
+          582,
+          19484,
+          8510,
+          30
+        ],
+        "choices": [
+          {
+            "text": "",
+            "token_ids": [
+              2
+            ],
+            "finish_reason": "stop",
+            "stop_reason": null
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 20,
+          "completion_tokens": 1
+        }
+      },
+      "response_sha256": "90cf478d84bcd14fde4ed3e3dd7b99f94438871430351efb91ac3a2f76cf5867",
+      "elapsed_seconds": 5.697620868682861,
+      "actual_engine_request_mappings": [
+        {
+          "external_req_id": "0",
+          "request_id": "0-a3f781fe"
+        }
+      ],
+      "request_mapping_source": "EngineCoreRequest fields immediately after real InputProcessor.assign_request_id",
+      "workers": {
+        "0": {
+          "before_native": {
+            "abi_version": 1,
+            "runtime_loaded": true,
+            "runtime_ready": true,
+            "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+            "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+            "generation": 1,
+            "enabled": true,
+            "mode": 1,
+            "exponent": -1,
+            "pattern": 0,
+            "input_mask": 3,
+            "rank": 0,
+            "device": 0,
+            "inflight": 0,
+            "leases": 0,
+            "status": "ARMED",
+            "last_error": 0,
+            "target_signature": "",
+            "interposed_run_calls": 462,
+            "last_run_api": "aclnnInplaceZero_602",
+            "typed_metadata_calls": 5,
+            "hits": 0,
+            "substituted": 0,
+            "completed": 0,
+            "rejected": 0,
+            "actual_request_ids_json": "[]",
+            "worker_rank": 0,
+            "observer": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "last_observation": {
+              "generation": 0,
+              "owner": "",
+              "hit": 0,
+              "exponent": -1,
+              "pattern": 0,
+              "self_constant_positive_verified": false,
+              "per_column_sign_counts_verified": false,
+              "amplitude_equal": false,
+              "theoretical_output_exact_zero": false,
+              "actual_request_ids_json": "[]",
+              "temporary_source": "host_constructed",
+              "output_source": "post_run_device_readback",
+              "input_device_readback_verified": false,
+              "original_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "original_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "output": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "changed": [
+                0,
+                0
+              ],
+              "unchanged": [
+                0,
+                0
+              ],
+              "proof": {},
+              "pre_sync_status": -2147483647,
+              "copy_status": -2147483647,
+              "run_status": -2147483647,
+              "post_sync_status": -2147483647,
+              "free_status": -2147483647
+            },
+            "candidates": []
+          },
+          "after_native": {
+            "abi_version": 1,
+            "runtime_loaded": true,
+            "runtime_ready": true,
+            "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+            "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+            "generation": 1,
+            "enabled": true,
+            "mode": 1,
+            "exponent": -1,
+            "pattern": 0,
+            "input_mask": 3,
+            "rank": 0,
+            "device": 0,
+            "inflight": 0,
+            "leases": 0,
+            "status": "ARMED",
+            "last_error": 0,
+            "target_signature": "",
+            "interposed_run_calls": 668,
+            "last_run_api": "aclnnMatmul_1025",
+            "typed_metadata_calls": 9,
+            "hits": 0,
+            "substituted": 0,
+            "completed": 0,
+            "rejected": 0,
+            "actual_request_ids_json": "[]",
+            "worker_rank": 0,
+            "observer": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "last_observation": {
+              "generation": 0,
+              "owner": "",
+              "hit": 0,
+              "exponent": -1,
+              "pattern": 0,
+              "self_constant_positive_verified": false,
+              "per_column_sign_counts_verified": false,
+              "amplitude_equal": false,
+              "theoretical_output_exact_zero": false,
+              "actual_request_ids_json": "[]",
+              "temporary_source": "host_constructed",
+              "output_source": "post_run_device_readback",
+              "input_device_readback_verified": false,
+              "original_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "original_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "output": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "changed": [
+                0,
+                0
+              ],
+              "unchanged": [
+                0,
+                0
+              ],
+              "proof": {},
+              "pre_sync_status": -2147483647,
+              "copy_status": -2147483647,
+              "run_status": -2147483647,
+              "post_sync_status": -2147483647,
+              "free_status": -2147483647
+            },
+            "candidates": [
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+                "candidate_count": 1,
+                "observations": 1,
+                "M": 1,
+                "K": 576,
+                "N": 49152,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 29,
+                "M": 20,
+                "K": 1536,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+                "candidate_count": 1,
+                "observations": 29,
+                "M": 20,
+                "K": 576,
+                "N": 3072,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 29,
+                "M": 20,
+                "K": 576,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+                "candidate_count": 1,
+                "observations": 29,
+                "M": 20,
+                "K": 576,
+                "N": 960,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              }
+            ]
+          },
+          "request_mapping": "SINGLE_REQUEST_SCHEDULER_MAPPING_VERIFIED",
+          "instrumentation_complete": true,
+          "context_range": [
+            0,
+            1
+          ],
+          "contexts_dropped": 0,
+          "contexts": [
+            {
+              "request_ids": [
+                "0-a3f781fe"
+              ],
+              "token_counts": {
+                "0-a3f781fe": 20
+              },
+              "mapping": "SINGLE_SCHEDULER_REQUEST",
+              "index": 0,
+              "rank": 0,
+              "pid": 1,
+              "completed": true,
+              "instrumentation_errors": [],
+              "native_before": {
+                "abi_version": 1,
+                "runtime_loaded": true,
+                "runtime_ready": true,
+                "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+                "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                "generation": 1,
+                "enabled": true,
+                "mode": 1,
+                "exponent": -1,
+                "pattern": 0,
+                "input_mask": 3,
+                "rank": 0,
+                "device": 0,
+                "inflight": 0,
+                "leases": 0,
+                "status": "ARMED",
+                "last_error": 0,
+                "target_signature": "",
+                "interposed_run_calls": 462,
+                "last_run_api": "aclnnInplaceZero_602",
+                "typed_metadata_calls": 5,
+                "hits": 0,
+                "substituted": 0,
+                "completed": 0,
+                "rejected": 0,
+                "actual_request_ids_json": "[]",
+                "worker_rank": 0,
+                "observer": {
+                  "total": 0,
+                  "finite": 0,
+                  "zero": 0,
+                  "positive": 0,
+                  "negative": 0,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": null,
+                  "max": null,
+                  "max_abs": null,
+                  "mean_abs": null
+                },
+                "last_observation": {
+                  "generation": 0,
+                  "owner": "",
+                  "hit": 0,
+                  "exponent": -1,
+                  "pattern": 0,
+                  "self_constant_positive_verified": false,
+                  "per_column_sign_counts_verified": false,
+                  "amplitude_equal": false,
+                  "theoretical_output_exact_zero": false,
+                  "actual_request_ids_json": "[]",
+                  "temporary_source": "host_constructed",
+                  "output_source": "post_run_device_readback",
+                  "input_device_readback_verified": false,
+                  "original_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "original_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "output": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "changed": [
+                    0,
+                    0
+                  ],
+                  "unchanged": [
+                    0,
+                    0
+                  ],
+                  "proof": {},
+                  "pre_sync_status": -2147483647,
+                  "copy_status": -2147483647,
+                  "run_status": -2147483647,
+                  "post_sync_status": -2147483647,
+                  "free_status": -2147483647
+                }
+              },
+              "native_after": {
+                "abi_version": 1,
+                "runtime_loaded": true,
+                "runtime_ready": true,
+                "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+                "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                "generation": 1,
+                "enabled": true,
+                "mode": 1,
+                "exponent": -1,
+                "pattern": 0,
+                "input_mask": 3,
+                "rank": 0,
+                "device": 0,
+                "inflight": 0,
+                "leases": 0,
+                "status": "ARMED",
+                "last_error": 0,
+                "target_signature": "",
+                "interposed_run_calls": 668,
+                "last_run_api": "aclnnMatmul_1025",
+                "typed_metadata_calls": 9,
+                "hits": 0,
+                "substituted": 0,
+                "completed": 0,
+                "rejected": 0,
+                "actual_request_ids_json": "[]",
+                "worker_rank": 0,
+                "observer": {
+                  "total": 0,
+                  "finite": 0,
+                  "zero": 0,
+                  "positive": 0,
+                  "negative": 0,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": null,
+                  "max": null,
+                  "max_abs": null,
+                  "mean_abs": null
+                },
+                "last_observation": {
+                  "generation": 0,
+                  "owner": "",
+                  "hit": 0,
+                  "exponent": -1,
+                  "pattern": 0,
+                  "self_constant_positive_verified": false,
+                  "per_column_sign_counts_verified": false,
+                  "amplitude_equal": false,
+                  "theoretical_output_exact_zero": false,
+                  "actual_request_ids_json": "[]",
+                  "temporary_source": "host_constructed",
+                  "output_source": "post_run_device_readback",
+                  "input_device_readback_verified": false,
+                  "original_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "original_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "output": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "changed": [
+                    0,
+                    0
+                  ],
+                  "unchanged": [
+                    0,
+                    0
+                  ],
+                  "proof": {},
+                  "pre_sync_status": -2147483647,
+                  "copy_status": -2147483647,
+                  "run_status": -2147483647,
+                  "post_sync_status": -2147483647,
+                  "free_status": -2147483647
+                }
+              },
+              "instrumentation_complete": true
+            }
+          ],
+          "capture_complete": false
+        }
+      }
+    },
+    {
+      "label": "baseline2/prompt0",
+      "response": {
+        "request_id": "1",
+        "prompt": "Explain what a checksum is and why it is useful in software systems. Answer in one concise paragraph.",
+        "prompt_token_ids": [
+          36971,
+          732,
+          253,
+          48612,
+          314,
+          284,
+          1701,
+          357,
+          314,
+          3465,
+          281,
+          3197,
+          1734,
+          30,
+          19842,
+          281,
+          582,
+          19484,
+          8510,
+          30
+        ],
+        "choices": [
+          {
+            "text": "",
+            "token_ids": [
+              2
+            ],
+            "finish_reason": "stop",
+            "stop_reason": null
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 20,
+          "completion_tokens": 1
+        }
+      },
+      "response_sha256": "90cf478d84bcd14fde4ed3e3dd7b99f94438871430351efb91ac3a2f76cf5867",
+      "elapsed_seconds": 0.06403112411499023,
+      "actual_engine_request_mappings": [
+        {
+          "external_req_id": "1",
+          "request_id": "1-aca3b9a1"
+        }
+      ],
+      "request_mapping_source": "EngineCoreRequest fields immediately after real InputProcessor.assign_request_id",
+      "workers": {
+        "0": {
+          "before_native": {
+            "abi_version": 1,
+            "runtime_loaded": true,
+            "runtime_ready": true,
+            "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+            "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+            "generation": 1,
+            "enabled": true,
+            "mode": 1,
+            "exponent": -1,
+            "pattern": 0,
+            "input_mask": 3,
+            "rank": 0,
+            "device": 0,
+            "inflight": 0,
+            "leases": 0,
+            "status": "ARMED",
+            "last_error": 0,
+            "target_signature": "",
+            "interposed_run_calls": 668,
+            "last_run_api": "aclnnMatmul_1025",
+            "typed_metadata_calls": 9,
+            "hits": 0,
+            "substituted": 0,
+            "completed": 0,
+            "rejected": 0,
+            "actual_request_ids_json": "[]",
+            "worker_rank": 0,
+            "observer": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "last_observation": {
+              "generation": 0,
+              "owner": "",
+              "hit": 0,
+              "exponent": -1,
+              "pattern": 0,
+              "self_constant_positive_verified": false,
+              "per_column_sign_counts_verified": false,
+              "amplitude_equal": false,
+              "theoretical_output_exact_zero": false,
+              "actual_request_ids_json": "[]",
+              "temporary_source": "host_constructed",
+              "output_source": "post_run_device_readback",
+              "input_device_readback_verified": false,
+              "original_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "original_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "output": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "changed": [
+                0,
+                0
+              ],
+              "unchanged": [
+                0,
+                0
+              ],
+              "proof": {},
+              "pre_sync_status": -2147483647,
+              "copy_status": -2147483647,
+              "run_status": -2147483647,
+              "post_sync_status": -2147483647,
+              "free_status": -2147483647
+            },
+            "candidates": [
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+                "candidate_count": 1,
+                "observations": 1,
+                "M": 1,
+                "K": 576,
+                "N": 49152,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 29,
+                "M": 20,
+                "K": 1536,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+                "candidate_count": 1,
+                "observations": 29,
+                "M": 20,
+                "K": 576,
+                "N": 3072,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 29,
+                "M": 20,
+                "K": 576,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+                "candidate_count": 1,
+                "observations": 29,
+                "M": 20,
+                "K": 576,
+                "N": 960,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              }
+            ]
+          },
+          "after_native": {
+            "abi_version": 1,
+            "runtime_loaded": true,
+            "runtime_ready": true,
+            "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+            "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+            "generation": 1,
+            "enabled": true,
+            "mode": 1,
+            "exponent": -1,
+            "pattern": 0,
+            "input_mask": 3,
+            "rank": 0,
+            "device": 0,
+            "inflight": 0,
+            "leases": 0,
+            "status": "ARMED",
+            "last_error": 0,
+            "target_signature": "",
+            "interposed_run_calls": 895,
+            "last_run_api": "aclnnCast_1439",
+            "typed_metadata_calls": 9,
+            "hits": 0,
+            "substituted": 0,
+            "completed": 0,
+            "rejected": 0,
+            "actual_request_ids_json": "[]",
+            "worker_rank": 0,
+            "observer": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "last_observation": {
+              "generation": 0,
+              "owner": "",
+              "hit": 0,
+              "exponent": -1,
+              "pattern": 0,
+              "self_constant_positive_verified": false,
+              "per_column_sign_counts_verified": false,
+              "amplitude_equal": false,
+              "theoretical_output_exact_zero": false,
+              "actual_request_ids_json": "[]",
+              "temporary_source": "host_constructed",
+              "output_source": "post_run_device_readback",
+              "input_device_readback_verified": false,
+              "original_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "original_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "output": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "changed": [
+                0,
+                0
+              ],
+              "unchanged": [
+                0,
+                0
+              ],
+              "proof": {},
+              "pre_sync_status": -2147483647,
+              "copy_status": -2147483647,
+              "run_status": -2147483647,
+              "post_sync_status": -2147483647,
+              "free_status": -2147483647
+            },
+            "candidates": [
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+                "candidate_count": 1,
+                "observations": 2,
+                "M": 1,
+                "K": 576,
+                "N": 49152,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 59,
+                "M": 20,
+                "K": 1536,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+                "candidate_count": 1,
+                "observations": 59,
+                "M": 20,
+                "K": 576,
+                "N": 3072,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 59,
+                "M": 20,
+                "K": 576,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+                "candidate_count": 1,
+                "observations": 59,
+                "M": 20,
+                "K": 576,
+                "N": 960,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              }
+            ]
+          },
+          "request_mapping": "SINGLE_REQUEST_SCHEDULER_MAPPING_VERIFIED",
+          "instrumentation_complete": true,
+          "context_range": [
+            1,
+            2
+          ],
+          "contexts_dropped": 0,
+          "contexts": [
+            {
+              "request_ids": [
+                "1-aca3b9a1"
+              ],
+              "token_counts": {
+                "1-aca3b9a1": 20
+              },
+              "mapping": "SINGLE_SCHEDULER_REQUEST",
+              "index": 1,
+              "rank": 0,
+              "pid": 1,
+              "completed": true,
+              "instrumentation_errors": [],
+              "native_before": {
+                "abi_version": 1,
+                "runtime_loaded": true,
+                "runtime_ready": true,
+                "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+                "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                "generation": 1,
+                "enabled": true,
+                "mode": 1,
+                "exponent": -1,
+                "pattern": 0,
+                "input_mask": 3,
+                "rank": 0,
+                "device": 0,
+                "inflight": 0,
+                "leases": 0,
+                "status": "ARMED",
+                "last_error": 0,
+                "target_signature": "",
+                "interposed_run_calls": 668,
+                "last_run_api": "aclnnMatmul_1025",
+                "typed_metadata_calls": 9,
+                "hits": 0,
+                "substituted": 0,
+                "completed": 0,
+                "rejected": 0,
+                "actual_request_ids_json": "[]",
+                "worker_rank": 0,
+                "observer": {
+                  "total": 0,
+                  "finite": 0,
+                  "zero": 0,
+                  "positive": 0,
+                  "negative": 0,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": null,
+                  "max": null,
+                  "max_abs": null,
+                  "mean_abs": null
+                },
+                "last_observation": {
+                  "generation": 0,
+                  "owner": "",
+                  "hit": 0,
+                  "exponent": -1,
+                  "pattern": 0,
+                  "self_constant_positive_verified": false,
+                  "per_column_sign_counts_verified": false,
+                  "amplitude_equal": false,
+                  "theoretical_output_exact_zero": false,
+                  "actual_request_ids_json": "[]",
+                  "temporary_source": "host_constructed",
+                  "output_source": "post_run_device_readback",
+                  "input_device_readback_verified": false,
+                  "original_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "original_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "output": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "changed": [
+                    0,
+                    0
+                  ],
+                  "unchanged": [
+                    0,
+                    0
+                  ],
+                  "proof": {},
+                  "pre_sync_status": -2147483647,
+                  "copy_status": -2147483647,
+                  "run_status": -2147483647,
+                  "post_sync_status": -2147483647,
+                  "free_status": -2147483647
+                }
+              },
+              "native_after": {
+                "abi_version": 1,
+                "runtime_loaded": true,
+                "runtime_ready": true,
+                "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+                "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                "generation": 1,
+                "enabled": true,
+                "mode": 1,
+                "exponent": -1,
+                "pattern": 0,
+                "input_mask": 3,
+                "rank": 0,
+                "device": 0,
+                "inflight": 0,
+                "leases": 0,
+                "status": "ARMED",
+                "last_error": 0,
+                "target_signature": "",
+                "interposed_run_calls": 892,
+                "last_run_api": "aclnnMatmul_1436",
+                "typed_metadata_calls": 9,
+                "hits": 0,
+                "substituted": 0,
+                "completed": 0,
+                "rejected": 0,
+                "actual_request_ids_json": "[]",
+                "worker_rank": 0,
+                "observer": {
+                  "total": 0,
+                  "finite": 0,
+                  "zero": 0,
+                  "positive": 0,
+                  "negative": 0,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": null,
+                  "max": null,
+                  "max_abs": null,
+                  "mean_abs": null
+                },
+                "last_observation": {
+                  "generation": 0,
+                  "owner": "",
+                  "hit": 0,
+                  "exponent": -1,
+                  "pattern": 0,
+                  "self_constant_positive_verified": false,
+                  "per_column_sign_counts_verified": false,
+                  "amplitude_equal": false,
+                  "theoretical_output_exact_zero": false,
+                  "actual_request_ids_json": "[]",
+                  "temporary_source": "host_constructed",
+                  "output_source": "post_run_device_readback",
+                  "input_device_readback_verified": false,
+                  "original_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "original_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "output": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "changed": [
+                    0,
+                    0
+                  ],
+                  "unchanged": [
+                    0,
+                    0
+                  ],
+                  "proof": {},
+                  "pre_sync_status": -2147483647,
+                  "copy_status": -2147483647,
+                  "run_status": -2147483647,
+                  "post_sync_status": -2147483647,
+                  "free_status": -2147483647
+                }
+              },
+              "instrumentation_complete": true
+            }
+          ],
+          "capture_complete": false
+        }
+      }
+    },
+    {
+      "label": "pattern/mask3/prompt0",
+      "response": {
+        "request_id": "2",
+        "prompt": "Explain what a checksum is and why it is useful in software systems. Answer in one concise paragraph.",
+        "prompt_token_ids": [
+          36971,
+          732,
+          253,
+          48612,
+          314,
+          284,
+          1701,
+          357,
+          314,
+          3465,
+          281,
+          3197,
+          1734,
+          30,
+          19842,
+          281,
+          582,
+          19484,
+          8510,
+          30
+        ],
+        "choices": [
+          {
+            "text": "",
+            "token_ids": [
+              2
+            ],
+            "finish_reason": "stop",
+            "stop_reason": null
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 20,
+          "completion_tokens": 1
+        }
+      },
+      "response_sha256": "90cf478d84bcd14fde4ed3e3dd7b99f94438871430351efb91ac3a2f76cf5867",
+      "elapsed_seconds": 1.9529883861541748,
+      "actual_engine_request_mappings": [
+        {
+          "external_req_id": "2",
+          "request_id": "2-abb01146"
+        }
+      ],
+      "request_mapping_source": "EngineCoreRequest fields immediately after real InputProcessor.assign_request_id",
+      "workers": {
+        "0": {
+          "before_native": {
+            "abi_version": 1,
+            "runtime_loaded": true,
+            "runtime_ready": true,
+            "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+            "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+            "generation": 2,
+            "enabled": true,
+            "mode": 4,
+            "exponent": 60,
+            "pattern": 0,
+            "input_mask": 3,
+            "rank": 0,
+            "device": 0,
+            "inflight": 0,
+            "leases": 0,
+            "status": "ARMED",
+            "last_error": 0,
+            "target_signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+            "interposed_run_calls": 895,
+            "last_run_api": "aclnnCast_1439",
+            "typed_metadata_calls": 9,
+            "hits": 0,
+            "substituted": 0,
+            "completed": 0,
+            "rejected": 0,
+            "actual_request_ids_json": "[]",
+            "worker_rank": 0,
+            "observer": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "last_observation": {
+              "generation": 0,
+              "owner": "",
+              "hit": 0,
+              "exponent": 60,
+              "pattern": 0,
+              "self_constant_positive_verified": false,
+              "per_column_sign_counts_verified": false,
+              "amplitude_equal": false,
+              "theoretical_output_exact_zero": false,
+              "actual_request_ids_json": "[]",
+              "temporary_source": "host_constructed",
+              "output_source": "post_run_device_readback",
+              "input_device_readback_verified": false,
+              "original_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "original_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_self": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "temporary_mat2": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "output": {
+                "total": 0,
+                "finite": 0,
+                "zero": 0,
+                "positive": 0,
+                "negative": 0,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": null,
+                "max": null,
+                "max_abs": null,
+                "mean_abs": null
+              },
+              "changed": [
+                0,
+                0
+              ],
+              "unchanged": [
+                0,
+                0
+              ],
+              "proof": {},
+              "pre_sync_status": -2147483647,
+              "copy_status": -2147483647,
+              "run_status": -2147483647,
+              "post_sync_status": -2147483647,
+              "free_status": -2147483647
+            },
+            "candidates": [
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+                "candidate_count": 1,
+                "observations": 2,
+                "M": 1,
+                "K": 576,
+                "N": 49152,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 59,
+                "M": 20,
+                "K": 1536,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+                "candidate_count": 1,
+                "observations": 59,
+                "M": 20,
+                "K": 576,
+                "N": 3072,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 59,
+                "M": 20,
+                "K": 576,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+                "candidate_count": 1,
+                "observations": 59,
+                "M": 20,
+                "K": 576,
+                "N": 960,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              }
+            ]
+          },
+          "after_native": {
+            "abi_version": 1,
+            "runtime_loaded": true,
+            "runtime_ready": true,
+            "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+            "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+            "generation": 2,
+            "enabled": false,
+            "mode": 4,
+            "exponent": 60,
+            "pattern": 0,
+            "input_mask": 3,
+            "rank": 0,
+            "device": 0,
+            "inflight": 0,
+            "leases": 0,
+            "status": "COMPLETED",
+            "last_error": 0,
+            "target_signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+            "interposed_run_calls": 6578,
+            "last_run_api": "aclnnCast_7435",
+            "typed_metadata_calls": 9,
+            "hits": 1,
+            "substituted": 0,
+            "completed": 1,
+            "rejected": 0,
+            "actual_request_ids_json": "[\"2-abb01146\"]",
+            "worker_rank": 0,
+            "observer": {
+              "total": 11520,
+              "finite": 11520,
+              "zero": 0,
+              "positive": 5738,
+              "negative": 5782,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": -29,
+              "max": 30.5,
+              "max_abs": 30.5,
+              "mean_abs": 1.2017390429973602
+            },
+            "last_observation": {
+              "generation": 2,
+              "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+              "hit": 1,
+              "exponent": 60,
+              "pattern": 0,
+              "self_constant_positive_verified": false,
+              "per_column_sign_counts_verified": false,
+              "amplitude_equal": false,
+              "theoretical_output_exact_zero": false,
+              "actual_request_ids_json": "[\"2-abb01146\"]",
+              "temporary_source": "host_constructed",
+              "output_source": "post_run_device_readback",
+              "input_device_readback_verified": false,
+              "original_self": {
+                "total": 30720,
+                "finite": 30720,
+                "zero": 0,
+                "positive": 15596,
+                "negative": 15124,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -5.625,
+                "max": 8.0625,
+                "max_abs": 8.0625,
+                "mean_abs": 0.063952000643197
+              },
+              "original_mat2": {
+                "total": 884736,
+                "finite": 884736,
+                "zero": 0,
+                "positive": 442513,
+                "negative": 442223,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -2.875,
+                "max": 2.328125,
+                "max_abs": 2.875,
+                "mean_abs": 0.14463373639531946
+              },
+              "temporary_self": {
+                "total": 30720,
+                "finite": 30720,
+                "zero": 0,
+                "positive": 15596,
+                "negative": 15124,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -5.625,
+                "max": 8.0625,
+                "max_abs": 8.0625,
+                "mean_abs": 0.063952000643197
+              },
+              "temporary_mat2": {
+                "total": 884736,
+                "finite": 884736,
+                "zero": 0,
+                "positive": 442513,
+                "negative": 442223,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -2.875,
+                "max": 2.328125,
+                "max_abs": 2.875,
+                "mean_abs": 0.14463373639531946
+              },
+              "output": {
+                "total": 11520,
+                "finite": 11520,
+                "zero": 0,
+                "positive": 5738,
+                "negative": 5782,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -29,
+                "max": 30.5,
+                "max_abs": 30.5,
+                "mean_abs": 1.2017390429973602
+              },
+              "changed": [
+                0,
+                0
+              ],
+              "unchanged": [
+                30720,
+                884736
+              ],
+              "proof": {
+                "api": "aclnnMatmul",
+                "generation": 2,
+                "hit": 1,
+                "formal_order_proven": true,
+                "slots": [
+                  0,
+                  1,
+                  2
+                ],
+                "input_mask": 3,
+                "tensors": [
+                  {
+                    "shape": [
+                      20,
+                      1536
+                    ],
+                    "strides": [
+                      1536,
+                      1
+                    ],
+                    "offset": 0,
+                    "storage_bytes": 61440,
+                    "original_address": 20623380383232,
+                    "run_address": 20623380383232
+                  },
+                  {
+                    "shape": [
+                      1536,
+                      576
+                    ],
+                    "strides": [
+                      1,
+                      1536
+                    ],
+                    "offset": 0,
+                    "storage_bytes": 1769472,
+                    "original_address": 20659930874368,
+                    "run_address": 20659930874368
+                  },
+                  {
+                    "shape": [
+                      20,
+                      576
+                    ],
+                    "strides": [
+                      576,
+                      1
+                    ],
+                    "offset": 0,
+                    "storage_bytes": 23040,
+                    "original_address": 20623380143104,
+                    "run_address": 20623380143104
+                  }
+                ]
+              },
+              "pre_sync_status": 0,
+              "copy_status": 0,
+              "run_status": 0,
+              "post_sync_status": 0,
+              "free_status": 0
+            },
+            "candidates": [
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+                "candidate_count": 1,
+                "observations": 2,
+                "M": 1,
+                "K": 576,
+                "N": 49152,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 1536,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 576,
+                "N": 3072,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 576,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 576,
+                "N": 960,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              }
+            ]
+          },
+          "request_mapping": "SINGLE_REQUEST_SCHEDULER_MAPPING_VERIFIED",
+          "instrumentation_complete": true,
+          "context_range": [
+            2,
+            3
+          ],
+          "contexts_dropped": 0,
+          "contexts": [
+            {
+              "request_ids": [
+                "2-abb01146"
+              ],
+              "token_counts": {
+                "2-abb01146": 20
+              },
+              "mapping": "SINGLE_SCHEDULER_REQUEST",
+              "index": 2,
+              "rank": 0,
+              "pid": 1,
+              "completed": true,
+              "instrumentation_errors": [],
+              "native_before": {
+                "abi_version": 1,
+                "runtime_loaded": true,
+                "runtime_ready": true,
+                "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+                "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                "generation": 2,
+                "enabled": true,
+                "mode": 4,
+                "exponent": 60,
+                "pattern": 0,
+                "input_mask": 3,
+                "rank": 0,
+                "device": 0,
+                "inflight": 0,
+                "leases": 0,
+                "status": "ARMED",
+                "last_error": 0,
+                "target_signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "interposed_run_calls": 895,
+                "last_run_api": "aclnnCast_1439",
+                "typed_metadata_calls": 9,
+                "hits": 0,
+                "substituted": 0,
+                "completed": 0,
+                "rejected": 0,
+                "actual_request_ids_json": "[]",
+                "worker_rank": 0,
+                "observer": {
+                  "total": 0,
+                  "finite": 0,
+                  "zero": 0,
+                  "positive": 0,
+                  "negative": 0,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": null,
+                  "max": null,
+                  "max_abs": null,
+                  "mean_abs": null
+                },
+                "last_observation": {
+                  "generation": 0,
+                  "owner": "",
+                  "hit": 0,
+                  "exponent": 60,
+                  "pattern": 0,
+                  "self_constant_positive_verified": false,
+                  "per_column_sign_counts_verified": false,
+                  "amplitude_equal": false,
+                  "theoretical_output_exact_zero": false,
+                  "actual_request_ids_json": "[]",
+                  "temporary_source": "host_constructed",
+                  "output_source": "post_run_device_readback",
+                  "input_device_readback_verified": false,
+                  "original_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "original_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_self": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "temporary_mat2": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "output": {
+                    "total": 0,
+                    "finite": 0,
+                    "zero": 0,
+                    "positive": 0,
+                    "negative": 0,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": null,
+                    "max": null,
+                    "max_abs": null,
+                    "mean_abs": null
+                  },
+                  "changed": [
+                    0,
+                    0
+                  ],
+                  "unchanged": [
+                    0,
+                    0
+                  ],
+                  "proof": {},
+                  "pre_sync_status": -2147483647,
+                  "copy_status": -2147483647,
+                  "run_status": -2147483647,
+                  "post_sync_status": -2147483647,
+                  "free_status": -2147483647
+                }
+              },
+              "capture_started": true,
+              "native_after": {
+                "abi_version": 1,
+                "runtime_loaded": true,
+                "runtime_ready": true,
+                "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+                "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                "generation": 2,
+                "enabled": false,
+                "mode": 4,
+                "exponent": 60,
+                "pattern": 0,
+                "input_mask": 3,
+                "rank": 0,
+                "device": 0,
+                "inflight": 0,
+                "leases": 0,
+                "status": "COMPLETED",
+                "last_error": 0,
+                "target_signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "interposed_run_calls": 6575,
+                "last_run_api": "aclnnMin_7432",
+                "typed_metadata_calls": 9,
+                "hits": 1,
+                "substituted": 0,
+                "completed": 1,
+                "rejected": 0,
+                "actual_request_ids_json": "[\"2-abb01146\"]",
+                "worker_rank": 0,
+                "observer": {
+                  "total": 11520,
+                  "finite": 11520,
+                  "zero": 0,
+                  "positive": 5738,
+                  "negative": 5782,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": -29,
+                  "max": 30.5,
+                  "max_abs": 30.5,
+                  "mean_abs": 1.2017390429973602
+                },
+                "last_observation": {
+                  "generation": 2,
+                  "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                  "hit": 1,
+                  "exponent": 60,
+                  "pattern": 0,
+                  "self_constant_positive_verified": false,
+                  "per_column_sign_counts_verified": false,
+                  "amplitude_equal": false,
+                  "theoretical_output_exact_zero": false,
+                  "actual_request_ids_json": "[\"2-abb01146\"]",
+                  "temporary_source": "host_constructed",
+                  "output_source": "post_run_device_readback",
+                  "input_device_readback_verified": false,
+                  "original_self": {
+                    "total": 30720,
+                    "finite": 30720,
+                    "zero": 0,
+                    "positive": 15596,
+                    "negative": 15124,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -5.625,
+                    "max": 8.0625,
+                    "max_abs": 8.0625,
+                    "mean_abs": 0.063952000643197
+                  },
+                  "original_mat2": {
+                    "total": 884736,
+                    "finite": 884736,
+                    "zero": 0,
+                    "positive": 442513,
+                    "negative": 442223,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -2.875,
+                    "max": 2.328125,
+                    "max_abs": 2.875,
+                    "mean_abs": 0.14463373639531946
+                  },
+                  "temporary_self": {
+                    "total": 30720,
+                    "finite": 30720,
+                    "zero": 0,
+                    "positive": 15596,
+                    "negative": 15124,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -5.625,
+                    "max": 8.0625,
+                    "max_abs": 8.0625,
+                    "mean_abs": 0.063952000643197
+                  },
+                  "temporary_mat2": {
+                    "total": 884736,
+                    "finite": 884736,
+                    "zero": 0,
+                    "positive": 442513,
+                    "negative": 442223,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -2.875,
+                    "max": 2.328125,
+                    "max_abs": 2.875,
+                    "mean_abs": 0.14463373639531946
+                  },
+                  "output": {
+                    "total": 11520,
+                    "finite": 11520,
+                    "zero": 0,
+                    "positive": 5738,
+                    "negative": 5782,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -29,
+                    "max": 30.5,
+                    "max_abs": 30.5,
+                    "mean_abs": 1.2017390429973602
+                  },
+                  "changed": [
+                    0,
+                    0
+                  ],
+                  "unchanged": [
+                    30720,
+                    884736
+                  ],
+                  "proof": {
+                    "api": "aclnnMatmul",
+                    "generation": 2,
+                    "hit": 1,
+                    "formal_order_proven": true,
+                    "slots": [
+                      0,
+                      1,
+                      2
+                    ],
+                    "input_mask": 3,
+                    "tensors": [
+                      {
+                        "shape": [
+                          20,
+                          1536
+                        ],
+                        "strides": [
+                          1536,
+                          1
+                        ],
+                        "offset": 0,
+                        "storage_bytes": 61440,
+                        "original_address": 20623380383232,
+                        "run_address": 20623380383232
+                      },
+                      {
+                        "shape": [
+                          1536,
+                          576
+                        ],
+                        "strides": [
+                          1,
+                          1536
+                        ],
+                        "offset": 0,
+                        "storage_bytes": 1769472,
+                        "original_address": 20659930874368,
+                        "run_address": 20659930874368
+                      },
+                      {
+                        "shape": [
+                          20,
+                          576
+                        ],
+                        "strides": [
+                          576,
+                          1
+                        ],
+                        "offset": 0,
+                        "storage_bytes": 23040,
+                        "original_address": 20623380143104,
+                        "run_address": 20623380143104
+                      }
+                    ]
+                  },
+                  "pre_sync_status": 0,
+                  "copy_status": 0,
+                  "run_status": 0,
+                  "post_sync_status": 0,
+                  "free_status": 0
+                }
+              },
+              "instrumentation_complete": true
+            }
+          ],
+          "capture_complete": true
+        }
+      },
+      "disable": {
+        "status": "DISABLED_CONFIRMED",
+        "workers": {
+          "0": {
+            "status": "DISABLED_CONFIRMED",
+            "native_code": 0,
+            "generation": 2,
+            "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+            "snapshot": {
+              "abi_version": 1,
+              "runtime_loaded": true,
+              "runtime_ready": true,
+              "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+              "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+              "generation": 2,
+              "enabled": false,
+              "mode": 4,
+              "exponent": 60,
+              "pattern": 0,
+              "input_mask": 3,
+              "rank": 0,
+              "device": 0,
+              "inflight": 0,
+              "leases": 0,
+              "status": "DISABLED",
+              "last_error": 0,
+              "target_signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+              "interposed_run_calls": 6578,
+              "last_run_api": "aclnnCast_7435",
+              "typed_metadata_calls": 9,
+              "hits": 1,
+              "substituted": 0,
+              "completed": 1,
+              "rejected": 0,
+              "actual_request_ids_json": "[\"2-abb01146\"]",
+              "worker_rank": 0,
+              "observer": {
+                "total": 11520,
+                "finite": 11520,
+                "zero": 0,
+                "positive": 5738,
+                "negative": 5782,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -29,
+                "max": 30.5,
+                "max_abs": 30.5,
+                "mean_abs": 1.2017390429973602
+              },
+              "last_observation": {
+                "generation": 2,
+                "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                "hit": 1,
+                "exponent": 60,
+                "pattern": 0,
+                "self_constant_positive_verified": false,
+                "per_column_sign_counts_verified": false,
+                "amplitude_equal": false,
+                "theoretical_output_exact_zero": false,
+                "actual_request_ids_json": "[\"2-abb01146\"]",
+                "temporary_source": "host_constructed",
+                "output_source": "post_run_device_readback",
+                "input_device_readback_verified": false,
+                "original_self": {
+                  "total": 30720,
+                  "finite": 30720,
+                  "zero": 0,
+                  "positive": 15596,
+                  "negative": 15124,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": -5.625,
+                  "max": 8.0625,
+                  "max_abs": 8.0625,
+                  "mean_abs": 0.063952000643197
+                },
+                "original_mat2": {
+                  "total": 884736,
+                  "finite": 884736,
+                  "zero": 0,
+                  "positive": 442513,
+                  "negative": 442223,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": -2.875,
+                  "max": 2.328125,
+                  "max_abs": 2.875,
+                  "mean_abs": 0.14463373639531946
+                },
+                "temporary_self": {
+                  "total": 30720,
+                  "finite": 30720,
+                  "zero": 0,
+                  "positive": 15596,
+                  "negative": 15124,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": -5.625,
+                  "max": 8.0625,
+                  "max_abs": 8.0625,
+                  "mean_abs": 0.063952000643197
+                },
+                "temporary_mat2": {
+                  "total": 884736,
+                  "finite": 884736,
+                  "zero": 0,
+                  "positive": 442513,
+                  "negative": 442223,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": -2.875,
+                  "max": 2.328125,
+                  "max_abs": 2.875,
+                  "mean_abs": 0.14463373639531946
+                },
+                "output": {
+                  "total": 11520,
+                  "finite": 11520,
+                  "zero": 0,
+                  "positive": 5738,
+                  "negative": 5782,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": -29,
+                  "max": 30.5,
+                  "max_abs": 30.5,
+                  "mean_abs": 1.2017390429973602
+                },
+                "changed": [
+                  0,
+                  0
+                ],
+                "unchanged": [
+                  30720,
+                  884736
+                ],
+                "proof": {
+                  "api": "aclnnMatmul",
+                  "generation": 2,
+                  "hit": 1,
+                  "formal_order_proven": true,
+                  "slots": [
+                    0,
+                    1,
+                    2
+                  ],
+                  "input_mask": 3,
+                  "tensors": [
+                    {
+                      "shape": [
+                        20,
+                        1536
+                      ],
+                      "strides": [
+                        1536,
+                        1
+                      ],
+                      "offset": 0,
+                      "storage_bytes": 61440,
+                      "original_address": 20623380383232,
+                      "run_address": 20623380383232
+                    },
+                    {
+                      "shape": [
+                        1536,
+                        576
+                      ],
+                      "strides": [
+                        1,
+                        1536
+                      ],
+                      "offset": 0,
+                      "storage_bytes": 1769472,
+                      "original_address": 20659930874368,
+                      "run_address": 20659930874368
+                    },
+                    {
+                      "shape": [
+                        20,
+                        576
+                      ],
+                      "strides": [
+                        576,
+                        1
+                      ],
+                      "offset": 0,
+                      "storage_bytes": 23040,
+                      "original_address": 20623380143104,
+                      "run_address": 20623380143104
+                    }
+                  ]
+                },
+                "pre_sync_status": 0,
+                "copy_status": 0,
+                "run_status": 0,
+                "post_sync_status": 0,
+                "free_status": 0
+              },
+              "candidates": [
+                {
+                  "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+                  "candidate_count": 1,
+                  "observations": 2,
+                  "M": 1,
+                  "K": 576,
+                  "N": 49152,
+                  "rank": 0,
+                  "device": 0,
+                  "api": "aclnnMatmul",
+                  "dtype": "BF16",
+                  "format": "ND"
+                },
+                {
+                  "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                  "candidate_count": 1,
+                  "observations": 60,
+                  "M": 20,
+                  "K": 1536,
+                  "N": 576,
+                  "rank": 0,
+                  "device": 0,
+                  "api": "aclnnMatmul",
+                  "dtype": "BF16",
+                  "format": "ND"
+                },
+                {
+                  "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+                  "candidate_count": 1,
+                  "observations": 60,
+                  "M": 20,
+                  "K": 576,
+                  "N": 3072,
+                  "rank": 0,
+                  "device": 0,
+                  "api": "aclnnMatmul",
+                  "dtype": "BF16",
+                  "format": "ND"
+                },
+                {
+                  "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+                  "candidate_count": 1,
+                  "observations": 60,
+                  "M": 20,
+                  "K": 576,
+                  "N": 576,
+                  "rank": 0,
+                  "device": 0,
+                  "api": "aclnnMatmul",
+                  "dtype": "BF16",
+                  "format": "ND"
+                },
+                {
+                  "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+                  "candidate_count": 1,
+                  "observations": 60,
+                  "M": 20,
+                  "K": 576,
+                  "N": 960,
+                  "rank": 0,
+                  "device": 0,
+                  "api": "aclnnMatmul",
+                  "dtype": "BF16",
+                  "format": "ND"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "native_inspection": {
+        "0": {
+          "schema_version": 1,
+          "verdict": "INSUFFICIENT_NATIVE_EVIDENCE",
+          "native_execution_verified": false,
+          "finite_inputs_verified": true,
+          "resources_released": true,
+          "range_anomaly": "RANGE_ANOMALY_NOT_OBSERVED",
+          "statistics_errors": [],
+          "native_request_scope": "SINGLE_REQUEST_SCOPE_OBSERVED",
+          "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+          "inner_framework_integration": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "evidence_kind": "NATIVE_STATISTICS",
+          "tensor_payloads": false,
+          "input_device_readback_verified": false,
+          "temporary_source": "host_constructed",
+          "output_source": "post_run_device_readback",
+          "dimensions": {
+            "M": 20,
+            "K": 1536,
+            "N": 576
+          },
+          "exact_cancellation_verified": false,
+          "pressure": {
+            "input_finite": true,
+            "single_product_finite": true,
+            "half_pattern_pressure": true,
+            "pressure_reference": "FP32_MAX_FINITE_NOT_ACCUMULATOR_PROOF",
+            "theoretical_output_exact_zero": true
+          },
+          "statistics": {
+            "original_self": {
+              "total": 30720,
+              "finite": 30720,
+              "zero": 0,
+              "positive": 15596,
+              "negative": 15124,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": -5.625,
+              "max": 8.0625,
+              "max_abs": 8.0625,
+              "mean_abs": 0.063952000643197
+            },
+            "original_mat2": {
+              "total": 884736,
+              "finite": 884736,
+              "zero": 0,
+              "positive": 442513,
+              "negative": 442223,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": -2.875,
+              "max": 2.328125,
+              "max_abs": 2.875,
+              "mean_abs": 0.14463373639531946
+            },
+            "temporary_self": {
+              "total": 30720,
+              "finite": 30720,
+              "zero": 0,
+              "positive": 15596,
+              "negative": 15124,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": -5.625,
+              "max": 8.0625,
+              "max_abs": 8.0625,
+              "mean_abs": 0.063952000643197
+            },
+            "temporary_mat2": {
+              "total": 884736,
+              "finite": 884736,
+              "zero": 0,
+              "positive": 442513,
+              "negative": 442223,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": -2.875,
+              "max": 2.328125,
+              "max_abs": 2.875,
+              "mean_abs": 0.14463373639531946
+            },
+            "output": {
+              "total": 11520,
+              "finite": 11520,
+              "zero": 0,
+              "positive": 5738,
+              "negative": 5782,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": -29,
+              "max": 30.5,
+              "max_abs": 30.5,
+              "mean_abs": 1.2017390429973602
+            }
+          }
+        }
+      },
+      "recovery_verified": true,
+      "validated": true
+    },
+    {
+      "label": "off/mask3/prompt0",
+      "response": {
+        "request_id": "3",
+        "prompt": "Explain what a checksum is and why it is useful in software systems. Answer in one concise paragraph.",
+        "prompt_token_ids": [
+          36971,
+          732,
+          253,
+          48612,
+          314,
+          284,
+          1701,
+          357,
+          314,
+          3465,
+          281,
+          3197,
+          1734,
+          30,
+          19842,
+          281,
+          582,
+          19484,
+          8510,
+          30
+        ],
+        "choices": [
+          {
+            "text": "",
+            "token_ids": [
+              2
+            ],
+            "finish_reason": "stop",
+            "stop_reason": null
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 20,
+          "completion_tokens": 1
+        }
+      },
+      "response_sha256": "90cf478d84bcd14fde4ed3e3dd7b99f94438871430351efb91ac3a2f76cf5867",
+      "elapsed_seconds": 0.09858202934265137,
+      "actual_engine_request_mappings": [
+        {
+          "external_req_id": "3",
+          "request_id": "3-882bac93"
+        }
+      ],
+      "request_mapping_source": "EngineCoreRequest fields immediately after real InputProcessor.assign_request_id",
+      "workers": {
+        "0": {
+          "before_native": {
+            "abi_version": 1,
+            "runtime_loaded": true,
+            "runtime_ready": true,
+            "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+            "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+            "generation": 2,
+            "enabled": false,
+            "mode": 4,
+            "exponent": 60,
+            "pattern": 0,
+            "input_mask": 3,
+            "rank": 0,
+            "device": 0,
+            "inflight": 0,
+            "leases": 0,
+            "status": "DISABLED",
+            "last_error": 0,
+            "target_signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+            "interposed_run_calls": 6578,
+            "last_run_api": "aclnnCast_7435",
+            "typed_metadata_calls": 9,
+            "hits": 1,
+            "substituted": 0,
+            "completed": 1,
+            "rejected": 0,
+            "actual_request_ids_json": "[\"2-abb01146\"]",
+            "worker_rank": 0,
+            "observer": {
+              "total": 11520,
+              "finite": 11520,
+              "zero": 0,
+              "positive": 5738,
+              "negative": 5782,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": -29,
+              "max": 30.5,
+              "max_abs": 30.5,
+              "mean_abs": 1.2017390429973602
+            },
+            "last_observation": {
+              "generation": 2,
+              "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+              "hit": 1,
+              "exponent": 60,
+              "pattern": 0,
+              "self_constant_positive_verified": false,
+              "per_column_sign_counts_verified": false,
+              "amplitude_equal": false,
+              "theoretical_output_exact_zero": false,
+              "actual_request_ids_json": "[\"2-abb01146\"]",
+              "temporary_source": "host_constructed",
+              "output_source": "post_run_device_readback",
+              "input_device_readback_verified": false,
+              "original_self": {
+                "total": 30720,
+                "finite": 30720,
+                "zero": 0,
+                "positive": 15596,
+                "negative": 15124,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -5.625,
+                "max": 8.0625,
+                "max_abs": 8.0625,
+                "mean_abs": 0.063952000643197
+              },
+              "original_mat2": {
+                "total": 884736,
+                "finite": 884736,
+                "zero": 0,
+                "positive": 442513,
+                "negative": 442223,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -2.875,
+                "max": 2.328125,
+                "max_abs": 2.875,
+                "mean_abs": 0.14463373639531946
+              },
+              "temporary_self": {
+                "total": 30720,
+                "finite": 30720,
+                "zero": 0,
+                "positive": 15596,
+                "negative": 15124,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -5.625,
+                "max": 8.0625,
+                "max_abs": 8.0625,
+                "mean_abs": 0.063952000643197
+              },
+              "temporary_mat2": {
+                "total": 884736,
+                "finite": 884736,
+                "zero": 0,
+                "positive": 442513,
+                "negative": 442223,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -2.875,
+                "max": 2.328125,
+                "max_abs": 2.875,
+                "mean_abs": 0.14463373639531946
+              },
+              "output": {
+                "total": 11520,
+                "finite": 11520,
+                "zero": 0,
+                "positive": 5738,
+                "negative": 5782,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -29,
+                "max": 30.5,
+                "max_abs": 30.5,
+                "mean_abs": 1.2017390429973602
+              },
+              "changed": [
+                0,
+                0
+              ],
+              "unchanged": [
+                30720,
+                884736
+              ],
+              "proof": {
+                "api": "aclnnMatmul",
+                "generation": 2,
+                "hit": 1,
+                "formal_order_proven": true,
+                "slots": [
+                  0,
+                  1,
+                  2
+                ],
+                "input_mask": 3,
+                "tensors": [
+                  {
+                    "shape": [
+                      20,
+                      1536
+                    ],
+                    "strides": [
+                      1536,
+                      1
+                    ],
+                    "offset": 0,
+                    "storage_bytes": 61440,
+                    "original_address": 20623380383232,
+                    "run_address": 20623380383232
+                  },
+                  {
+                    "shape": [
+                      1536,
+                      576
+                    ],
+                    "strides": [
+                      1,
+                      1536
+                    ],
+                    "offset": 0,
+                    "storage_bytes": 1769472,
+                    "original_address": 20659930874368,
+                    "run_address": 20659930874368
+                  },
+                  {
+                    "shape": [
+                      20,
+                      576
+                    ],
+                    "strides": [
+                      576,
+                      1
+                    ],
+                    "offset": 0,
+                    "storage_bytes": 23040,
+                    "original_address": 20623380143104,
+                    "run_address": 20623380143104
+                  }
+                ]
+              },
+              "pre_sync_status": 0,
+              "copy_status": 0,
+              "run_status": 0,
+              "post_sync_status": 0,
+              "free_status": 0
+            },
+            "candidates": [
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+                "candidate_count": 1,
+                "observations": 2,
+                "M": 1,
+                "K": 576,
+                "N": 49152,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 1536,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 576,
+                "N": 3072,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 576,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 576,
+                "N": 960,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              }
+            ]
+          },
+          "after_native": {
+            "abi_version": 1,
+            "runtime_loaded": true,
+            "runtime_ready": true,
+            "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+            "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+            "generation": 2,
+            "enabled": false,
+            "mode": 4,
+            "exponent": 60,
+            "pattern": 0,
+            "input_mask": 3,
+            "rank": 0,
+            "device": 0,
+            "inflight": 0,
+            "leases": 0,
+            "status": "DISABLED",
+            "last_error": 0,
+            "target_signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+            "interposed_run_calls": 6805,
+            "last_run_api": "aclnnCast_7843",
+            "typed_metadata_calls": 9,
+            "hits": 1,
+            "substituted": 0,
+            "completed": 1,
+            "rejected": 0,
+            "actual_request_ids_json": "[\"2-abb01146\"]",
+            "worker_rank": 0,
+            "observer": {
+              "total": 11520,
+              "finite": 11520,
+              "zero": 0,
+              "positive": 5738,
+              "negative": 5782,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": -29,
+              "max": 30.5,
+              "max_abs": 30.5,
+              "mean_abs": 1.2017390429973602
+            },
+            "last_observation": {
+              "generation": 2,
+              "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+              "hit": 1,
+              "exponent": 60,
+              "pattern": 0,
+              "self_constant_positive_verified": false,
+              "per_column_sign_counts_verified": false,
+              "amplitude_equal": false,
+              "theoretical_output_exact_zero": false,
+              "actual_request_ids_json": "[\"2-abb01146\"]",
+              "temporary_source": "host_constructed",
+              "output_source": "post_run_device_readback",
+              "input_device_readback_verified": false,
+              "original_self": {
+                "total": 30720,
+                "finite": 30720,
+                "zero": 0,
+                "positive": 15596,
+                "negative": 15124,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -5.625,
+                "max": 8.0625,
+                "max_abs": 8.0625,
+                "mean_abs": 0.063952000643197
+              },
+              "original_mat2": {
+                "total": 884736,
+                "finite": 884736,
+                "zero": 0,
+                "positive": 442513,
+                "negative": 442223,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -2.875,
+                "max": 2.328125,
+                "max_abs": 2.875,
+                "mean_abs": 0.14463373639531946
+              },
+              "temporary_self": {
+                "total": 30720,
+                "finite": 30720,
+                "zero": 0,
+                "positive": 15596,
+                "negative": 15124,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -5.625,
+                "max": 8.0625,
+                "max_abs": 8.0625,
+                "mean_abs": 0.063952000643197
+              },
+              "temporary_mat2": {
+                "total": 884736,
+                "finite": 884736,
+                "zero": 0,
+                "positive": 442513,
+                "negative": 442223,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -2.875,
+                "max": 2.328125,
+                "max_abs": 2.875,
+                "mean_abs": 0.14463373639531946
+              },
+              "output": {
+                "total": 11520,
+                "finite": 11520,
+                "zero": 0,
+                "positive": 5738,
+                "negative": 5782,
+                "nan": 0,
+                "posinf": 0,
+                "neginf": 0,
+                "min": -29,
+                "max": 30.5,
+                "max_abs": 30.5,
+                "mean_abs": 1.2017390429973602
+              },
+              "changed": [
+                0,
+                0
+              ],
+              "unchanged": [
+                30720,
+                884736
+              ],
+              "proof": {
+                "api": "aclnnMatmul",
+                "generation": 2,
+                "hit": 1,
+                "formal_order_proven": true,
+                "slots": [
+                  0,
+                  1,
+                  2
+                ],
+                "input_mask": 3,
+                "tensors": [
+                  {
+                    "shape": [
+                      20,
+                      1536
+                    ],
+                    "strides": [
+                      1536,
+                      1
+                    ],
+                    "offset": 0,
+                    "storage_bytes": 61440,
+                    "original_address": 20623380383232,
+                    "run_address": 20623380383232
+                  },
+                  {
+                    "shape": [
+                      1536,
+                      576
+                    ],
+                    "strides": [
+                      1,
+                      1536
+                    ],
+                    "offset": 0,
+                    "storage_bytes": 1769472,
+                    "original_address": 20659930874368,
+                    "run_address": 20659930874368
+                  },
+                  {
+                    "shape": [
+                      20,
+                      576
+                    ],
+                    "strides": [
+                      576,
+                      1
+                    ],
+                    "offset": 0,
+                    "storage_bytes": 23040,
+                    "original_address": 20623380143104,
+                    "run_address": 20623380143104
+                  }
+                ]
+              },
+              "pre_sync_status": 0,
+              "copy_status": 0,
+              "run_status": 0,
+              "post_sync_status": 0,
+              "free_status": 0
+            },
+            "candidates": [
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+                "candidate_count": 1,
+                "observations": 2,
+                "M": 1,
+                "K": 576,
+                "N": 49152,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 1536,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 576,
+                "N": 3072,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 576,
+                "N": 576,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              },
+              {
+                "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+                "candidate_count": 1,
+                "observations": 60,
+                "M": 20,
+                "K": 576,
+                "N": 960,
+                "rank": 0,
+                "device": 0,
+                "api": "aclnnMatmul",
+                "dtype": "BF16",
+                "format": "ND"
+              }
+            ]
+          },
+          "request_mapping": "SINGLE_REQUEST_SCHEDULER_MAPPING_VERIFIED",
+          "instrumentation_complete": true,
+          "context_range": [
+            3,
+            4
+          ],
+          "contexts_dropped": 0,
+          "contexts": [
+            {
+              "request_ids": [
+                "3-882bac93"
+              ],
+              "token_counts": {
+                "3-882bac93": 20
+              },
+              "mapping": "SINGLE_SCHEDULER_REQUEST",
+              "index": 3,
+              "rank": 0,
+              "pid": 1,
+              "completed": true,
+              "instrumentation_errors": [],
+              "native_before": {
+                "abi_version": 1,
+                "runtime_loaded": true,
+                "runtime_ready": true,
+                "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+                "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                "generation": 2,
+                "enabled": false,
+                "mode": 4,
+                "exponent": 60,
+                "pattern": 0,
+                "input_mask": 3,
+                "rank": 0,
+                "device": 0,
+                "inflight": 0,
+                "leases": 0,
+                "status": "DISABLED",
+                "last_error": 0,
+                "target_signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "interposed_run_calls": 6578,
+                "last_run_api": "aclnnCast_7435",
+                "typed_metadata_calls": 9,
+                "hits": 1,
+                "substituted": 0,
+                "completed": 1,
+                "rejected": 0,
+                "actual_request_ids_json": "[\"2-abb01146\"]",
+                "worker_rank": 0,
+                "observer": {
+                  "total": 11520,
+                  "finite": 11520,
+                  "zero": 0,
+                  "positive": 5738,
+                  "negative": 5782,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": -29,
+                  "max": 30.5,
+                  "max_abs": 30.5,
+                  "mean_abs": 1.2017390429973602
+                },
+                "last_observation": {
+                  "generation": 2,
+                  "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                  "hit": 1,
+                  "exponent": 60,
+                  "pattern": 0,
+                  "self_constant_positive_verified": false,
+                  "per_column_sign_counts_verified": false,
+                  "amplitude_equal": false,
+                  "theoretical_output_exact_zero": false,
+                  "actual_request_ids_json": "[\"2-abb01146\"]",
+                  "temporary_source": "host_constructed",
+                  "output_source": "post_run_device_readback",
+                  "input_device_readback_verified": false,
+                  "original_self": {
+                    "total": 30720,
+                    "finite": 30720,
+                    "zero": 0,
+                    "positive": 15596,
+                    "negative": 15124,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -5.625,
+                    "max": 8.0625,
+                    "max_abs": 8.0625,
+                    "mean_abs": 0.063952000643197
+                  },
+                  "original_mat2": {
+                    "total": 884736,
+                    "finite": 884736,
+                    "zero": 0,
+                    "positive": 442513,
+                    "negative": 442223,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -2.875,
+                    "max": 2.328125,
+                    "max_abs": 2.875,
+                    "mean_abs": 0.14463373639531946
+                  },
+                  "temporary_self": {
+                    "total": 30720,
+                    "finite": 30720,
+                    "zero": 0,
+                    "positive": 15596,
+                    "negative": 15124,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -5.625,
+                    "max": 8.0625,
+                    "max_abs": 8.0625,
+                    "mean_abs": 0.063952000643197
+                  },
+                  "temporary_mat2": {
+                    "total": 884736,
+                    "finite": 884736,
+                    "zero": 0,
+                    "positive": 442513,
+                    "negative": 442223,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -2.875,
+                    "max": 2.328125,
+                    "max_abs": 2.875,
+                    "mean_abs": 0.14463373639531946
+                  },
+                  "output": {
+                    "total": 11520,
+                    "finite": 11520,
+                    "zero": 0,
+                    "positive": 5738,
+                    "negative": 5782,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -29,
+                    "max": 30.5,
+                    "max_abs": 30.5,
+                    "mean_abs": 1.2017390429973602
+                  },
+                  "changed": [
+                    0,
+                    0
+                  ],
+                  "unchanged": [
+                    30720,
+                    884736
+                  ],
+                  "proof": {
+                    "api": "aclnnMatmul",
+                    "generation": 2,
+                    "hit": 1,
+                    "formal_order_proven": true,
+                    "slots": [
+                      0,
+                      1,
+                      2
+                    ],
+                    "input_mask": 3,
+                    "tensors": [
+                      {
+                        "shape": [
+                          20,
+                          1536
+                        ],
+                        "strides": [
+                          1536,
+                          1
+                        ],
+                        "offset": 0,
+                        "storage_bytes": 61440,
+                        "original_address": 20623380383232,
+                        "run_address": 20623380383232
+                      },
+                      {
+                        "shape": [
+                          1536,
+                          576
+                        ],
+                        "strides": [
+                          1,
+                          1536
+                        ],
+                        "offset": 0,
+                        "storage_bytes": 1769472,
+                        "original_address": 20659930874368,
+                        "run_address": 20659930874368
+                      },
+                      {
+                        "shape": [
+                          20,
+                          576
+                        ],
+                        "strides": [
+                          576,
+                          1
+                        ],
+                        "offset": 0,
+                        "storage_bytes": 23040,
+                        "original_address": 20623380143104,
+                        "run_address": 20623380143104
+                      }
+                    ]
+                  },
+                  "pre_sync_status": 0,
+                  "copy_status": 0,
+                  "run_status": 0,
+                  "post_sync_status": 0,
+                  "free_status": 0
+                }
+              },
+              "native_after": {
+                "abi_version": 1,
+                "runtime_loaded": true,
+                "runtime_ready": true,
+                "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+                "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                "generation": 2,
+                "enabled": false,
+                "mode": 4,
+                "exponent": 60,
+                "pattern": 0,
+                "input_mask": 3,
+                "rank": 0,
+                "device": 0,
+                "inflight": 0,
+                "leases": 0,
+                "status": "DISABLED",
+                "last_error": 0,
+                "target_signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+                "interposed_run_calls": 6802,
+                "last_run_api": "aclnnMatmul_7840",
+                "typed_metadata_calls": 9,
+                "hits": 1,
+                "substituted": 0,
+                "completed": 1,
+                "rejected": 0,
+                "actual_request_ids_json": "[\"2-abb01146\"]",
+                "worker_rank": 0,
+                "observer": {
+                  "total": 11520,
+                  "finite": 11520,
+                  "zero": 0,
+                  "positive": 5738,
+                  "negative": 5782,
+                  "nan": 0,
+                  "posinf": 0,
+                  "neginf": 0,
+                  "min": -29,
+                  "max": 30.5,
+                  "max_abs": 30.5,
+                  "mean_abs": 1.2017390429973602
+                },
+                "last_observation": {
+                  "generation": 2,
+                  "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+                  "hit": 1,
+                  "exponent": 60,
+                  "pattern": 0,
+                  "self_constant_positive_verified": false,
+                  "per_column_sign_counts_verified": false,
+                  "amplitude_equal": false,
+                  "theoretical_output_exact_zero": false,
+                  "actual_request_ids_json": "[\"2-abb01146\"]",
+                  "temporary_source": "host_constructed",
+                  "output_source": "post_run_device_readback",
+                  "input_device_readback_verified": false,
+                  "original_self": {
+                    "total": 30720,
+                    "finite": 30720,
+                    "zero": 0,
+                    "positive": 15596,
+                    "negative": 15124,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -5.625,
+                    "max": 8.0625,
+                    "max_abs": 8.0625,
+                    "mean_abs": 0.063952000643197
+                  },
+                  "original_mat2": {
+                    "total": 884736,
+                    "finite": 884736,
+                    "zero": 0,
+                    "positive": 442513,
+                    "negative": 442223,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -2.875,
+                    "max": 2.328125,
+                    "max_abs": 2.875,
+                    "mean_abs": 0.14463373639531946
+                  },
+                  "temporary_self": {
+                    "total": 30720,
+                    "finite": 30720,
+                    "zero": 0,
+                    "positive": 15596,
+                    "negative": 15124,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -5.625,
+                    "max": 8.0625,
+                    "max_abs": 8.0625,
+                    "mean_abs": 0.063952000643197
+                  },
+                  "temporary_mat2": {
+                    "total": 884736,
+                    "finite": 884736,
+                    "zero": 0,
+                    "positive": 442513,
+                    "negative": 442223,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -2.875,
+                    "max": 2.328125,
+                    "max_abs": 2.875,
+                    "mean_abs": 0.14463373639531946
+                  },
+                  "output": {
+                    "total": 11520,
+                    "finite": 11520,
+                    "zero": 0,
+                    "positive": 5738,
+                    "negative": 5782,
+                    "nan": 0,
+                    "posinf": 0,
+                    "neginf": 0,
+                    "min": -29,
+                    "max": 30.5,
+                    "max_abs": 30.5,
+                    "mean_abs": 1.2017390429973602
+                  },
+                  "changed": [
+                    0,
+                    0
+                  ],
+                  "unchanged": [
+                    30720,
+                    884736
+                  ],
+                  "proof": {
+                    "api": "aclnnMatmul",
+                    "generation": 2,
+                    "hit": 1,
+                    "formal_order_proven": true,
+                    "slots": [
+                      0,
+                      1,
+                      2
+                    ],
+                    "input_mask": 3,
+                    "tensors": [
+                      {
+                        "shape": [
+                          20,
+                          1536
+                        ],
+                        "strides": [
+                          1536,
+                          1
+                        ],
+                        "offset": 0,
+                        "storage_bytes": 61440,
+                        "original_address": 20623380383232,
+                        "run_address": 20623380383232
+                      },
+                      {
+                        "shape": [
+                          1536,
+                          576
+                        ],
+                        "strides": [
+                          1,
+                          1536
+                        ],
+                        "offset": 0,
+                        "storage_bytes": 1769472,
+                        "original_address": 20659930874368,
+                        "run_address": 20659930874368
+                      },
+                      {
+                        "shape": [
+                          20,
+                          576
+                        ],
+                        "strides": [
+                          576,
+                          1
+                        ],
+                        "offset": 0,
+                        "storage_bytes": 23040,
+                        "original_address": 20623380143104,
+                        "run_address": 20623380143104
+                      }
+                    ]
+                  },
+                  "pre_sync_status": 0,
+                  "copy_status": 0,
+                  "run_status": 0,
+                  "post_sync_status": 0,
+                  "free_status": 0
+                }
+              },
+              "instrumentation_complete": true
+            }
+          ],
+          "capture_complete": false
+        }
+      }
+    }
+  ],
+  "inner_framework_integration": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+  "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+  "msprobe_first_difference": "NOT_ANALYZED",
+  "tensor_payloads_uploaded": false,
+  "inventory_round_1": {
+    "status": "STABILITY_WORKLOAD_REQUIRED",
+    "inventories": {
+      "0": [
+        {
+          "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+          "candidate_count": 1,
+          "observations": 1,
+          "M": 1,
+          "K": 576,
+          "N": 49152,
+          "rank": 0,
+          "device": 0,
+          "api": "aclnnMatmul",
+          "dtype": "BF16",
+          "format": "ND"
+        },
+        {
+          "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+          "candidate_count": 1,
+          "observations": 29,
+          "M": 20,
+          "K": 1536,
+          "N": 576,
+          "rank": 0,
+          "device": 0,
+          "api": "aclnnMatmul",
+          "dtype": "BF16",
+          "format": "ND"
+        },
+        {
+          "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+          "candidate_count": 1,
+          "observations": 29,
+          "M": 20,
+          "K": 576,
+          "N": 3072,
+          "rank": 0,
+          "device": 0,
+          "api": "aclnnMatmul",
+          "dtype": "BF16",
+          "format": "ND"
+        },
+        {
+          "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+          "candidate_count": 1,
+          "observations": 29,
+          "M": 20,
+          "K": 576,
+          "N": 576,
+          "rank": 0,
+          "device": 0,
+          "api": "aclnnMatmul",
+          "dtype": "BF16",
+          "format": "ND"
+        },
+        {
+          "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+          "candidate_count": 1,
+          "observations": 29,
+          "M": 20,
+          "K": 576,
+          "N": 960,
+          "rank": 0,
+          "device": 0,
+          "api": "aclnnMatmul",
+          "dtype": "BF16",
+          "format": "ND"
+        }
+      ]
+    }
+  },
+  "inventory_round_2": {
+    "status": "STABLE_UNIQUE_TARGET",
+    "targets": {
+      "0": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040"
+    }
+  },
+  "baseline_stable": true,
+  "targets": {
+    "0": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040"
+  },
+  "discovery_disable": {
+    "status": "DISABLED_CONFIRMED",
+    "workers": {
+      "0": {
+        "status": "DISABLED_CONFIRMED",
+        "native_code": 0,
+        "generation": 1,
+        "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+        "snapshot": {
+          "abi_version": 1,
+          "runtime_loaded": true,
+          "runtime_ready": true,
+          "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+          "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+          "generation": 1,
+          "enabled": false,
+          "mode": 1,
+          "exponent": -1,
+          "pattern": 0,
+          "input_mask": 3,
+          "rank": 0,
+          "device": 0,
+          "inflight": 0,
+          "leases": 0,
+          "status": "DISABLED",
+          "last_error": 0,
+          "target_signature": "",
+          "interposed_run_calls": 895,
+          "last_run_api": "aclnnCast_1439",
+          "typed_metadata_calls": 9,
+          "hits": 0,
+          "substituted": 0,
+          "completed": 0,
+          "rejected": 0,
+          "actual_request_ids_json": "[]",
+          "worker_rank": 0,
+          "observer": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "last_observation": {
+            "generation": 0,
+            "owner": "",
+            "hit": 0,
+            "exponent": -1,
+            "pattern": 0,
+            "self_constant_positive_verified": false,
+            "per_column_sign_counts_verified": false,
+            "amplitude_equal": false,
+            "theoretical_output_exact_zero": false,
+            "actual_request_ids_json": "[]",
+            "temporary_source": "host_constructed",
+            "output_source": "post_run_device_readback",
+            "input_device_readback_verified": false,
+            "original_self": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "original_mat2": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "temporary_self": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "temporary_mat2": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "output": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "changed": [
+              0,
+              0
+            ],
+            "unchanged": [
+              0,
+              0
+            ],
+            "proof": {},
+            "pre_sync_status": -2147483647,
+            "copy_status": -2147483647,
+            "run_status": -2147483647,
+            "post_sync_status": -2147483647,
+            "free_status": -2147483647
+          },
+          "candidates": [
+            {
+              "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+              "candidate_count": 1,
+              "observations": 2,
+              "M": 1,
+              "K": 576,
+              "N": 49152,
+              "rank": 0,
+              "device": 0,
+              "api": "aclnnMatmul",
+              "dtype": "BF16",
+              "format": "ND"
+            },
+            {
+              "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+              "candidate_count": 1,
+              "observations": 59,
+              "M": 20,
+              "K": 1536,
+              "N": 576,
+              "rank": 0,
+              "device": 0,
+              "api": "aclnnMatmul",
+              "dtype": "BF16",
+              "format": "ND"
+            },
+            {
+              "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+              "candidate_count": 1,
+              "observations": 59,
+              "M": 20,
+              "K": 576,
+              "N": 3072,
+              "rank": 0,
+              "device": 0,
+              "api": "aclnnMatmul",
+              "dtype": "BF16",
+              "format": "ND"
+            },
+            {
+              "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+              "candidate_count": 1,
+              "observations": 59,
+              "M": 20,
+              "K": 576,
+              "N": 576,
+              "rank": 0,
+              "device": 0,
+              "api": "aclnnMatmul",
+              "dtype": "BF16",
+              "format": "ND"
+            },
+            {
+              "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+              "candidate_count": 1,
+              "observations": 59,
+              "M": 20,
+              "K": 576,
+              "N": 960,
+              "rank": 0,
+              "device": 0,
+              "api": "aclnnMatmul",
+              "dtype": "BF16",
+              "format": "ND"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "discovery_snapshot": {
+    "api": "demoncat_fault39.NativeBackend",
+    "schema_version": 1,
+    "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+    "state": "DISABLED_CONFIRMED",
+    "config": {
+      "fault_id": 39,
+      "pattern": "half",
+      "amplitude_policy": "auto",
+      "target": "auto",
+      "target_policy": "max_k_min_m_unique",
+      "ranks": [
+        0
+      ],
+      "devices": [],
+      "max_hits": 1,
+      "max_bytes": 536870912,
+      "schema_version": 1
+    },
+    "generations": {
+      "0": 1
+    },
+    "targets": {
+      "0": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040"
+    },
+    "uncertain_workers": [],
+    "workers": {
+      "0": {
+        "abi_version": 1,
+        "runtime_loaded": true,
+        "runtime_ready": true,
+        "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+        "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+        "generation": 1,
+        "enabled": false,
+        "mode": 1,
+        "exponent": -1,
+        "pattern": 0,
+        "input_mask": 3,
+        "rank": 0,
+        "device": 0,
+        "inflight": 0,
+        "leases": 0,
+        "status": "DISABLED",
+        "last_error": 0,
+        "target_signature": "",
+        "interposed_run_calls": 895,
+        "last_run_api": "aclnnCast_1439",
+        "typed_metadata_calls": 9,
+        "hits": 0,
+        "substituted": 0,
+        "completed": 0,
+        "rejected": 0,
+        "actual_request_ids_json": "[]",
+        "worker_rank": 0,
+        "observer": {
+          "total": 0,
+          "finite": 0,
+          "zero": 0,
+          "positive": 0,
+          "negative": 0,
+          "nan": 0,
+          "posinf": 0,
+          "neginf": 0,
+          "min": null,
+          "max": null,
+          "max_abs": null,
+          "mean_abs": null
+        },
+        "last_observation": {
+          "generation": 0,
+          "owner": "",
+          "hit": 0,
+          "exponent": -1,
+          "pattern": 0,
+          "self_constant_positive_verified": false,
+          "per_column_sign_counts_verified": false,
+          "amplitude_equal": false,
+          "theoretical_output_exact_zero": false,
+          "actual_request_ids_json": "[]",
+          "temporary_source": "host_constructed",
+          "output_source": "post_run_device_readback",
+          "input_device_readback_verified": false,
+          "original_self": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "original_mat2": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "temporary_self": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "temporary_mat2": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "output": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "changed": [
+            0,
+            0
+          ],
+          "unchanged": [
+            0,
+            0
+          ],
+          "proof": {},
+          "pre_sync_status": -2147483647,
+          "copy_status": -2147483647,
+          "run_status": -2147483647,
+          "post_sync_status": -2147483647,
+          "free_status": -2147483647
+        },
+        "candidates": [
+          {
+            "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,1,576,576,1,0,1152:27,2,576,49152,1,576,0,56623104:27,2,1,49152,49152,1,0,98304",
+            "candidate_count": 1,
+            "observations": 2,
+            "M": 1,
+            "K": 576,
+            "N": 49152,
+            "rank": 0,
+            "device": 0,
+            "api": "aclnnMatmul",
+            "dtype": "BF16",
+            "format": "ND"
+          },
+          {
+            "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,1536,1536,1,0,61440:27,2,1536,576,1,1536,0,1769472:27,2,20,576,576,1,0,23040",
+            "candidate_count": 1,
+            "observations": 59,
+            "M": 20,
+            "K": 1536,
+            "N": 576,
+            "rank": 0,
+            "device": 0,
+            "api": "aclnnMatmul",
+            "dtype": "BF16",
+            "format": "ND"
+          },
+          {
+            "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,3072,1,576,0,3538944:27,2,20,3072,3072,1,0,122880",
+            "candidate_count": 1,
+            "observations": 59,
+            "M": 20,
+            "K": 576,
+            "N": 3072,
+            "rank": 0,
+            "device": 0,
+            "api": "aclnnMatmul",
+            "dtype": "BF16",
+            "format": "ND"
+          },
+          {
+            "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,576,1,576,0,663552:27,2,20,576,576,1,0,23040",
+            "candidate_count": 1,
+            "observations": 59,
+            "M": 20,
+            "K": 576,
+            "N": 576,
+            "rank": 0,
+            "device": 0,
+            "api": "aclnnMatmul",
+            "dtype": "BF16",
+            "format": "ND"
+          },
+          {
+            "signature": "f39v1:aclnnMatmul:r0:d0:c0:27,2,20,576,576,1,0,23040:27,2,576,960,1,576,0,1105920:27,2,20,960,960,1,0,38400",
+            "candidate_count": 1,
+            "observations": 59,
+            "M": 20,
+            "K": 576,
+            "N": 960,
+            "rank": 0,
+            "device": 0,
+            "api": "aclnnMatmul",
+            "dtype": "BF16",
+            "format": "ND"
+          }
+        ]
+      }
+    },
+    "inner_framework_integration": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+    "request_mapping": "UNPROVEN_REQUEST_MAPPING"
+  },
+  "lossless_receipt_sha256": "ee346e4d4d5992a5834178f5cd28198e20958fb930cd4d1dca2c196d9626ef41",
+  "capture": {
+    "0": {
+      "config_path": "/evidence/model/baseline/rank0/config.json",
+      "rank": 0,
+      "steps": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "scope": "Actual model-runner calls; steps are not fabricated token numbers"
+    }
+  },
+  "capture_finish": {
+    "status": "CAPTURE_FINISHED",
+    "workers": {
+      "0": {
+        "status": "CAPTURE_FINISHED",
+        "rank": 0,
+        "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+        "already_finished": false,
+        "capture_active": false,
+        "last_context_index": 2
+      }
+    }
+  },
+  "cleanup": {
+    "status": "DISABLED_CONFIRMED",
+    "workers": {
+      "0": {
+        "status": "DISABLED_CONFIRMED",
+        "native_code": 0,
+        "generation": 2,
+        "owner": "fault39-44a9550616d2479e854c0b463b9506c5",
+        "snapshot": {
+          "abi_version": 1,
+          "runtime_loaded": true,
+          "runtime_ready": true,
+          "runtime_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+          "owner": "",
+          "generation": 2,
+          "enabled": false,
+          "mode": 0,
+          "exponent": 0,
+          "pattern": 0,
+          "input_mask": 0,
+          "rank": 0,
+          "device": 0,
+          "inflight": 0,
+          "leases": 0,
+          "status": "CLEAN",
+          "last_error": 0,
+          "target_signature": "",
+          "interposed_run_calls": 6805,
+          "last_run_api": "aclnnCast_7843",
+          "typed_metadata_calls": 9,
+          "hits": 0,
+          "substituted": 0,
+          "completed": 1,
+          "rejected": 0,
+          "actual_request_ids_json": "[]",
+          "worker_rank": 0,
+          "observer": {
+            "total": 0,
+            "finite": 0,
+            "zero": 0,
+            "positive": 0,
+            "negative": 0,
+            "nan": 0,
+            "posinf": 0,
+            "neginf": 0,
+            "min": null,
+            "max": null,
+            "max_abs": null,
+            "mean_abs": null
+          },
+          "last_observation": {
+            "generation": 0,
+            "owner": "",
+            "hit": 0,
+            "exponent": 0,
+            "pattern": 0,
+            "self_constant_positive_verified": false,
+            "per_column_sign_counts_verified": false,
+            "amplitude_equal": false,
+            "theoretical_output_exact_zero": false,
+            "actual_request_ids_json": "[]",
+            "temporary_source": "host_constructed",
+            "output_source": "post_run_device_readback",
+            "input_device_readback_verified": false,
+            "original_self": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "original_mat2": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "temporary_self": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "temporary_mat2": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "output": {
+              "total": 0,
+              "finite": 0,
+              "zero": 0,
+              "positive": 0,
+              "negative": 0,
+              "nan": 0,
+              "posinf": 0,
+              "neginf": 0,
+              "min": null,
+              "max": null,
+              "max_abs": null,
+              "mean_abs": null
+            },
+            "changed": [
+              0,
+              0
+            ],
+            "unchanged": [
+              0,
+              0
+            ],
+            "proof": {},
+            "pre_sync_status": -2147483647,
+            "copy_status": -2147483647,
+            "run_status": -2147483647,
+            "post_sync_status": -2147483647,
+            "free_status": -2147483647
+          },
+          "candidates": []
+        }
+      }
+    }
+  },
+  "detached": {
+    "0": {
+      "status": "DETACHED",
+      "rank": 0
+    }
+  }
+}
