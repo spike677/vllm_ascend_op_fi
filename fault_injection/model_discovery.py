@@ -1,8 +1,10 @@
 """Model identity and structural roles shared by native mechanism adapters."""
 from collections.abc import Mapping
 import ast
+import hashlib
 import inspect
 import math
+from pathlib import Path
 import textwrap
 
 
@@ -23,6 +25,46 @@ def _value(config, name):
 def _shape(tensor):
     shape = getattr(tensor, 'shape', None)
     return list(shape) if shape is not None and all(type(dim) is int for dim in shape) else None
+
+
+def model_identity(model, config):
+    """Diagnostic architecture identity; never select a provider by model name.
+
+    A checkpoint title (including a Distill-DeepSeek title) is not architecture
+    evidence. Keep actual implementation and config families separate so a
+    mislabeled or custom implementation cannot inherit a native certificate.
+    """
+    def family(value):
+        if not isinstance(value, str):
+            return None
+        token = value.lower().replace('-', '_')
+        for prefix, result in (('qwen', 'Qwen'), ('glm', 'GLM'), ('chatglm', 'GLM'),
+                               ('deepseek', 'DeepSeek'), ('llama', 'Llama')):
+            if token.startswith(prefix):
+                return result
+        return None
+    module = type(model).__module__
+    leaf = None
+    for prefix in ('transformers.models.', 'vllm.model_executor.models.'):
+        if module.startswith(prefix):
+            leaf = module[len(prefix):].split('.', 1)[0]
+            break
+    actual = family(leaf)
+    configured = family(_value(config, 'model_type'))
+    status = ('FAMILY_METADATA_CONFLICT' if actual and configured and actual != configured
+              else 'IMPLEMENTATION_FAMILY_OBSERVED' if actual else 'CUSTOM_IMPLEMENTATION_UNVERIFIED')
+    source = None
+    try:
+        path = Path(inspect.getsourcefile(type(model)))
+        source = dict(file=path.name, sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+    except (OSError, TypeError):
+        pass
+    return dict(status=status, implementation_family=actual, configured_family=configured,
+                model_class=_class(model), implementation_module=module,
+                implementation_source=source, config_class=_class(config),
+                configured_model_type=_value(config, 'model_type'),
+                native_provider_verified=False,
+                note='Family is diagnostic only; actual operator/ABI/storage gates remain required')
 
 
 def projection_geometry(module):
@@ -79,7 +121,11 @@ def _attention(children, dimensions, config, shared):
                 and dimensions.get('kv_a_proj_with_mqa') == (hidden, kv_rank + rope_dim)
                 and dimensions.get('kv_b_proj') == (kv_rank, q_heads * (nope_dim + value_dim))
                 and output_in == q_heads * value_dim):
-            return {q_name: (roles[0],), 'kv_b_proj': roles[1:], o: ('ATTENTION_O_PROJ',)}
+            result = {q_name: (roles[0],), 'kv_b_proj': roles[1:], o: ('ATTENTION_O_PROJ',),
+                      'kv_a_proj_with_mqa': ('ATTENTION_KV_LATENT_PROJ',)}
+            if q_rank:
+                result['q_a_proj'] = ('ATTENTION_Q_LATENT_PROJ',)
+            return result
     if all(name in dimensions for name in (q, k, v)) and fused is None:
         geometries = [dimensions[name] for name in (q, k, v)]
         if (all(inputs == hidden for inputs, _ in geometries)
@@ -252,6 +298,7 @@ def inspect_structure(model, *, attention_paths=(), runner=None):
     quantization = getattr(config, 'quantization_config', None)
     return dict(
         schema='demoncat.model_structure.v1', object_identity=id(model),
+        architecture_identity=model_identity(model, config),
         model_type=_value(config, 'model_type'), architectures=list(architectures)
         if isinstance(architectures, (list, tuple)) and all(isinstance(name, str) for name in architectures) else [],
         model_class=_class(model), mro=[cls.__module__ + '.' + cls.__qualname__ for cls in type(model).__mro__],

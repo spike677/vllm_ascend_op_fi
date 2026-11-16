@@ -111,7 +111,7 @@ class WorkerFaultRuntime:
             self._observe_context(context)
             if action == 'worker_identity':
                 return {'status': 'WORKER_IDENTIFIED' if context.ready else 'WORKER_CONTEXT_NOT_READY',
-                        'worker': context.worker}
+                        'worker': context.worker, 'quarantined': self._quarantined()}
             if action == 'capabilities':
                 try:
                     providers = _provider_capabilities()
@@ -123,7 +123,8 @@ class WorkerFaultRuntime:
                 return {'status': 'CAPABILITIES', 'worker': context.worker,
                         'extension_version': EXTENSION_VERSION, 'providers': providers,
                         'provider_resolver_status': resolver_status,
-                        'native_state_requires_prepared_ticket': True, 'one_attempt_per_lease': True}
+                        'native_state_requires_prepared_ticket': True, 'one_attempt_per_lease': True,
+                        'quarantined': self._quarantined()}
             if action == 'attach':
                 return self._attach(context, payload)
             if action == 'detach':
@@ -177,6 +178,8 @@ class WorkerFaultRuntime:
         tenant_id = _text(payload['tenant_id'])
         if tenant_id in self._tenants:
             raise Rejected('TENANT_ALREADY_ATTACHED')
+        if self._quarantined():
+            raise Rejected('WORKER_RECOVERY_REQUIRED')
         tenant = _Tenant(tenant_id, secrets.token_hex(16), deepcopy(context.worker))
         self._tenants[tenant_id] = tenant
         return {'status': 'ATTACHED', 'ticket': tenant.ticket()}
@@ -218,7 +221,10 @@ class WorkerFaultRuntime:
             if type(state.get('native_registered')) is not bool:
                 return None
             return json.loads(_json(state))
-        except Exception:
+        except BaseException as error:
+            lease.recovery_required = True
+            if not isinstance(error, Exception):
+                raise
             return None
 
     @staticmethod
@@ -231,13 +237,23 @@ class WorkerFaultRuntime:
         return (cls._quiet(state) and state['registered'] is False
                 and state['native_registered'] is False)
 
+    def _quarantined(self):
+        # Providers may share streams, allocators or process-level interposers.
+        # An unresolved fault cannot be bypassed by choosing another mechanism
+        # or another tenant on this same Worker.
+        return self._identity_invalidated or any(
+            lease.recovery_required for lease in self._leases.values())
+
     def _query(self, context, payload):
         _check_shape(payload, _TICKET | _TARGET | {'generation'})
         lease = self._lease(self._tenant(context, payload), payload)
         state = self._fresh(lease)
+        if not self._quiet(state):
+            lease.recovery_required = True
         return {'status': 'QUERY_OK' if state is not None else 'NATIVE_STATE_UNAVAILABLE',
                 'ticket': lease.ticket(), 'phase': lease.phase,
-                'recovery_required': lease.recovery_required, 'native': state}
+                'recovery_required': lease.recovery_required, 'native': state,
+                'quarantined': self._quarantined()}
 
     def _dispatch(self, worker, context, action, payload):
         required = _TICKET | _TARGET | ({'generation'} if action != 'prepare' else set())
@@ -256,6 +272,8 @@ class WorkerFaultRuntime:
             owner = _text(payload['owner'])
             if mechanism in self._leases:
                 raise Rejected('MECHANISM_ALREADY_OWNED')
+            if self._quarantined():
+                raise Rejected('WORKER_RECOVERY_REQUIRED')
             try:
                 provider = _resolve_provider(mechanism, version, worker, context.model, deepcopy(context.worker))
                 if not all(callable(getattr(provider, name, None)) for name in ('dispatch', 'query')):
@@ -276,6 +294,8 @@ class WorkerFaultRuntime:
     def _run(self, lease, action, settings):
         if lease.recovery_required and action not in _RESTORE:
             raise Rejected('RECOVERY_REQUIRED')
+        if self._quarantined() and action not in _RESTORE:
+            raise Rejected('WORKER_RECOVERY_REQUIRED')
         expected = {'register': 'PREPARED', 'check': 'REGISTERED',
                     'execute': 'CHECKED', 'enable': 'CHECKED', 'finish': 'ATTEMPTED'}
         if action in ('execute', 'enable') and lease.attempted:
@@ -293,11 +313,15 @@ class WorkerFaultRuntime:
             if not isinstance(reply, dict):
                 raise TypeError('Provider action must return a dictionary')
             reply = json.loads(_json(reply))
-        except Exception as error:
+        except BaseException as error:
             if action == 'prepare' and isinstance(error, NativePreloadNotAttached):
                 del self._leases[lease.mechanism]
                 return {'status': 'NATIVE_PRELOAD_NOT_ATTACHED', 'action': action}
             lease.recovery_required = True
+            if not isinstance(error, Exception):
+                # Preserve interruption semantics, but do not let a surviving
+                # host reuse this Worker after a disputed native action.
+                raise
             return dict(result, status='PROVIDER_ACTION_FAILED', phase=lease.phase,
                         recovery_required=True, **_provider_error(error))
 

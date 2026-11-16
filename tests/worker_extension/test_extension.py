@@ -161,10 +161,8 @@ class WorkerExtensionTest(unittest.TestCase):
         self.assertIs(worker, self.worker)
         self.assertIs(model, self.worker.model_runner.model)
         self.assertEqual(context, attached['worker'])
-        self.provider.state.update(inflight=2, leases=1)
         query = self.worker.demoncat_fault_query(lease)
-        self.assertEqual((query['status'], query['native']['inflight']), ('QUERY_OK', 2))
-        self.provider.state.update(inflight=0, leases=0)
+        self.assertEqual((query['status'], query['native']['inflight']), ('QUERY_OK', 0))
         self.assertEqual(self.worker.demoncat_fault_rpc('execute', lease)['phase'], 'ATTEMPTED')
         self.assertEqual(self.worker.demoncat_fault_rpc('execute', lease)['reason'], 'ATTEMPT_CONSUMED')
         self.assertEqual(self.worker.demoncat_fault_rpc('finish', lease)['phase'], 'FINISHED')
@@ -357,6 +355,91 @@ class WorkerExtensionTest(unittest.TestCase):
         self.assertEqual(row['provider_resolver_status'], 'DEPENDENCY_UNAVAILABLE')
         self.assertEqual(row['providers'], [])
         self.resolver.assert_not_called()
+
+    def test_failed_provider_quarantines_other_mechanisms_and_new_tenants(self):
+        self.worker.load_model()
+        tenant = self._attach()
+        failed = self._check(tenant)
+        other = ReadbackProvider()
+        self.resolver.return_value = other
+        other_lease = self._prepare(tenant, OTHER_MECHANISM)['ticket']
+        for action in ('register', 'check'):
+            self.assertEqual(self.worker.demoncat_fault_rpc(action, other_lease)['status'], 'ACTION_COMPLETED')
+        self.provider.callbacks['execute'] = Mock(side_effect=RuntimeError)
+        self.assertEqual(self.worker.demoncat_fault_rpc('execute', failed)['status'], 'PROVIDER_ACTION_FAILED')
+        before = len(other.actions)
+        blocked = self.worker.demoncat_fault_rpc('execute', other_lease)
+        self.assertEqual(blocked['reason'], 'WORKER_RECOVERY_REQUIRED')
+        self.assertEqual(len(other.actions), before)
+        current = self.worker.demoncat_worker_identity()
+        self.assertTrue(current['quarantined'])
+        attached = self.worker.demoncat_attach({'tenant_id': 'new', 'worker': current['worker']})
+        self.assertEqual(attached['reason'], 'WORKER_RECOVERY_REQUIRED')
+        fresh = self._prepare(tenant, '26.residual_stomp')
+        self.assertEqual(fresh['reason'], 'WORKER_RECOVERY_REQUIRED')
+        self.assertEqual(self.worker.demoncat_fault_rpc('disable', failed)['status'], 'ACTION_COMPLETED')
+        self.assertFalse(self.worker.demoncat_capabilities()['quarantined'])
+        self.assertEqual(self.worker.demoncat_fault_rpc('execute', other_lease)['status'], 'ACTION_COMPLETED')
+        self.assertEqual(self.worker.demoncat_fault_rpc('execute', failed)['reason'], 'ATTEMPT_CONSUMED')
+
+    def test_query_unknown_native_state_requires_explicit_recovery(self):
+        self.worker.load_model()
+        tenant = self._attach()
+        lease = self._prepare(tenant)['ticket']
+        self.provider.state['native_loaded'] = False
+        missing = self.worker.demoncat_fault_query(lease)
+        self.assertEqual(missing['status'], 'NATIVE_STATE_UNAVAILABLE')
+        self.assertTrue(missing['recovery_required'])
+        self.assertTrue(missing['quarantined'])
+        self.provider.state['native_loaded'] = True
+        self.assertTrue(self.worker.demoncat_fault_query(lease)['quarantined'])
+        self.assertEqual(self._prepare(tenant, OTHER_MECHANISM)['reason'], 'WORKER_RECOVERY_REQUIRED')
+        self.assertEqual(self.worker.demoncat_fault_rpc('clean', lease)['status'], 'ACTION_COMPLETED')
+        self.assertFalse(self.worker.demoncat_capabilities()['quarantined'])
+
+    def test_query_busy_native_state_cannot_admit_other_work(self):
+        self.worker.load_model()
+        tenant = self._attach()
+        lease = self._check(tenant)
+        self.provider.state.update(inflight=2, leases=1)
+        current = self.worker.demoncat_fault_query(lease)
+        self.assertEqual(current['native']['inflight'], 2)
+        self.assertTrue(current['quarantined'])
+        self.assertEqual(self.worker.demoncat_fault_rpc('execute', lease)['reason'], 'RECOVERY_REQUIRED')
+        self.provider.state.update(inflight=0, leases=0)
+        self.assertTrue(self.worker.demoncat_fault_query(lease)['quarantined'])
+        self.assertEqual(self.worker.demoncat_fault_rpc('abort', lease)['status'], 'ACTION_COMPLETED')
+        self.assertFalse(self.worker.demoncat_worker_identity()['quarantined'])
+
+    def test_recovering_one_provider_does_not_release_another_failed_provider(self):
+        self.worker.load_model()
+        tenant = self._attach()
+        a = self._prepare(tenant)['ticket']
+        other = ReadbackProvider()
+        self.resolver.return_value = other
+        b = self._prepare(tenant, OTHER_MECHANISM)['ticket']
+        self.provider.state['native_loaded'] = other.state['native_loaded'] = False
+        self.worker.demoncat_fault_query(a)
+        self.worker.demoncat_fault_query(b)
+        self.provider.state['native_loaded'] = True
+        self.assertEqual(self.worker.demoncat_fault_rpc('unregister', a)['status'], 'ACTION_COMPLETED')
+        self.assertTrue(self.worker.demoncat_worker_identity()['quarantined'])
+        self.assertEqual(self._prepare(tenant)['reason'], 'WORKER_RECOVERY_REQUIRED')
+        other.state['native_loaded'] = True
+        self.assertEqual(self.worker.demoncat_detach(tenant)['status'], 'DETACHED')
+        self.assertFalse(self.worker.demoncat_worker_identity()['quarantined'])
+
+    def test_interrupted_action_preserves_quarantine_and_consumes_attempt(self):
+        self.worker.load_model()
+        tenant = self._attach()
+        lease = self._check(tenant)
+        self.provider.callbacks['execute'] = Mock(side_effect=KeyboardInterrupt)
+        with self.assertRaises(KeyboardInterrupt):
+            self.worker.demoncat_fault_rpc('execute', lease)
+        self.assertTrue(self.worker.demoncat_worker_identity()['quarantined'])
+        self.assertEqual(self._prepare(tenant, OTHER_MECHANISM)['reason'], 'WORKER_RECOVERY_REQUIRED')
+        self.assertEqual(self.worker.demoncat_fault_rpc('disable', lease)['status'], 'ACTION_COMPLETED')
+        self.assertEqual(self.worker.demoncat_fault_rpc('execute', lease)['reason'], 'ATTEMPT_CONSUMED')
 
 
 if __name__ == '__main__':

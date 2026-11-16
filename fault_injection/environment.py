@@ -17,6 +17,41 @@ _LIBRARIES = re.compile(
     r'fault\d+\w*|dcat\d+\w*)\.so(?:\.[\w.]+)?$'
 )
 _ABI_HEADERS = ('acl/acl.h', 'aclnn/acl_meta.h', 'aclnn/opdev/op_cache.h')
+_SOC_REFERENCE = 'https://docs.vllm.ai/projects/ascend/en/v0.18.0/faqs.html'
+
+
+def classify_soc(observed_name):
+    """Classify an observed SoC family, never certify a provider or a product SKU."""
+    normalized = re.sub(r'\s+', '', observed_name).lower() if isinstance(observed_name, str) else ''
+    if re.fullmatch(r'(?:ascend)?910b\d*', normalized):
+        family = 'A2'
+    elif re.fullmatch(r'(?:ascend)?910_93\d{2}', normalized):
+        family = 'A3'
+    else:
+        family = None
+    return dict(observed_name=observed_name, family=family,
+                status='SOC_FAMILY_CLASSIFIED' if family else 'UNCLASSIFIED',
+                source=_SOC_REFERENCE if family else None,
+                product_sku=None, provider_compatibility='UNVERIFIED')
+
+
+def _live_soc():
+    """Query only an already initialized backend; never import or initialize NPU."""
+    backend = sys.modules.get('torch_npu')
+    npu = getattr(backend, 'npu', None) if backend is not None else None
+    ready = getattr(npu, 'is_initialized', None)
+    if not callable(ready):
+        return None, 'REQUIRES_LIVE_WORKER_OBSERVATION'
+    try:
+        if ready() is not True:
+            return None, 'BACKEND_NOT_INITIALIZED_NO_QUERY'
+        index = npu.current_device()
+        name = npu.get_device_name(index)
+        if type(index) is not int or not isinstance(name, str) or not name:
+            return None, 'INVALID_LIVE_DEVICE_OBSERVATION'
+        return dict(classify_soc(name), logical_device=index), 'INITIALIZED_TORCH_NPU_DEVICE_QUERY'
+    except (RuntimeError, AttributeError, TypeError):
+        return None, 'LIVE_DEVICE_QUERY_UNAVAILABLE'
 
 
 def _digest(stream):
@@ -74,6 +109,91 @@ def _toolkit():
             break
     status = 'AMBIGUOUS' if len(installations) > 1 else 'FOUND' if installations else 'UNAVAILABLE'
     return {'status': status, 'ascend_home_path': configured, 'installations': list(installations.values())}
+
+
+def discover_installations(root=None, *, fingerprint_libraries=False):
+    """Read installed toolkit metadata without loading a library or a device.
+
+    This is an inventory, not an ABI compatibility decision. Full library hashes
+    are opt-in for an offline inventory because a worker's status RPC should
+    not reread gigabytes of unused installations on every call.
+    """
+    root = Path(root) if root is not None else _ASCEND
+    machine = platform.machine().lower()
+    arch = {'arm64': 'aarch64', 'amd64': 'x86_64'}.get(machine, machine)
+    candidates = set()
+    errors = []
+    for base in (root, root / 'ascend-toolkit', root / 'cann'):
+        try:
+            if base.is_dir():
+                candidates.add(base)
+                candidates.update(p for p in base.iterdir() if p.is_dir())
+        except OSError as error:
+            errors.append(dict(path=str(base), error=type(error).__name__))
+    if len(candidates) > 512:
+        raise RuntimeError('Toolkit inventory exceeds bounded directory budget')
+    records = {}
+    for base in sorted(candidates):
+        for directory in (base / (arch + '-linux'), base):
+            info = _manifest(directory / 'ascend_toolkit_install.info')
+            if info is None:
+                continue
+            directory = directory.resolve()
+            if str(directory) in records:
+                break
+            row = dict(info, toolkit=str(directory), abi_headers={}, libraries={},
+                       native_loaded=False, compatibility='UNVERIFIED')
+            for name in _ABI_HEADERS:
+                path = directory / 'include' / name
+                try:
+                    with path.open('rb') as stream:
+                        row['abi_headers'][name] = _digest(stream)
+                except OSError:
+                    row['abi_headers'][name] = None
+            if fingerprint_libraries:
+                for name in ('libopapi.so', 'libopapi_nn.so', 'libnnopbase.so', 'libascendcl.so'):
+                    path = directory / 'lib64' / name
+                    try:
+                        with path.open('rb') as stream:
+                            length = os.fstat(stream.fileno()).st_size
+                            row['libraries'][name] = dict(path=str(path.resolve()), bytes=length,
+                                sha256=_digest(stream), elf_build_id=_elf_build_id(stream, length))
+                    except OSError:
+                        row['libraries'][name] = None
+            records[str(directory)] = row
+            break
+    return dict(status='INSTALLED_METADATA_FOUND' if records else 'UNAVAILABLE',
+                root=str(root), installations=list(records.values()),
+                library_fingerprints_collected=fingerprint_libraries,
+                loaded_library_identity_proven=False, scan_errors=errors)
+
+
+def loaded_installation_links(libraries, installations):
+    """Associate verified mapped file paths with installation metadata, not ABI.
+
+    A proxy outside the toolkit stays unresolved. Multiple installations remain
+    visible. No version is inferred from an arbitrary directory-name substring.
+    """
+    rows = []
+    for library in libraries:
+        path = Path(library['path'])
+        matches = []
+        if library.get('status') == 'MAPPED_FILE_VERIFIED':
+            for installation in installations:
+                root = Path(installation['toolkit'])
+                try:
+                    path.relative_to(root)
+                except ValueError:
+                    continue
+                matches.append(dict(toolkit=str(root), version=installation['fields'].get('version'),
+                                    metadata_sha256=installation['sha256']))
+        rows.append(dict(name=library['name'], path=str(path), matches=matches,
+                         status='PATH_LINKED_TO_INSTALLATION' if len(matches) == 1 else
+                                'AMBIGUOUS_INSTALLATION' if matches else 'UNRESOLVED'))
+    versions = {m['toolkit'] for row in rows for m in row['matches']}
+    return dict(status='MULTIPLE_INSTALLATIONS_LOADED' if len(versions) > 1 else
+                'PARTIALLY_LINKED' if versions else 'UNRESOLVED', libraries=rows,
+                abi_compatibility_proven=False)
 
 
 def _elf_build_id(stream, length):
@@ -213,6 +333,8 @@ def inspect_environment(*, additional_libraries=()):
     packages = {name: _package(name, module) for name, module in (
         ('torch', 'torch'), ('torch-npu', 'torch_npu'), ('vllm', 'vllm'), ('vllm-ascend', 'vllm_ascend'),
     )}
+    installations = discover_installations()
+    soc, soc_source = _live_soc()
     driver_file = _manifest(_ASCEND / 'driver' / 'version.info')
     driver = {'installation': driver_file, 'running_module_versions': {}}
     for module in ('drv_pcie_host', 'drv_devdrv_host'):
@@ -224,7 +346,9 @@ def inspect_environment(*, additional_libraries=()):
     return dict(schema='demoncat.environment.v1', pid=os.getpid(), machine=platform.machine(),
                 python=platform.python_version(), packages=packages, toolkit=_toolkit(), driver=driver,
                 torch_cxx11_abi=abi if type(abi) is bool else None,
-                soc=None, soc_source='REQUIRES_LIVE_WORKER_OBSERVATION',
+                soc=soc, soc_source=soc_source,
+                installed_toolkits=installations,
+                loaded_toolkit_links=loaded_installation_links(libraries, installations['installations']),
                 maps_status=maps_status, loaded_libraries=libraries,
                 has_native_code_attestation=False)
 
