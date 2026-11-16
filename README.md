@@ -7,6 +7,10 @@
 
 ## 当前统一接入
 
+[17条本轮工程整理与实测报告](docs/fault_closure_report.md) · [逐项最终矩阵](experiments/overnight_20261116/fault_matrix.json) · [源码与证据校验](experiments/overnight_20261116/checksums.json)
+
+本轮从 `bfdd6abc` 独立开发：17条机制完成能力卡及门禁审计，445项CPU测试通过；Qwen、GLM、DeepSeek等六种实际模型结构完成CPU适配检查。新增15/17/18的构造NPU推理模块B/F/OFF通过，但原始statistics/mix的全局调用链均未严格对齐，未授予独立首差通过。真实共享Worker完成20/39的拒绝、隔离及恢复，QMM TP2记录到实际调用，但稳定目标及可信回放仍未闭合。本轮新增完整预训练模型故障闭环和共享Worker故障闭环均为0；下文历史模型验证单独保留。
+
 [文档索引](docs/README.md) · [生产接线分支的实现与验收](experiments/production_wiring_20261116/README.md) · [17 项能力与支持矩阵](docs/unified_fault_inventory.md#9171f3b-全局审计)
 
 蓝区可独立安装 `demoncat-worker-extension`，由 vLLM-Ascend 的 `--worker-extension-cls` 加载到已有 Worker。共用入口管理 Worker 身份、附着、Provider 分发和原生状态查询。Fault20 WeightNz／QMM 与 Fault39 MatMul 分别沿用已有的原生实现和单点资格门禁。[接入与部署](docs/worker_extension/deployment.md) · [124 验收记录](experiments/worker_extension_20261116/README.md)

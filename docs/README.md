@@ -1,5 +1,8 @@
 # DemonCATPFI 文档
 
+- [本轮17条最终验收报告](fault_closure_report.md) · [执行记录](overnight_execution_plan.md) · [逐机制能力卡](overnight_fault_cards/)
+- [本轮模型适配矩阵](model_adaptation_matrix.md) · [CANN/硬件实际范围](cann_hardware_compatibility.md)
+- [共享Worker补充合同](worker_extension_contract.md) · [Provider规范](provider_contract.md) · [本轮证据索引](../experiments/overnight_20261116/README.md)
 - [17 个机制、宿主合同与三张审计面板](unified_fault_inventory.md#9171f3b-全局审计)
 - [现有接口和生产接线规划](unified_model_injection.md)
 - [Worker 附着契约](contracts/worker_extension_contract.md) · [蓝区扩展部署](worker_extension/deployment.md) · [实机验收](../experiments/worker_extension_20261116/README.md)

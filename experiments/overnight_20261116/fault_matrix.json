@@ -1,0 +1,1149 @@
+{
+  "schema": "demoncat.overnight.final_matrix.v1",
+  "baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "mechanisms": [
+    {
+      "mechanism": "8.restore_offset",
+      "implementation": "LEGACY_SOURCE_RECOVERED_NOT_INTEGRATED",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/8.restore_offset.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史Qwen3-VL TP2：48适用调用/rank、B/I/新进程R一致；当前库无可复用worker源码。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "torch_npu.npu_moe_token_unpermute(sorted_indices, probs) input boundary",
+      "cann": "历史Qwen3-VL MoE TP2、INT32 indices/BF16 hidden/probs、T>1完整prefill；新GLM/DeepSeek MoE及A3未验收。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "REUSABLE_BUNDLE_INCOMPLETE",
+        "REQUEST_MAPPING_UNPROVEN",
+        "COMMON_WORKER_PROVIDER_MISSING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "同步后释放临时tensor、owner核对卸载；不声称释放副本撤销故障请求状态。新请求/新缓存OFF对比完整token/logits。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "补齐fault8_extension/request_scope等依赖和可信scheduler契约；复用已有Worker身份/生命周期而非直接运行旧全局wrapper。",
+      "historical_native": {
+        "scope": "历史Qwen3-VL TP2：48适用调用/rank、B/I/新进程R一致；当前库无可复用worker源码。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "历史Qwen3-VL TP2：48适用调用/rank、B/I/新进程R一致；当前库无可复用worker源码。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "AUDITED",
+      "result": {
+        "level": "AUDITED",
+        "conclusion": "历史配对路由源码已找回；依赖和共享 Provider 未闭合，未在新 MoE 模型注入。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false,
+        "analysis_receipt": "legacy_source_audit.json"
+      }
+    },
+    {
+      "mechanism": "15.alias_detach",
+      "implementation": "IMPLEMENTED_PYTHON_BOUNDARY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/15.alias_detach.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "旧故障27目录实际属15；旧六次NZ机制证据不代表本轮统一入口或自然模型通过。",
+        "family_membership_grants_support": false,
+        "current_scope": "构造的 eval/inference_mode NPU 模块；无预训练模型/Serving 闭环"
+      },
+      "operator": "torch.as_strided construction → NPU format cast → copy_ → original-base consumer",
+      "cann": "CANN 8.5.1 / vLLM-Ascend v0.18.0 image / torch-npu 2.9.0.post1+gitee7ba04",
+      "soc": "124 physical card5 / Ascend910B4 / A2",
+      "gate": [
+        "NATURAL_MODEL_WRITE_CONSUMER_MISSING",
+        "NATIVE_INTERNAL_VIEW_UNOBSERVED",
+        "G9_ALIGNMENT_MISMATCH"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": {
+        "status": "INCOMPLETE_COMPARISON",
+        "steps": [
+          0,
+          1,
+          2
+        ],
+        "first_difference": null,
+        "report": "diagnostic15_summary.json"
+      },
+      "off": "PASS exact after session exit; fresh initial state, not rollback of a damaged request",
+      "coverage": {
+        "single_target": "VERIFIED_CONSTRUCTED_MODULE_ONLY",
+        "multi_target": "NOT_TESTED",
+        "every_match": "VERIFIED_FOUR_FORWARDS_IN_THIS_MODULE_ONLY",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "small bounded module",
+        "group_recovery": "OFF_OUTPUT_EXACT_IN_THIS_MODULE",
+        "common_worker_all_eligible": "NOT_QUALIFIED"
+      },
+      "next_action": "先补显式调用链对齐规则并独立审查；15 保留私有格式 null，寻找自然写入/消费者链；17/18 再接实际适用预训练模型，不扩大已验收范围。",
+      "historical_native": {
+        "scope": "旧故障27目录实际属15；旧六次NZ机制证据不代表本轮统一入口或自然模型通过。",
+        "levels": [
+          "NATIVE_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "旧故障27目录实际属15；旧六次NZ机制证据不代表本轮统一入口或自然模型通过。",
+      "native": "CONSTRUCTED_NPU_INFERENCE_MODULE B/F: PASS; 构造 NPU 模块 B/F/OFF 通过；视图写入正确，F 原 base 未更新，消费者读旧值。",
+      "current_level": "NATIVE_VERIFIED",
+      "result": {
+        "level": "NATIVE_VERIFIED",
+        "conclusion": "构造 NPU 模块 B/F/OFF 通过；视图写入正确，F 原 base 未更新，消费者读旧值。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false,
+        "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+        "execution_receipts": [
+          "/home/overnight-17-20261116/native15-a1/fault15_baseline",
+          "/home/overnight-17-20261116/native15-a1/fault15_fault"
+        ],
+        "native_receipt": "mechanism_receipts-a1.json",
+        "independent_report": "diagnostic15_summary.json",
+        "exact_off": true,
+        "steps": [
+          0,
+          1,
+          2
+        ],
+        "warmup_forwards": 1
+      }
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "implementation": "IMPLEMENTED_ARGUMENT_PROXY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/17.spatial_padding.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史固定视觉patch实验；当前重建入口只有CPU路径验收。",
+        "family_membership_grants_support": false,
+        "current_scope": "构造的 eval/inference_mode NPU 模块；无预训练模型/Serving 闭环"
+      },
+      "operator": "torch.nn.functional.conv3d padding argument",
+      "cann": "CANN 8.5.1 / vLLM-Ascend v0.18.0 image / torch-npu 2.9.0.post1+gitee7ba04",
+      "soc": "124 physical card5 / Ascend910B4 / A2",
+      "gate": [
+        "PRETRAINED_VISION_PATH_UNVERIFIED",
+        "G9_ALIGNMENT_MISMATCH"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": {
+        "status": "INCOMPLETE_COMPARISON",
+        "steps": [
+          0,
+          1,
+          2
+        ],
+        "first_difference": null,
+        "report": "diagnostic17_summary.json"
+      },
+      "off": "PASS exact after session exit; fresh initial state, not rollback of a damaged request",
+      "coverage": {
+        "single_target": "VERIFIED_CONSTRUCTED_MODULE_ONLY",
+        "multi_target": "NOT_TESTED",
+        "every_match": "VERIFIED_FOUR_FORWARDS_IN_THIS_MODULE_ONLY",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "small bounded module",
+        "group_recovery": "OFF_OUTPUT_EXACT_IN_THIS_MODULE",
+        "common_worker_all_eligible": "NOT_QUALIFIED"
+      },
+      "next_action": "先补显式调用链对齐规则并独立审查；15 保留私有格式 null，寻找自然写入/消费者链；17/18 再接实际适用预训练模型，不扩大已验收范围。",
+      "historical_native": {
+        "scope": "历史固定视觉patch实验；当前重建入口只有CPU路径验收。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "历史固定视觉patch实验；当前重建入口只有CPU路径验收。",
+      "native": "CONSTRUCTED_NPU_INFERENCE_MODULE B/F: PASS; 构造 NPU Conv3d B/F/OFF 通过；实际 padding 0,0,0→0,7,7，输出数值改变。",
+      "current_level": "NATIVE_VERIFIED",
+      "result": {
+        "level": "NATIVE_VERIFIED",
+        "conclusion": "构造 NPU Conv3d B/F/OFF 通过；实际 padding 0,0,0→0,7,7，输出数值改变。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false,
+        "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+        "execution_receipts": [
+          "/home/overnight-17-20261116/native17-a2/fault17_baseline",
+          "/home/overnight-17-20261116/native17-a2/fault17_fault"
+        ],
+        "native_receipt": "mechanism_receipts-a1.json",
+        "independent_report": "diagnostic17_summary.json",
+        "exact_off": true,
+        "steps": [
+          0,
+          1,
+          2
+        ],
+        "warmup_forwards": 1
+      }
+    },
+    {
+      "mechanism": "18.api_half",
+      "implementation": "IMPLEMENTED_RETURN_PROXY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/18.api_half.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史Qwen3-VL wrapper；新模块返回代理不继承旧native边界证据。",
+        "family_membership_grants_support": false,
+        "current_scope": "构造的 eval/inference_mode NPU 模块；无预训练模型/Serving 闭环"
+      },
+      "operator": "nn.RMSNorm module return",
+      "cann": "CANN 8.5.1 / vLLM-Ascend v0.18.0 image / torch-npu 2.9.0.post1+gitee7ba04",
+      "soc": "124 physical card5 / Ascend910B4 / A2",
+      "gate": [
+        "CUSTOM_RMSNORM_NOT_SUPPORTED",
+        "G9_ALIGNMENT_MISMATCH"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": {
+        "status": "INCOMPLETE_COMPARISON",
+        "steps": [
+          0,
+          1,
+          2
+        ],
+        "first_difference": null,
+        "report": "diagnostic18_summary.json"
+      },
+      "off": "PASS exact after session exit; fresh initial state, not rollback of a damaged request",
+      "coverage": {
+        "single_target": "VERIFIED_CONSTRUCTED_MODULE_ONLY",
+        "multi_target": "TWO_RMSNORM_MODULES_ONLY",
+        "every_match": "VERIFIED_FOUR_FORWARDS_IN_THIS_MODULE_ONLY",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "small bounded module",
+        "group_recovery": "OFF_OUTPUT_EXACT_IN_THIS_MODULE",
+        "common_worker_all_eligible": "NOT_QUALIFIED"
+      },
+      "next_action": "先补显式调用链对齐规则并独立审查；15 保留私有格式 null，寻找自然写入/消费者链；17/18 再接实际适用预训练模型，不扩大已验收范围。",
+      "historical_native": {
+        "scope": "历史Qwen3-VL wrapper；新模块返回代理不继承旧native边界证据。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "历史Qwen3-VL wrapper；新模块返回代理不继承旧native边界证据。",
+      "native": "CONSTRUCTED_NPU_INFERENCE_MODULE B/F: PASS; 两个标准 RMSNorm 自动选点，8/8 适用调用返回减半，OFF 精确恢复。",
+      "current_level": "NATIVE_VERIFIED",
+      "result": {
+        "level": "NATIVE_VERIFIED",
+        "conclusion": "两个标准 RMSNorm 自动选点，8/8 适用调用返回减半，OFF 精确恢复。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false,
+        "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+        "execution_receipts": [
+          "/home/overnight-17-20261116/native18-a1/fault18_baseline",
+          "/home/overnight-17-20261116/native18-fault-a3/fault18_fault"
+        ],
+        "native_receipt": "mechanism_receipts-a1.json",
+        "independent_report": "diagnostic18_summary.json",
+        "exact_off": true,
+        "steps": [
+          0,
+          1,
+          2
+        ],
+        "warmup_forwards": 1
+      }
+    },
+    {
+      "mechanism": "20.buffer_substitute",
+      "implementation": "IMPLEMENTED_TWO_OPERATOR_PATHS",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/20.buffer_substitute.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "9171f3b WeightNz Qwen3/SmolLM2：591/633调用、3step、OFF；旧QMM真实实验与新qualified桥分开。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "aclnnMatmulWeightNz(self) / aclnnQuantMatmulWeightNz(x1) at OpExecCache::Run",
+      "cann": "各自真实v17 ABI/CANN8.5.1构建与库指纹、设备、输入格式和storage边界；不能用WeightNz通过替代QMM。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "COMMON_WORKER_INJECTION_PENDING",
+        "QMM_NEW_BRIDGE_NPU_PENDING",
+        "CROSS_THREAD_ARM_RECHECK",
+        "TRUSTED_REPLAY_BINDING_MISSING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "Normal generation exact after refused register / unregister / detach; not fault OFF",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "在当前Worker验证可托管replay、原生scope线程、声明profile和两个API各自receipt；新family只通过实际API复用。",
+      "historical_native": {
+        "scope": "9171f3b WeightNz Qwen3/SmolLM2：591/633调用、3step、OFF；旧QMM真实实验与新qualified桥分开。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "9171f3b WeightNz Qwen3/SmolLM2：591/633调用、3step、OFF；旧QMM真实实验与新qualified桥分开。",
+      "native": "共享 Worker 隔离/恢复通过；WeightNz 未观测，QMM TP2 每 rank 观测 3 次，但跨轮稳定目标未成立。",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "共享 Worker 隔离/恢复通过；WeightNz 未观测，QMM TP2 每 rank 观测 3 次，但跨轮稳定目标未成立。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false,
+        "scope": "REAL_VLLM_WORKER_QUARANTINE_RECOVERY_AND_READONLY_DISCOVERY",
+        "execution_receipt": "worker_receipts-a2.json",
+        "trusted_replay_registered": false
+      }
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "implementation": "LEGACY_EVIDENCE_ONLY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/22.wrong_row.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "旧固定Qwen3-32B/TP2首次prefill每rank一次；input一致/IndexSelect output统计变化，新请求恢复。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "aten.index_select.default return before actual RoPE consumer",
+      "cann": "历史BF16 source40960x128、positions0..13、TP2/eager；源10MiB无法触发uint32字节偏移回绕。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "REUSABLE_SOURCE_MISSING",
+        "CACHE_CONSUMER_BINDING_MISSING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "sync/owner检查卸载；新请求新cache重建后token/logits精确恢复。旧错误请求状态不由disable撤销。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "查experiments/indexselect_wrong_source_row_proxy/source/quick_extension.py，SHA a9bb9cc575e8df871d0a7056b3ad9ef41a5014052d329cf9e23d128ed5defffb。",
+      "historical_native": {
+        "scope": "旧固定Qwen3-32B/TP2首次prefill每rank一次；input一致/IndexSelect output统计变化，新请求恢复。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "旧固定Qwen3-32B/TP2首次prefill每rank一次；input一致/IndexSelect output统计变化，新请求恢复。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "AUDITED",
+      "result": {
+        "level": "AUDITED",
+        "conclusion": "历史错误行代理证据已核对，未找到可重用源码本体；不能称为 uint32 溢出。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false,
+        "analysis_receipt": "legacy_source_audit.json"
+      }
+    },
+    {
+      "mechanism": "25.reduce_scatter",
+      "implementation": "DESIGN_ONLY_CPU_CONTRACT",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/25.reduce_scatter.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "None accepted",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "actual ReduceScatter communication boundary; HCCL/LCCL/NCCL API must first be observed",
+      "cann": "没有本机制已验收native库；实际group/backend/确定性选项必须观察。CPU三rank模拟不是124双卡通信实测。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "NATIVE_IMPLEMENTATION_MISSING",
+        "ACTUAL_GROUP_UNOBSERVED",
+        "SAME_INPUT_DELTA_SAMPLE_MISSING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "所有rank一致disarm并drain已发collective；不可单rank跳过collective。等待stream和临时缓冲回收，fresh request恢复；失败隔离整个group。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "从现有worker确认调用的是torch/HCCL还是ATB/LCCL；取得完整调用和group证明再实现对应typed adapter。",
+      "historical_native": {
+        "scope": "None accepted",
+        "levels": [],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "None accepted",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "补齐真实通信组/差值回放设计与 CPU 准入测试，尚无真实 collective 注入。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false
+      }
+    },
+    {
+      "mechanism": "26.residual_stomp",
+      "implementation": "IMPLEMENTED_NATIVE_WRITER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/26.residual_stomp.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "provider26-final-a2：45eligible writes/rank、pending0、OFF exact；rank0首差下游RoPE，rank1 step0 NaN不可比较。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "aclnnQuantMatmulWeightNz output-base before native execution",
+      "cann": "CANN8.5.1/custom AddRmsNormBias；真实相邻active block和padding≤budget；32B W8A8实际是Qwen架构distill。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "RANK1_FIRST_DIFF_NAN_BLOCKED",
+        "COMMON_WORKER_ADAPTER_PENDING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "output、padding、residual逐一精确恢复；pending必须0；消费者未执行不得卸载或继续复用worker。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "进一步观察写前destination的实际allocation/初始化生命周期；如需全新采集应保持原始记录并独立复核，不靠删除写前NaN通过。",
+      "historical_native": {
+        "scope": "provider26-final-a2：45eligible writes/rank、pending0、OFF exact；rank0首差下游RoPE，rank1 step0 NaN不可比较。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "provider26-final-a2：45eligible writes/rank、pending0、OFF exact；rank0首差下游RoPE，rank1 step0 NaN不可比较。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "保留历史推理闭环；NaN 位于写前目标统计，来源分配尚未证明，严格首差仍阻塞。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false,
+        "analysis_receipt": "fault26_nan_analysis.json"
+      }
+    },
+    {
+      "mechanism": "26.fia_destination",
+      "implementation": "IMPLEMENTED_NATIVE_WRITER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/26.fia_destination.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "provider26-final-a2：126/126completed/rank，首层无producer透传；4/8token/text改变；OFF exact。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "aclnnFusedInferAttentionScoreV3 output destination",
+      "cann": "CANN8.5.1/32B W8A8 TP2，output必须可放入独立live residual storage；不是自然OOB。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "COMMON_WORKER_ADAPTER_PENDING",
+        "OTHER_LAYOUTS_UNVERIFIED"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "consumer后恢复残差并核对copyback；pending0后移除hook，fresh input/cache OFF；未消费隔离worker。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "为共用Extension增加部署factory与trusted replay，保留真实consumer完成/恢复门禁。",
+      "historical_native": {
+        "scope": "provider26-final-a2：126/126completed/rank，首层无producer透传；4/8token/text改变；OFF exact。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "provider26-final-a2：126/126completed/rank，首层无producer透传；4/8token/text改变；OFF exact。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "保留历史真实推理 writer/consumer 证据；共享 Worker 宿主适配待接入。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false
+      }
+    },
+    {
+      "mechanism": "quant.batch_shared_scale",
+      "implementation": "IMPLEMENTED_NATIVE_TLS",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/quant.batch_shared_scale.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "quant-model-a2：每rank3命中；实际scheduler请求/token行映射及selected input一致；3step整批DynamicQuant output0 Max127→98不证明每请求scale/Q均变；6/8logprob变、token不变；OFF exact。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "aclnnDynamicQuantV2 native reduction descriptors and scale/Q outputs",
+      "cann": "CANN9.1、精确vLLM runner SHA、TP2/B8 pure decode、TLS owner；只选首个实际eligible模块。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "ALL_ELIGIBLE_MAPPING_UNVERIFIED",
+        "PER_REQUEST_SCALE_Q_IMPACT_UNPROVEN",
+        "COMMON_WORKER_ADAPTER_PENDING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "停止新arm、owner线程finish/context释放，重复相同decode OFF exact；异线程finish/disarm必须拒绝。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "核对已保存scheduler row映射、scale/Q逐行辅助证据；缺少则限定为全张量统计与请求输入映射已证。",
+      "historical_native": {
+        "scope": "quant-model-a2：每rank3命中；实际scheduler请求/token行映射及selected input一致；3step整批DynamicQuant output0 Max127→98不证明每请求scale/Q均变；6/8logprob变、token不变；OFF exact。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "quant-model-a2：每rank3命中；实际scheduler请求/token行映射及selected input一致；3step整批DynamicQuant output0 Max127→98不证明每请求scale/Q均变；6/8logprob变、token不变；OFF exact。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "保留历史 TP2 decode；全张量统计不证明每请求 scale/Q 改变，逐行影响证据不足。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false
+      }
+    },
+    {
+      "mechanism": "28.fa.legal_tiling",
+      "implementation": "IMPLEMENTED_STRATEGY_BRIDGE",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/28.fa.legal_tiling.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史FA固定shape机制矩阵；当前桥CPU验证不代表新共用Worker实机。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "FlashAttentionScore S1S2 native host policy / actual launch",
+      "cann": "证书绑定CANN9.1/910B4、B1/B8、Q16/KV8、S2048、D128、FP16及无dropout；不支持TND/复杂mask。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "MODEL_NATIVE_PROVIDER_NOT_WIRED",
+        "COMMON_WORKER_ADAPTER_PENDING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "撤销scope并重新运行原策略，对实际launch及完整输出确认恢复。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "从实际FA API观察构建NativeFAInvocation，只有证书覆盖形状能执行；不同FIA路径不能复用此通过状态。",
+      "historical_native": {
+        "scope": "历史FA固定shape机制矩阵；当前桥CPU验证不代表新共用Worker实机。",
+        "levels": [
+          "NATIVE_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "历史FA固定shape机制矩阵；当前桥CPU验证不代表新共用Worker实机。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "StrategySession CPU 回归通过；共享模型 forward 的原生 FA Provider 接线尚缺。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false
+      }
+    },
+    {
+      "mechanism": "28.fia.legal_tiling",
+      "implementation": "IMPLEMENTED_PINNED_ATTENTION_ADAPTER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/28.fia.legal_tiling.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史固定Qwen3合法切分实验；当前router仅CPU合同。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "FIA host coupled_base512 → coupled_m128 (healthy templates)",
+      "cann": "精确vendor SHA，FP16/B1或B8/Hq16/Hkv8/S2048/D128/causal；QK与V维度不同的MLA拒绝。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "NEW_ROUTER_NPU_PENDING",
+        "FIXED_GEOMETRY_ONLY",
+        "STATISTICAL_MAGNITUDE_TARGET_UNMET"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "恢复Attention注册及模型config；清除owned临时策略；重新建立同一cache/input再比B。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "用当前router在证书形状验证一次原生launch/恢复；新增形状须新增合法模板及独立证据。",
+      "historical_native": {
+        "scope": "历史固定Qwen3合法切分实验；当前router仅CPU合同。",
+        "levels": [
+          "NATIVE_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "历史固定Qwen3合法切分实验；当前router仅CPU合同。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "保留合法切分历史数值结果；新 router NPU 未验收，不能承诺统计幅度达标。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false
+      }
+    },
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "implementation": "IMPLEMENTED_PINNED_ATTENTION_ADAPTER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/28.fia.denominator_replay.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史完整Qwen3/B8/28层/3step首层FIA输出Norm0.7968%变化与OFF；新routerCPU通过不继承。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "FIA native online-softmax denominator accumulation",
+      "cann": "固定vendor/FP16/B1或B8/Hq16/Hkv8/S2048/D128/causal；历史Qwen28层，不声称任意GLM/MLA。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "NEW_ROUTER_NPU_PENDING",
+        "GENERALIZATION_UNVERIFIED"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "关闭replay并重建原scope，OFF完整输出精确、临时策略与hook均回收；出错隔离。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "取得匹配vendor源码/manifest并在新router单目标实测，再评估覆盖扩展；无matching build拒绝。",
+      "historical_native": {
+        "scope": "历史完整Qwen3/B8/28层/3step首层FIA输出Norm0.7968%变化与OFF；新routerCPU通过不继承。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "历史完整Qwen3/B8/28层/3step首层FIA输出Norm0.7968%变化与OFF；新routerCPU通过不继承。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "保留分母重复累计独立机制及历史完整模型证据；新 router 尚缺匹配构建实测。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false
+      }
+    },
+    {
+      "mechanism": "33.paged_decode",
+      "implementation": "IMPLEMENTED_NATIVE_PAGED_PROVIDER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/33.paged_decode.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "provider33-model-a2：84/84策略切换，logits maxabs0.02734375、Top1不变、OFF exact；first mean.3 Max .05369125679→.05369321257。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "paged IncreFlashAttention native host SInner / actual launch",
+      "cann": "固定CANN9.1审计bundle/B8/Q1/KV16384/H16/KV8/D128/FP16/page128；teacher decode。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "UNIQUE_FIRST_DIFF_AT_IFA_UNPROVEN",
+        "COMMON_WORKER_ADAPTER_PENDING",
+        "CONTINUOUS_GENERATION_UNVERIFIED"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "停策略并恢复同一pagedbackend原生参数；fresh cache clone OFF exact；退出route恢复原后端但不声称SDPA binary等价。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "先确认整张量统计为何FIA不可见或低阈值，再扩更多decode长度；持续生成需独立验收。",
+      "historical_native": {
+        "scope": "provider33-model-a2：84/84策略切换，logits maxabs0.02734375、Top1不变、OFF exact；first mean.3 Max .05369125679→.05369321257。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "provider33-model-a2：84/84策略切换，logits maxabs0.02734375、Top1不变、OFF exact；first mean.3 Max .05369125679→.05369321257。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "保留历史分页 decode；严格首差在后续统计，不能声称唯一定位 IFA，连续生成仍待测。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false
+      }
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "implementation": "IMPLEMENTED_NATIVE_AND_WORKER_BINDING",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/39.matmul_range.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "独立包四实际CANN算子通过；8.5.1 QwenTP1/TP2、9.1 QwenTP2通过。bfdd共用Worker只证明attach/拒绝/正常恢复。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "aclnnMatmul OpExecCache::Run temporary input addresses",
+      "cann": "独立ABI v1/Config368，BF16 ND/合法stride，精确header/library/profile；8.5.1/9.0/9.1/9.2分别构建。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "COMMON_WORKER_REAL_INJECTION_PENDING",
+        "ALL_ELIGIBLE_UNQUALIFIED",
+        "TRUSTED_REPLAY_BINDING_MISSING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "Normal generation exact after refused register / unregister / detach; not fault OFF",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "不能以mock回放或standalone旧TP2证据授予共用Worker闭环；实际调用和完整输出回执是门槛。",
+      "historical_native": {
+        "scope": "独立包四实际CANN算子通过；8.5.1 QwenTP1/TP2、9.1 QwenTP2通过。bfdd共用Worker只证明attach/拒绝/正常恢复。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "独立包四实际CANN算子通过；8.5.1 QwenTP1/TP2、9.1 QwenTP2通过。bfdd共用Worker只证明attach/拒绝/正常恢复。",
+      "native": "真实共享 Worker 的缺回放拒绝、隔离和恢复通过；缺可信 scheduler replay，未执行新注入。",
+      "current_level": "CPU_VERIFIED",
+      "result": {
+        "level": "CPU_VERIFIED",
+        "conclusion": "真实共享 Worker 的缺回放拒绝、隔离和恢复通过；缺可信 scheduler replay，未执行新注入。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false,
+        "scope": "REAL_VLLM_WORKER_QUARANTINE_RECOVERY_AND_READONLY_DISCOVERY",
+        "execution_receipt": "worker_receipts-a2.json",
+        "trusted_replay_registered": false
+      }
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "implementation": "LEGACY_NATIVE_IMPLEMENTATION_ONLY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/39.output_proxy.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "旧Qwen32B v19：prefix1/5/51/512 BF16非有限readback通过；不是当前共用Worker或新四版本通过。",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "post OpExecCache::Run synchronization / original output storage writeback",
+      "cann": "历史v19/CANN8.5.1/BF16[1,5120]/rank0/decode一次；独立Fault39 ABI没有这个模式，共用Worker必须拒绝。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "DEDICATED_HOST_CONTRACT_MISSING",
+        "NEW_WORKER_PROVIDER_MISSING",
+        "CURRENT_STORAGE_PROOF_MISSING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "同步disable并释放owner；output故障已传播不能靠改flag撤销，fresh request/cache恢复；强制失败隔离。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "增加专属Host合同和typed output观察者，再做单次无损writeback→故障→fresh-request OFF验证。",
+      "historical_native": {
+        "scope": "旧Qwen32B v19：prefix1/5/51/512 BF16非有限readback通过；不是当前共用Worker或新四版本通过。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "旧Qwen32B v19：prefix1/5/51/512 BF16非有限readback通过；不是当前共用Worker或新四版本通过。",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "AUDITED",
+      "result": {
+        "level": "AUDITED",
+        "conclusion": "与 matmul_range 分开登记；历史 native 代理存在，专属共享 Worker 合同仍缺。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false
+      }
+    },
+    {
+      "mechanism": "41.tail_column",
+      "implementation": "DESIGN_ONLY_DISPATCH_BLOCKED",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/41.tail_column.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "None accepted",
+        "family_membership_grants_support": false,
+        "current_scope": "六种实际 Transformers 小模型 CPU 结构/角色/透明前向；不是全部机制 NPU 验收"
+      },
+      "operator": "actual post-write cache tail boundary not yet intercepted",
+      "cann": "旧.so已加载但真实torch_npu/ATB dispatcher未被拦截；所有新CANN/SoC/provider组合未验。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "DISPATCHER_NOT_INTERCEPTED",
+        "CACHE_STORAGE_PROOF_MISSING",
+        "CONSUMER_MISSING",
+        "NATIVE_PROVIDER_MISSING"
+      ],
+      "cpu": {
+        "status": "PASS_EXECUTABLE_CPU_REGRESSION",
+        "suite_receipt": "cpu_final_receipt.json",
+        "suite_total": 445,
+        "scope": "Full suite; not 445 separate tests per mechanism"
+      },
+      "bf": "No new independent B/F pair for this mechanism",
+      "off": "停止新writer、等待consumer/stream、恢复完整tail并核对非目标cache；共享cache不可独立恢复时隔离worker。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "从实际wrapper/dispatcher观察合法cache写API，完成只读存储身份闭环后才能开发故障路径。",
+      "historical_native": {
+        "scope": "None accepted",
+        "levels": [],
+        "inherited_by_new_worker": false
+      },
+      "historical_model_scope": "None accepted",
+      "native": "No new fault injection; historical scope explicitly separate",
+      "current_level": "AUDITED",
+      "result": {
+        "level": "AUDITED",
+        "conclusion": "实际 dispatcher/cache writer/consumer 尚未闭合，保留拒绝与具体实施方案。",
+        "actual_pretrained_model_fault_closed": false,
+        "common_worker_fault_injection_verified": false,
+        "current_npu_fault_gate9_closed": false,
+        "raw_statistics_published": false,
+        "historical_acceptance_inherited": false
+      }
+    }
+  ],
+  "counts": {
+    "AUDITED": 4,
+    "NATIVE_VERIFIED": 3,
+    "CPU_VERIFIED": 10
+  },
+  "source_audited": 17,
+  "cpu_tests": 445,
+  "new_npu_mechanism_pairs": 3,
+  "new_pretrained_model_closed": 0,
+  "new_common_worker_fault_closed": 0,
+  "new_strict_independent_pairs_closed": 0,
+  "scope_note": "Historical MODEL_VERIFIED rows do not inherit current Worker acceptance"
+}
