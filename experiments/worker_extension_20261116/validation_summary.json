@@ -1,0 +1,538 @@
+{
+  "schema": "demoncat.worker_extension.summary.v1",
+  "source_commit": "236c359e85e9dbdef822818a257c98c0b6298998",
+  "root": "/home/worker-extension-20261116-a1-a3bb5996",
+  "attempts": {
+    "tp1-a1": {
+      "status": "FAILED",
+      "started": "2026-11-16T12:48:35.977023+00:00",
+      "finished": "2026-11-16T12:50:07.767984+00:00",
+      "source_manifest_sha256": "f9dda03550a83df3a55f02fa0720bbe102470dcb01a3a39c6b594f4536bada1c",
+      "wheel_sha256": "c6c4fbf54cacd63848fc79c1ece29cf1286e8ebfad992729f0fc87c82c6d5155",
+      "controller_sha256": "ad5f8ec14550046d4e67568871eac35f73010699cfd6b0d16ca8b3af17cf6bd0",
+      "cases": [
+        {
+          "name": "identity",
+          "cards": [
+            5
+          ],
+          "status": "FAILED",
+          "exit_code": 1,
+          "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+          "gate_idle": true,
+          "installed_preflight": null,
+          "result_sha256": "78ded155b8b913e07491087af0bd730678501ceb882f89e99a526016ab128bdb",
+          "result_status": "FAIL",
+          "error_type": "RuntimeError",
+          "failure": "CANN ACL module not importable after launcher replaced configured PYTHONPATH",
+          "versions": {
+            "demoncat-worker-extension": "0.1.0",
+            "vllm": "0.18.0+empty",
+            "vllm-ascend": "0.18.0",
+            "torch": "2.9.0+cpu",
+            "torch-npu": "2.9.0.post1+gitee7ba04"
+          },
+          "workers": []
+        }
+      ]
+    },
+    "tp1-a2": {
+      "status": "COMPLETED",
+      "started": "2026-11-16T12:51:22.993077+00:00",
+      "finished": "2026-11-16T13:00:55.846079+00:00",
+      "source_manifest_sha256": "bfbfa45e0675de7092282ad44c34cb9553552c208b9f98a451ed9dd4ebc9ee25",
+      "wheel_sha256": "69b589daaeba2bcbc968746f1520b5fc7efa97909b09162aa13751f6106c899b",
+      "controller_sha256": "49ca73b6cdfabeb887eda71e9506abc0f7a57a48a58e65bcc48e12ec47638303",
+      "cases": [
+        {
+          "name": "identity",
+          "cards": [
+            5
+          ],
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+          "gate_idle": true,
+          "installed_preflight": null,
+          "result_sha256": "9d04e5dd62d71304c56f07962eeaa22f7dd9ed8d38d527e18121421f8e8eab96",
+          "result_status": "PASS",
+          "versions": {
+            "demoncat-worker-extension": "0.1.0",
+            "vllm": "0.18.0+empty",
+            "vllm-ascend": "0.18.0",
+            "torch": "2.9.0+cpu",
+            "torch-npu": "2.9.0.post1+gitee7ba04"
+          },
+          "workers": [
+            {
+              "rank": 0,
+              "pid": 116,
+              "logical_device": 0,
+              "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+              "visible_devices": null
+            }
+          ],
+          "baseline": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "after": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "no_preload": {
+            "20.buffer_substitute": "NATIVE_PRELOAD_NOT_ATTACHED",
+            "39.matmul_range": "NATIVE_PRELOAD_NOT_ATTACHED"
+          },
+          "detach": "DETACHED"
+        },
+        {
+          "name": "fault20",
+          "cards": [
+            5
+          ],
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+          "gate_idle": true,
+          "installed_preflight": "INSTALLED_FILES_AND_ENV_MATCH_BUILD",
+          "result_sha256": "cb45035da5aba7331d68ae82caf153864dcbd0e5f73abcd3349fca853f43ad60",
+          "result_status": "PASS",
+          "versions": {
+            "demoncat-worker-extension": "0.1.0",
+            "vllm": "0.18.0+empty",
+            "vllm-ascend": "0.18.0",
+            "torch": "2.9.0+cpu",
+            "torch-npu": "2.9.0.post1+gitee7ba04"
+          },
+          "workers": [
+            {
+              "rank": 0,
+              "pid": 172,
+              "logical_device": 0,
+              "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+              "visible_devices": null
+            }
+          ],
+          "baseline": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "after": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "native_at_prepare": {
+            "native_loaded": true,
+            "native_registered": false,
+            "enabled": false,
+            "inflight": 0,
+            "leases": 0,
+            "build_profile_sha256": "2fd278ad333a5d37060fbfb017eabacfb95c8ba4f6796e796a89d2feb8c8eae1",
+            "operator": "aclnnMatmulWeightNz",
+            "observed_adapter_states": {
+              "aclnnMatmulWeightNz": {
+                "inflight": 0,
+                "leases": 0,
+                "native_owned": false,
+                "native_registered": false,
+                "recovery_required": false,
+                "runtime_matched": true
+              },
+              "aclnnQuantMatmulWeightNz": {
+                "inflight": 0,
+                "leases": 0,
+                "native_owned": false,
+                "native_registered": false,
+                "recovery_required": false,
+                "runtime_matched": true
+              }
+            }
+          },
+          "register_refusal": {
+            "status": "PROVIDER_ACTION_FAILED",
+            "provider_code": null
+          },
+          "detach": "DETACHED"
+        },
+        {
+          "name": "fault39",
+          "cards": [
+            5
+          ],
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+          "gate_idle": true,
+          "installed_preflight": "INSTALLED_FILES_AND_ENV_MATCH_BUILD",
+          "result_sha256": "e0901eba5070f4b467403ec17a7b6a157c1d57f6051ae40933e9ba82a2312e51",
+          "result_status": "PASS",
+          "versions": {
+            "demoncat-worker-extension": "0.1.0",
+            "vllm": "0.18.0+empty",
+            "vllm-ascend": "0.18.0",
+            "torch": "2.9.0+cpu",
+            "torch-npu": "2.9.0.post1+gitee7ba04"
+          },
+          "workers": [
+            {
+              "rank": 0,
+              "pid": 172,
+              "logical_device": 0,
+              "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+              "visible_devices": null
+            }
+          ],
+          "baseline": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "after": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "native_at_prepare": {
+            "native_loaded": true,
+            "native_registered": false,
+            "enabled": false,
+            "inflight": 0,
+            "leases": 0,
+            "build_profile_sha256": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+            "operator": null,
+            "runtime_identity": "MATCHED_BUILD"
+          },
+          "register_refusal": {
+            "status": "PROVIDER_ACTION_FAILED",
+            "provider_code": null
+          },
+          "detach": "DETACHED"
+        },
+        {
+          "name": "restart",
+          "cards": [
+            5
+          ],
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+          "gate_idle": true,
+          "installed_preflight": null,
+          "result_sha256": "05f709fdb6bcc80110482ea5b66ba76774d07a7523c8d94379a688d7b3806215",
+          "result_status": "PASS",
+          "versions": {
+            "demoncat-worker-extension": "0.1.0",
+            "vllm": "0.18.0+empty",
+            "vllm-ascend": "0.18.0",
+            "torch": "2.9.0+cpu",
+            "torch-npu": "2.9.0.post1+gitee7ba04"
+          },
+          "workers": [
+            {
+              "rank": 0,
+              "pid": 116,
+              "logical_device": 0,
+              "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+              "visible_devices": null
+            }
+          ],
+          "baseline": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "after": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "detach": "DETACHED",
+          "previous_attachment_rejection": {
+            "status": "REJECTED",
+            "reason": "WORKER_IDENTITY_MISMATCH"
+          },
+          "previous_owner_rejection": {
+            "status": "REJECTED",
+            "reason": "WORKER_IDENTITY_MISMATCH"
+          }
+        }
+      ]
+    },
+    "tp1-a3": {
+      "status": "COMPLETED",
+      "started": "2026-11-16T13:00:58.969653+00:00",
+      "finished": "2026-11-16T13:06:03.159108+00:00",
+      "source_manifest_sha256": "d9fa67221a9d3ae5db5d58cab4fa5b99254d691a308bf13a765eb0deff292965",
+      "wheel_sha256": "7c90b526c2461da32e983854abdf802d868cc9418224d876b23fbb185f8a01bf",
+      "controller_sha256": "b07cdbcc02c6409a940d0c606eb6f1b573677129e4103c9712d04a05c993db47",
+      "cases": [
+        {
+          "name": "fault20",
+          "cards": [
+            5
+          ],
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+          "gate_idle": true,
+          "installed_preflight": "INSTALLED_FILES_AND_ENV_MATCH_BUILD",
+          "result_sha256": "9b14a56a40b8d1285ebdeee12972a9d846ba816b7f52436af14b9fe33baf36e0",
+          "result_status": "PASS",
+          "versions": {
+            "demoncat-worker-extension": "0.1.0",
+            "vllm": "0.18.0+empty",
+            "vllm-ascend": "0.18.0",
+            "torch": "2.9.0+cpu",
+            "torch-npu": "2.9.0.post1+gitee7ba04"
+          },
+          "workers": [
+            {
+              "rank": 0,
+              "pid": 172,
+              "logical_device": 0,
+              "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+              "visible_devices": null
+            }
+          ],
+          "baseline": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "after": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "native_at_prepare": {
+            "native_loaded": true,
+            "native_registered": false,
+            "enabled": false,
+            "inflight": 0,
+            "leases": 0,
+            "build_profile_sha256": "2fd278ad333a5d37060fbfb017eabacfb95c8ba4f6796e796a89d2feb8c8eae1",
+            "operator": "aclnnMatmulWeightNz",
+            "observed_adapter_states": {
+              "aclnnMatmulWeightNz": {
+                "inflight": 0,
+                "leases": 0,
+                "native_owned": false,
+                "native_registered": false,
+                "recovery_required": false,
+                "runtime_matched": true
+              },
+              "aclnnQuantMatmulWeightNz": {
+                "inflight": 0,
+                "leases": 0,
+                "native_owned": false,
+                "native_registered": false,
+                "recovery_required": false,
+                "runtime_matched": true
+              }
+            }
+          },
+          "register_refusal": {
+            "status": "PROVIDER_ACTION_FAILED",
+            "provider_code": "FAULT20_TRUSTED_EXCLUSIVE_REPLAY_REQUIRED"
+          },
+          "detach": "DETACHED"
+        },
+        {
+          "name": "fault39",
+          "cards": [
+            5
+          ],
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+          "gate_idle": true,
+          "installed_preflight": "INSTALLED_FILES_AND_ENV_MATCH_BUILD",
+          "result_sha256": "e044ccbda32994404050f4b317f22dfb51c376be481cd586e238d0e36ac98dad",
+          "result_status": "PASS",
+          "versions": {
+            "demoncat-worker-extension": "0.1.0",
+            "vllm": "0.18.0+empty",
+            "vllm-ascend": "0.18.0",
+            "torch": "2.9.0+cpu",
+            "torch-npu": "2.9.0.post1+gitee7ba04"
+          },
+          "workers": [
+            {
+              "rank": 0,
+              "pid": 172,
+              "logical_device": 0,
+              "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+              "visible_devices": null
+            }
+          ],
+          "baseline": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "after": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "native_at_prepare": {
+            "native_loaded": true,
+            "native_registered": false,
+            "enabled": false,
+            "inflight": 0,
+            "leases": 0,
+            "build_profile_sha256": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+            "operator": null,
+            "runtime_identity": "MATCHED_BUILD"
+          },
+          "register_refusal": {
+            "status": "PROVIDER_ACTION_FAILED",
+            "provider_code": "FAULT39_TRUSTED_SCHEDULER_REPLAY_REQUIRED"
+          },
+          "detach": "DETACHED"
+        }
+      ]
+    },
+    "tp2-a3": {
+      "status": "COMPLETED",
+      "started": "2026-11-16T13:06:03.270736+00:00",
+      "finished": "2026-11-16T13:08:36.315017+00:00",
+      "source_manifest_sha256": "d9fa67221a9d3ae5db5d58cab4fa5b99254d691a308bf13a765eb0deff292965",
+      "wheel_sha256": "7c90b526c2461da32e983854abdf802d868cc9418224d876b23fbb185f8a01bf",
+      "controller_sha256": "8997d237dc0cea3a6f4d73c048405bc1c9c4f78a1bedee1f96f65c01e12afc0c",
+      "cases": [
+        {
+          "name": "identity",
+          "cards": [
+            2,
+            5
+          ],
+          "status": "COMPLETED",
+          "exit_code": 0,
+          "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+          "gate_idle": true,
+          "installed_preflight": null,
+          "result_sha256": "057a8d8de3f55fa5f2b83ae784779bee20ab36d8ccd4a41e6d6470a0ff8bb1f3",
+          "result_status": "PASS",
+          "versions": {
+            "demoncat-worker-extension": "0.1.0",
+            "vllm": "0.18.0+empty",
+            "vllm-ascend": "0.18.0",
+            "torch": "2.9.0+cpu",
+            "torch-npu": "2.9.0.post1+gitee7ba04"
+          },
+          "workers": [
+            {
+              "rank": 0,
+              "pid": 131,
+              "logical_device": 0,
+              "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+              "visible_devices": null
+            },
+            {
+              "rank": 1,
+              "pid": 132,
+              "logical_device": 1,
+              "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+              "visible_devices": null
+            }
+          ],
+          "baseline": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          },
+          "after": {
+            "prompt_tokens_sha256": "9ee874ffc7ef6f6382c038283d6bcb24d52acf8e26d784a16a2f3d58815b2e39",
+            "output_token_ids": [
+              12095,
+              13
+            ],
+            "finish_reason": "length"
+          }
+        }
+      ]
+    }
+  },
+  "fault20_sdk_build": {
+    "status": "PASS_CPU_BUILD_ONLY",
+    "npu_device_count": 0,
+    "source_manifest_sha256": "d9b03ec4d383592bb3cc675516e59cfe6405524498b7827ef537e51b361c6f2a",
+    "build_manifest_sha256": "f47552c5fd9c81d769661b6900a3b343dc29120ccfc0ce6ccc746d11d3184ce4",
+    "profile_sha256": "2fd278ad333a5d37060fbfb017eabacfb95c8ba4f6796e796a89d2feb8c8eae1",
+    "cann": "8.5.1",
+    "exports": [
+      "dcat20_weight_nz_state_v1",
+      "dcat20_qmm_state_v1"
+    ]
+  },
+  "acceptance": {
+    "blue_worker_attachment": "PASS",
+    "fault20_native_attachment": "PASS",
+    "fault39_native_attachment": "PASS",
+    "worker_restart_stale_tickets": "PASS",
+    "tp2_worker_rpc_identity": "PASS",
+    "fault20_qualified_serving_injection": "BLOCKED_TRUSTED_EXCLUSIVE_REPLAY",
+    "fault39_qualified_serving_injection": "BLOCKED_TRUSTED_SCHEDULER_REPLAY_AND_STORAGE_READBACK",
+    "post_injection_OFF_recovery": "NOT_EXECUTED",
+    "new_msprobe_capture": "NOT_EXECUTED",
+    "remaining_provider_bridges": "PENDING",
+    "yellow_serving_host": "PENDING"
+  },
+  "local_tests": {
+    "python_suites": {
+      "main": 226,
+      "native_execution_strategy": 69,
+      "fault39_core": 60,
+      "fault39_tools": 47
+    },
+    "linux_cpp_matmul_bridge": "PASS",
+    "linux_ctypes_both_fault20_operators": "PASS",
+    "standalone_wheel_import": "PASS"
+  },
+  "source_commit_scope": "All 68 files in source-a3 match this commit after LF canonicalization. Earlier attempts use their own source/wheel digests."
+}
