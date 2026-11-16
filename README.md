@@ -11,6 +11,10 @@
 
 蓝区可独立安装 `demoncat-worker-extension`，由 vLLM-Ascend 的 `--worker-extension-cls` 加载到已有 Worker。共用入口管理 Worker 身份、附着、Provider 分发和原生状态查询。Fault20 WeightNz／QMM 与 Fault39 MatMul 分别沿用已有的原生实现和单点资格门禁。[接入与部署](docs/worker_extension/deployment.md) · [124 验收记录](experiments/worker_extension_20261116/README.md)
 
+124 在 vLLM-Ascend 0.18.0、CANN 8.5.1 和 Qwen3-0.6B BF16 eager 下通过了 Worker 附着验收。TP1 验证了 Fault20／Fault39 预加载后的原生空闲状态、缺少可信回放时的注册拒绝，以及解除附着后的生成一致性。TP2 验证了两个 Worker 的 rank、逻辑卡和正常生成。Worker 重建后，旧租户和旧 owner 票据均失效。
+
+共用入口的实际故障命中、注入后的 OFF 恢复和新 msprobe B/F 取证仍待验收。本次 GitHub 提交包含实现、测试、总结和校验清单，已有原始统计与原始运行回执留在 124。[验收总结](experiments/worker_extension_20261116/validation_summary.json) · [SHA-256 校验清单](experiments/worker_extension_20261116/SHA256SUMS)
+
 已有 `attach` 和 `ModelFaultBackend` 入口。显式登记合格 Worker Provider 后，Fault20 可走新的单目标回放门禁。Fault39 保留独立 ABI v1，并提供可选宿主资格适配。覆盖资格可在 CPU 核对完整目标集、两种分母、租约和恢复；真实执行按已有单点门禁和各机制发布范围。生产状态与已发布实机证据见实验记录。
 
 - [5条部署 provider 与 Fault39 8.x/9.x 本轮实机总结](experiments/provider_adaptation_20261116/README.md)：
@@ -20,8 +24,7 @@
 - [Fault39 独立原生接入及124实测](fault39/README.md)：保留两种真实架构、TP2及B/F证据，
   不与旧 `39.output_proxy` 混用。
 
-蓝区没有当前内源 `src/demoncat`。上述宿主契约仍标记
-`INNER_FRAMEWORK_INTEGRATION_PENDING`；不是对黄区 CLI/catalog/bindings 已经修改的声明。
+黄区现役内源 `src/demoncat` 和 CLI、catalog、bindings 的接线仍待验证，宿主契约保留 `INNER_FRAMEWORK_INTEGRATION_PENDING`。
 
 ## 已验证能力
 

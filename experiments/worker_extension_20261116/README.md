@@ -33,6 +33,14 @@ Worker 预加载由启动环境管理。两个验证包分别代理 `libopapi.so
 
 两种有预加载的用例分别运行于新容器，实际返回 `native_registered=false`、`enabled=false`、`inflight=0`、`leases=0`。无预加载、准备后和解除附着后的同一输入生成结果一致。最初启动用例因启动器丢失 CANN 的 Python 搜索路径失败。保留 toolkit 原路径后重试通过。[回执摘要及校验](validation_summary.json)
 
+## 发布与校验
+
+本次分支增量包含实现、测试、文档和验收摘要。已有原始统计及本轮原始运行回执留在 124。`validation_summary.json` 记录实机回执、构建和 wheel 的 SHA-256。发布文件可以从仓库根目录校验。[本次发布文件校验清单](SHA256SUMS)
+
+```sh
+sha256sum -c experiments/worker_extension_20261116/SHA256SUMS
+```
+
 ## 故障执行缺口
 
 目标版本的 `collective_rpc` 调用已有 Worker 方法，真实 `SchedulerOutput` 通过原有执行路径进入 Worker。普通控制 RPC 缺少真实请求范围。Fault20 还需要完整模型输出和原生输入保护回执，Fault39 需要在同一模型线程关联实际调度请求并独立读取原始 `self`／`mat2` 存储。缺少这些宿主能力时，当前接口验证拒绝注册。两条机制通过共用扩展的实际故障命中、注入后 OFF 恢复与重新取证均待验收。既有独立实验证据按原版本与调用链保留。[vLLM 调度执行顺序](https://github.com/vllm-project/vllm/blob/v0.18.0/vllm/v1/engine/core.py#L345-L372) · [Worker RPC 接口](https://github.com/vllm-project/vllm/blob/v0.18.0/vllm/entrypoints/llm.py#L594-L632)
