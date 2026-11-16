@@ -86,14 +86,17 @@ class NativeBackend:
             self._state = "REGISTERED"
             return self.query()
 
-    def _arm(self, mode):
+    def _arm(self, mode, *, input_mask=None):
         if self._uncertain_ranks or self.generations and self._state != "DISABLED_CONFIRMED":
             raise RuntimeError("DISABLE_REQUIRED_BEFORE_REENABLE")
         try:
             for rank, worker in self._selected().items():
                 self._uncertain_ranks.add(rank)
-                generation = worker.provider.configure(self.owner, self.config, rank, worker.device,
-                    mode=mode, target_signature=self.targets.get(rank, ""))
+                options = dict(mode=mode, target_signature=self.targets.get(rank, ""))
+                if input_mask is not None:
+                    options["input_mask"] = input_mask
+                generation = worker.provider.configure(
+                    self.owner, self.config, rank, worker.device, **options)
                 self.generations[rank] = generation
                 self._uncertain_ranks.discard(rank)
             self._state = "DISCOVERING" if mode == "discover" else "ARMED"

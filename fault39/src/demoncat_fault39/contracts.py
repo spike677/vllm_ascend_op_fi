@@ -32,19 +32,45 @@ def integration_manifest():
 
 
 class DocumentContractAdapter:
-    def __init__(self, host: HostContract, owner="fault39.contract.adapter"):
+    def __init__(self, host: HostContract, owner="fault39.contract.adapter", *, qualified=False):
         if getattr(host, "api", None) != HOST_API:
             raise ValueError("EXPLICIT_HOST_CONTRACT_REQUIRED")
         self.host, self.owner = host, owner
         self.installed = False
+        self._qualified = qualified
+        self._generation = 0
+        self._backends = []
+
+    def _qualified_factory(self):
+        from .host_qualification import QualifiedFault39Backend
+
+        generation = self._generation
+
+        def active():
+            return self.installed and generation == self._generation
+
+        def create(workers, **binding):
+            if not active():
+                raise RuntimeError("FAULT39_BINDING_NOT_ACTIVE")
+            backend = QualifiedFault39Backend(workers, binding_active=active, **binding)
+            self._backends.append(backend)
+            return backend
+
+        return create
 
     def install(self):
         if self.installed:
             raise RuntimeError("ADAPTER_ALREADY_INSTALLED")
         manifest = integration_manifest()
+        self._generation += 1
+        factory = NativeBackend
+        if self._qualified:
+            factory = self._qualified_factory()
+            manifest["backend"] = "demoncat_fault39.host_qualification.QualifiedFault39Backend"
+            manifest["qualification"] = "SCOPED_SINGLE_WORKER_LOSSLESS"
         self.host.catalog_register_primitive(self.owner, manifest)
         try:
-            self.host.binding_register(self.owner, manifest, NativeBackend)
+            self.host.binding_register(self.owner, manifest, factory)
         except Exception:
             self.host.catalog_unregister_primitive(self.owner, PRIMITIVE)
             raise
@@ -53,7 +79,12 @@ class DocumentContractAdapter:
 
     def uninstall(self):
         if self.installed:
+            for backend in self._backends:
+                state = backend.query()
+                if state["config"] is not None or state["generations"] or state["uncertain_workers"]:
+                    raise RuntimeError("OWNED_BACKEND_CLEAN_REQUIRED")
             self.host.binding_unregister(self.owner, "fault39.native.matmul")
             self.host.catalog_unregister_primitive(self.owner, PRIMITIVE)
             self.installed = False
+            self._backends.clear()
         return {"status": INTEGRATION_STATUS, "contract_adapter_removed": True}
