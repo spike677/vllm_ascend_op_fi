@@ -18,6 +18,7 @@ _SYMBOLS = {
     'aclnnMatmulWeightNz': 'dcat20_weight_nz_',
 }
 _MECHANISM = '20.buffer_substitute'
+_INSTALLED, _INFLIGHT, _QUARANTINED, _OWNED, _MATCHED = 1, 2, 4, 8, 16
 _REQUIRED_BUNDLE = frozenset({
     'libnnopbase.so', 'libascendcl.so', 'libdcat20_qmm.so',
     'libopapi.so', 'libopapi_nn.so', 'libopapi_real.so', 'libopapi_nn_real.so',
@@ -64,6 +65,30 @@ class CtypesMatmulRuntime:
         self.evidence_dir = Path(evidence_dir)
         self._pending = self._callback = None
         self.last_error = None
+
+    def snapshot(self):
+        """Query both native bridges, including any callback owned elsewhere."""
+        states = {}
+        for operator, prefix in _SYMBOLS.items():
+            try:
+                state = getattr(self._library, prefix + 'state_v1')
+            except AttributeError as exc:
+                raise UnsupportedCall('NATIVE_STATE_UNAVAILABLE: Fault20 state ABI not preloaded') from exc
+            state.argtypes, state.restype = [ctypes.c_void_p], ctypes.c_uint32
+            requester = ctypes.cast(self._callback, ctypes.c_void_p) if operator == self.operator else None
+            flags = state(requester)
+            if (flags & ~(_INSTALLED | _INFLIGHT | _QUARANTINED | _OWNED | _MATCHED)
+                    or flags & (_INFLIGHT | _OWNED) and not flags & _INSTALLED):
+                raise UnsupportedCall('NATIVE_STATE_UNAVAILABLE: invalid Fault20 state flags')
+            states[operator] = {
+                'native_registered': bool(flags & _INSTALLED),
+                'native_owned': bool(flags & _OWNED),
+                'runtime_matched': bool(flags & _MATCHED),
+                'inflight': int(bool(flags & _INFLIGHT)),
+                'recovery_required': bool(flags & _QUARANTINED),
+                'leases': int(bool(flags & (_INFLIGHT | _QUARANTINED))),
+            }
+        return states
 
     def _proofs(self, call_id, owner, packet, directory):
         rows = {
@@ -163,7 +188,7 @@ class CtypesMatmulRuntime:
 
 
 def register_worker_matmul(mechanism, *, worker_identity, replay, profiles, evidence_dir,
-                           first_live_validation=False):
+                           first_live_validation=False, reserve_worker=None):
     """Deployment wiring. Worker RPC and replay are supplied by the actual runner."""
     if mechanism != _MECHANISM or not callable(worker_identity):
         raise ValueError('Expected Fault20 and a real worker identity reader')
@@ -181,6 +206,16 @@ def register_worker_matmul(mechanism, *, worker_identity, replay, profiles, evid
         if worker.pop('model', None) is not model:
             raise UnsupportedCall('Worker identity is not bound to the loaded model object')
         return CtypesMatmulRuntime(mechanism, worker, evidence_dir, operator=operator)
+
+    if reserve_worker is not None:
+        if not callable(reserve_worker) or not callable(replay):
+            raise ValueError('Worker reservation and replay must be trusted callables')
+        invoke = replay
+
+        def replay(model):
+            return invoke(model)
+
+        replay.reserve_worker = reserve_worker
 
     register_runtime(mechanism, factory, observer_factory=factory, profiles=profiles, replay=replay,
                      first_live_validation=first_live_validation)

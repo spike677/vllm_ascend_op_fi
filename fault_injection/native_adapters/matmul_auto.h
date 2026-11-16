@@ -10,6 +10,10 @@
 
 namespace dcat_matmul {
 enum Arm : uint32_t { original = 0, reference = 1, lossless = 2, fault = 3 };
+enum StateFlag : uint32_t {
+    callback_installed = 1, call_inflight = 2, recovery_required = 4,
+    callback_owned = 8, runtime_matched = 16,
+};
 constexpr uint64_t byte_limit = 512ULL * 1024 * 1024;
 using Callback = uint32_t (*)(uint64_t, const char*);
 using Run = std::function<uint32_t(const std::vector<void*>&)>;
@@ -259,6 +263,16 @@ public:
     bool owned() {
         std::lock_guard<std::mutex> guard(control_);
         return callback_ != nullptr;
+    }
+
+    uint32_t state(Callback requester) {
+        std::lock_guard<std::mutex> guard(control_);
+        uint32_t flags = 0;
+        if (callback_) flags |= callback_installed;
+        if (flight_) flags |= call_inflight;
+        if (quarantined_) flags |= recovery_required;
+        if (requester && requester == callback_) flags |= callback_owned;
+        return flags;
     }
 
     bool on_owner() {

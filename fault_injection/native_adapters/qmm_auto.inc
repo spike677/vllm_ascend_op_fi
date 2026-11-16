@@ -17,7 +17,7 @@ struct AutoAcl {
 
 AutoAcl auto_acl;
 
-bool resolve_auto_acl() {
+bool resolve_auto_acl(bool install = true) {
     pthread_once(&g_resolve_once, resolve_real);
     if (!g_abi_ok || !g_developer_mode_ok) return false;
     for (void* symbol : {reinterpret_cast<void*>(g_real_run), reinterpret_cast<void*>(g_real_add),
@@ -39,7 +39,7 @@ bool resolve_auto_acl() {
         && bind(verified.host_release, "aclrtFreeHost") && bind(verified.copy, "aclrtMemcpy")
         && bind(verified.sync, "aclrtSynchronizeStream");
     dlclose(handle);
-    if (ok) auto_acl = verified;
+    if (ok && install) auto_acl = verified;
     return ok;
 }
 
@@ -209,6 +209,12 @@ int install_auto_bridge(dcat_matmul::Bridge& bridge, dcat_matmul::Callback callb
         || qmm_auto.owned() || weight_nz_auto.owned() || !resolve_auto_acl()) return 1;
     return bridge.install(callback);
 }
+
+uint32_t auto_bridge_state(dcat_matmul::Bridge& bridge, dcat_matmul::Callback requester) {
+    const char* task_queue = std::getenv("TASK_QUEUE_ENABLE");
+    const bool matched = task_queue && !std::strcmp(task_queue, "0") && resolve_auto_acl(false);
+    return bridge.state(requester) | (matched ? dcat_matmul::runtime_matched : 0);
+}
 }
 
 extern "C" int dcat20_qmm_install_v1(dcat_matmul::Callback callback, int32_t rank) {
@@ -218,6 +224,9 @@ extern "C" int dcat20_qmm_remove_v1(dcat_matmul::Callback callback) { return qmm
 extern "C" uint32_t dcat20_qmm_invoke_v1(uint64_t token, uint32_t arm) { return qmm_auto.invoke(token, arm); }
 extern "C" const char* dcat20_qmm_receipt_v1(uint64_t token) { return qmm_auto.receipt(token); }
 extern "C" const char* dcat20_qmm_profile_v1() { return f39profile::id; }
+extern "C" uint32_t dcat20_qmm_state_v1(dcat_matmul::Callback requester) {
+    return auto_bridge_state(qmm_auto, requester);
+}
 
 extern "C" int dcat20_weight_nz_install_v1(dcat_matmul::Callback callback, int32_t rank) {
     return install_auto_bridge(weight_nz_auto, callback, rank);
@@ -227,3 +236,6 @@ extern "C" uint32_t dcat20_weight_nz_invoke_v1(uint64_t token, uint32_t arm) {
     return weight_nz_auto.invoke(token, arm);
 }
 extern "C" const char* dcat20_weight_nz_receipt_v1(uint64_t token) { return weight_nz_auto.receipt(token); }
+extern "C" uint32_t dcat20_weight_nz_state_v1(dcat_matmul::Callback requester) {
+    return auto_bridge_state(weight_nz_auto, requester);
+}

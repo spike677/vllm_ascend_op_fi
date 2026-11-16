@@ -32,7 +32,10 @@ for base in opapi opapi_nn; do
       -L"$output/real" -Wl,--no-as-needed "-l:lib${base}_real.so" "-Wl,-soname,lib${base}.so" \
       -Wl,-rpath,'$ORIGIN/real:/native/real' -ldl -lpthread -o "$output/lib${base}.so"
 done
-nm -D "$output/libdcat20_qmm.so" | grep -E 'dcat20_qmm_(install|remove|invoke|receipt|profile)_v1'
-nm -D "$output/libdcat20_qmm.so" | grep -E 'dcat20_weight_nz_(install|remove|invoke|receipt)_v1'
+nm -D "$output/libdcat20_qmm.so" | grep -E 'dcat20_qmm_(install|remove|invoke|receipt|profile|state)_v1'
+nm -D "$output/libdcat20_qmm.so" | grep -E 'dcat20_weight_nz_(install|remove|invoke|receipt|state)_v1'
+for prefix in dcat20_qmm dcat20_weight_nz; do
+    nm -D "$output/libdcat20_qmm.so" | grep -E "[[:space:]]${prefix}_state_v1$"
+done
 python3 "$native/test_identity.py" --output "$output/identity_tests.json"
 python3 "$root/fault39/tools/deployment_profile.py" --native "$output" --write-manifest

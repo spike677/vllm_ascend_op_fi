@@ -29,12 +29,18 @@ extern "C" int dcat20_qmm_install_v1(Callback callback, int32_t) { return bridge
 extern "C" int dcat20_qmm_remove_v1(Callback callback) { return bridge.remove(callback); }
 extern "C" uint32_t dcat20_qmm_invoke_v1(uint64_t token, uint32_t arm) { return bridge.invoke(token, arm); }
 extern "C" const char* dcat20_qmm_receipt_v1(uint64_t token) { return bridge.receipt(token); }
+extern "C" uint32_t dcat20_qmm_state_v1(Callback requester) {
+    return bridge.state(requester) | runtime_matched;
+}
 extern "C" int dcat20_weight_nz_install_v1(Callback callback, int32_t) { return weight_nz_bridge.install(callback); }
 extern "C" int dcat20_weight_nz_remove_v1(Callback callback) { return weight_nz_bridge.remove(callback); }
 extern "C" uint32_t dcat20_weight_nz_invoke_v1(uint64_t token, uint32_t arm) {
     return weight_nz_bridge.invoke(token, arm);
 }
 extern "C" const char* dcat20_weight_nz_receipt_v1(uint64_t token) { return weight_nz_bridge.receipt(token); }
+extern "C" uint32_t dcat20_weight_nz_state_v1(Callback requester) {
+    return weight_nz_bridge.state(requester) | runtime_matched;
+}
 
 int fixture_qmm_run_for_generation(uint64_t generation, int8_t first = 37, int* run_calls = nullptr) {
     int8_t x[]{first, -39};
@@ -107,8 +113,10 @@ bool other_thread = false;
 
 uint32_t callback(uint64_t token, const char* packet) {
     assert(std::strstr(packet, "\"operator\":\"aclnnQuantMatmulWeightNz\""));
+    assert(bridge.state(callback) == (callback_installed | call_inflight | callback_owned));
     if (other_thread) {
         std::thread foreign([&] {
+            assert(bridge.state(nullptr) == (callback_installed | call_inflight));
             assert(bridge.invoke(token, fault) != 0);
             assert(fixture_qmm_run() == -80);
         });
@@ -128,7 +136,10 @@ uint32_t callback(uint64_t token, const char* packet) {
 
 int main() {
     const int baseline = fixture_qmm_run();
+    assert(bridge.state(callback) == 0);
     assert(bridge.install(callback) == 0);
+    assert(bridge.state(callback) == (callback_installed | callback_owned));
+    assert(weight_nz_bridge.state(callback) == 0);
     assert(bridge.install(callback) != 0);
     refused = true;
     expected_arm = fault;
@@ -150,6 +161,7 @@ int main() {
     assert(fixture_qmm_run() == 9999);
     retry = false;
     assert(bridge.remove(callback) == 0);
+    assert(bridge.state(callback) == 0);
     assert(fixture_qmm_run() == baseline);
     assert(bridge.install(callback) == 0);
     for (auto arm : {reference, lossless, reference}) {
@@ -234,6 +246,7 @@ int main() {
         audit.resources_released = false;
         return 1;
     }) != 0);
+    assert(quarantined.state(nullptr) == (callback_installed | recovery_required));
     assert(quarantined.remove(callback_with_failure) != 0);
     std::cout << "PASS local C++ callback, lossless, substitutions, OFF and slot rejection\n";
 }

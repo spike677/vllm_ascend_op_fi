@@ -25,12 +25,16 @@ def verify(operator, symbol, formal):
         worker = dict(pid=os.getpid(), rank=0, logical_device=0, tp=1,
                       execution_mode='eager', soc='host_memory_fixture')
         runtime = CtypesMatmulRuntime(mechanism, worker, directory, operator=operator)
+        assert all(not row['native_registered'] and row['runtime_matched']
+                   for row in runtime.snapshot().values())
         module = object()
         receipts = []
         arms = iter([(1, 'reference'), (2, 'lossless'), (1, 'reference'), (3, 'fault')])
 
         def callback(call, original):
             assert call.owner is module
+            active = runtime.snapshot()[operator]
+            assert active['native_owned'] and active['inflight'] == 1 and active['leases'] == 1
             _, kinds = _read_proofs(call, mechanism)
             facts = native_facts(kinds['runtime_call'], kinds.keys(), mechanism)
             assert facts['build_profile_sha256'] == runtime.build_profile
@@ -40,6 +44,8 @@ def verify(operator, symbol, formal):
             receipts.append(_validate_receipt(receipt, stage, operator, 2))
 
         remove = runtime.install_observer(callback, [('fixture', module, [])], mechanism)
+        active = runtime.snapshot()[operator]
+        assert active['native_owned'] and active['native_registered'] and active['inflight'] == 0
         assert run() == baseline  # outside actual scope
         token = _STACK.set(((0, module, 0),))
         try:
@@ -50,6 +56,8 @@ def verify(operator, symbol, formal):
         finally:
             _STACK.reset(token)
             remove()
+        assert all(not row['native_registered'] and row['leases'] == 0
+                   for row in runtime.snapshot().values())
         assert run() == baseline and runtime.last_error is None
         assert receipts[0]['output_sha256'] == receipts[1]['output_sha256']
         assert receipts[2]['output_sha256'] == receipts[0]['output_sha256']
