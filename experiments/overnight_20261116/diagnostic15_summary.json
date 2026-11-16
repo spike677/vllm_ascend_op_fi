@@ -1,0 +1,1558 @@
+{
+  "schema_version": 1,
+  "purpose": "RAW_STATISTICS_ALIGNMENT_DIAGNOSIS_ONLY",
+  "source": "RAW_MSPROBE_STATISTICS_MIX",
+  "native_logs_read": false,
+  "tensor_payloads_read": false,
+  "generated_responses_read": false,
+  "comparison_policy": {
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "rule": "abs(F-B) > atol + rtol*abs(B)"
+  },
+  "diagnostic_source_sha256": "8d8a6d426be903361f3d8e36d162adf3cff4f2f86504e04ba82a7ab13ed0d028",
+  "strict_comparator_sha256": {
+    "compare_msprobe.py": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+    "compare_model_capture.py": "8404ce2214e190556f953a70e28c7d30365ab082d36601a36a2ecd062417f6f8"
+  },
+  "strict_original_result": {
+    "schema_version": 1,
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "generated_responses_read": false,
+    "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+    "rank": 0,
+    "step_semantics": "Actual collector steps in numeric order; not inferred token numbers",
+    "comparison_policy": {
+      "rtol": 1e-05,
+      "atol": 1e-08,
+      "rule": "abs(F-B) > atol + rtol*abs(B)"
+    },
+    "limitations": [
+      "Null statistics remain unobservable; equality of hidden values is not established.",
+      "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+      "Step numbers and matching stacks do not independently prove request identity.",
+      "Statistical first difference does not uniquely establish a physical fault mechanism."
+    ],
+    "steps": [
+      {
+        "step": 0,
+        "relative_path": "observation/step0/rank0",
+        "report": {
+          "baseline": {
+            "dump.json": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+            "stack.json": "dc1c99126a5b8550329992f52cd7e7cf06bda27d0e636cd4302b84771a9263cb",
+            "construct.json": "c019f8c6fcfeb8c5bbc2a9a7baf834d03ab18e9b0e0465c86c5e6d64cee76dc0"
+          },
+          "fault": {
+            "dump.json": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+            "stack.json": "5bc01e288504694f240a3b5facea552409aee3c813d533d537013d9d1aa4ad89",
+            "construct.json": "dcd5e859911cd4d0c18bfb6f02d7f25bc7d5d11a570de62e06f817bfab97c6d3"
+          },
+          "source": "RAW_MSPROBE_STATISTICS_MIX",
+          "native_logs_read": false,
+          "private_tensors_read": false,
+          "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "status": "ALIGNMENT_MISMATCH",
+          "mismatched": "structure"
+        },
+        "status": "ALIGNMENT_MISMATCH"
+      },
+      {
+        "step": 1,
+        "relative_path": "observation/step1/rank0",
+        "report": {
+          "baseline": {
+            "dump.json": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+            "stack.json": "dc1c99126a5b8550329992f52cd7e7cf06bda27d0e636cd4302b84771a9263cb",
+            "construct.json": "c019f8c6fcfeb8c5bbc2a9a7baf834d03ab18e9b0e0465c86c5e6d64cee76dc0"
+          },
+          "fault": {
+            "dump.json": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+            "stack.json": "5bc01e288504694f240a3b5facea552409aee3c813d533d537013d9d1aa4ad89",
+            "construct.json": "dcd5e859911cd4d0c18bfb6f02d7f25bc7d5d11a570de62e06f817bfab97c6d3"
+          },
+          "source": "RAW_MSPROBE_STATISTICS_MIX",
+          "native_logs_read": false,
+          "private_tensors_read": false,
+          "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "status": "ALIGNMENT_MISMATCH",
+          "mismatched": "structure"
+        },
+        "status": "ALIGNMENT_MISMATCH"
+      },
+      {
+        "step": 2,
+        "relative_path": "observation/step2/rank0",
+        "report": {
+          "baseline": {
+            "dump.json": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+            "stack.json": "dc1c99126a5b8550329992f52cd7e7cf06bda27d0e636cd4302b84771a9263cb",
+            "construct.json": "c019f8c6fcfeb8c5bbc2a9a7baf834d03ab18e9b0e0465c86c5e6d64cee76dc0"
+          },
+          "fault": {
+            "dump.json": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+            "stack.json": "5bc01e288504694f240a3b5facea552409aee3c813d533d537013d9d1aa4ad89",
+            "construct.json": "dcd5e859911cd4d0c18bfb6f02d7f25bc7d5d11a570de62e06f817bfab97c6d3"
+          },
+          "source": "RAW_MSPROBE_STATISTICS_MIX",
+          "native_logs_read": false,
+          "private_tensors_read": false,
+          "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "status": "ALIGNMENT_MISMATCH",
+          "mismatched": "structure"
+        },
+        "status": "ALIGNMENT_MISMATCH"
+      }
+    ],
+    "first_difference": null,
+    "blocking_steps": [
+      0,
+      1,
+      2
+    ],
+    "baseline_steps": [
+      0,
+      1,
+      2
+    ],
+    "fault_steps": [
+      0,
+      1,
+      2
+    ],
+    "missing_from_baseline": [],
+    "missing_from_fault": [],
+    "all_steps_aligned": false,
+    "status": "INCOMPLETE_COMPARISON"
+  },
+  "strict_acceptance_overridden": false,
+  "global_first_difference": null,
+  "status": "DIAGNOSTICS_ONLY_STRICT_ALIGNMENT_RETAINED",
+  "limitations": [
+    "Pairing preserves exact operator IDs, non-statistical metadata, resolved stacks and construct entries; it is not a sequence realignment acceptance gate.",
+    "Unpaired APIs, changed scalar arguments and missing context remain explicit; they are not filtered out.",
+    "Common-ID local statistics do not prove globally earliest change when other records are unpaired.",
+    "Equal observable Max/Min/Mean/Norm do not prove tensor equality; null is never counted as equality.",
+    "Null construct entries do not independently establish tensor aliasing or producer-consumer identity.",
+    "Raw stack source lines are evidence from the collector, not separately read injector code or hit logs.",
+    "Actual collector steps are not inferred decode tokens; no request identity is inferred."
+  ],
+  "summary_only": true,
+  "steps": [
+    {
+      "step": 0,
+      "rank": 0,
+      "baseline_raw_sha256": {
+        "dump.json": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+        "stack.json": "dc1c99126a5b8550329992f52cd7e7cf06bda27d0e636cd4302b84771a9263cb",
+        "construct.json": "c019f8c6fcfeb8c5bbc2a9a7baf834d03ab18e9b0e0465c86c5e6d64cee76dc0"
+      },
+      "fault_raw_sha256": {
+        "dump.json": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+        "stack.json": "5bc01e288504694f240a3b5facea552409aee3c813d533d537013d9d1aa4ad89",
+        "construct.json": "dcd5e859911cd4d0c18bfb6f02d7f25bc7d5d11a570de62e06f817bfab97c6d3"
+      },
+      "baseline_operator_order": [
+        "NPU.npu_format_cast.0.forward",
+        "Torch.equal.0.forward",
+        "Torch.equal.1.forward",
+        "Tensor.__setitem__.0.forward",
+        "Tensor.__setitem__.1.forward",
+        "Torch.equal.2.forward",
+        "Torch.equal.3.forward",
+        "Torch.equal.4.forward",
+        "Torch.equal.5.forward",
+        "Torch.equal.6.forward",
+        "Tensor.__add__.0.forward"
+      ],
+      "fault_operator_order": [
+        "NPU.npu_format_cast.0.forward",
+        "NPU.npu_format_cast.1.forward",
+        "Torch.equal.0.forward",
+        "Torch.equal.1.forward",
+        "Tensor.__setitem__.0.forward",
+        "Tensor.__setitem__.1.forward",
+        "Torch.equal.2.forward",
+        "Torch.equal.3.forward",
+        "Torch.equal.4.forward",
+        "Torch.equal.5.forward",
+        "Torch.equal.6.forward",
+        "Tensor.__add__.0.forward"
+      ],
+      "common_operator_relative_order_equal": true,
+      "capture_metadata_aligned": true,
+      "strict_structure_equal": false,
+      "strict_stack_equal": false,
+      "strict_construct_equal": false,
+      "changed_paired_fields": [],
+      "global_first_difference": null,
+      "unpaired": {
+        "baseline": [],
+        "fault": [
+          {
+            "operator": "NPU.npu_format_cast.1.forward",
+            "kind": "api",
+            "reason": "NO_EXACT_OPERATOR_ID_ON_OTHER_SIDE",
+            "scalar_records": [
+              {
+                "path": "/input_args/1",
+                "record": {
+                  "type": "int",
+                  "value": 2
+                }
+              }
+            ],
+            "first_raw_stack_frame": "File /source/fault_injection/alias.py, line 36, in convert, \n return torch_npu.npu_format_cast(tensor, 2)",
+            "construct_present": true,
+            "construct": null
+          }
+        ]
+      },
+      "paired_diagnostics": [
+        {
+          "operator": "NPU.npu_format_cast.0.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "OCCURRENCE_FAMILY_COUNT_MISMATCH"
+          ],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": []
+        },
+        {
+          "operator": "Torch.equal.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.1.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Tensor.__setitem__.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 3
+        },
+        {
+          "operator": "Tensor.__setitem__.1.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.2.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.3.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "NON_STATISTICAL_RECORD_CHANGED"
+          ],
+          "nonstatistical_changes": [
+            {
+              "path": "Torch.equal.3.forward/output/0/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": true,
+              "fault": false
+            }
+          ],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": [
+            {
+              "identity": "Torch.equal.3.forward/input_args/0",
+              "field": "Min",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -32.0,
+              "fault": 0.0,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 1.0,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 32.0,
+              "absolute_difference": 32.0,
+              "threshold": 0.00032001,
+              "relative_change_reason": null
+            }
+          ]
+        },
+        {
+          "operator": "Torch.equal.4.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "NON_STATISTICAL_RECORD_CHANGED"
+          ],
+          "nonstatistical_changes": [
+            {
+              "path": "Torch.equal.4.forward/output/0/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": false,
+              "fault": true
+            }
+          ],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": [
+            {
+              "identity": "Torch.equal.4.forward/input_args/0",
+              "field": "Max",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -32.0,
+              "fault": 136.0,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 5.25,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 168.0,
+              "absolute_difference": 168.0,
+              "threshold": 0.00032001,
+              "relative_change_reason": null
+            },
+            {
+              "identity": "Torch.equal.4.forward/input_args/0",
+              "field": "Min",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -32.0,
+              "fault": 17.0,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 1.53125,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 49.0,
+              "absolute_difference": 49.0,
+              "threshold": 0.00032001,
+              "relative_change_reason": null
+            }
+          ]
+        },
+        {
+          "operator": "Torch.equal.5.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.6.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Tensor.__add__.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        }
+      ],
+      "unobservable_paired_fields": [
+        {
+          "identity": "Torch.equal.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.0.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.0.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/2",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/2",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Max",
+          "status": "UNCOMPARABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Min",
+          "status": "UNCOMPARABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Max",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Min",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Max",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Min",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        }
+      ]
+    },
+    {
+      "step": 1,
+      "rank": 0,
+      "baseline_raw_sha256": {
+        "dump.json": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+        "stack.json": "dc1c99126a5b8550329992f52cd7e7cf06bda27d0e636cd4302b84771a9263cb",
+        "construct.json": "c019f8c6fcfeb8c5bbc2a9a7baf834d03ab18e9b0e0465c86c5e6d64cee76dc0"
+      },
+      "fault_raw_sha256": {
+        "dump.json": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+        "stack.json": "5bc01e288504694f240a3b5facea552409aee3c813d533d537013d9d1aa4ad89",
+        "construct.json": "dcd5e859911cd4d0c18bfb6f02d7f25bc7d5d11a570de62e06f817bfab97c6d3"
+      },
+      "baseline_operator_order": [
+        "NPU.npu_format_cast.0.forward",
+        "Torch.equal.0.forward",
+        "Torch.equal.1.forward",
+        "Tensor.__setitem__.0.forward",
+        "Tensor.__setitem__.1.forward",
+        "Torch.equal.2.forward",
+        "Torch.equal.3.forward",
+        "Torch.equal.4.forward",
+        "Torch.equal.5.forward",
+        "Torch.equal.6.forward",
+        "Tensor.__add__.0.forward"
+      ],
+      "fault_operator_order": [
+        "NPU.npu_format_cast.0.forward",
+        "NPU.npu_format_cast.1.forward",
+        "Torch.equal.0.forward",
+        "Torch.equal.1.forward",
+        "Tensor.__setitem__.0.forward",
+        "Tensor.__setitem__.1.forward",
+        "Torch.equal.2.forward",
+        "Torch.equal.3.forward",
+        "Torch.equal.4.forward",
+        "Torch.equal.5.forward",
+        "Torch.equal.6.forward",
+        "Tensor.__add__.0.forward"
+      ],
+      "common_operator_relative_order_equal": true,
+      "capture_metadata_aligned": true,
+      "strict_structure_equal": false,
+      "strict_stack_equal": false,
+      "strict_construct_equal": false,
+      "changed_paired_fields": [],
+      "global_first_difference": null,
+      "unpaired": {
+        "baseline": [],
+        "fault": [
+          {
+            "operator": "NPU.npu_format_cast.1.forward",
+            "kind": "api",
+            "reason": "NO_EXACT_OPERATOR_ID_ON_OTHER_SIDE",
+            "scalar_records": [
+              {
+                "path": "/input_args/1",
+                "record": {
+                  "type": "int",
+                  "value": 2
+                }
+              }
+            ],
+            "first_raw_stack_frame": "File /source/fault_injection/alias.py, line 36, in convert, \n return torch_npu.npu_format_cast(tensor, 2)",
+            "construct_present": true,
+            "construct": null
+          }
+        ]
+      },
+      "paired_diagnostics": [
+        {
+          "operator": "NPU.npu_format_cast.0.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "OCCURRENCE_FAMILY_COUNT_MISMATCH"
+          ],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": []
+        },
+        {
+          "operator": "Torch.equal.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.1.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Tensor.__setitem__.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 3
+        },
+        {
+          "operator": "Tensor.__setitem__.1.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.2.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.3.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "NON_STATISTICAL_RECORD_CHANGED"
+          ],
+          "nonstatistical_changes": [
+            {
+              "path": "Torch.equal.3.forward/output/0/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": true,
+              "fault": false
+            }
+          ],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": [
+            {
+              "identity": "Torch.equal.3.forward/input_args/0",
+              "field": "Min",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -32.0,
+              "fault": 0.0,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 1.0,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 32.0,
+              "absolute_difference": 32.0,
+              "threshold": 0.00032001,
+              "relative_change_reason": null
+            }
+          ]
+        },
+        {
+          "operator": "Torch.equal.4.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "NON_STATISTICAL_RECORD_CHANGED"
+          ],
+          "nonstatistical_changes": [
+            {
+              "path": "Torch.equal.4.forward/output/0/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": false,
+              "fault": true
+            }
+          ],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": [
+            {
+              "identity": "Torch.equal.4.forward/input_args/0",
+              "field": "Max",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -32.0,
+              "fault": 136.0,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 5.25,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 168.0,
+              "absolute_difference": 168.0,
+              "threshold": 0.00032001,
+              "relative_change_reason": null
+            },
+            {
+              "identity": "Torch.equal.4.forward/input_args/0",
+              "field": "Min",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -32.0,
+              "fault": 17.0,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 1.53125,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 49.0,
+              "absolute_difference": 49.0,
+              "threshold": 0.00032001,
+              "relative_change_reason": null
+            }
+          ]
+        },
+        {
+          "operator": "Torch.equal.5.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.6.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Tensor.__add__.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        }
+      ],
+      "unobservable_paired_fields": [
+        {
+          "identity": "Torch.equal.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.0.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.0.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/2",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/2",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Max",
+          "status": "UNCOMPARABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Min",
+          "status": "UNCOMPARABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Max",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Min",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Max",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Min",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "rank": 0,
+      "baseline_raw_sha256": {
+        "dump.json": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+        "stack.json": "dc1c99126a5b8550329992f52cd7e7cf06bda27d0e636cd4302b84771a9263cb",
+        "construct.json": "c019f8c6fcfeb8c5bbc2a9a7baf834d03ab18e9b0e0465c86c5e6d64cee76dc0"
+      },
+      "fault_raw_sha256": {
+        "dump.json": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+        "stack.json": "5bc01e288504694f240a3b5facea552409aee3c813d533d537013d9d1aa4ad89",
+        "construct.json": "dcd5e859911cd4d0c18bfb6f02d7f25bc7d5d11a570de62e06f817bfab97c6d3"
+      },
+      "baseline_operator_order": [
+        "NPU.npu_format_cast.0.forward",
+        "Torch.equal.0.forward",
+        "Torch.equal.1.forward",
+        "Tensor.__setitem__.0.forward",
+        "Tensor.__setitem__.1.forward",
+        "Torch.equal.2.forward",
+        "Torch.equal.3.forward",
+        "Torch.equal.4.forward",
+        "Torch.equal.5.forward",
+        "Torch.equal.6.forward",
+        "Tensor.__add__.0.forward"
+      ],
+      "fault_operator_order": [
+        "NPU.npu_format_cast.0.forward",
+        "NPU.npu_format_cast.1.forward",
+        "Torch.equal.0.forward",
+        "Torch.equal.1.forward",
+        "Tensor.__setitem__.0.forward",
+        "Tensor.__setitem__.1.forward",
+        "Torch.equal.2.forward",
+        "Torch.equal.3.forward",
+        "Torch.equal.4.forward",
+        "Torch.equal.5.forward",
+        "Torch.equal.6.forward",
+        "Tensor.__add__.0.forward"
+      ],
+      "common_operator_relative_order_equal": true,
+      "capture_metadata_aligned": true,
+      "strict_structure_equal": false,
+      "strict_stack_equal": false,
+      "strict_construct_equal": false,
+      "changed_paired_fields": [],
+      "global_first_difference": null,
+      "unpaired": {
+        "baseline": [],
+        "fault": [
+          {
+            "operator": "NPU.npu_format_cast.1.forward",
+            "kind": "api",
+            "reason": "NO_EXACT_OPERATOR_ID_ON_OTHER_SIDE",
+            "scalar_records": [
+              {
+                "path": "/input_args/1",
+                "record": {
+                  "type": "int",
+                  "value": 2
+                }
+              }
+            ],
+            "first_raw_stack_frame": "File /source/fault_injection/alias.py, line 36, in convert, \n return torch_npu.npu_format_cast(tensor, 2)",
+            "construct_present": true,
+            "construct": null
+          }
+        ]
+      },
+      "paired_diagnostics": [
+        {
+          "operator": "NPU.npu_format_cast.0.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "OCCURRENCE_FAMILY_COUNT_MISMATCH"
+          ],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": []
+        },
+        {
+          "operator": "Torch.equal.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.1.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Tensor.__setitem__.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 3
+        },
+        {
+          "operator": "Tensor.__setitem__.1.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.2.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.3.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "NON_STATISTICAL_RECORD_CHANGED"
+          ],
+          "nonstatistical_changes": [
+            {
+              "path": "Torch.equal.3.forward/output/0/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": true,
+              "fault": false
+            }
+          ],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": [
+            {
+              "identity": "Torch.equal.3.forward/input_args/0",
+              "field": "Min",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -32.0,
+              "fault": 0.0,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 1.0,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 32.0,
+              "absolute_difference": 32.0,
+              "threshold": 0.00032001,
+              "relative_change_reason": null
+            }
+          ]
+        },
+        {
+          "operator": "Torch.equal.4.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "NON_STATISTICAL_RECORD_CHANGED"
+          ],
+          "nonstatistical_changes": [
+            {
+              "path": "Torch.equal.4.forward/output/0/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": false,
+              "fault": true
+            }
+          ],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": [
+            {
+              "identity": "Torch.equal.4.forward/input_args/0",
+              "field": "Max",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -32.0,
+              "fault": 136.0,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 5.25,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 168.0,
+              "absolute_difference": 168.0,
+              "threshold": 0.00032001,
+              "relative_change_reason": null
+            },
+            {
+              "identity": "Torch.equal.4.forward/input_args/0",
+              "field": "Min",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -32.0,
+              "fault": 17.0,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 1.53125,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 49.0,
+              "absolute_difference": 49.0,
+              "threshold": 0.00032001,
+              "relative_change_reason": null
+            }
+          ]
+        },
+        {
+          "operator": "Torch.equal.5.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Torch.equal.6.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        },
+        {
+          "operator": "Tensor.__add__.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        }
+      ],
+      "unobservable_paired_fields": [
+        {
+          "identity": "Torch.equal.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.0.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.0.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.1.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/2",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/2",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Max",
+          "status": "UNCOMPARABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Min",
+          "status": "UNCOMPARABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.2.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.5.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Torch.equal.6.forward/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Max",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Min",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Max",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Min",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        }
+      ]
+    }
+  ]
+}

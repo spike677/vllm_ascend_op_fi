@@ -1,0 +1,1441 @@
+{
+  "schema_version": 1,
+  "purpose": "RAW_STATISTICS_ALIGNMENT_DIAGNOSIS_ONLY",
+  "source": "RAW_MSPROBE_STATISTICS_MIX",
+  "native_logs_read": false,
+  "tensor_payloads_read": false,
+  "generated_responses_read": false,
+  "comparison_policy": {
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "rule": "abs(F-B) > atol + rtol*abs(B)"
+  },
+  "diagnostic_source_sha256": "8d8a6d426be903361f3d8e36d162adf3cff4f2f86504e04ba82a7ab13ed0d028",
+  "strict_comparator_sha256": {
+    "compare_msprobe.py": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+    "compare_model_capture.py": "8404ce2214e190556f953a70e28c7d30365ab082d36601a36a2ecd062417f6f8"
+  },
+  "strict_original_result": {
+    "schema_version": 1,
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "generated_responses_read": false,
+    "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+    "rank": 0,
+    "step_semantics": "Actual collector steps in numeric order; not inferred token numbers",
+    "comparison_policy": {
+      "rtol": 1e-05,
+      "atol": 1e-08,
+      "rule": "abs(F-B) > atol + rtol*abs(B)"
+    },
+    "limitations": [
+      "Null statistics remain unobservable; equality of hidden values is not established.",
+      "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+      "Step numbers and matching stacks do not independently prove request identity.",
+      "Statistical first difference does not uniquely establish a physical fault mechanism."
+    ],
+    "steps": [
+      {
+        "step": 0,
+        "relative_path": "observation/step0/rank0",
+        "report": {
+          "baseline": {
+            "dump.json": "5366eaf631dcd80e22e88b545cd8d832560cf32a287af924a2c5c63d7e302fd8",
+            "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+            "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+          },
+          "fault": {
+            "dump.json": "e40a4f55e82ad9d5be0325cad6e0fbcaf48f783936239bb49b75d0f8050c5d47",
+            "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+            "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+          },
+          "source": "RAW_MSPROBE_STATISTICS_MIX",
+          "native_logs_read": false,
+          "private_tensors_read": false,
+          "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "status": "ALIGNMENT_MISMATCH",
+          "mismatched": "structure"
+        },
+        "status": "ALIGNMENT_MISMATCH"
+      },
+      {
+        "step": 1,
+        "relative_path": "observation/step1/rank0",
+        "report": {
+          "baseline": {
+            "dump.json": "5366eaf631dcd80e22e88b545cd8d832560cf32a287af924a2c5c63d7e302fd8",
+            "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+            "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+          },
+          "fault": {
+            "dump.json": "e40a4f55e82ad9d5be0325cad6e0fbcaf48f783936239bb49b75d0f8050c5d47",
+            "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+            "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+          },
+          "source": "RAW_MSPROBE_STATISTICS_MIX",
+          "native_logs_read": false,
+          "private_tensors_read": false,
+          "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "status": "ALIGNMENT_MISMATCH",
+          "mismatched": "structure"
+        },
+        "status": "ALIGNMENT_MISMATCH"
+      },
+      {
+        "step": 2,
+        "relative_path": "observation/step2/rank0",
+        "report": {
+          "baseline": {
+            "dump.json": "5366eaf631dcd80e22e88b545cd8d832560cf32a287af924a2c5c63d7e302fd8",
+            "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+            "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+          },
+          "fault": {
+            "dump.json": "e40a4f55e82ad9d5be0325cad6e0fbcaf48f783936239bb49b75d0f8050c5d47",
+            "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+            "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+          },
+          "source": "RAW_MSPROBE_STATISTICS_MIX",
+          "native_logs_read": false,
+          "private_tensors_read": false,
+          "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "status": "ALIGNMENT_MISMATCH",
+          "mismatched": "structure"
+        },
+        "status": "ALIGNMENT_MISMATCH"
+      }
+    ],
+    "first_difference": null,
+    "blocking_steps": [
+      0,
+      1,
+      2
+    ],
+    "baseline_steps": [
+      0,
+      1,
+      2
+    ],
+    "fault_steps": [
+      0,
+      1,
+      2
+    ],
+    "missing_from_baseline": [],
+    "missing_from_fault": [],
+    "all_steps_aligned": false,
+    "status": "INCOMPLETE_COMPARISON"
+  },
+  "strict_acceptance_overridden": false,
+  "global_first_difference": null,
+  "status": "DIAGNOSTICS_ONLY_STRICT_ALIGNMENT_RETAINED",
+  "limitations": [
+    "Pairing preserves exact operator IDs, non-statistical metadata, resolved stacks and construct entries; it is not a sequence realignment acceptance gate.",
+    "Unpaired APIs, changed scalar arguments and missing context remain explicit; they are not filtered out.",
+    "Common-ID local statistics do not prove globally earliest change when other records are unpaired.",
+    "Equal observable Max/Min/Mean/Norm do not prove tensor equality; null is never counted as equality.",
+    "Null construct entries do not independently establish tensor aliasing or producer-consumer identity.",
+    "Raw stack source lines are evidence from the collector, not separately read injector code or hit logs.",
+    "Actual collector steps are not inferred decode tokens; no request identity is inferred."
+  ],
+  "summary_only": true,
+  "steps": [
+    {
+      "step": 0,
+      "rank": 0,
+      "baseline_raw_sha256": {
+        "dump.json": "5366eaf631dcd80e22e88b545cd8d832560cf32a287af924a2c5c63d7e302fd8",
+        "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+        "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+      },
+      "fault_raw_sha256": {
+        "dump.json": "e40a4f55e82ad9d5be0325cad6e0fbcaf48f783936239bb49b75d0f8050c5d47",
+        "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+        "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+      },
+      "baseline_operator_order": [
+        "Functional.conv3d.0.forward",
+        "Module.patch.Conv3d.forward.0",
+        "Tensor.__add__.0.forward"
+      ],
+      "fault_operator_order": [
+        "Functional.conv3d.0.forward",
+        "Module.patch.Conv3d.forward.0",
+        "Tensor.__add__.0.forward"
+      ],
+      "common_operator_relative_order_equal": true,
+      "capture_metadata_aligned": true,
+      "strict_structure_equal": false,
+      "strict_stack_equal": true,
+      "strict_construct_equal": true,
+      "changed_paired_fields": [
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Max",
+          "baseline": 0.5635518431663513,
+          "fault": 0.24107059836387634,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5722299531318963,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.322481244802475,
+          "absolute_difference": 0.322481244802475,
+          "threshold": 5.645518431663513e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Min",
+          "baseline": -0.4876461327075958,
+          "fault": -0.39287781715393066,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.1943382899962225,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.09476831555366516,
+          "absolute_difference": 0.09476831555366516,
+          "threshold": 4.886461327075958e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Max",
+          "baseline": 0.5635518431663513,
+          "fault": 0.24107059836387634,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5722299531318963,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.322481244802475,
+          "absolute_difference": 0.322481244802475,
+          "threshold": 5.645518431663513e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Min",
+          "baseline": -0.4876461327075958,
+          "fault": -0.39287781715393066,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.1943382899962225,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.09476831555366516,
+          "absolute_difference": 0.09476831555366516,
+          "threshold": 4.886461327075958e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Max",
+          "baseline": 1.563551902770996,
+          "fault": 1.2410706281661987,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.20624916514333916,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.32248127460479736,
+          "absolute_difference": 0.32248127460479736,
+          "threshold": 1.5645519027709964e-05,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Min",
+          "baseline": 0.5123538970947266,
+          "fault": 0.6071221828460693,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.18496645831859757,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.09476828575134277,
+          "absolute_difference": 0.09476828575134277,
+          "threshold": 5.133538970947266e-06,
+          "relative_change_reason": null
+        }
+      ],
+      "global_first_difference": null,
+      "unpaired": {
+        "baseline": [],
+        "fault": []
+      },
+      "paired_diagnostics": [
+        {
+          "operator": "Functional.conv3d.0.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "NON_STATISTICAL_RECORD_CHANGED"
+          ],
+          "nonstatistical_changes": [
+            {
+              "path": "Functional.conv3d.0.forward/input_kwargs/padding/1/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": 0,
+              "fault": 7
+            },
+            {
+              "path": "Functional.conv3d.0.forward/input_kwargs/padding/2/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": 0,
+              "fault": 7
+            }
+          ],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": false,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": [
+            {
+              "identity": "Functional.conv3d.0.forward/output/0",
+              "field": "Max",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": 0.5635518431663513,
+              "fault": 0.24107059836387634,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 0.5722299531318963,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": -0.322481244802475,
+              "absolute_difference": 0.322481244802475,
+              "threshold": 5.645518431663513e-06,
+              "relative_change_reason": null
+            },
+            {
+              "identity": "Functional.conv3d.0.forward/output/0",
+              "field": "Min",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -0.4876461327075958,
+              "fault": -0.39287781715393066,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 0.1943382899962225,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 0.09476831555366516,
+              "absolute_difference": 0.09476831555366516,
+              "threshold": 4.886461327075958e-06,
+              "relative_change_reason": null
+            }
+          ]
+        },
+        {
+          "operator": "Module.patch.Conv3d.forward.0",
+          "kind": "module",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 3,
+          "module_statistics": [
+            {
+              "identity": "Module.patch.Conv3d.forward.0/input_args/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  2,
+                  3,
+                  2,
+                  16,
+                  16
+                ],
+                "requires_grad": false
+              },
+              "fields": {
+                "Max": {
+                  "baseline": 1.0,
+                  "fault": 1.0,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 1.001e-05,
+                  "relative_change_reason": null
+                },
+                "Min": {
+                  "baseline": -1.0,
+                  "fault": -1.0,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 1.001e-05,
+                  "relative_change_reason": null
+                },
+                "Mean": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                },
+                "Norm": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                }
+              }
+            },
+            {
+              "identity": "Module.patch.Conv3d.forward.0/output/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  2,
+                  8,
+                  1,
+                  1,
+                  1
+                ],
+                "requires_grad": false
+              },
+              "fields": {
+                "Max": {
+                  "baseline": 0.5635518431663513,
+                  "fault": 0.24107059836387634,
+                  "exact_change": true,
+                  "exceeds_tolerance": true,
+                  "relative_change": 0.5722299531318963,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": -0.322481244802475,
+                  "absolute_difference": 0.322481244802475,
+                  "threshold": 5.645518431663513e-06,
+                  "relative_change_reason": null
+                },
+                "Min": {
+                  "baseline": -0.4876461327075958,
+                  "fault": -0.39287781715393066,
+                  "exact_change": true,
+                  "exceeds_tolerance": true,
+                  "relative_change": 0.1943382899962225,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.09476831555366516,
+                  "absolute_difference": 0.09476831555366516,
+                  "threshold": 4.886461327075958e-06,
+                  "relative_change_reason": null
+                },
+                "Mean": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                },
+                "Norm": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                }
+              }
+            },
+            {
+              "identity": "Module.patch.Conv3d.forward.0/parameters/weight",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  8,
+                  3,
+                  2,
+                  16,
+                  16
+                ],
+                "requires_grad": true
+              },
+              "fields": {
+                "Max": {
+                  "baseline": 0.025513021275401115,
+                  "fault": 0.025513021275401115,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 2.651302127540112e-07,
+                  "relative_change_reason": null
+                },
+                "Min": {
+                  "baseline": -0.025506148114800453,
+                  "fault": -0.025506148114800453,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 2.6506148114800455e-07,
+                  "relative_change_reason": null
+                },
+                "Mean": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                },
+                "Norm": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator": "Tensor.__add__.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        }
+      ],
+      "unobservable_paired_fields": [
+        {
+          "identity": "Module.patch.Conv3d.forward.0/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/parameters/weight",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/parameters/weight",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        }
+      ]
+    },
+    {
+      "step": 1,
+      "rank": 0,
+      "baseline_raw_sha256": {
+        "dump.json": "5366eaf631dcd80e22e88b545cd8d832560cf32a287af924a2c5c63d7e302fd8",
+        "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+        "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+      },
+      "fault_raw_sha256": {
+        "dump.json": "e40a4f55e82ad9d5be0325cad6e0fbcaf48f783936239bb49b75d0f8050c5d47",
+        "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+        "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+      },
+      "baseline_operator_order": [
+        "Functional.conv3d.0.forward",
+        "Module.patch.Conv3d.forward.0",
+        "Tensor.__add__.0.forward"
+      ],
+      "fault_operator_order": [
+        "Functional.conv3d.0.forward",
+        "Module.patch.Conv3d.forward.0",
+        "Tensor.__add__.0.forward"
+      ],
+      "common_operator_relative_order_equal": true,
+      "capture_metadata_aligned": true,
+      "strict_structure_equal": false,
+      "strict_stack_equal": true,
+      "strict_construct_equal": true,
+      "changed_paired_fields": [
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Max",
+          "baseline": 0.5635518431663513,
+          "fault": 0.24107059836387634,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5722299531318963,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.322481244802475,
+          "absolute_difference": 0.322481244802475,
+          "threshold": 5.645518431663513e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Min",
+          "baseline": -0.4876461327075958,
+          "fault": -0.39287781715393066,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.1943382899962225,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.09476831555366516,
+          "absolute_difference": 0.09476831555366516,
+          "threshold": 4.886461327075958e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Max",
+          "baseline": 0.5635518431663513,
+          "fault": 0.24107059836387634,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5722299531318963,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.322481244802475,
+          "absolute_difference": 0.322481244802475,
+          "threshold": 5.645518431663513e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Min",
+          "baseline": -0.4876461327075958,
+          "fault": -0.39287781715393066,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.1943382899962225,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.09476831555366516,
+          "absolute_difference": 0.09476831555366516,
+          "threshold": 4.886461327075958e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Max",
+          "baseline": 1.563551902770996,
+          "fault": 1.2410706281661987,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.20624916514333916,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.32248127460479736,
+          "absolute_difference": 0.32248127460479736,
+          "threshold": 1.5645519027709964e-05,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Min",
+          "baseline": 0.5123538970947266,
+          "fault": 0.6071221828460693,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.18496645831859757,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.09476828575134277,
+          "absolute_difference": 0.09476828575134277,
+          "threshold": 5.133538970947266e-06,
+          "relative_change_reason": null
+        }
+      ],
+      "global_first_difference": null,
+      "unpaired": {
+        "baseline": [],
+        "fault": []
+      },
+      "paired_diagnostics": [
+        {
+          "operator": "Functional.conv3d.0.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "NON_STATISTICAL_RECORD_CHANGED"
+          ],
+          "nonstatistical_changes": [
+            {
+              "path": "Functional.conv3d.0.forward/input_kwargs/padding/1/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": 0,
+              "fault": 7
+            },
+            {
+              "path": "Functional.conv3d.0.forward/input_kwargs/padding/2/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": 0,
+              "fault": 7
+            }
+          ],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": false,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": [
+            {
+              "identity": "Functional.conv3d.0.forward/output/0",
+              "field": "Max",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": 0.5635518431663513,
+              "fault": 0.24107059836387634,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 0.5722299531318963,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": -0.322481244802475,
+              "absolute_difference": 0.322481244802475,
+              "threshold": 5.645518431663513e-06,
+              "relative_change_reason": null
+            },
+            {
+              "identity": "Functional.conv3d.0.forward/output/0",
+              "field": "Min",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -0.4876461327075958,
+              "fault": -0.39287781715393066,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 0.1943382899962225,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 0.09476831555366516,
+              "absolute_difference": 0.09476831555366516,
+              "threshold": 4.886461327075958e-06,
+              "relative_change_reason": null
+            }
+          ]
+        },
+        {
+          "operator": "Module.patch.Conv3d.forward.0",
+          "kind": "module",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 3,
+          "module_statistics": [
+            {
+              "identity": "Module.patch.Conv3d.forward.0/input_args/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  2,
+                  3,
+                  2,
+                  16,
+                  16
+                ],
+                "requires_grad": false
+              },
+              "fields": {
+                "Max": {
+                  "baseline": 1.0,
+                  "fault": 1.0,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 1.001e-05,
+                  "relative_change_reason": null
+                },
+                "Min": {
+                  "baseline": -1.0,
+                  "fault": -1.0,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 1.001e-05,
+                  "relative_change_reason": null
+                },
+                "Mean": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                },
+                "Norm": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                }
+              }
+            },
+            {
+              "identity": "Module.patch.Conv3d.forward.0/output/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  2,
+                  8,
+                  1,
+                  1,
+                  1
+                ],
+                "requires_grad": false
+              },
+              "fields": {
+                "Max": {
+                  "baseline": 0.5635518431663513,
+                  "fault": 0.24107059836387634,
+                  "exact_change": true,
+                  "exceeds_tolerance": true,
+                  "relative_change": 0.5722299531318963,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": -0.322481244802475,
+                  "absolute_difference": 0.322481244802475,
+                  "threshold": 5.645518431663513e-06,
+                  "relative_change_reason": null
+                },
+                "Min": {
+                  "baseline": -0.4876461327075958,
+                  "fault": -0.39287781715393066,
+                  "exact_change": true,
+                  "exceeds_tolerance": true,
+                  "relative_change": 0.1943382899962225,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.09476831555366516,
+                  "absolute_difference": 0.09476831555366516,
+                  "threshold": 4.886461327075958e-06,
+                  "relative_change_reason": null
+                },
+                "Mean": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                },
+                "Norm": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                }
+              }
+            },
+            {
+              "identity": "Module.patch.Conv3d.forward.0/parameters/weight",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  8,
+                  3,
+                  2,
+                  16,
+                  16
+                ],
+                "requires_grad": true
+              },
+              "fields": {
+                "Max": {
+                  "baseline": 0.025513021275401115,
+                  "fault": 0.025513021275401115,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 2.651302127540112e-07,
+                  "relative_change_reason": null
+                },
+                "Min": {
+                  "baseline": -0.025506148114800453,
+                  "fault": -0.025506148114800453,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 2.6506148114800455e-07,
+                  "relative_change_reason": null
+                },
+                "Mean": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                },
+                "Norm": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator": "Tensor.__add__.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        }
+      ],
+      "unobservable_paired_fields": [
+        {
+          "identity": "Module.patch.Conv3d.forward.0/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/parameters/weight",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/parameters/weight",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "rank": 0,
+      "baseline_raw_sha256": {
+        "dump.json": "5366eaf631dcd80e22e88b545cd8d832560cf32a287af924a2c5c63d7e302fd8",
+        "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+        "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+      },
+      "fault_raw_sha256": {
+        "dump.json": "e40a4f55e82ad9d5be0325cad6e0fbcaf48f783936239bb49b75d0f8050c5d47",
+        "stack.json": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+        "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+      },
+      "baseline_operator_order": [
+        "Functional.conv3d.0.forward",
+        "Module.patch.Conv3d.forward.0",
+        "Tensor.__add__.0.forward"
+      ],
+      "fault_operator_order": [
+        "Functional.conv3d.0.forward",
+        "Module.patch.Conv3d.forward.0",
+        "Tensor.__add__.0.forward"
+      ],
+      "common_operator_relative_order_equal": true,
+      "capture_metadata_aligned": true,
+      "strict_structure_equal": false,
+      "strict_stack_equal": true,
+      "strict_construct_equal": true,
+      "changed_paired_fields": [
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Max",
+          "baseline": 0.5635518431663513,
+          "fault": 0.24107059836387634,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5722299531318963,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.322481244802475,
+          "absolute_difference": 0.322481244802475,
+          "threshold": 5.645518431663513e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Min",
+          "baseline": -0.4876461327075958,
+          "fault": -0.39287781715393066,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.1943382899962225,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.09476831555366516,
+          "absolute_difference": 0.09476831555366516,
+          "threshold": 4.886461327075958e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Max",
+          "baseline": 0.5635518431663513,
+          "fault": 0.24107059836387634,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5722299531318963,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.322481244802475,
+          "absolute_difference": 0.322481244802475,
+          "threshold": 5.645518431663513e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Min",
+          "baseline": -0.4876461327075958,
+          "fault": -0.39287781715393066,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.1943382899962225,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.09476831555366516,
+          "absolute_difference": 0.09476831555366516,
+          "threshold": 4.886461327075958e-06,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Max",
+          "baseline": 1.563551902770996,
+          "fault": 1.2410706281661987,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.20624916514333916,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.32248127460479736,
+          "absolute_difference": 0.32248127460479736,
+          "threshold": 1.5645519027709964e-05,
+          "relative_change_reason": null
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Min",
+          "baseline": 0.5123538970947266,
+          "fault": 0.6071221828460693,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.18496645831859757,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.09476828575134277,
+          "absolute_difference": 0.09476828575134277,
+          "threshold": 5.133538970947266e-06,
+          "relative_change_reason": null
+        }
+      ],
+      "global_first_difference": null,
+      "unpaired": {
+        "baseline": [],
+        "fault": []
+      },
+      "paired_diagnostics": [
+        {
+          "operator": "Functional.conv3d.0.forward",
+          "kind": "api",
+          "pairing_status": "REJECTED",
+          "reasons": [
+            "NON_STATISTICAL_RECORD_CHANGED"
+          ],
+          "nonstatistical_changes": [
+            {
+              "path": "Functional.conv3d.0.forward/input_kwargs/padding/1/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": 0,
+              "fault": 7
+            },
+            {
+              "path": "Functional.conv3d.0.forward/input_kwargs/padding/2/value",
+              "reason": "VALUE_CHANGED",
+              "baseline": 0,
+              "fault": 7
+            }
+          ],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": false,
+          "tensor_statistics_count": 0,
+          "rejected_record_same_path_arithmetic": [
+            {
+              "identity": "Functional.conv3d.0.forward/output/0",
+              "field": "Max",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": 0.5635518431663513,
+              "fault": 0.24107059836387634,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 0.5722299531318963,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": -0.322481244802475,
+              "absolute_difference": 0.322481244802475,
+              "threshold": 5.645518431663513e-06,
+              "relative_change_reason": null
+            },
+            {
+              "identity": "Functional.conv3d.0.forward/output/0",
+              "field": "Min",
+              "record_pairing_accepted": false,
+              "arithmetic_only_not_comparison_acceptance": true,
+              "baseline": -0.4876461327075958,
+              "fault": -0.39287781715393066,
+              "exact_change": true,
+              "exceeds_tolerance": true,
+              "relative_change": 0.1943382899962225,
+              "status": "OBSERVABLE_FINITE",
+              "signed_difference": 0.09476831555366516,
+              "absolute_difference": 0.09476831555366516,
+              "threshold": 4.886461327075958e-06,
+              "relative_change_reason": null
+            }
+          ]
+        },
+        {
+          "operator": "Module.patch.Conv3d.forward.0",
+          "kind": "module",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 3,
+          "module_statistics": [
+            {
+              "identity": "Module.patch.Conv3d.forward.0/input_args/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  2,
+                  3,
+                  2,
+                  16,
+                  16
+                ],
+                "requires_grad": false
+              },
+              "fields": {
+                "Max": {
+                  "baseline": 1.0,
+                  "fault": 1.0,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 1.001e-05,
+                  "relative_change_reason": null
+                },
+                "Min": {
+                  "baseline": -1.0,
+                  "fault": -1.0,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 1.001e-05,
+                  "relative_change_reason": null
+                },
+                "Mean": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                },
+                "Norm": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                }
+              }
+            },
+            {
+              "identity": "Module.patch.Conv3d.forward.0/output/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  2,
+                  8,
+                  1,
+                  1,
+                  1
+                ],
+                "requires_grad": false
+              },
+              "fields": {
+                "Max": {
+                  "baseline": 0.5635518431663513,
+                  "fault": 0.24107059836387634,
+                  "exact_change": true,
+                  "exceeds_tolerance": true,
+                  "relative_change": 0.5722299531318963,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": -0.322481244802475,
+                  "absolute_difference": 0.322481244802475,
+                  "threshold": 5.645518431663513e-06,
+                  "relative_change_reason": null
+                },
+                "Min": {
+                  "baseline": -0.4876461327075958,
+                  "fault": -0.39287781715393066,
+                  "exact_change": true,
+                  "exceeds_tolerance": true,
+                  "relative_change": 0.1943382899962225,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.09476831555366516,
+                  "absolute_difference": 0.09476831555366516,
+                  "threshold": 4.886461327075958e-06,
+                  "relative_change_reason": null
+                },
+                "Mean": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                },
+                "Norm": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                }
+              }
+            },
+            {
+              "identity": "Module.patch.Conv3d.forward.0/parameters/weight",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  8,
+                  3,
+                  2,
+                  16,
+                  16
+                ],
+                "requires_grad": true
+              },
+              "fields": {
+                "Max": {
+                  "baseline": 0.025513021275401115,
+                  "fault": 0.025513021275401115,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 2.651302127540112e-07,
+                  "relative_change_reason": null
+                },
+                "Min": {
+                  "baseline": -0.025506148114800453,
+                  "fault": -0.025506148114800453,
+                  "exact_change": false,
+                  "exceeds_tolerance": false,
+                  "relative_change": 0.0,
+                  "status": "OBSERVABLE_FINITE",
+                  "signed_difference": 0.0,
+                  "absolute_difference": 0.0,
+                  "threshold": 2.6506148114800455e-07,
+                  "relative_change_reason": null
+                },
+                "Mean": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                },
+                "Norm": {
+                  "baseline": null,
+                  "fault": null,
+                  "exact_change": null,
+                  "exceeds_tolerance": null,
+                  "relative_change": null,
+                  "status": "UNOBSERVABLE"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "operator": "Tensor.__add__.0.forward",
+          "kind": "api",
+          "pairing_status": "ELIGIBLE_PARTIAL_PAIR_ONLY",
+          "reasons": [],
+          "nonstatistical_changes": [],
+          "stack_equal": true,
+          "construct_equal": true,
+          "construct_null": true,
+          "tensor_statistics_count": 2
+        }
+      ],
+      "unobservable_paired_fields": [
+        {
+          "identity": "Module.patch.Conv3d.forward.0/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/parameters/weight",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Module.patch.Conv3d.forward.0/parameters/weight",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "identity": "Tensor.__add__.0.forward/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        }
+      ]
+    }
+  ]
+}

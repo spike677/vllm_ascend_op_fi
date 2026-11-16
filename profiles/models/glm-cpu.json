@@ -1,0 +1,347 @@
+{
+  "model": "glm",
+  "architecture": {
+    "status": "IMPLEMENTATION_FAMILY_OBSERVED",
+    "implementation_family": "GLM",
+    "configured_family": "GLM",
+    "model_class": "transformers.models.glm.modeling_glm.GlmForCausalLM",
+    "implementation_module": "transformers.models.glm.modeling_glm",
+    "implementation_source": {
+      "file": "modeling_glm.py",
+      "sha256": "97a67100f66f6da9dc0ee8388acee750ae5bddecdcf738e893a0201a17b4215b"
+    },
+    "config_class": "transformers.models.glm.configuration_glm.GlmConfig",
+    "configured_model_type": "glm",
+    "native_provider_verified": false,
+    "note": "Family is diagnostic only; actual operator/ABI/storage gates remain required"
+  },
+  "config": {
+    "transformers_version": "5.5.4",
+    "architectures": null,
+    "output_hidden_states": false,
+    "return_dict": true,
+    "dtype": null,
+    "chunk_size_feed_forward": 0,
+    "is_encoder_decoder": false,
+    "id2label": {
+      "0": "LABEL_0",
+      "1": "LABEL_1"
+    },
+    "label2id": {
+      "LABEL_0": 0,
+      "LABEL_1": 1
+    },
+    "problem_type": null,
+    "vocab_size": 64,
+    "hidden_size": 32,
+    "intermediate_size": 64,
+    "num_hidden_layers": 2,
+    "num_attention_heads": 4,
+    "num_key_value_heads": 2,
+    "head_dim": 8,
+    "hidden_act": "silu",
+    "attention_dropout": 0.0,
+    "max_position_embeddings": 128,
+    "initializer_range": 0.02,
+    "rms_norm_eps": 1.5625e-07,
+    "use_cache": true,
+    "tie_word_embeddings": false,
+    "rope_parameters": {
+      "rope_theta": 10000.0,
+      "partial_rotary_factor": 0.5,
+      "rope_type": "default"
+    },
+    "pad_token_id": 0,
+    "eos_token_id": [
+      151329,
+      151336,
+      151338
+    ],
+    "bos_token_id": null,
+    "attention_bias": true,
+    "_name_or_path": "",
+    "partial_rotary_factor": 0.5,
+    "model_type": "glm",
+    "output_attentions": false
+  },
+  "status": "CPU_VERIFIED",
+  "model_structure": "MODEL_STRUCTURE_VERIFIED_CPU",
+  "module_roles": "MODULE_ROLE_VERIFIED_CPU",
+  "operator_path": "CPU_SHARED_ATTENTION_OBSERVED",
+  "native_provider": "UNVERIFIED",
+  "model_fault": "UNVERIFIED",
+  "recovery": "CPU_TRANSPARENT_ROUTE_RECOVERY_VERIFIED",
+  "transparent_exact": {
+    "prefill": true,
+    "cached_decode": true,
+    "off": true
+  },
+  "finite": true,
+  "requests": 2,
+  "role_counts": {
+    "ATTENTION_Q_PROJ": 2,
+    "ATTENTION_K_PROJ": 2,
+    "ATTENTION_V_PROJ": 2,
+    "ATTENTION_O_PROJ": 2,
+    "MLP_GATE_UP_PROJ": 2,
+    "MLP_DOWN_PROJ": 2,
+    "ATTENTION_NORM": 2,
+    "MLP_NORM": 2
+  },
+  "roles": [
+    {
+      "path": "model.layers.0.self_attn.q_proj",
+      "aliases": [
+        "model.layers.0.self_attn.q_proj"
+      ],
+      "canonical_roles": [
+        "ATTENTION_Q_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.0.self_attn.k_proj",
+      "aliases": [
+        "model.layers.0.self_attn.k_proj"
+      ],
+      "canonical_roles": [
+        "ATTENTION_K_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.0.self_attn.v_proj",
+      "aliases": [
+        "model.layers.0.self_attn.v_proj"
+      ],
+      "canonical_roles": [
+        "ATTENTION_V_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.0.self_attn.o_proj",
+      "aliases": [
+        "model.layers.0.self_attn.o_proj"
+      ],
+      "canonical_roles": [
+        "ATTENTION_O_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.0.mlp.gate_up_proj",
+      "aliases": [
+        "model.layers.0.mlp.gate_up_proj"
+      ],
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.0.mlp.down_proj",
+      "aliases": [
+        "model.layers.0.mlp.down_proj"
+      ],
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.0.input_layernorm",
+      "aliases": [
+        "model.layers.0.input_layernorm"
+      ],
+      "canonical_roles": [
+        "ATTENTION_NORM"
+      ],
+      "module_type": "transformers.models.glm.modeling_glm.GlmRMSNorm",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.0.post_attention_layernorm",
+      "aliases": [
+        "model.layers.0.post_attention_layernorm"
+      ],
+      "canonical_roles": [
+        "MLP_NORM"
+      ],
+      "module_type": "transformers.models.glm.modeling_glm.GlmRMSNorm",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.1.self_attn.q_proj",
+      "aliases": [
+        "model.layers.1.self_attn.q_proj"
+      ],
+      "canonical_roles": [
+        "ATTENTION_Q_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.1.self_attn.k_proj",
+      "aliases": [
+        "model.layers.1.self_attn.k_proj"
+      ],
+      "canonical_roles": [
+        "ATTENTION_K_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.1.self_attn.v_proj",
+      "aliases": [
+        "model.layers.1.self_attn.v_proj"
+      ],
+      "canonical_roles": [
+        "ATTENTION_V_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.1.self_attn.o_proj",
+      "aliases": [
+        "model.layers.1.self_attn.o_proj"
+      ],
+      "canonical_roles": [
+        "ATTENTION_O_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.1.mlp.gate_up_proj",
+      "aliases": [
+        "model.layers.1.mlp.gate_up_proj"
+      ],
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.1.mlp.down_proj",
+      "aliases": [
+        "model.layers.1.mlp.down_proj"
+      ],
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "module_type": "torch.nn.modules.linear.Linear",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.1.input_layernorm",
+      "aliases": [
+        "model.layers.1.input_layernorm"
+      ],
+      "canonical_roles": [
+        "ATTENTION_NORM"
+      ],
+      "module_type": "transformers.models.glm.modeling_glm.GlmRMSNorm",
+      "executed_forward_calls": 5
+    },
+    {
+      "path": "model.layers.1.post_attention_layernorm",
+      "aliases": [
+        "model.layers.1.post_attention_layernorm"
+      ],
+      "canonical_roles": [
+        "MLP_NORM"
+      ],
+      "module_type": "transformers.models.glm.modeling_glm.GlmRMSNorm",
+      "executed_forward_calls": 5
+    }
+  ],
+  "attention_candidates": 2,
+  "attention_calls": [
+    {
+      "module_type": "transformers.models.glm.modeling_glm.GlmAttention",
+      "geometry": {
+        "batch": 2,
+        "query_heads": 4,
+        "kv_heads": 2,
+        "query_length": 6,
+        "kv_length": 6,
+        "qk_dim": 8,
+        "value_dim": 8
+      },
+      "dtype": "torch.float32",
+      "device": "cpu",
+      "native_fia_check": {
+        "supported": false,
+        "reason": "Pinned kernel supports B1/B8, Hq16/Hkv8, S2048, Dqk=Dv128 only; model family is irrelevant"
+      }
+    },
+    {
+      "module_type": "transformers.models.glm.modeling_glm.GlmAttention",
+      "geometry": {
+        "batch": 2,
+        "query_heads": 4,
+        "kv_heads": 2,
+        "query_length": 6,
+        "kv_length": 6,
+        "qk_dim": 8,
+        "value_dim": 8
+      },
+      "dtype": "torch.float32",
+      "device": "cpu",
+      "native_fia_check": {
+        "supported": false,
+        "reason": "Pinned kernel supports B1/B8, Hq16/Hkv8, S2048, Dqk=Dv128 only; model family is irrelevant"
+      }
+    },
+    {
+      "module_type": "transformers.models.glm.modeling_glm.GlmAttention",
+      "geometry": {
+        "batch": 2,
+        "query_heads": 4,
+        "kv_heads": 2,
+        "query_length": 1,
+        "kv_length": 7,
+        "qk_dim": 8,
+        "value_dim": 8
+      },
+      "dtype": "torch.float32",
+      "device": "cpu",
+      "native_fia_check": {
+        "supported": false,
+        "reason": "Pinned kernel supports B1/B8, Hq16/Hkv8, S2048, Dqk=Dv128 only; model family is irrelevant"
+      }
+    },
+    {
+      "module_type": "transformers.models.glm.modeling_glm.GlmAttention",
+      "geometry": {
+        "batch": 2,
+        "query_heads": 4,
+        "kv_heads": 2,
+        "query_length": 1,
+        "kv_length": 7,
+        "qk_dim": 8,
+        "value_dim": 8
+      },
+      "dtype": "torch.float32",
+      "device": "cpu",
+      "native_fia_check": {
+        "supported": false,
+        "reason": "Pinned kernel supports B1/B8, Hq16/Hkv8, S2048, Dqk=Dv128 only; model family is irrelevant"
+      }
+    }
+  ],
+  "observation_scope": "Random initialized actual Transformers CPU models; no weights download, native injection or quality acceptance",
+  "actual_npu_calls": 0,
+  "evidence": "../../experiments/overnight_20261116/model_matrix.json"
+}

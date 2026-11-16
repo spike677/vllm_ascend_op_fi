@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "completed_utc": "2026-11-16T14:10:28.358796+00:00",
+  "scope": "READ_ONLY_RAW_STATISTICS_ALIGNMENT_DIAGNOSIS",
+  "production_code_changed_for_this_subtask": false,
+  "npu_calls_for_this_subtask": 0,
+  "capture_bytes_modified": false,
+  "strict_acceptance_overridden": false,
+  "tests": {
+    "command": "python experiments/overnight_20261116/test_diagnose_statistics_alignment.py",
+    "passed": 9,
+    "failed": 0,
+    "scope": "CPU offline diagnostics only"
+  },
+  "files_sha256": {
+    "diagnose_statistics_alignment.py": "8d8a6d426be903361f3d8e36d162adf3cff4f2f86504e04ba82a7ab13ed0d028",
+    "test_diagnose_statistics_alignment.py": "6a742c45a827f0e29a950394d041108ae54b9bde190a2f06f2d1b6c2533e20a7",
+    "diagnostic15_summary.json": "f2b88545d660c02d57c57741e1d3fd3b6bc1ebfce712387e042b22232d044ed2",
+    "diagnostic17_summary.json": "82e561d536afea7895ddb2d57085dd2579d55c308d253bbf2c1ca1e6f6d2dc9e",
+    "diagnostic18_summary.json": "0659b65c013c2db6e86d43a1605ca95a462a4d366c54f8e1fecd2f647f5929a4",
+    "STATISTICS_ALIGNMENT_DIAGNOSIS.md": "e19f6f2033b376337c3f54bcb6eb1a13aea5d9664e95263592261962ad701c2a"
+  },
+  "results": {
+    "15": {
+      "status": "INCOMPLETE_COMPARISON",
+      "steps": [
+        0,
+        1,
+        2
+      ],
+      "global_first_difference": null,
+      "changed_paired_fields_per_step": [
+        0,
+        0,
+        0
+      ]
+    },
+    "17": {
+      "status": "INCOMPLETE_COMPARISON",
+      "steps": [
+        0,
+        1,
+        2
+      ],
+      "global_first_difference": null,
+      "changed_paired_fields_per_step": [
+        6,
+        6,
+        6
+      ]
+    },
+    "18": {
+      "status": "INCOMPLETE_COMPARISON",
+      "steps": [
+        0,
+        1,
+        2
+      ],
+      "global_first_difference": null,
+      "changed_paired_fields_per_step": [
+        6,
+        6,
+        6
+      ]
+    }
+  },
+  "private_not_for_publish": [
+    "private/stat15_baseline",
+    "private/stat15_fault",
+    "private/stat17_baseline",
+    "private/stat17_fault",
+    "private/stat18_baseline",
+    "private/stat18_fault",
+    "private/diagnostic*_details-*.json"
+  ],
+  "source_paths": {
+    "15": "/home/overnight-17-20261116/native15-a1/fault15_{baseline,fault}/capture",
+    "17": "/home/overnight-17-20261116/native17-a2/fault17_{baseline,fault}/capture",
+    "18_baseline": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture",
+    "18_fault": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture"
+  }
+}

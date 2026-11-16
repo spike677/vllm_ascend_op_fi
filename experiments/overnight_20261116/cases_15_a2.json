@@ -1,0 +1,28 @@
+[
+  {
+    "id": "fault15_baseline",
+    "mounts": [
+      [
+        "/home/overnight-17-20261116/source-a3",
+        "/source",
+        "ro"
+      ]
+    ],
+    "timeout": 600,
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh; export PYTHONPATH=/source:/msprobe_packages:$PYTHONPATH; exec python3 /source/experiments/overnight_20261116/npu_mechanism_probe.py --fault 15.alias_detach --arm baseline"
+  },
+  {
+    "id": "fault15_fault",
+    "mounts": [
+      [
+        "/home/overnight-17-20261116/source-a3",
+        "/source",
+        "ro"
+      ]
+    ],
+    "timeout": 600,
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh; export PYTHONPATH=/source:/msprobe_packages:$PYTHONPATH; exec python3 /source/experiments/overnight_20261116/npu_mechanism_probe.py --fault 15.alias_detach --arm fault"
+  }
+]

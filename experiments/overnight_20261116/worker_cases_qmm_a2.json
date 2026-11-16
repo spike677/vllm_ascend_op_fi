@@ -1,0 +1,40 @@
+[
+  {
+    "id": "observe-fault20-qmm",
+    "mounts": [
+      [
+        "/home/overnight-17-20261116/source-a2",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/worker-extension-20261116-a1-a3bb5996/sdk-output/build",
+        "/native",
+        "ro"
+      ],
+      [
+        "/home/worker-extension-20261116-a1-a3bb5996/sdk-output/build/libopapi_nn.so",
+        "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so",
+        "ro"
+      ],
+      [
+        "/home/ws/models/DeepSeek-R1-Distill-Qwen-32B-W8A8",
+        "/model",
+        "ro"
+      ]
+    ],
+    "timeout": 1800,
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "env": {
+      "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "1",
+      "OMP_NUM_THREADS": "4",
+      "VLLM_HOST_IP": "127.0.0.1",
+      "GLOO_SOCKET_IFNAME": "lo",
+      "HCCL_CONNECT_TIMEOUT": "120",
+      "HCCL_EXEC_TIMEOUT": "120",
+      "VLLM_ALLOW_INSECURE_SERIALIZATION": "1"
+    },
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh; export LD_PRELOAD=/native/libdcat20_qmm.so:/native/libopapi.so; export LD_LIBRARY_PATH=/native:$LD_LIBRARY_PATH; export PYTHONPATH=/source/src:/source:/source/fault39/src:$PYTHONPATH; exec python3 /source/experiments/overnight_20261116/worker_probe.py --case observe-fault20-qmm --tp 2 --memory-utilization 0.75 --out /evidence/result.json"
+  }
+]

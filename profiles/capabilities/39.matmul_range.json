@@ -1,0 +1,226 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "39.matmul_range",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "将真实Matmul两个输入替为有限BF16抵消模式，数学结果0但实际计算可出现非有限；不强写输出，也未证明accumulator类型。",
+  "implementation": "IMPLEMENTED_NATIVE_AND_WORKER_BINDING",
+  "source_paths": [
+    "fault39/native/runtime.cpp",
+    "fault39/native/metadata_proxy.cpp",
+    "fault39/src/demoncat_fault39/backend.py",
+    "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39.py"
+  ],
+  "test_paths": [
+    "tests/test_worker_extension_providers.py",
+    "fault39/tests/test_contracts.py"
+  ],
+  "historical_paths": [
+    "experiments/provider_adaptation_20261116/validation_summary.json",
+    "experiments/worker_extension_20261116/validation_summary.json"
+  ],
+  "model_adaptation": {
+    "roles": "实际aclnnMatmul typed self/mat2/out与稳定唯一cache；worker/rank/request/model身份，不以down_proj名称替API。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "aclnnMatmul OpExecCache::Run temporary input addresses",
+  "environment": "独立ABI v1/Config368，BF16 ND/合法stride，精确header/library/profile；8.5.1/9.0/9.1/9.2分别构建。",
+  "native_modification_plan": "复用独立Fault39 native与共用Extension路由，单目标/单次/owner代次；self/mat2临时有限±2^e，真实Run后sync并释放。",
+  "lossless_validation": "self-only/mat2-only/dual lossless、原input backing hash、完整输出及实际profile绑定；旧receipt不能授权新构建。",
+  "effect_validation": "实际输入有限、原Run输出范围异常、原input不变；独立statistics首差后再关联native。无异常保持RANGE_ANOMALY_NOT_OBSERVED。",
+  "off_recovery": "disable/drain/nativeidle，fresh-request缓存和response/logits恢复；共用Worker old owner在重建后失效，不自动rearm。",
+  "current_gaps": [
+    "COMMON_WORKER_REAL_INJECTION_PENDING",
+    "ALL_ELIGIBLE_UNQUALIFIED"
+  ],
+  "sprint_target": "在已有profile和同Worker trusted replay完成共用Extension单目标lossless/单次故障/OFF；保持独立ABI。",
+  "next_action": "不能以mock回放或standalone旧TP2证据授予共用Worker闭环；实际调用和完整输出回执是门槛。",
+  "historical_validation": {
+    "scope": "独立包四实际CANN算子通过；8.5.1 QwenTP1/TP2、9.1 QwenTP2通过。bfdd共用Worker只证明attach/拒绝/正常恢复。",
+    "levels": [
+      "NATIVE_VERIFIED",
+      "MODEL_VERIFIED",
+      "RECOVERY_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "CPU_VERIFIED",
+    "conclusion": "真实共享 Worker 的缺回放拒绝、隔离和恢复通过；缺可信 scheduler replay，未执行新注入。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false,
+    "scope": "REAL_VLLM_WORKER_QUARANTINE_RECOVERY_AND_READONLY_DISCOVERY",
+    "execution_receipt": "worker_receipts-a2.json",
+    "trusted_replay_registered": false
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "856082739038e888cd08f417199c685ab254a1948558e2de03880be1615816a7",
+      "bytes": 172067
+    },
+    {
+      "path": "experiments/worker_extension_20261116/validation_summary.json",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "305dedb8a84304a15f28921f2e8e869b2dec4ab71b68c9ddbd3fc806058f7d66",
+      "bytes": 19122
+    },
+    {
+      "path": "fault39/native/metadata_proxy.cpp",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "622d9cff10abdd5e41c47b04daa251f7ef859fbd2b9901c501c973bcad53af77",
+      "bytes": 4189
+    },
+    {
+      "path": "fault39/native/runtime.cpp",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "5c53c52877189c0a49511f86aad0b8c00a6edd5a3cf120e26039b564634415fe",
+      "bytes": 29985
+    },
+    {
+      "path": "fault39/src/demoncat_fault39/backend.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "b07338e6c012570a18c7862f60cebdbea25fcafb4dba6c46b0fb0a1280a31d96",
+      "bytes": 11148
+    },
+    {
+      "path": "fault39/tests/test_contracts.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "30d422fad95213d771a4b4762c50d4064a44a91dac2cc54d1ed379d8eb581dd5",
+      "bytes": 27349
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "142ac0e1d0671b6817c34173130036e760e9c652f1a36ec92aeebcc0771bc949",
+      "bytes": 7310
+    },
+    {
+      "path": "tests/test_worker_extension_providers.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "a18d7565880816e61cc4da7e219b45082ffdd5c0decc348ff1129f5523f3ff7c",
+      "bytes": 8747
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "COMMON_WORKER_REAL_INJECTION_PENDING",
+    "ALL_ELIGIBLE_UNQUALIFIED",
+    "TRUSTED_REPLAY_BINDING_MISSING"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "不能以mock回放或standalone旧TP2证据授予共用Worker闭环；实际调用和完整输出回执是门槛。",
+  "execution_gate_overlay": {
+    "scope": "REAL_VLLM_WORKER_QUARANTINE_RECOVERY_AND_READONLY_DISCOVERY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

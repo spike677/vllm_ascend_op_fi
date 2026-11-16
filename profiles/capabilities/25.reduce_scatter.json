@@ -1,0 +1,171 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "25.reduce_scatter",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "同输入collective归约次序引起的舍入差异及传播。原设计路线A观察真实后端，路线B重放实际采得的同输入差异；不能换成丢块/重复贡献。",
+  "implementation": "DESIGN_ONLY_CPU_CONTRACT",
+  "source_paths": [],
+  "test_paths": [
+    "tests/test_overnight_evidence_contract.py"
+  ],
+  "historical_paths": [
+    "docs/unified_fault_inventory.md"
+  ],
+  "model_adaptation": {
+    "roles": "实际TP/EP process group、global↔local rank、sequence、reduce op、scatter分片和后续hidden消费。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "actual ReduceScatter communication boundary; HCCL/LCCL/NCCL API must first be observed",
+  "environment": "没有本机制已验收native库；实际group/backend/确定性选项必须观察。CPU三rank模拟不是124双卡通信实测。",
+  "native_modification_plan": "先只读观察group/count/dtype/op/stream和collective序号；同输入B多次建立稳定对照。若采到真实差异，可建立与input/group/layout绑定的delta-replay专属代理；无差异样本则拒绝，不随机加噪。",
+  "lossless_validation": "证明每个rank每个贡献恰好一次，receive count×world_size等于send count，成员与调用序号一致，无损代理与原collective完全一致。",
+  "effect_validation": "B/F统计首差在ReduceScatter输出或未暴露API后的首个consumer；native组/执行与输入同一性另外核验。CPU模拟仅展示加法次序与合法分片。",
+  "off_recovery": "所有rank一致disarm并drain已发collective；不可单rank跳过collective。等待stream和临时缓冲回收，fresh request恢复；失败隔离整个group。",
+  "current_gaps": [
+    "NATIVE_IMPLEMENTATION_MISSING",
+    "ACTUAL_GROUP_UNOBSERVED",
+    "SAME_INPUT_DELTA_SAMPLE_MISSING"
+  ],
+  "sprint_target": "完成可执行CPU group/rank/分片拒绝合同与数值次序模拟，以及真实native设计；没有实际group不标NPU通过。",
+  "next_action": "从现有worker确认调用的是torch/HCCL还是ATB/LCCL；取得完整调用和group证明再实现对应typed adapter。",
+  "historical_validation": {
+    "scope": "None accepted",
+    "levels": [],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "CPU_VERIFIED",
+    "conclusion": "补齐真实通信组/差值回放设计与 CPU 准入测试，尚无真实 collective 注入。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "docs/unified_fault_inventory.md",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "816e602607b9d524f06647bb9c62db67b4a077ef05955db9a1a3a724fe58eb37",
+      "bytes": 33973
+    },
+    {
+      "path": "tests/test_overnight_evidence_contract.py",
+      "scope": "sprint_cpu_design_test",
+      "baseline_commit": null,
+      "sha256": "889b80be10a7c14ce0963dc6e512a5a3abccc832f831ed61ee70bc8f1610eaa1",
+      "bytes": 9190
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "NATIVE_IMPLEMENTATION_MISSING",
+    "ACTUAL_GROUP_UNOBSERVED",
+    "SAME_INPUT_DELTA_SAMPLE_MISSING"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "从现有worker确认调用的是torch/HCCL还是ATB/LCCL；取得完整调用和group证明再实现对应typed adapter。",
+  "execution_gate_overlay": {
+    "scope": "CPU_OR_SOURCE_ONLY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

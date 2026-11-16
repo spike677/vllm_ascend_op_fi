@@ -1,0 +1,54 @@
+{
+  "schema": "demoncat.legacy.source.audit.v1",
+  "fault8": {
+    "status": "MATCHING_SOURCE_RECOVERED_NOT_INTEGRATED",
+    "files": [
+      {
+        "mechanism": "8.restore_offset",
+        "remote_path": "/home/haoran/fault8_systemic_mapping_20260915_v3/systemic_extension.py",
+        "sha256": "0d3e18b0c3058699be99990d887fdc2afe34b144b255da2c74729ad750fa03e9",
+        "bytes": 8693,
+        "read_only": true,
+        "executed": false,
+        "definitions": [
+          "digest",
+          "SystemicBinding",
+          "SystemicExtension"
+        ]
+      },
+      {
+        "mechanism": "8.restore_offset",
+        "remote_path": "/home/haoran/fault8_systemic_mapping_20260915_v3/strategy.py",
+        "sha256": "acadf9e0ac7c4279fc97eae035d11277e32aa83b26c8fb293c954f042f982b20",
+        "bytes": 334,
+        "read_only": true,
+        "executed": false,
+        "definitions": [
+          "source_groups"
+        ]
+      }
+    ],
+    "dependencies": [
+      "fault8_extension.Binding",
+      "fault8_extension.NativeObservationExtension",
+      "RequestScope/scheduler contract",
+      "msprobe composition for capture"
+    ],
+    "findings": [
+      "source_groups moves a contribution group and matching top-k probabilities, not arithmetic index increment",
+      "T1 passes through; T>1 requires first complete request prefill",
+      "Current source verifies actual routing metadata and original indices/probabilities; historical hidden/output numerical check only first16 feature columns",
+      "Global class/API wrappers and development assertions require owner-scoped Worker adaptation before reuse"
+    ],
+    "native_calls": 0
+  },
+  "fault22": {
+    "status": "SOURCE_NOT_FOUND_IN_BOUNDED_SEARCH",
+    "queries": [
+      "find /home/haoran -maxdepth3 directory names *indexselect* or *wrong*row*",
+      "find /home -maxdepth3 same names"
+    ],
+    "matches": [],
+    "limitation": "Not a proof that source does not exist elsewhere; published historical code SHA and boundary are retained in the capability card"
+  }
+}

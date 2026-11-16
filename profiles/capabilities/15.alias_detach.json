@@ -1,0 +1,205 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "15.alias_detach",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "as_strided初值正确，但view连接格式转换后的独立存储；真实copy_只更新临时存储，原base仍旧。",
+  "implementation": "IMPLEMENTED_PYTHON_BOUNDARY",
+  "source_paths": [
+    "fault_injection/alias.py"
+  ],
+  "test_paths": [
+    "tests/test_alias_auto.py",
+    "tests/test_cleanup_adapters.py"
+  ],
+  "historical_paths": [
+    "docs/unified_fault_inventory.md"
+  ],
+  "model_adaptation": {
+    "roles": "实际module forward中的公开torch.as_strided；动态保留base/view/temporary身份，不指定层名。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "torch.as_strided construction → NPU format cast → copy_ → original-base consumer",
+  "environment": "NPU format29、BF16 base16x16/view8x8/stride16,1/offset17；仅公开Python调用，native内部as_strided未覆盖。",
+  "native_modification_plan": "复用NpuFormatProvider将NZ转base format2，必须确认独立storage且初值完全一致；原变量base不得重新绑定。",
+  "lossless_validation": "B原生别名共享；CPU逻辑索引reference检查64个目标元素和全部非目标元素；同步后view初值与copy_结果均正确。",
+  "effect_validation": "F原base目标元素保持旧值，非目标不变；消费者确实读取同一base。统计首差可在写后base读取/consumer，而非必须as_strided输出。",
+  "off_recovery": "恢复包装及所有hook；原故障base不能靠disable自动修正，OFF使用同一初始状态重建base并验证。",
+  "current_gaps": [
+    "NEW_ROUTE_NPU_PENDING",
+    "NATURAL_MODEL_WRITE_CONSUMER_MISSING",
+    "NATIVE_INTERNAL_VIEW_UNOBSERVED"
+  ],
+  "sprint_target": "在新入口完成NPU机制级B/F/OFF；自然预训练模型不存在写入链时停止在机制级。",
+  "next_action": "先最小NPU模块证明精确写范围，再寻找真实私有base→view写入→base消费路径；读取权重视图不够。",
+  "historical_validation": {
+    "scope": "旧故障27目录实际属15；旧六次NZ机制证据不代表本轮统一入口或自然模型通过。",
+    "levels": [
+      "NATIVE_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "NATIVE_VERIFIED",
+    "conclusion": "构造 NPU 模块 B/F/OFF 通过；视图写入正确，F 原 base 未更新，消费者读旧值。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false,
+    "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+    "execution_receipts": [
+      "/home/overnight-17-20261116/native15-a1/fault15_baseline",
+      "/home/overnight-17-20261116/native15-a1/fault15_fault"
+    ],
+    "native_receipt": "mechanism_receipts-a1.json",
+    "independent_report": "diagnostic15_summary.json",
+    "exact_off": true,
+    "steps": [
+      0,
+      1,
+      2
+    ],
+    "warmup_forwards": 1
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "docs/unified_fault_inventory.md",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "816e602607b9d524f06647bb9c62db67b4a077ef05955db9a1a3a724fe58eb37",
+      "bytes": 33973
+    },
+    {
+      "path": "fault_injection/alias.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "064ea52b5252f4bb878cbffeb186ffbd8e22dc0dc485e65e3769654c9fb4a788",
+      "bytes": 19940
+    },
+    {
+      "path": "tests/test_alias_auto.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "ec388665639f2e022ada869da1090f25160b8ad62a14c5a3b0e531d62100a008",
+      "bytes": 13494
+    },
+    {
+      "path": "tests/test_cleanup_adapters.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "acd608cdc9e15cc53742e22812582acc5b68ad25f6b93e1d9d260b7d4cdc2f9e",
+      "bytes": 12970
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "NATURAL_MODEL_WRITE_CONSUMER_MISSING",
+    "NATIVE_INTERNAL_VIEW_UNOBSERVED",
+    "G9_ALIGNMENT_MISMATCH"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "VERIFIED_CONSTRUCTED_MODULE_ONLY",
+    "multi_target": "NOT_TESTED",
+    "every_match": "VERIFIED_FOUR_FORWARDS_IN_THIS_MODULE_ONLY",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "small bounded module",
+    "group_recovery": "OFF_OUTPUT_EXACT_IN_THIS_MODULE",
+    "common_worker_all_eligible": "NOT_QUALIFIED"
+  },
+  "current_next_action": "先补显式调用链对齐规则并独立审查；15 保留私有格式 null，寻找自然写入/消费者链；17/18 再接实际适用预训练模型，不扩大已验收范围。",
+  "execution_gate_overlay": {
+    "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+    "G6": "MECHANISM_MODULE_PASS",
+    "G8": "EXACT_MODULE_OFF",
+    "G9": "ALIGNMENT_MISMATCH"
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "schema": "demoncat.overnight.public_receipts.v1",
+  "summary_tool_sha256": "5c712293c7485f820a50719b41e09411965a8b227afbf1617168205acfd8a580",
+  "cases": [
+    {
+      "case": "/home/overnight-17-20261116/worker-tp1-a1/observe-fault20-weightnz",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/worker-tp1-a1/observe-fault20-weightnz/process.log",
+        "sha256": "bad19efe4ffb359e731421ae38218e4e80050019d62c90ac59218fe9db4d319f",
+        "bytes": 11947
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/worker-tp1-a1/observe-fault20-weightnz/result.json",
+        "sha256": "3c629250aec16566a2dd53f4cbabd744aa0809ec097a794b19e8cd4e5f4ec120",
+        "bytes": 1384
+      },
+      "status": "FAILED_WITH_EVIDENCE",
+      "error": {
+        "type": "TypeError",
+        "message": "Object of type <class 'function'> is not serializableSet VLLM_ALLOW_INSECURE_SERIALIZATION=1 to allow fallback to pickle-based serialization."
+      },
+      "actual_fault_injection": false,
+      "tp": 1,
+      "memory_utilization": 0.35,
+      "runtime_sha256": "092667f3098f18b0ea94c9eefa6c3202de15944fca5f82fdd575389237f1e383",
+      "worker_count": 1,
+      "rank_ids": [
+        0
+      ],
+      "normal_generation_exact_after": null,
+      "observed_generation_exact": null
+    },
+    {
+      "case": "/home/overnight-17-20261116/worker-tp1-a1/quarantine-fault20",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/worker-tp1-a1/quarantine-fault20/process.log",
+        "sha256": "e0c243cf15b1b20ed7c01f4fe3202cd3a366507c41ca2b6fd19f27d63151b12b",
+        "bytes": 9807
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/worker-tp1-a1/quarantine-fault20/result.json",
+        "sha256": "a473b0680332a25138f696bb617d05b6d97c026f05e890aed6c5223773245c81",
+        "bytes": 8187
+      },
+      "status": "PASS_QUARANTINE_RECOVERY",
+      "actual_fault_injection": false,
+      "tp": 1,
+      "memory_utilization": 0.35,
+      "runtime_sha256": "092667f3098f18b0ea94c9eefa6c3202de15944fca5f82fdd575389237f1e383",
+      "worker_count": 1,
+      "rank_ids": [
+        0
+      ],
+      "normal_generation_exact_after": true,
+      "observed_generation_exact": null,
+      "prepared": {
+        "status": "ACTION_COMPLETED",
+        "recovery_required": false,
+        "action": "prepare"
+      },
+      "register": {
+        "status": "PROVIDER_ACTION_FAILED",
+        "provider_code": "FAULT20_TRUSTED_EXCLUSIVE_REPLAY_REQUIRED",
+        "recovery_required": true,
+        "action": "register"
+      },
+      "other_provider": {
+        "status": "REJECTED",
+        "reason": "WORKER_RECOVERY_REQUIRED"
+      },
+      "recovery": {
+        "status": "ACTION_COMPLETED",
+        "recovery_required": false,
+        "action": "unregister"
+      },
+      "detach": {
+        "status": "DETACHED"
+      }
+    },
+    {
+      "case": "/home/overnight-17-20261116/worker-tp1-a1/quarantine-fault39",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/worker-tp1-a1/quarantine-fault39/process.log",
+        "sha256": "fc3cced3f101511fd1dbfe84d83fa4e5d2a842e3db35c2811ef4ed910134af04",
+        "bytes": 9807
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/worker-tp1-a1/quarantine-fault39/result.json",
+        "sha256": "014a40c7aa9da49c10639e39c283e6403a8483d187d7597ba7d9b3d792ee0717",
+        "bytes": 21624
+      },
+      "status": "PASS_QUARANTINE_RECOVERY",
+      "actual_fault_injection": false,
+      "tp": 1,
+      "memory_utilization": 0.35,
+      "runtime_sha256": "092667f3098f18b0ea94c9eefa6c3202de15944fca5f82fdd575389237f1e383",
+      "worker_count": 1,
+      "rank_ids": [
+        0
+      ],
+      "normal_generation_exact_after": true,
+      "observed_generation_exact": null,
+      "prepared": {
+        "status": "ACTION_COMPLETED",
+        "recovery_required": false,
+        "action": "prepare"
+      },
+      "register": {
+        "status": "PROVIDER_ACTION_FAILED",
+        "provider_code": "FAULT39_TRUSTED_SCHEDULER_REPLAY_REQUIRED",
+        "recovery_required": true,
+        "action": "register"
+      },
+      "other_provider": {
+        "status": "REJECTED",
+        "reason": "WORKER_RECOVERY_REQUIRED"
+      },
+      "recovery": {
+        "status": "ACTION_COMPLETED",
+        "recovery_required": false,
+        "action": "unregister"
+      },
+      "detach": {
+        "status": "DETACHED"
+      }
+    },
+    {
+      "case": "/home/overnight-17-20261116/worker-weightnz-a2/observe-fault20-weightnz",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/worker-weightnz-a2/observe-fault20-weightnz/process.log",
+        "sha256": "395d1891e79a99a6ec7d1eccc127cfd63c418585b72bfc9ee765cb64240b516a",
+        "bytes": 10093
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/worker-weightnz-a2/observe-fault20-weightnz/result.json",
+        "sha256": "df628d16200b1cc8940c14a5fdacddc7914394bfd190a7ef9ff405304b52b472",
+        "bytes": 2719
+      },
+      "status": "DISCOVERY_COMPLETED",
+      "actual_fault_injection": false,
+      "tp": 1,
+      "memory_utilization": 0.35,
+      "runtime_sha256": "092667f3098f18b0ea94c9eefa6c3202de15944fca5f82fdd575389237f1e383",
+      "worker_count": 1,
+      "rank_ids": [
+        0
+      ],
+      "normal_generation_exact_after": true,
+      "observed_generation_exact": true,
+      "discovery": [
+        {
+          "status": "NO_SUPPORTED_NATIVE_OPERATOR_OBSERVED",
+          "rank": 0,
+          "operator": "aclnnMatmulWeightNz",
+          "matching_modules": 0,
+          "actual_calls": 0,
+          "signatures": {},
+          "model_forwards": 2,
+          "finish_thread": 281463995170848,
+          "finish_native_thread": 179,
+          "same_thread_observed": false,
+          "thread_proof": "NativeSession root and ctypes callback require install owner thread",
+          "native_idle": true,
+          "fault_calls": 0,
+          "qualification": "DISCOVERY_ONLY_NOT_LOSSLESS_OR_INJECTION",
+          "report": "/evidence/observation-rank0.json",
+          "report_sha256": "1c34b97afbf5747aa4bcdbc117f54de3642e5ccd2803cef4d2f8b01e5eea5541"
+        }
+      ]
+    }
+  ],
+  "independent_first_difference_selected": false,
+  "new_raw_statistics_published": false
+}

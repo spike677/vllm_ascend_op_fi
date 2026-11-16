@@ -1,0 +1,1178 @@
+{
+  "schema": "demoncat.overnight.public_receipts.v1",
+  "summary_tool_sha256": "5c712293c7485f820a50719b41e09411965a8b227afbf1617168205acfd8a580",
+  "cases": [
+    {
+      "case": "/home/overnight-17-20261116/native15-a1/fault15_baseline",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/process.log",
+        "sha256": "34b66feec5cf856f954efbff8bfbc81ef75aa54d7caa6c69068f84be2dd2109d",
+        "bytes": 3037
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/result.json",
+        "sha256": "08c87fbe71a6d298369c846a3ae9e79c1bcc498bba10ca652b79bcf41c00780e",
+        "bytes": 12174
+      },
+      "fault": "15.alias_detach",
+      "arm": "baseline",
+      "status": "PASS_NATIVE_MECHANISM_ONLY",
+      "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+      "pretrained_model": false,
+      "worker_extension": false,
+      "actual_device": "Ascend910B4",
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "alias_check": {
+        "actual_format": 29,
+        "view_written_exact": true,
+        "original_base_updated": true,
+        "original_base_retains_initial": false,
+        "consumer_exact": true
+      },
+      "off_exact": true,
+      "repeat_stable": true,
+      "input_unchanged": true,
+      "changed": false,
+      "finite": true,
+      "max_abs": 0.0,
+      "steps": [
+        0,
+        1,
+        2
+      ],
+      "routing": {
+        "candidate_modules": [
+          "<root>"
+        ],
+        "statuses": {
+          "routed": 4
+        },
+        "per_module": {
+          "<root>": 4
+        },
+        "forwards": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "snapshot_scope": "inside session, before context exit; off_exact measured after exit"
+      },
+      "alias_observations": [
+        {
+          "forward": 0,
+          "eligible": true,
+          "actual_format": 29,
+          "initial_values_correct": true,
+          "aliases_original_base": true,
+          "writes": [
+            {
+              "operator": "aten.copy_.default",
+              "view_write_correct": true,
+              "base_matches_expected_update": true,
+              "base_target_retains_prewrite_values": false,
+              "write_changes_target_values": true,
+              "non_target_unchanged": true
+            }
+          ],
+          "consumers": [
+            {
+              "operator": "aten.add.Tensor",
+              "original_base_object": true,
+              "base_value_snapshot_matches_after_call": true,
+              "consumer_result_reference_verified": null
+            }
+          ],
+          "observation_errors": []
+        },
+        {
+          "forward": 1,
+          "eligible": true,
+          "actual_format": 29,
+          "initial_values_correct": true,
+          "aliases_original_base": true,
+          "writes": [
+            {
+              "operator": "aten.copy_.default",
+              "view_write_correct": true,
+              "base_matches_expected_update": true,
+              "base_target_retains_prewrite_values": false,
+              "write_changes_target_values": true,
+              "non_target_unchanged": true
+            }
+          ],
+          "consumers": [
+            {
+              "operator": "aten.add.Tensor",
+              "original_base_object": true,
+              "base_value_snapshot_matches_after_call": true,
+              "consumer_result_reference_verified": null
+            }
+          ],
+          "observation_errors": []
+        },
+        {
+          "forward": 2,
+          "eligible": true,
+          "actual_format": 29,
+          "initial_values_correct": true,
+          "aliases_original_base": true,
+          "writes": [
+            {
+              "operator": "aten.copy_.default",
+              "view_write_correct": true,
+              "base_matches_expected_update": true,
+              "base_target_retains_prewrite_values": false,
+              "write_changes_target_values": true,
+              "non_target_unchanged": true
+            }
+          ],
+          "consumers": [
+            {
+              "operator": "aten.add.Tensor",
+              "original_base_object": true,
+              "base_value_snapshot_matches_after_call": true,
+              "consumer_result_reference_verified": null
+            }
+          ],
+          "observation_errors": []
+        },
+        {
+          "forward": 3,
+          "eligible": true,
+          "actual_format": 29,
+          "initial_values_correct": true,
+          "aliases_original_base": true,
+          "writes": [
+            {
+              "operator": "aten.copy_.default",
+              "view_write_correct": true,
+              "base_matches_expected_update": true,
+              "base_target_retains_prewrite_values": false,
+              "write_changes_target_values": true,
+              "non_target_unchanged": true
+            }
+          ],
+          "consumers": [
+            {
+              "operator": "aten.add.Tensor",
+              "original_base_object": true,
+              "base_value_snapshot_matches_after_call": true,
+              "consumer_result_reference_verified": null
+            }
+          ],
+          "observation_errors": []
+        }
+      ],
+      "capture_artifacts": [
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/collector_identity.json",
+          "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "bytes": 53004
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/observation/step0/rank0/construct.json",
+          "sha256": "c019f8c6fcfeb8c5bbc2a9a7baf834d03ab18e9b0e0465c86c5e6d64cee76dc0",
+          "bytes": 859
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/observation/step0/rank0/dump.json",
+          "sha256": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+          "bytes": 6733
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/observation/step0/rank0/stack.json",
+          "sha256": "dc1c99126a5b8550329992f52cd7e7cf06bda27d0e636cd4302b84771a9263cb",
+          "bytes": 13131
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/observation/step1/rank0/construct.json",
+          "sha256": "c019f8c6fcfeb8c5bbc2a9a7baf834d03ab18e9b0e0465c86c5e6d64cee76dc0",
+          "bytes": 859
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/observation/step1/rank0/dump.json",
+          "sha256": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+          "bytes": 6733
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/observation/step1/rank0/stack.json",
+          "sha256": "dc1c99126a5b8550329992f52cd7e7cf06bda27d0e636cd4302b84771a9263cb",
+          "bytes": 13131
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/observation/step2/rank0/construct.json",
+          "sha256": "c019f8c6fcfeb8c5bbc2a9a7baf834d03ab18e9b0e0465c86c5e6d64cee76dc0",
+          "bytes": 859
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/observation/step2/rank0/dump.json",
+          "sha256": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+          "bytes": 6733
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/observation/step2/rank0/stack.json",
+          "sha256": "dc1c99126a5b8550329992f52cd7e7cf06bda27d0e636cd4302b84771a9263cb",
+          "bytes": 13131
+        }
+      ],
+      "capture_configs": [
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_baseline/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339,
+          "configuration": {
+            "task": "statistics",
+            "level": "mix",
+            "precision": "high",
+            "rank": [],
+            "step": [
+              0,
+              1,
+              2
+            ],
+            "dump_path": "/evidence/capture/observation",
+            "async_dump": false,
+            "statistics": {
+              "scope": [],
+              "list": [],
+              "data_mode": [
+                "all"
+              ],
+              "summary_mode": "statistics",
+              "tensor_list": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "/home/overnight-17-20261116/native15-a1/fault15_fault",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/process.log",
+        "sha256": "eb0f78bdfc96485f33bdccaf3a3cf3e2c1200e56fac0d9d102bff32ef439e683",
+        "bytes": 3034
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/result.json",
+        "sha256": "1e99c491522993919bf7567bd1849c9378fd7fefc4a45ac1297126228799896b",
+        "bytes": 12165
+      },
+      "fault": "15.alias_detach",
+      "arm": "fault",
+      "status": "PASS_NATIVE_MECHANISM_ONLY",
+      "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+      "pretrained_model": false,
+      "worker_extension": false,
+      "actual_device": "Ascend910B4",
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "alias_check": {
+        "actual_format": 29,
+        "view_written_exact": true,
+        "original_base_updated": false,
+        "original_base_retains_initial": true,
+        "consumer_exact": true
+      },
+      "off_exact": true,
+      "repeat_stable": true,
+      "input_unchanged": true,
+      "changed": true,
+      "finite": true,
+      "max_abs": 168.0,
+      "steps": [
+        0,
+        1,
+        2
+      ],
+      "routing": {
+        "candidate_modules": [
+          "<root>"
+        ],
+        "statuses": {
+          "routed": 4
+        },
+        "per_module": {
+          "<root>": 4
+        },
+        "forwards": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "snapshot_scope": "inside session, before context exit; off_exact measured after exit"
+      },
+      "alias_observations": [
+        {
+          "forward": 0,
+          "eligible": true,
+          "actual_format": 29,
+          "initial_values_correct": true,
+          "aliases_original_base": false,
+          "writes": [
+            {
+              "operator": "aten.copy_.default",
+              "view_write_correct": true,
+              "base_matches_expected_update": false,
+              "base_target_retains_prewrite_values": true,
+              "write_changes_target_values": true,
+              "non_target_unchanged": true
+            }
+          ],
+          "consumers": [
+            {
+              "operator": "aten.add.Tensor",
+              "original_base_object": true,
+              "base_value_snapshot_matches_after_call": true,
+              "consumer_result_reference_verified": null
+            }
+          ],
+          "observation_errors": []
+        },
+        {
+          "forward": 1,
+          "eligible": true,
+          "actual_format": 29,
+          "initial_values_correct": true,
+          "aliases_original_base": false,
+          "writes": [
+            {
+              "operator": "aten.copy_.default",
+              "view_write_correct": true,
+              "base_matches_expected_update": false,
+              "base_target_retains_prewrite_values": true,
+              "write_changes_target_values": true,
+              "non_target_unchanged": true
+            }
+          ],
+          "consumers": [
+            {
+              "operator": "aten.add.Tensor",
+              "original_base_object": true,
+              "base_value_snapshot_matches_after_call": true,
+              "consumer_result_reference_verified": null
+            }
+          ],
+          "observation_errors": []
+        },
+        {
+          "forward": 2,
+          "eligible": true,
+          "actual_format": 29,
+          "initial_values_correct": true,
+          "aliases_original_base": false,
+          "writes": [
+            {
+              "operator": "aten.copy_.default",
+              "view_write_correct": true,
+              "base_matches_expected_update": false,
+              "base_target_retains_prewrite_values": true,
+              "write_changes_target_values": true,
+              "non_target_unchanged": true
+            }
+          ],
+          "consumers": [
+            {
+              "operator": "aten.add.Tensor",
+              "original_base_object": true,
+              "base_value_snapshot_matches_after_call": true,
+              "consumer_result_reference_verified": null
+            }
+          ],
+          "observation_errors": []
+        },
+        {
+          "forward": 3,
+          "eligible": true,
+          "actual_format": 29,
+          "initial_values_correct": true,
+          "aliases_original_base": false,
+          "writes": [
+            {
+              "operator": "aten.copy_.default",
+              "view_write_correct": true,
+              "base_matches_expected_update": false,
+              "base_target_retains_prewrite_values": true,
+              "write_changes_target_values": true,
+              "non_target_unchanged": true
+            }
+          ],
+          "consumers": [
+            {
+              "operator": "aten.add.Tensor",
+              "original_base_object": true,
+              "base_value_snapshot_matches_after_call": true,
+              "consumer_result_reference_verified": null
+            }
+          ],
+          "observation_errors": []
+        }
+      ],
+      "capture_artifacts": [
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/collector_identity.json",
+          "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "bytes": 53004
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/observation/step0/rank0/construct.json",
+          "sha256": "dcd5e859911cd4d0c18bfb6f02d7f25bc7d5d11a570de62e06f817bfab97c6d3",
+          "bytes": 899
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/observation/step0/rank0/dump.json",
+          "sha256": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+          "bytes": 7325
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/observation/step0/rank0/stack.json",
+          "sha256": "5bc01e288504694f240a3b5facea552409aee3c813d533d537013d9d1aa4ad89",
+          "bytes": 14429
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/observation/step1/rank0/construct.json",
+          "sha256": "dcd5e859911cd4d0c18bfb6f02d7f25bc7d5d11a570de62e06f817bfab97c6d3",
+          "bytes": 899
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/observation/step1/rank0/dump.json",
+          "sha256": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+          "bytes": 7325
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/observation/step1/rank0/stack.json",
+          "sha256": "5bc01e288504694f240a3b5facea552409aee3c813d533d537013d9d1aa4ad89",
+          "bytes": 14429
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/observation/step2/rank0/construct.json",
+          "sha256": "dcd5e859911cd4d0c18bfb6f02d7f25bc7d5d11a570de62e06f817bfab97c6d3",
+          "bytes": 899
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/observation/step2/rank0/dump.json",
+          "sha256": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+          "bytes": 7325
+        },
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/observation/step2/rank0/stack.json",
+          "sha256": "5bc01e288504694f240a3b5facea552409aee3c813d533d537013d9d1aa4ad89",
+          "bytes": 14429
+        }
+      ],
+      "capture_configs": [
+        {
+          "path": "/home/overnight-17-20261116/native15-a1/fault15_fault/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339,
+          "configuration": {
+            "task": "statistics",
+            "level": "mix",
+            "precision": "high",
+            "rank": [],
+            "step": [
+              0,
+              1,
+              2
+            ],
+            "dump_path": "/evidence/capture/observation",
+            "async_dump": false,
+            "statistics": {
+              "scope": [],
+              "list": [],
+              "data_mode": [
+                "all"
+              ],
+              "summary_mode": "statistics",
+              "tensor_list": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "/home/overnight-17-20261116/native17-a1/fault17_baseline",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/process.log",
+        "sha256": "97a4a9cc593ccde8ad5da33ace05f1c66109ef7823da6e0c52f0e6e3b1e38272",
+        "bytes": 2967
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/result.json",
+        "sha256": "d4b57ad621dcfc3e9b948e55feedc12b16730a9813327ec317c5a9e7ea0374d1",
+        "bytes": 1502
+      },
+      "fault": "17.spatial_padding",
+      "arm": "baseline",
+      "status": "FAILED",
+      "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+      "pretrained_model": false,
+      "worker_extension": false,
+      "actual_device": "Ascend910B4",
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "error": "RuntimeError('Module cleanup failed: Foreign conv3d wrapper replaced this session; not overwritten')",
+      "capture_artifacts": [
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/collector_identity.json",
+          "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "bytes": 53004
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/observation/step0/rank0/construct.json",
+          "sha256": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87",
+          "bytes": 177
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/observation/step0/rank0/dump.json",
+          "sha256": "a8ad6e52f53d30fea70dd6ea77b5dcfce5c2e2261dd7a6db8e94082de8beb538",
+          "bytes": 3153
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/observation/step0/rank0/stack.json",
+          "sha256": "42818f0c37224bf85cc901443fcfffa52d0e05a42d34cb90afbafee2c583c067",
+          "bytes": 3944
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/observation/step1/rank0/construct.json",
+          "sha256": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87",
+          "bytes": 177
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/observation/step1/rank0/dump.json",
+          "sha256": "a8ad6e52f53d30fea70dd6ea77b5dcfce5c2e2261dd7a6db8e94082de8beb538",
+          "bytes": 3153
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/observation/step1/rank0/stack.json",
+          "sha256": "42818f0c37224bf85cc901443fcfffa52d0e05a42d34cb90afbafee2c583c067",
+          "bytes": 3944
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/observation/step2/rank0/construct.json",
+          "sha256": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87",
+          "bytes": 177
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/observation/step2/rank0/dump.json",
+          "sha256": "a8ad6e52f53d30fea70dd6ea77b5dcfce5c2e2261dd7a6db8e94082de8beb538",
+          "bytes": 3153
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/observation/step2/rank0/stack.json",
+          "sha256": "42818f0c37224bf85cc901443fcfffa52d0e05a42d34cb90afbafee2c583c067",
+          "bytes": 3944
+        }
+      ],
+      "capture_configs": [
+        {
+          "path": "/home/overnight-17-20261116/native17-a1/fault17_baseline/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339,
+          "configuration": {
+            "task": "statistics",
+            "level": "mix",
+            "precision": "high",
+            "rank": [],
+            "step": [
+              0,
+              1,
+              2
+            ],
+            "dump_path": "/evidence/capture/observation",
+            "async_dump": false,
+            "statistics": {
+              "scope": [],
+              "list": [],
+              "data_mode": [
+                "all"
+              ],
+              "summary_mode": "statistics",
+              "tensor_list": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "/home/overnight-17-20261116/native17-a2/fault17_baseline",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/process.log",
+        "sha256": "111eb43273229ea58351a9bbee3bc96020f3ea48865f25e66163351796000b36",
+        "bytes": 2874
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/result.json",
+        "sha256": "0701b632e22f4e4f504978502b9f05e3c1de5be258504f72bed5f3072c0c7cbe",
+        "bytes": 5501
+      },
+      "fault": "17.spatial_padding",
+      "arm": "baseline",
+      "status": "PASS_NATIVE_MECHANISM_ONLY",
+      "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+      "pretrained_model": false,
+      "worker_extension": false,
+      "actual_device": "Ascend910B4",
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "off_exact": true,
+      "repeat_stable": true,
+      "input_unchanged": true,
+      "changed": false,
+      "finite": true,
+      "max_abs": 0.0,
+      "steps": [
+        0,
+        1,
+        2
+      ],
+      "routing": {
+        "candidate_modules": 1,
+        "statuses": {
+          "baseline": 4
+        },
+        "per_module": {
+          "patch": 4
+        },
+        "forwards": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "snapshot_scope": "inside session, before context exit; off_exact measured after exit"
+      },
+      "capture_artifacts": [
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/collector_identity.json",
+          "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "bytes": 53004
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/observation/step0/rank0/construct.json",
+          "sha256": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87",
+          "bytes": 177
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/observation/step0/rank0/dump.json",
+          "sha256": "5366eaf631dcd80e22e88b545cd8d832560cf32a287af924a2c5c63d7e302fd8",
+          "bytes": 3223
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/observation/step0/rank0/stack.json",
+          "sha256": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+          "bytes": 4060
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/observation/step1/rank0/construct.json",
+          "sha256": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87",
+          "bytes": 177
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/observation/step1/rank0/dump.json",
+          "sha256": "5366eaf631dcd80e22e88b545cd8d832560cf32a287af924a2c5c63d7e302fd8",
+          "bytes": 3223
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/observation/step1/rank0/stack.json",
+          "sha256": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+          "bytes": 4060
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/observation/step2/rank0/construct.json",
+          "sha256": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87",
+          "bytes": 177
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/observation/step2/rank0/dump.json",
+          "sha256": "5366eaf631dcd80e22e88b545cd8d832560cf32a287af924a2c5c63d7e302fd8",
+          "bytes": 3223
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/observation/step2/rank0/stack.json",
+          "sha256": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+          "bytes": 4060
+        }
+      ],
+      "capture_configs": [
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_baseline/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339,
+          "configuration": {
+            "task": "statistics",
+            "level": "mix",
+            "precision": "high",
+            "rank": [],
+            "step": [
+              0,
+              1,
+              2
+            ],
+            "dump_path": "/evidence/capture/observation",
+            "async_dump": false,
+            "statistics": {
+              "scope": [],
+              "list": [],
+              "data_mode": [
+                "all"
+              ],
+              "summary_mode": "statistics",
+              "tensor_list": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "/home/overnight-17-20261116/native17-a2/fault17_fault",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/process.log",
+        "sha256": "e69cef8340ff339fce53bf9ded4728dd2b33e485839a8f0397cfa31d33aec922",
+        "bytes": 2871
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/result.json",
+        "sha256": "6c70ae17641129e6272fe3abe9d9e776198726bc7912aa53ef62df8febbf23d3",
+        "bytes": 5505
+      },
+      "fault": "17.spatial_padding",
+      "arm": "fault",
+      "status": "PASS_NATIVE_MECHANISM_ONLY",
+      "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+      "pretrained_model": false,
+      "worker_extension": false,
+      "actual_device": "Ascend910B4",
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "off_exact": true,
+      "repeat_stable": true,
+      "input_unchanged": true,
+      "changed": true,
+      "finite": true,
+      "max_abs": 0.4982621669769287,
+      "steps": [
+        0,
+        1,
+        2
+      ],
+      "routing": {
+        "candidate_modules": 1,
+        "statuses": {
+          "applied": 4
+        },
+        "per_module": {
+          "patch": 4
+        },
+        "forwards": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "snapshot_scope": "inside session, before context exit; off_exact measured after exit"
+      },
+      "capture_artifacts": [
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/collector_identity.json",
+          "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "bytes": 53004
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/observation/step0/rank0/construct.json",
+          "sha256": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87",
+          "bytes": 177
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/observation/step0/rank0/dump.json",
+          "sha256": "e40a4f55e82ad9d5be0325cad6e0fbcaf48f783936239bb49b75d0f8050c5d47",
+          "bytes": 3230
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/observation/step0/rank0/stack.json",
+          "sha256": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+          "bytes": 4060
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/observation/step1/rank0/construct.json",
+          "sha256": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87",
+          "bytes": 177
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/observation/step1/rank0/dump.json",
+          "sha256": "e40a4f55e82ad9d5be0325cad6e0fbcaf48f783936239bb49b75d0f8050c5d47",
+          "bytes": 3230
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/observation/step1/rank0/stack.json",
+          "sha256": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+          "bytes": 4060
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/observation/step2/rank0/construct.json",
+          "sha256": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87",
+          "bytes": 177
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/observation/step2/rank0/dump.json",
+          "sha256": "e40a4f55e82ad9d5be0325cad6e0fbcaf48f783936239bb49b75d0f8050c5d47",
+          "bytes": 3230
+        },
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/observation/step2/rank0/stack.json",
+          "sha256": "d13308eb1391333b6b025f6a81f1797ea2f287a5905701a170768926b3098e86",
+          "bytes": 4060
+        }
+      ],
+      "capture_configs": [
+        {
+          "path": "/home/overnight-17-20261116/native17-a2/fault17_fault/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339,
+          "configuration": {
+            "task": "statistics",
+            "level": "mix",
+            "precision": "high",
+            "rank": [],
+            "step": [
+              0,
+              1,
+              2
+            ],
+            "dump_path": "/evidence/capture/observation",
+            "async_dump": false,
+            "statistics": {
+              "scope": [],
+              "list": [],
+              "data_mode": [
+                "all"
+              ],
+              "summary_mode": "statistics",
+              "tensor_list": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "/home/overnight-17-20261116/native18-a1/fault18_baseline",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/process.log",
+        "sha256": "7023fd0cf399c467d2d60cb3dde53c8c5aa20d21384f6fa25061f3b611e199f6",
+        "bytes": 2867
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/result.json",
+        "sha256": "68f5e425cd2d1078a080be87b6118d2edb84ee71985d549908fb81587cad59e3",
+        "bytes": 5606
+      },
+      "fault": "18.api_half",
+      "arm": "baseline",
+      "status": "PASS_NATIVE_MECHANISM_ONLY",
+      "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+      "pretrained_model": false,
+      "worker_extension": false,
+      "actual_device": "Ascend910B4",
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "off_exact": true,
+      "repeat_stable": true,
+      "input_unchanged": true,
+      "changed": false,
+      "finite": true,
+      "max_abs": 0.0,
+      "steps": [
+        0,
+        1,
+        2
+      ],
+      "exact_half": true,
+      "routing": {
+        "candidate_modules": 2,
+        "statuses": {
+          "baseline": 8
+        },
+        "per_module": {
+          "a": 4,
+          "b": 4
+        },
+        "forwards": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "snapshot_scope": "inside session, before context exit; off_exact measured after exit"
+      },
+      "capture_artifacts": [
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/collector_identity.json",
+          "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "bytes": 53004
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/observation/step0/rank0/construct.json",
+          "sha256": "c132927cae6267bb4b194c4dbfc01df25635c8deb8c75df75d503cff547690a2",
+          "bytes": 111
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/observation/step0/rank0/dump.json",
+          "sha256": "5204d029ca21d21b0fea1b63cdff3a4eaf62ab206cbcc79622994b38c7432173",
+          "bytes": 2556
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/observation/step0/rank0/stack.json",
+          "sha256": "2eb768c408fcbcfbf1a30f24d1b608fe08fe1cab24498a6ff9ed3ae95394a8f0",
+          "bytes": 2286
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/observation/step1/rank0/construct.json",
+          "sha256": "c132927cae6267bb4b194c4dbfc01df25635c8deb8c75df75d503cff547690a2",
+          "bytes": 111
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/observation/step1/rank0/dump.json",
+          "sha256": "5204d029ca21d21b0fea1b63cdff3a4eaf62ab206cbcc79622994b38c7432173",
+          "bytes": 2556
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/observation/step1/rank0/stack.json",
+          "sha256": "2eb768c408fcbcfbf1a30f24d1b608fe08fe1cab24498a6ff9ed3ae95394a8f0",
+          "bytes": 2286
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/observation/step2/rank0/construct.json",
+          "sha256": "c132927cae6267bb4b194c4dbfc01df25635c8deb8c75df75d503cff547690a2",
+          "bytes": 111
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/observation/step2/rank0/dump.json",
+          "sha256": "5204d029ca21d21b0fea1b63cdff3a4eaf62ab206cbcc79622994b38c7432173",
+          "bytes": 2556
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/observation/step2/rank0/stack.json",
+          "sha256": "2eb768c408fcbcfbf1a30f24d1b608fe08fe1cab24498a6ff9ed3ae95394a8f0",
+          "bytes": 2286
+        }
+      ],
+      "capture_configs": [
+        {
+          "path": "/home/overnight-17-20261116/native18-a1/fault18_baseline/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339,
+          "configuration": {
+            "task": "statistics",
+            "level": "mix",
+            "precision": "high",
+            "rank": [],
+            "step": [
+              0,
+              1,
+              2
+            ],
+            "dump_path": "/evidence/capture/observation",
+            "async_dump": false,
+            "statistics": {
+              "scope": [],
+              "list": [],
+              "data_mode": [
+                "all"
+              ],
+              "summary_mode": "statistics",
+              "tensor_list": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "/home/overnight-17-20261116/native18-a1/fault18_fault",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/native18-a1/fault18_fault/process.log",
+        "sha256": "3ff30a6b79100bd5a7e1042adac7810dbba38002e2eb26a09b0cd3e8b1cf5e7b",
+        "bytes": 7490
+      },
+      "status": "NO_RESULT_JSON"
+    },
+    {
+      "case": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault",
+      "raw_statistics_published": false,
+      "process_log": {
+        "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/process.log",
+        "sha256": "ffd7050b8c921d32865b8f60148ea058157286a9e357ab0a737cc2441e5a6744",
+        "bytes": 2864
+      },
+      "result": {
+        "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/result.json",
+        "sha256": "421c51767032882d6fb36b37d7f1ab217c3fe5999a3faea0112b88a995ce61ec",
+        "bytes": 5606
+      },
+      "fault": "18.api_half",
+      "arm": "fault",
+      "status": "PASS_NATIVE_MECHANISM_ONLY",
+      "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+      "pretrained_model": false,
+      "worker_extension": false,
+      "actual_device": "Ascend910B4",
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "off_exact": true,
+      "repeat_stable": true,
+      "input_unchanged": true,
+      "changed": true,
+      "finite": true,
+      "max_abs": 1.7051955461502075,
+      "steps": [
+        0,
+        1,
+        2
+      ],
+      "exact_half": true,
+      "routing": {
+        "candidate_modules": 2,
+        "statuses": {
+          "applied": 8
+        },
+        "per_module": {
+          "a": 4,
+          "b": 4
+        },
+        "forwards": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "snapshot_scope": "inside session, before context exit; off_exact measured after exit"
+      },
+      "capture_artifacts": [
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/collector_identity.json",
+          "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "bytes": 53004
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/observation/step0/rank0/construct.json",
+          "sha256": "7f577d42a42b2c17a712c194031bc4d0a15dab1d58bd04fb1797320b0cb3ca5a",
+          "bytes": 181
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/observation/step0/rank0/dump.json",
+          "sha256": "1935dc175548a8e91180b02fd3e5940199a38c5a20e320d44cfebed60bc5eba4",
+          "bytes": 3854
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/observation/step0/rank0/stack.json",
+          "sha256": "30ceb1f52692f77e7b7b778cc3b2d4780f144125c9887862c6961af313dfa121",
+          "bytes": 3806
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/observation/step1/rank0/construct.json",
+          "sha256": "7f577d42a42b2c17a712c194031bc4d0a15dab1d58bd04fb1797320b0cb3ca5a",
+          "bytes": 181
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/observation/step1/rank0/dump.json",
+          "sha256": "1935dc175548a8e91180b02fd3e5940199a38c5a20e320d44cfebed60bc5eba4",
+          "bytes": 3854
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/observation/step1/rank0/stack.json",
+          "sha256": "30ceb1f52692f77e7b7b778cc3b2d4780f144125c9887862c6961af313dfa121",
+          "bytes": 3806
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/observation/step2/rank0/construct.json",
+          "sha256": "7f577d42a42b2c17a712c194031bc4d0a15dab1d58bd04fb1797320b0cb3ca5a",
+          "bytes": 181
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/observation/step2/rank0/dump.json",
+          "sha256": "1935dc175548a8e91180b02fd3e5940199a38c5a20e320d44cfebed60bc5eba4",
+          "bytes": 3854
+        },
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/observation/step2/rank0/stack.json",
+          "sha256": "30ceb1f52692f77e7b7b778cc3b2d4780f144125c9887862c6961af313dfa121",
+          "bytes": 3806
+        }
+      ],
+      "capture_configs": [
+        {
+          "path": "/home/overnight-17-20261116/native18-fault-a3/fault18_fault/capture/config.json",
+          "sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "bytes": 339,
+          "configuration": {
+            "task": "statistics",
+            "level": "mix",
+            "precision": "high",
+            "rank": [],
+            "step": [
+              0,
+              1,
+              2
+            ],
+            "dump_path": "/evidence/capture/observation",
+            "async_dump": false,
+            "statistics": {
+              "scope": [],
+              "list": [],
+              "data_mode": [
+                "all"
+              ],
+              "summary_mode": "statistics",
+              "tensor_list": []
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "independent_first_difference_selected": false,
+  "new_raw_statistics_published": false
+}

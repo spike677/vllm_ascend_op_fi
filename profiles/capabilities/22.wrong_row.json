@@ -1,0 +1,182 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "22.wrong_row",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "原生IndexSelect返回后，将某一目标输出行改为另一合法RoPE source行；是错行输出代理，不是uint32乘法溢出。",
+  "implementation": "LEGACY_EVIDENCE_ONLY",
+  "source_paths": [],
+  "test_paths": [
+    "tests/test_capabilities.py",
+    "tests/test_lifecycle.py"
+  ],
+  "historical_paths": [
+    "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/INJECTION_LOGIC.md"
+  ],
+  "model_adaptation": {
+    "roles": "实际RoPE实例的cos_sin_cache、positions、aten.index_select调用与npu_apply_rotary_pos_emb消费者。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "aten.index_select.default return before actual RoPE consumer",
+  "environment": "历史BF16 source40960x128、positions0..13、TP2/eager；源10MiB无法触发uint32字节偏移回绕。",
+  "native_modification_plan": "先恢复QuickWrongRowExtension并自动绑定cache身份；原生IndexSelect一次执行，设备copy合法source首行到最后输出行，保留原source/index及非目标行。",
+  "lossless_validation": "健康代理不copy或copy同一应读source行，精确比较全部output与source[index]；完整source/index hash保持。",
+  "effect_validation": "实际错误行被下游rotary消费、Q/K变化及模型输出分叉；不能仅构造错误index或以固定第0层强行验收。",
+  "off_recovery": "sync/owner检查卸载；新请求新cache重建后token/logits精确恢复。旧错误请求状态不由disable撤销。",
+  "current_gaps": [
+    "REUSABLE_SOURCE_MISSING",
+    "CACHE_CONSUMER_BINDING_MISSING"
+  ],
+  "sprint_target": "查找历史源码及cache/consumer观察入口；不可得则形成具体自动适配设计与拒绝理由。",
+  "next_action": "查experiments/indexselect_wrong_source_row_proxy/source/quick_extension.py，SHA a9bb9cc575e8df871d0a7056b3ad9ef41a5014052d329cf9e23d128ed5defffb。",
+  "historical_validation": {
+    "scope": "旧固定Qwen3-32B/TP2首次prefill每rank一次；input一致/IndexSelect output统计变化，新请求恢复。",
+    "levels": [
+      "NATIVE_VERIFIED",
+      "MODEL_VERIFIED",
+      "RECOVERY_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "AUDITED",
+    "conclusion": "历史错误行代理证据已核对，未找到可重用源码本体；不能称为 uint32 溢出。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false,
+    "analysis_receipt": "legacy_source_audit.json"
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/INJECTION_LOGIC.md",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "6597cb27c99b1127737719d512c771846ecad99b42a70b9f1abd959f511590e6",
+      "bytes": 10828
+    },
+    {
+      "path": "tests/test_capabilities.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "f718f8fd03785f80b6e107dd5b31cfbcbfcfa9202c7b3a6d335a61d165a5bc6b",
+      "bytes": 5972
+    },
+    {
+      "path": "tests/test_lifecycle.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "19daa373a04eadefc955c58e5b9fe3549c9ffb416fd8fdfe655161c3ea8225b6",
+      "bytes": 16941
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "REUSABLE_SOURCE_MISSING",
+    "CACHE_CONSUMER_BINDING_MISSING"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "查experiments/indexselect_wrong_source_row_proxy/source/quick_extension.py，SHA a9bb9cc575e8df871d0a7056b3ad9ef41a5014052d329cf9e23d128ed5defffb。",
+  "execution_gate_overlay": {
+    "scope": "CPU_OR_SOURCE_ONLY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

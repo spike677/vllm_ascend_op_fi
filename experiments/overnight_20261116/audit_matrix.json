@@ -1,0 +1,752 @@
+{
+  "schema": "demoncat.audit.matrix.v1",
+  "baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "mechanism_count": 17,
+  "status": "AUDITED_17_SOURCE_AND_GATES",
+  "native_executions_in_this_audit": 0,
+  "historical_evidence_inherits_current_acceptance": false,
+  "mechanisms": [
+    {
+      "mechanism": "8.restore_offset",
+      "implementation": "LEGACY_SOURCE_RECOVERED_NOT_INTEGRATED",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/8.restore_offset.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史Qwen3-VL TP2：48适用调用/rank、B/I/新进程R一致；当前库无可复用worker源码。",
+        "family_membership_grants_support": false
+      },
+      "operator": "torch_npu.npu_moe_token_unpermute(sorted_indices, probs) input boundary",
+      "cann": "历史Qwen3-VL MoE TP2、INT32 indices/BF16 hidden/probs、T>1完整prefill；新GLM/DeepSeek MoE及A3未验收。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "REUSABLE_BUNDLE_INCOMPLETE",
+        "REQUEST_MAPPING_UNPROVEN",
+        "COMMON_WORKER_PROVIDER_MISSING"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "历史Qwen3-VL TP2：48适用调用/rank、B/I/新进程R一致；当前库无可复用worker源码。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "同步后释放临时tensor、owner核对卸载；不声称释放副本撤销故障请求状态。新请求/新缓存OFF对比完整token/logits。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "补齐fault8_extension/request_scope等依赖和可信scheduler契约；复用已有Worker身份/生命周期而非直接运行旧全局wrapper。"
+    },
+    {
+      "mechanism": "15.alias_detach",
+      "implementation": "IMPLEMENTED_PYTHON_BOUNDARY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/15.alias_detach.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "旧故障27目录实际属15；旧六次NZ机制证据不代表本轮统一入口或自然模型通过。",
+        "family_membership_grants_support": false
+      },
+      "operator": "torch.as_strided construction → NPU format cast → copy_ → original-base consumer",
+      "cann": "NPU format29、BF16 base16x16/view8x8/stride16,1/offset17；仅公开Python调用，native内部as_strided未覆盖。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "NEW_ROUTE_NPU_PENDING",
+        "NATURAL_MODEL_WRITE_CONSUMER_MISSING",
+        "NATIVE_INTERNAL_VIEW_UNOBSERVED"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "旧故障27目录实际属15；旧六次NZ机制证据不代表本轮统一入口或自然模型通过。",
+        "levels": [
+          "NATIVE_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "恢复包装及所有hook；原故障base不能靠disable自动修正，OFF使用同一初始状态重建base并验证。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "先最小NPU模块证明精确写范围，再寻找真实私有base→view写入→base消费路径；读取权重视图不够。"
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "implementation": "IMPLEMENTED_ARGUMENT_PROXY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/17.spatial_padding.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史固定视觉patch实验；当前重建入口只有CPU路径验收。",
+        "family_membership_grants_support": false
+      },
+      "operator": "torch.nn.functional.conv3d padding argument",
+      "cann": "eval标准Conv3d，kernel/stride匹配输入patch，空间16x16、dilation1/groups1、zero padding；NPU新入口待证。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "NEW_ROUTE_NPU_PENDING",
+        "PRETRAINED_VISION_PATH_UNVERIFIED"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "历史固定视觉patch实验；当前重建入口只有CPU路径验收。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "停止新调用并恢复原Functional.conv3d及hook owner；新同输入forward精确返回B。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "发现当前视觉模型Conv3d实例并实际触发；文本only模型明确NO_ELIGIBLE_MODULE，不伪造视觉路径。"
+    },
+    {
+      "mechanism": "18.api_half",
+      "implementation": "IMPLEMENTED_RETURN_PROXY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/18.api_half.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史Qwen3-VL wrapper；新模块返回代理不继承旧native边界证据。",
+        "family_membership_grants_support": false
+      },
+      "operator": "nn.RMSNorm module return",
+      "cann": "标准eval nn.RMSNorm，实际浮点返回tensor；自定义/融合类需要专属语义适配。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "NEW_ROUTE_NPU_PENDING",
+        "CUSTOM_RMSNORM_NOT_SUPPORTED"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "历史Qwen3-VL wrapper；新模块返回代理不继承旧native边界证据。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "移除owned hooks后相同输入再次输出B；不能用enabled flag不检查的旧wrapper。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "逐个评估自定义Norm实现或实际native API，禁止为扩模型覆盖直接按RMSNorm字符串匹配。"
+    },
+    {
+      "mechanism": "20.buffer_substitute",
+      "implementation": "IMPLEMENTED_TWO_OPERATOR_PATHS",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/20.buffer_substitute.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "9171f3b WeightNz Qwen3/SmolLM2：591/633调用、3step、OFF；旧QMM真实实验与新qualified桥分开。",
+        "family_membership_grants_support": false
+      },
+      "operator": "aclnnMatmulWeightNz(self) / aclnnQuantMatmulWeightNz(x1) at OpExecCache::Run",
+      "cann": "各自真实v17 ABI/CANN8.5.1构建与库指纹、设备、输入格式和storage边界；不能用WeightNz通过替代QMM。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "COMMON_WORKER_INJECTION_PENDING",
+        "QMM_NEW_BRIDGE_NPU_PENDING",
+        "CROSS_THREAD_ARM_RECHECK"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "9171f3b WeightNz Qwen3/SmolLM2：591/633调用、3step、OFF；旧QMM真实实验与新qualified桥分开。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "disarm、drain、释放所有临时buffer并核对native idle，再同输入replay/OFF精确对比；不全局reload。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "在当前Worker验证可托管replay、原生scope线程、声明profile和两个API各自receipt；新family只通过实际API复用。"
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "implementation": "LEGACY_EVIDENCE_ONLY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/22.wrong_row.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "旧固定Qwen3-32B/TP2首次prefill每rank一次；input一致/IndexSelect output统计变化，新请求恢复。",
+        "family_membership_grants_support": false
+      },
+      "operator": "aten.index_select.default return before actual RoPE consumer",
+      "cann": "历史BF16 source40960x128、positions0..13、TP2/eager；源10MiB无法触发uint32字节偏移回绕。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "REUSABLE_SOURCE_MISSING",
+        "CACHE_CONSUMER_BINDING_MISSING"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "旧固定Qwen3-32B/TP2首次prefill每rank一次；input一致/IndexSelect output统计变化，新请求恢复。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "sync/owner检查卸载；新请求新cache重建后token/logits精确恢复。旧错误请求状态不由disable撤销。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "查experiments/indexselect_wrong_source_row_proxy/source/quick_extension.py，SHA a9bb9cc575e8df871d0a7056b3ad9ef41a5014052d329cf9e23d128ed5defffb。"
+    },
+    {
+      "mechanism": "25.reduce_scatter",
+      "implementation": "DESIGN_ONLY_CPU_CONTRACT",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/25.reduce_scatter.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "None accepted",
+        "family_membership_grants_support": false
+      },
+      "operator": "actual ReduceScatter communication boundary; HCCL/LCCL/NCCL API must first be observed",
+      "cann": "没有本机制已验收native库；实际group/backend/确定性选项必须观察。CPU三rank模拟不是124双卡通信实测。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "NATIVE_IMPLEMENTATION_MISSING",
+        "ACTUAL_GROUP_UNOBSERVED",
+        "SAME_INPUT_DELTA_SAMPLE_MISSING"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "None accepted",
+        "levels": [],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "所有rank一致disarm并drain已发collective；不可单rank跳过collective。等待stream和临时缓冲回收，fresh request恢复；失败隔离整个group。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "从现有worker确认调用的是torch/HCCL还是ATB/LCCL；取得完整调用和group证明再实现对应typed adapter。"
+    },
+    {
+      "mechanism": "26.residual_stomp",
+      "implementation": "IMPLEMENTED_NATIVE_WRITER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/26.residual_stomp.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "provider26-final-a2：45eligible writes/rank、pending0、OFF exact；rank0首差下游RoPE，rank1 step0 NaN不可比较。",
+        "family_membership_grants_support": false
+      },
+      "operator": "aclnnQuantMatmulWeightNz output-base before native execution",
+      "cann": "CANN8.5.1/custom AddRmsNormBias；真实相邻active block和padding≤budget；32B W8A8实际是Qwen架构distill。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "RANK1_FIRST_DIFF_NAN_BLOCKED",
+        "COMMON_WORKER_ADAPTER_PENDING"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "provider26-final-a2：45eligible writes/rank、pending0、OFF exact；rank0首差下游RoPE，rank1 step0 NaN不可比较。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "output、padding、residual逐一精确恢复；pending必须0；消费者未执行不得卸载或继续复用worker。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "进一步观察写前destination的实际allocation/初始化生命周期；如需全新采集应保持原始记录并独立复核，不靠删除写前NaN通过。"
+    },
+    {
+      "mechanism": "26.fia_destination",
+      "implementation": "IMPLEMENTED_NATIVE_WRITER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/26.fia_destination.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "provider26-final-a2：126/126completed/rank，首层无producer透传；4/8token/text改变；OFF exact。",
+        "family_membership_grants_support": false
+      },
+      "operator": "aclnnFusedInferAttentionScoreV3 output destination",
+      "cann": "CANN8.5.1/32B W8A8 TP2，output必须可放入独立live residual storage；不是自然OOB。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "COMMON_WORKER_ADAPTER_PENDING",
+        "OTHER_LAYOUTS_UNVERIFIED"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "provider26-final-a2：126/126completed/rank，首层无producer透传；4/8token/text改变；OFF exact。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "consumer后恢复残差并核对copyback；pending0后移除hook，fresh input/cache OFF；未消费隔离worker。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "为共用Extension增加部署factory与trusted replay，保留真实consumer完成/恢复门禁。"
+    },
+    {
+      "mechanism": "quant.batch_shared_scale",
+      "implementation": "IMPLEMENTED_NATIVE_TLS",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/quant.batch_shared_scale.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "quant-model-a2：每rank3命中；实际scheduler请求/token行映射及selected input一致；3step整批DynamicQuant output0 Max127→98不证明每请求scale/Q均变；6/8logprob变、token不变；OFF exact。",
+        "family_membership_grants_support": false
+      },
+      "operator": "aclnnDynamicQuantV2 native reduction descriptors and scale/Q outputs",
+      "cann": "CANN9.1、精确vLLM runner SHA、TP2/B8 pure decode、TLS owner；只选首个实际eligible模块。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "ALL_ELIGIBLE_MAPPING_UNVERIFIED",
+        "PER_REQUEST_SCALE_Q_IMPACT_UNPROVEN",
+        "COMMON_WORKER_ADAPTER_PENDING"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "quant-model-a2：每rank3命中；实际scheduler请求/token行映射及selected input一致；3step整批DynamicQuant output0 Max127→98不证明每请求scale/Q均变；6/8logprob变、token不变；OFF exact。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "停止新arm、owner线程finish/context释放，重复相同decode OFF exact；异线程finish/disarm必须拒绝。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "核对已保存scheduler row映射、scale/Q逐行辅助证据；缺少则限定为全张量统计与请求输入映射已证。"
+    },
+    {
+      "mechanism": "28.fa.legal_tiling",
+      "implementation": "IMPLEMENTED_STRATEGY_BRIDGE",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/28.fa.legal_tiling.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史FA固定shape机制矩阵；当前桥CPU验证不代表新共用Worker实机。",
+        "family_membership_grants_support": false
+      },
+      "operator": "FlashAttentionScore S1S2 native host policy / actual launch",
+      "cann": "证书绑定CANN9.1/910B4、B1/B8、Q16/KV8、S2048、D128、FP16及无dropout；不支持TND/复杂mask。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "MODEL_NATIVE_PROVIDER_NOT_WIRED",
+        "COMMON_WORKER_ADAPTER_PENDING"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "历史FA固定shape机制矩阵；当前桥CPU验证不代表新共用Worker实机。",
+        "levels": [
+          "NATIVE_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "撤销scope并重新运行原策略，对实际launch及完整输出确认恢复。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "从实际FA API观察构建NativeFAInvocation，只有证书覆盖形状能执行；不同FIA路径不能复用此通过状态。"
+    },
+    {
+      "mechanism": "28.fia.legal_tiling",
+      "implementation": "IMPLEMENTED_PINNED_ATTENTION_ADAPTER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/28.fia.legal_tiling.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史固定Qwen3合法切分实验；当前router仅CPU合同。",
+        "family_membership_grants_support": false
+      },
+      "operator": "FIA host coupled_base512 → coupled_m128 (healthy templates)",
+      "cann": "精确vendor SHA，FP16/B1或B8/Hq16/Hkv8/S2048/D128/causal；QK与V维度不同的MLA拒绝。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "NEW_ROUTER_NPU_PENDING",
+        "FIXED_GEOMETRY_ONLY",
+        "STATISTICAL_MAGNITUDE_TARGET_UNMET"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "历史固定Qwen3合法切分实验；当前router仅CPU合同。",
+        "levels": [
+          "NATIVE_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "恢复Attention注册及模型config；清除owned临时策略；重新建立同一cache/input再比B。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "用当前router在证书形状验证一次原生launch/恢复；新增形状须新增合法模板及独立证据。"
+    },
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "implementation": "IMPLEMENTED_PINNED_ATTENTION_ADAPTER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/28.fia.denominator_replay.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "历史完整Qwen3/B8/28层/3step首层FIA输出Norm0.7968%变化与OFF；新routerCPU通过不继承。",
+        "family_membership_grants_support": false
+      },
+      "operator": "FIA native online-softmax denominator accumulation",
+      "cann": "固定vendor/FP16/B1或B8/Hq16/Hkv8/S2048/D128/causal；历史Qwen28层，不声称任意GLM/MLA。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "NEW_ROUTER_NPU_PENDING",
+        "GENERALIZATION_UNVERIFIED"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "历史完整Qwen3/B8/28层/3step首层FIA输出Norm0.7968%变化与OFF；新routerCPU通过不继承。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "关闭replay并重建原scope，OFF完整输出精确、临时策略与hook均回收；出错隔离。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "取得匹配vendor源码/manifest并在新router单目标实测，再评估覆盖扩展；无matching build拒绝。"
+    },
+    {
+      "mechanism": "33.paged_decode",
+      "implementation": "IMPLEMENTED_NATIVE_PAGED_PROVIDER",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/33.paged_decode.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "provider33-model-a2：84/84策略切换，logits maxabs0.02734375、Top1不变、OFF exact；first mean.3 Max .05369125679→.05369321257。",
+        "family_membership_grants_support": false
+      },
+      "operator": "paged IncreFlashAttention native host SInner / actual launch",
+      "cann": "固定CANN9.1审计bundle/B8/Q1/KV16384/H16/KV8/D128/FP16/page128；teacher decode。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "UNIQUE_FIRST_DIFF_AT_IFA_UNPROVEN",
+        "COMMON_WORKER_ADAPTER_PENDING",
+        "CONTINUOUS_GENERATION_UNVERIFIED"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "provider33-model-a2：84/84策略切换，logits maxabs0.02734375、Top1不变、OFF exact；first mean.3 Max .05369125679→.05369321257。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "停策略并恢复同一pagedbackend原生参数；fresh cache clone OFF exact；退出route恢复原后端但不声称SDPA binary等价。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "先确认整张量统计为何FIA不可见或低阈值，再扩更多decode长度；持续生成需独立验收。"
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "implementation": "IMPLEMENTED_NATIVE_AND_WORKER_BINDING",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/39.matmul_range.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "独立包四实际CANN算子通过；8.5.1 QwenTP1/TP2、9.1 QwenTP2通过。bfdd共用Worker只证明attach/拒绝/正常恢复。",
+        "family_membership_grants_support": false
+      },
+      "operator": "aclnnMatmul OpExecCache::Run temporary input addresses",
+      "cann": "独立ABI v1/Config368，BF16 ND/合法stride，精确header/library/profile；8.5.1/9.0/9.1/9.2分别构建。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "COMMON_WORKER_REAL_INJECTION_PENDING",
+        "ALL_ELIGIBLE_UNQUALIFIED"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "独立包四实际CANN算子通过；8.5.1 QwenTP1/TP2、9.1 QwenTP2通过。bfdd共用Worker只证明attach/拒绝/正常恢复。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "disable/drain/nativeidle，fresh-request缓存和response/logits恢复；共用Worker old owner在重建后失效，不自动rearm。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "不能以mock回放或standalone旧TP2证据授予共用Worker闭环；实际调用和完整输出回执是门槛。"
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "implementation": "LEGACY_NATIVE_IMPLEMENTATION_ONLY",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/39.output_proxy.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "旧Qwen32B v19：prefix1/5/51/512 BF16非有限readback通过；不是当前共用Worker或新四版本通过。",
+        "family_membership_grants_support": false
+      },
+      "operator": "post OpExecCache::Run synchronization / original output storage writeback",
+      "cann": "历史v19/CANN8.5.1/BF16[1,5120]/rank0/decode一次；独立Fault39 ABI没有这个模式，共用Worker必须拒绝。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "DEDICATED_HOST_CONTRACT_MISSING",
+        "NEW_WORKER_PROVIDER_MISSING",
+        "CURRENT_STORAGE_PROOF_MISSING"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "旧Qwen32B v19：prefix1/5/51/512 BF16非有限readback通过；不是当前共用Worker或新四版本通过。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "同步disable并释放owner；output故障已传播不能靠改flag撤销，fresh request/cache恢复；强制失败隔离。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "增加专属Host合同和typed output观察者，再做单次无损writeback→故障→fresh-request OFF验证。"
+    },
+    {
+      "mechanism": "41.tail_column",
+      "implementation": "DESIGN_ONLY_DISPATCH_BLOCKED",
+      "audit_level": "AUDITED",
+      "current_worker_level": "UNVERIFIED",
+      "card": "profiles/capabilities/41.tail_column.json",
+      "model": {
+        "adaptation_targets": [
+          "Qwen",
+          "GLM",
+          "DeepSeek"
+        ],
+        "verified_scope": "None accepted",
+        "family_membership_grants_support": false
+      },
+      "operator": "actual post-write cache tail boundary not yet intercepted",
+      "cann": "旧.so已加载但真实torch_npu/ATB dispatcher未被拦截；所有新CANN/SoC/provider组合未验。",
+      "soc": "Exact observed SoC required; no A2/A3 interpolation",
+      "gate": [
+        "DISPATCHER_NOT_INTERCEPTED",
+        "CACHE_STORAGE_PROOF_MISSING",
+        "CONSUMER_MISSING",
+        "NATIVE_PROVIDER_MISSING"
+      ],
+      "cpu": "Pending current sprint receipt overlay",
+      "native": {
+        "scope": "None accepted",
+        "levels": [],
+        "inherited_by_new_worker": false
+      },
+      "bf": "See scoped historical report; no new raw statistics in Git",
+      "off": "停止新writer、等待consumer/stream、恢复完整tail并核对非目标cache；共享cache不可独立恢复时隔离worker。",
+      "coverage": {
+        "single_target": "PENDING_CURRENT_WORKER",
+        "multi_target": "UNVERIFIED",
+        "every_match": "UNVERIFIED",
+        "rank_isolation": "UNVERIFIED",
+        "resource_budget": "REQUIRED",
+        "group_recovery": "UNVERIFIED"
+      },
+      "next_action": "从实际wrapper/dispatcher观察合法cache写API，完成只读存储身份闭环后才能开发故障路径。"
+    }
+  ]
+}

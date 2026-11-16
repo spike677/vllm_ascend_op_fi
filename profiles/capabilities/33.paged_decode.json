@@ -1,0 +1,200 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "33.paged_decode",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "分页增量Attention合法SInner分组8192→1024改变真实归约路径；不是dense prefill的M分组。",
+  "implementation": "IMPLEMENTED_NATIVE_PAGED_PROVIDER",
+  "source_paths": [
+    "fault_injection/deployments/paged33.py",
+    "fault_injection/native.py"
+  ],
+  "test_paths": [
+    "tests/test_deployment_providers.py",
+    "tests/test_native_bindings.py"
+  ],
+  "historical_paths": [
+    "experiments/provider_adaptation_20261116/validation_summary.json"
+  ],
+  "model_adaptation": {
+    "roles": "真实Attention模块、DynamicCache、每请求KV page table及存活页；所有值逆映射证明后执行。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "paged IncreFlashAttention native host SInner / actual launch",
+  "environment": "固定CANN9.1审计bundle/B8/Q1/KV16384/H16/KV8/D128/FP16/page128；teacher decode。",
+  "native_modification_plan": "只在真实paged kernel host分组选择边界切换，重算合法派生tiling；page table、KV和输出不人工扰动。",
+  "lossless_validation": "prefix16383后真实1token输入；全值page pack→inverse等于原cache，B/OFF同pagedbackend、原输入保持。",
+  "effect_validation": "28层×3轮=84次，每次含8请求；独立call_id/pid/tid/time、POD/raw、launch核对。固定容差首差下游mean，不唯一IFA。",
+  "off_recovery": "停策略并恢复同一pagedbackend原生参数；fresh cache clone OFF exact；退出route恢复原后端但不声称SDPA binary等价。",
+  "current_gaps": [
+    "UNIQUE_FIRST_DIFF_AT_IFA_UNPROVEN",
+    "COMMON_WORKER_ADAPTER_PENDING",
+    "CONTINUOUS_GENERATION_UNVERIFIED"
+  ],
+  "sprint_target": "复核完整page/request/storage/launch证据与统计定位限制，不把84次说成每个请求84次单独launch。",
+  "next_action": "先确认整张量统计为何FIA不可见或低阈值，再扩更多decode长度；持续生成需独立验收。",
+  "historical_validation": {
+    "scope": "provider33-model-a2：84/84策略切换，logits maxabs0.02734375、Top1不变、OFF exact；first mean.3 Max .05369125679→.05369321257。",
+    "levels": [
+      "NATIVE_VERIFIED",
+      "MODEL_VERIFIED",
+      "RECOVERY_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "CPU_VERIFIED",
+    "conclusion": "保留历史分页 decode；严格首差在后续统计，不能声称唯一定位 IFA，连续生成仍待测。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "856082739038e888cd08f417199c685ab254a1948558e2de03880be1615816a7",
+      "bytes": 172067
+    },
+    {
+      "path": "fault_injection/deployments/paged33.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "55a975468738aae58677b84dafe3608794759678a1d4ddf2da6a66badc4062b3",
+      "bytes": 11644
+    },
+    {
+      "path": "fault_injection/native.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "9e474a5b3a9eef0cba370b66af4f33b8d3f99855ae2e072473ba05d0203d4054",
+      "bytes": 32131
+    },
+    {
+      "path": "tests/test_deployment_providers.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "5e32d29aebcd2dd107e1cc1f4d0cf8af9a79b484f7ef0929f3988e15fa4647c0",
+      "bytes": 2984
+    },
+    {
+      "path": "tests/test_native_bindings.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "c6e5f70bbc5a75e1f699e3f5280947594ecb1be2d7f35f604ba8f55fc1912d61",
+      "bytes": 21139
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "UNIQUE_FIRST_DIFF_AT_IFA_UNPROVEN",
+    "COMMON_WORKER_ADAPTER_PENDING",
+    "CONTINUOUS_GENERATION_UNVERIFIED"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "先确认整张量统计为何FIA不可见或低阈值，再扩更多decode长度；持续生成需独立验收。",
+  "execution_gate_overlay": {
+    "scope": "CPU_OR_SOURCE_ONLY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

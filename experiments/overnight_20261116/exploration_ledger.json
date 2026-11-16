@@ -1,0 +1,1217 @@
+{
+  "schema": "demoncat.overnight.exploration_ledger.v1",
+  "purpose": "Bounded active exploration record for all 17 mechanisms; a review ledger, not an execution admission certificate.",
+  "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "scope_rules": {
+    "audited_mechanisms": 17,
+    "all_mechanisms_had_active_source_or_gap_audit": true,
+    "all_mechanisms_ran_three_npu_rounds": false,
+    "new_completed_bf_mechanisms": [
+      "15.alias_detach",
+      "17.spatial_padding",
+      "18.api_half"
+    ],
+    "new_bf_scope": "Constructed NPU inference modules, not pretrained model or common Worker",
+    "new_statistics_steps": [
+      0,
+      1,
+      2
+    ],
+    "new_bf_strict_first_difference": "ALIGNMENT_MISMATCH in every step for all three mechanisms",
+    "actual_worker_probes": [
+      "20.buffer_substitute: discovery and refusal/recovery only",
+      "39.matmul_range: refusal/quarantine/recovery only"
+    ],
+    "common_worker_fault_injection_performed": false,
+    "historical_validation_inherits_current_acceptance": false,
+    "model_weights_available_implies_provider_adapted": false,
+    "new_raw_statistics_published": false,
+    "this_ledger_writing_started_npu_calls": 0
+  },
+  "fixed_statistics_policy": {
+    "source": "B/F raw statistics/mix, config, stack and construct",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "preserve_null_nan_inf": true,
+    "native_logs_select_first_difference": false,
+    "alignment_diagnostics_override_strict_first_difference": false
+  },
+  "evidence_snapshot": {
+    "experiments/overnight_20261116/audit_cpu_receipt.json": {
+      "sha256": "1c7223685a1a5b612a8cb5198d1c420b6baafb3b544b4b1090e4bd706040df09",
+      "bytes": 433
+    },
+    "experiments/overnight_20261116/cpu_final_receipt.json": {
+      "sha256": "e660d6e31ef1e9bf49bc5c37f3cb67524f777d1d21efd8a234592ce50dfa33b9",
+      "bytes": 1264
+    },
+    "experiments/overnight_20261116/worker_cpu_receipt.json": {
+      "sha256": "4edc28a11e68a211ac9e37117287c743b4d1a886ad491455f38edeccb9d1d771",
+      "bytes": 1660
+    },
+    "experiments/overnight_20261116/worker_native_cpu_receipt.json": {
+      "sha256": "2195254bdc9064c6321cd107fbed2bed8623a181202ca617c9e5e45cad4212d2",
+      "bytes": 10223
+    },
+    "experiments/overnight_20261116/model_environment_tests.json": {
+      "sha256": "98a4fbab193d8c20c973796bb9cada0cce29bd9257e2c61586e9bf7b99465f1a",
+      "bytes": 667
+    },
+    "experiments/overnight_20261116/mechanism_receipts-a1.json": {
+      "sha256": "2dac0d682e313291af867999058a7e941acfeadbfc37d4529785eac68d5dcf30",
+      "bytes": 43484
+    },
+    "experiments/overnight_20261116/worker_receipts-a2.json": {
+      "sha256": "b79774aa5b64aa56cd24f6d144af9de151e8337240e791ab09f6cfc4c27c2c12",
+      "bytes": 10574
+    },
+    "experiments/overnight_20261116/worker_injection_gap.json": {
+      "sha256": "818d7ed9e3e155f2658c9185755cbcbac87bcccd0678b338fa88a52218871d96",
+      "bytes": 25830
+    },
+    "experiments/overnight_20261116/fault26_nan_analysis.json": {
+      "sha256": "f9d2894efd404cd036c05905306261b524643e62d3280eeb28e2d7d70c757036",
+      "bytes": 2581
+    },
+    "experiments/overnight_20261116/legacy_source_audit.json": {
+      "sha256": "eb073f271054ce83683641ea08aa3c9c29a8e718ec1acc99a35ed2a157f11e6c",
+      "bytes": 2097
+    },
+    "experiments/overnight_20261116/host_inventory-a1.json": {
+      "sha256": "65f42dd991d7cdaacea94e4ff62b3f36c79d99b47510fe60da6da8b829626999",
+      "bytes": 29260
+    },
+    "experiments/overnight_20261116/summary15-a1.json": {
+      "sha256": "fb84cbee3d0b6e7cbcba1500cdcca2971adb9976f042adb52acbb329738f1df3",
+      "bytes": 3109
+    },
+    "experiments/overnight_20261116/summary17-a1.json": {
+      "sha256": "1eb2a522f6119560adf3c832c0be5f1fd1a49cf63751960d61c94be4eeab4f82",
+      "bytes": 3109
+    },
+    "experiments/overnight_20261116/summary18-a1.json": {
+      "sha256": "121b7bf77c36008f85191ce56fef56c26e06406b5e94f1a0b5ee22f4225874b2",
+      "bytes": 3109
+    },
+    "experiments/overnight_20261116/diagnostic15_summary.json": {
+      "sha256": "f2b88545d660c02d57c57741e1d3fd3b6bc1ebfce712387e042b22232d044ed2",
+      "bytes": 52003
+    },
+    "experiments/overnight_20261116/diagnostic17_summary.json": {
+      "sha256": "82e561d536afea7895ddb2d57085dd2579d55c308d253bbf2c1ca1e6f6d2dc9e",
+      "bytes": 53446
+    },
+    "experiments/overnight_20261116/diagnostic18_summary.json": {
+      "sha256": "0659b65c013c2db6e86d43a1605ca95a462a4d366c54f8e1fecd2f647f5929a4",
+      "bytes": 71543
+    }
+  },
+  "mechanisms": [
+    {
+      "mechanism": "8.restore_offset",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/8.restore_offset.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [],
+        "historical_paths_reviewed": [
+          "artifacts/fault8/systemic_restore_offset_20260916/INJECTION_LOGIC.md"
+        ],
+        "findings": [
+          "Recovered and read matching systemic_extension.py and strategy.py by read-only transfer; recorded exact SHAs in legacy_source_audit.json. Paired contribution-group indices and top-k probabilities move together; T=1 passes through.",
+          "Actual legacy consumer is npu_moe_token_unpermute; wrapper depends on fault8_extension.Binding, NativeObservationExtension and scheduler RequestScope not supplied by the new common Worker. Legacy numerical consumer checks cover only the first 16 hidden columns.",
+          "Read-only host inventory found actual DeepSeek-V2-Lite-W8A8 weights. Model availability is not provider readiness or MoE-call verification; Distill-Qwen is not a DeepSeek-V2/V3 architecture proof."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_capabilities.py",
+          "tests/test_lifecycle.py"
+        ],
+        "checks": [
+          "Catalog/refusal/lifecycle tests are executable. Six-family structure discovery is CPU-only; no recovered legacy source was executed."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "17-card/source-manifest audit; matching legacy source recovery and AST/read-through audit; read-only model inventory."
+        ],
+        "not_performed": [
+          "No new NPU MoE call, provider qualification, lossless replacement, fault, OFF, full-hidden consumer comparison, or real DeepSeek model run."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/legacy_source_audit.json",
+          "experiments/overnight_20261116/host_inventory-a1.json",
+          "experiments/overnight_20261116/model_environment_tests.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "REUSABLE_BUNDLE_INCOMPLETE",
+        "TRUSTED_REQUEST_MAPPING_UNPROVEN",
+        "COMMON_WORKER_PROVIDER_MISSING",
+        "COMPLETE_CONSUMER_ORACLE_MISSING"
+      ],
+      "next_action": "Recover reviewed dependencies, bind owner-scoped actual routing metadata and complete consumer output to the existing Worker, then qualify a real MoE prefill before injecting. Do not run global legacy wrappers as a substitute.",
+      "historical_scope_not_inherited": {
+        "scope": "历史Qwen3-VL TP2：48适用调用/rank、B/I/新进程R一致；当前库无可复用worker源码。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "15.alias_detach",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/15.alias_detach.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/alias.py"
+        ],
+        "historical_paths_reviewed": [
+          "docs/unified_fault_inventory.md"
+        ],
+        "findings": [
+          "Audited NpuFormatProvider format29-to-format2 independent storage, initial logical equality, actual copy_, original-base identity, and data-reading consumer. Metadata-only uses do not satisfy consumption.",
+          "The existing implementation intercepts the public Python as_strided boundary; no proof it covers native-internal view calls or a natural pretrained-model write path."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_alias_auto.py",
+          "tests/test_cleanup_adapters.py"
+        ],
+        "checks": [
+          "Alias routing, storage/write/consumer and cleanup tests; evidence contract rejects constructed-module receipts being promoted to pretrained MODEL_CLOSED."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "One completed constructed NPU inference-module B/F series with three real statistics steps per arm, repeat checks and OFF recovery; one warmup plus three measured forwards per arm.",
+          "Original view writes exactly; B updates original base, F preserves old original-base values; original-base consumer reference matches and F max_abs is 168.0.",
+          "Strict independent statistics comparison retained all three ALIGNMENT_MISMATCH results; read-only structure diagnostics were executed without selecting a replacement first difference."
+        ],
+        "not_performed": [
+          "No common Worker injection, natural pretrained-model write chain, graph/internal-view qualification, or second/third formal NPU round."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/mechanism_receipts-a1.json",
+          "experiments/overnight_20261116/summary15-a1.json",
+          "experiments/overnight_20261116/diagnostic15_summary.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "STRICT_STATISTICS_ALIGNMENT_MISMATCH",
+        "NATURAL_PRETRAINED_WRITE_CONSUMER_UNPROVEN",
+        "INTERNAL_NATIVE_VIEW_UNOBSERVED"
+      ],
+      "next_action": "Resolve statistics identity/structure alignment through a reviewed comparison or symmetrically instrumented collection, preserving original records. Then find a natural model base-view-write-consumer path; mechanism success cannot certify one.",
+      "historical_scope_not_inherited": {
+        "scope": "旧故障27目录实际属15；旧六次NZ机制证据不代表本轮统一入口或自然模型通过。",
+        "levels": [
+          "NATIVE_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/17.spatial_padding.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/module_faults.py"
+        ],
+        "historical_paths_reviewed": [
+          "artifacts/fault17/spatial_padding_hw7_20260920/INJECTION_LOGIC.md"
+        ],
+        "findings": [
+          "Audited actual nn.Conv3d/Functional.conv3d boundary and shape-preserving supported patch geometry; only spatial padding changes from (0,0,0) to (0,7,7).",
+          "Standard Conv3d selection is structural. A text-only decoder has no eligible vision patch; class-name matching cannot fabricate one."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_module_faults.py",
+          "tests/test_cleanup_adapters.py"
+        ],
+        "checks": [
+          "Conv3d shape/role eligibility, nonmatching passthrough, every-match and cleanup tests."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "A failed constructed baseline attempt is preserved in mechanism_receipts-a1.json; the subsequent completed constructed NPU B/F series has three real statistics steps per arm, repeats and exact OFF.",
+          "F changes the actual consumer result, max_abs 0.4982621669769287, with finite outputs and unchanged input.",
+          "Strict independent statistics comparison reports ALIGNMENT_MISMATCH for steps 0,1,2; structure diagnostics do not override this result."
+        ],
+        "not_performed": [
+          "No new pretrained visual-model or common Worker acceptance; no fabricated second/third qualification cycle."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/mechanism_receipts-a1.json",
+          "experiments/overnight_20261116/summary17-a1.json",
+          "experiments/overnight_20261116/diagnostic17_summary.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "STRICT_STATISTICS_ALIGNMENT_MISMATCH",
+        "PRETRAINED_VISION_ROUTE_UNVERIFIED"
+      ],
+      "next_action": "Reconcile changed scalar padding metadata with identity alignment without masking genuine data differences, then qualify an actual pretrained visual patch and its consumer under the same contract.",
+      "historical_scope_not_inherited": {
+        "scope": "历史固定视觉patch实验；当前重建入口只有CPU路径验收。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "18.api_half",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/18.api_half.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/module_faults.py"
+        ],
+        "historical_paths_reviewed": [
+          "artifacts/fault18/systemic_api_half_20260915/README.md"
+        ],
+        "findings": [
+          "Audited nn.RMSNorm module-return multiplication by 0.5, actual module selection and hook cleanup. This is an explicit effect proxy, not CANN accumulator corruption.",
+          "Custom model RMSNorm classes are not automatically equivalent to nn.RMSNorm. Historical B/F did not include a fresh recovery request and must not supply recovery proof."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_module_faults.py",
+          "tests/test_cleanup_adapters.py"
+        ],
+        "checks": [
+          "Standard-module eligibility and cleanup tests; custom-name-only selection refused."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Completed constructed NPU B/F series with two eligible RMSNorm modules, one warmup and three real measured steps; 8 applied module calls in F across those four forwards.",
+          "F consumer result changes with max_abs 1.7051955461502075; repeat stability, finite output, unchanged input and exact OFF pass. An interrupted/no-result attempt remains in the receipt.",
+          "Three strict independent comparisons remain ALIGNMENT_MISMATCH. Raw-statistics structure diagnostics were performed separately."
+        ],
+        "not_performed": [
+          "No natural pretrained custom-RMSNorm qualification, common Worker fault, or three independent NPU rounds."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/mechanism_receipts-a1.json",
+          "experiments/overnight_20261116/summary18-a1.json",
+          "experiments/overnight_20261116/diagnostic18_summary.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "STRICT_STATISTICS_ALIGNMENT_MISMATCH",
+        "CUSTOM_RMSNORM_NOT_QUALIFIED",
+        "PRETRAINED_MODEL_ROUTE_UNVERIFIED"
+      ],
+      "next_action": "Qualify the statistics identity changes induced by the added multiply without deleting records; adapt the actual custom normalization implementation if a pretrained-model claim is needed.",
+      "historical_scope_not_inherited": {
+        "scope": "历史Qwen3-VL wrapper；新模块返回代理不继承旧native边界证据。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "20.buffer_substitute",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/20.buffer_substitute.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/deployments/buffer20.py",
+          "fault_injection/deployments/matmul.py",
+          "fault_injection/native_adapters/legacy20_bridge.inc",
+          "fault_injection/native_adapters/qmm_auto.inc",
+          "fault_injection/native_adapters/matmul_auto.h",
+          "fault_injection/qualification.py"
+        ],
+        "historical_paths_reviewed": [
+          "experiments/provider_adaptation_20261116/validation_summary.json",
+          "experiments/production_wiring_20261116/README.md",
+          "experiments/worker_extension_20261116/validation_summary.json"
+        ],
+        "findings": [
+          "Audited WeightNz and QMM typed formal/Run-slot bridges, owner-thread lifetime, original-input storage preservation, temporary replacement and synchronization/quarantine.",
+          "QualifiedNativeSession requires a stable unique compatible target and trusted complete-model replay under exclusive reservation. Historical standalone outcomes do not satisfy the common Worker contract."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_worker_extension_providers.py",
+          "tests/test_native_bindings.py",
+          "tests/native/test_matmul_auto.cpp"
+        ],
+        "checks": [
+          "CPU Worker/provider ownership and cancellation/recovery tests; C++/ctypes host-memory callback, slot-rejection, lossless replacement and OFF fixtures. Host fixtures are explicitly not NPU execution."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Actual standard Worker refusal/quarantine/unregister/detach recovered normal generation.",
+          "WeightNz discovery rerun completed on TP1 over two model forwards with zero supported native calls. Initial serialization failure remains visible.",
+          "QMM TP2 discovery observed three native calls and three signatures per rank, all in forward 0; forward 1 had zero. No stable unique target was qualified. Generation before/after discovery remained exact."
+        ],
+        "not_performed": [
+          "No common Worker fault injection, lossless qualification of a unique target, B/F statistics capture, or numerical OFF-after-fault acceptance."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/worker_receipts-a2.json",
+          "experiments/overnight_20261116/worker_injection_gap.json",
+          "experiments/overnight_20261116/worker_cpu_receipt.json",
+          "experiments/overnight_20261116/worker_native_cpu_receipt.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "WEIGHTNZ_NO_SUPPORTED_NATIVE_OPERATOR_OBSERVED",
+        "QMM_STABLE_UNIQUE_TARGET_UNPROVEN",
+        "TRUSTED_EXCLUSIVE_FULL_MODEL_REPLAY_MISSING"
+      ],
+      "next_action": "Implement the reviewed deployment-owned full-model replay contract and obtain stable discovery on both forwards. Keep zero/multiple/unobserved calls as refusals; do not select the first layer or borrow Fault39 policy.",
+      "historical_scope_not_inherited": {
+        "scope": "9171f3b WeightNz Qwen3/SmolLM2：591/633调用、3step、OFF；旧QMM真实实验与新qualified桥分开。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/22.wrong_row.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [],
+        "historical_paths_reviewed": [
+          "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/INJECTION_LOGIC.md"
+        ],
+        "findings": [
+          "Read historical actual IndexSelect output-row proxy boundary: row13 is replaced by legal source row0 after native completion; 10MiB table geometry is not proof of uint32 address overflow.",
+          "Searched only known /home and /home/haoran directory names to depth3 for indexselect/wrong-row sources. No match was found in that bounded search; this is not a whole-host absence claim."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_capabilities.py",
+          "tests/test_lifecycle.py"
+        ],
+        "checks": [
+          "Catalog/lifecycle refusal tests cover unavailable mechanism. No current native wrong-row implementation test exists."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Historical input/output/recovery and source-SHA review; bounded read-only source search."
+        ],
+        "not_performed": [
+          "No new source execution, cache/consumer binding, native writeback, lossless phase, fault, OFF, or model experiment."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/legacy_source_audit.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "REUSABLE_NATIVE_SOURCE_MISSING",
+        "LIVE_CACHE_CONSUMER_BINDING_MISSING"
+      ],
+      "next_action": "Recover the historical SHA-bound source or implement a reviewed typed legal-row output proxy with actual source/destination/cache identity, then qualify it before model acceptance.",
+      "historical_scope_not_inherited": {
+        "scope": "旧固定Qwen3-32B/TP2首次prefill每rank一次；input一致/IndexSelect output统计变化，新请求恢复。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "25.reduce_scatter",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/25.reduce_scatter.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [],
+        "historical_paths_reviewed": [
+          "docs/unified_fault_inventory.md"
+        ],
+        "findings": [
+          "Reviewed original plan: observe real HCCL/LCCL same-input nondeterministic reduction, or replay differences actually captured from that reduction; arbitrary noise and missing/duplicated rank contributions are different mechanisms.",
+          "No actual deployed group, ReduceScatter API/ABI, export, algorithm or same-input native delta sample was demonstrated. Existing environment ELF inventory did not inspect HCCL."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_overnight_evidence_contract.py"
+        ],
+        "checks": [
+          "Added executable CPU FP32 group/reduction/scatter simulation: distinct global ranks map through group membership, every contribution participates once, association changes can produce 0 versus 1.",
+          "Five CPU design tests reject duplicate/missing contributions, unsupported dtype/operation and replay admission of CPU or fabricated native evidence. Native provider remains absent and refuses arming."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Source/dependency absence audit, explicit native design and CPU-only simulation/refusal tests."
+        ],
+        "not_performed": [
+          "No HCCL/LCCL header/export qualification, collective group observation, native multi-rank execution, measured delta, injection, or OFF."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/audit_cpu_receipt.json",
+          "experiments/overnight_20261116/collective25_design.py",
+          "experiments/overnight_20261116/evidence_contract.py"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "NATIVE_IMPLEMENTATION_MISSING",
+        "ACTUAL_GROUP_AND_COLLECTIVE_ABI_UNOBSERVED",
+        "MEASURED_SAME_INPUT_NATIVE_DELTA_MISSING"
+      ],
+      "next_action": "Observe the actual inference collective and group first, then capture repeat same-input native differences and implement a typed replay adapter with group/rank/storage/sequence identity. CPU rounding examples cannot be native evidence.",
+      "historical_scope_not_inherited": {
+        "scope": "None accepted",
+        "levels": [],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "26.residual_stomp",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/26.residual_stomp.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/deployments/residual26.py",
+          "fault_injection/native_adapters/legacy26_qmm_bridge.inc",
+          "fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_qmm_output_underflow.cpp"
+        ],
+        "historical_paths_reviewed": [
+          "experiments/provider_adaptation_20261116/validation_summary.json"
+        ],
+        "findings": [
+          "Audited QMM writer output-base redirection into live residual storage, actual downstream consumer completion, padding/guard preservation, pending buffers and restoration.",
+          "Rechecked historical rank0/rank1 B/F scope. Rank1 step0 contains incomparable NaN before the target, which must remain blocking for independent earliest-difference acceptance."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_deployment_providers.py",
+          "tests/test_native_bindings.py"
+        ],
+        "checks": [
+          "Deployment/native-binding checks for producer identity, typed parameters, pending consumption and restoration; CPU tests do not recreate a natural inference writer."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Read-only historical source/evidence and focused NaN source/stack analysis.",
+          "The selected Tensor.__setitem__.20 destination is NaN/null before write while RHS, prior FIA and later returned Attention are finite. This supports a prewrite-buffer interpretation only; allocation/initialization provenance is unproven."
+        ],
+        "not_performed": [
+          "No new NPU collection, common Worker replay, write/consumer fault, or new OFF cycle; no removal or initialization of historical NaN."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/fault26_nan_analysis.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "COMMON_WORKER_ADAPTER_MISSING",
+        "RANK1_EARLIEST_DIFFERENCE_UNPROVEN",
+        "PREWRITE_ALLOCATION_INITIALIZATION_UNPROVEN"
+      ],
+      "next_action": "Trace actual allocation and initialization lifetime with read-only observer evidence; preserve raw NaN and add a trusted common Worker producer-consumer replay before any new acceptance claim.",
+      "historical_scope_not_inherited": {
+        "scope": "provider26-final-a2：45eligible writes/rank、pending0、OFF exact；rank0首差下游RoPE，rank1 step0 NaN不可比较。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "26.fia_destination",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/26.fia_destination.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/deployments/residual26.py",
+          "fault_injection/native_adapters/legacy26_fia_bridge.inc",
+          "fault20_fast_validation/source/fault26_fia_writer_proxy_v1/fault26_fia_writer_lossless.cpp"
+        ],
+        "historical_paths_reviewed": [
+          "experiments/provider_adaptation_20261116/validation_summary.json"
+        ],
+        "findings": [
+          "Audited real FIA V3 output-destination binding to a currently live residual, synchronous native writer completion, later actual residual consumption and restoration.",
+          "Historical inference-model evidence distinguishes a natural writer/consumer path from earlier constructed-model mechanism checks; first layer without producer must pass through."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_deployment_providers.py",
+          "tests/test_native_bindings.py"
+        ],
+        "checks": [
+          "Executable deployment/native-binding and consumer-lifetime checks; legacy standalone registration is separate from shared Worker deployment."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Historical 126 completed calls per rank, request/text impact, pending=0 and OFF evidence reviewed; current common-Worker deployment dependencies inspected."
+        ],
+        "not_performed": [
+          "No new actual FIA writer run, common Worker qualification/injection, alternate layout, multi-target or new B/F/OFF collection."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "COMMON_WORKER_TRUSTED_REPLAY_ADAPTER_MISSING",
+        "OTHER_LAYOUTS_AND_MULTI_TARGET_UNQUALIFIED"
+      ],
+      "next_action": "Provide reviewed shared-Worker replay and live residual producer/consumer identity. Preserve refusal on no live producer and complete consumer restoration before extending coverage.",
+      "historical_scope_not_inherited": {
+        "scope": "provider26-final-a2：126/126completed/rank，首层无producer透传；4/8token/text改变；OFF exact。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "quant.batch_shared_scale",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/quant.batch_shared_scale.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/quantization.py",
+          "fault_injection/deployments/batch_scale.py",
+          "fault_injection/native_adapters/batch_scale_native.cpp"
+        ],
+        "historical_paths_reviewed": [
+          "experiments/provider_adaptation_20261116/validation_summary.json"
+        ],
+        "findings": [
+          "Audited DynamicQuantV2 input-scale reduction-range change, native execution, original input preservation and current request/forward scope.",
+          "Historical actual scheduler request/token mapping and selected-input equality are established; whole-batch output Max127 to98 does not prove every request scale/Q changed. Prompt-only natural induction is a different experiment."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_quant_auto.py",
+          "experiments/provider_adaptation_20261116/test_quant_thread_native.py"
+        ],
+        "checks": [
+          "Actual-call quantizer discovery, supported shape/scope, passthrough and thread-owner contract tests are executable."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Reviewed historical three-step real quantizer hit and OFF evidence, scheduler-row mapping and whole-tensor statistics; explicitly recorded missing per-request scale/Q impact proof."
+        ],
+        "not_performed": [
+          "No new NPU DynamicQuant run or shared Worker B/F/OFF; no new per-request scale/Q numerical comparison or all-eligible coverage measurement."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "COMMON_WORKER_ADAPTER_MISSING",
+        "PER_REQUEST_SCALE_Q_IMPACT_UNPROVEN",
+        "ALL_ELIGIBLE_DENOMINATOR_UNPROVEN"
+      ],
+      "next_action": "Bind trusted scheduler mapping to the common Worker and independently measure eligible calls. If claiming every request impact, add scale/Q row evidence rather than infer it from global Max.",
+      "historical_scope_not_inherited": {
+        "scope": "quant-model-a2：每rank3命中；实际scheduler请求/token行映射及selected input一致；3step整批DynamicQuant output0 Max127→98不证明每请求scale/Q均变；6/8logprob变、token不变；OFF exact。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "28.fa.legal_tiling",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/28.fa.legal_tiling.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/strategy.py",
+          "native_execution_strategy/session.py",
+          "native_execution_strategy/adapters/flash_attention.py"
+        ],
+        "historical_paths_reviewed": [
+          "docs/unified_fault_inventory.md"
+        ],
+        "findings": [
+          "Audited NativeFAInvocation, FlashAttention adapter and strategy-session bridge; legal M/nRatio candidates require matching kernel/tiling/environment facts.",
+          "FA S1S2 acceptance is distinct from FIA; legal strategy change can have no observable statistics change."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_strategy_bridge.py"
+        ],
+        "checks": [
+          "Strategy bridge plus 69 strategy-suite tests passed on CPU; no template or launch is certified from constants alone."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Source/legality/trigger/lifecycle and historical fixed-shape native evidence reviewed."
+        ],
+        "not_performed": [
+          "No new native FA provider wiring, actual launch, common Worker replay, model propagation or B/F/OFF."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "MODEL_NATIVE_PROVIDER_NOT_WIRED",
+        "COMMON_WORKER_ADAPTER_MISSING"
+      ],
+      "next_action": "Construct invocation context from a real FA API and validate candidate launch only on reviewed shapes; retain no-effect outcomes and separate FIA evidence.",
+      "historical_scope_not_inherited": {
+        "scope": "历史FA固定shape机制矩阵；当前桥CPU验证不代表新共用Worker实机。",
+        "levels": [
+          "NATIVE_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "28.fia.legal_tiling",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/28.fia.legal_tiling.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/fia.py",
+          "fault_injection/attention.py"
+        ],
+        "historical_paths_reviewed": [
+          "docs/unified_fault_inventory.md"
+        ],
+        "findings": [
+          "Audited FP16 B1/B8 Hq16/Hkv8 S2048 D128 causal restrictions, vendor SHA and distinct legal M/S2 strategies; unsupported mask/cache/dimension routes refuse.",
+          "Prior legal-strategy search did not reach the required 0.1 percent reliable-statistics amplitude; this must not inherit denominator-replay success."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_fia_masks.py",
+          "tests/test_fault_contracts.py"
+        ],
+        "checks": [
+          "FIA mask, structural attention selection and fault contract tests passed in unified CPU suite."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Reviewed source/kernel-key boundaries, fixed-geometry historical numerical and restoration evidence, and unmet statistics-magnitude requirement."
+        ],
+        "not_performed": [
+          "No new router NPU execution, common Worker, independent new first difference or geometry generalization."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "NEW_ROUTER_NATIVE_ACCEPTANCE_PENDING",
+        "FIXED_GEOMETRY_ONLY",
+        "STATISTICAL_MAGNITUDE_TARGET_UNMET"
+      ],
+      "next_action": "Requalify a matching vendor on the actual router before broadening geometry. Keep this legal mechanism separate from controlled erroneous denominator replay.",
+      "historical_scope_not_inherited": {
+        "scope": "历史固定Qwen3合法切分实验；当前router仅CPU合同。",
+        "levels": [
+          "NATIVE_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/28.fia.denominator_replay.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/fia.py",
+          "fault_injection/attention.py"
+        ],
+        "historical_paths_reviewed": [
+          "docs/unified_fault_inventory.md"
+        ],
+        "findings": [
+          "Audited distinct denominator-replay kernel key and healthy/fault pair using shared M128 geometry. Repeating the first S2 denominator contribution is an explicit controlled error, not historical default tiling.",
+          "Reviewed historical Qwen3 full-model three-step earliest FIA output statistics, 0.7968 percent Norm change, 28-layer coverage and OFF scope; new router acceptance is separate."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_fia_masks.py",
+          "tests/test_fault_contracts.py"
+        ],
+        "checks": [
+          "Structural attention registry, masks, fingerprint and variant-separation tests are executable and passed in the CPU suite."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Source/variant/build restrictions and historical raw-statistics-derived conclusions reviewed."
+        ],
+        "not_performed": [
+          "No new native router run, Worker integration, fresh B/F/OFF or GLM/DeepSeek numerical acceptance."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "NEW_ROUTER_NATIVE_ACCEPTANCE_PENDING",
+        "VENDOR_BUILD_MATCH_REQUIRED",
+        "MULTI_MODEL_NATIVE_GENERALIZATION_UNVERIFIED"
+      ],
+      "next_action": "Use a matching reviewed vendor and actual attention call on the new router; validate launch and full inputs independently after statistical localization.",
+      "historical_scope_not_inherited": {
+        "scope": "历史完整Qwen3/B8/28层/3step首层FIA输出Norm0.7968%变化与OFF；新routerCPU通过不继承。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "33.paged_decode",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/33.paged_decode.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault_injection/deployments/paged33.py",
+          "fault_injection/native.py"
+        ],
+        "historical_paths_reviewed": [
+          "experiments/provider_adaptation_20261116/validation_summary.json"
+        ],
+        "findings": [
+          "Audited paged KV/cache block inverse, IFA launch/profile and legal SInner8192-to1024 change; it is a decode reduction strategy, not dense-prefill M tiling.",
+          "Reviewed historical 84 calls total (28 layers x3 steps, each B8), full page inverse and OFF. Statistics first difference was downstream mean.3, not unique IFA output localization."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_deployment_providers.py",
+          "tests/test_native_bindings.py"
+        ],
+        "checks": [
+          "Paged deployment descriptor/cache-map/profile validation and native binding tests; no CPU fixture certifies paged kernel execution."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Historical launch/page mapping, numerical propagation, Top1 unchanged, OFF and localization limitations reviewed."
+        ],
+        "not_performed": [
+          "No new common Worker deployment, continuous-generation correctness test, IFA-unique first difference, or new NPU B/F/OFF."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "COMMON_WORKER_ADAPTER_MISSING",
+        "UNIQUE_IFA_FIRST_DIFFERENCE_UNPROVEN",
+        "CONTINUOUS_GENERATION_UNVERIFIED"
+      ],
+      "next_action": "Add trusted paged inference replay and report actual observable first difference without relabeling it IFA; continuous generation remains a separate acceptance task.",
+      "historical_scope_not_inherited": {
+        "scope": "provider33-model-a2：84/84策略切换，logits maxabs0.02734375、Top1不变、OFF exact；first mean.3 Max .05369125679→.05369321257。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/39.matmul_range.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault39/native/runtime.cpp",
+          "fault39/native/metadata_proxy.cpp",
+          "fault39/src/demoncat_fault39/backend.py",
+          "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39.py"
+        ],
+        "historical_paths_reviewed": [
+          "experiments/provider_adaptation_20261116/validation_summary.json",
+          "experiments/worker_extension_20261116/validation_summary.json"
+        ],
+        "findings": [
+          "Audited two real Matmul input temporary replacements, exact build/API/slot/storage gates, complete input preservation, native completion, owner/rank/generation and recovery.",
+          "Reviewed prior four concrete CANN build/operator cases separately from prior TP1/TP2 model cases; 8.x/9.x family strings are not universal ABI approval.",
+          "Common Worker register requires a live trusted scheduler replay. Current synchronous execute RPC lacks a supported reentrant host scheduler-replay adapter."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_worker_extension_providers.py",
+          "fault39/tests/test_contracts.py"
+        ],
+        "checks": [
+          "60 Fault39 and 47 tool tests, shared Worker/provider refusal and recovery tests. CPU fixtures cannot supply fresh real scheduler IDs."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Actual standard Worker prepare/register refusal/quarantine/unregister/detach probe passed; other-provider action was blocked during quarantine and normal generation was exact after recovery.",
+          "Read-only host/environment ABI and prior source/profile review; no new native fault was armed."
+        ],
+        "not_performed": [
+          "No trusted scheduler replay factory, discovery/lossless-self/lossless-mat2/lossless-dual/fault/OFF sequence on the common Worker, new B/F statistics or all-eligible coverage."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/worker_receipts-a2.json",
+          "experiments/overnight_20261116/worker_injection_gap.json",
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/model_environment_delivery.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "FAULT39_TRUSTED_SCHEDULER_REPLAY_REQUIRED",
+        "SYNCHRONOUS_HOST_REPLAY_BOUNDARY_MISSING",
+        "COMMON_WORKER_INJECTION_UNVERIFIED"
+      ],
+      "next_action": "Specify host-owned exclusive replay that obtains fresh scheduler IDs on the real model thread; if synchronous execution cannot support it, review phase-continuation orchestration rather than fake IDs or reuse old ones.",
+      "historical_scope_not_inherited": {
+        "scope": "独立包四实际CANN算子通过；8.5.1 QwenTP1/TP2、9.1 QwenTP2通过。bfdd共用Worker只证明attach/拒绝/正常恢复。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/39.output_proxy.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [
+          "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp"
+        ],
+        "historical_paths_reviewed": [
+          "fault20_fast_validation/reports/fault39_float_matmul_output_nonfinite_proxy_validation.md"
+        ],
+        "findings": [
+          "Located and read actual legacy post-Run output writeback in buffer_substitute_preload.cpp: finite original output becomes BF16 Inf/NaN bits in original output storage.",
+          "This effect proxy is distinct from mathematically cancelling finite inputs that cause a nonfinite real Matmul result. The current independent Fault39 ABI does not expose output-proxy mode."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_capabilities.py",
+          "tests/test_native_bindings.py"
+        ],
+        "checks": [
+          "Catalog/native-binding separation and unavailable-provider refusal checks; no dedicated modern output-proxy host acceptance exists."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Legacy implementation and historical model/prefix/readback/recovery report reviewed; dedicated host-contract gap recorded."
+        ],
+        "not_performed": [
+          "No new typed output observer, common Worker proxy, native writeback, non-target isolation or fresh-request OFF experiment."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "DEDICATED_TYPED_HOST_CONTRACT_MISSING",
+        "COMMON_WORKER_PROVIDER_MISSING",
+        "CURRENT_OUTPUT_STORAGE_PROOF_MISSING"
+      ],
+      "next_action": "Implement a separately named reviewed output-storage provider through existing interfaces, with output type/format/size identity, readback, non-target preservation and fresh-request recovery. Do not reuse range-mechanism acceptance.",
+      "historical_scope_not_inherited": {
+        "scope": "旧Qwen32B v19：prefix1/5/51/512 BF16非有限readback通过；不是当前共用Worker或新四版本通过。",
+        "levels": [
+          "NATIVE_VERIFIED",
+          "MODEL_VERIFIED",
+          "RECOVERY_VERIFIED"
+        ],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    },
+    {
+      "mechanism": "41.tail_column",
+      "active_audit_completed": true,
+      "capability_card": "profiles/capabilities/41.tail_column.json",
+      "source_audit": {
+        "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+        "source_paths_reviewed": [],
+        "historical_paths_reviewed": [
+          "fault20_fast_validation/reports/fault41/README.md",
+          "fault20_fast_validation/reports/fault41/fault41_state_cache_tail_corruption_roadmap.md"
+        ],
+        "findings": [
+          "Reviewed tail-cache-corruption roadmap and historical failure: loading a shared object did not intercept actual torch_npu/ATB writer dispatcher.",
+          "No current reusable native provider or accepted writer-storage-consumer chain was found. A cache state mutation requires live cache identity and restoration, not an arbitrary returned tensor edit."
+        ],
+        "source_fingerprints": "See card.source_manifest and legacy_source_audit.json; recovered legacy source was read, not executed."
+      },
+      "executable_cpu_contract": {
+        "test_paths": [
+          "tests/test_capabilities.py",
+          "tests/test_lifecycle.py"
+        ],
+        "checks": [
+          "Catalog/lifecycle unavailable-mechanism refusal checks only; no native cache-writer simulation is claimed."
+        ],
+        "receipt_refs": [
+          "experiments/overnight_20261116/cpu_final_receipt.json",
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "limit": "Suite pass is CPU contract evidence only; not 17 separate native executions or per-mechanism full-model acceptance."
+      },
+      "actual_exploration_this_sprint": {
+        "performed": [
+          "Source/roadmap/dispatcher-gap and required cache storage/consumer proof audit."
+        ],
+        "not_performed": [
+          "No new actual writer interception, cache mutation, consumer execution, fault, OFF, or model run."
+        ],
+        "evidence_refs": [
+          "experiments/overnight_20261116/audit_cpu_receipt.json"
+        ],
+        "formal_second_round_performed": false,
+        "formal_third_round_performed": false,
+        "round_semantics": "Retries and three measured prefill/module steps are preserved as actual attempts/steps; they are not invented second/third qualification rounds."
+      },
+      "current_structural_gates": [
+        "ACTUAL_WRITER_DISPATCHER_NOT_INTERCEPTED",
+        "LIVE_CACHE_STORAGE_AND_CONSUMER_UNPROVEN",
+        "NATIVE_PROVIDER_MISSING"
+      ],
+      "next_action": "First observe the actual cache-write API and prove the same live storage reaches Attention; only then implement bounded tail mutation and full cache restoration via a reviewed provider.",
+      "historical_scope_not_inherited": {
+        "scope": "None accepted",
+        "levels": [],
+        "inherited_by_new_worker": false
+      },
+      "new_raw_statistics_published": false
+    }
+  ],
+  "validation": {
+    "mechanism_ids_unique": true,
+    "required_entry_fields_present": true,
+    "all_referenced_local_paths_exist": true,
+    "receipt_snapshots_sha256_recorded": true,
+    "cards_modified_by_this_step": false,
+    "production_files_modified_by_this_step": false,
+    "npu_started_by_this_step": false,
+    "git_committed_by_this_step": false
+  }
+}

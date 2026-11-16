@@ -1,0 +1,21 @@
+In file included from tests/native/../../fault_injection/native_adapters/matmul_auto.h:4,
+                 from tests/native/test_matmul_auto.cpp:2:
+tests/native/../../fault_injection/native_adapters/../../fault39/native/runtime_identity.h: In function 'bool f39identity::matches(void*, const f39identity::Image&)':
+tests/native/../../fault_injection/native_adapters/../../fault39/native/runtime_identity.h:60:2: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   60 |  if(!symbol)return false;Dl_info info{};if(!dladdr(symbol,&info) || !info.dli_fname || !info.dli_fbase)return false;
+      |  ^~
+tests/native/../../fault_injection/native_adapters/../../fault39/native/runtime_identity.h:60:26: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   60 |  if(!symbol)return false;Dl_info info{};if(!dladdr(symbol,&info) || !info.dli_fname || !info.dli_fbase)return false;
+      |                          ^~~~~~~
+PASS local C++ callback, lossless, substitutions, OFF and slot rejection
+In file included from tests/native/../../fault_injection/native_adapters/matmul_auto.h:4,
+                 from tests/native/test_matmul_auto.cpp:2:
+tests/native/../../fault_injection/native_adapters/../../fault39/native/runtime_identity.h: In function 'bool f39identity::matches(void*, const f39identity::Image&)':
+tests/native/../../fault_injection/native_adapters/../../fault39/native/runtime_identity.h:60:2: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
+   60 |  if(!symbol)return false;Dl_info info{};if(!dladdr(symbol,&info) || !info.dli_fname || !info.dli_fbase)return false;
+      |  ^~
+tests/native/../../fault_injection/native_adapters/../../fault39/native/runtime_identity.h:60:26: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the 'if'
+   60 |  if(!symbol)return false;Dl_info info{};if(!dladdr(symbol,&info) || !info.dli_fname || !info.dli_fbase)return false;
+      |                          ^~~~~~~
+PASS scoped host callback, D2D fixture and OFF for aclnnQuantMatmulWeightNz
+PASS scoped host callback, D2D fixture and OFF for aclnnMatmulWeightNz

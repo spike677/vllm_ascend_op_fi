@@ -1,0 +1,196 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "28.fa.legal_tiling",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "真实FA S1S2 host选择合法M/nRatio分组，数值变化来自真实浮点计算次序，不保证超过统计阈值。",
+  "implementation": "IMPLEMENTED_STRATEGY_BRIDGE",
+  "source_paths": [
+    "fault_injection/strategy.py",
+    "native_execution_strategy/session.py",
+    "native_execution_strategy/adapters/flash_attention.py"
+  ],
+  "test_paths": [
+    "tests/test_strategy_bridge.py"
+  ],
+  "historical_paths": [
+    "docs/unified_fault_inventory.md"
+  ],
+  "model_adaptation": {
+    "roles": "实际共享Attention回调与真实npu_fusion_attention_v3参数；请求长度映射独立提供，不从模块名或batch猜。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "FlashAttentionScore S1S2 native host policy / actual launch",
+  "environment": "证书绑定CANN9.1/910B4、B1/B8、Q16/KV8、S2048、D128、FP16及无dropout；不支持TND/复杂mask。",
+  "native_modification_plan": "保留StrategySession、NativeFAInvocation和实际observe→choose→host重算；M-only、ratio-only、joint分别归因。不得直接写raw字段骗profile。",
+  "lossless_validation": "原生策略观察与未改变策略launch一致；固定同一完整Q/K/V、逐元素输出与关闭策略恢复。",
+  "effect_validation": "实际raw/POD/launch与完整输出、msprobe固定容差独立定位。策略切换成功但数值无差异仍保留有效否定结果。",
+  "off_recovery": "撤销scope并重新运行原策略，对实际launch及完整输出确认恢复。",
+  "current_gaps": [
+    "MODEL_NATIVE_PROVIDER_NOT_WIRED",
+    "COMMON_WORKER_ADAPTER_PENDING"
+  ],
+  "sprint_target": "核对现有56+4算子矩阵和模型路径，补共用模型forward到策略session的真实绑定可行性。",
+  "next_action": "从实际FA API观察构建NativeFAInvocation，只有证书覆盖形状能执行；不同FIA路径不能复用此通过状态。",
+  "historical_validation": {
+    "scope": "历史FA固定shape机制矩阵；当前桥CPU验证不代表新共用Worker实机。",
+    "levels": [
+      "NATIVE_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "CPU_VERIFIED",
+    "conclusion": "StrategySession CPU 回归通过；共享模型 forward 的原生 FA Provider 接线尚缺。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "docs/unified_fault_inventory.md",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "816e602607b9d524f06647bb9c62db67b4a077ef05955db9a1a3a724fe58eb37",
+      "bytes": 33973
+    },
+    {
+      "path": "fault_injection/strategy.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "79ac02ccd923e3ab7a68fec066305bd0fb969d2ebce9aadf6bad0a2aeb1b94cf",
+      "bytes": 6629
+    },
+    {
+      "path": "native_execution_strategy/adapters/flash_attention.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "fc5be3982f243852575ffb9f8a13a395a9475f9f7c22beb9091f7e723b721738",
+      "bytes": 18817
+    },
+    {
+      "path": "native_execution_strategy/session.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "b77cb735a858c1e7a2292911b45be7cc3c058f1c53a5eee6ddf60c04d67a5275",
+      "bytes": 6853
+    },
+    {
+      "path": "tests/test_strategy_bridge.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "59704fb4791c0f339d331ae22989185928d9f6626f1d0b0ad9783e3eb3f203a5",
+      "bytes": 8692
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "MODEL_NATIVE_PROVIDER_NOT_WIRED",
+    "COMMON_WORKER_ADAPTER_PENDING"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "从实际FA API观察构建NativeFAInvocation，只有证书覆盖形状能执行；不同FIA路径不能复用此通过状态。",
+  "execution_gate_overlay": {
+    "scope": "CPU_OR_SOURCE_ONLY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

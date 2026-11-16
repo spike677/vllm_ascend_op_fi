@@ -237,3 +237,7 @@ Fault20 记录中的 `Buffer20Runtime`、probe20 使用 `provider-source-a3`，L
 | P5 · 8、22、25、41、39 输出代理 | 可复用 Worker 或 Native Provider、实际语义、资源和恢复。25/41 先确认执行边界再拆工。 | 2–5／初次可运行验证，待边界确认 |
 
 本轮已通过 85 个发布文件校验、35 条源码 LF 校验；发布工作树的 12 个统一合同、39 个 Fault39 合同测试通过。本地原型的 6 个覆盖及 9 个适配测试通过。后续代码触点和测试入口见[生产接线规划](unified_model_injection.md#生产接线规划)。
+
+## 17条隔夜执行结果覆盖层
+
+本轮从 bfdd6abc 继续，历史能力表不自动升级为新 Worker 验收。17项逐条的实际结果、G0–G9、模型/环境范围、B/F/OFF和缺口见[最终报告](fault_closure_report.md)、[机器矩阵](../experiments/overnight_20261116/fault_matrix.json)与[能力卡](overnight_fault_cards/)。新增15/17/18仅通过构造NPU模块机制级；共享Worker实际故障闭环仍待可信回放。

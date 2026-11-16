@@ -1,0 +1,79 @@
+{
+  "schema": "demoncat.overnight.nan_investigation.v1",
+  "actual_npu_calls": 0,
+  "groups": {
+    "baseline": {
+      "dump_sha256": "785a9f1b6063d68b05187e331fe938d7f3e82c4befeb342fa2e6b74f77d93c38",
+      "destination_shape": [
+        51,
+        20,
+        128
+      ],
+      "destination_dtype": "torch.bfloat16",
+      "destination_max": "NaN",
+      "destination_min": "NaN",
+      "destination_mean": null,
+      "destination_norm": null,
+      "complete_slice": [
+        null,
+        51,
+        null
+      ],
+      "rhs_max": 1.640625,
+      "rhs_min": -1.609375,
+      "rhs_shape": [
+        51,
+        20,
+        128
+      ],
+      "fia_output_max": 1.640625,
+      "fia_output_min": -1.609375,
+      "returned_attention_max": 1.640625,
+      "returned_attention_min": -1.609375,
+      "finite_rhs_and_return": true
+    },
+    "fault": {
+      "dump_sha256": "e4038f773e6e0add0fe5606a94ced6a44c6221c52c10b2d30006098718007b8c",
+      "destination_shape": [
+        51,
+        20,
+        128
+      ],
+      "destination_dtype": "torch.bfloat16",
+      "destination_max": "NaN",
+      "destination_min": "NaN",
+      "destination_mean": null,
+      "destination_norm": null,
+      "complete_slice": [
+        null,
+        51,
+        null
+      ],
+      "rhs_max": 1.640625,
+      "rhs_min": -1.609375,
+      "rhs_shape": [
+        51,
+        20,
+        128
+      ],
+      "fia_output_max": 1.640625,
+      "fia_output_min": -1.609375,
+      "returned_attention_max": 1.640625,
+      "returned_attention_min": -1.609375,
+      "finite_rhs_and_return": true
+    }
+  },
+  "source": {
+    "path": "/vllm-workspace/vllm-ascend/vllm_ascend/attention/attention_v1.py",
+    "sha256": "bbe69c3015ee15789dea0d6ec9795243458b68494294c4c023ed5a5d665c550b",
+    "line": 839,
+    "statement": "output[:num_tokens] = attn_output[:num_tokens]"
+  },
+  "private_diagnostic_sha256": "a4177caa89bb12f3ecb4a4c36b1641db07c68ca8a5720b1522c2af1040e59baf",
+  "inference": "The blocking NaN is observed in the assignment destination before a complete finite RHS overwrite; this does not show nonfinite FIA or returned Attention values.",
+  "unproven": [
+    "Allocation/initialization provenance of the prewrite buffer; no whole-tensor payload examined.",
+    "No new clean-input NPU replay in this diagnostic; prior native recovery is separate evidence."
+  ],
+  "independent_comparison": "EARLIEST_DIFFERENCE_UNPROVEN remains unchanged; do not mask, drop, initialize or equate NaN in original captures."
+}

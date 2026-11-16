@@ -1,0 +1,260 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "20.buffer_substitute",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "真实executor Run的语义输入槽临时buffer替换：WeightNz BF16 mantissa与QMM INT8策略分别承诺，原输入存储不变。",
+  "implementation": "IMPLEMENTED_TWO_OPERATOR_PATHS",
+  "source_paths": [
+    "fault_injection/deployments/buffer20.py",
+    "fault_injection/deployments/matmul.py",
+    "fault_injection/native_adapters/legacy20_bridge.inc",
+    "fault_injection/native_adapters/qmm_auto.inc",
+    "fault_injection/native_adapters/matmul_auto.h",
+    "fault_injection/qualification.py"
+  ],
+  "test_paths": [
+    "tests/test_worker_extension_providers.py",
+    "tests/test_native_bindings.py",
+    "tests/native/test_matmul_auto.cpp"
+  ],
+  "historical_paths": [
+    "experiments/provider_adaptation_20261116/validation_summary.json",
+    "experiments/production_wiring_20261116/README.md",
+    "experiments/worker_extension_20261116/validation_summary.json"
+  ],
+  "model_adaptation": {
+    "roles": "实际Linear/量化method候选→active module→typed formal/Run slot→唯一稳定cache；QMM与WeightNz各自单独选点。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "aclnnMatmulWeightNz(self) / aclnnQuantMatmulWeightNz(x1) at OpExecCache::Run",
+  "environment": "各自真实v17 ABI/CANN8.5.1构建与库指纹、设备、输入格式和storage边界；不能用WeightNz通过替代QMM。",
+  "native_modification_plan": "复用原v17 native算法及typed代理；对每个API独立观察描述符和slot，owner线程仅消费本线程arm，临时输入执行后同步释放。",
+  "lossless_validation": "reference与lossless完整输入storage哈希/完整输出、替换formals、readback、native_calls=1；QualifiedNativeSession保留唯一目标单次门禁。",
+  "effect_validation": "实际temporary input和真实native输出变化、完整模型/logits、原输入保持；Python可记录未替换的caller输入。",
+  "off_recovery": "disarm、drain、释放所有临时buffer并核对native idle，再同输入replay/OFF精确对比；不全局reload。",
+  "current_gaps": [
+    "COMMON_WORKER_INJECTION_PENDING",
+    "QMM_NEW_BRIDGE_NPU_PENDING",
+    "CROSS_THREAD_ARM_RECHECK"
+  ],
+  "sprint_target": "共用Worker单点lossless→fault→OFF；WeightNz和QMM分别证明，至少保留Qwen与Llama两结构历史范围。",
+  "next_action": "在当前Worker验证可托管replay、原生scope线程、声明profile和两个API各自receipt；新family只通过实际API复用。",
+  "historical_validation": {
+    "scope": "9171f3b WeightNz Qwen3/SmolLM2：591/633调用、3step、OFF；旧QMM真实实验与新qualified桥分开。",
+    "levels": [
+      "NATIVE_VERIFIED",
+      "MODEL_VERIFIED",
+      "RECOVERY_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "CPU_VERIFIED",
+    "conclusion": "共享 Worker 隔离/恢复通过；WeightNz 未观测，QMM TP2 每 rank 观测 3 次，但跨轮稳定目标未成立。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false,
+    "scope": "REAL_VLLM_WORKER_QUARANTINE_RECOVERY_AND_READONLY_DISCOVERY",
+    "execution_receipt": "worker_receipts-a2.json",
+    "trusted_replay_registered": false
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "experiments/production_wiring_20261116/README.md",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "7b3a1df2998f4fa4b5af949eb5131c78917895aab60867e54bd85cbebeafbd50",
+      "bytes": 4043
+    },
+    {
+      "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "856082739038e888cd08f417199c685ab254a1948558e2de03880be1615816a7",
+      "bytes": 172067
+    },
+    {
+      "path": "experiments/worker_extension_20261116/validation_summary.json",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "305dedb8a84304a15f28921f2e8e869b2dec4ab71b68c9ddbd3fc806058f7d66",
+      "bytes": 19122
+    },
+    {
+      "path": "fault_injection/deployments/buffer20.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "1d0024da8945faa6d4e8adf08023882ef2d63e4918dbdd253098868ab8a2b466",
+      "bytes": 7313
+    },
+    {
+      "path": "fault_injection/deployments/matmul.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "a3ccc8433ef3740446dc14778baf1bf029ed0dc32855bc36586a91337a6b5be3",
+      "bytes": 11698
+    },
+    {
+      "path": "fault_injection/native_adapters/legacy20_bridge.inc",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "fa835b729c78c0919bc3565f2a6a006d830d5356ed7ec16e1bd1250f363c4e57",
+      "bytes": 5894
+    },
+    {
+      "path": "fault_injection/native_adapters/matmul_auto.h",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "15dade31b7edca018fc2cff1193046740c241cb3a0c076f7e426c6e5de13648c",
+      "bytes": 16048
+    },
+    {
+      "path": "fault_injection/native_adapters/qmm_auto.inc",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "0658b38c586103502c737a42d26a65dde60e13d476c4da27dd9167cc6e5ff762",
+      "bytes": 13688
+    },
+    {
+      "path": "fault_injection/qualification.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "a76f93c4fd3fa6796c3102bf412c8db6068ec9af9c83a0c53c4ce90dbdd3fd71",
+      "bytes": 13748
+    },
+    {
+      "path": "tests/native/test_matmul_auto.cpp",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "7e58a0eef625ce047b26c134c22b5eb833bdc82b33bb050a97f166a27eb4cddc",
+      "bytes": 11756
+    },
+    {
+      "path": "tests/test_native_bindings.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "c6e5f70bbc5a75e1f699e3f5280947594ecb1be2d7f35f604ba8f55fc1912d61",
+      "bytes": 21139
+    },
+    {
+      "path": "tests/test_worker_extension_providers.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "a18d7565880816e61cc4da7e219b45082ffdd5c0decc348ff1129f5523f3ff7c",
+      "bytes": 8747
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "COMMON_WORKER_INJECTION_PENDING",
+    "QMM_NEW_BRIDGE_NPU_PENDING",
+    "CROSS_THREAD_ARM_RECHECK",
+    "TRUSTED_REPLAY_BINDING_MISSING"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "在当前Worker验证可托管replay、原生scope线程、声明profile和两个API各自receipt；新family只通过实际API复用。",
+  "execution_gate_overlay": {
+    "scope": "REAL_VLLM_WORKER_QUARANTINE_RECOVERY_AND_READONLY_DISCOVERY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

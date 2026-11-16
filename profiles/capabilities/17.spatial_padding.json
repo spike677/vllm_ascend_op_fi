@@ -1,0 +1,204 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "17.spatial_padding",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "Conv3d padding参数由0,0,0改为0,7,7；受控空间边界改变，保持已证明的patch输出shape。",
+  "implementation": "IMPLEMENTED_ARGUMENT_PROXY",
+  "source_paths": [
+    "fault_injection/module_faults.py"
+  ],
+  "test_paths": [
+    "tests/test_module_faults.py",
+    "tests/test_cleanup_adapters.py"
+  ],
+  "historical_paths": [
+    "artifacts/fault17/spatial_padding_hw7_20260920/INJECTION_LOGIC.md"
+  ],
+  "model_adaptation": {
+    "roles": "实际标准Conv3d视觉patch embedding；仅类和真实weight/bias/参数关系，不匹配名字proj。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "torch.nn.functional.conv3d padding argument",
+  "environment": "eval标准Conv3d，kernel/stride匹配输入patch，空间16x16、dilation1/groups1、zero padding；NPU新入口待证。",
+  "native_modification_plan": "在实际Functional.conv3d唯一调用的padding参数处切换；不修改输入或weight、不人为补写输出。",
+  "lossless_validation": "B透传原参数、原调用一次；核对输入/权重不变和输出N,C,1,1,1；独立CPU卷积参考证明shape。",
+  "effect_validation": "参数字段可先变化，随后conv3d输出变化；不要求相同参数的kernel计算失败。比较完整输出及下游shape消费。",
+  "off_recovery": "停止新调用并恢复原Functional.conv3d及hook owner；新同输入forward精确返回B。",
+  "current_gaps": [
+    "NEW_ROUTE_NPU_PENDING",
+    "PRETRAINED_VISION_PATH_UNVERIFIED"
+  ],
+  "sprint_target": "真实NPU Conv3d机制级参数/数值/shape/OFF验收；真实视觉预训练调用另标。",
+  "next_action": "发现当前视觉模型Conv3d实例并实际触发；文本only模型明确NO_ELIGIBLE_MODULE，不伪造视觉路径。",
+  "historical_validation": {
+    "scope": "历史固定视觉patch实验；当前重建入口只有CPU路径验收。",
+    "levels": [
+      "NATIVE_VERIFIED",
+      "MODEL_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "NATIVE_VERIFIED",
+    "conclusion": "构造 NPU Conv3d B/F/OFF 通过；实际 padding 0,0,0→0,7,7，输出数值改变。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false,
+    "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+    "execution_receipts": [
+      "/home/overnight-17-20261116/native17-a2/fault17_baseline",
+      "/home/overnight-17-20261116/native17-a2/fault17_fault"
+    ],
+    "native_receipt": "mechanism_receipts-a1.json",
+    "independent_report": "diagnostic17_summary.json",
+    "exact_off": true,
+    "steps": [
+      0,
+      1,
+      2
+    ],
+    "warmup_forwards": 1
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "artifacts/fault17/spatial_padding_hw7_20260920/INJECTION_LOGIC.md",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "7d6f2067601f588bcc37408f5b16bfbef379863dd1ccd63e641a7f10ef2712d5",
+      "bytes": 6415
+    },
+    {
+      "path": "fault_injection/module_faults.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "903017adf8fb868f575087597344f12587ab3044d3892fa1ac2578598f442be6",
+      "bytes": 13921
+    },
+    {
+      "path": "tests/test_cleanup_adapters.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "acd608cdc9e15cc53742e22812582acc5b68ad25f6b93e1d9d260b7d4cdc2f9e",
+      "bytes": 12970
+    },
+    {
+      "path": "tests/test_module_faults.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "ca318d31ded29a86c0485afce756c24d5ec96c14c1d0d7980fb2391b3b79b561",
+      "bytes": 13151
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "PRETRAINED_VISION_PATH_UNVERIFIED",
+    "G9_ALIGNMENT_MISMATCH"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "VERIFIED_CONSTRUCTED_MODULE_ONLY",
+    "multi_target": "NOT_TESTED",
+    "every_match": "VERIFIED_FOUR_FORWARDS_IN_THIS_MODULE_ONLY",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "small bounded module",
+    "group_recovery": "OFF_OUTPUT_EXACT_IN_THIS_MODULE",
+    "common_worker_all_eligible": "NOT_QUALIFIED"
+  },
+  "current_next_action": "先补显式调用链对齐规则并独立审查；15 保留私有格式 null，寻找自然写入/消费者链；17/18 再接实际适用预训练模型，不扩大已验收范围。",
+  "execution_gate_overlay": {
+    "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+    "G6": "MECHANISM_MODULE_PASS",
+    "G8": "EXACT_MODULE_OFF",
+    "G9": "ALIGNMENT_MISMATCH"
+  }
+}

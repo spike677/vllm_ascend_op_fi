@@ -1,0 +1,198 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "28.fia.legal_tiling",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "FIA健康合法模板之间切换M/S2分组；不改变累加精度或输出值，不与分母重放错误合并。",
+  "implementation": "IMPLEMENTED_PINNED_ATTENTION_ADAPTER",
+  "source_paths": [
+    "fault_injection/fia.py",
+    "fault_injection/attention.py"
+  ],
+  "test_paths": [
+    "tests/test_fia_masks.py",
+    "tests/test_fault_contracts.py"
+  ],
+  "historical_paths": [
+    "docs/unified_fault_inventory.md"
+  ],
+  "model_adaptation": {
+    "roles": "自动共享Attention注册入口，实际Q/K/V、causal mask、scale、cache/prefill语义。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "FIA host coupled_base512 → coupled_m128 (healthy templates)",
+  "environment": "精确vendor SHA，FP16/B1或B8/Hq16/Hkv8/S2048/D128/causal；QK与V维度不同的MLA拒绝。",
+  "native_modification_plan": "B M/S2=512，F M/S2=128；正常tiling key109...；原host派生循环/尾块/workspace，legal路径绝不选replay key119...。",
+  "lossless_validation": "完整input与健康base策略nativelaunch相符；同shape原实现执行；OFF原策略精确恢复。",
+  "effect_validation": "记录真实分组、完整输出和固定容差统计。历史合法策略最佳Norm变化不足0.1%，不可用新分母故障替补通过。",
+  "off_recovery": "恢复Attention注册及模型config；清除owned临时策略；重新建立同一cache/input再比B。",
+  "current_gaps": [
+    "NEW_ROUTER_NPU_PENDING",
+    "FIXED_GEOMETRY_ONLY",
+    "STATISTICAL_MAGNITUDE_TARGET_UNMET"
+  ],
+  "sprint_target": "保留合法切分数值无超阈值结论，审计通用router是否确实覆盖真实FIA且无语义改写。",
+  "next_action": "用当前router在证书形状验证一次原生launch/恢复；新增形状须新增合法模板及独立证据。",
+  "historical_validation": {
+    "scope": "历史固定Qwen3合法切分实验；当前router仅CPU合同。",
+    "levels": [
+      "NATIVE_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "CPU_VERIFIED",
+    "conclusion": "保留合法切分历史数值结果；新 router NPU 未验收，不能承诺统计幅度达标。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "docs/unified_fault_inventory.md",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "816e602607b9d524f06647bb9c62db67b4a077ef05955db9a1a3a724fe58eb37",
+      "bytes": 33973
+    },
+    {
+      "path": "fault_injection/attention.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "bd4aa9e8db12977c367137fbdfea8465ebd401273ce4eaa4372ab73c9c1f4b18",
+      "bytes": 19754
+    },
+    {
+      "path": "fault_injection/fia.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "9ef11e16fe2e85839290e7a155bf8f4737fcb3cec8bf96577bcb25ee2ca3c511",
+      "bytes": 12396
+    },
+    {
+      "path": "tests/test_fault_contracts.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "e557e9277a423f5a4ca7e8daf0fdc4561c9342727567fd44557f9a87b5855866",
+      "bytes": 2554
+    },
+    {
+      "path": "tests/test_fia_masks.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "f863fdda0fb9a9d94fbaff2b7acab861427860e9521c83b56205ab26ba650056",
+      "bytes": 2180
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "NEW_ROUTER_NPU_PENDING",
+    "FIXED_GEOMETRY_ONLY",
+    "STATISTICAL_MAGNITUDE_TARGET_UNMET"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "用当前router在证书形状验证一次原生launch/恢复；新增形状须新增合法模板及独立证据。",
+  "execution_gate_overlay": {
+    "scope": "CPU_OR_SOURCE_ONLY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

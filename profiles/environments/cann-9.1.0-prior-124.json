@@ -1,0 +1,267 @@
+{
+  "scope": "HISTORICAL_ISOLATED_IMAGE_BUILD_AND_RUN",
+  "version": "9.1.0",
+  "installation": {
+    "ascend_ops_install.info": {
+      "package_name": "Ascend-cann-910b-ops",
+      "version": "9.1.0",
+      "innerversion": "V100R001C11SPC001B243",
+      "compatible_version": "[V100R001C15],[V100R001C21],[V100R001C23],[V100R001C10]",
+      "arch": "aarch64",
+      "os": "linux",
+      "path": "/usr/local/Ascend/cann-9.1.0"
+    },
+    "ascend_toolkit_install.info": {
+      "package_name": "Ascend-cann-toolkit",
+      "version": "9.1.0",
+      "innerversion": "V100R001C11SPC001B243",
+      "compatible_version": "[V100R001C15],[V100R001C21],[V100R001C23],[V100R001C10]",
+      "arch": "aarch64",
+      "os": "linux",
+      "path": "/usr/local/Ascend/cann-9.1.0"
+    }
+  },
+  "toolkit": "/usr/local/Ascend/cann-9.1.0/aarch64-linux",
+  "profile_sha256": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+  "profile_file_sha256": "b1d6525f846ce0547cc025502665dcfed0398a9cf99e8570f77cefee4f4fa8da",
+  "original_profile": "/home/provider-adaptation-20261116/build-91-a5/version_profile.json",
+  "native_adapter": "matmul-cache-abi0-v1",
+  "abi_facts": {
+    "aclTensor_size": 544,
+    "OpExecCache_size": 320,
+    "ACL_BF16": 27,
+    "ACL_FORMAT_ND": 2,
+    "matmul_signature": "verified",
+    "private_cache_signatures": "verified",
+    "actual_npu_calls": 0
+  },
+  "upstream_libraries": {
+    "opapi": {
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libopapi.so",
+      "file_sha256": "3e10def2f7158482f3967b9db6ad2707cca8691198ddae8cc52bbbaf61bb2675"
+    },
+    "nn": {
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libnnopbase.so",
+      "file_sha256": "308dda461704a6e5f70de6e0eac4495e9829b9cec3328563b75a5b382c6e438b"
+    },
+    "acl": {
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libascendcl.so",
+      "file_sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480"
+    },
+    "split": {
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libopapi_nn.so",
+      "file_sha256": "6644fd0f5f1e7a5cdb7e549acc1057703bc81eb269bb95890b878a7d7f7aa131"
+    }
+  },
+  "runtime_libraries": {
+    "nn": {
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libnnopbase.so",
+      "file_sha256": "308dda461704a6e5f70de6e0eac4495e9829b9cec3328563b75a5b382c6e438b",
+      "file_bytes": 4328144,
+      "segments": [
+        {
+          "vaddr": 0,
+          "size": 4261909,
+          "sha256": "b324a5904e5d657ff9ce7e3a57568ef92a3cda3e04aa28164e8c2f7484bb1d25"
+        }
+      ]
+    },
+    "acl": {
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libascendcl.so",
+      "file_sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+      "file_bytes": 329544,
+      "segments": [
+        {
+          "vaddr": 0,
+          "size": 261659,
+          "sha256": "640cb996f035eafc08842db9a9b68592a9117d19a781dfa3078400b252eb7be3"
+        }
+      ]
+    },
+    "opapi": {
+      "path": "/work/build-91-a5/real/libopapi_real.so",
+      "file_sha256": "b66f263aef3cd41c0b3d09212fd3deef24cd714e9ae208e8fb3ffca483d0fc64",
+      "file_bytes": 44879576,
+      "segments": [
+        {
+          "vaddr": 0,
+          "size": 42828675,
+          "sha256": "3a5cdf6c81ca081c603c3e54b307bb26a81ca208fc29cc1bf4a30f3a449fdcc4"
+        }
+      ]
+    },
+    "split": {
+      "path": "/work/build-91-a5/real/libopapi_nn_real.so",
+      "file_sha256": "580d60e07db24062c214abbe5fd5c822b7e470442d5e2929738bbc8b256d03b9",
+      "file_bytes": 17648664,
+      "segments": [
+        {
+          "vaddr": 0,
+          "size": 17355308,
+          "sha256": "6056c97f1211dc5c4d6e2f892c1e3fcc85901a1224aa344b65f8442e0c74ed43"
+        }
+      ]
+    }
+  },
+  "required_exports": {
+    "nn": [
+      "_ZN2op8internal11OpExecCache3RunEPvS2_RKSt6vectorIS2_SaIS2_EE",
+      "_ZN2op8internal14AddOpExecCacheEPNS0_11OpExecCacheE",
+      "_ZN2op8internal13AddParamToBufEPK9aclTensor",
+      "_ZN2op8internal13AddParamToBufEP9aclTensor",
+      "_ZN2op8internal13GetLogApiInfoEv",
+      "aclGetDataType",
+      "aclGetFormat",
+      "aclGetViewOffset",
+      "aclGetViewShape",
+      "aclGetStorageShape",
+      "aclGetViewStrides",
+      "aclGetRawTensorAddr"
+    ],
+    "acl": [
+      "aclrtGetDevice",
+      "aclrtMalloc",
+      "aclrtFree",
+      "aclrtMallocHost",
+      "aclrtFreeHost",
+      "aclrtMemcpy",
+      "aclrtSynchronizeStream",
+      "aclrtGetCurrentContext"
+    ],
+    "opapi": [
+      "aclnnMatmul",
+      "aclnnMatmulGetWorkspaceSize"
+    ],
+    "split": [
+      "aclnnMatmul",
+      "aclnnMatmulGetWorkspaceSize"
+    ]
+  },
+  "headers_count": 4073,
+  "header_manifest_sha256": "2375c14f463976558879670a808ac20aea89d535508b6b37695c8e29c4e597ec",
+  "selected_headers": {
+    "include/acl/acl.h": "4f7170f7a0c1a2ebe2cb016b07b1f04816bc20de98a4a392883206399856ec8b",
+    "include/aclnn/acl_meta.h": "9f2fb665b11e2c782639cec5bbb347c271dae80f0fb5441e9141b61dd144be1c",
+    "include/aclnn/opdev/op_cache.h": "6c029dbffaa30dce5d0009b490e12695aa4140efad95aee82b1bcb166111fe25",
+    "include/aclnnop/aclnn_matmul.h": "170e9a38439f9ee7f1f6b36b4be63858dc8162d949a4840c78956beaed13eba1",
+    "include/aclnnop/level2/aclnn_matmul.h": "170e9a38439f9ee7f1f6b36b4be63858dc8162d949a4840c78956beaed13eba1",
+    "include/pto/costmodel/stubs/acl/acl.h": "70a8d57492335f7e64fd1c80dcf4a95041518691935760d8217ccbd137e139fe"
+  },
+  "current_image_id": "sha256:9008234fbe4948ce9e0383c34972044b369e42dc7711d44d5878f52267b8614a",
+  "current_elf_inventory": [
+    {
+      "name": "libopapi.so",
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libopapi.so",
+      "bytes": 44155312,
+      "sha256": "3e10def2f7158482f3967b9db6ad2707cca8691198ddae8cc52bbbaf61bb2675",
+      "elf_build_id": null,
+      "needed": [
+        "libnnopbase.so",
+        "libge_common_base.so",
+        "libdl.so.2",
+        "libexe_graph.so",
+        "libascend_dump.so",
+        "libprofapi.so",
+        "libregister.so",
+        "libunified_dlog.so",
+        "libc_sec.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "soname": [
+        "libopapi.so"
+      ],
+      "notes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dynamic_sha256": "40ee7888ace01ed04a06877de6ba52781df2c09f3ec888f0dbff882dda1fe706"
+    },
+    {
+      "name": "libopapi_nn.so",
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libopapi_nn.so",
+      "bytes": 17562248,
+      "sha256": "6644fd0f5f1e7a5cdb7e549acc1057703bc81eb269bb95890b878a7d7f7aa131",
+      "elf_build_id": null,
+      "needed": [
+        "libopapi_math.so",
+        "libpthread.so.0",
+        "libacl_rt.so",
+        "libnnopbase.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "soname": [
+        "libopapi_nn.so"
+      ],
+      "notes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dynamic_sha256": "be686f7b68871d97c750cace1b4683f8c4648c55365463a21313a3790dc2a046"
+    },
+    {
+      "name": "libnnopbase.so",
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libnnopbase.so",
+      "bytes": 4328144,
+      "sha256": "308dda461704a6e5f70de6e0eac4495e9829b9cec3328563b75a5b382c6e438b",
+      "elf_build_id": null,
+      "needed": [
+        "libexe_graph.so",
+        "libacl_rt.so",
+        "libregister.so",
+        "libdummy_tls.so",
+        "libdl.so.2",
+        "libascend_dump.so",
+        "libruntime.so",
+        "libopp_registry.so",
+        "libgraph.so",
+        "libmetadef.so",
+        "libc_sec.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "soname": [
+        "libnnopbase.so"
+      ],
+      "notes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dynamic_sha256": "1a1fcceefc93611378eef5ffa394709cd4d4ccc6db7a952d9a25e2a70a7e37fb"
+    },
+    {
+      "name": "libascendcl.so",
+      "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libascendcl.so",
+      "bytes": 329544,
+      "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+      "elf_build_id": null,
+      "needed": [
+        "libmsprofiler.so",
+        "libascend_dump.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "soname": [
+        "libascendcl.so"
+      ],
+      "notes_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "dynamic_sha256": "4e6242b3b5b98ce51a95271ae58f238154b9b1e577c19ce8eb8c1fbf6cb1b2c0"
+    }
+  ],
+  "elf_inventory_sha256": "893404efe3d36b699053d62c01a90b2c73c85aca34c6d04b4cdd76fd01b98a8a",
+  "elf_limit": "Successful readelf -n produced no GNU Build ID; null is observed absence, not a synthetic ID. DT_NEEDED/SONAME and exact file hashes were collected.",
+  "current_worker_loaded": null,
+  "current_worker_status": "NO_CURRENT_SERVING_WORKER_OBSERVED",
+  "prior_native_operator": "NATIVE_VERIFIED",
+  "prior_off_exact": true,
+  "prior_model_scope": "Qwen3 TP2",
+  "current_source_native_revalidation": "NOT_RERUN",
+  "evidence": "../provider_adaptation_20261116/validation_summary.json"
+}

@@ -1,0 +1,635 @@
+{
+  "schema": "demoncat.overnight.worker_injection_gap.v1",
+  "review_status": "TRUSTED_REPLAY_INTEGRATION_NOT_COMPLETE",
+  "production_behavior_changed": false,
+  "actual_npu_calls": 0,
+  "cpu_contract_runs": [
+    {
+      "suite": "provider_refusals",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_worker_extension_providers.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 6,
+      "log": "worker_gap_provider_refusals.log",
+      "log_sha256": "655d229dac646002dd325412723e87bd5acd19767af4a18ba9a5f6b074603bdf"
+    },
+    {
+      "suite": "qualified_adaptation",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_auto_adaptation.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 12,
+      "log": "worker_gap_qualified_adaptation.log",
+      "log_sha256": "a9cc32d398528da03ef327c0d1d7221c7881fefa540622f29dae2e73da1cfaf2"
+    },
+    {
+      "suite": "fault39_host_gate",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "fault39/tests",
+        "-p",
+        "test_host_qualification.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 4,
+      "log": "worker_gap_fault39_host_gate.log",
+      "log_sha256": "f18f869d11cf325c0b47858324b34c2ae2c9fd1ef90dce587fc21ef0fdcb9656"
+    },
+    {
+      "suite": "worker_cancellation_recovery",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/worker_extension",
+        "-p",
+        "test_extension.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 19,
+      "log": "worker_gap_worker_cancellation_recovery.log",
+      "log_sha256": "ec60805255b544c72d42f85be58670e68a9719209364d411801d2ccb37d37d89"
+    }
+  ],
+  "reviewed_utc": "2026-11-16T14:15:11.224296+00:00",
+  "base_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "actual_model_fault_injection_tested_here": false,
+  "scope": "Common Worker Extension production entry only; historical standalone native/model acceptance is preserved and not transferred",
+  "sources": [
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/extension.py",
+      "sha256_canonical_lf": "ef372d973551f9e0437cc79e645fb0bb9ecb56cd5017fcf8b26c10051673a1a8",
+      "symbols": [
+        {
+          "name": "_call",
+          "line": 22
+        },
+        {
+          "name": "demoncat_fault_rpc",
+          "line": 45
+        }
+      ]
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/runtime.py",
+      "sha256_canonical_lf": "092667f3098f18b0ea94c9eefa6c3202de15944fca5f82fdd575389237f1e383",
+      "symbols": [
+        {
+          "name": "invoke",
+          "line": 106
+        },
+        {
+          "name": "_fresh",
+          "line": 212
+        },
+        {
+          "name": "_query",
+          "line": 247
+        },
+        {
+          "name": "_run",
+          "line": 294
+        },
+        {
+          "name": "_detach",
+          "line": 352
+        }
+      ]
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault20.py",
+      "sha256_canonical_lf": "fad673f3d72fc7f25058747b5cd6d3ff4a6e2874cac595846cac3f0f087bb826",
+      "symbols": [
+        {
+          "name": "_register",
+          "line": 94
+        },
+        {
+          "name": "_run",
+          "line": 109
+        },
+        {
+          "name": "_recover_reserved",
+          "line": 135
+        },
+        {
+          "name": "_recover",
+          "line": 150
+        }
+      ]
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39.py",
+      "sha256_canonical_lf": "142ac0e1d0671b6817c34173130036e760e9c652f1a36ec92aeebcc0771bc949",
+      "symbols": [
+        {
+          "name": "Fault39WorkerReplay",
+          "line": 15
+        },
+        {
+          "name": "dispatch",
+          "line": 35
+        },
+        {
+          "name": "_register",
+          "line": 75
+        },
+        {
+          "name": "_check",
+          "line": 107
+        }
+      ]
+    },
+    {
+      "path": "fault_injection/deployments/matmul.py",
+      "sha256_canonical_lf": "a3ccc8433ef3740446dc14778baf1bf029ed0dc32855bc36586a91337a6b5be3",
+      "symbols": [
+        {
+          "name": "register_worker_matmul",
+          "line": 190
+        },
+        {
+          "name": "install_observer",
+          "line": 112
+        }
+      ]
+    },
+    {
+      "path": "fault_injection/providers.py",
+      "sha256_canonical_lf": "da06c0e3a265ba24a52d683a6321024cebe7b7a048fb5017295c841a2a471afb",
+      "symbols": [
+        {
+          "name": "register_runtime",
+          "line": 85
+        },
+        {
+          "name": "resolve_runtime",
+          "line": 124
+        },
+        {
+          "name": "qualified_binding",
+          "line": 154
+        }
+      ]
+    },
+    {
+      "path": "fault_injection/native.py",
+      "sha256_canonical_lf": "9e474a5b3a9eef0cba370b66af4f33b8d3f99855ae2e072473ba05d0203d4054",
+      "symbols": [
+        {
+          "name": "__enter__",
+          "line": 234
+        },
+        {
+          "name": "_enter_root",
+          "line": 283
+        },
+        {
+          "name": "_in_root",
+          "line": 355
+        },
+        {
+          "name": "close",
+          "line": 534
+        }
+      ]
+    },
+    {
+      "path": "fault_injection/qualification.py",
+      "sha256_canonical_lf": "a76f93c4fd3fa6796c3102bf412c8db6068ec9af9c83a0c53c4ce90dbdd3fd71",
+      "symbols": [
+        {
+          "name": "_digest_output",
+          "line": 21
+        },
+        {
+          "name": "_replay",
+          "line": 81
+        },
+        {
+          "name": "__enter__",
+          "line": 115
+        },
+        {
+          "name": "_observe_invocation",
+          "line": 164
+        },
+        {
+          "name": "assert_coverage",
+          "line": 241
+        }
+      ]
+    },
+    {
+      "path": "fault_injection/runtime_discovery.py",
+      "sha256_canonical_lf": "fa8e7217566a77d33d871411af7931257a9be6b9612c6439edcd667ac06134b1",
+      "symbols": [
+        {
+          "name": "_single_target_plan",
+          "line": 167
+        },
+        {
+          "name": "plan_adaptation",
+          "line": 306
+        }
+      ]
+    },
+    {
+      "path": "fault39/src/demoncat_fault39/host_qualification.py",
+      "sha256_canonical_lf": "0cb8336cbf4541b84bfa96e40f22b5d5883f3782a96b02d175d85cd1cdda3a7d",
+      "symbols": [
+        {
+          "name": "ReplayObservation",
+          "line": 17
+        },
+        {
+          "name": "register",
+          "line": 85
+        },
+        {
+          "name": "_workload",
+          "line": 116
+        },
+        {
+          "name": "_observe_run",
+          "line": 139
+        },
+        {
+          "name": "_recover",
+          "line": 173
+        },
+        {
+          "name": "enable",
+          "line": 187
+        }
+      ]
+    },
+    {
+      "path": "fault39/src/demoncat_fault39/provider.py",
+      "sha256_canonical_lf": "18f79aebad9312ccb96c4c52823832d851cba20b555e91b541007f7151b663d1",
+      "symbols": [
+        {
+          "name": "context",
+          "line": 171
+        }
+      ]
+    },
+    {
+      "path": "fault39/src/demoncat_fault39/vllm_worker.py",
+      "sha256_canonical_lf": "407f3726d24cfdad6b93ca75b02e5f2bba44f66ec3f2375e2f0edbefcb266cdf",
+      "symbols": [
+        {
+          "name": "scheduler_context",
+          "line": 20
+        },
+        {
+          "name": "install_runner_scope",
+          "line": 48
+        }
+      ]
+    }
+  ],
+  "mechanisms": [
+    {
+      "mechanism": "20.buffer_substitute",
+      "operators": [
+        "aclnnMatmulWeightNz",
+        "aclnnQuantMatmulWeightNz"
+      ],
+      "status": "DEPLOYMENT_BINDING_AND_QUALIFIED_REPLAY_REQUIRED",
+      "entry_chain": [
+        "DemoncatWorkerExtension.demoncat_fault_rpc",
+        "WorkerFaultRuntime.invoke/_dispatch/_run",
+        "Fault20Provider._register",
+        "qualified_binding",
+        "register_worker_matmul deployment-owned binding",
+        "Fault20Provider._run",
+        "QualifiedNativeSession"
+      ],
+      "current_refusal": "FAULT20_TRUSTED_EXCLUSIVE_REPLAY_REQUIRED",
+      "missing_interfaces": [
+        "No production call installs register_worker_matmul with reviewed profiles, live-model worker_identity, exclusive reserve_worker and actual full-model replay",
+        "No common deployment adapter captures and restores actual attention/KV/forward context on the owned model thread",
+        "No common loaded-model result yet proves exactly one compatible stable target across all observed calls"
+      ],
+      "required_evidence": [
+        "Live loaded build/worker/model/cache/slot identity",
+        "Two stable full-model discovery forwards with complete output tensor bytes",
+        "Exactly one compatible stable automatic target; ambiguous candidates refused",
+        "Reference, lossless replacement and OFF preserve complete native input/output bytes and complete model output",
+        "Fault consumes one selected native continuation, original input storage preserved, post-fault OFF complete output restored"
+      ],
+      "scheduler_ids": "Fresh scheduler IDs are not required by QualifiedNativeSession; a captured model forward is eligible only if its complete context and state are faithfully replayed under exclusive reservation.",
+      "forbidden_shortcuts": [
+        "Return generated token text or output summary instead of complete tensor",
+        "Select first layer or import Fault39 max_k_min_m_unique policy",
+        "Clone-only operator call and call it complete loaded-model replay",
+        "Reuse an unverified profile or ignore another unproven same-operator call"
+      ]
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "operator": "aclnnMatmul",
+      "status": "HOST_SCHEDULER_REPLAY_INTERFACE_REQUIRED",
+      "entry_chain": [
+        "DemoncatWorkerExtension.demoncat_fault_rpc",
+        "WorkerFaultRuntime._run holds synchronous RPC lock",
+        "Fault39Provider._register resolves Fault39WorkerReplay",
+        "Fault39Provider.dispatch execute",
+        "QualifiedFault39Backend.enable under one exclusive reservation",
+        "_workload/_observe_run validate actual scheduler and native observation"
+      ],
+      "current_refusal": "FAULT39_TRUSTED_SCHEDULER_REPLAY_REQUIRED",
+      "phases": [
+        "discovery_1",
+        "discovery_2",
+        "lossless_self",
+        "lossless_mat2",
+        "lossless_dual",
+        "fault",
+        "off"
+      ],
+      "missing_interfaces": [
+        "No deployment factory registers a live Fault39WorkerReplay in the existing runtime registry",
+        "No host-owned replay service advances fresh real scheduler requests on the reserved model thread while synchronous execute RPC is running",
+        "No deployed common adapter derives native provider.context from real scheduler mapping and supplies complete input/model-output/original-self-and-mat2 storage hashes"
+      ],
+      "required_evidence": [
+        "Distinct real scheduler request ID for every phase, including OFF recovery retry",
+        "Single real request scope must exactly equal native actual_request_ids_json",
+        "Same complete input and original self/mat2 storage hashes across healthy/lossless/fault/OFF; before == after",
+        "Exact model-output hash equality for healthy/lossless/OFF; fault output change reported separately",
+        "Unique target, one fault hit, exact owner/generation/rank/device/build/ABI binding",
+        "Lossless self, mat2 and dual-input replacement before the fault; verified drain and OFF before clean"
+      ],
+      "synchronous_constraint": "Current WorkerFaultRuntime invokes provider dispatch synchronously and does not yield the Worker execution thread. Calling ordinary driver generate while that same Worker RPC awaits replay cannot by itself produce the required fresh scheduled executions; the current code contains no supported reentrant scheduler-replay adapter.",
+      "legacy_boundary": "fault39/src/demoncat_fault39/vllm_worker.py is a historical separate extension that wraps model_runner.execute_model. It is not the current common extension and is not imported here to bypass the no-core-method-override constraint.",
+      "forbidden_shortcuts": [
+        "Invent or reuse scheduler IDs",
+        "Use an arbitrary client request_ids setting",
+        "Treat captured model.forward with old IDs as fresh scheduler replay",
+        "Copy the historical runner wrapper or add a second Worker/Registry/CLI",
+        "Borrow standalone max_k selection or historical B/F acceptance as common unique-target certification"
+      ]
+    }
+  ],
+  "minimal_next_design": [
+    {
+      "order": 1,
+      "mechanism": "20",
+      "design": "Implement one trusted deployment replay adapter using the existing register_worker_matmul API. Capture one actual complete inference forward through removable owned model hooks, including input tensor bytes, kwargs, attention metadata, forward context and KV-state reset protocol. A host reservation must exclude other requests and model changes throughout qualification. Replay exactly one loaded model forward on the observer owner thread and return the complete deterministic tensor. Do not modify Worker methods or pick a layer.",
+      "first_acceptance": "Use read-only actual native inventory to check whether a reviewed profile yields a unique stable target. If zero/multiple/unproven targets remain, refuse before injection. If unique, run existing reference/lossless/OFF and one fault/OFF unchanged.",
+      "coverage_claim": "Captured full-model replay, not newly scheduled request acceptance; separate WeightNz and QMM/TP scopes."
+    },
+    {
+      "order": 2,
+      "mechanism": "39",
+      "design": "First specify and implement a host-owned exclusive scheduler replay boundary for the dedicated standard-started Worker. The actual scheduler must allocate fresh requests and the actual model thread must expose verified request mapping and complete storage/output readbacks to Fault39WorkerReplay. Register it through the existing runtime registry and retain the current unique/single-hit/storage gates.",
+      "blocking_design_decision": "No supported reentrant host scheduler executor is currently present. If the deployed engine cannot execute this contract synchronously, a reviewed phase-continuation orchestration change is required before claiming completion; merely invoking external generate from the existing blocking RPC will not fix it.",
+      "phase_refactor_constraints": "Any later continuation design must preserve one attempt across all phases, unforgeable owner/generation, real request binding, fail-closed cancellation, controlled native scope, complete OFF recovery and no new Registry/CLI or overwritten Worker core method. It is not implemented or approved by this document alone.",
+      "first_acceptance": "CPU contract refusal/phase-corruption/cancellation tests, then real dedicated Worker fresh-request seven-phase replay and independent B/F statistics. Real quarantine success is not a fault hit."
+    }
+  ],
+  "test_claims": [
+    {
+      "test": "tests/test_worker_extension_providers.py::ProviderTests.test_fault20_readback_and_detach_require_native_idle",
+      "proves": "Missing qualified binding rejects register with TRUSTED_EXCLUSIVE_REPLAY_REQUIRED; live native leases prevent unregister",
+      "scope": "CPU native fixture"
+    },
+    {
+      "test": "tests/test_worker_extension_providers.py::ProviderTests.test_fault39_does_not_arm_a_prepared_service_with_no_scheduler_replay",
+      "proves": "Missing binding rejects register with TRUSTED_SCHEDULER_REPLAY_REQUIRED; client request_ids settings rejected",
+      "scope": "CPU native fixture"
+    },
+    {
+      "test": "tests/test_auto_adaptation.py::AdaptationTests.test_inject_refuses_ambiguity_wrong_model_and_native_lossless_mismatch",
+      "proves": "Ambiguous model targets, wrong model and mismatched native lossless bytes are not admitted",
+      "scope": "CPU torch/model and native fixture"
+    },
+    {
+      "test": "fault39/tests/test_host_qualification.py::HostQualificationTest",
+      "proves": "Seven-phase sequence under reservation, one attempt, failed lossless prevents inject, changed model refused, failed OFF preserves owner",
+      "scope": "CPU mock scheduler/native fixture; generated fixture IDs are not NPU evidence"
+    },
+    {
+      "test": "tests/worker_extension/test_extension.py::WorkerExtensionTest",
+      "proves": "Worker/tenant/generation binding, native readback refusal, cross-provider quarantine, interrupt consumes attempt, explicit recovery preserves unresolved owners",
+      "scope": "CPU Worker/provider fixture"
+    }
+  ],
+  "runtime_exception_review": {
+    "verdict": "NO_NEW_CRITICAL_FLAW_FOUND_IN_REVIEWED_RPC_CANCELLATION_AND_RECOVERY_CHANGES",
+    "checks": [
+      "invoke finally releases RPC lock even when BaseException propagates",
+      "Attempt is marked consumed before execute/enable dispatch",
+      "Provider dispatch/readback BaseException records recovery_required before propagating non-Exception interruptions",
+      "Ordinary dispatch failures preserve owner/generation; malformed readback also fails closed at caller",
+      "Restoration must pass fresh native idle/inert readback before lease recovery or release",
+      "Partial detach keeps tenant and all unresolved leases; recovering one mechanism does not clear another",
+      "Model replacement with leases fails closed and cannot transfer old resources to a new model"
+    ],
+    "limits": [
+      "This quarantine blocks extension fault actions, not ordinary serving execute_model; host must isolate an unresolved Worker and prevent scheduler reuse",
+      "Client RPC timeout is not proof that Worker execution stopped; wait/query actual owned state before restoring or reusing",
+      "SIGKILL/process death cannot execute Python finally or release external state; process/generation changes invalidate tickets but host owns process/resource cleanup",
+      "Review and current CPU tests are not a proof against asynchronous signal delivery at every Python instruction or native driver failures"
+    ],
+    "production_changes_in_this_followup": false
+  },
+  "actual_readonly_discovery_review": {
+    "runs": [
+      {
+        "operator": "weightnz",
+        "rank": 0,
+        "private_report": "/home/overnight-17-20261116/worker-weightnz-a2/observe-fault20-weightnz/observation-rank0.json",
+        "private_report_sha256": "1c34b97afbf5747aa4bcdbc117f54de3642e5ccd2803cef4d2f8b01e5eea5541",
+        "private_report_bytes": 160093,
+        "forwards": [
+          {
+            "index": 0,
+            "status": "returned",
+            "errors": [],
+            "native_events": 0
+          },
+          {
+            "index": 1,
+            "status": "returned",
+            "errors": [],
+            "native_events": 0
+          }
+        ],
+        "structural_candidates": 113,
+        "module_invocations": 226,
+        "native_events": 0,
+        "events": [],
+        "adaptation_status": "NATIVE_OPERATOR_EVIDENCE_REQUIRED",
+        "unobserved_module_invocations": 226,
+        "qualified_target": null,
+        "profile_count": 0,
+        "rejected_root_calls": [],
+        "cleanup_pending": false,
+        "native_idle": true,
+        "fault_calls": 0
+      },
+      {
+        "operator": "qmm",
+        "rank": 0,
+        "private_report": "/home/overnight-17-20261116/worker-qmm-a2/observe-fault20-qmm/observation-rank0.json",
+        "private_report_sha256": "6477bf83fe512e4473ea9c0879c2f512a21950fbeb12c8ba10488c72ddc53db6",
+        "private_report_bytes": 365390,
+        "forwards": [
+          {
+            "index": 0,
+            "status": "returned",
+            "errors": [],
+            "native_events": 3
+          },
+          {
+            "index": 1,
+            "status": "returned",
+            "errors": [],
+            "native_events": 0
+          }
+        ],
+        "structural_candidates": 258,
+        "module_invocations": 514,
+        "native_events": 3,
+        "events": [
+          {
+            "path": "model.layers.0.self_attn.qkv_proj",
+            "forward": 0,
+            "operator": "aclnnQuantMatmulWeightNz",
+            "status": "observed_readonly",
+            "native_signature_sha256": "adbfc3b3a79d2b823c861b7b1b8021df2054fb611b165c9faa52decfa9bbacc1",
+            "cache_lifecycle": "5"
+          },
+          {
+            "path": "model.layers.0.self_attn.o_proj",
+            "forward": 0,
+            "operator": "aclnnQuantMatmulWeightNz",
+            "status": "observed_readonly",
+            "native_signature_sha256": "d09ea6ee784bd65214dceec092ad1dfb1c9b673fee6fc15c8fc1fa13686182e1",
+            "cache_lifecycle": "6"
+          },
+          {
+            "path": "model.layers.0.mlp.gate_up_proj",
+            "forward": 0,
+            "operator": "aclnnQuantMatmulWeightNz",
+            "status": "observed_readonly",
+            "native_signature_sha256": "714a1f62dfb3d6ecddb02202a927956c652c4e6352dfc44de3b98ba80b254e10",
+            "cache_lifecycle": "7"
+          }
+        ],
+        "adaptation_status": "PROFILE_REQUIRED",
+        "unobserved_module_invocations": 511,
+        "qualified_target": null,
+        "profile_count": 0,
+        "rejected_root_calls": [],
+        "cleanup_pending": false,
+        "native_idle": true,
+        "fault_calls": 0
+      },
+      {
+        "operator": "qmm",
+        "rank": 1,
+        "private_report": "/home/overnight-17-20261116/worker-qmm-a2/observe-fault20-qmm/observation-rank1.json",
+        "private_report_sha256": "5dbdd940519b033be49c020e1b2bf0bc6587eee5c6b2972aec756b99c0b3705a",
+        "private_report_bytes": 365390,
+        "forwards": [
+          {
+            "index": 0,
+            "status": "returned",
+            "errors": [],
+            "native_events": 3
+          },
+          {
+            "index": 1,
+            "status": "returned",
+            "errors": [],
+            "native_events": 0
+          }
+        ],
+        "structural_candidates": 258,
+        "module_invocations": 514,
+        "native_events": 3,
+        "events": [
+          {
+            "path": "model.layers.0.self_attn.qkv_proj",
+            "forward": 0,
+            "operator": "aclnnQuantMatmulWeightNz",
+            "status": "observed_readonly",
+            "native_signature_sha256": "adbfc3b3a79d2b823c861b7b1b8021df2054fb611b165c9faa52decfa9bbacc1",
+            "cache_lifecycle": "5"
+          },
+          {
+            "path": "model.layers.0.self_attn.o_proj",
+            "forward": 0,
+            "operator": "aclnnQuantMatmulWeightNz",
+            "status": "observed_readonly",
+            "native_signature_sha256": "d09ea6ee784bd65214dceec092ad1dfb1c9b673fee6fc15c8fc1fa13686182e1",
+            "cache_lifecycle": "6"
+          },
+          {
+            "path": "model.layers.0.mlp.gate_up_proj",
+            "forward": 0,
+            "operator": "aclnnQuantMatmulWeightNz",
+            "status": "observed_readonly",
+            "native_signature_sha256": "714a1f62dfb3d6ecddb02202a927956c652c4e6352dfc44de3b98ba80b254e10",
+            "cache_lifecycle": "7"
+          }
+        ],
+        "adaptation_status": "PROFILE_REQUIRED",
+        "unobserved_module_invocations": 511,
+        "qualified_target": null,
+        "profile_count": 0,
+        "rejected_root_calls": [],
+        "cleanup_pending": false,
+        "native_idle": true,
+        "fault_calls": 0
+      }
+    ],
+    "result": "DISCOVERY_ONLY_NOT_QUALIFIED_INJECTION",
+    "interpretation": [
+      "WeightNz serving path completed two forwards but yielded no native event; do not infer a wrong-thread root cause",
+      "QMM each rank observed three distinct native calls, all in forward 0; forward 1 had none. Repeated stable observation and unique-target selection are not established",
+      "Actual QMM adaptation reports PROFILE_REQUIRED, not AMBIGUOUS_TARGET. Three signatures cannot be relabeled as three stable qualified candidates",
+      "Model normal-generation and native-idle results are summarized independently in worker_receipts-a2.json"
+    ],
+    "task_queue_proof": {
+      "controller": "experiments/overnight_20261116/run_cases_124.py:54",
+      "default": "TASK_QUEUE_ENABLE=0 and VLLM_SERVER_DEV_MODE=1",
+      "python_guard": "fault_injection/deployments/matmul.py:34",
+      "native_install_guard": "fault_injection/native_adapters/qmm_auto.inc:205",
+      "conclusion": "Observer installation plus matched final native state contradicts the proposed missing-TASK_QUEUE_ENABLE explanation. A native thread mismatch is not established by zero events."
+    },
+    "next_run_decision": "STOP_AT_TWO_REAL_DISCOVERY_FORWARDS; no additional NPU run requested by this audit",
+    "raw_reports_published": false
+  },
+  "source_index_claims": "Line references identify the reviewed source snapshot, with canonical-LF SHA-256; they are not stable across later edits."
+}

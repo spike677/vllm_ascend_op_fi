@@ -1,0 +1,189 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "41.tail_column",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "真实cache writer完成后改变已证明的live tail列，后续attention读取；受控cache状态代理，不声称自然OOB。",
+  "implementation": "DESIGN_ONLY_DISPATCH_BLOCKED",
+  "source_paths": [],
+  "test_paths": [
+    "tests/test_capabilities.py",
+    "tests/test_lifecycle.py"
+  ],
+  "historical_paths": [
+    "fault20_fast_validation/reports/fault41/README.md",
+    "fault20_fast_validation/reports/fault41/fault41_state_cache_tail_corruption_roadmap.md"
+  ],
+  "model_adaptation": {
+    "roles": "实际dispatcher→cache writer→完整storage/slot→请求/KV page→later consumer；地址相近不够。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "actual post-write cache tail boundary not yet intercepted",
+  "environment": "旧.so已加载但真实torch_npu/ATB dispatcher未被拦截；所有新CANN/SoC/provider组合未验。",
+  "native_modification_plan": "先只读dispatcher证明；从真实writer元数据导出tail范围并持有allocation。无损保留原尾列；若可支持再单次改值、sync、真实consumer、精确restore。",
+  "lossless_validation": "零修改observer与B一致，完整cache/tail身份和生命周期可验证；输出简单挂钩不能当cache writer命中。",
+  "effect_validation": "writer后tail发生预期变化且consumer读取同一存储，统计首差与读后传播对应；KV共享/请求混合不明拒绝。",
+  "off_recovery": "停止新writer、等待consumer/stream、恢复完整tail并核对非目标cache；共享cache不可独立恢复时隔离worker。",
+  "current_gaps": [
+    "DISPATCHER_NOT_INTERCEPTED",
+    "CACHE_STORAGE_PROOF_MISSING",
+    "CONSUMER_MISSING",
+    "NATIVE_PROVIDER_MISSING"
+  ],
+  "sprint_target": "检查真实调用/源码，保留blocked事实，输出可执行只读观察设计而非伪造tail故障实现。",
+  "next_action": "从实际wrapper/dispatcher观察合法cache写API，完成只读存储身份闭环后才能开发故障路径。",
+  "historical_validation": {
+    "scope": "None accepted",
+    "levels": [],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "AUDITED",
+    "conclusion": "实际 dispatcher/cache writer/consumer 尚未闭合，保留拒绝与具体实施方案。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "fault20_fast_validation/reports/fault41/README.md",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "c3f817d966c67a2af189617a4a02c373dcd4ff7b98b16a636906704443b5cbaf",
+      "bytes": 612
+    },
+    {
+      "path": "fault20_fast_validation/reports/fault41/fault41_state_cache_tail_corruption_roadmap.md",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "edd6ee150937a0a3e1fbe1a5a02a9912807e3191e4c64907b51dbae2944758c0",
+      "bytes": 6376
+    },
+    {
+      "path": "tests/test_capabilities.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "f718f8fd03785f80b6e107dd5b31cfbcbfcfa9202c7b3a6d335a61d165a5bc6b",
+      "bytes": 5972
+    },
+    {
+      "path": "tests/test_lifecycle.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "19daa373a04eadefc955c58e5b9fe3549c9ffb416fd8fdfe655161c3ea8225b6",
+      "bytes": 16941
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "DISPATCHER_NOT_INTERCEPTED",
+    "CACHE_STORAGE_PROOF_MISSING",
+    "CONSUMER_MISSING",
+    "NATIVE_PROVIDER_MISSING"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "从实际wrapper/dispatcher观察合法cache写API，完成只读存储身份闭环后才能开发故障路径。",
+  "execution_gate_overlay": {
+    "scope": "CPU_OR_SOURCE_ONLY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

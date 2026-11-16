@@ -1,0 +1,208 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "quant.batch_shared_scale",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "真实DynamicQuantV2从逐token行量化范围变为batch共享范围；这是后端归约范围错误，不是异常prompt自然诱发已证明。",
+  "implementation": "IMPLEMENTED_NATIVE_TLS",
+  "source_paths": [
+    "fault_injection/quantization.py",
+    "fault_injection/deployments/batch_scale.py",
+    "fault_injection/native_adapters/batch_scale_native.cpp"
+  ],
+  "test_paths": [
+    "tests/test_quant_auto.py",
+    "experiments/provider_adaptation_20261116/test_quant_thread_native.py"
+  ],
+  "historical_paths": [
+    "experiments/provider_adaptation_20261116/validation_summary.json"
+  ],
+  "model_adaptation": {
+    "roles": "实际动态W8A8方法、独立健康decode输入、scheduler request-id→row→token-position/prefix映射，两rank分别证明。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "aclnnDynamicQuantV2 native reduction descriptors and scale/Q outputs",
+  "environment": "CANN9.1、精确vLLM runner SHA、TP2/B8 pure decode、TLS owner；只选首个实际eligible模块。",
+  "native_modification_plan": "沿用native量化算术并改变内部[T,H]→[1,T*H]归约范围；不篡改Q/K/V/权重或事后输出。选点和arm按owner线程。",
+  "lossless_validation": "独立健康forward与B/F输入hash、prefix、actual scheduler rows一致；B逐行结果与原算子一致，未选模块透传。",
+  "effect_validation": "分别核对每rank每request row对应的scale与Q改变；原始statistics按整张量汇总，不用单纯shape[0]代表请求数。",
+  "off_recovery": "停止新arm、owner线程finish/context释放，重复相同decode OFF exact；异线程finish/disarm必须拒绝。",
+  "current_gaps": [
+    "ALL_ELIGIBLE_MAPPING_UNVERIFIED",
+    "PER_REQUEST_SCALE_Q_IMPACT_UNPROVEN",
+    "COMMON_WORKER_ADAPTER_PENDING"
+  ],
+  "sprint_target": "复用3步TP2模型通过，补每request量化结果证据的摘要/哈希，不从整张量Max推出全部请求都变化。",
+  "next_action": "核对已保存scheduler row映射、scale/Q逐行辅助证据；缺少则限定为全张量统计与请求输入映射已证。",
+  "historical_validation": {
+    "scope": "quant-model-a2：每rank3命中；实际scheduler请求/token行映射及selected input一致；3step整批DynamicQuant output0 Max127→98不证明每请求scale/Q均变；6/8logprob变、token不变；OFF exact。",
+    "levels": [
+      "NATIVE_VERIFIED",
+      "MODEL_VERIFIED",
+      "RECOVERY_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "CPU_VERIFIED",
+    "conclusion": "保留历史 TP2 decode；全张量统计不证明每请求 scale/Q 改变，逐行影响证据不足。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "experiments/provider_adaptation_20261116/test_quant_thread_native.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "0c516fa15b69bb492590e0680b1330e142b7cab6b0f5c65eb09eb19166ee56f8",
+      "bytes": 1061
+    },
+    {
+      "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "856082739038e888cd08f417199c685ab254a1948558e2de03880be1615816a7",
+      "bytes": 172067
+    },
+    {
+      "path": "fault_injection/deployments/batch_scale.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "faff4dc3a5e47c3227ca94b60f3d7ad8a7e70e2d4fabcb86ddfaee734e64d2c4",
+      "bytes": 8192
+    },
+    {
+      "path": "fault_injection/native_adapters/batch_scale_native.cpp",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "e172c3c2fa0f7122f143e2b7b215c6a20a74331789540c6613a36ba15d58e414",
+      "bytes": 10267
+    },
+    {
+      "path": "fault_injection/quantization.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "6b38acad6c6ea6811f0deff1f16fbf0b5783eece6c2b3d56349aefc207f5dd5a",
+      "bytes": 27801
+    },
+    {
+      "path": "tests/test_quant_auto.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "1c2eeef6f13ea510e6f616d7b4f1683c3891f72698f2f0cb7cb5b5d9abf9b393",
+      "bytes": 15366
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "ALL_ELIGIBLE_MAPPING_UNVERIFIED",
+    "PER_REQUEST_SCALE_Q_IMPACT_UNPROVEN",
+    "COMMON_WORKER_ADAPTER_PENDING"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "核对已保存scheduler row映射、scale/Q逐行辅助证据；缺少则限定为全张量统计与请求输入映射已证。",
+  "execution_gate_overlay": {
+    "scope": "CPU_OR_SOURCE_ONLY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

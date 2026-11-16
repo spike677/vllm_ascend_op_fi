@@ -1,0 +1,206 @@
+{
+  "schema": "demoncat.audit.capability.v1",
+  "mechanism": "26.fia_destination",
+  "audited_baseline": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+  "purpose": "FIA V3真实输出destination绑定到存活残差；保持正常FIA返回内容，经真实residual consumer传播后恢复。",
+  "implementation": "IMPLEMENTED_NATIVE_WRITER",
+  "source_paths": [
+    "fault_injection/deployments/residual26.py",
+    "fault_injection/native_adapters/legacy26_fia_bridge.inc",
+    "fault20_fast_validation/source/fault26_fia_writer_proxy_v1/fault26_fia_writer_lossless.cpp"
+  ],
+  "test_paths": [
+    "tests/test_deployment_providers.py",
+    "tests/test_native_bindings.py"
+  ],
+  "historical_paths": [
+    "experiments/provider_adaptation_20261116/validation_summary.json"
+  ],
+  "model_adaptation": {
+    "roles": "实际Attention forward→typed FIA V3 output→同forward residual backing→custom AddRmsNormBias consumer。",
+    "families": [
+      "Qwen",
+      "GLM",
+      "DeepSeek"
+    ],
+    "selection": "Actual module/call structure, never user-supplied layer names",
+    "boundary": "Family recognition alone neither admits a native call nor certifies this mechanism"
+  },
+  "operator": "aclnnFusedInferAttentionScoreV3 output destination",
+  "environment": "CANN8.5.1/32B W8A8 TP2，output必须可放入独立live residual storage；不是自然OOB。",
+  "native_modification_plan": "复用已验证临时destination/copyback算法，禁止前一prefill残差跨forward变成下一decode的producer；完整consumer receipt后才计completed。",
+  "lossless_validation": "lossless输出替换→正常output精确；残差健康；copyback、sync与consumer生命周期均可证明。",
+  "effect_validation": "首个prefill差异预计在consumer残差输入；FIA正常返回可一致。decode token已经变时不得以其index_select差异归因新的writer。",
+  "off_recovery": "consumer后恢复残差并核对copyback；pending0后移除hook，fresh input/cache OFF；未消费隔离worker。",
+  "current_gaps": [
+    "COMMON_WORKER_ADAPTER_PENDING",
+    "OTHER_LAYOUTS_UNVERIFIED"
+  ],
+  "sprint_target": "复核实际126次/rank完整writer-consumer证据及forward边界修复，避免无意义重复已有模型矩阵。",
+  "next_action": "为共用Extension增加部署factory与trusted replay，保留真实consumer完成/恢复门禁。",
+  "historical_validation": {
+    "scope": "provider26-final-a2：126/126completed/rank，首层无producer透传；4/8token/text改变；OFF exact。",
+    "levels": [
+      "NATIVE_VERIFIED",
+      "MODEL_VERIFIED",
+      "RECOVERY_VERIFIED"
+    ],
+    "inherited_by_new_worker": false
+  },
+  "sprint_validation": {
+    "level": "CPU_VERIFIED",
+    "conclusion": "保留历史真实推理 writer/consumer 证据；共享 Worker 宿主适配待接入。",
+    "actual_pretrained_model_fault_closed": false,
+    "common_worker_fault_injection_verified": false,
+    "current_npu_fault_gate9_closed": false,
+    "raw_statistics_published": false,
+    "historical_acceptance_inherited": false
+  },
+  "coverage": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "independent_statistics": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "baseline_reference": true,
+    "first_diff_before_native_correlation": true,
+    "preserve_null_nan_inf": true,
+    "preserve_actual_steps": true,
+    "raw_statistics_publish": false,
+    "limitation": "Statistics are tensor summaries, not per-element equality or a unique physical cause"
+  },
+  "source_manifest": [
+    {
+      "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "856082739038e888cd08f417199c685ab254a1948558e2de03880be1615816a7",
+      "bytes": 172067
+    },
+    {
+      "path": "fault20_fast_validation/source/fault26_fia_writer_proxy_v1/fault26_fia_writer_lossless.cpp",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "bb3619d8d3b447e81db44e126be916c28b1bf45d4eadc4c54d6172979c1ab8c5",
+      "bytes": 45463
+    },
+    {
+      "path": "fault_injection/deployments/residual26.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "31a43e42c9f39dd4ec561866c07903f8702fbe9e6fd049193f4557630c27ef8d",
+      "bytes": 13896
+    },
+    {
+      "path": "fault_injection/native_adapters/legacy26_fia_bridge.inc",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "180cebb19529f720f5019b8f632823d6cc0d6a11465766d83d1ee132374ce840",
+      "bytes": 3475
+    },
+    {
+      "path": "tests/test_deployment_providers.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "5e32d29aebcd2dd107e1cc1f4d0cf8af9a79b484f7ef0929f3988e15fa4647c0",
+      "bytes": 2984
+    },
+    {
+      "path": "tests/test_native_bindings.py",
+      "scope": "baseline_source_or_evidence",
+      "baseline_commit": "bfdd6abc1adb5d08b034db7a96ec97ffbec0b9bf",
+      "sha256": "c6e5f70bbc5a75e1f699e3f5280947594ecb1be2d7f35f604ba8f55fc1912d61",
+      "bytes": 21139
+    }
+  ],
+  "gates": {
+    "G0": {
+      "name": "实现及来源",
+      "requirement_field": "implementation",
+      "status": "AUDITED",
+      "accepted_for_current_worker": false
+    },
+    "G1": {
+      "name": "环境与ABI",
+      "requirement_field": "environment",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G2": {
+      "name": "模型/逻辑层",
+      "requirement_field": "model_adaptation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G3": {
+      "name": "实际算子路径",
+      "requirement_field": "operator",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G4": {
+      "name": "目标身份",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G5": {
+      "name": "无损门禁",
+      "requirement_field": "lossless_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G6": {
+      "name": "实际单次干预",
+      "requirement_field": "native_modification_plan",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G7": {
+      "name": "现象观察",
+      "requirement_field": "effect_validation",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G8": {
+      "name": "OFF/恢复",
+      "requirement_field": "off_recovery",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    },
+    "G9": {
+      "name": "独立B/F统计",
+      "requirement_field": "independent_statistics",
+      "status": "EXECUTION_EVIDENCE_REQUIRED",
+      "accepted_for_current_worker": false
+    }
+  },
+  "audit_scope": "Source and gate review at baseline; execution receipts are a separate overlay",
+  "current_sprint_gaps": [
+    "COMMON_WORKER_ADAPTER_PENDING",
+    "OTHER_LAYOUTS_UNVERIFIED"
+  ],
+  "coverage_current_sprint": {
+    "single_target": "PENDING_CURRENT_WORKER",
+    "multi_target": "UNVERIFIED",
+    "every_match": "UNVERIFIED",
+    "rank_isolation": "UNVERIFIED",
+    "resource_budget": "REQUIRED",
+    "group_recovery": "UNVERIFIED"
+  },
+  "current_next_action": "为共用Extension增加部署factory与trusted replay，保留真实consumer完成/恢复门禁。",
+  "execution_gate_overlay": {
+    "scope": "CPU_OR_SOURCE_ONLY",
+    "G6": "NOT_NEWLY_ACCEPTED",
+    "G8": "SEE_SCOPED_RECEIPT",
+    "G9": "NOT_NEWLY_ACCEPTED"
+  }
+}

@@ -62,3 +62,8 @@
 26 QMM 的 rank1 step0 双方 NaN 目前阻断“最早变化”判定。下一次同时保留该字段的自然语义、首个可见差异和独立日志。33 优先在真实 IFA 输出边界提高原始可观测性。目前下游 mean 的差异只能定位到传播范围。每个 B/F/OFF 回执都保留原件位置、SHA、比较器身份、未观测项和同进程 OFF 对照。发布只收录摘要和索引。
 
 [现有比较器](../fault39/tools/compare_model_capture.py) · [生产接线与测试矩阵](unified_model_injection.md#生产接线规划) · [现有实机证据](../experiments/provider_adaptation_20261116/README.md)
+
+
+## 隔夜验收补充
+
+本文件既有资格规则保留；2026-11-16新增[分级证据、独立分母和17条机制覆盖边界](overnight_coverage_acceptance_standard.md)，不改变现有单点执行门禁。

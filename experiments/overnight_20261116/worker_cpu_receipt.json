@@ -1,0 +1,51 @@
+{
+  "schema": "demoncat.overnight.worker_cpu.v1",
+  "status": "PASS_CPU_ONLY",
+  "runs": [
+    {
+      "suite": "worker",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/worker_extension",
+        "-p",
+        "test*.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 24,
+      "log": "worker_cpu.log",
+      "log_sha256": "46062eebcb3ab84270d73cd4942d806c759a9eff661e25e330f302a94d98d70c"
+    },
+    {
+      "suite": "providers",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_worker_extension_providers.py",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 6,
+      "log": "providers_cpu.log",
+      "log_sha256": "534869723e456da79cbeca8919f003e6ceb109c7de681142d5b34c541fdaebe6"
+    }
+  ],
+  "actual_npu_calls": 0,
+  "real_worker_started": false,
+  "sources": {
+    "src/demoncat/runtime/vllm_ascend/worker_extension/runtime.py": "092667f3098f18b0ea94c9eefa6c3202de15944fca5f82fdd575389237f1e383",
+    "tests/worker_extension/test_extension.py": "048656251a74a4dfdb2f2bf062bde3d0974c48e1373967d7c556140038352825",
+    "tests/worker_extension/test_probe_contract.py": "05204bee2a2ed4e7c1ac2c548857f42cd4ae4353d516c20db116298f6a607edc",
+    "experiments/overnight_20261116/worker_probe.py": "c6e1501301cc7b127887ce1e660e1fe5277ff91043741a86c445f697942127db"
+  },
+  "scope": "CPU Worker identity/owner/generation/quarantine/recovery and serving-probe state-machine fixtures; not Native or model fault acceptance"
+}
