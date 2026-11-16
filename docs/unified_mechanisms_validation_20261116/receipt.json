@@ -1,0 +1,84 @@
+{
+  "schema": "demoncat.model_interface.cpu_validation.v1",
+  "status": "PASS_CPU_ONLY",
+  "versions": {
+    "torch": "2.10.0+cpu",
+    "transformers": "5.5.4",
+    "numpy": "2.2.6"
+  },
+  "runs": [
+    {
+      "suite": "unified",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 129,
+      "skipped": false
+    },
+    {
+      "suite": "native_strategy_regression",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "native_execution_strategy/tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 69,
+      "skipped": false
+    }
+  ],
+  "actual_npu_calls": 0,
+  "pretrained_weights_downloaded": false,
+  "models": [
+    "Qwen3",
+    "Glm",
+    "DeepseekV3",
+    "Llama"
+  ],
+  "scope": "Small random CPU models, real CPU Conv3d/RMSNorm, and explicit CPU alias/quant/native fixtures: structural routing, per-forward coverage, padded prefill, cached decode, isolation, restoration and rejection. Not NPU injection or model-quality validation.",
+  "mechanism_tests": {
+    "15.alias_detach": "CPU explicit format simulation; no actual private NPU format",
+    "17.spatial_padding": "real CPU Conv3d argument change; new reconstructed proxy",
+    "18.api_half": "real CPU RMSNorm module-return gain; new boundary",
+    "quant.batch_shared_scale": "CPU provider and scheduler contract only",
+    "20/26/33/39": "CPU native-boundary fixtures; deployment providers still required",
+    "28.fia": "CPU registration/mask/vendor-contract checks, not NPU launch"
+  },
+  "sources": {
+    "fault_injection/alias.py": "0936fc37125fdc176aec74d930bd49cf3d09ca1cfae6880dfe44ad09243fdd06",
+    "fault_injection/attention.py": "ccfcf4b1fb33415c50c79be0220768598efb8d58df37b92d09cebd9ea8075776",
+    "fault_injection/catalog.py": "7d4f231823ebcc358b33a58820eecc224ae30d2ba69833247adf60e8c7d22d1e",
+    "fault_injection/core.py": "5f043a7ab653d691a87d75fe61384fe68c6814c4f1d2a0930b6c1d5d44c22737",
+    "fault_injection/fia.py": "9ef11e16fe2e85839290e7a155bf8f4737fcb3cec8bf96577bcb25ee2ca3c511",
+    "fault_injection/module_faults.py": "af93ed7db30c827ba892a31cef823c300cce4991710aebd55c1b965251e0510e",
+    "fault_injection/native.py": "b086bced207bcf7d72d1c21eee2e5551911524dbca52a925ea8dd08c6c455741",
+    "fault_injection/providers.py": "d222a171b18e8919e1d0fe803283b4c77aac606b98376403178607082c59579d",
+    "fault_injection/quantization.py": "5d889fa6aac640452463a3e4a2709532cedaced37d4ce5551c57d8cf53a3187b",
+    "fault_injection/session.py": "dba10d5a2bb87bec01e7d79ec1061898cfe2cf0c2ab4ffae60104efabc7279f2",
+    "fault_injection/strategy.py": "79ac02ccd923e3ab7a68fec066305bd0fb969d2ebce9aadf6bad0a2aeb1b94cf",
+    "fault_injection/__init__.py": "2d308c0a294b96fd12eba0ee01ab131661d840a86b391c36e07a96d31654a2f7",
+    "fault_injection/__main__.py": "90391299db0f9a9c13a43e494a65af6a630977e14c2748e9395f2792c635d60d",
+    "tests/run_unified_validation.py": "c1cdfccb2beadf8999e4b015b046c7d244ae677ee7d643c2b9abfb87206a7561",
+    "tests/test_alias_auto.py": "7cc19f30ef41222e28531165c8a7be2eb4936832e5346cef443dfbac6bc86fbd",
+    "tests/test_attention_interface.py": "5cff46d23f358706082bf839ba29ed074cf0932abd510ea18f42e167eac99fe5",
+    "tests/test_fault_contracts.py": "e557e9277a423f5a4ca7e8daf0fdc4561c9342727567fd44557f9a87b5855866",
+    "tests/test_fia_masks.py": "f863fdda0fb9a9d94fbaff2b7acab861427860e9521c83b56205ab26ba650056",
+    "tests/test_module_faults.py": "6b638100726aed17f082f95d0155fa8e6e90b5fec9e0a934f6e941b0b254d049",
+    "tests/test_native_bindings.py": "30bbdd5a5257436bf8ba5084925a34d5275e9d4795ec321e53ee37a255724884",
+    "tests/test_public_interface.py": "96f733d788b32e70f71a2e8e845b410553cdaf51971c05a669a3b9ad97608a5e",
+    "tests/test_quant_auto.py": "1c2eeef6f13ea510e6f616d7b4f1683c3891f72698f2f0cb7cb5b5d9abf9b393",
+    "tests/test_strategy_bridge.py": "59704fb4791c0f339d331ae22989185928d9f6626f1d0b0ad9783e3eb3f203a5",
+    "tests/test_transformers_models.py": "754ed88237a8f26633aac6d326fa6e07b6a64cf8d90e6990f7c77353abb85e1e"
+  }
+}

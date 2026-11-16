@@ -2,7 +2,18 @@
 
 这是一个面向 vLLM-Ascend/CANN 的开发者模式原生算子故障注入原型。实现覆盖 CANN repeat executor-cache replay 边界、typed operator adapter 和 temporary device buffer 替换，并提供受控、可审计的输入数值退化、非有限输出代理与 allocation-boundary 写错地址代理。
 
-本仓库仅包含最终运行源码、构建/容器脚本和能力说明。请求响应、token 对比、trace、结构化 evidence、离线测试程序和历史探针不上传。
+本仓库保留原生实现和历史限定验收，并提供经过审查的独立集成包、CPU测试和统计证据。
+不公开模型权重、完整私有张量或 vendor 库。下文旧能力表属于历史运行范围，不自动授予新接口验收。
+
+## 当前统一接入
+
+- [其余15个机制的统一接口与逐项状态](docs/remaining_faults_integration_20261116/README.md)：
+  模型结构自动选择、注册默认关闭、真实 disable/clean、清理失败保留及文档宿主契约。
+- [Fault39 独立原生接入及124实测](fault39/README.md)：保留两种真实架构、TP2及B/F证据，
+  不与旧 `39.output_proxy` 混用。
+
+蓝区没有当前内源 `src/demoncat`。上述宿主契约仍标记
+`INNER_FRAMEWORK_INTEGRATION_PENDING`；不是对黄区 CLI/catalog/bindings 已经修改的声明。
 
 ## 已验证能力
 

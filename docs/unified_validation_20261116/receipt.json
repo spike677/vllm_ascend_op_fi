@@ -1,0 +1,65 @@
+{
+  "schema": "demoncat.model_interface.cpu_validation.v1",
+  "status": "PASS_CPU_ONLY",
+  "versions": {
+    "torch": "2.10.0+cpu",
+    "transformers": "5.5.4",
+    "numpy": "2.2.6"
+  },
+  "runs": [
+    {
+      "suite": "unified",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 35,
+      "skipped": false
+    },
+    {
+      "suite": "native_strategy_regression",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "native_execution_strategy/tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 69,
+      "skipped": false
+    }
+  ],
+  "actual_npu_calls": 0,
+  "pretrained_weights_downloaded": false,
+  "models": [
+    "Qwen3",
+    "Glm",
+    "DeepseekV3",
+    "Llama"
+  ],
+  "scope": "Small random CPU models: structural routing, padded prefill, cached decode, exact restoration, and rejection. Not native injection or model-quality validation.",
+  "sources": {
+    "fault_injection/attention.py": "158fc387f6287312699545cb88ad9d6e2e24a3bf82a35484675acb7aeebbe7b8",
+    "fault_injection/catalog.py": "3dfee3c14405512b9c48c3f7f8e1df3727a33ec742dc33ed50529fe6028f9d16",
+    "fault_injection/core.py": "5f043a7ab653d691a87d75fe61384fe68c6814c4f1d2a0930b6c1d5d44c22737",
+    "fault_injection/fia.py": "e314115b19238e20c602cbd407eb4cc506476c660e1fdfa5aaf6c5a06c8fc560",
+    "fault_injection/strategy.py": "79ac02ccd923e3ab7a68fec066305bd0fb969d2ebce9aadf6bad0a2aeb1b94cf",
+    "fault_injection/__init__.py": "92e57e086c662ed2f4d3474703c9b61c592d48f736b2575855562ff9754edcc0",
+    "fault_injection/__main__.py": "90391299db0f9a9c13a43e494a65af6a630977e14c2748e9395f2792c635d60d",
+    "tests/run_unified_validation.py": "8ed6fbe567ce933ca5d9b62321d728cbc7386237e1bcb4620539a4fd7b326130",
+    "tests/test_attention_interface.py": "6ab7bd485e5207d5c20d15db9ffe06a2fe9b82d577f4c0cf5be58b060d07c0b1",
+    "tests/test_fault_contracts.py": "e557e9277a423f5a4ca7e8daf0fdc4561c9342727567fd44557f9a87b5855866",
+    "tests/test_fia_masks.py": "f863fdda0fb9a9d94fbaff2b7acab861427860e9521c83b56205ab26ba650056",
+    "tests/test_strategy_bridge.py": "59704fb4791c0f339d331ae22989185928d9f6626f1d0b0ad9783e3eb3f203a5",
+    "tests/test_transformers_models.py": "754ed88237a8f26633aac6d326fa6e07b6a64cf8d90e6990f7c77353abb85e1e"
+  }
+}

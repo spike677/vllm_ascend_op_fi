@@ -1,0 +1,681 @@
+{
+  "schema": "demoncat.remaining_mechanisms.catalog.v1",
+  "mechanisms": [
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "8.restore_offset",
+      "mechanism": "paired_moe_restore_mapping",
+      "boundary": "MoE restore indices/top-k mapping",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "legacy_evidence_only",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": false,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "historical fixed experiment",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Missing reusable worker; actual routing indices, top-k weights and restore consumer required.",
+      "expected_observability": "Restore output or its consumer; no automatic msprobe alignment is supplied.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "15.alias_detach",
+      "mechanism": "private_format_view_alias_detach",
+      "boundary": "as_strided view construction",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "automatic_adapter",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "old NPU mechanism; new routing CPU simulation only",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "NPU NZ29/BF16 16x16 base and public as_strided 8x8/stride16,1/offset17; native internal calls unsupported.",
+      "expected_observability": "View initial values and copy_ output may agree; original base after write is the first value difference.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "17.spatial_padding",
+      "mechanism": "conv3d_padding_argument_proxy",
+      "boundary": "Functional.conv3d padding argument",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "automatic_adapter",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "new native CPU Conv3d tests; historical fixed NPU evidence remains separate",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Standard Conv3d; shape-preserving 16x16 patch geometry only; reconstructed CPU adapter, new NPU acceptance required.",
+      "expected_observability": "Conv3d padding input changes first; tensor output changes afterward. Not equal-input kernel corruption.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "18.api_half",
+      "mechanism": "rmsnorm_module_return_gain_proxy",
+      "boundary": "RMSNorm module return gain proxy",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "automatic_adapter",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "new CPU module proxy tests; historical native wrapper evidence remains separate",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Standard nn.RMSNorm only; gain0.5 at module return, not historical native wrapper or Reduce internals.",
+      "expected_observability": "Observation order depends on module hooks; native RMSNorm may appear healthy before a downstream input differs.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "20.buffer_substitute",
+      "mechanism": "native_input_buffer_substitute",
+      "boundary": "CANN executor semantic slot",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "deployment_provider_required",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": true,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "old pinned ABI/model NPU; new bridge CPU simulation only",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Matched ABI, semantic slot, live storage and original transform; a Linear candidate proves no slot.",
+      "expected_observability": "Python may record original caller input; actual native operator output and downstream values require separate checking.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "22.wrong_row",
+      "mechanism": "index_select_return_row_proxy",
+      "boundary": "IndexSelect returned row proxy",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "legacy_evidence_only",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": false,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "historical proxy",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Missing reusable worker; real RoPE cache/index/consumer mapping required; not address overflow.",
+      "expected_observability": "IndexSelect post-return proxy or downstream consumer, depending on collection boundary.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "25.reduce_scatter",
+      "mechanism": "collective_reduction",
+      "boundary": "collective reduction",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "not_implemented",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": false,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "not accepted",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "No accepted dedicated implementation; actual collective, process group and rank semantics are required.",
+      "expected_observability": "Unspecified until an actual mechanism and observable boundary are implemented.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "26.residual_stomp",
+      "mechanism": "native_output_underflow_proxy",
+      "boundary": "native output allocation",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "deployment_provider_required",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": true,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "old pinned allocation proxy; new bridge CPU simulation only",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Actual allocator adjacency, live residual and exact writer/consumer lifecycle are mandatory.",
+      "expected_observability": "Residual consumer may differ while the restored normal output agrees; statistics alone do not prove memory aliasing.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "26.fia_destination",
+      "mechanism": "fia_live_residual_destination_proxy",
+      "boundary": "FIA output destination proxy",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "deployment_provider_required",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": true,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "old pinned writer/consumer experiment; new bridge CPU simulation only",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Actual output destination and live residual consumer proof; not natural OOB; historical consumer coverage incomplete.",
+      "expected_observability": "Residual read/consumer, after real writer destination diversion; original output can be restored.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "quant.batch_shared_scale",
+      "mechanism": "dynamic_quant_reduction_scope_error",
+      "boundary": "native quantization reduction",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "deployment_provider_required",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": true,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "old pinned W8A8 path; new routing CPU simulation only",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Verified W8A8 native backend plus TP2 pure-decode scheduler and healthy-input identity; no shape[0] request guess.",
+      "expected_observability": "Quantized output/scale can change; distinguish backend scope error from anomalous prompt-induced batching.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "28.fa.legal_tiling",
+      "mechanism": "legal_fa_execution_grouping",
+      "boundary": "FA S1S2 host policy",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "strategy_bridge_only",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": false,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "pinned FA operator/model matrix",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Existing certified FA S1S2 StrategySession; model-to-native provider not implemented in attach.",
+      "expected_observability": "FA output may differ or be exactly equal; legal strategy changes need not violate any precision standard.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "28.fia.legal_tiling",
+      "mechanism": "legal_fia_coupled_grouping",
+      "boundary": "FIA host M/S2 selection",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "automatic_adapter",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "old pinned Qwen3 experiments; new router CPU only",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Pinned FP16 B1/B8 Hq16/Hkv8 S2048 D128 vendor; M/S2 512->128; no inherited new-router NPU acceptance.",
+      "expected_observability": "FIA output may differ below tolerance; prior legal-strategy search did not reach the0.1% statistical target.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "28.fia.denominator_replay",
+      "mechanism": "fia_softmax_denominator_replay",
+      "boundary": "FIA native online softmax",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "automatic_adapter",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "old Qwen3 NPU; new router CPU only",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Pinned FP16 B1/B8 Hq16/Hkv8 S2048 D128 vendor; distinct arithmetic error, not historical legal-tiling fault.",
+      "expected_observability": "FIA output then downstream logits; historical0.7968% Norm applies only to the frozen Qwen experiment.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "33.paged_decode",
+      "mechanism": "paged_attention_reduction_grouping",
+      "boundary": "paged IFA SInner selection",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "deployment_provider_required",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": true,
+      "runtime_factory_required": true,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "old pinned decode experiment; new bridge CPU simulation only",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Native IFA tiling, actual page table, KV lifetime and request mapping required; dense prefill is not equivalent.",
+      "expected_observability": "Paged attention output then downstream; a FIA API label alone does not identify fault28 versus fault33.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    },
+    {
+      "schema": "demoncat.mechanism.capability.v1",
+      "name": "41.tail_column",
+      "mechanism": "cached_tail_state_corruption",
+      "boundary": "cached tail/state",
+      "integration_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+      "implementation_status": "not_implemented",
+      "target": "auto",
+      "user_layer_names_required": false,
+      "dispatch_adapter_present": false,
+      "runtime_factory_required": false,
+      "native_launch_verified": false,
+      "current_model_npu_accepted": false,
+      "validation": {
+        "historical_scope": "design/blocked",
+        "new_routing_scope": "CPU tests only; no inherited NPU or model-quality acceptance"
+      },
+      "restrictions": "Historical dispatcher interception was blocked; live cache writer/storage/consumer must be proven first.",
+      "expected_observability": "Unspecified until actual dispatcher and cache lifetime are established.",
+      "evidence_contract": {
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "public_groups": [
+          "baseline",
+          "fault"
+        ],
+        "raw_files": [
+          "dump.json",
+          "stack.json",
+          "construct.json"
+        ],
+        "required_identity": [
+          "config",
+          "collector_identity"
+        ],
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparison": "abs(F-B) > atol + rtol*abs(B)",
+        "preserve_null": true,
+        "preserve_actual_steps": true,
+        "use_injection_logs_to_choose_first_difference": false,
+        "numeric_first_difference_proves_unique_mechanism": false
+      }
+    }
+  ],
+  "fault39": "separate demoncat_fault39 package"
+}

@@ -1,0 +1,205 @@
+{
+  "schema": "nes.fa.validation_certificate.v1",
+  "id": "fa_s1s2_experimental_20261030",
+  "adapter": {
+    "name": "FlashAttentionScore",
+    "version": "cann9.1-s1s2-candidate-20261030",
+    "route": "S1S2"
+  },
+  "validation_state": "experimental",
+  "fingerprints": {
+    "source_sha256": "15bdb7b6e63ddec53f9d3d9a4c31ef4217732f7fdcf46f724cbad52099a5a3f3",
+    "build_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1"
+  },
+  "runtime": {
+    "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+    "cann_build": "V100R001C11SPC001B243",
+    "bridge_abi": "nes.fa.cann9.1.s1s2.v1",
+    "device": "Ascend910B4"
+  },
+  "projection_schema_sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+  "validation_evidence": [
+    {
+      "path": "data/evidence/cpu_build_ready.json",
+      "sha256": "177699a301d1489913d5679b0ff41725f9b89f1c51fd26a658daa50346cc77bb"
+    }
+  ],
+  "contexts": [
+    {
+      "request_count": 1,
+      "input_contract": {
+        "inputParams.bSize": 1,
+        "inputParams.n2Size": 8,
+        "inputParams.gSize": 2,
+        "inputParams.s1Size": 2048,
+        "inputParams.s2Size": 2048,
+        "inputParams.alignedS2": 2048,
+        "inputParams.dSize": 128,
+        "inputParams.keepProb": 1.0,
+        "inputParams.scaleValue": 0.0883883461356163,
+        "inputParams.preTokens": 2048,
+        "inputParams.nextTokens": 0,
+        "inputParams.pseS1Size": 0,
+        "inputParams.pseS2Size": 0,
+        "inputParams.pseBSize": 0,
+        "inputParams.bandIndex": 0,
+        "inputParams.layoutType": 3,
+        "inputParams.pseShapeType": 1,
+        "inputParams.attenMaskShapeType": 2,
+        "inputParams.attenMaskDataType": 1,
+        "inputParams.attenMaskCompressMode": 1,
+        "inputParams.implMode": 0,
+        "inputParams.sparseType": 3,
+        "inputParams.needDropMaskOp": 0,
+        "inputParams.pseEncodeType": 0,
+        "inputParams.rsv": 0,
+        "inputParams.needL1Carry": 0,
+        "inputParams.remainPH": 0,
+        "inputParams.remain": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.attenMaskS2Size": 2048,
+        "inputParams.pseType": 1,
+        "inputParams.rsv1": 0,
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.qStartIdx": 0,
+        "inputParams.kvStartIdx": 0,
+        "inputParams.tndSoftmaxOut": 0,
+        "inputParams.needSinkOp": 0
+      },
+      "strategies": [
+        {
+          "strategy_id": "fa.s1s2.m128.r8",
+          "parameters": {
+            "query_tile": 128,
+            "key_group_ratio": 8,
+            "key_tile": 128,
+            "execution_plan": null
+          }
+        },
+        {
+          "strategy_id": "fa.s1s2.m64.r8",
+          "parameters": {
+            "query_tile": 64,
+            "key_group_ratio": 8,
+            "key_tile": 128,
+            "execution_plan": null
+          }
+        },
+        {
+          "strategy_id": "fa.s1s2.m128.r4",
+          "parameters": {
+            "query_tile": 128,
+            "key_group_ratio": 4,
+            "key_tile": 128,
+            "execution_plan": null
+          }
+        },
+        {
+          "strategy_id": "fa.s1s2.m64.r4",
+          "parameters": {
+            "query_tile": 64,
+            "key_group_ratio": 4,
+            "key_tile": 128,
+            "execution_plan": null
+          }
+        }
+      ]
+    },
+    {
+      "request_count": 8,
+      "input_contract": {
+        "inputParams.bSize": 8,
+        "inputParams.n2Size": 8,
+        "inputParams.gSize": 2,
+        "inputParams.s1Size": 2048,
+        "inputParams.s2Size": 2048,
+        "inputParams.alignedS2": 2048,
+        "inputParams.dSize": 128,
+        "inputParams.keepProb": 1.0,
+        "inputParams.scaleValue": 0.0883883461356163,
+        "inputParams.preTokens": 2048,
+        "inputParams.nextTokens": 0,
+        "inputParams.pseS1Size": 0,
+        "inputParams.pseS2Size": 0,
+        "inputParams.pseBSize": 0,
+        "inputParams.bandIndex": 0,
+        "inputParams.layoutType": 3,
+        "inputParams.pseShapeType": 1,
+        "inputParams.attenMaskShapeType": 2,
+        "inputParams.attenMaskDataType": 1,
+        "inputParams.attenMaskCompressMode": 1,
+        "inputParams.implMode": 0,
+        "inputParams.sparseType": 3,
+        "inputParams.needDropMaskOp": 0,
+        "inputParams.pseEncodeType": 0,
+        "inputParams.rsv": 0,
+        "inputParams.needL1Carry": 0,
+        "inputParams.remainPH": 0,
+        "inputParams.remain": 0,
+        "inputParams.attenMaskS2SizePH": [
+          0,
+          0
+        ],
+        "inputParams.attenMaskS2Size": 2048,
+        "inputParams.pseType": 1,
+        "inputParams.rsv1": 0,
+        "inputParams.qStartIdxPH": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "inputParams.qStartIdx": 0,
+        "inputParams.kvStartIdx": 0,
+        "inputParams.tndSoftmaxOut": 0,
+        "inputParams.needSinkOp": 0
+      },
+      "strategies": [
+        {
+          "strategy_id": "fa.s1s2.m128.r8",
+          "parameters": {
+            "query_tile": 128,
+            "key_group_ratio": 8,
+            "key_tile": 128,
+            "execution_plan": null
+          }
+        },
+        {
+          "strategy_id": "fa.s1s2.m64.r8",
+          "parameters": {
+            "query_tile": 64,
+            "key_group_ratio": 8,
+            "key_tile": 128,
+            "execution_plan": null
+          }
+        },
+        {
+          "strategy_id": "fa.s1s2.m128.r4",
+          "parameters": {
+            "query_tile": 128,
+            "key_group_ratio": 4,
+            "key_tile": 128,
+            "execution_plan": null
+          }
+        },
+        {
+          "strategy_id": "fa.s1s2.m64.r4",
+          "parameters": {
+            "query_tile": 64,
+            "key_group_ratio": 4,
+            "key_tile": 128,
+            "execution_plan": null
+          }
+        }
+      ]
+    }
+  ]
+}

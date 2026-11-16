@@ -1,0 +1,95 @@
+{
+  "schema": "demoncat.model_interface.cpu_validation.v1",
+  "status": "PASS_CPU_ONLY",
+  "versions": {
+    "torch": "2.10.0+cpu",
+    "transformers": "5.5.4",
+    "numpy": "2.2.6"
+  },
+  "runs": [
+    {
+      "suite": "unified",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 174,
+      "skipped": false
+    },
+    {
+      "suite": "native_strategy_regression",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "native_execution_strategy/tests",
+        "-v"
+      ],
+      "returncode": 0,
+      "tests": 69,
+      "skipped": false
+    }
+  ],
+  "actual_npu_calls": 0,
+  "pretrained_weights_downloaded": false,
+  "models": [
+    "Qwen3",
+    "Glm",
+    "DeepseekV3",
+    "Llama"
+  ],
+  "scope": "Small random CPU models, real CPU Conv3d/RMSNorm, and explicit CPU alias/quant/native fixtures: structural routing, per-forward coverage, padded prefill, cached decode, owner-scoped lifecycle, cleanup failure quarantine/retry, document-host registration rollback, isolation, restoration and rejection. Not NPU injection, inner-framework wiring or model-quality validation.",
+  "remaining_mechanism_count": 15,
+  "inner_framework_integration": "PENDING",
+  "fault39": "Existing independent native package and acceptance unchanged; legacy bridge fixtures are not that acceptance",
+  "mechanism_tests": {
+    "15.alias_detach": "CPU explicit format simulation; no actual private NPU format",
+    "17.spatial_padding": "real CPU Conv3d argument change; new reconstructed proxy",
+    "18.api_half": "real CPU RMSNorm module-return gain; new boundary",
+    "quant.batch_shared_scale": "CPU provider and scheduler contract only",
+    "20/26/33/39": "CPU native-boundary fixtures; deployment providers still required",
+    "28.fia": "CPU registration/mask/vendor-contract checks, not NPU launch"
+  },
+  "sources": {
+    "fault_injection/alias.py": "064ea52b5252f4bb878cbffeb186ffbd8e22dc0dc485e65e3769654c9fb4a788",
+    "fault_injection/attention.py": "bd4aa9e8db12977c367137fbdfea8465ebd401273ce4eaa4372ab73c9c1f4b18",
+    "fault_injection/capabilities.py": "bf5f4ea1c208e9ec1ab28f3643d8ab66f04c5f4963c09532634c8a979897eaa5",
+    "fault_injection/catalog.py": "7d4f231823ebcc358b33a58820eecc224ae30d2ba69833247adf60e8c7d22d1e",
+    "fault_injection/core.py": "5f043a7ab653d691a87d75fe61384fe68c6814c4f1d2a0930b6c1d5d44c22737",
+    "fault_injection/fia.py": "9ef11e16fe2e85839290e7a155bf8f4737fcb3cec8bf96577bcb25ee2ca3c511",
+    "fault_injection/integration.py": "2ff473df25b19c4965aa0e797891b7ed50d95d7093516e3f5d0db7c51d7096a0",
+    "fault_injection/lifecycle.py": "e9e5b06c738da8e1849707f7b5aca6fc5bb08a75ca7e253cd3efb4422e24d3d4",
+    "fault_injection/module_faults.py": "903017adf8fb868f575087597344f12587ab3044d3892fa1ac2578598f442be6",
+    "fault_injection/native.py": "06f59b0e0f68744e0db0561d9c4fba692b227af3927dea73f6bc21c203f51b83",
+    "fault_injection/providers.py": "06f7bd087ce5a896359ff677a8a4427a81b0e87c51154bebe9b8f985de064ca6",
+    "fault_injection/quantization.py": "f09b87744b61fcab576c905fc500c7ab9a1ca550c4930446f299d44feb896636",
+    "fault_injection/session.py": "8251338314ad60562308515f0ea4cef730361f4cbd5c37a93e0b6973169396b5",
+    "fault_injection/strategy.py": "79ac02ccd923e3ab7a68fec066305bd0fb969d2ebce9aadf6bad0a2aeb1b94cf",
+    "fault_injection/__init__.py": "60dfade1fd2876ad792ecbebdcc84712c1759b292c81d5161045318ea729f92c",
+    "fault_injection/__main__.py": "ad3bbc026dd034d794801348e47bc2ab38c1fa7aa27c7535dcbaebd87b098519",
+    "tests/run_unified_validation.py": "bc3f948194bac2515a5831223d525db5347cee0f4ea5074a5d6c53c7ca82bdf1",
+    "tests/test_alias_auto.py": "ec388665639f2e022ada869da1090f25160b8ad62a14c5a3b0e531d62100a008",
+    "tests/test_attention_interface.py": "5cff46d23f358706082bf839ba29ed074cf0932abd510ea18f42e167eac99fe5",
+    "tests/test_capabilities.py": "94b27faa54803cc1b5862e4c153f9f3a5494d351b07ba958b0f22d215fb65c76",
+    "tests/test_catalog_cli.py": "f97720319df64d794d64b597591b59d5a82e4691cf7f185b70e46bc97b96abd4",
+    "tests/test_cleanup_adapters.py": "acd608cdc9e15cc53742e22812582acc5b68ad25f6b93e1d9d260b7d4cdc2f9e",
+    "tests/test_fault_contracts.py": "e557e9277a423f5a4ca7e8daf0fdc4561c9342727567fd44557f9a87b5855866",
+    "tests/test_fia_masks.py": "f863fdda0fb9a9d94fbaff2b7acab861427860e9521c83b56205ab26ba650056",
+    "tests/test_integration_contract.py": "26232fc69aa758b228b5657387c62d847fb206fb70f0d2310d96b7e42c294101",
+    "tests/test_lifecycle.py": "19daa373a04eadefc955c58e5b9fe3549c9ffb416fd8fdfe655161c3ea8225b6",
+    "tests/test_module_faults.py": "ca318d31ded29a86c0485afce756c24d5ec96c14c1d0d7980fb2391b3b79b561",
+    "tests/test_native_bindings.py": "c6e5f70bbc5a75e1f699e3f5280947594ecb1be2d7f35f604ba8f55fc1912d61",
+    "tests/test_public_interface.py": "96f733d788b32e70f71a2e8e845b410553cdaf51971c05a669a3b9ad97608a5e",
+    "tests/test_quant_auto.py": "1c2eeef6f13ea510e6f616d7b4f1683c3891f72698f2f0cb7cb5b5d9abf9b393",
+    "tests/test_strategy_bridge.py": "59704fb4791c0f339d331ae22989185928d9f6626f1d0b0ad9783e3eb3f203a5",
+    "tests/test_transformers_models.py": "754ed88237a8f26633aac6d326fa6e07b6a64cf8d90e6990f7c77353abb85e1e"
+  }
+}

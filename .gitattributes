@@ -6,3 +6,12 @@
 *.h text eol=lf
 *.md text eol=lf
 *.json text eol=lf
+
+# Preserve audited import/source hashes and CPU receipts without newline conversion.
+fault_injection/** -text
+tests/** -text
+native_execution_strategy/** -text
+docs/unified_validation_20261116/** -text
+docs/unified_mechanisms_validation_20261116/** -text
+docs/remaining_faults_integration_20261116/** -text
+pyproject.toml -text

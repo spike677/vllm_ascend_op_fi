@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "demoncatpfi"
+version = "0.2.0"
+description = "Owner-scoped model fault lifecycle with structural routing and explicit native integration contracts"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+transformers = ["transformers==5.5.4"]
+
+[tool.setuptools.packages.find]
+include = ["fault_injection*", "native_execution_strategy*"]
+exclude = ["native_execution_strategy.tests*"]
+
+[tool.setuptools.package-data]
+native_execution_strategy = ["README.md", "*.json", "adapters/*.json", "data/*.json", "data/**/*.json", "notes/*.json", "examples/*.json"]

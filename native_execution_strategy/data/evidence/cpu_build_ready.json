@@ -1,0 +1,73 @@
+{
+  "schema": "nes.fa.native_build_ready.v1",
+  "status": "READY_EXPERIMENTAL_CPU_ONLY",
+  "vendor_manifest_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1",
+  "policy_source_manifest_sha256": "15bdb7b6e63ddec53f9d3d9a4c31ef4217732f7fdcf46f724cbad52099a5a3f3",
+  "pod_schema_sha256": "f5865ad7185b7fabeb71b37aababb2b1719f79861ed70f487351dbac7248638b",
+  "vendor_root": "native_vendor_stage_a1/vendors/native_execution_strategy_transformer",
+  "artifacts": 670,
+  "host_libraries": [
+    {
+      "path": "op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+      "bytes": 2210376,
+      "sha256": "a120a9dffbe22b97a0558b84472191144bcfb1d5d785dc36b46ebfdf90cdfb95",
+      "symlink": null
+    },
+    {
+      "path": "op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+      "bytes": 899656,
+      "sha256": "181e56c01408790ff1ada9937f4bad76087fc88d84765ec529ca4340c9eaea19",
+      "symlink": null
+    }
+  ],
+  "build": {
+    "status": "PASS_CPU_BUILD",
+    "returncode": 0,
+    "finished_unix": 1793332935.1588278,
+    "frozen_sources_changed": [],
+    "container_removed": true,
+    "npu_executed": false,
+    "log_sha256": "1cd95beeaf990b04fddd2aa2160aaedfebca61f9063e5ad24c209b52b87dc3db"
+  },
+  "stage": {
+    "status": "PASS_CPU_PRIVATE_STAGE",
+    "returncode": 0,
+    "container_removed": true,
+    "npu_executed": false,
+    "global_sdk_modified": false,
+    "manifest_sha256": "42173485d5d3c86b57cd8a847dbce2dfd1fc42004c1a451bb282b7aa211d9ef1",
+    "manifest": "/home/native-execution-strategy-20261030/native_vendor_stage_a1/vendor_manifest.json",
+    "finished_unix": 1793332990.8597226
+  },
+  "cpu_plan": {
+    "certificate_authenticity_verified": false,
+    "full_gert_context_tested": false,
+    "invalid_plan_rejections": 28,
+    "matched_controlled_invocations": 18,
+    "native_passthroughs": 6,
+    "new_binary_runtime_validated": false,
+    "npu_executed": false,
+    "status": "PASS_CPU_TYPED_PLAN_AND_ATOMIC_FACTORS"
+  },
+  "cpu_scope": {
+    "status": "PASS_CPU_SCOPE_AND_PUBLIC_SHAPE",
+    "valid_scopes": 1,
+    "invalid_scopes": 5,
+    "shape_checks": 2,
+    "optional_checks": 3,
+    "npu_executed": false,
+    "full_gert_context_tested": false
+  },
+  "cpu_pod": {
+    "status": "PASS_PUBLIC_POD_CPU_ROUNDTRIP",
+    "size": 1464,
+    "fields": 205,
+    "array_elements": 65,
+    "stock_abi_validated": false
+  },
+  "source_order_audit_sha256": "8f1fad94470e319f98ca8f54be54aa97990293695a0d6b3c374da42225901e2e",
+  "source_dependency_audit_sha256": "43fd0cbdbb4dc2c05e0bd0d30d629e175894e78273fc16cc209aeec19768a0e2",
+  "new_runtime_validated": false,
+  "old_runtime_validation_inherited": false,
+  "npu_executed": false
+}
