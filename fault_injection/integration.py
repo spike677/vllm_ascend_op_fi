@@ -13,7 +13,7 @@ import threading
 from typing import Protocol
 import uuid
 
-from .catalog import CAPABILITIES
+from .catalog import CAPABILITIES, DEPLOYMENT_RUNTIME_ROUTES, MODEL_SESSION_ROUTES
 from .capabilities import describe_mechanism
 
 HOST_API = "demoncat.model_faults.host_contract.v1"
@@ -40,11 +40,8 @@ def integration_manifest():
             "binding": "model_fault." + capability.name,
             "target": "auto",
             "capability": describe_mechanism(capability.name),
-            "model_session_route_available": capability.integration in {
-                "automatic_attention", "automatic_operator", "automatic_module",
-                "automatic_quantization_requires_runtime", "native_provider_bridge"},
-            "deployment_runtime_required": capability.integration in {
-                "automatic_quantization_requires_runtime", "native_provider_bridge"},
+            "model_session_route_available": capability.integration in MODEL_SESSION_ROUTES,
+            "deployment_runtime_required": capability.integration in DEPLOYMENT_RUNTIME_ROUTES,
             "arming_is_conditional": True,
             "runtime_acceptance_inherited": False,
             "status": INTEGRATION_STATUS,

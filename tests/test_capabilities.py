@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 import unittest
 from unittest.mock import patch
 
@@ -7,9 +8,39 @@ import torch
 from fault_injection.capabilities import describe_mechanism, list_mechanisms, inspect_support
 from fault_injection.catalog import list_faults
 from fault_injection import register_runtime, unregister_runtime
+from fault_injection.integration import integration_manifest
 
 
 class CapabilityScopeTests(unittest.TestCase):
+    def test_audit_covers_catalog_and_scopes_proof_to_real_sources(self):
+        root = Path(__file__).resolve().parents[1]
+        inventory = list_faults()
+        contract = {row["mechanism"]: row for row in integration_manifest()["mechanisms"]}
+        self.assertEqual(len(inventory), 17)
+        self.assertEqual(len(contract), 15)
+        self.assertEqual(sum(row['model_session_route_available'] for row in contract.values()), 10)
+        self.assertEqual(sum(row['deployment_runtime_required'] for row in contract.values()), 5)
+        for row in inventory:
+            name, audit = row["name"], row["audit"]
+            implementation = audit["implementation"]
+            self.assertIn("HOST_INTEGRATION_PENDING", audit["gaps"])
+            self.assertEqual(audit["production_status"], "PENDING")
+            if name in contract:
+                self.assertEqual(implementation["host_binding"], contract[name]["binding"])
+                self.assertEqual(implementation["model_session_factory_present"],
+                                 contract[name]["model_session_route_available"])
+            elif name == "39.matmul_range":
+                self.assertEqual(implementation["host_binding"], "fault39.native.matmul")
+            else:
+                self.assertIsNone(implementation["host_binding"])
+            for field in ("source", "worker_entry", "native_provider"):
+                if implementation[field] is not None:
+                    self.assertTrue((root / implementation[field]).is_file(), name)
+            evidence = audit["evidence"]
+            if evidence is not None:
+                self.assertTrue((root / evidence["path"]).is_file(), name)
+                self.assertNotIn("PRODUCTION_INTEGRATED", evidence["verified"])
+
     def test_every_remaining_variant_has_explicit_non_inherited_scope(self):
         specs = list_mechanisms()
         self.assertEqual(len(specs), 15)

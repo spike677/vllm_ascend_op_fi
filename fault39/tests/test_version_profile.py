@@ -1,10 +1,12 @@
 """Malformed build identity inputs must fail before a provider can be armed."""
 import hashlib
 import importlib.util
+import json
 from pathlib import Path
 import struct
 import tempfile
 import unittest
+from unittest.mock import patch
 
 path=Path(__file__).resolve().parents[1]/'tools/version_profile.py'
 spec=importlib.util.spec_from_file_location('version_profile',path)
@@ -44,6 +46,39 @@ class ElfIdentityTests(unittest.TestCase):
     def test_truncated_program_table(self):
         raw=elf();struct.pack_into('<H',raw,56,512)
         with self.assertRaisesRegex(ValueError,'program table'):self.inspect(raw)
+
+    def test_isolated_fault20_build_profiles_both_distinct_operator_paths(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            toolkit = root / 'aarch64-linux'
+            libraries = toolkit / 'lib64'
+            libraries.mkdir(parents=True)
+            for name in ('libnnopbase.so', 'libascendcl.so', 'libopapi.so', 'libopapi_nn.so'):
+                (libraries/name).write_bytes(elf())
+            for name in ('acl/acl.h', 'aclnn/acl_meta.h', 'aclnn/opdev/op_cache.h', 'aclnnop/aclnn_matmul.h',
+                         'aclnnop/aclnn_quant_matmul_weight_nz.h'):
+                path = toolkit / 'include' / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text('fixture header')
+            (root/'set_env.sh').write_text('# fixture script\n')
+            (toolkit/'ascend_toolkit_install.info').write_text('version=8.5.1\n')
+            facts = root/'abi_facts.json'
+            abi = dict(weight_nz_signature='verified', qmm_signature='verified',
+                       private_cache_signatures='verified', actual_npu_calls=0)
+            facts.write_text(json.dumps(abi))
+            exports = set(profile.PRIVATE + profile.METADATA + profile.FAULT20_EXPORTS + profile.ACL)
+            with patch.object(profile, 'exports', return_value=exports):
+                args = (toolkit, libraries/'libopapi.so', libraries/'libopapi_nn.so', root/'build',
+                        facts, libraries/'libopapi.so')
+                result = profile.generate(*args, operator='fault20-isolated')
+                self.assertEqual(result['adapter'], 'fault20-isolated-cache-abi0-v1')
+                for library in ('opapi', 'split'):
+                    self.assertEqual(set(result['required_exports'][library]), set(profile.FAULT20_EXPORTS))
+                self.assertIn('fault_injection/native_adapters/fault20_abi_probe.cpp', result['sources'])
+                self.assertNotIn('runtime.cpp', result['sources'])
+                facts.write_text(json.dumps(dict(abi, qmm_signature='unverified')))
+                with self.assertRaisesRegex(ValueError, 'ABI compile probe'):
+                    profile.generate(*args, operator='fault20-isolated')
 
 
 if __name__=='__main__':unittest.main()

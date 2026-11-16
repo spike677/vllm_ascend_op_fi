@@ -113,6 +113,10 @@ class NativeProof:
     sha256: str
 
 
+class UninstalledObserver(UnsupportedCall):
+    """A provider refused installation before acquiring callback ownership."""
+
+
 @dataclass(frozen=True)
 class NativeCall:
     owner: Any
@@ -124,13 +128,17 @@ class NativeCall:
 
 
 def validate_proofs(call, fault):
+    return _read_proofs(call, fault, REQUIREMENTS[fault])[0]
+
+
+def _read_proofs(call, fault, required=()):
     if not isinstance(call.call_id, str) or not call.call_id:
         raise UnsupportedCall('Native call identity is missing')
     if call.operator not in OPERATORS[fault]:
         raise UnsupportedCall(f'{fault} cannot target native operator {call.operator}')
-    kinds, receipts = set(), []
+    details, receipts = {}, []
     for proof in call.proofs:
-        if not isinstance(proof, NativeProof) or proof.kind in kinds:
+        if not isinstance(proof, NativeProof) or proof.kind in details:
             raise UnsupportedCall('Duplicate or invalid native proof')
         path = Path(proof.path)
         if not path.is_file() or path.is_symlink() or path.stat().st_size > 8*1024*1024:
@@ -152,12 +160,12 @@ def validate_proofs(call, fault):
             and receipt.get('status') == 'verified'
             and isinstance(receipt.get('details'), dict) and receipt['details']):
             raise UnsupportedCall('Native proof is stale, mismatched or incomplete')
-        kinds.add(proof.kind)
+        details[proof.kind] = receipt['details']
         receipts.append(dict(kind=proof.kind, path=str(path), sha256=proof.sha256))
-    missing = set(REQUIREMENTS[fault]) - kinds
+    missing = set(required) - details.keys()
     if missing:
         raise UnsupportedCall('Missing native proofs: ' + ', '.join(sorted(missing)))
-    return receipts
+    return receipts, details
 
 
 class NativeSession:
@@ -170,22 +178,49 @@ class NativeSession:
       finish(call, mechanism, arm) -> native observation receipt
       abort(call, mechanism, arm) -> idempotently release this call's native state
 
+    Read-only discovery uses install_observer(callback, candidates, mechanism)
+    and its owned removal. Its callback invokes the original boundary once.
+    Provider execution and control methods are not called by this arm.
+
     install must be inert for writes and invoke callback only at the real native
     boundary. execute must retain the legacy ABI/storage/tiling checks and undo
     its own control state on error. The Python bridge never guesses addresses.
     """
-    def __init__(self, model, fault, runtime=None, arm='fault', unsupported='error', evidence_dir=None):
+    def __init__(self, model, fault, runtime=None, arm='fault', unsupported='error',
+                 evidence_dir=None, profiles=()):
         if fault not in REQUIREMENTS:
             raise ValueError('No native bridge contract for ' + str(fault))
-        if arm not in ('baseline', 'fault') or unsupported not in ('error', 'passthrough'):
+        if arm not in ('baseline', 'fault', 'observe') or unsupported not in ('error', 'passthrough'):
             raise ValueError('Invalid arm or unsupported policy')
         self.model, self.fault, self.runtime = model, fault, runtime
         self.arm, self.unsupported, self.evidence_dir = arm, unsupported, evidence_dir
-        self._candidates = [row for row in _candidates(model) if set(row[2]) & TARGET_KINDS[fault]]
+        candidates = _candidates(model)
+        self._observing = arm == 'observe'
+        self._profiles = tuple(profiles)
+        self._environment_before = self._environment_after = None
+        self._model_structure = None
+        self._structure_by_id = {}
+        self._candidates = [row for row in candidates if set(row[2]) & TARGET_KINDS[fault]]
+        if self._observing:
+            from .model_discovery import inspect_structure
+            self._model_structure = inspect_structure(model, attention_paths=[
+                '' if path == '<root>' else path for path, _, kinds in candidates if 'shared_attention' in kinds
+            ])
+            self._structure_by_id = {row['object_identity']: row for row in self._model_structure['modules']}
+            if fault in ('20.buffer_substitute', '39.matmul_range'):
+                enrolled = {id(module) for _, module, _ in self._candidates}
+                for _, module in model.named_modules():
+                    row = self._structure_by_id.get(id(module))
+                    if id(module) in enrolled or row is None:
+                        continue
+                    if row['projection_dimensions'] is not None or set(row['canonical_roles']) & {'MLP_GATE', 'MLP_EXPERTS'}:
+                        self._candidates.append((row['path'], module, ['projection_candidate']))
+                        enrolled.add(id(module))
         self._by_id = {id(m): (path, m, kinds) for path, m, kinds in self._candidates}
         self._handles, self._events, self._seen = [], [], set()
         self._forwards, self._invocations, self._rejected_roots = [], [], []
         self._invocation_exceptions = {}
+        self._module_occurrences = {}
         self._root_entries, self._cleanup_errors = [], []
         self._owner = self._forward_index = None
         self._root_active = False
@@ -199,12 +234,14 @@ class NativeSession:
     def __enter__(self):
         if self._active or self._closed:
             raise RuntimeError('Session cannot be reentered')
-        if self.runtime is None:
+        if self.runtime is None and not self._observing:
             raise UnsupportedCall(f'{self.fault}: native provider not adapted for this deployment; '
                                   'module discovery cannot replace ABI, storage or page-table proof')
-        for name in ('install', 'check', 'execute', 'finish', 'abort'):
-            if not callable(getattr(self.runtime, name, None)):
-                raise UnsupportedCall('Incomplete native provider: ' + name)
+        methods = ('install_observer',) if self._observing else ('install', 'check', 'execute', 'finish', 'abort')
+        if self.runtime is not None:
+            for name in methods:
+                if not callable(getattr(self.runtime, name, None)):
+                    raise UnsupportedCall('Incomplete native provider: ' + name)
         if not self._candidates:
             raise UnsupportedCall('No native structural candidates discovered')
         if not _LEASE.acquire(blocking=False):
@@ -212,6 +249,8 @@ class NativeSession:
         self._locked = True
         self._owner = threading.get_ident()
         try:
+            if self._observing:
+                self._environment_before = self._observe_environment()
             # Enter before pre-existing local pre-hooks and leave after the
             # candidate hooks, including when the root is itself a candidate.
             self._handles.append(self.model.register_forward_pre_hook(self._enter_root, prepend=True))
@@ -219,8 +258,19 @@ class NativeSession:
                 self._handles.append(module.register_forward_pre_hook(self._enter_module))
                 self._handles.append(module.register_forward_hook(self._exit_module, always_call=True))
             self._handles.append(self.model.register_forward_hook(self._exit_root, always_call=True))
-            self._installation_unknown = True
-            self._remove = self.runtime.install(self._dispatch, tuple(self._candidates), self.fault, self.arm)
+            if self._observing and self.runtime is None:
+                from .runtime_discovery import install_dispatch_observer
+                self._remove = install_dispatch_observer(self._dispatch, self._current_candidate)
+            else:
+                self._installation_unknown = True
+                if self._observing:
+                    try:
+                        self._remove = self.runtime.install_observer(self._dispatch, tuple(self._candidates), self.fault)
+                    except UninstalledObserver:
+                        self._installation_unknown = False
+                        raise
+                else:
+                    self._remove = self.runtime.install(self._dispatch, tuple(self._candidates), self.fault, self.arm)
             if not callable(self._remove):
                 raise UnsupportedCall('Native provider did not supply an ownership-scoped removal function')
             self._installation_unknown = False
@@ -245,6 +295,7 @@ class NativeSession:
             self._rejected_roots.append(dict(reason='Recursive root call', forward=self._forward_index))
             raise UnsupportedCall('Concurrent or recursive native model execution is unsupported')
         self._forward_index = len(self._forwards)
+        self._module_occurrences.clear()
         self._forwards.append(dict(index=self._forward_index, status='running', errors=[]))
         self._root_entries.append(dict(index=self._forward_index, roots=_ROOTS.get(), stack=_STACK.get(),
                                        exception=sys.exc_info()[1]))
@@ -281,8 +332,11 @@ class NativeSession:
         if not self._in_root():
             return
         index = len(self._invocations)
+        ordinal = self._module_occurrences.get(id(module), 0)
+        self._module_occurrences[id(module)] = ordinal + 1
         self._invocations.append(dict(index=index, path=self._by_id[id(module)][0],
-                                      forward=self._forward_index, status='running'))
+                                      forward=self._forward_index, status='running',
+                                      module_ordinal=ordinal, native_calls=0))
         self._invocation_exceptions[index] = sys.exc_info()[1]
         _STACK.set(_STACK.get() + ((id(self), module, index),))
 
@@ -303,6 +357,46 @@ class NativeSession:
                 and self._root_entries and self._root_entries[-1] is not None
                 and id(self) in _ROOTS.get())
 
+    def _current_candidate(self):
+        stack = _STACK.get()
+        if self._in_root() and stack and stack[-1][0] == id(self):
+            return stack[-1][1]
+        return None
+
+    def _observe_environment(self):
+        from .environment import inspect_environment
+        libraries = {name for profile in self._profiles for name in profile.required_libraries}
+        return inspect_environment(additional_libraries=libraries)
+
+    def _observe_invocation(self, call, event, original):
+        from .runtime_discovery import dispatch_tensors, native_facts
+        structure = self._structure_by_id[id(call.owner)]
+        event.update(source='torch_dispatcher' if self.runtime is None else 'deployment_native_observer',
+                     object_identity=id(call.owner), aliases=structure['aliases'],
+                     canonical_roles=structure['canonical_roles'], role_status=structure['role_status'])
+        try:
+            if not isinstance(call.call_id, str) or not call.call_id or call.call_id in self._seen:
+                raise UnsupportedCall('Missing or reused observation call identity')
+            self._seen.add(call.call_id)
+            if self.runtime is None:
+                event['tensor_descriptors'] = dispatch_tensors(call)
+                event['reason'] = 'Torch dispatcher does not identify an ACLNN execution boundary'
+            else:
+                receipts, details = _read_proofs(call, self.fault)
+                event['proofs'] = receipts
+                event['native_facts'] = native_facts(details.get('runtime_call'), details.keys(), self.fault)
+        except (OSError, ValueError, TypeError, RuntimeError) as error:
+            # Diagnostic failures are visible but cannot change the original calculation.
+            event['reason'] = str(error)
+        event['actual_original_calls'] = 1
+        try:
+            result = original()
+        except BaseException as error:
+            event.update(status='failed', reason=type(error).__name__)
+            raise
+        event['status'] = 'observed_readonly'
+        return result
+
     def _dispatch(self, call, invoke_original):
         if not callable(invoke_original):
             if self._in_root():
@@ -317,11 +411,16 @@ class NativeSession:
                 or not _STACK.get() or _STACK.get()[-1][:2] != (id(self), call.owner)):
             return invoke_original()
         path = entry[0]
+        invocation = self._invocations[_STACK.get()[-1][2]]
         event = dict(path=path, call_id=call.call_id, operator=call.operator,
-                     forward=self._forward_index, module_invocation=_STACK.get()[-1][2],
+                     forward=self._forward_index, module_invocation=invocation['index'],
+                     scope_ordinal=(invocation['module_ordinal'], invocation['native_calls']),
                      status='observed', reason=None, actual_original_calls=0,
                      native_hit_proven=False, native_launch_verified=False)
+        invocation['native_calls'] += 1
         self._events.append(event)
+        if self._observing:
+            return self._observe_invocation(call, event, invoke_original)
         if call.call_id in self._seen:
             event.update(status='failed', reason='Native call identity reused')
             raise UnsupportedCall(event['reason'])
@@ -398,7 +497,7 @@ class NativeSession:
                                  all_discovered_candidates_covered=covered))
         complete = (bool(forwards) and not self._rejected_roots and not self._cleanup_errors
                     and all(f['all_discovered_candidates_covered'] for f in forwards))
-        return dict(schema='demoncat.native.coverage.v1', mechanism=self.fault,
+        report = dict(schema='demoncat.native.coverage.v1', mechanism=self.fault,
                     active=self._active, candidates=modules, events=copy.deepcopy(self._events),
                     forwards=copy.deepcopy(forwards), module_invocations=invocations,
                     rejected_root_calls=copy.deepcopy(self._rejected_roots),
@@ -415,8 +514,18 @@ class NativeSession:
                             'Inactive dynamic branches remain unexecuted, not covered by a previous forward.',
                             'A None model/module result is conservatively no-output-or-exception, not a coverage pass.',
                             'Structural candidates may be unrelated to the selected native mechanism.'])
+        if self._observing:
+            from .runtime_discovery import plan_adaptation
+            report['observation_only'] = True
+            report['environment'] = copy.deepcopy(self._environment_before)
+            report['environment_after'] = copy.deepcopy(self._environment_after)
+            report['adaptation'] = plan_adaptation(report, self._model_structure, self._profiles,
+                                                   self._environment_before, self._environment_after)
+        return report
 
     def assert_coverage(self):
+        if self._observing:
+            raise UnsupportedCall('Read-only discovery does not establish fault coverage; inspect report()')
         report = self.report()
         if not report['all_discovered_candidates_covered']:
             raise UnsupportedCall('Native coverage incomplete; see unobserved/unsupported/failed calls')
@@ -473,6 +582,8 @@ class NativeSession:
         if self._locked:
             _LEASE.release()
             self._locked = False
+        if self._observing and self._profiles and self._environment_before is not None:
+            self._environment_after = self._observe_environment()
 
     def __exit__(self, exc_type, exc_value, traceback):
         try:

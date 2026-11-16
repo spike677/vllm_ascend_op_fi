@@ -5,8 +5,10 @@ Fault39 has its own delivered native package and is deliberately excluded from
 this remaining-mechanisms contract. Legacy attach names remain compatible.
 """
 from copy import deepcopy
+from dataclasses import asdict
 
-from .catalog import list_faults, resolve
+from .catalog import audit_mechanism, list_faults, resolve
+from .coverage import CoverageCapability
 
 INTEGRATION_STATUS = 'INNER_FRAMEWORK_INTEGRATION_PENDING'
 
@@ -76,6 +78,7 @@ def describe_mechanism(name):
         validation=dict(historical_scope=capability.validation,
                         new_routing_scope='CPU tests only; no inherited NPU or model-quality acceptance'),
         restrictions=restriction, expected_observability=observable,
+        audit=audit_mechanism(name), coverage=asdict(CoverageCapability()),
         evidence_contract=dict(task='statistics', level='mix', summary_mode='statistics',
             public_groups=['baseline', 'fault'], raw_files=['dump.json', 'stack.json', 'construct.json'],
             required_identity=['config', 'collector_identity'], rtol=1e-5, atol=1e-8,
@@ -123,7 +126,16 @@ def inspect_support(model, name):
         status = 'RUNTIME_OBSERVATION_REQUIRED'
     else:
         status = 'STATIC_CANDIDATE_FOUND' if candidates else 'NO_SUPPORTED_CANDIDATE'
-    return dict(schema='demoncat.mechanism.support.v1', capability=spec, status=status,
+    result = dict(schema='demoncat.mechanism.support.v1', capability=spec, status=status,
         candidates=deepcopy(candidates), runtime_factory_registered=factory,
         provider_loaded_or_called=False, hooks_installed=False, native_calls_observed=0,
         runtime_call_validation_required=True, current_model_npu_accepted=False)
+    if kind == 'native_provider_bridge':
+        from .providers import coverage_capability, registered_profiles
+
+        result['capability']['coverage'] = asdict(coverage_capability(name))
+        result['adaptation'] = dict(
+            profiles=[asdict(profile) for profile in registered_profiles(name)],
+            status='RUNTIME_OBSERVATION_REQUIRED',
+        )
+    return result

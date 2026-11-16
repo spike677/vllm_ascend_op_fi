@@ -11,9 +11,11 @@ deployment=importlib.util.module_from_spec(spec);spec.loader.exec_module(deploym
 
 
 class BuildProfileTests(unittest.TestCase):
-    def make_build(self,root,version='9.2.0',layout='main_and_nn'):
+    def make_build(self,root,version='9.2.0',layout='main_and_nn',adapter=None):
         profile=dict(schema='fault39.cann.build_profile.v1',toolkit='/opt/cann/aarch64-linux',proxy_layout=layout,
                      installation={'ascend_toolkit_install.info':{'version':version}},libraries={})
+        if adapter is not None:
+            profile['adapter'] = adapter
         profile['profile_sha256']=hashlib.sha256(json.dumps(profile,sort_keys=True,separators=(',',':')).encode()).hexdigest()
         for name in deployment.artifacts(profile):
             path=root/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b'fixture, not a native build')
@@ -46,6 +48,17 @@ class BuildProfileTests(unittest.TestCase):
             root=Path(d);self.make_build(root,layout='main_only')
             self.assertEqual(deployment.verify_build(root)['proxy_layout'],'main_only')
             self.assertFalse((root/'libopapi_nn.so').exists())
+
+    def test_isolated_fault20_bundle_has_distinct_identity_and_requires_split(self):
+        adapter = 'fault20-isolated-cache-abi0-v1'
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            self.make_build(root, version='8.5.1', adapter=adapter)
+            self.assertEqual(deployment.verify_build(root)['adapter'], adapter)
+            self.assertTrue((root/'libdcat20_qmm.so').is_file())
+            self.assertFalse((root/'libfault39_native_v1.so').exists())
+            with self.assertRaisesRegex(ValueError, 'UNSUPPORTED_BUILD_ADAPTER'):
+                deployment.artifacts(dict(adapter=adapter, proxy_layout='main_only'))
 
     def test_installed_library_mismatch_is_rejected(self):
         with tempfile.TemporaryDirectory() as d:

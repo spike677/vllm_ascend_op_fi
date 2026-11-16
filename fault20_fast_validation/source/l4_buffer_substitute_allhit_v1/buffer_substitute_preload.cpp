@@ -82,6 +82,9 @@ struct RegisteredMetadata {
     uint64_t run_count{0};
     uint32_t tensor_param_count{0};
     uintptr_t tensor_params[16]{};
+#ifdef DEMONCAT_QMM_AUTO
+    uint64_t cache_lifecycle{0};
+#endif
 };
 
 struct RegisteredMatmulMetadata {
@@ -91,7 +94,15 @@ struct RegisteredMatmulMetadata {
     uint32_t tensor_param_count{0};
     uintptr_t tensor_params[16]{};
     uint32_t api_kind{0};
+#ifdef DEMONCAT_QMM_AUTO
+    uint64_t cache_lifecycle{0};
+#endif
 };
+
+#ifdef DEMONCAT_QMM_AUTO
+// Guarded by registry_mutex(). Cache addresses can be reused.
+uint64_t auto_cache_generation = 0;
+#endif
 
 enum class MatmulApiKind : uint32_t {
     kUnknown = 0,
@@ -5811,6 +5822,13 @@ aclnnStatus run_and_maybe_substitute(op::internal::OpExecCache *cache, void *wor
 
 bool add_and_capture(op::internal::OpExecCache *cache) {
     pthread_once(&g_resolve_once, resolve_real);
+#ifdef DEMONCAT_QMM_AUTO
+    {
+        std::lock_guard<std::mutex> lock(registry_mutex());
+        registry().erase(cache);
+        matmul_registry().erase(cache);
+    }
+#endif
     if (g_capture.active) {
         ++g_capture.add_count;
         if (g_capture.add_count == 1) {
@@ -5882,6 +5900,9 @@ extern "C" bool fault20_qmm_gws_commit_v17(
     std::memcpy(registered.tensor_params, tensor_params, sizeof(tensor_params));
     {
         std::lock_guard<std::mutex> lock(registry_mutex());
+#ifdef DEMONCAT_QMM_AUTO
+        registered.cache_lifecycle = ++auto_cache_generation;
+#endif
         registry()[cache] = registered;
     }
     log_registration("qmm_cache_registered", cache, &metadata->x1_legacy, device,
@@ -5956,6 +5977,9 @@ extern "C" bool fault20_matmul_gws_commit_v17(
     std::memcpy(registered.tensor_params, tensor_params, sizeof(tensor_params));
     {
         std::lock_guard<std::mutex> lock(registry_mutex());
+#ifdef DEMONCAT_QMM_AUTO
+        registered.cache_lifecycle = ++auto_cache_generation;
+#endif
         matmul_registry()[cache] = registered;
     }
     log_matmul_registration("matmulweightnz_cache_registered", cache, metadata, device,
@@ -6050,7 +6074,15 @@ extern "C" void fault20_float_matmul_gws_abort() {
     g_capture = CaptureState{};
 }
 
-#ifdef DEMONCAT_NATIVE_PROVIDER_BRIDGE
+#if defined(DEMONCAT_QMM_AUTO) && defined(DEMONCAT_NATIVE_PROVIDER_BRIDGE)
+#error Select exactly one Fault20 provider ABI.
+#endif
+#if defined(DEMONCAT_QMM_AUTO)
+#include "fault39_build_profile.h"
+#include <type_traits>
+#include "../../../fault_injection/native_adapters/matmul_auto.h"
+#include "../../../fault_injection/native_adapters/qmm_auto.inc"
+#elif defined(DEMONCAT_NATIVE_PROVIDER_BRIDGE)
 #include "../../../fault_injection/native_adapters/legacy20_bridge.inc"
 #endif
 
@@ -6065,7 +6097,9 @@ void AddParamToBuf(aclTensor *tensor) {
 
 aclnnStatus OpExecCache::Run(void *workspace, const aclrtStream stream,
                              const std::vector<void *> &addresses) {
-#ifdef DEMONCAT_NATIVE_PROVIDER_BRIDGE
+#if defined(DEMONCAT_QMM_AUTO)
+    return run_auto_fault20(this, workspace, stream, addresses);
+#elif defined(DEMONCAT_NATIVE_PROVIDER_BRIDGE)
     return dcat20_dispatch(this, workspace, stream, addresses);
 #else
     return run_and_maybe_substitute(this, workspace, stream, addresses);

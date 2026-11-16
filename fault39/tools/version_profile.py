@@ -21,6 +21,10 @@ METADATA = ('aclGetDataType','aclGetFormat','aclGetViewOffset','aclGetViewShape'
 ACL = ('aclrtGetDevice','aclrtMalloc','aclrtFree','aclrtMallocHost','aclrtFreeHost',
        'aclrtMemcpy','aclrtSynchronizeStream','aclrtGetCurrentContext')
 GETWS = ('aclnnMatmul','aclnnMatmulGetWorkspaceSize')
+FAULT20_EXPORTS = (
+    'aclnnQuantMatmulWeightNz', 'aclnnQuantMatmulWeightNzGetWorkspaceSize',
+    'aclnnMatmulWeightNz', 'aclnnMatmulWeightNzGetWorkspaceSize',
+)
 
 
 def image(path):
@@ -45,12 +49,19 @@ def exports(path):
     return {x.split()[-1].split('@')[0] for x in r.stdout.splitlines() if x.split()}
 
 
-def generate(toolkit,real,split,out,abi_facts,source_opapi):
+def generate(toolkit,real,split,out,abi_facts,source_opapi,operator='matmul'):
+    adapters = {'matmul': 'matmul-cache-abi0-v1', 'fault20-isolated': 'fault20-isolated-cache-abi0-v1'}
+    if operator not in adapters:
+        raise ValueError('Unknown build operator')
+    isolated_fault20 = operator == 'fault20-isolated'
+    if isolated_fault20 and split is None:
+        raise ValueError('Isolated Fault20 requires both opapi proxies')
     toolkit=toolkit.resolve(strict=True)
     paths={'nn':toolkit/'lib64/libnnopbase.so','acl':toolkit/'lib64/libascendcl.so','opapi':real}
-    needs={'nn':PRIVATE+METADATA,'acl':ACL,'opapi':GETWS}
+    execute_exports = FAULT20_EXPORTS if isolated_fault20 else GETWS
+    needs={'nn':PRIVATE+METADATA,'acl':ACL,'opapi':execute_exports}
     if split is not None:
-        paths['split']=split;needs['split']=GETWS
+        paths['split']=split;needs['split']=execute_exports
     originals={'opapi':source_opapi,'nn':paths['nn'],'acl':paths['acl']}
     if split is not None:originals['split']=toolkit/'lib64/libopapi_nn.so'
     upstream={key:dict(path=str(path.resolve()),file_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
@@ -65,19 +76,48 @@ def generate(toolkit,real,split,out,abi_facts,source_opapi):
     metadata={}
     for p in sorted(toolkit.glob('*install.info')):
         metadata[p.name]=dict(re.findall(r'^([^=\n]+)=(.*)$',p.read_text(errors='replace'),re.M))
-    if not metadata.get('ascend_toolkit_install.info',{}).get('version'):raise ValueError('Installed toolkit version metadata required')
+    version = metadata.get('ascend_toolkit_install.info', {}).get('version')
+    if not version:
+        raise ValueError('Installed toolkit version metadata required')
+    if isolated_fault20 and version != '8.5.1':
+        raise ValueError('Isolated Fault20 build is limited to CANN 8.5.1')
     headers={p.relative_to(toolkit).as_posix():hashlib.sha256(p.read_bytes()).hexdigest()
              for base in ('include','pkg_inc') for p in sorted((toolkit/base).rglob('*.h')) if p.is_file()}
-    for p in ('include/acl/acl.h','include/aclnn/acl_meta.h','include/aclnn/opdev/op_cache.h','include/aclnnop/aclnn_matmul.h'):
+    required_headers = ('include/acl/acl.h', 'include/aclnn/acl_meta.h', 'include/aclnn/opdev/op_cache.h',
+                        'include/aclnnop/aclnn_matmul.h')
+    if isolated_fault20:
+        required_headers += ('include/aclnnop/aclnn_quant_matmul_weight_nz.h',)
+    for p in required_headers:
         if p not in headers:raise ValueError('Required header missing: '+p)
     facts=json.loads(abi_facts.read_text())
-    if (facts.get('matmul_signature')!='verified' or facts.get('private_cache_signatures')!='verified'
-            or facts.get('actual_npu_calls')!=0):raise ValueError('Successful ABI compile probe required')
+    signatures = ('private_cache_signatures',) + (
+        ('weight_nz_signature', 'qmm_signature') if isolated_fault20 else ('matmul_signature',)
+    )
+    if any(facts.get(key) != 'verified' for key in signatures) or facts.get('actual_npu_calls') != 0:
+        raise ValueError('Successful ABI compile probe required')
     native=Path(__file__).resolve().parents[1]/'native'
-    sources={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(native.iterdir())
-             if p.is_file() and p.suffix in ('.h','.cpp','.inc','.sh','.py')}
-    sources['tools/version_profile.py']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
-    profile=dict(schema='fault39.cann.build_profile.v1',adapter='matmul-cache-abi0-v1',
+    if isolated_fault20:
+        root = native.parents[1]
+        adapter_dir = root / 'fault_injection/native_adapters'
+        fault20_sources = root / 'fault20_fast_validation/source'
+        preload = fault20_sources / 'l4_buffer_substitute_allhit_v1'
+        source_paths = [
+            native / 'runtime_identity.h', native / 'test_identity.py',
+            Path(__file__).resolve(), Path(__file__).resolve().with_name('deployment_profile.py'),
+            *(adapter_dir / name for name in ('build_qmm.sh', 'fault20_abi_probe.cpp',
+                                             'matmul_auto.h', 'qmm_auto.inc')),
+            *(preload / name for name in ('buffer_substitute_preload.cpp', 'fault20_buffer_api.h',
+                                         'extreme_transform.h', 'int_equivalent_transform.h', 'mantissa_truncate.h')),
+            fault20_sources / 'l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp',
+            fault20_sources / 'fault26_readonly_trace_v1/fault26_trace_shared.h',
+        ]
+        sources = {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                   for p in source_paths}
+    else:
+        sources={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(native.iterdir())
+                 if p.is_file() and p.suffix in ('.h','.cpp','.inc','.sh','.py')}
+        sources['tools/version_profile.py']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    profile=dict(schema='fault39.cann.build_profile.v1',adapter=adapters[operator],
         toolkit=str(toolkit),environment_script=environment_script,proxy_layout='main_and_nn' if split else 'main_only',abi_facts=facts,sources=sources,
         installation=metadata,headers=headers,libraries=libraries,upstream_libraries=upstream,required_exports=needs,
         acceptance='BUILD_IDENTITY_ONLY_REQUIRES_REAL_DISCOVERY_AND_LOSSLESS',actual_npu_calls=0)
@@ -101,7 +141,8 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ('toolkit','real','output','abi-facts','source-opapi'):p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--split',type=Path)
-    a=p.parse_args();r=generate(a.toolkit,a.real,a.split,a.output,a.abi_facts,a.source_opapi)
+    p.add_argument('--operator', choices=('matmul', 'fault20-isolated'), default='matmul')
+    a=p.parse_args();r=generate(a.toolkit,a.real,a.split,a.output,a.abi_facts,a.source_opapi,a.operator)
     print(json.dumps({'version':r['installation']['ascend_toolkit_install.info']['version'],'profile_sha256':r['profile_sha256'],'acceptance':r['acceptance']}))
 
 

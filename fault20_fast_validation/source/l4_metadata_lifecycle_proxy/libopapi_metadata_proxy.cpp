@@ -23,6 +23,9 @@
 #include <sys/uio.h>
 #include <time.h>
 #include <unistd.h>
+#ifdef DEMONCAT_QMM_AUTO
+#include "fault39_build_profile.h"
+#endif
 
 namespace {
 
@@ -161,6 +164,45 @@ void resolve_real() {
         dlsym(RTLD_DEFAULT, "fault26_trace_execute_end"));
     g_fault26_trace_writer_gws = reinterpret_cast<Fault26TraceWriterGwsFn>(
         dlsym(RTLD_DEFAULT, "fault26_trace_writer_gws"));
+#ifdef DEMONCAT_QMM_AUTO
+#ifdef DEMONCAT_QMM_SPLIT
+    const char* library = "libopapi_nn_real.so";
+    const auto& image = f39profile::split;
+#else
+    const char* library = "libopapi_real.so";
+    const auto& image = f39profile::opapi;
+#endif
+    void* handle = dlopen(library, RTLD_LAZY | RTLD_NOLOAD);
+    auto* getws = handle ? dlsym(handle, "aclnnQuantMatmulWeightNzGetWorkspaceSize") : nullptr;
+    auto* execute = handle ? dlsym(handle, "aclnnQuantMatmulWeightNz") : nullptr;
+    auto* weight_nz_getws = handle ? dlsym(handle, "aclnnMatmulWeightNzGetWorkspaceSize") : nullptr;
+    auto* weight_nz_execute = handle ? dlsym(handle, "aclnnMatmulWeightNz") : nullptr;
+    using Profile = const char* (*)();
+    const auto profile = reinterpret_cast<Profile>(dlsym(RTLD_DEFAULT, "dcat20_qmm_profile_v1"));
+    bool verified = profile && std::strcmp(profile(), f39profile::id) == 0;
+    for (void* symbol : {reinterpret_cast<void*>(&aclGetDataType), reinterpret_cast<void*>(&aclGetFormat),
+            reinterpret_cast<void*>(&aclGetViewOffset), reinterpret_cast<void*>(&aclGetViewShape),
+            reinterpret_cast<void*>(&aclGetStorageShape), reinterpret_cast<void*>(&aclGetViewStrides),
+            reinterpret_cast<void*>(&aclGetRawTensorAddr)}) {
+        verified = f39identity::matches(symbol, f39profile::nn) && verified;
+    }
+    if (verified && f39identity::matches(getws, image) && f39identity::matches(execute, image)) {
+        g_real_qmm_getws = reinterpret_cast<QuantMatmulGetWorkspaceSizeFn>(getws);
+        g_real_qmm_execute = reinterpret_cast<ExecuteFn>(execute);
+    } else {
+        g_fault20_gws_begin = nullptr;
+        g_fault20_gws_commit_v17 = nullptr;
+    }
+    if (verified && f39identity::matches(weight_nz_getws, image)
+        && f39identity::matches(weight_nz_execute, image)) {
+        g_real_matmul_getws = reinterpret_cast<MatmulWeightNzGetWorkspaceSizeFn>(weight_nz_getws);
+        g_real_matmul_execute = reinterpret_cast<ExecuteFn>(weight_nz_execute);
+    } else {
+        g_fault20_matmul_gws_begin = nullptr;
+        g_fault20_matmul_gws_commit_v17 = nullptr;
+    }
+    if (handle) dlclose(handle);
+#endif
 }
 
 Fault20MetadataAbiDescriptor make_metadata_descriptor(uint32_t payload_kind,

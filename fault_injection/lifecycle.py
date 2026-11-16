@@ -23,11 +23,13 @@ class FaultConfig:
     def __post_init__(self):
         if type(self.mechanism) is not str:
             raise TypeError('mechanism must be an explicit catalog string')
-        resolve(self.mechanism)
-        if self.mechanism.startswith('39.'):
+        capability = resolve(self.mechanism)
+        if self.mechanism.startswith('39.') and self.arm != 'observe':
             raise ValueError('Fault39 uses its separately validated demoncat_fault39 backend')
-        if type(self.arm) is not str or self.arm not in ('baseline', 'fault'):
-            raise ValueError('arm must be baseline or fault')
+        if type(self.arm) is not str or self.arm not in ('baseline', 'fault', 'observe'):
+            raise ValueError('arm must be baseline, fault or observe')
+        if self.arm == 'observe' and capability.integration != 'native_provider_bridge':
+            raise ValueError('Read-only operator observation requires a native provider bridge')
         if type(self.unsupported) is not str or self.unsupported not in ('error', 'passthrough'):
             raise ValueError('unsupported must be error or passthrough')
         if type(self.target) is not str or self.target != 'auto':
@@ -66,6 +68,7 @@ class ModelFaultBackend:
         self._last_session = None
         self._history = []
         self._error = None
+        self._required_binding = None
 
     def _check_owner(self):
         if self._thread is not None and self._thread != threading.get_ident():
@@ -89,8 +92,12 @@ class ModelFaultBackend:
             config = FaultConfig.from_dict(config)
         if not isinstance(config, FaultConfig):
             raise TypeError('register requires FaultConfig or its exact field mapping')
+        from .providers import qualified_binding
+
         self._thread = threading.get_ident()
         self.config = config
+        if self.runtime is None and config.arm != 'observe':
+            self._required_binding = qualified_binding(config.mechanism)
         self.state = 'REGISTERED_DISABLED'
         self._error = None
         return self.query()
@@ -107,7 +114,8 @@ class ModelFaultBackend:
         try:
             self._session = attach(self.model, self.config.mechanism,
                 arm=self.config.arm, unsupported=self.config.unsupported,
-                evidence_dir=self.config.evidence_dir, runtime=self.runtime)
+                evidence_dir=self.config.evidence_dir, runtime=self.runtime,
+                _required_binding=self._required_binding)
             self._session.__enter__()
         except BaseException as exc:
             self._error = repr(exc)
@@ -122,6 +130,19 @@ class ModelFaultBackend:
             raise
         self.state = 'ENABLED'
         return self.query()
+
+    def inject(self, mechanism):
+        """Start a qualified injection using the actual model already bound to this worker."""
+        from .providers import qualified_binding
+        from .core import UnsupportedCall
+
+        self._check_owner()
+        binding = qualified_binding(mechanism)
+        if self.runtime is not None or binding is None:
+            raise UnsupportedCall('A qualified provider and replay for the loaded model are required')
+        self.register(FaultConfig(mechanism))
+        self._required_binding = binding
+        return self.enable()
 
     def _archive_session(self):
         if self._session is not None:
@@ -155,6 +176,7 @@ class ModelFaultBackend:
         self._check_owner()
         self.disable()
         self.config = None
+        self._required_binding = None
         self.state = 'UNREGISTERED'
         return self.query()
 

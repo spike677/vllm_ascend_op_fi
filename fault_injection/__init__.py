@@ -5,14 +5,24 @@ Unsupported legacy routes are listed, never silently treated as armed faults.
 """
 from .catalog import list_faults, resolve
 from .core import AttentionCall, Decision, UnsupportedCall
-from .providers import register_runtime, unregister_runtime, registered_runtimes, resolve_runtime
+from .providers import (ProviderProfile, register_runtime, unregister_runtime,
+                        registered_runtimes, qualified_binding, resolve_observer, resolve_runtime)
+from .environment import inspect_environment, environment_fingerprint
 from .capabilities import describe_mechanism, list_mechanisms, inspect_support
+from .coverage import (CallOutcome, Candidate, CandidateSet, CoverageCapability, CoverageReport,
+                       Eligibility, EligibilityResult, GroupRecoveryReport, IndependentObservation,
+                       ObservedCall, Outcome, Phase, QualifiedTargetSet, RecoveryReport,
+                       TargetIdentity, TargetLease, TargetLosslessProof, coverage_phase)
 from .lifecycle import FaultConfig, ModelFaultBackend
 
 
-def inspect_model(model):
+def inspect_model(model, *, runner=None):
     from .attention import inspect_model as inspect_attention
     result = inspect_attention(model)
+    from .model_discovery import inspect_structure
+    result['structure'] = inspect_structure(model, attention_paths=[
+        row['path'] for row in result['candidates']
+    ], runner=runner)
     # Structure candidates only: a Linear module is not proof of a native QMM
     # runtime slot or of an allocator relationship.
     import torch
@@ -35,13 +45,16 @@ def inspect_model(model):
     return result
 
 
-def attach(model, fault, *, arm='fault', unsupported='error', evidence_dir=None, runtime=None):
+def attach(model, fault, *, arm='fault', unsupported='error', evidence_dir=None, runtime=None,
+           _required_binding=None):
     """Return a scoped session; entering it automatically binds actual modules."""
     capability = resolve(fault)
     if not callable(getattr(model, 'named_modules', None)):
         raise UnsupportedCall('Expected an actual model with named_modules(); no fault was installed')
-    if arm not in ('baseline','fault') or unsupported not in ('error','passthrough'):
+    if arm not in ('baseline', 'fault', 'observe') or unsupported not in ('error', 'passthrough'):
         raise ValueError('Invalid arm or unsupported policy')
+    if arm == 'observe' and capability.integration != 'native_provider_bridge':
+        raise ValueError('Read-only operator observation is available on native provider bridges')
     common = dict(arm=arm, unsupported=unsupported, evidence_dir=evidence_dir)
     if capability.integration == 'automatic_attention':
         if runtime is not None:
@@ -65,7 +78,18 @@ def attach(model, fault, *, arm='fault', unsupported='error', evidence_dir=None,
         adapter = QuantizationSession(model, runtime=resolve_runtime(fault,model,runtime), **common)
     elif capability.integration == 'native_provider_bridge':
         from .native import NativeSession
-        adapter = NativeSession(model, fault, runtime=resolve_runtime(fault,model,runtime), **common)
+        if arm == 'observe':
+            observer, profiles = resolve_observer(fault, model, runtime)
+            adapter = NativeSession(model, fault, runtime=observer, profiles=profiles, **common)
+        else:
+            binding = qualified_binding(fault) if runtime is None else None
+            if _required_binding is not None and binding is not _required_binding:
+                raise UnsupportedCall('Qualified worker binding changed before enable')
+            if binding is None:
+                adapter = NativeSession(model, fault, runtime=resolve_runtime(fault, model, runtime), **common)
+            else:
+                from .qualification import QualifiedNativeSession
+                adapter = QualifiedNativeSession(model, fault, binding, **common)
     else:
         raise UnsupportedCall(f'{fault}: {capability.integration}; {capability.limitation}. '
                               'Use inspect_model(model) for discovery; no fault was installed.')
@@ -75,4 +99,9 @@ def attach(model, fault, *, arm='fault', unsupported='error', evidence_dir=None,
 
 __all__ = ['attach', 'inspect_model', 'list_faults', 'register_runtime', 'unregister_runtime',
            'registered_runtimes', 'AttentionCall', 'Decision', 'UnsupportedCall',
-           'describe_mechanism', 'list_mechanisms', 'inspect_support', 'FaultConfig', 'ModelFaultBackend']
+           'describe_mechanism', 'list_mechanisms', 'inspect_support', 'FaultConfig', 'ModelFaultBackend',
+           'inspect_environment', 'environment_fingerprint', 'ProviderProfile',
+           'CandidateSet', 'Candidate', 'TargetIdentity', 'EligibilityResult', 'Eligibility',
+           'CoverageCapability', 'CoverageReport', 'RecoveryReport', 'TargetLease',
+           'ObservedCall', 'IndependentObservation', 'CallOutcome', 'Outcome', 'Phase', 'coverage_phase',
+           'QualifiedTargetSet', 'TargetLosslessProof', 'GroupRecoveryReport']

@@ -24,7 +24,15 @@ def read_profile(native):
 
 
 def artifacts(profile):
-    paths=['libfault39_native_v1.so','libopapi.so','real/libopapi_real.so','version_profile.json','abi_facts.json','identity_tests.json']
+    adapter = profile.get('adapter', 'matmul-cache-abi0-v1')
+    library = {
+        'matmul-cache-abi0-v1': 'libfault39_native_v1.so',
+        'fault20-isolated-cache-abi0-v1': 'libdcat20_qmm.so',
+    }.get(adapter)
+    if library is None or (adapter == 'fault20-isolated-cache-abi0-v1'
+                           and profile['proxy_layout'] != 'main_and_nn'):
+        raise ValueError('UNSUPPORTED_BUILD_ADAPTER')
+    paths=[library,'libopapi.so','real/libopapi_real.so','version_profile.json','abi_facts.json','identity_tests.json']
     if profile['proxy_layout']=='main_and_nn':paths+=['libopapi_nn.so','real/libopapi_nn_real.so']
     return paths
 
