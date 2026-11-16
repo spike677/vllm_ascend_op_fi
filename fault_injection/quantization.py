@@ -135,6 +135,31 @@ class PinnedQuantRuntime:
         self.backend, self.context_provider = backend, context_provider
         self.build_identity, self.poisoned = build_identity, False
         self._last_verified_receipt = None
+        self.thread_scoped = False
+
+    @classmethod
+    def from_scoped_backend(cls, source_root, *, context_provider, approved_build_sha256):
+        """Same arithmetic, verified TLS ownership; original process-only loader remains."""
+        import ctypes
+        root=Path(source_root).resolve(strict=True)
+        control,source,build=root/'backend_control.py',root/'native_backend.cpp',root/'runtime/build.json'
+        expected_source=Path(__file__).parent/'native_adapters/batch_scale_native.cpp'
+        if _sha(control)!=_CONTROL_SHA or _sha(source)!=_sha(expected_source) or _sha(build)!=approved_build_sha256:
+            raise UnsupportedCall('Scoped quantization source/build identity differs')
+        data=json.loads(build.read_bytes());library=root/'runtime/vendor/op_api/lib/libcust_opapi.so'
+        if (data.get('schema')!='demoncat.quant.thread_scope.v1' or data.get('parent_native_sha256')!=_NATIVE_SHA
+            or data.get('source_sha256')!=_sha(source) or data.get('library_sha256')!=_sha(library)
+            or os.environ.get('DCAT_DQ_V2_ENABLE')!='1'):
+            raise UnsupportedCall('Scoped native deployment receipt is incomplete')
+        spec=importlib.util.spec_from_file_location('_demoncat_scoped_quant_control',control)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        backend=module.BackendControl()
+        backend.lib.dcat_dq_thread_scope_v1.restype=ctypes.c_uint32
+        if backend.lib.dcat_dq_thread_scope_v1()!=1:raise UnsupportedCall('Native TLS capability missing')
+        obj=cls(backend,context_provider,dict(build_sha256=approved_build_sha256,library_sha256=_sha(library),
+                source_sha256=_sha(source),thread_scope=1),_load_token=_VERIFIED_LOAD)
+        obj.thread_scoped=True
+        return obj
 
     @classmethod
     def from_existing_backend(cls, source_root, *, context_provider, approved_build_sha256):
@@ -237,7 +262,8 @@ class QuantizationSession:
             raise UnsupportedCall('Provider must declare native or explicit CPU-test-only mode')
         if getattr(self.runtime,'native',False) is True and getattr(self.runtime,'test_only',False) is True:
             raise UnsupportedCall('A CPU test provider cannot simultaneously claim native execution')
-        if getattr(self.runtime,'native',False) is True and (threading.current_thread() is not threading.main_thread()
+        thread_scoped=(type(self.runtime) is PinnedQuantRuntime and self.runtime.thread_scoped is True)
+        if getattr(self.runtime,'native',False) is True and not thread_scoped and (threading.current_thread() is not threading.main_thread()
                                                           or threading.active_count() != 1):
             raise UnsupportedCall('Native process-scoped backend requires a dedicated single-request process')
         if not _LEASE.acquire(blocking=False):

@@ -1,0 +1,47 @@
+[
+  {
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/source-a7",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build-91-a5",
+        "/native",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build-91-a5/libopapi_nn.so",
+        "/usr/local/Ascend/cann-9.1.0/aarch64-linux/lib64/libopapi_nn.so",
+        "ro"
+      ],
+      [
+        "/home/tik-constfold-cann91-overnight-20261022",
+        "/work",
+        "ro"
+      ],
+      [
+        "/home/gyl/models/Qwen3-0.6B",
+        "/model",
+        "ro"
+      ]
+    ],
+    "timeout": 1800,
+    "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+    "env": {
+      "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+      "HCCL_EXEC_TIMEOUT": "120",
+      "OMP_NUM_THREADS": "4",
+      "GLOO_SOCKET_IFNAME": "lo",
+      "HCCL_CONNECT_TIMEOUT": "120",
+      "VLLM_CACHE_ROOT": "/evidence/cache/vllm",
+      "XDG_CACHE_HOME": "/evidence/cache",
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+      "TORCH_DEVICE_BACKEND_AUTOLOAD": "0",
+      "VLLM_HOST_IP": "127.0.0.1"
+    },
+    "command": "source /usr/local/Ascend/cann-9.1.0/set_env.sh; source /usr/local/Ascend/nnal/atb/set_env.sh --cxx_abi=1; source /work/venv/bin/activate; export ASCEND_CUSTOM_OPP_PATH=/work/venv/lib/python3.11/site-packages/vllm_ascend/_cann_ops_custom/vendors/custom_transformer; export LD_PRELOAD=/native/libfault39_native_v1.so:/native/libopapi.so; export LD_LIBRARY_PATH=/native:$LD_LIBRARY_PATH; export PYTHONPATH=/source/fault39/src:/msprobe_packages:$PYTHONPATH; exec python /source/fault39/tools/vllm_validate.py --model /model --tp 2 --ranks 0 1 --target-policy max_k_min_m_unique --max-tokens 4 --stage lossless --output /evidence/lossless",
+    "id": "model_lossless"
+  }
+]

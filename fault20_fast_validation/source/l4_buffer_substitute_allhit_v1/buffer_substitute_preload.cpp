@@ -6050,6 +6050,10 @@ extern "C" void fault20_float_matmul_gws_abort() {
     g_capture = CaptureState{};
 }
 
+#ifdef DEMONCAT_NATIVE_PROVIDER_BRIDGE
+#include "../../../fault_injection/native_adapters/legacy20_bridge.inc"
+#endif
+
 namespace op::internal {
 void AddParamToBuf(const aclTensor *tensor) {
     add_param_const_and_capture(tensor);
@@ -6061,7 +6065,11 @@ void AddParamToBuf(aclTensor *tensor) {
 
 aclnnStatus OpExecCache::Run(void *workspace, const aclrtStream stream,
                              const std::vector<void *> &addresses) {
+#ifdef DEMONCAT_NATIVE_PROVIDER_BRIDGE
+    return dcat20_dispatch(this, workspace, stream, addresses);
+#else
     return run_and_maybe_substitute(this, workspace, stream, addresses);
+#endif
 }
 
 bool AddOpExecCache(OpExecCache *cache) {

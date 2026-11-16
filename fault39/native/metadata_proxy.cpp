@@ -1,5 +1,6 @@
 // Minimal extraction of the CANN 8.5.1 historical lifecycle proxy.
 #include "fault39_metadata.h"
+#include "fault39_build_profile.h"
 #include <acl/acl.h>
 #include <aclnn/acl_meta.h>
 #include <aclnn/opdev/common_types.h>
@@ -7,6 +8,7 @@
 #include <dlfcn.h>
 #include <limits>
 #include <mutex>
+#include <type_traits>
 #ifndef FAULT39_REAL_LIBRARY
 #define FAULT39_REAL_LIBRARY "libopapi_real.so"
 #endif
@@ -19,6 +21,8 @@ uint64_t checked_bytes(int64_t elements,size_t size) {
 #include "metadata_capture.inc"
 using Getws=aclnnStatus(*)(const aclTensor*,const aclTensor*,aclTensor*,int8_t,uint64_t*,aclOpExecutor**);
 using Execute=aclnnStatus(*)(void*,uint64_t,aclOpExecutor*,aclrtStream);
+static_assert(std::is_same<decltype(&aclnnMatmulGetWorkspaceSize),Getws>::value,"Matmul GWS ABI changed");
+static_assert(std::is_same<decltype(&aclnnMatmul),Execute>::value,"Matmul execute ABI changed");
 using Begin=void(*)(); using Commit=int(*)(const Fault39MetadataEnvelopeV1*);
 Getws getws=nullptr; Execute execute=nullptr; Begin begin=nullptr,abort_capture=nullptr; Commit commit=nullptr;
 std::once_flag once;
@@ -30,6 +34,23 @@ void resolve() {
   getws=reinterpret_cast<Getws>(dlsym(real,"aclnnMatmulGetWorkspaceSize"));
   execute=reinterpret_cast<Execute>(dlsym(real,"aclnnMatmul"));
   dlclose(real);
+ }
+#ifdef FAULT39_SPLIT_PROXY
+ const auto& expected=f39profile::split;
+#else
+ const auto& expected=f39profile::opapi;
+#endif
+ bool identity=f39identity::matches(reinterpret_cast<void*>(getws),expected) &&
+               f39identity::matches(reinterpret_cast<void*>(execute),expected);
+ for(void* fn : {reinterpret_cast<void*>(&aclGetDataType),reinterpret_cast<void*>(&aclGetFormat),
+     reinterpret_cast<void*>(&aclGetViewOffset),reinterpret_cast<void*>(&aclGetViewShape),
+     reinterpret_cast<void*>(&aclGetStorageShape),reinterpret_cast<void*>(&aclGetViewStrides),
+     reinterpret_cast<void*>(&aclGetRawTensorAddr)})
+  identity=f39identity::matches(fn,f39profile::nn) && identity;
+ using Profile=const char*(*)();
+ auto profile=reinterpret_cast<Profile>(dlsym(RTLD_DEFAULT,"fault39_build_profile_v1"));
+ if(!identity || !profile || std::strcmp(profile(),f39profile::id)) {
+  getws=nullptr;execute=nullptr;return;
  }
  begin=reinterpret_cast<Begin>(dlsym(RTLD_DEFAULT,"fault39_gws_begin_v1"));
  abort_capture=reinterpret_cast<Begin>(dlsym(RTLD_DEFAULT,"fault39_gws_abort_v1"));

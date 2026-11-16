@@ -352,6 +352,9 @@ bool match_target_pair_spec(const char *spec, uint64_t output,
 
 }  // namespace
 
+#ifdef DEMONCAT_NATIVE_PROVIDER_BRIDGE
+#define fault26_qmm_underflow_prepare dcat26_qmm_prepare_impl
+#endif
 extern "C" bool fault26_qmm_underflow_prepare(
     const Fault26QmmUnderflowContext *context, aclrtStream stream,
     Fault26QmmUnderflowDecision *decision) {
@@ -725,3 +728,8 @@ extern "C" void fault26_qmm_underflow_consumer_complete(
                      : "consumer_restore_failed");
     g_pending = Pending{};
 }
+
+#ifdef DEMONCAT_NATIVE_PROVIDER_BRIDGE
+#include "../../../fault_injection/native_adapters/legacy26_qmm_bridge.inc"
+#endif
+

@@ -2,6 +2,7 @@
 // from l4_buffer_substitute_allhit_v1, validated historically with CANN 8.5.1.
 // There are no other fault routes in this library.
 #include "fault39_core.h"
+#include "fault39_build_profile.h"
 #include <acl/acl.h>
 #include <aclnn/opdev/op_cache.h>
 #include <algorithm>
@@ -42,6 +43,12 @@ template<class T> void resolve_one(T& fn,const char* symbol,void* fallback=nullp
  if(!fn)fn=reinterpret_cast<T>(dlsym(RTLD_NEXT,symbol));
  if(!fn && fallback)fn=reinterpret_cast<T>(dlsym(fallback,symbol));
 }
+template<class T> void resolve_public(T& fn,const char* symbol,void* verified_library) {
+ // CANN also exports these names from libacl_rt.so. RTLD_NEXT is load-order
+ // dependent; bind the exact public facade profiled at build time. Do not
+ // load a missing runtime or accept another DSO merely for sharing a symbol.
+ if(!fn && verified_library)fn=reinterpret_cast<T>(dlsym(verified_library,symbol));
+}
 bool resolve() {
  std::lock_guard<std::mutex> lock(resolve_mutex);
  void* nn=dlopen("libnnopbase.so",RTLD_LAZY|RTLD_NOLOAD);
@@ -51,17 +58,24 @@ bool resolve() {
  resolve_one(real_paramc,"_ZN2op8internal13AddParamToBufEPK9aclTensor",nn);
  resolve_one(real_param,"_ZN2op8internal13AddParamToBufEP9aclTensor",nn);
  resolve_one(api_info,"_ZN2op8internal13GetLogApiInfoEv",nn);
- resolve_one(get_device,"aclrtGetDevice",acl); resolve_one(alloc,"aclrtMalloc",acl);
- resolve_one(release,"aclrtFree",acl); resolve_one(host_alloc,"aclrtMallocHost",acl);
- resolve_one(host_release,"aclrtFreeHost",acl); resolve_one(copy,"aclrtMemcpy",acl);
- resolve_one(sync_stream,"aclrtSynchronizeStream",acl);
- resolve_one(get_context,"aclrtGetCurrentContext",acl);
+ resolve_public(get_device,"aclrtGetDevice",acl); resolve_public(alloc,"aclrtMalloc",acl);
+ resolve_public(release,"aclrtFree",acl); resolve_public(host_alloc,"aclrtMallocHost",acl);
+ resolve_public(host_release,"aclrtFreeHost",acl); resolve_public(copy,"aclrtMemcpy",acl);
+ resolve_public(sync_stream,"aclrtSynchronizeStream",acl);
+ resolve_public(get_context,"aclrtGetCurrentContext",acl);
  Dl_info info{}; char path[PATH_MAX]{};
  if(runtime_path.empty() && real_run && dladdr(reinterpret_cast<void*>(real_run),&info) && info.dli_fname && realpath(info.dli_fname,path))runtime_path=path;
- // Both official installation layouts are 8.5.1. No override and no 9.1 fallback.
- const bool path_ok=runtime_path.find("/8.5.1/")!=std::string::npos || runtime_path.find("/cann-8.5.1/")!=std::string::npos;
- runtime_ok=path_ok && real_run && real_add && real_paramc && real_param && api_info &&
-  get_device && get_context && alloc && release && host_alloc && host_release && copy && sync_stream;
+ // Match the exact build's loaded code and files, not a version in a pathname.
+ // Successful identities are pinned/cached; each new worker still needs real
+ // discovery and lossless validation before its first injection.
+ runtime_ok=true;
+ for(void* fn : {reinterpret_cast<void*>(real_run),reinterpret_cast<void*>(real_add),
+     reinterpret_cast<void*>(real_paramc),reinterpret_cast<void*>(real_param),reinterpret_cast<void*>(api_info)})
+  runtime_ok=f39identity::matches(fn,f39profile::nn) && runtime_ok;
+ for(void* fn : {reinterpret_cast<void*>(get_device),reinterpret_cast<void*>(alloc),
+     reinterpret_cast<void*>(release),reinterpret_cast<void*>(host_alloc),reinterpret_cast<void*>(host_release),
+     reinterpret_cast<void*>(copy),reinterpret_cast<void*>(sync_stream),reinterpret_cast<void*>(get_context)})
+  runtime_ok=f39identity::matches(fn,f39profile::acl) && runtime_ok;
  if(nn)dlclose(nn); if(acl)dlclose(acl); return runtime_ok;
 }
 int actual_rank() {
@@ -291,6 +305,7 @@ int stop(const char* owner,uint64_t generation,uint32_t timeout,bool clean) {
 }
 
 extern "C" uint32_t fault39_abi_version_v1(){return 1;}
+extern "C" const char* fault39_build_profile_v1(){return f39profile::id;}
 extern "C" int fault39_bind_worker_rank_v1(int32_t rank) {
  if(rank<0)return F39_INVALID_CONFIG;int32_t expected=-1;
  if(worker_rank.compare_exchange_strong(expected,rank)) {
@@ -362,6 +377,8 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
  try {
   const bool ready=resolve();State& s=state();std::lock_guard<std::mutex> lock(s.mutex);std::ostringstream j;
   j<<"{\"abi_version\":1,\"runtime_loaded\":true,\"runtime_ready\":"<<(ready?"true":"false")<<",\"runtime_path\":"<<quote(runtime_path)
+   <<",\"build_profile_sha256\":"<<quote(f39profile::id)<<",\"cann_build_version\":"<<quote(f39profile::version)
+   <<",\"runtime_identity\":"<<quote(ready?"MATCHED_BUILD":"MISSING_OR_MISMATCHED_LIBRARIES")
    <<",\"owner\":"<<quote(s.config.owner)<<",\"generation\":"<<s.generation<<",\"enabled\":"<<(s.enabled?"true":"false")
    <<",\"mode\":"<<s.config.mode<<",\"exponent\":"<<s.config.exponent<<",\"pattern\":"<<s.config.pattern<<",\"input_mask\":"<<s.config.input_mask
    <<",\"rank\":"<<s.config.rank<<",\"device\":"<<s.config.device<<",\"inflight\":"<<s.inflight<<",\"leases\":"<<(s.retained.size()+s.inflight)

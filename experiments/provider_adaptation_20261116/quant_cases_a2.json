@@ -1,0 +1,96 @@
+[
+  {
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a7",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/quant-scoped-a1",
+        "/quant",
+        "ro"
+      ],
+      [
+        "/home/tik-constfold-cann91-overnight-20261022",
+        "/work",
+        "ro"
+      ],
+      [
+        "/home/ws/models/DeepSeek-R1-Distill-Qwen-32B-W8A8",
+        "/model",
+        "ro"
+      ],
+      [
+        "/home/batch-scale-v2-20261027",
+        "/quant_original",
+        "ro"
+      ]
+    ],
+    "timeout": 1800,
+    "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+    "env": {
+      "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+      "HCCL_EXEC_TIMEOUT": "120",
+      "OMP_NUM_THREADS": "4",
+      "GLOO_SOCKET_IFNAME": "lo",
+      "DCAT_DQ_V2_ENABLE": "1",
+      "HCCL_CONNECT_TIMEOUT": "120",
+      "VLLM_CACHE_ROOT": "/evidence/cache/vllm",
+      "XDG_CACHE_HOME": "/evidence/cache",
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+      "TORCH_DEVICE_BACKEND_AUTOLOAD": "0",
+      "VLLM_HOST_IP": "127.0.0.1",
+      "DCAT_QUANT_BUILD_SHA256": "56492164a38f982f834270eeacd41fd8d71d3ad6d31d8ee0e2b698c41fcfaa07"
+    },
+    "command": "source /usr/local/Ascend/cann-9.1.0/set_env.sh; source /usr/local/Ascend/nnal/atb/set_env.sh --cxx_abi=1; source /work/venv/bin/activate; export ASCEND_CUSTOM_OPP_PATH=/quant/runtime/vendor:/work/venv/lib/python3.11/site-packages/vllm_ascend/_cann_ops_custom/vendors/custom_transformer; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python /source/experiments/provider_adaptation_20261116/probe_quant.py --arm baseline",
+    "id": "quant_baseline"
+  },
+  {
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a7",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/quant-scoped-a1",
+        "/quant",
+        "ro"
+      ],
+      [
+        "/home/tik-constfold-cann91-overnight-20261022",
+        "/work",
+        "ro"
+      ],
+      [
+        "/home/ws/models/DeepSeek-R1-Distill-Qwen-32B-W8A8",
+        "/model",
+        "ro"
+      ],
+      [
+        "/home/batch-scale-v2-20261027",
+        "/quant_original",
+        "ro"
+      ]
+    ],
+    "timeout": 1800,
+    "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+    "env": {
+      "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+      "HCCL_EXEC_TIMEOUT": "120",
+      "OMP_NUM_THREADS": "4",
+      "GLOO_SOCKET_IFNAME": "lo",
+      "DCAT_DQ_V2_ENABLE": "1",
+      "HCCL_CONNECT_TIMEOUT": "120",
+      "VLLM_CACHE_ROOT": "/evidence/cache/vllm",
+      "XDG_CACHE_HOME": "/evidence/cache",
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+      "TORCH_DEVICE_BACKEND_AUTOLOAD": "0",
+      "VLLM_HOST_IP": "127.0.0.1",
+      "DCAT_QUANT_BUILD_SHA256": "56492164a38f982f834270eeacd41fd8d71d3ad6d31d8ee0e2b698c41fcfaa07"
+    },
+    "command": "source /usr/local/Ascend/cann-9.1.0/set_env.sh; source /usr/local/Ascend/nnal/atb/set_env.sh --cxx_abi=1; source /work/venv/bin/activate; export ASCEND_CUSTOM_OPP_PATH=/quant/runtime/vendor:/work/venv/lib/python3.11/site-packages/vllm_ascend/_cann_ops_custom/vendors/custom_transformer; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python /source/experiments/provider_adaptation_20261116/probe_quant.py --arm fault",
+    "id": "quant_fault"
+  }
+]

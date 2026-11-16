@@ -7,6 +7,8 @@
 
 ## 当前统一接入
 
+- [5条部署 provider 与 Fault39 8.x/9.x 本轮实机总结](experiments/provider_adaptation_20261116/README.md)：
+  自动选点、原生命中、B/F/OFF、独立统计首差及不可观测限制；本轮不公开新采集原件。
 - [其余15个机制的统一接口与逐项状态](docs/remaining_faults_integration_20261116/README.md)：
   模型结构自动选择、注册默认关闭、真实 disable/clean、清理失败保留及文档宿主契约。
 - [Fault39 独立原生接入及124实测](fault39/README.md)：保留两种真实架构、TP2及B/F证据，

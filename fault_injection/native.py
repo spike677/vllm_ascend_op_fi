@@ -36,6 +36,7 @@ OPERATORS = {
     '20.buffer_substitute': {'aclnnQuantMatmulWeightNz', 'aclnnMatmulWeightNz', 'aclnnMatmul'},
     '26.residual_stomp': {'aclnnQuantMatmulWeightNz'},
     '26.fia_destination': {'aclnnFusedInferAttentionScore', 'aclnnFusedInferAttentionScoreV2',
+                           'aclnnFusedInferAttentionScoreV3',
                            'torch_npu.npu_fused_infer_attention_score.out'},
     '33.paged_decode': {'aclnnIncreFlashAttention', 'aclnnFusedInferAttentionScore',
                        'torch_npu.npu_incre_flash_attention', 'torch_npu.npu_fused_infer_attention_score'},

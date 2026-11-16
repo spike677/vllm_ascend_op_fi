@@ -11,8 +11,10 @@ import subprocess
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--output',type=Path,required=True)
+    p.add_argument('--toolkit',type=Path,default=Path(os.environ.get('ASCEND_HOME_PATH','/usr/local/Ascend/ascend-toolkit/latest')))
     a=p.parse_args()
-    root=Path('/usr/local/Ascend/cann-8.5.1/aarch64-linux')
+    root=a.toolkit.resolve()
+    if (root/'aarch64-linux/include').is_dir():root=(root/'aarch64-linux').resolve()
     files=[root/'include/aclnn/opdev/op_cache.h',root/'pkg_inc/base/dlog_pub.h',root/'lib64/libopapi.so']
     result=dict(schema='demoncat_fault39.build_inventory.v1',actual_npu_calls=0,
         machine=platform.machine(),python=platform.python_version(),pid=os.getpid(),

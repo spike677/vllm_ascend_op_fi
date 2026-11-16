@@ -7,7 +7,8 @@ must limit each experiment batch to at most eight cases.
 
 Before process startup, preload `libfault39_native_v1.so`, put the isolated
 metadata `libopapi.so` first in the worker library search path, and set
-`VLLM_SERVER_DEV_MODE=1`. Use the real CANN 8.5.1 environment. The provider only
+`VLLM_SERVER_DEV_MODE=1`. Use the exact CANN installation recorded in this build's
+`version_profile.json`, with its environment script and matched libraries. The provider only
 attaches to `CDLL(None)`; a late load cannot satisfy the probe.
 
 Example arguments after the parent has prepared that environment:
@@ -20,7 +21,7 @@ python3 native_probe.py --stage lossless --input-mask 3 --output lossless-dual.j
 python3 native_probe.py --stage pattern --pattern half --output half.json
 ```
 
-Each invocation first executes two actual `torch.mm` calls on the same finite
+Each invocation first executes two actual `torch.matmul` calls on the same finite
 BF16 ND inputs and output allocation. The mat2 input is a transpose view with
 stride `[1,K]`. Selection requires two increasing real observations of a unique,
 identical native signature, exact output repeatability, finite baseline output,

@@ -1,0 +1,1441 @@
+{
+  "schema": "demoncat.cann.interface_comparison.v1",
+  "actual_npu_calls": 0,
+  "status": "INTERFACE_FACTS_ONLY",
+  "versions": {
+    "8.5.1": {
+      "source": "interface-851-a3.json",
+      "installation": {
+        "ascend_ops_install.info": {
+          "package_name": "Ascend-cann-910b-ops",
+          "version": "8.5.1",
+          "innerversion": "V100R001C25SPC002B220",
+          "compatible_version": "[V100R001C15],[V100R001C18],[V100R001C19],[V100R001C20],[V100R001C21],[V100R001C23]",
+          "arch": "aarch64",
+          "os": "linux",
+          "path": "/usr/local/Ascend/cann-8.5.1"
+        },
+        "ascend_toolkit_install.info": {
+          "package_name": "Ascend-cann-toolkit",
+          "version": "8.5.1",
+          "innerversion": "V100R001C25SPC002B220",
+          "compatible_version": "[V100R001C15],[V100R001C18],[V100R001C19],[V100R001C20],[V100R001C21],[V100R001C23]",
+          "arch": "aarch64",
+          "os": "linux",
+          "path": "/usr/local/Ascend/cann-8.5.1"
+        }
+      },
+      "abi_facts": {
+        "aclTensor_size": 544,
+        "OpExecCache_size": 320,
+        "ACL_BF16": 27,
+        "ACL_FORMAT_ND": 2
+      }
+    },
+    "9.0.0": {
+      "source": "interface-90-a3.json",
+      "installation": {
+        "ascend_ops_install.info": {
+          "package_name": "Ascend-cann-910b-ops",
+          "version": "9.0.0",
+          "innerversion": "V100R001C10SPC001B250",
+          "compatible_version": "[V100R001C21],[V100R001C22],[V100R001C23],[V100R001C25],[V100R001C10]",
+          "arch": "aarch64",
+          "os": "linux",
+          "path": "/usr/local/Ascend/cann-9.0.0"
+        },
+        "ascend_toolkit_install.info": {
+          "package_name": "Ascend-cann-toolkit",
+          "version": "9.0.0",
+          "innerversion": "V100R001C10SPC001B250",
+          "compatible_version": "[V100R001C21],[V100R001C22],[V100R001C23],[V100R001C25],[V100R001C10]",
+          "arch": "aarch64",
+          "os": "linux",
+          "path": "/usr/local/Ascend/cann-9.0.0"
+        }
+      },
+      "abi_facts": {
+        "aclTensor_size": 544,
+        "OpExecCache_size": 320,
+        "ACL_BF16": 27,
+        "ACL_FORMAT_ND": 2
+      }
+    },
+    "9.1.0": {
+      "source": "interface-91-a3.json",
+      "installation": {
+        "ascend_ops_install.info": {
+          "package_name": "Ascend-cann-910b-ops",
+          "version": "9.1.0",
+          "innerversion": "V100R001C11SPC001B243",
+          "compatible_version": "[V100R001C15],[V100R001C21],[V100R001C23],[V100R001C10]",
+          "arch": "aarch64",
+          "os": "linux",
+          "path": "/usr/local/Ascend/cann-9.1.0"
+        },
+        "ascend_toolkit_install.info": {
+          "package_name": "Ascend-cann-toolkit",
+          "version": "9.1.0",
+          "innerversion": "V100R001C11SPC001B243",
+          "compatible_version": "[V100R001C15],[V100R001C21],[V100R001C23],[V100R001C10]",
+          "arch": "aarch64",
+          "os": "linux",
+          "path": "/usr/local/Ascend/cann-9.1.0"
+        }
+      },
+      "abi_facts": {
+        "aclTensor_size": 544,
+        "OpExecCache_size": 320,
+        "ACL_BF16": 27,
+        "ACL_FORMAT_ND": 2
+      }
+    },
+    "9.2.0": {
+      "source": "interface-92-a3.json",
+      "installation": {
+        "ascend_ops_install.info": {
+          "package_name": "Ascend-cann-910b-ops",
+          "version": "9.2.0",
+          "innerversion": "V100R001C12SPC001B237",
+          "compatible_version": "[V100R001C15],[V100R001C23],[V100R001C10],[V100R001C11],[V100R001C12]",
+          "arch": "aarch64",
+          "os": "linux",
+          "path": "/usr/local/Ascend/cann-9.2.0"
+        },
+        "ascend_toolkit_install.info": {
+          "package_name": "Ascend-cann-toolkit",
+          "version": "9.2.0",
+          "innerversion": "V100R001C12SPC001B237",
+          "compatible_version": "[V100R001C15],[V100R001C23],[V100R001C10],[V100R001C11],[V100R001C12]",
+          "arch": "aarch64",
+          "os": "linux",
+          "path": "/usr/local/Ascend/cann-9.2.0"
+        }
+      },
+      "abi_facts": {
+        "aclTensor_size": 544,
+        "OpExecCache_size": 320,
+        "ACL_BF16": 27,
+        "ACL_FORMAT_ND": 2
+      }
+    }
+  },
+  "symbols": {
+    "_ZN2op8internal11OpExecCache3RunEPvS2_RKSt6vectorIS2_SaIS2_EE": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.0.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.1.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.2.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "_ZN2op8internal13AddParamToBufEP9aclTensor": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.0.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.1.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.2.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "_ZN2op8internal13AddParamToBufEPK9aclTensor": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.0.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.1.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.2.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "_ZN2op8internal13GetLogApiInfoEv": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.0.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.1.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.2.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "_ZN2op8internal14AddOpExecCacheEPNS0_11OpExecCacheE": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.0.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.1.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        },
+        "9.2.0": {
+          "libraries": [
+            "libnnopbase.so"
+          ],
+          "declaration_found": false
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnAddRmsNorm": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "aclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnAddRmsNormGetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "double",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1"
+          ]
+        },
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "double",
+            "aclTensor*",
+            "aclTensor*",
+            "aclTensor*",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnDynamicQuant": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "aclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnDynamicQuantGetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnDynamicQuantV2": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "aclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnDynamicQuantV2GetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "int64_t",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnFusedInferAttentionScore": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "constaclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnFusedInferAttentionScoreGetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensorList*",
+            "constaclTensorList*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclIntArray*",
+            "constaclIntArray*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "int64_t",
+            "double",
+            "int64_t",
+            "int64_t",
+            "char*",
+            "int64_t",
+            "int64_t",
+            "int64_t",
+            "int64_t",
+            "int64_t",
+            "bool",
+            "constaclTensor*",
+            "constaclTensor*",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnFusedInferAttentionScoreV2": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "constaclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnFusedInferAttentionScoreV2GetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensorList*",
+            "constaclTensorList*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclIntArray*",
+            "constaclIntArray*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclIntArray*",
+            "int64_t",
+            "double",
+            "int64_t",
+            "int64_t",
+            "char*",
+            "int64_t",
+            "int64_t",
+            "int64_t",
+            "int64_t",
+            "int64_t",
+            "bool",
+            "int64_t",
+            "int64_t",
+            "constaclTensor*",
+            "constaclTensor*",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnFusedInferAttentionScoreV3": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "constaclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnFusedInferAttentionScoreV3GetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensorList*",
+            "constaclTensorList*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclIntArray*",
+            "constaclIntArray*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclIntArray*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "int64_t",
+            "double",
+            "int64_t",
+            "int64_t",
+            "char*",
+            "int64_t",
+            "int64_t",
+            "int64_t",
+            "int64_t",
+            "int64_t",
+            "bool",
+            "int64_t",
+            "int64_t",
+            "constaclTensor*",
+            "constaclTensor*",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnIncreFlashAttention": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "constaclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnIncreFlashAttentionGetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_transformer.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensorList*",
+            "constaclTensorList*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclIntArray*",
+            "int64_t",
+            "double",
+            "char*",
+            "int64_t",
+            "constaclTensor*",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnMatmul": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "aclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnMatmulGetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensor*",
+            "aclTensor*",
+            "int8_t",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnMatmulWeightNz": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "aclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnMatmulWeightNzGetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensor*",
+            "aclTensor*",
+            "int8_t",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnQuantMatmulWeightNz": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "void*",
+            "uint64_t",
+            "aclOpExecutor*",
+            "aclrtStream"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    },
+    "aclnnQuantMatmulWeightNzGetWorkspaceSize": {
+      "availability": {
+        "8.5.1": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.0.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.1.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        },
+        "9.2.0": {
+          "libraries": [
+            "libopapi.so",
+            "libopapi_nn.so"
+          ],
+          "declaration_found": true
+        }
+      },
+      "signature_groups": [
+        {
+          "parameter_types": [
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "constaclTensor*",
+            "bool",
+            "bool",
+            "int64_t",
+            "aclTensor*",
+            "uint64_t*",
+            "aclOpExecutor**"
+          ],
+          "versions": [
+            "8.5.1",
+            "9.0.0",
+            "9.1.0",
+            "9.2.0"
+          ]
+        }
+      ]
+    }
+  },
+  "limits": [
+    "Matching sizeof is not proof of matching field layout or runtime cache semantics.",
+    "Header declarations and exports do not prove actual model dispatch or kernel compatibility.",
+    "No evidence for uninstalled 8.x/9.x releases; no major-version blanket certification."
+  ]
+}

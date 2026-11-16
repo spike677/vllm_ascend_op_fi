@@ -22,6 +22,7 @@ lib.fault39_disable_v1.argtypes = [C.c_char_p, C.c_uint64, C.c_uint32]
 lib.fault39_clean_v1.argtypes = [C.c_char_p, C.c_uint64, C.c_uint32]
 lib.fault39_set_context_v1.argtypes = [C.c_char_p, C.c_char_p]
 lib.fault39_bind_worker_rank_v1.argtypes = [C.c_int32]
+lib.fault39_build_profile_v1.restype = C.c_char_p
 
 
 def snapshot():
@@ -39,6 +40,10 @@ assert lib.fault39_abi_version_v1() == 1
 initial = snapshot()
 assert initial['enabled'] is False and initial['owner'] == ''
 assert initial['generation'] == 0 and initial['inflight'] == 0 and initial['leases'] == 0
+assert initial['runtime_ready'] is False
+assert initial['runtime_identity'] == 'MISSING_OR_MISMATCHED_LIBRARIES'
+assert initial['build_profile_sha256'] == lib.fault39_build_profile_v1().decode()
+assert len(initial['build_profile_sha256']) == 64 and initial['cann_build_version']
 cfg = Config(1, C.sizeof(Config), 1, 0, -1, 0, 0, 1, 1 << 20, b'cpu-test', b'', 3, 0)
 generation = C.c_uint64(999)
 cfg.abi_version = 0
@@ -47,6 +52,7 @@ cfg.abi_version = 1
 cfg.max_hits = 0
 assert lib.fault39_configure_v1(C.byref(cfg), C.byref(generation)) == -1
 cfg.max_hits = 1
+assert lib.fault39_configure_v1(C.byref(cfg), C.byref(generation)) == -8
 cfg.mode, cfg.input_mask = 2, 1
 assert lib.fault39_configure_v1(C.byref(cfg), C.byref(generation)) == -1
 assert generation.value == 999

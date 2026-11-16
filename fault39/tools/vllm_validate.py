@@ -239,10 +239,14 @@ def _native_lossless_verified(snapshot, expected_mask):
 def _gate_lossless(receipt_path, report):
     if not receipt_path:
         raise RuntimeError("LOSSLESS_RECEIPT_REQUIRED_BEFORE_PATTERN")
+    profiles=report.get('native_build_profiles')
+    if (not isinstance(profiles,dict) or not profiles or set(profiles)!={str(rank) for rank in report.get('ranks',[])} or
+            any(not isinstance(value,str) or len(value)!=64 or any(c not in '0123456789abcdef' for c in value) for value in profiles.values())):
+        raise RuntimeError('NATIVE_BUILD_PROFILE_REQUIRED')
     receipt = json.loads(Path(receipt_path).read_text(encoding="utf-8"))
     if receipt.get("status") != "LOSSLESS_VALIDATED" or receipt.get("stage") != "lossless":
         raise RuntimeError("LOSSLESS_GATE_NOT_PASSED")
-    for key in ("model", "tp", "ranks", "environment"):
+    for key in ("model", "tp", "ranks", "environment", "native_build_profiles"):
         if receipt.get(key) != report.get(key):
             raise RuntimeError("LOSSLESS_GATE_ENVIRONMENT_MISMATCH: " + key)
     if receipt.get("targets") != report.get("targets"):
@@ -277,6 +281,11 @@ def validate(args, llm, sampling_factory, environment):
         "tp": args.tp, "ranks": list(args.ranks), "config": config.as_dict(), "environment": environment,
         "worker_identities": identities, "phases": [], "inner_framework_integration": INTEGRATION_STATUS,
         "request_mapping": REQUEST_MAPPING, "msprobe_first_difference": "NOT_ANALYZED", "tensor_payloads_uploaded": False}
+    # Version adaptation invalidates an old lossless receipt even if model and
+    # package version strings are unchanged. Bind all selected worker profiles.
+    report['native_build_profiles']={str(rank):providers[rank].snapshot().get('build_profile_sha256') for rank in args.ranks}
+    if any(not isinstance(value,str) or len(value)!=64 for value in report['native_build_profiles'].values()):
+        raise RuntimeError('NATIVE_BUILD_PROFILE_REQUIRED')
     output = Path(args.output)
     output.mkdir(parents=True, exist_ok=False)
     report_file = output / "validation.json"
@@ -440,8 +449,8 @@ def main():
     os.environ["TRANSFORMERS_OFFLINE"] = "1"
     from vllm import LLM, SamplingParams
     versions = {name: importlib.metadata.version(name) for name in ("vllm", "vllm-ascend", "torch", "torch-npu")}
-    if not versions["vllm"].startswith("0.18."):
-        raise SystemExit("This runner is verified against vLLM 0.18 only")
+    if not versions["vllm"].startswith(("0.18.", "0.23.")):
+        raise SystemExit("Runner adapters cover vLLM 0.18/0.23; actual worker/scheduler contracts are checked at attachment")
     preload_files = [Path(value) for value in os.environ["LD_PRELOAD"].replace(":", " ").split()]
     preload_hashes = {str(path.resolve()): hashlib.sha256(path.read_bytes()).hexdigest() for path in preload_files if path.is_file()}
     environment = {"packages": versions, "preload_files": preload_hashes, "worker_extension": WORKER_CLASS,
@@ -462,10 +471,14 @@ def main():
                 digest.update(block)
         identity['weights'][weight.name] = {'bytes': weight.stat().st_size, 'sha256': digest.hexdigest()}
     environment['model_identity'] = identity
+    extra = ({'additional_config': {'enable_flashcomm1': False}, 'enable_chunked_prefill': False,
+              'block_size': 128}
+             if versions['vllm'].startswith('0.23.') else {})
+    environment['runner_options'] = extra
     llm = LLM(model=args.model, tensor_parallel_size=args.tp, dtype="bfloat16", enforce_eager=True,
         worker_extension_cls=WORKER_CLASS, max_model_len=args.max_model_len, max_num_seqs=1,
         gpu_memory_utilization=args.memory_utilization, seed=args.seed, trust_remote_code=False,
-        enable_prefix_caching=False, async_scheduling=False)
+        enable_prefix_caching=False, async_scheduling=False, **extra)
     report = validate(args, llm, lambda: SamplingParams(temperature=0, seed=args.seed, max_tokens=args.max_tokens), environment)
     print(json.dumps({"status": report["status"], "report": str(Path(args.output) / "validation.json")}, ensure_ascii=False))
     return 0 if report["status"] in ("STABLE_UNIQUE_TARGET_DISCOVERED", "LOSSLESS_VALIDATED", 'BASELINE_MODEL_CAPTURED', "PATTERN_NATIVE_VALIDATED_MSPROBE_ANALYSIS_PENDING") else 2

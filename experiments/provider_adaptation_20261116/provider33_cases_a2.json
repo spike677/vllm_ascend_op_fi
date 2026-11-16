@@ -1,0 +1,71 @@
+[
+  {
+    "env": {
+      "TORCH_DEVICE_BACKEND_AUTOLOAD": "0",
+      "ASCEND_WORK_PATH": "/evidence/cann",
+      "ASCEND_GLOBAL_LOG_LEVEL": "0",
+      "ASCEND_SLOG_PRINT_TO_STDOUT": "1"
+    },
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a6",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/fault33-paged-tiling-20261105",
+        "/audit",
+        "ro"
+      ],
+      [
+        "/home/tik-constfold-cann91-overnight-20261022",
+        "/work",
+        "ro"
+      ],
+      [
+        "/home/gyl/models/Qwen3-0.6B",
+        "/model",
+        "ro"
+      ]
+    ],
+    "id": "provider33_baseline",
+    "timeout": 1800,
+    "command": "source /usr/local/Ascend/cann-9.1.0/set_env.sh; source /work/venv/bin/activate; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python /source/experiments/provider_adaptation_20261116/probe33.py --arm baseline",
+    "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8"
+  },
+  {
+    "env": {
+      "TORCH_DEVICE_BACKEND_AUTOLOAD": "0",
+      "ASCEND_WORK_PATH": "/evidence/cann",
+      "ASCEND_GLOBAL_LOG_LEVEL": "0",
+      "ASCEND_SLOG_PRINT_TO_STDOUT": "1"
+    },
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a6",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/fault33-paged-tiling-20261105",
+        "/audit",
+        "ro"
+      ],
+      [
+        "/home/tik-constfold-cann91-overnight-20261022",
+        "/work",
+        "ro"
+      ],
+      [
+        "/home/gyl/models/Qwen3-0.6B",
+        "/model",
+        "ro"
+      ]
+    ],
+    "id": "provider33_fault",
+    "timeout": 1800,
+    "command": "source /usr/local/Ascend/cann-9.1.0/set_env.sh; source /work/venv/bin/activate; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python /source/experiments/provider_adaptation_20261116/probe33.py --arm fault",
+    "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8"
+  }
+]
+

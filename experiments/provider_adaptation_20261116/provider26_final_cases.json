@@ -1,0 +1,194 @@
+[
+  {
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh; export ASCEND_CUSTOM_OPP_PATH=/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend; export LD_PRELOAD=/native/libfault26_readonly_trace_abi0.so:/native/libfault26_fia_writer_proxy_abi0.so:/native/libfault26_qmm_output_underflow_abi0.so:/native/libfault26_fia_opapi_proxy.so:/native/libopapi.so:/native/libcust_opapi.so; export LD_LIBRARY_PATH=/native:/native/real:$LD_LIBRARY_PATH; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python3 /source/experiments/provider_adaptation_20261116/probe26_model.py --kind fia --arm baseline",
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a11",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build26-a2",
+        "/native",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build26-a2/libopapi_nn.so",
+        "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so",
+        "ro"
+      ],
+      [
+        "/home/ws/models/DeepSeek-R1-Distill-Qwen-32B-W8A8",
+        "/model",
+        "ro"
+      ]
+    ],
+    "id": "provider26_fia_model_baseline",
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "timeout": 1800,
+    "env": {
+      "FAULT26_TRACE_ENABLED": "1",
+      "FAULT26_FIA_WRITER_PROXY_ALLOWED": "1",
+      "FAULT26_WRITER_TOPOLOGY_ENABLED": "1",
+      "FAULT26_QMM_UNDERFLOW_LOG_PATH": "/evidence/writer.jsonl",
+      "FAULT26_TRACE_CAPTURE_TENSORS": "1",
+      "FAULT26_TRACE_MAX_EVENTS": "100000",
+      "FAULT26_QMM_UNDERFLOW_ALLOWED": "1",
+      "FAULT26_TRACE_LOG_PATH": "/evidence/trace.jsonl",
+      "FAULT26_FIA_WRITER_LOG_PATH": "/evidence/writer.jsonl",
+      "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+      "HCCL_CONNECT_TIMEOUT": "120",
+      "HCCL_EXEC_TIMEOUT": "120",
+      "VLLM_HOST_IP": "127.0.0.1",
+      "OMP_NUM_THREADS": "4",
+      "XDG_CACHE_HOME": "/evidence/cache",
+      "VLLM_CACHE_ROOT": "/evidence/cache/vllm",
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+      "GLOO_SOCKET_IFNAME": "lo"
+    }
+  },
+  {
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh; export ASCEND_CUSTOM_OPP_PATH=/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend; export LD_PRELOAD=/native/libfault26_readonly_trace_abi0.so:/native/libfault26_fia_writer_proxy_abi0.so:/native/libfault26_qmm_output_underflow_abi0.so:/native/libfault26_fia_opapi_proxy.so:/native/libopapi.so:/native/libcust_opapi.so; export LD_LIBRARY_PATH=/native:/native/real:$LD_LIBRARY_PATH; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python3 /source/experiments/provider_adaptation_20261116/probe26_model.py --kind fia --arm fault",
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a11",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build26-a2",
+        "/native",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build26-a2/libopapi_nn.so",
+        "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so",
+        "ro"
+      ],
+      [
+        "/home/ws/models/DeepSeek-R1-Distill-Qwen-32B-W8A8",
+        "/model",
+        "ro"
+      ]
+    ],
+    "id": "provider26_fia_model_fault",
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "timeout": 1800,
+    "env": {
+      "FAULT26_TRACE_ENABLED": "1",
+      "FAULT26_FIA_WRITER_PROXY_ALLOWED": "1",
+      "FAULT26_WRITER_TOPOLOGY_ENABLED": "1",
+      "FAULT26_QMM_UNDERFLOW_LOG_PATH": "/evidence/writer.jsonl",
+      "FAULT26_TRACE_CAPTURE_TENSORS": "1",
+      "FAULT26_TRACE_MAX_EVENTS": "100000",
+      "FAULT26_QMM_UNDERFLOW_ALLOWED": "1",
+      "FAULT26_TRACE_LOG_PATH": "/evidence/trace.jsonl",
+      "FAULT26_FIA_WRITER_LOG_PATH": "/evidence/writer.jsonl",
+      "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+      "HCCL_CONNECT_TIMEOUT": "120",
+      "HCCL_EXEC_TIMEOUT": "120",
+      "VLLM_HOST_IP": "127.0.0.1",
+      "OMP_NUM_THREADS": "4",
+      "XDG_CACHE_HOME": "/evidence/cache",
+      "VLLM_CACHE_ROOT": "/evidence/cache/vllm",
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+      "GLOO_SOCKET_IFNAME": "lo"
+    }
+  },
+  {
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh; export ASCEND_CUSTOM_OPP_PATH=/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend; export LD_PRELOAD=/native/libfault26_readonly_trace_abi0.so:/native/libfault26_fia_writer_proxy_abi0.so:/native/libfault26_qmm_output_underflow_abi0.so:/native/libfault26_fia_opapi_proxy.so:/native/libopapi.so:/native/libcust_opapi.so; export LD_LIBRARY_PATH=/native:/native/real:$LD_LIBRARY_PATH; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python3 /source/experiments/provider_adaptation_20261116/probe26_model.py --kind qmm --arm baseline",
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a11",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build26-a2",
+        "/native",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build26-a2/libopapi_nn.so",
+        "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so",
+        "ro"
+      ],
+      [
+        "/home/ws/models/DeepSeek-R1-Distill-Qwen-32B-W8A8",
+        "/model",
+        "ro"
+      ]
+    ],
+    "id": "provider26_qmm_model_baseline",
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "timeout": 1800,
+    "env": {
+      "FAULT26_TRACE_ENABLED": "1",
+      "FAULT26_FIA_WRITER_PROXY_ALLOWED": "1",
+      "FAULT26_WRITER_TOPOLOGY_ENABLED": "1",
+      "FAULT26_QMM_UNDERFLOW_LOG_PATH": "/evidence/writer.jsonl",
+      "FAULT26_TRACE_CAPTURE_TENSORS": "1",
+      "FAULT26_TRACE_MAX_EVENTS": "100000",
+      "FAULT26_QMM_UNDERFLOW_ALLOWED": "1",
+      "FAULT26_TRACE_LOG_PATH": "/evidence/trace.jsonl",
+      "FAULT26_FIA_WRITER_LOG_PATH": "/evidence/writer.jsonl",
+      "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+      "HCCL_CONNECT_TIMEOUT": "120",
+      "HCCL_EXEC_TIMEOUT": "120",
+      "VLLM_HOST_IP": "127.0.0.1",
+      "OMP_NUM_THREADS": "4",
+      "XDG_CACHE_HOME": "/evidence/cache",
+      "VLLM_CACHE_ROOT": "/evidence/cache/vllm",
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+      "GLOO_SOCKET_IFNAME": "lo"
+    }
+  },
+  {
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh; export ASCEND_CUSTOM_OPP_PATH=/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend; export LD_PRELOAD=/native/libfault26_readonly_trace_abi0.so:/native/libfault26_fia_writer_proxy_abi0.so:/native/libfault26_qmm_output_underflow_abi0.so:/native/libfault26_fia_opapi_proxy.so:/native/libopapi.so:/native/libcust_opapi.so; export LD_LIBRARY_PATH=/native:/native/real:$LD_LIBRARY_PATH; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python3 /source/experiments/provider_adaptation_20261116/probe26_model.py --kind qmm --arm fault",
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a11",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build26-a2",
+        "/native",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build26-a2/libopapi_nn.so",
+        "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so",
+        "ro"
+      ],
+      [
+        "/home/ws/models/DeepSeek-R1-Distill-Qwen-32B-W8A8",
+        "/model",
+        "ro"
+      ]
+    ],
+    "id": "provider26_qmm_model_fault",
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "timeout": 1800,
+    "env": {
+      "FAULT26_TRACE_ENABLED": "1",
+      "FAULT26_FIA_WRITER_PROXY_ALLOWED": "1",
+      "FAULT26_WRITER_TOPOLOGY_ENABLED": "1",
+      "FAULT26_QMM_UNDERFLOW_LOG_PATH": "/evidence/writer.jsonl",
+      "FAULT26_TRACE_CAPTURE_TENSORS": "1",
+      "FAULT26_TRACE_MAX_EVENTS": "100000",
+      "FAULT26_QMM_UNDERFLOW_ALLOWED": "1",
+      "FAULT26_TRACE_LOG_PATH": "/evidence/trace.jsonl",
+      "FAULT26_FIA_WRITER_LOG_PATH": "/evidence/writer.jsonl",
+      "VLLM_WORKER_MULTIPROC_METHOD": "spawn",
+      "HCCL_CONNECT_TIMEOUT": "120",
+      "HCCL_EXEC_TIMEOUT": "120",
+      "VLLM_HOST_IP": "127.0.0.1",
+      "OMP_NUM_THREADS": "4",
+      "XDG_CACHE_HOME": "/evidence/cache",
+      "VLLM_CACHE_ROOT": "/evidence/cache/vllm",
+      "VLLM_ENABLE_V1_MULTIPROCESSING": "0",
+      "GLOO_SOCKET_IFNAME": "lo"
+    }
+  }
+]

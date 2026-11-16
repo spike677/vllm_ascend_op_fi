@@ -6,10 +6,16 @@ status remains **`INNER_FRAMEWORK_INTEGRATION_PENDING`**: the document-contract
 adapter and tests are not evidence that the inaccessible catalog, bindings,
 controller or CLI have been changed.
 
-Blue-124 results and independent statistics are indexed in
-[the acceptance report](reports/README.md). The delivered native source matches
-the actual `build-a10` source fingerprint. Qwen3 and a real Llama implementation
-have separate acceptance records; this is not arbitrary-model certification.
+Historical Blue-124 results and independent statistics are indexed in
+[the acceptance report](reports/README.md); its source fingerprint refers to
+the historical `build-a10`, not the current version-adapted build.
+[The 2026-11-16 acceptance](../experiments/provider_adaptation_20261116/README.md)
+separately verifies the current `source-a5` / per-version `build-*-a5` on actual
+CANN 8.5.1, 9.0.0, 9.1.0 and 9.2.0 installations at operator level, plus Qwen3
+TP1/TP2 on 8.5.1 and TP2 on 9.1.0. The 9.1 model runner uses Python `source-a7`
+with the same accepted native `build-91-a5`.
+Qwen3 and a real Llama implementation retain separate historical acceptance
+records; no arbitrary-model or arbitrary-8.x/9.x certification is implied.
 
 The native core derives from the historical CANN 8.5.1 metadata/cache runtime.
 See [source audit](docs/historical_source_audit.md),
@@ -54,7 +60,7 @@ internally uses FP32 throughout.
 | Native metadata | Dynamic M/K/N, BF16 ND, positive injective strides, storage bounds, alias rejection | Other dtype/API/format routes are rejected |
 | Target discovery | Stable real signature and cache identity across repeated workloads | Ambiguous candidate signatures/caches are refused; cache uniqueness does not establish model-layer uniqueness |
 | `NativeBackend` | prepare/register/discover/enable/disable/query/clean/unregister | Owner-scoped; no global `reload_weights()` |
-| Worker extension | vLLM 0.18 actual rank and scheduler request scope | Eager, synchronous host task queue; `TASK_QUEUE_ENABLE=0` |
+| Worker extension | vLLM 0.18/0.23 actual rank and scheduler request scope | Eager, synchronous host task queue; `TASK_QUEUE_ENABLE=0`; actual runner contract remains checked |
 | Inspector | Full native logical statistics and independent raw msprobe comparison | Native hit logs cannot select the msprobe first difference |
 | Host adapter | Versioned document-contract adapter + mocks | Yellow framework wiring still required |
 
@@ -107,9 +113,14 @@ remain separate from any reported real TP1/TP2 results.
 
 ## Building and running on 124
 
-Use the matched `quay.io/ascend/vllm-ascend:v0.18.0` environment with CANN 8.5.1.
-`native/build.sh` uses the historical `pkg_inc` include fix and builds versioned
-runtime and metadata proxies. Vendor libraries are copied only into the private
+Historical NPU acceptance used `quay.io/ascend/vllm-ascend:v0.18.0` with CANN 8.5.1.
+The current source supports capability-checked, per-installation builds rather
+than rejecting every version except 8.5.1. CPU builds against actual 8.5.1,
+9.0.0, 9.1.0 and 9.2.0 and their operator NPU B/F/OFF have passed. Real Qwen3
+inference passed on 8.5.1 (TP1/TP2) and 9.1.0 (TP2); 9.0/9.2 model inference
+remains unvalidated. See [version differences and exact scope](docs/cann_version_adaptation.md).
+`native/build.sh` uses the installed headers, symbol/signature checks and an
+immutable build profile. Vendor libraries are copied only into the private
 runtime build directory; vendor binaries and headers must not be published.
 
 The installed torch-npu 2.9 `torch.mm` path calls **aclnnMm**, which this Fault39

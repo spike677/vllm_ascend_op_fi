@@ -565,6 +565,9 @@ bool restore_wrong_destination(Record *record, aclrtStream stream,
 
 }  // namespace
 
+#ifdef DEMONCAT_NATIVE_PROVIDER_BRIDGE
+#define fault26_fia_writer_prepare_output dcat26_fia_prepare_impl
+#endif
 extern "C" const aclTensor *fault26_fia_writer_prepare_output(
     const aclTensor *attention_out) {
     pthread_once(&g_once, initialize);
@@ -1109,3 +1112,8 @@ extern "C" void fault26_write_gate_after_add_rms_norm_bias(
     }
     g_active_add_rms = ActiveAddRms{};
 }
+
+#ifdef DEMONCAT_NATIVE_PROVIDER_BRIDGE
+#include "../../../fault_injection/native_adapters/legacy26_fia_bridge.inc"
+#endif
+

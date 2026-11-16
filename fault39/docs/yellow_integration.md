@@ -66,8 +66,11 @@ Worker 继续 pending，不能伪报整体关闭。
 
 源代码与 ABI 定义见 [native/README.md](../native/README.md)、
 [build.sh](../native/build.sh)、[fault39_api.h](../native/fault39_api.h)。
-当前仅支持匹配的 aarch64 CANN 8.5.1、C++ ABI0 和独立 Fault39 ABI v1
-（Config 368 字节），不覆盖历史 SHM v13，也不复用其内存布局。
+当前按实际 aarch64 CANN 安装的头文件／符号／运行库指纹构建，保留 C++ ABI0
+和独立 Fault39 ABI v1（Config 368 字节）。已完成 8.5.1、9.0.0、9.1.0、9.2.0
+CPU 构建预检；新适配版本的 NPU 验收仍待执行。不能把主版本号或编译成功当作
+实机通过，详见[版本适配矩阵](cann_version_adaptation.md)。不覆盖历史 SHM v13，
+也不复用其内存布局。
 
 在实际 Worker 启动**之前**准备同一构建的 runtime 与 metadata proxies：
 
@@ -156,6 +159,7 @@ python3 "$F39_SOURCE/fault39/tools/run_124.py" \
   响应及恢复。响应相同不等于全模型中间张量逐元素相同。
 - 公开交付只包含源码、原始统计、配置、版本和报告；不包含完整私有张量、模型权重或
   vendor 二进制。报告分别列出 CPU/mock、真实算子、真实模型、TP 与内源接线范围。
+  2026-11-16本轮按用户要求仅提交实现与总结，新的原始statistics保留在124，不随Git发布。
 
 黄区最终应重新验证：实际 rank 过滤及未选 rank 零替换、请求映射、同步 disable/drain、
 重复启停、与另一条真实 fault 共存时的 owner 隔离，以及内源 CLI 到 Native 的闭环。

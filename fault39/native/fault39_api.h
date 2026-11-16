@@ -22,6 +22,8 @@ typedef struct Fault39ConfigV1 {
  uint32_t input_mask, reserved;
 } Fault39ConfigV1;
 uint32_t fault39_abi_version_v1(void);
+/* Additive diagnostic: immutable identity of this exact toolkit/header build. */
+const char* fault39_build_profile_v1(void);
 int fault39_configure_v1(const Fault39ConfigV1*, uint64_t* generation);
 int fault39_disable_v1(const char* owner, uint64_t generation, uint32_t timeout_ms);
 int fault39_clean_v1(const char* owner, uint64_t generation, uint32_t timeout_ms);

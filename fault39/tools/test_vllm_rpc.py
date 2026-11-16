@@ -1,5 +1,9 @@
 from types import SimpleNamespace
 import unittest
+import json
+from pathlib import Path
+import tempfile
+from vllm_validate import _gate_lossless
 from vllm_validate import WorkerRpc, RpcContractError, observe_request_ids, request_evidence, finish_group_capture
 
 
@@ -11,6 +15,21 @@ class FakeProcessor:
 
 
 class RpcTests(unittest.TestCase):
+    def test_lossless_receipt_is_bound_to_exact_native_build(self):
+        report=dict(model='/model',tp=1,ranks=[0],environment={},targets={'0':'actual-signature'},native_build_profiles={'0':'a'*64})
+        receipt=dict(report,status='LOSSLESS_VALIDATED',stage='lossless')
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'lossless.json';path.write_text(json.dumps(receipt))
+            _gate_lossless(path,dict(report))
+            for profiles in ({'0':'b'*64},None):
+                invalid=dict(receipt,native_build_profiles=profiles);path.write_text(json.dumps(invalid))
+                with self.assertRaisesRegex(RuntimeError,'LOSSLESS_GATE_ENVIRONMENT_MISMATCH: native_build_profiles'):
+                    _gate_lossless(path,dict(report))
+
+    def test_unidentified_build_cannot_use_legacy_lossless_receipt(self):
+        with self.assertRaisesRegex(RuntimeError,'NATIVE_BUILD_PROFILE_REQUIRED'):
+            _gate_lossless('/not-read',dict(ranks=[0]))
+
     def test_observes_actual_mapping_without_suffix_assumption(self):
         processor = FakeProcessor()
         request = SimpleNamespace(request_id='client-17')

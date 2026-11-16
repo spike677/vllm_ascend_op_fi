@@ -1,0 +1,4303 @@
+{
+  "schema": "demoncat.provider.acceptance_summary.v1",
+  "private_root": "/home/provider-adaptation-20261116",
+  "raw_statistics_published": false,
+  "first_difference_source": "Independent raw statistics reports; no native logs used",
+  "cases": {
+    "provider20-model-a1/provider20_model_baseline/result.json": {
+      "status": "PASS",
+      "arm": "baseline",
+      "stage": "native_provider_model_probe",
+      "full_pretrained_model": true,
+      "off_exact": true,
+      "input_unchanged": true,
+      "changed": false,
+      "repeat_stable": true,
+      "receipt_sha256": "c970c606cc08686cd851a7c18859da7004be8026316318218042cb0cb912ca2a",
+      "routing": {
+        "candidate_count": 197,
+        "event_status_counts": {
+          "routed": 591
+        },
+        "all_discovered_candidates_covered": true,
+        "all_observed_supported_calls_routed": true,
+        "cleanup_completed": true,
+        "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+      }
+    },
+    "provider20-model-a1/provider20_model_fault/result.json": {
+      "status": "PASS",
+      "arm": "fault",
+      "stage": "native_provider_model_probe",
+      "full_pretrained_model": true,
+      "off_exact": true,
+      "input_unchanged": true,
+      "changed": true,
+      "repeat_stable": true,
+      "receipt_sha256": "a1e9b562c4b6dbe2035af2026c611b4aad2d06ee43b89cb54a3e07a92d6e1e8e",
+      "routing": {
+        "candidate_count": 197,
+        "event_status_counts": {
+          "routed": 591
+        },
+        "all_discovered_candidates_covered": true,
+        "all_observed_supported_calls_routed": true,
+        "cleanup_completed": true,
+        "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+      }
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/result.json": {
+      "status": "PASS",
+      "arm": "baseline",
+      "stage": "native_provider_model_probe",
+      "full_pretrained_model": true,
+      "off_exact": true,
+      "input_unchanged": true,
+      "changed": false,
+      "repeat_stable": true,
+      "receipt_sha256": "9d1d6fb16718433b2c86440458fbf3d7bbb09d39d2f8f084451533e5848ccc60",
+      "routing": {
+        "candidate_count": 211,
+        "event_status_counts": {
+          "routed": 633
+        },
+        "all_discovered_candidates_covered": true,
+        "all_observed_supported_calls_routed": true,
+        "cleanup_completed": true,
+        "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+      }
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/result.json": {
+      "status": "PASS",
+      "arm": "fault",
+      "stage": "native_provider_model_probe",
+      "full_pretrained_model": true,
+      "off_exact": true,
+      "input_unchanged": true,
+      "changed": true,
+      "repeat_stable": true,
+      "receipt_sha256": "19c18e7c47bd8e2e9d2f2bc7626fdaed90b07c9a19fd0e1e0fda12a2368926ba",
+      "routing": {
+        "candidate_count": 211,
+        "event_status_counts": {
+          "routed": 633
+        },
+        "all_discovered_candidates_covered": true,
+        "all_observed_supported_calls_routed": true,
+        "cleanup_completed": true,
+        "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+      }
+    },
+    "provider26-npu-a1/provider26_fia_baseline/result.json": {
+      "status": "PASS",
+      "arm": "baseline",
+      "scope": "constructed_model_mechanism_only",
+      "full_pretrained_model": false,
+      "off_exact": true,
+      "repeat_stable": true,
+      "writer_exact": true,
+      "residual_restored": true,
+      "consumer_changed": false,
+      "supported": 3,
+      "claims": 3,
+      "receipt_sha256": "82bd8b891682e7087535138e6bcd822399553e772a6f5855bcf423dc4724cf86",
+      "routing": {
+        "candidate_count": 1,
+        "event_status_counts": {
+          "routed": 3
+        },
+        "all_discovered_candidates_covered": true,
+        "all_observed_supported_calls_routed": true,
+        "cleanup_completed": true,
+        "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+      },
+      "completed_native_events": 3,
+      "all_native_events_pass": true
+    },
+    "provider26-npu-a1/provider26_fia_fault/result.json": {
+      "status": "PASS",
+      "arm": "fault",
+      "scope": "constructed_model_mechanism_only",
+      "full_pretrained_model": false,
+      "off_exact": true,
+      "repeat_stable": true,
+      "writer_exact": true,
+      "residual_restored": true,
+      "consumer_changed": true,
+      "supported": 3,
+      "claims": 3,
+      "receipt_sha256": "c16983a07593ae647e3c62011f53efa809428c70e0adf2577fff71bb8b0229fe",
+      "routing": {
+        "candidate_count": 1,
+        "event_status_counts": {
+          "routed": 3
+        },
+        "all_discovered_candidates_covered": true,
+        "all_observed_supported_calls_routed": true,
+        "cleanup_completed": true,
+        "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+      },
+      "completed_native_events": 3,
+      "all_native_events_pass": true
+    },
+    "provider26-npu-a1/provider26_qmm_baseline/result.json": {
+      "status": "FAIL",
+      "arm": "baseline",
+      "scope": "constructed_model_mechanism_only",
+      "full_pretrained_model": false,
+      "receipt_sha256": "3774a6378e1e1a82d0fbf294c52d290f2d2493b4e127ff52ff4ce26b7437f51b",
+      "error_sha256": "0b3ca271e869c1bd748a8ec66001d53cb7e3d53276ee5766df852ed82c1af8a3"
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/result.json": {
+      "status": "PASS",
+      "arm": "baseline",
+      "kind": "qmm",
+      "scope": "pretrained_tp2_model",
+      "off_exact": true,
+      "changed": false,
+      "receipt_sha256": "6990d6ade9e26d3d35bee6791cca418bed2f84e44b45e0a6231f09ef7c92784c",
+      "native": [
+        {
+          "rank": 0,
+          "supported": 52,
+          "claims": 0,
+          "completed": 0,
+          "pending": 0
+        },
+        {
+          "rank": 1,
+          "supported": 52,
+          "claims": 0,
+          "completed": 0,
+          "pending": 0
+        }
+      ],
+      "request_count": 8,
+      "changed_tokens_rows": 0,
+      "changed_text_rows": 0,
+      "changed_logprobs_rows": 0
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/result.json": {
+      "status": "PASS",
+      "arm": "fault",
+      "kind": "qmm",
+      "scope": "pretrained_tp2_model",
+      "off_exact": true,
+      "changed": true,
+      "receipt_sha256": "1802af54a65f18b6e7c30829dc6dd03eee663316f26d06b993566e05623d11cf",
+      "native": [
+        {
+          "rank": 0,
+          "supported": 52,
+          "claims": 52,
+          "completed": 52,
+          "pending": 0
+        },
+        {
+          "rank": 1,
+          "supported": 52,
+          "claims": 52,
+          "completed": 52,
+          "pending": 0
+        }
+      ],
+      "request_count": 8,
+      "changed_tokens_rows": 0,
+      "changed_text_rows": 0,
+      "changed_logprobs_rows": 1
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/rank0/provider_result.json": {
+      "receipt_sha256": "ad9d2cd07348c1537861f5d133d0ba74017983672cf7dc4a7b921a4faea54dba",
+      "rank": 0,
+      "supported": 52,
+      "claims": 0,
+      "completed": 0,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 258,
+      "event_status_counts": {
+        "passthrough": 460,
+        "routed": 52
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 2,
+        "Actual live writer/residual allocator blocks are not adjacent": 458
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/rank1/provider_result.json": {
+      "receipt_sha256": "1e160a1c08ef84b895f0fb901202319782bad14a05b6081c9c8bb66f75f69318",
+      "rank": 1,
+      "supported": 52,
+      "claims": 0,
+      "completed": 0,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 258,
+      "event_status_counts": {
+        "passthrough": 460,
+        "routed": 52
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 2,
+        "Actual live writer/residual allocator blocks are not adjacent": 458
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/rank0/provider_result.json": {
+      "receipt_sha256": "3fcdd442ddd595eb7151458157c6d638cde97f6c2d4ef35bfe30651b9549a754",
+      "rank": 0,
+      "supported": 52,
+      "claims": 52,
+      "completed": 52,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 258,
+      "event_status_counts": {
+        "passthrough": 460,
+        "routed": 52
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 2,
+        "Actual live writer/residual allocator blocks are not adjacent": 458
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/rank1/provider_result.json": {
+      "receipt_sha256": "8bdde26e40c290064cc1e822c4e0b505da2865a9a1a0984a6e0c919bb9d5e22f",
+      "rank": 1,
+      "supported": 52,
+      "claims": 52,
+      "completed": 52,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 258,
+      "event_status_counts": {
+        "passthrough": 460,
+        "routed": 52
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 2,
+        "Actual live writer/residual allocator blocks are not adjacent": 458
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/result.json": {
+      "status": "PASS",
+      "arm": "baseline",
+      "kind": "fia",
+      "scope": "pretrained_tp2_model",
+      "off_exact": true,
+      "changed": false,
+      "receipt_sha256": "670f701929eff2f26091e7c072dfd0d7131e1c0af3b18f98d3ac7f21ca27ed35",
+      "native": [
+        {
+          "rank": 0,
+          "supported": 127,
+          "claims": 127,
+          "completed": 127,
+          "pending": 0
+        },
+        {
+          "rank": 1,
+          "supported": 127,
+          "claims": 127,
+          "completed": 127,
+          "pending": 0
+        }
+      ],
+      "request_count": 8,
+      "changed_tokens_rows": 0,
+      "changed_text_rows": 0,
+      "changed_logprobs_rows": 0
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/result.json": {
+      "status": "FAIL",
+      "arm": "fault",
+      "kind": "fia",
+      "scope": "pretrained_tp2_model",
+      "receipt_sha256": "f1619e81ce5301c6dffbc2ce0ec362355d83289d32b4d05d3b49fcce9cf266df",
+      "error_sha256": "b89149b917b9d9b2111ea4ebf09a55b4f8d6964853f8200ff67c2aedc154365a"
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/rank0/provider_result.json": {
+      "receipt_sha256": "587efed804a6e0fe7b3b3027b9835cb5b238586cfeed205761512af15ce7df93",
+      "rank": 0,
+      "supported": 127,
+      "claims": 127,
+      "completed": 127,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 64,
+      "event_status_counts": {
+        "passthrough": 1,
+        "routed": 127
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 1
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/rank1/provider_result.json": {
+      "receipt_sha256": "ce5358579a60e584a056eecfa9e0e4a4b9d662f884e2d7a6bea7cdcb363ecdf6",
+      "rank": 1,
+      "supported": 127,
+      "claims": 127,
+      "completed": 127,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 64,
+      "event_status_counts": {
+        "passthrough": 1,
+        "routed": 127
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 1
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/result.json": {
+      "status": "PASS",
+      "arm": "baseline",
+      "kind": "fia",
+      "scope": "pretrained_tp2_model",
+      "off_exact": true,
+      "changed": false,
+      "receipt_sha256": "4b312bd39c09dd8b10b944c94321213156d6e8eb65e6b45cadf9170c21477515",
+      "native": [
+        {
+          "rank": 0,
+          "supported": 126,
+          "claims": 126,
+          "completed": 126,
+          "pending": 0
+        },
+        {
+          "rank": 1,
+          "supported": 126,
+          "claims": 126,
+          "completed": 126,
+          "pending": 0
+        }
+      ],
+      "request_count": 8,
+      "changed_tokens_rows": 0,
+      "changed_text_rows": 0,
+      "changed_logprobs_rows": 0
+    },
+    "provider26-final-a2/provider26_fia_model_fault/result.json": {
+      "status": "PASS",
+      "arm": "fault",
+      "kind": "fia",
+      "scope": "pretrained_tp2_model",
+      "off_exact": true,
+      "changed": true,
+      "receipt_sha256": "c4fc19d1d19264749778674ee26bb3d6852031af03f394b6999241c2db47454c",
+      "native": [
+        {
+          "rank": 0,
+          "supported": 126,
+          "claims": 126,
+          "completed": 126,
+          "pending": 0
+        },
+        {
+          "rank": 1,
+          "supported": 126,
+          "claims": 126,
+          "completed": 126,
+          "pending": 0
+        }
+      ],
+      "request_count": 8,
+      "changed_tokens_rows": 4,
+      "changed_text_rows": 4,
+      "changed_logprobs_rows": 4
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/result.json": {
+      "status": "PASS",
+      "arm": "baseline",
+      "kind": "qmm",
+      "scope": "pretrained_tp2_model",
+      "off_exact": true,
+      "changed": false,
+      "receipt_sha256": "b9f89a5117cf1373e9cd9f0932344df5c32b153c0a4c0dc0c336ed4950a58dfb",
+      "native": [
+        {
+          "rank": 0,
+          "supported": 45,
+          "claims": 0,
+          "completed": 0,
+          "pending": 0
+        },
+        {
+          "rank": 1,
+          "supported": 45,
+          "claims": 0,
+          "completed": 0,
+          "pending": 0
+        }
+      ],
+      "request_count": 8,
+      "changed_tokens_rows": 0,
+      "changed_text_rows": 0,
+      "changed_logprobs_rows": 0
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/result.json": {
+      "status": "PASS",
+      "arm": "fault",
+      "kind": "qmm",
+      "scope": "pretrained_tp2_model",
+      "off_exact": true,
+      "changed": true,
+      "receipt_sha256": "32da3e7b3512e3615f511a693d31747c9cd6f41e229b7f44ac3da6feb92eb2ad",
+      "native": [
+        {
+          "rank": 0,
+          "supported": 45,
+          "claims": 45,
+          "completed": 45,
+          "pending": 0
+        },
+        {
+          "rank": 1,
+          "supported": 45,
+          "claims": 45,
+          "completed": 45,
+          "pending": 0
+        }
+      ],
+      "request_count": 8,
+      "changed_tokens_rows": 0,
+      "changed_text_rows": 0,
+      "changed_logprobs_rows": 1
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/rank0/provider_result.json": {
+      "receipt_sha256": "f2ac8a704a8937b427287800fdaf16ffc86452b23c85e46b07816e3344cfc29f",
+      "rank": 0,
+      "supported": 126,
+      "claims": 126,
+      "completed": 126,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 64,
+      "event_status_counts": {
+        "passthrough": 2,
+        "routed": 126
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 2
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/rank1/provider_result.json": {
+      "receipt_sha256": "f09a83bdc167c38724e5b7b4e1836813a75e3cf5d8c2e2b9216fe754cd418ab4",
+      "rank": 1,
+      "supported": 126,
+      "claims": 126,
+      "completed": 126,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 64,
+      "event_status_counts": {
+        "passthrough": 2,
+        "routed": 126
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 2
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-final-a2/provider26_fia_model_fault/rank0/provider_result.json": {
+      "receipt_sha256": "5df863bac554456ce264092fa4d06573867f3530fc18f2e1d7cdce370df1ff58",
+      "rank": 0,
+      "supported": 126,
+      "claims": 126,
+      "completed": 126,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 64,
+      "event_status_counts": {
+        "passthrough": 2,
+        "routed": 126
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 2
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-final-a2/provider26_fia_model_fault/rank1/provider_result.json": {
+      "receipt_sha256": "6860f0192879a5e53371d1ecb9a407d3df275b23f9d10425b20b2278d234bcf0",
+      "rank": 1,
+      "supported": 126,
+      "claims": 126,
+      "completed": 126,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 64,
+      "event_status_counts": {
+        "passthrough": 2,
+        "routed": 126
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 2
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/rank0/provider_result.json": {
+      "receipt_sha256": "3e6ee530dabdd1bdc3bbc5e34909b47ea9efe29b3233be29f986f268153159b0",
+      "rank": 0,
+      "supported": 45,
+      "claims": 0,
+      "completed": 0,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 258,
+      "event_status_counts": {
+        "passthrough": 467,
+        "routed": 45
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 4,
+        "Actual live writer/residual allocator blocks are not adjacent": 463
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/rank1/provider_result.json": {
+      "receipt_sha256": "a8320483492bb777beb8e6047741980d6dc4b89825849ed061d2f736bd7d8010",
+      "rank": 1,
+      "supported": 45,
+      "claims": 0,
+      "completed": 0,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 258,
+      "event_status_counts": {
+        "passthrough": 467,
+        "routed": 45
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 4,
+        "Actual live writer/residual allocator blocks are not adjacent": 463
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/rank0/provider_result.json": {
+      "receipt_sha256": "4a7b779db116899c66b8b94013ace30fc6c1e384907baa66b07e05d30df5d07a",
+      "rank": 0,
+      "supported": 45,
+      "claims": 45,
+      "completed": 45,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 258,
+      "event_status_counts": {
+        "passthrough": 467,
+        "routed": 45
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 4,
+        "Actual live writer/residual allocator blocks are not adjacent": 463
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/rank1/provider_result.json": {
+      "receipt_sha256": "553e79c9d5e64d2838623a35fcd6f76a96053cb968121113f965334a92383251",
+      "rank": 1,
+      "supported": 45,
+      "claims": 45,
+      "completed": 45,
+      "pending": 0,
+      "has_error": false,
+      "candidate_count": 258,
+      "event_status_counts": {
+        "passthrough": 467,
+        "routed": 45
+      },
+      "passthrough_reasons": {
+        "Actual producer residual is not retained by the model observer": 4,
+        "Actual live writer/residual allocator blocks are not adjacent": 463
+      },
+      "all_observed_supported_calls_routed": false,
+      "all_discovered_candidates_covered": false
+    },
+    "quant-model-a2/quant_baseline/result.json": {
+      "status": "PASS",
+      "arm": "baseline",
+      "off_exact": true,
+      "changed": false,
+      "repeat_stable": true,
+      "receipt_sha256": "23007c089d4020abe355fb7d4891a0653996c17d914aca48c1b90a90cb785392",
+      "native": [
+        {
+          "rank": 0,
+          "events": 3,
+          "native_poisoned": false
+        },
+        {
+          "rank": 1,
+          "events": 3,
+          "native_poisoned": false
+        }
+      ],
+      "request_count": 8,
+      "changed_tokens_rows": 0,
+      "changed_text_rows": 0,
+      "changed_logprobs_rows": 0
+    },
+    "quant-model-a2/quant_fault/result.json": {
+      "status": "PASS",
+      "arm": "fault",
+      "off_exact": true,
+      "changed": true,
+      "repeat_stable": true,
+      "receipt_sha256": "c2d917e89139240fbc387b4a7be4da22aa81fc10b5ae5497dee292bcd099dc57",
+      "native": [
+        {
+          "rank": 0,
+          "events": 3,
+          "native_poisoned": false
+        },
+        {
+          "rank": 1,
+          "events": 3,
+          "native_poisoned": false
+        }
+      ],
+      "request_count": 8,
+      "changed_tokens_rows": 0,
+      "changed_text_rows": 0,
+      "changed_logprobs_rows": 6
+    },
+    "provider33-model-a2/provider33_baseline/result.json": {
+      "status": "PASS",
+      "arm": "baseline",
+      "scope": "full_model_one_teacher_decode_repeated_three_times",
+      "off_exact": true,
+      "inputs_unchanged": true,
+      "changed": false,
+      "repeat_stable": true,
+      "native_calls": 84,
+      "actual_policy_applied": 0,
+      "logits_max_abs": 0.0,
+      "top1_equal": true,
+      "receipt_sha256": "365227d1dada504dfa9ad8ba84386676f0069bbcf1a240ae16cdff8e109d5b12",
+      "routing": {
+        "candidate_count": 28,
+        "event_status_counts": {
+          "routed": 84
+        },
+        "all_discovered_candidates_covered": true,
+        "all_observed_supported_calls_routed": true,
+        "cleanup_completed": true,
+        "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+      }
+    },
+    "provider33-model-a2/provider33_fault/result.json": {
+      "status": "PASS",
+      "arm": "fault",
+      "scope": "full_model_one_teacher_decode_repeated_three_times",
+      "off_exact": true,
+      "inputs_unchanged": true,
+      "changed": true,
+      "repeat_stable": true,
+      "native_calls": 84,
+      "actual_policy_applied": 84,
+      "logits_max_abs": 0.02734375,
+      "top1_equal": true,
+      "receipt_sha256": "177ac515072dbc9e208758500456231f7292f445c8e0827ba0bfdf4f9053d268",
+      "routing": {
+        "candidate_count": 28,
+        "event_status_counts": {
+          "routed": 84
+        },
+        "all_discovered_candidates_covered": true,
+        "all_observed_supported_calls_routed": true,
+        "cleanup_completed": true,
+        "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+      }
+    },
+    "npu-851-a3/operator_baseline/result.json": {
+      "status": "PASS",
+      "stage": "pattern",
+      "receipt_sha256": "86e53b066b0faefb579e25410e21b5036a398c25412a1e0c040cda643c36367d"
+    },
+    "npu-851-a3/operator_fault/result.json": {
+      "status": "PASS",
+      "stage": "pattern",
+      "receipt_sha256": "425932a1576d3681ac210b7976a7493cfe4dd080233c9381359a900db9eab4c5"
+    },
+    "npu-90-a3/operator_baseline/result.json": {
+      "status": "PASS",
+      "stage": "pattern",
+      "receipt_sha256": "23b87c22167be87c201491f0255703427f2abf0d56b5ee7f1d4abb14a4cad425"
+    },
+    "npu-90-a3/operator_fault/result.json": {
+      "status": "PASS",
+      "stage": "pattern",
+      "receipt_sha256": "57d32a3e713e3820bccfcc768ac1f19cae0fdc258097d936c31c988ad10cf08e"
+    },
+    "npu-91-a3/operator_baseline/result.json": {
+      "status": "PASS",
+      "stage": "pattern",
+      "receipt_sha256": "b8f1397416b211290f2d96ae44da90b0c8ae4464d6c89bad95b24dbcbfd269dc"
+    },
+    "npu-91-a3/operator_fault/result.json": {
+      "status": "PASS",
+      "stage": "pattern",
+      "receipt_sha256": "2ceb316748f13103cee9376653469739d1d30ae8cd9918450280f6338eb9ec9b"
+    },
+    "npu-92-a3/operator_baseline/result.json": {
+      "status": "PASS",
+      "stage": "pattern",
+      "receipt_sha256": "5777ca178ab8121ab8f32fdf29e8210434be1d5c7e883340eaee030c32279c7c"
+    },
+    "npu-92-a3/operator_fault/result.json": {
+      "status": "PASS",
+      "stage": "pattern",
+      "receipt_sha256": "235999dc2dd29644f2eb4601729e631879a9c47f9546fd557474dc5f7df7538b"
+    }
+  },
+  "comparisons": {
+    "provider20-model-a1/independent_first_difference.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1,
+        2
+      ],
+      "fault_steps": [
+        0,
+        1,
+        2
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "cfe397f66b632c7516f7c52f7dffdbf02c7a01a628a152e39f19442cf514ae21",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 3.4375,
+            "fault": 2.296875
+          },
+          "unobservable_count": 108
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 3.4375,
+            "fault": 2.296875
+          },
+          "unobservable_count": 108
+        },
+        {
+          "step": 2,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 3.4375,
+            "fault": 2.296875
+          },
+          "unobservable_count": 108
+        }
+      ]
+    },
+    "provider20-model-a1/independent_three_steps.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1,
+        2
+      ],
+      "fault_steps": [
+        0,
+        1,
+        2
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "9b111d2e97d5c72100db158b6623d46e8d683029a4216c715fec2b65da7d73ee",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 3.4375,
+            "fault": 2.296875
+          },
+          "unobservable_count": 108
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 3.4375,
+            "fault": 2.296875
+          },
+          "unobservable_count": 108
+        },
+        {
+          "step": 2,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 3.4375,
+            "fault": 2.296875
+          },
+          "unobservable_count": 108
+        }
+      ]
+    },
+    "provider20-smollm-a1/independent_first_difference.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1,
+        2
+      ],
+      "fault_steps": [
+        0,
+        1,
+        2
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "d26282c511683fad70f4cf53025c6568f7a69eb480c23574ac70a051c0709b9c",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 4.125,
+            "fault": 2.9375
+          },
+          "unobservable_count": 108
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 4.125,
+            "fault": 2.9375
+          },
+          "unobservable_count": 108
+        },
+        {
+          "step": 2,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 4.125,
+            "fault": 2.9375
+          },
+          "unobservable_count": 108
+        }
+      ]
+    },
+    "provider26-npu-a1/fia_independent_first_difference.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1,
+        2
+      ],
+      "fault_steps": [
+        0,
+        1,
+        2
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "326d659a31e9f0a6b0490b7c801ed71c4a696f5c35059c0820b12c51c0e1ad86",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "_C_ascend.npu_add_rms_norm_bias.1.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 3.57421875,
+            "fault": 5.0703125
+          },
+          "unobservable_count": 48
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "_C_ascend.npu_add_rms_norm_bias.1.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 3.57421875,
+            "fault": 5.0703125
+          },
+          "unobservable_count": 48
+        },
+        {
+          "step": 2,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "_C_ascend.npu_add_rms_norm_bias.1.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 3.57421875,
+            "fault": 5.0703125
+          },
+          "unobservable_count": 48
+        }
+      ]
+    },
+    "provider26-model-a2/independent_first_difference_rank0.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "318265916841719f6ed46e0423e097a76398fa4208e3cd168050637ebbd465c2",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_dynamic_quant.23.forward/output/1",
+          "difference": {
+            "field": "/Min",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.007320374250411987,
+            "fault": 0.007228100206702948
+          },
+          "unobservable_count": 1695
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_dynamic_quant.19.forward/output/1",
+          "difference": {
+            "field": "/Min",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.008858268149197102,
+            "fault": 0.008796751499176025
+          },
+          "unobservable_count": 1419
+        }
+      ]
+    },
+    "provider26-model-a2/independent_first_difference_rank1.json": {
+      "status": "INCOMPLETE_COMPARISON",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 1,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": false,
+      "blocking_steps": [
+        0,
+        1
+      ],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "26c43c6c97384f904087f846dd95d39623508b7c8aee8d3689818354b94c2a9b",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Tensor.__setitem__.20.forward/input_args/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "NONFINITE_UNCOMPARABLE",
+            "baseline": "NaN",
+            "fault": "NaN"
+          },
+          "unobservable_count": 2654
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Tensor.__setitem__.12.forward/input_args/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "NONFINITE_UNCOMPARABLE",
+            "baseline": "NaN",
+            "fault": "NaN"
+          },
+          "unobservable_count": 1570
+        }
+      ]
+    },
+    "provider26-final-a2/fia_independent_first_difference_rank0.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "eea16d7fcdc637cb87331f9350e3533e3466fc1544f612c0e204c8f7ca56d965",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "_C_ascend.npu_add_rms_norm_bias.2.forward/input_args/1",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 23.5,
+            "fault": 23.25
+          },
+          "unobservable_count": 552
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Torch.index_select.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 15920,
+            "fault": 149742
+          },
+          "unobservable_count": 6
+        }
+      ]
+    },
+    "provider26-final-a2/fia_independent_first_difference_rank1.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 1,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "a0e7ee7808a558fd0d5775904ef761e35b71ddded2d92dc7fa51ed5ac2103fb4",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "_C_ascend.npu_add_rms_norm_bias.2.forward/input_args/1",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 23.5,
+            "fault": 23.25
+          },
+          "unobservable_count": 552
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Torch.index_select.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 15920,
+            "fault": 149742
+          },
+          "unobservable_count": 6
+        }
+      ]
+    },
+    "provider26-final-a2/qmm_independent_first_difference_rank0.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "79ae851171d2bbeb1a7564454da13a6653500a8ce94f48accddbd174da9ecf39",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Triton._triton_rope.7.forward/input_args/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 7.5,
+            "fault": 7.46875
+          },
+          "unobservable_count": 2064
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_dynamic_quant.18.forward/output/1",
+          "difference": {
+            "field": "/Min",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.009904035367071629,
+            "fault": 0.00996555108577013
+          },
+          "unobservable_count": 1381
+        }
+      ]
+    },
+    "provider26-final-a2/qmm_independent_first_difference_rank1.json": {
+      "status": "EARLIEST_DIFFERENCE_UNPROVEN",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 1,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": false,
+      "blocking_steps": [
+        0
+      ],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "8bbf11938320899f1f97689047217970e56b1d7547c56a4ad8e3fdbcda0f5967",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Tensor.__setitem__.20.forward/input_args/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "NONFINITE_UNCOMPARABLE",
+            "baseline": "NaN",
+            "fault": "NaN"
+          },
+          "unobservable_count": 2654
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_quant_matmul.17.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 1.4765625,
+            "fault": 1.4921875
+          },
+          "unobservable_count": 1330
+        }
+      ]
+    },
+    "quant-model-a2/independent_first_difference_rank0.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1,
+        2
+      ],
+      "fault_steps": [
+        0,
+        1,
+        2
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "e0a1ebd1905f57ff769f8ed4c370044428c524cee052aade84dfa513a361b40e",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_dynamic_quant.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 127,
+            "fault": 98
+          },
+          "unobservable_count": 160
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_dynamic_quant.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 127,
+            "fault": 98
+          },
+          "unobservable_count": 160
+        },
+        {
+          "step": 2,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_dynamic_quant.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 127,
+            "fault": 98
+          },
+          "unobservable_count": 160
+        }
+      ]
+    },
+    "quant-model-a2/independent_first_difference_rank1.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 1,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1,
+        2
+      ],
+      "fault_steps": [
+        0,
+        1,
+        2
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "306ab584b8e5c50db8d487a56b145d5c8d37c6da3a2305c78551365687201744",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_dynamic_quant.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 127,
+            "fault": 98
+          },
+          "unobservable_count": 160
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_dynamic_quant.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 127,
+            "fault": 98
+          },
+          "unobservable_count": 160
+        },
+        {
+          "step": 2,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "NPU.npu_dynamic_quant.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 127,
+            "fault": 98
+          },
+          "unobservable_count": 160
+        }
+      ]
+    },
+    "provider33-model-a2/independent_first_difference.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1,
+        2
+      ],
+      "fault_steps": [
+        0,
+        1,
+        2
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "7c3894cf5f67dcfe575dee33780324474bf22b00ea37d27cd5f78f71e0dca654",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Tensor.mean.3.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.053691256791353226,
+            "fault": 0.05369321256875992
+          },
+          "unobservable_count": 328
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Tensor.mean.3.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.053691256791353226,
+            "fault": 0.05369321256875992
+          },
+          "unobservable_count": 328
+        },
+        {
+          "step": 2,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Tensor.mean.3.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.053691256791353226,
+            "fault": 0.05369321256875992
+          },
+          "unobservable_count": 328
+        }
+      ]
+    },
+    "model-851-bf-a1/independent_first_difference.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "fb253b1dcebab3ed08b68ab2186c0acc6e8ff2ac8ce9268ac4654f8898155da0",
+      "steps": [
+        {
+          "step": 0,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": null,
+          "difference": null,
+          "unobservable_count": 6102
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.3.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.76953125,
+            "fault": "+Inf"
+          },
+          "unobservable_count": 258
+        }
+      ]
+    },
+    "tp2-851-bf-a1/independent_first_difference_rank0.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "d9ac59c00a2b6c04cabaed139d6f6a74dc92e068297cff1828d71cd096fb5398",
+      "steps": [
+        {
+          "step": 0,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": null,
+          "difference": null,
+          "unobservable_count": 6372
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.3.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.625,
+            "fault": "+Inf"
+          },
+          "unobservable_count": 302
+        }
+      ]
+    },
+    "tp2-851-bf-a1/independent_first_difference_rank1.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 1,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "52594efe5dd033ed56878dcd031538c69ed124a8fddc2a4572aeaec22ea833b4",
+      "steps": [
+        {
+          "step": 0,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": null,
+          "difference": null,
+          "unobservable_count": 6372
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.3.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.369140625,
+            "fault": "+Inf"
+          },
+          "unobservable_count": 302
+        }
+      ]
+    },
+    "model-91-bf-a2/independent_first_difference_rank0.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "b6bda62f72c7ba7bf65a0320a768659e8c69e590ed6438d38a106071dabe2815",
+      "steps": [
+        {
+          "step": 0,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": null,
+          "difference": null,
+          "unobservable_count": 6426
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.3.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.625,
+            "fault": "+Inf"
+          },
+          "unobservable_count": 366
+        }
+      ]
+    },
+    "model-91-bf-a2/independent_first_difference_rank1.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 1,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0,
+        1
+      ],
+      "fault_steps": [
+        0,
+        1
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "36de54d8579e0584a293184ef78a348cf5bc63347673ef2a166d6e494749e770",
+      "steps": [
+        {
+          "step": 0,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": null,
+          "difference": null,
+          "unobservable_count": 6426
+        },
+        {
+          "step": 1,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Functional.linear.3.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.369140625,
+            "fault": "+Inf"
+          },
+          "unobservable_count": 366
+        }
+      ]
+    },
+    "npu-851-a3/independent_first_difference.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0
+      ],
+      "fault_steps": [
+        0
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "1932ec74529a3e1c7ed1adcb44ef9d7f09739456737d933f7f4e4e01695cd552",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Torch.matmul.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": -0.3359375,
+            "fault": "+Inf"
+          },
+          "unobservable_count": 6
+        }
+      ]
+    },
+    "npu-90-a3/independent_first_difference.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0
+      ],
+      "fault_steps": [
+        0
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "1932ec74529a3e1c7ed1adcb44ef9d7f09739456737d933f7f4e4e01695cd552",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Torch.matmul.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": -0.3359375,
+            "fault": "+Inf"
+          },
+          "unobservable_count": 6
+        }
+      ]
+    },
+    "npu-91-a3/independent_first_difference.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0
+      ],
+      "fault_steps": [
+        0
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "efe562c2d0521cc1ef441ae5fa15e3ba0a2dac1caa5e92426620d14aa6a52761",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Torch.matmul.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": -0.3359375,
+            "fault": "+Inf"
+          },
+          "unobservable_count": 6
+        }
+      ]
+    },
+    "npu-92-a3/independent_first_difference.json": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "source": "RAW_MSPROBE_STATISTICS_MIX",
+      "native_logs_read": false,
+      "private_tensors_read": false,
+      "rank": 0,
+      "comparison_policy": {
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "baseline_steps": [
+        0
+      ],
+      "fault_steps": [
+        0
+      ],
+      "all_steps_aligned": true,
+      "blocking_steps": [],
+      "limitations": [
+        "Null statistics remain unobservable; equality of hidden values is not established.",
+        "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+        "Step numbers and matching stacks do not independently prove request identity.",
+        "Statistical first difference does not uniquely establish a physical fault mechanism."
+      ],
+      "private_report_sha256": "efe562c2d0521cc1ef441ae5fa15e3ba0a2dac1caa5e92426620d14aa6a52761",
+      "steps": [
+        {
+          "step": 0,
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "identity": "Torch.matmul.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": -0.3359375,
+            "fault": "+Inf"
+          },
+          "unobservable_count": 6
+        }
+      ]
+    }
+  },
+  "model39": {
+    "model-851-lossless-a1/model_lossless/lossless/validation.json": {
+      "status": "LOSSLESS_VALIDATED",
+      "stage": "lossless",
+      "tp": 1,
+      "ranks": [
+        0
+      ],
+      "baseline_stable": true,
+      "native_build_profiles": {
+        "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+      },
+      "receipt_sha256": "4c4652f653d461c4f1ebbabf8227d46f002b05ff1e42ef19ab152f273c9d6500",
+      "phases": [
+        {
+          "label": "lossless/mask1/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "REAL_OPERATOR_HIT_VERIFIED"
+          }
+        },
+        {
+          "label": "lossless/mask2/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "REAL_OPERATOR_HIT_VERIFIED"
+          }
+        },
+        {
+          "label": "lossless/mask3/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "REAL_OPERATOR_HIT_VERIFIED"
+          }
+        }
+      ],
+      "cleanup_status": "DISABLED_CONFIRMED"
+    },
+    "model-851-bf-a1/model_baseline/validation/validation.json": {
+      "status": "BASELINE_MODEL_CAPTURED",
+      "stage": "pattern",
+      "tp": 1,
+      "ranks": [
+        0
+      ],
+      "baseline_stable": true,
+      "native_build_profiles": {
+        "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+      },
+      "receipt_sha256": "db3d5265d02b393fc00112a083637ff51b00e0b13baf519a13f40ea145e2440a",
+      "phases": [
+        {
+          "label": "pattern/mask3/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "INSUFFICIENT_NATIVE_EVIDENCE"
+          }
+        }
+      ],
+      "cleanup_status": "DISABLED_CONFIRMED"
+    },
+    "model-851-bf-a1/model_fault/validation/validation.json": {
+      "status": "PATTERN_NATIVE_VALIDATED_MSPROBE_ANALYSIS_PENDING",
+      "stage": "pattern",
+      "tp": 1,
+      "ranks": [
+        0
+      ],
+      "baseline_stable": true,
+      "native_build_profiles": {
+        "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+      },
+      "receipt_sha256": "2b49217864feb24f6910d711be2ae3d0b0a60446b60b07806bf51579a8c04504",
+      "phases": [
+        {
+          "label": "pattern/mask3/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED"
+          }
+        }
+      ],
+      "cleanup_status": "DISABLED_CONFIRMED"
+    },
+    "tp2-851-lossless-a1/model_lossless/lossless/validation.json": {
+      "status": "LOSSLESS_VALIDATED",
+      "stage": "lossless",
+      "tp": 2,
+      "ranks": [
+        0,
+        1
+      ],
+      "baseline_stable": true,
+      "native_build_profiles": {
+        "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+        "1": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+      },
+      "receipt_sha256": "61214a1c746790da77938d1f4c5a9fa0700d2fc45b0702c085854247a3d4cbf1",
+      "phases": [
+        {
+          "label": "lossless/mask1/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "REAL_OPERATOR_HIT_VERIFIED",
+            "1": "REAL_OPERATOR_HIT_VERIFIED"
+          }
+        },
+        {
+          "label": "lossless/mask2/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "REAL_OPERATOR_HIT_VERIFIED",
+            "1": "REAL_OPERATOR_HIT_VERIFIED"
+          }
+        },
+        {
+          "label": "lossless/mask3/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "REAL_OPERATOR_HIT_VERIFIED",
+            "1": "REAL_OPERATOR_HIT_VERIFIED"
+          }
+        }
+      ],
+      "cleanup_status": "DISABLED_CONFIRMED"
+    },
+    "tp2-851-bf-a1/model_baseline/validation/validation.json": {
+      "status": "BASELINE_MODEL_CAPTURED",
+      "stage": "pattern",
+      "tp": 2,
+      "ranks": [
+        0,
+        1
+      ],
+      "baseline_stable": true,
+      "native_build_profiles": {
+        "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+        "1": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+      },
+      "receipt_sha256": "e62696ced521232428b082ae8ce117b61fdffcbe27d0ff09b4464bde2d452941",
+      "phases": [
+        {
+          "label": "pattern/mask3/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "INSUFFICIENT_NATIVE_EVIDENCE",
+            "1": "INSUFFICIENT_NATIVE_EVIDENCE"
+          }
+        }
+      ],
+      "cleanup_status": "DISABLED_CONFIRMED"
+    },
+    "tp2-851-bf-a1/model_fault/validation/validation.json": {
+      "status": "PATTERN_NATIVE_VALIDATED_MSPROBE_ANALYSIS_PENDING",
+      "stage": "pattern",
+      "tp": 2,
+      "ranks": [
+        0,
+        1
+      ],
+      "baseline_stable": true,
+      "native_build_profiles": {
+        "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+        "1": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+      },
+      "receipt_sha256": "7e0d69a9e05829212e65187f771d72f7eec8c24febc4a0f440874887872f02a5",
+      "phases": [
+        {
+          "label": "pattern/mask3/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+            "1": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED"
+          }
+        }
+      ],
+      "cleanup_status": "DISABLED_CONFIRMED"
+    },
+    "model-91-lossless-a2/model_lossless/lossless/validation.json": {
+      "status": "LOSSLESS_VALIDATED",
+      "stage": "lossless",
+      "tp": 2,
+      "ranks": [
+        0,
+        1
+      ],
+      "baseline_stable": true,
+      "native_build_profiles": {
+        "0": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+        "1": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b"
+      },
+      "receipt_sha256": "e5a9c00d32651397045f6e06926cc35dbc54bd04a1487a78c897803ca8087c22",
+      "phases": [
+        {
+          "label": "lossless/mask1/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "REAL_OPERATOR_HIT_VERIFIED",
+            "1": "REAL_OPERATOR_HIT_VERIFIED"
+          }
+        },
+        {
+          "label": "lossless/mask2/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "REAL_OPERATOR_HIT_VERIFIED",
+            "1": "REAL_OPERATOR_HIT_VERIFIED"
+          }
+        },
+        {
+          "label": "lossless/mask3/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "REAL_OPERATOR_HIT_VERIFIED",
+            "1": "REAL_OPERATOR_HIT_VERIFIED"
+          }
+        }
+      ],
+      "cleanup_status": "DISABLED_CONFIRMED"
+    },
+    "model-91-bf-a2/model_baseline/validation/validation.json": {
+      "status": "BASELINE_MODEL_CAPTURED",
+      "stage": "pattern",
+      "tp": 2,
+      "ranks": [
+        0,
+        1
+      ],
+      "baseline_stable": true,
+      "native_build_profiles": {
+        "0": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+        "1": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b"
+      },
+      "receipt_sha256": "8463ae84354b6ca94f3591029a45a2efb77b73b7488903bf3e55b5341bd93078",
+      "phases": [
+        {
+          "label": "pattern/mask3/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "INSUFFICIENT_NATIVE_EVIDENCE",
+            "1": "INSUFFICIENT_NATIVE_EVIDENCE"
+          }
+        }
+      ],
+      "cleanup_status": "DISABLED_CONFIRMED"
+    },
+    "model-91-bf-a2/model_fault/validation/validation.json": {
+      "status": "PATTERN_NATIVE_VALIDATED_MSPROBE_ANALYSIS_PENDING",
+      "stage": "pattern",
+      "tp": 2,
+      "ranks": [
+        0,
+        1
+      ],
+      "baseline_stable": true,
+      "native_build_profiles": {
+        "0": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+        "1": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b"
+      },
+      "receipt_sha256": "18847a45089bab3db13aba3a4526929e647da097b1d5985cc9c1e52fd3888f56",
+      "phases": [
+        {
+          "label": "pattern/mask3/prompt0",
+          "validated": true,
+          "recovery_verified": true,
+          "native_verdicts": {
+            "0": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+            "1": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED"
+          }
+        }
+      ],
+      "cleanup_status": "DISABLED_CONFIRMED"
+    }
+  },
+  "capture_hashes": {
+    "provider20-model-a1/provider20_model_baseline/baseline/observation/step0/rank0/dump.json": {
+      "sha256": "4bf766b6b4d9f5f74c634f62cfef6ee676a581c79c34314dd669275c5f59cbf7",
+      "bytes": 1431534
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/observation/step0/rank0/stack.json": {
+      "sha256": "1f4bc9ce8f0900ac0fc6bdd8c5b11bce63850cda3aba8eae4bab9b21c4ea7392",
+      "bytes": 280519
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/observation/step0/rank0/construct.json": {
+      "sha256": "4fe5bb87c5b186ed22bbfd0ccdfcf6d14924adad03d96bc2fb3815b4b5e4d9aa",
+      "bytes": 233374
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/config.json": {
+      "sha256": "bbe4659494842e3c5c6bf1d717ec40b03707bb2a9c28b104eb0aef2ad1ec2100",
+      "bytes": 340
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/observation/step1/rank0/dump.json": {
+      "sha256": "4bf766b6b4d9f5f74c634f62cfef6ee676a581c79c34314dd669275c5f59cbf7",
+      "bytes": 1431534
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/observation/step1/rank0/stack.json": {
+      "sha256": "1f4bc9ce8f0900ac0fc6bdd8c5b11bce63850cda3aba8eae4bab9b21c4ea7392",
+      "bytes": 280519
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/observation/step1/rank0/construct.json": {
+      "sha256": "4fe5bb87c5b186ed22bbfd0ccdfcf6d14924adad03d96bc2fb3815b4b5e4d9aa",
+      "bytes": 233374
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/observation/step2/rank0/dump.json": {
+      "sha256": "4bf766b6b4d9f5f74c634f62cfef6ee676a581c79c34314dd669275c5f59cbf7",
+      "bytes": 1431534
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/observation/step2/rank0/stack.json": {
+      "sha256": "1f4bc9ce8f0900ac0fc6bdd8c5b11bce63850cda3aba8eae4bab9b21c4ea7392",
+      "bytes": 280519
+    },
+    "provider20-model-a1/provider20_model_baseline/baseline/observation/step2/rank0/construct.json": {
+      "sha256": "4fe5bb87c5b186ed22bbfd0ccdfcf6d14924adad03d96bc2fb3815b4b5e4d9aa",
+      "bytes": 233374
+    },
+    "provider20-model-a1/provider20_model_fault/fault/observation/step0/rank0/dump.json": {
+      "sha256": "afb0f062ddcf55d54deb2ca8478ef1dd20d0cc9991d8e2e54a29485deb9839e2",
+      "bytes": 1433490
+    },
+    "provider20-model-a1/provider20_model_fault/fault/observation/step0/rank0/stack.json": {
+      "sha256": "1f4bc9ce8f0900ac0fc6bdd8c5b11bce63850cda3aba8eae4bab9b21c4ea7392",
+      "bytes": 280519
+    },
+    "provider20-model-a1/provider20_model_fault/fault/observation/step0/rank0/construct.json": {
+      "sha256": "4fe5bb87c5b186ed22bbfd0ccdfcf6d14924adad03d96bc2fb3815b4b5e4d9aa",
+      "bytes": 233374
+    },
+    "provider20-model-a1/provider20_model_fault/fault/config.json": {
+      "sha256": "49d91b4c5db1f2c8496d0211beb25c633b60982684a1d4bef0f295762fcb5b75",
+      "bytes": 337
+    },
+    "provider20-model-a1/provider20_model_fault/fault/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider20-model-a1/provider20_model_fault/fault/observation/step1/rank0/dump.json": {
+      "sha256": "afb0f062ddcf55d54deb2ca8478ef1dd20d0cc9991d8e2e54a29485deb9839e2",
+      "bytes": 1433490
+    },
+    "provider20-model-a1/provider20_model_fault/fault/observation/step1/rank0/stack.json": {
+      "sha256": "1f4bc9ce8f0900ac0fc6bdd8c5b11bce63850cda3aba8eae4bab9b21c4ea7392",
+      "bytes": 280519
+    },
+    "provider20-model-a1/provider20_model_fault/fault/observation/step1/rank0/construct.json": {
+      "sha256": "4fe5bb87c5b186ed22bbfd0ccdfcf6d14924adad03d96bc2fb3815b4b5e4d9aa",
+      "bytes": 233374
+    },
+    "provider20-model-a1/provider20_model_fault/fault/observation/step2/rank0/dump.json": {
+      "sha256": "afb0f062ddcf55d54deb2ca8478ef1dd20d0cc9991d8e2e54a29485deb9839e2",
+      "bytes": 1433490
+    },
+    "provider20-model-a1/provider20_model_fault/fault/observation/step2/rank0/stack.json": {
+      "sha256": "1f4bc9ce8f0900ac0fc6bdd8c5b11bce63850cda3aba8eae4bab9b21c4ea7392",
+      "bytes": 280519
+    },
+    "provider20-model-a1/provider20_model_fault/fault/observation/step2/rank0/construct.json": {
+      "sha256": "4fe5bb87c5b186ed22bbfd0ccdfcf6d14924adad03d96bc2fb3815b4b5e4d9aa",
+      "bytes": 233374
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/observation/step0/rank0/dump.json": {
+      "sha256": "310311be17f8c0890c0c6965c0232728e24c701d8071a648c57110d786eadf52",
+      "bytes": 1212834
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/observation/step0/rank0/stack.json": {
+      "sha256": "6b168777aa4d3ac7ff8577faefe52c190c25e0476e921d82e31f20d9fe039f9a",
+      "bytes": 243054
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/observation/step0/rank0/construct.json": {
+      "sha256": "a1cdbc2377720211616e92c9e7f5e94449e7d1de0524771c4acfcbd9c57762ac",
+      "bytes": 197207
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/config.json": {
+      "sha256": "bbe4659494842e3c5c6bf1d717ec40b03707bb2a9c28b104eb0aef2ad1ec2100",
+      "bytes": 340
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/observation/step1/rank0/dump.json": {
+      "sha256": "310311be17f8c0890c0c6965c0232728e24c701d8071a648c57110d786eadf52",
+      "bytes": 1212834
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/observation/step1/rank0/stack.json": {
+      "sha256": "6b168777aa4d3ac7ff8577faefe52c190c25e0476e921d82e31f20d9fe039f9a",
+      "bytes": 243054
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/observation/step1/rank0/construct.json": {
+      "sha256": "a1cdbc2377720211616e92c9e7f5e94449e7d1de0524771c4acfcbd9c57762ac",
+      "bytes": 197207
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/observation/step2/rank0/dump.json": {
+      "sha256": "310311be17f8c0890c0c6965c0232728e24c701d8071a648c57110d786eadf52",
+      "bytes": 1212834
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/observation/step2/rank0/stack.json": {
+      "sha256": "6b168777aa4d3ac7ff8577faefe52c190c25e0476e921d82e31f20d9fe039f9a",
+      "bytes": 243054
+    },
+    "provider20-smollm-a1/provider20_smollm_baseline/baseline/observation/step2/rank0/construct.json": {
+      "sha256": "a1cdbc2377720211616e92c9e7f5e94449e7d1de0524771c4acfcbd9c57762ac",
+      "bytes": 197207
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/observation/step0/rank0/dump.json": {
+      "sha256": "67fd13ffffde5c9760c940919e7e80912106d04dd5416a52ad0d191640f1e1be",
+      "bytes": 1213816
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/observation/step0/rank0/stack.json": {
+      "sha256": "6b168777aa4d3ac7ff8577faefe52c190c25e0476e921d82e31f20d9fe039f9a",
+      "bytes": 243054
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/observation/step0/rank0/construct.json": {
+      "sha256": "a1cdbc2377720211616e92c9e7f5e94449e7d1de0524771c4acfcbd9c57762ac",
+      "bytes": 197207
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/config.json": {
+      "sha256": "49d91b4c5db1f2c8496d0211beb25c633b60982684a1d4bef0f295762fcb5b75",
+      "bytes": 337
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/observation/step1/rank0/dump.json": {
+      "sha256": "67fd13ffffde5c9760c940919e7e80912106d04dd5416a52ad0d191640f1e1be",
+      "bytes": 1213816
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/observation/step1/rank0/stack.json": {
+      "sha256": "6b168777aa4d3ac7ff8577faefe52c190c25e0476e921d82e31f20d9fe039f9a",
+      "bytes": 243054
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/observation/step1/rank0/construct.json": {
+      "sha256": "a1cdbc2377720211616e92c9e7f5e94449e7d1de0524771c4acfcbd9c57762ac",
+      "bytes": 197207
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/observation/step2/rank0/dump.json": {
+      "sha256": "67fd13ffffde5c9760c940919e7e80912106d04dd5416a52ad0d191640f1e1be",
+      "bytes": 1213816
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/observation/step2/rank0/stack.json": {
+      "sha256": "6b168777aa4d3ac7ff8577faefe52c190c25e0476e921d82e31f20d9fe039f9a",
+      "bytes": 243054
+    },
+    "provider20-smollm-a1/provider20_smollm_fault/fault/observation/step2/rank0/construct.json": {
+      "sha256": "a1cdbc2377720211616e92c9e7f5e94449e7d1de0524771c4acfcbd9c57762ac",
+      "bytes": 197207
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/observation/step0/rank0/dump.json": {
+      "sha256": "b65c80e26dcaa9a766f99adeeee8b9de3170780a3898cdc13a502bd5401cdc89",
+      "bytes": 8575
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/observation/step0/rank0/stack.json": {
+      "sha256": "97e219ab5330eef300e60e28a61b109abb3b33acda385a20fcb73c11059c14f3",
+      "bytes": 9332
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/observation/step0/rank0/construct.json": {
+      "sha256": "127eba834940b6304b62f157d4670b004025870aed8b93e5aeb115b7a5864f8e",
+      "bytes": 389
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/config.json": {
+      "sha256": "bbe4659494842e3c5c6bf1d717ec40b03707bb2a9c28b104eb0aef2ad1ec2100",
+      "bytes": 340
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/observation/step1/rank0/dump.json": {
+      "sha256": "b65c80e26dcaa9a766f99adeeee8b9de3170780a3898cdc13a502bd5401cdc89",
+      "bytes": 8575
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/observation/step1/rank0/stack.json": {
+      "sha256": "97e219ab5330eef300e60e28a61b109abb3b33acda385a20fcb73c11059c14f3",
+      "bytes": 9332
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/observation/step1/rank0/construct.json": {
+      "sha256": "127eba834940b6304b62f157d4670b004025870aed8b93e5aeb115b7a5864f8e",
+      "bytes": 389
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/observation/step2/rank0/dump.json": {
+      "sha256": "b65c80e26dcaa9a766f99adeeee8b9de3170780a3898cdc13a502bd5401cdc89",
+      "bytes": 8575
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/observation/step2/rank0/stack.json": {
+      "sha256": "97e219ab5330eef300e60e28a61b109abb3b33acda385a20fcb73c11059c14f3",
+      "bytes": 9332
+    },
+    "provider26-npu-a1/provider26_fia_baseline/baseline/observation/step2/rank0/construct.json": {
+      "sha256": "127eba834940b6304b62f157d4670b004025870aed8b93e5aeb115b7a5864f8e",
+      "bytes": 389
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/observation/step0/rank0/dump.json": {
+      "sha256": "b9ac6c82577b2e099125fcc9718e9c99635c0dfb7a64a8187aba5a99b0f60a69",
+      "bytes": 8573
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/observation/step0/rank0/stack.json": {
+      "sha256": "97e219ab5330eef300e60e28a61b109abb3b33acda385a20fcb73c11059c14f3",
+      "bytes": 9332
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/observation/step0/rank0/construct.json": {
+      "sha256": "127eba834940b6304b62f157d4670b004025870aed8b93e5aeb115b7a5864f8e",
+      "bytes": 389
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/config.json": {
+      "sha256": "49d91b4c5db1f2c8496d0211beb25c633b60982684a1d4bef0f295762fcb5b75",
+      "bytes": 337
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/observation/step1/rank0/dump.json": {
+      "sha256": "b9ac6c82577b2e099125fcc9718e9c99635c0dfb7a64a8187aba5a99b0f60a69",
+      "bytes": 8573
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/observation/step1/rank0/stack.json": {
+      "sha256": "97e219ab5330eef300e60e28a61b109abb3b33acda385a20fcb73c11059c14f3",
+      "bytes": 9332
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/observation/step1/rank0/construct.json": {
+      "sha256": "127eba834940b6304b62f157d4670b004025870aed8b93e5aeb115b7a5864f8e",
+      "bytes": 389
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/observation/step2/rank0/dump.json": {
+      "sha256": "b9ac6c82577b2e099125fcc9718e9c99635c0dfb7a64a8187aba5a99b0f60a69",
+      "bytes": 8573
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/observation/step2/rank0/stack.json": {
+      "sha256": "97e219ab5330eef300e60e28a61b109abb3b33acda385a20fcb73c11059c14f3",
+      "bytes": 9332
+    },
+    "provider26-npu-a1/provider26_fia_fault/fault/observation/step2/rank0/construct.json": {
+      "sha256": "127eba834940b6304b62f157d4670b004025870aed8b93e5aeb115b7a5864f8e",
+      "bytes": 389
+    },
+    "provider26-npu-a1/provider26_qmm_baseline/baseline/observation/step0/rank0/dump.json": {
+      "sha256": "2c00d280118b4e8a1601adbbafdd9ac87617cd7f130738b0664eca8f1b45a2e0",
+      "bytes": 7438
+    },
+    "provider26-npu-a1/provider26_qmm_baseline/baseline/observation/step0/rank0/stack.json": {
+      "sha256": "24ae8fb0028df45e72b20a0fad1ef0f7d2a1ae1cac6fea02445abb63657950e2",
+      "bytes": 9334
+    },
+    "provider26-npu-a1/provider26_qmm_baseline/baseline/observation/step0/rank0/construct.json": {
+      "sha256": "a6a43238486dadcd243e4c29ed5f4e2915ab903b32d29c7c5f55e31418f01af1",
+      "bytes": 366
+    },
+    "provider26-npu-a1/provider26_qmm_baseline/baseline/config.json": {
+      "sha256": "bbe4659494842e3c5c6bf1d717ec40b03707bb2a9c28b104eb0aef2ad1ec2100",
+      "bytes": 340
+    },
+    "provider26-npu-a1/provider26_qmm_baseline/baseline/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "5f48e4bf629bb3c213c9c09355d6c430d9d0f6e262cd11f7c5345c15fd964cfe",
+      "bytes": 2400589
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "079cfc19521c527f0cedfa9c91cae83782baa33393f972d0ba43357472c0c92e",
+      "bytes": 325798
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank0/config.json": {
+      "sha256": "919b971f988d37ff5552c554c62d02588190002b83b2734d8e2c17a5f35d81fd",
+      "bytes": 346
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "081be3e7e85bd272c40ba21620102141803d55a684b24551171ef8744d45696e",
+      "bytes": 2403637
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "ee3d0bda2d632aa3505c36e166f39154c09c572af5f63323c99406e73c6084eb",
+      "bytes": 315647
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "785a9f1b6063d68b05187e331fe938d7f3e82c4befeb342fa2e6b74f77d93c38",
+      "bytes": 2400503
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "079cfc19521c527f0cedfa9c91cae83782baa33393f972d0ba43357472c0c92e",
+      "bytes": 325798
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank1/config.json": {
+      "sha256": "7816b2980f1d9f2b48fa7269de2ba46e9a39dff6cffccc0bc634fc222d940754",
+      "bytes": 346
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "a8edadef043a006375490e9c5a0a66845dca81dc0e4127f675ee70662308d21a",
+      "bytes": 2403799
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "ee3d0bda2d632aa3505c36e166f39154c09c572af5f63323c99406e73c6084eb",
+      "bytes": 315647
+    },
+    "provider26-model-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "4543e9ed311225f20f8d07ad89403d5ac35abff52876365d75edc186175fb342",
+      "bytes": 2400600
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "079cfc19521c527f0cedfa9c91cae83782baa33393f972d0ba43357472c0c92e",
+      "bytes": 325798
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank0/config.json": {
+      "sha256": "868332d78ea874f7d0ee4f5f5a9f2a64e2868996905bb4acfce988d886495aec",
+      "bytes": 343
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "0734864dfbe11595a11df5a3b6c017717a044cf90462d9ee84616fca693aa246",
+      "bytes": 2403540
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "ee3d0bda2d632aa3505c36e166f39154c09c572af5f63323c99406e73c6084eb",
+      "bytes": 315647
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "4a6c1d69586ae1942f7bca7be462bf4e40a2410e4c5748a9a8e774245f370d1f",
+      "bytes": 2400560
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "079cfc19521c527f0cedfa9c91cae83782baa33393f972d0ba43357472c0c92e",
+      "bytes": 325798
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank1/config.json": {
+      "sha256": "29188ecb7a60379cc2482fb4ed86033d30cd64b2b45c083f8054805f15c2dd6c",
+      "bytes": 343
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "cee1fea8dd1e91dfd9751698716bc395912c27a52c88ff94e5a9c10da8cfcba7",
+      "bytes": 2403824
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "ee3d0bda2d632aa3505c36e166f39154c09c572af5f63323c99406e73c6084eb",
+      "bytes": 315647
+    },
+    "provider26-model-a2/provider26_qmm_model_fault/fault/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "5f48e4bf629bb3c213c9c09355d6c430d9d0f6e262cd11f7c5345c15fd964cfe",
+      "bytes": 2400589
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "079cfc19521c527f0cedfa9c91cae83782baa33393f972d0ba43357472c0c92e",
+      "bytes": 325798
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank0/config.json": {
+      "sha256": "919b971f988d37ff5552c554c62d02588190002b83b2734d8e2c17a5f35d81fd",
+      "bytes": 346
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "081be3e7e85bd272c40ba21620102141803d55a684b24551171ef8744d45696e",
+      "bytes": 2403637
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "ee3d0bda2d632aa3505c36e166f39154c09c572af5f63323c99406e73c6084eb",
+      "bytes": 315647
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "785a9f1b6063d68b05187e331fe938d7f3e82c4befeb342fa2e6b74f77d93c38",
+      "bytes": 2400503
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "079cfc19521c527f0cedfa9c91cae83782baa33393f972d0ba43357472c0c92e",
+      "bytes": 325798
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank1/config.json": {
+      "sha256": "7816b2980f1d9f2b48fa7269de2ba46e9a39dff6cffccc0bc634fc222d940754",
+      "bytes": 346
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "a8edadef043a006375490e9c5a0a66845dca81dc0e4127f675ee70662308d21a",
+      "bytes": 2403799
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "ee3d0bda2d632aa3505c36e166f39154c09c572af5f63323c99406e73c6084eb",
+      "bytes": 315647
+    },
+    "provider26-fia-model-a1/provider26_fia_model_baseline/baseline/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "b72627cdd863980fd9a62dd8f05851e4bd4d7619b0523bed0b9a3202043bb8cf",
+      "bytes": 2396827
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "079cfc19521c527f0cedfa9c91cae83782baa33393f972d0ba43357472c0c92e",
+      "bytes": 325798
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank0/config.json": {
+      "sha256": "868332d78ea874f7d0ee4f5f5a9f2a64e2868996905bb4acfce988d886495aec",
+      "bytes": 343
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "80cf62ae03299b0dbea55d418f9914d4d882201cee0f4a96022c78c07452fd54",
+      "bytes": 2395956
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "03b419ff31ce74d471de1a1f045670f3f4008ab1e187ea86cd17148c87e8ec2f",
+      "bytes": 305427
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "16a9d820bbdcd0e5f1fc148cf841b5785833dba587d06d44ae71ef22857b0ceb",
+      "bytes": 248954
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "3812e68feb0e25e3522f70eab8a09e6d05f8a8da60275b38951a484ae3ea25fd",
+      "bytes": 2397030
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "079cfc19521c527f0cedfa9c91cae83782baa33393f972d0ba43357472c0c92e",
+      "bytes": 325798
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank1/config.json": {
+      "sha256": "29188ecb7a60379cc2482fb4ed86033d30cd64b2b45c083f8054805f15c2dd6c",
+      "bytes": 343
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "c56c70f105a99757afd3c7769038379433f92134dc8dbbce3488e2b316d6b1a2",
+      "bytes": 2396283
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "03b419ff31ce74d471de1a1f045670f3f4008ab1e187ea86cd17148c87e8ec2f",
+      "bytes": 305427
+    },
+    "provider26-fia-model-a1/provider26_fia_model_fault/fault/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "16a9d820bbdcd0e5f1fc148cf841b5785833dba587d06d44ae71ef22857b0ceb",
+      "bytes": 248954
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "5f48e4bf629bb3c213c9c09355d6c430d9d0f6e262cd11f7c5345c15fd964cfe",
+      "bytes": 2400589
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "86925ca086b9092d9873667ee2fa50de4a9695b4cf8f5f28c60b1a949c125ba3",
+      "bytes": 325798
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank0/config.json": {
+      "sha256": "919b971f988d37ff5552c554c62d02588190002b83b2734d8e2c17a5f35d81fd",
+      "bytes": 346
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "5e0b79634b8433be614b69ec98618caf5f80303785f8fed1794a777a1c613b16",
+      "bytes": 2403686
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "b9419f65333219a335f361a415b156de7be5cc78330d00875dcde0842201b06a",
+      "bytes": 315647
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "785a9f1b6063d68b05187e331fe938d7f3e82c4befeb342fa2e6b74f77d93c38",
+      "bytes": 2400503
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "86925ca086b9092d9873667ee2fa50de4a9695b4cf8f5f28c60b1a949c125ba3",
+      "bytes": 325798
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank1/config.json": {
+      "sha256": "7816b2980f1d9f2b48fa7269de2ba46e9a39dff6cffccc0bc634fc222d940754",
+      "bytes": 346
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "8f9c59c1609331bddb0dd6512ef691203cf0d243a0b0b145f5b5e25dc4c66fd9",
+      "bytes": 2403850
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "b9419f65333219a335f361a415b156de7be5cc78330d00875dcde0842201b06a",
+      "bytes": 315647
+    },
+    "provider26-final-a2/provider26_fia_model_baseline/baseline/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "b72627cdd863980fd9a62dd8f05851e4bd4d7619b0523bed0b9a3202043bb8cf",
+      "bytes": 2396827
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "86925ca086b9092d9873667ee2fa50de4a9695b4cf8f5f28c60b1a949c125ba3",
+      "bytes": 325798
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank0/config.json": {
+      "sha256": "868332d78ea874f7d0ee4f5f5a9f2a64e2868996905bb4acfce988d886495aec",
+      "bytes": 343
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "e09472b34ff8e560ac7e7a8ec61127fa8c877e8d7b3d6f7dfb48f82f6ef1eabc",
+      "bytes": 2398491
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "b9419f65333219a335f361a415b156de7be5cc78330d00875dcde0842201b06a",
+      "bytes": 315647
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "3812e68feb0e25e3522f70eab8a09e6d05f8a8da60275b38951a484ae3ea25fd",
+      "bytes": 2397030
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "86925ca086b9092d9873667ee2fa50de4a9695b4cf8f5f28c60b1a949c125ba3",
+      "bytes": 325798
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank1/config.json": {
+      "sha256": "29188ecb7a60379cc2482fb4ed86033d30cd64b2b45c083f8054805f15c2dd6c",
+      "bytes": 343
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "af542eb255ee4a94b5d686947a7b03359a2b3e737ecbd3325273f5b6d3646a31",
+      "bytes": 2398824
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "b9419f65333219a335f361a415b156de7be5cc78330d00875dcde0842201b06a",
+      "bytes": 315647
+    },
+    "provider26-final-a2/provider26_fia_model_fault/fault/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "5f48e4bf629bb3c213c9c09355d6c430d9d0f6e262cd11f7c5345c15fd964cfe",
+      "bytes": 2400589
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "86925ca086b9092d9873667ee2fa50de4a9695b4cf8f5f28c60b1a949c125ba3",
+      "bytes": 325798
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank0/config.json": {
+      "sha256": "919b971f988d37ff5552c554c62d02588190002b83b2734d8e2c17a5f35d81fd",
+      "bytes": 346
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "5e0b79634b8433be614b69ec98618caf5f80303785f8fed1794a777a1c613b16",
+      "bytes": 2403686
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "b9419f65333219a335f361a415b156de7be5cc78330d00875dcde0842201b06a",
+      "bytes": 315647
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "785a9f1b6063d68b05187e331fe938d7f3e82c4befeb342fa2e6b74f77d93c38",
+      "bytes": 2400503
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "86925ca086b9092d9873667ee2fa50de4a9695b4cf8f5f28c60b1a949c125ba3",
+      "bytes": 325798
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank1/config.json": {
+      "sha256": "7816b2980f1d9f2b48fa7269de2ba46e9a39dff6cffccc0bc634fc222d940754",
+      "bytes": 346
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "8f9c59c1609331bddb0dd6512ef691203cf0d243a0b0b145f5b5e25dc4c66fd9",
+      "bytes": 2403850
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "b9419f65333219a335f361a415b156de7be5cc78330d00875dcde0842201b06a",
+      "bytes": 315647
+    },
+    "provider26-final-a2/provider26_qmm_model_baseline/baseline/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "5b54b09be1d845d1fd0a71814718aecffef26577ed260efc7931b61bb7e3b053",
+      "bytes": 2400614
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "86925ca086b9092d9873667ee2fa50de4a9695b4cf8f5f28c60b1a949c125ba3",
+      "bytes": 325798
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank0/config.json": {
+      "sha256": "868332d78ea874f7d0ee4f5f5a9f2a64e2868996905bb4acfce988d886495aec",
+      "bytes": 343
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "81310078150fea94160d120f2af06134d708f59774a0c291afd1cd494094a65c",
+      "bytes": 2403523
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "b9419f65333219a335f361a415b156de7be5cc78330d00875dcde0842201b06a",
+      "bytes": 315647
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "e4038f773e6e0add0fe5606a94ced6a44c6221c52c10b2d30006098718007b8c",
+      "bytes": 2400539
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "86925ca086b9092d9873667ee2fa50de4a9695b4cf8f5f28c60b1a949c125ba3",
+      "bytes": 325798
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "d1bcc40a3d3ddad4ade178474cebd7de8556edb0fe7762329e8ed5867e3b4c34",
+      "bytes": 249683
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank1/config.json": {
+      "sha256": "29188ecb7a60379cc2482fb4ed86033d30cd64b2b45c083f8054805f15c2dd6c",
+      "bytes": 343
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "c8ba98ad93e0f5bb1daf64ceab1a4cecfd9502679d352100d5acba826b491460",
+      "bytes": 2403796
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "b9419f65333219a335f361a415b156de7be5cc78330d00875dcde0842201b06a",
+      "bytes": 315647
+    },
+    "provider26-final-a2/provider26_qmm_model_fault/fault/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "2ba66977d297f79da1df04ba94c2483d4228ff63fa9570aea0a8857b396f333c",
+      "bytes": 249483
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "951b765dccf2345f6c16e3aaf54afc749ea5c86ae4d5076cacd6fc9800c493a4",
+      "bytes": 4076924
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/config.json": {
+      "sha256": "919b971f988d37ff5552c554c62d02588190002b83b2734d8e2c17a5f35d81fd",
+      "bytes": 346
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "e1ad7232c17b57aa677fe0a50a9e78f5aa239ec7e8a40accfd737bee3a2ea771",
+      "bytes": 4076924
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/observation/step2/rank0/dump.json": {
+      "sha256": "324908ed9a75d6f726de520955ba11682cb3384a703e0e732e191e27bab7362b",
+      "bytes": 4076924
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/observation/step2/rank0/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_baseline/baseline/rank0/observation/step2/rank0/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "6fb5352326418c7aaeb0c7933d79a154976488057cb36ca27ac083468e9512f4",
+      "bytes": 4077505
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/config.json": {
+      "sha256": "7816b2980f1d9f2b48fa7269de2ba46e9a39dff6cffccc0bc634fc222d940754",
+      "bytes": 346
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "995bb91b5e6d476ddeaca8f9e81cee2e172ed1f8d983e61028c41e9d8456fcf7",
+      "bytes": 4077505
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/observation/step2/rank1/dump.json": {
+      "sha256": "1db59f4f172708be65a80a11a739c10542dd32f1ff92ad096ca775caf654976a",
+      "bytes": 4077505
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/observation/step2/rank1/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_baseline/baseline/rank1/observation/step2/rank1/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_fault/fault/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "38c89112d855adc9f28d4392bf5124ed8d0ec4b104870bd496c6f14860b9675c",
+      "bytes": 4077225
+    },
+    "quant-model-a2/quant_fault/fault/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_fault/fault/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_fault/fault/rank0/config.json": {
+      "sha256": "868332d78ea874f7d0ee4f5f5a9f2a64e2868996905bb4acfce988d886495aec",
+      "bytes": 343
+    },
+    "quant-model-a2/quant_fault/fault/rank0/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "quant-model-a2/quant_fault/fault/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "fef4ef6f7b183a0d69d70b065b08f0129d306cda0975ed6fda857efd3489a46e",
+      "bytes": 4077223
+    },
+    "quant-model-a2/quant_fault/fault/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_fault/fault/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_fault/fault/rank0/observation/step2/rank0/dump.json": {
+      "sha256": "384bd4a83b17f297be0ed4e8f1c4ee0b5679a58d740b11c1104b03d72fee9bbd",
+      "bytes": 4077223
+    },
+    "quant-model-a2/quant_fault/fault/rank0/observation/step2/rank0/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_fault/fault/rank0/observation/step2/rank0/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_fault/fault/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "4e206a7aaf8e7f37860a6733d3459c268bb8aa119f248c27952d99aca7b1f840",
+      "bytes": 4077381
+    },
+    "quant-model-a2/quant_fault/fault/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_fault/fault/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_fault/fault/rank1/config.json": {
+      "sha256": "29188ecb7a60379cc2482fb4ed86033d30cd64b2b45c083f8054805f15c2dd6c",
+      "bytes": 343
+    },
+    "quant-model-a2/quant_fault/fault/rank1/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "quant-model-a2/quant_fault/fault/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "afe604714c72ab608c4667cda654e926c5d23477649f316297a2bdb87ca290f9",
+      "bytes": 4077387
+    },
+    "quant-model-a2/quant_fault/fault/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_fault/fault/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "quant-model-a2/quant_fault/fault/rank1/observation/step2/rank1/dump.json": {
+      "sha256": "6fc1a16f6178d45cae29e5ceee7fafa583bf99933372cc8782a163f23ba5d473",
+      "bytes": 4077387
+    },
+    "quant-model-a2/quant_fault/fault/rank1/observation/step2/rank1/stack.json": {
+      "sha256": "5ed358de7d64e828a7d340af9ce8da4426fca9675f5de552b4402a42255d4e8c",
+      "bytes": 438982
+    },
+    "quant-model-a2/quant_fault/fault/rank1/observation/step2/rank1/construct.json": {
+      "sha256": "3df644f8c1e0244230c50b01ae3a8da0641f8fe1a8b32b432a0bb04509d327c7",
+      "bytes": 746872
+    },
+    "provider33-model-a2/provider33_baseline/baseline/observation/step0/rank0/dump.json": {
+      "sha256": "086327c5684a6bfc376e003c71a830feb7569325e9f766d3f74cea4cb005a1d0",
+      "bytes": 1629616
+    },
+    "provider33-model-a2/provider33_baseline/baseline/observation/step0/rank0/stack.json": {
+      "sha256": "99af6cc860061723de301279e072406890eab2efe716e8e56e4e0164cf6e447f",
+      "bytes": 240003
+    },
+    "provider33-model-a2/provider33_baseline/baseline/observation/step0/rank0/construct.json": {
+      "sha256": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe",
+      "bytes": 10968618
+    },
+    "provider33-model-a2/provider33_baseline/baseline/config.json": {
+      "sha256": "bbe4659494842e3c5c6bf1d717ec40b03707bb2a9c28b104eb0aef2ad1ec2100",
+      "bytes": 340
+    },
+    "provider33-model-a2/provider33_baseline/baseline/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider33-model-a2/provider33_baseline/baseline/observation/step1/rank0/dump.json": {
+      "sha256": "086327c5684a6bfc376e003c71a830feb7569325e9f766d3f74cea4cb005a1d0",
+      "bytes": 1629616
+    },
+    "provider33-model-a2/provider33_baseline/baseline/observation/step1/rank0/stack.json": {
+      "sha256": "99af6cc860061723de301279e072406890eab2efe716e8e56e4e0164cf6e447f",
+      "bytes": 240003
+    },
+    "provider33-model-a2/provider33_baseline/baseline/observation/step1/rank0/construct.json": {
+      "sha256": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe",
+      "bytes": 10968618
+    },
+    "provider33-model-a2/provider33_baseline/baseline/observation/step2/rank0/dump.json": {
+      "sha256": "086327c5684a6bfc376e003c71a830feb7569325e9f766d3f74cea4cb005a1d0",
+      "bytes": 1629616
+    },
+    "provider33-model-a2/provider33_baseline/baseline/observation/step2/rank0/stack.json": {
+      "sha256": "99af6cc860061723de301279e072406890eab2efe716e8e56e4e0164cf6e447f",
+      "bytes": 240003
+    },
+    "provider33-model-a2/provider33_baseline/baseline/observation/step2/rank0/construct.json": {
+      "sha256": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe",
+      "bytes": 10968618
+    },
+    "provider33-model-a2/provider33_fault/fault/observation/step0/rank0/dump.json": {
+      "sha256": "8e665619fce9ec761df9e715cda264018862538d6f263c3be11eccba52acf352",
+      "bytes": 1629752
+    },
+    "provider33-model-a2/provider33_fault/fault/observation/step0/rank0/stack.json": {
+      "sha256": "99af6cc860061723de301279e072406890eab2efe716e8e56e4e0164cf6e447f",
+      "bytes": 240003
+    },
+    "provider33-model-a2/provider33_fault/fault/observation/step0/rank0/construct.json": {
+      "sha256": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe",
+      "bytes": 10968618
+    },
+    "provider33-model-a2/provider33_fault/fault/config.json": {
+      "sha256": "49d91b4c5db1f2c8496d0211beb25c633b60982684a1d4bef0f295762fcb5b75",
+      "bytes": 337
+    },
+    "provider33-model-a2/provider33_fault/fault/collector_identity.json": {
+      "sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+      "bytes": 53004
+    },
+    "provider33-model-a2/provider33_fault/fault/observation/step1/rank0/dump.json": {
+      "sha256": "8e665619fce9ec761df9e715cda264018862538d6f263c3be11eccba52acf352",
+      "bytes": 1629752
+    },
+    "provider33-model-a2/provider33_fault/fault/observation/step1/rank0/stack.json": {
+      "sha256": "99af6cc860061723de301279e072406890eab2efe716e8e56e4e0164cf6e447f",
+      "bytes": 240003
+    },
+    "provider33-model-a2/provider33_fault/fault/observation/step1/rank0/construct.json": {
+      "sha256": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe",
+      "bytes": 10968618
+    },
+    "provider33-model-a2/provider33_fault/fault/observation/step2/rank0/dump.json": {
+      "sha256": "8e665619fce9ec761df9e715cda264018862538d6f263c3be11eccba52acf352",
+      "bytes": 1629752
+    },
+    "provider33-model-a2/provider33_fault/fault/observation/step2/rank0/stack.json": {
+      "sha256": "99af6cc860061723de301279e072406890eab2efe716e8e56e4e0164cf6e447f",
+      "bytes": 240003
+    },
+    "provider33-model-a2/provider33_fault/fault/observation/step2/rank0/construct.json": {
+      "sha256": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe",
+      "bytes": 10968618
+    },
+    "model-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "0fb24cd3cf15aeced587aad016d0f1b32a151630fb2a6784ddb9339ed9e89555",
+      "bytes": 877750
+    },
+    "model-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "98c52fb325f65e9fccec1dc4930f65b047ef8a10df677954cbffb8a7966ffe8d",
+      "bytes": 272113
+    },
+    "model-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "0a6f714320253d26884ce059c1d0f519c5a10806e81bd1ad8170124eb8e181e0",
+      "bytes": 102009
+    },
+    "model-851-bf-a1/model_baseline/validation/baseline/rank0/config.json": {
+      "sha256": "fac3116b4ec68daf3009725fdaa028d11aaf03851a803658214273b259530234",
+      "bytes": 351
+    },
+    "model-851-bf-a1/model_baseline/validation/baseline/rank0/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "model-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "32f4b0b79b667577b583e848c6b8e55a19e2e2c87fba48b9cad8dc0d8546efab",
+      "bytes": 880374
+    },
+    "model-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "da8d0c8a9a30d5eb462c3f5b00231ad25915d651a2edae367d565dd110e2365a",
+      "bytes": 258426
+    },
+    "model-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "add3242043105c76b7ddd64d179f6fdc93c64212c3f64562cd2c8002e51dd4d3",
+      "bytes": 101809
+    },
+    "model-851-bf-a1/model_fault/validation/fault/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "0fb24cd3cf15aeced587aad016d0f1b32a151630fb2a6784ddb9339ed9e89555",
+      "bytes": 877750
+    },
+    "model-851-bf-a1/model_fault/validation/fault/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "98c52fb325f65e9fccec1dc4930f65b047ef8a10df677954cbffb8a7966ffe8d",
+      "bytes": 272113
+    },
+    "model-851-bf-a1/model_fault/validation/fault/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "0a6f714320253d26884ce059c1d0f519c5a10806e81bd1ad8170124eb8e181e0",
+      "bytes": 102009
+    },
+    "model-851-bf-a1/model_fault/validation/fault/rank0/config.json": {
+      "sha256": "a743c0a349c73c23b46cd52815287fd69d394de9223e63de02ed49d8707b9a35",
+      "bytes": 348
+    },
+    "model-851-bf-a1/model_fault/validation/fault/rank0/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "model-851-bf-a1/model_fault/validation/fault/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "f7643a3bd7a7546cd249182ff6bca1ab1e79383930228407e3d287fdcd31ce64",
+      "bytes": 863337
+    },
+    "model-851-bf-a1/model_fault/validation/fault/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "da8d0c8a9a30d5eb462c3f5b00231ad25915d651a2edae367d565dd110e2365a",
+      "bytes": 258426
+    },
+    "model-851-bf-a1/model_fault/validation/fault/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "add3242043105c76b7ddd64d179f6fdc93c64212c3f64562cd2c8002e51dd4d3",
+      "bytes": 101809
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "74c603b1b6f8bf53661d38d60afc9949637b300d9dda9b2fc0e287485859233e",
+      "bytes": 929978
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "7458cb1c90aa13aa278bab1ebedf003c91f62a288952dd5fe5f773667701ef35",
+      "bytes": 382121
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "04c3e75085d6a2e987a4b09ad412d62e77b9afbc17412e0da7d8d79a3d9966ae",
+      "bytes": 109595
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank0/config.json": {
+      "sha256": "fac3116b4ec68daf3009725fdaa028d11aaf03851a803658214273b259530234",
+      "bytes": 351
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank0/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "876934be19aee1371510eb7d42e61159d84b4660ff69b7c355829a297c3da98e",
+      "bytes": 932692
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "5104fbcfcbf1fae0f500e06218069463da554b2cffe1025d0c4c33bec88c95fa",
+      "bytes": 363894
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "3869146ed2e229138898740b50a63e97e8949ffd0bbbf7e0854c73064f5d4e69",
+      "bytes": 109395
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "0f696ec8f4d592d48aa4287c48bc89deaac06f49bc26a35b7acf1128db6a0a21",
+      "bytes": 930196
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "7458cb1c90aa13aa278bab1ebedf003c91f62a288952dd5fe5f773667701ef35",
+      "bytes": 382121
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "04c3e75085d6a2e987a4b09ad412d62e77b9afbc17412e0da7d8d79a3d9966ae",
+      "bytes": 109595
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank1/config.json": {
+      "sha256": "3512efa0010c4a4f789aa699ab7bdf3472b35991230155338e55e9907937547a",
+      "bytes": 351
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank1/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "14404a691009ebcc6c0436d3d67e3da35711349f5066055d354ad0e978565b57",
+      "bytes": 933336
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "5104fbcfcbf1fae0f500e06218069463da554b2cffe1025d0c4c33bec88c95fa",
+      "bytes": 363894
+    },
+    "tp2-851-bf-a1/model_baseline/validation/baseline/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "3869146ed2e229138898740b50a63e97e8949ffd0bbbf7e0854c73064f5d4e69",
+      "bytes": 109395
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "74c603b1b6f8bf53661d38d60afc9949637b300d9dda9b2fc0e287485859233e",
+      "bytes": 929978
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "7458cb1c90aa13aa278bab1ebedf003c91f62a288952dd5fe5f773667701ef35",
+      "bytes": 382121
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "04c3e75085d6a2e987a4b09ad412d62e77b9afbc17412e0da7d8d79a3d9966ae",
+      "bytes": 109595
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank0/config.json": {
+      "sha256": "a743c0a349c73c23b46cd52815287fd69d394de9223e63de02ed49d8707b9a35",
+      "bytes": 348
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank0/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "89cb445feed0551c38da76b4a442026a8cc99f413dbb107223a29602769a475d",
+      "bytes": 914338
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "5104fbcfcbf1fae0f500e06218069463da554b2cffe1025d0c4c33bec88c95fa",
+      "bytes": 363894
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "3869146ed2e229138898740b50a63e97e8949ffd0bbbf7e0854c73064f5d4e69",
+      "bytes": 109395
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "0f696ec8f4d592d48aa4287c48bc89deaac06f49bc26a35b7acf1128db6a0a21",
+      "bytes": 930196
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "7458cb1c90aa13aa278bab1ebedf003c91f62a288952dd5fe5f773667701ef35",
+      "bytes": 382121
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "04c3e75085d6a2e987a4b09ad412d62e77b9afbc17412e0da7d8d79a3d9966ae",
+      "bytes": 109595
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank1/config.json": {
+      "sha256": "6846e7d9751b3d1d537fd2386b920cec064827678e38da358c6990b33b663a8a",
+      "bytes": 348
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank1/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "e2e94e8b3f28af9f41728c3a84c5959be462cb655e366dcfeeb8af6734f6bd4a",
+      "bytes": 914361
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "5104fbcfcbf1fae0f500e06218069463da554b2cffe1025d0c4c33bec88c95fa",
+      "bytes": 363894
+    },
+    "tp2-851-bf-a1/model_fault/validation/fault/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "3869146ed2e229138898740b50a63e97e8949ffd0bbbf7e0854c73064f5d4e69",
+      "bytes": 109395
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "5245123f03c43cb8526cc84ace167b28e57d69d059f0176defed99f54149decd",
+      "bytes": 931546
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "b630e20f51e3502bc222ee394aeafdea8cd75c51c3fb1cb9319b815d8f591bc7",
+      "bytes": 255912
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "57e79b2425c1189d628d7d8386032691150b88cf97b111a2337dc6db8c9978e7",
+      "bytes": 109937
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank0/config.json": {
+      "sha256": "fac3116b4ec68daf3009725fdaa028d11aaf03851a803658214273b259530234",
+      "bytes": 351
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank0/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "1017e099bae6508d76dbb37f769dd5fde4e2f26fafa0ac10104eb27867f769f9",
+      "bytes": 935844
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "3796e5c94d27ffb916423e40432068c43efd31263904704e6dc8fcf314904f1b",
+      "bytes": 253594
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "09927aa81b926f2835cccedd9daa4ef4b95e45530e17ab1ed3d1af5f92457348",
+      "bytes": 109902
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "2223c7bf3b87aa34a835c8a50fb5fed31e90dbe61a7ec67fca418836cd91772e",
+      "bytes": 931753
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "b630e20f51e3502bc222ee394aeafdea8cd75c51c3fb1cb9319b815d8f591bc7",
+      "bytes": 255912
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "57e79b2425c1189d628d7d8386032691150b88cf97b111a2337dc6db8c9978e7",
+      "bytes": 109937
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank1/config.json": {
+      "sha256": "3512efa0010c4a4f789aa699ab7bdf3472b35991230155338e55e9907937547a",
+      "bytes": 351
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank1/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "127276e1c3d319e06cfbfb89687b708d835e948d51eb7d9ac4d2cd152891405a",
+      "bytes": 936510
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "3796e5c94d27ffb916423e40432068c43efd31263904704e6dc8fcf314904f1b",
+      "bytes": 253594
+    },
+    "model-91-bf-a2/model_baseline/validation/baseline/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "09927aa81b926f2835cccedd9daa4ef4b95e45530e17ab1ed3d1af5f92457348",
+      "bytes": 109902
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank0/observation/step0/rank0/dump.json": {
+      "sha256": "5245123f03c43cb8526cc84ace167b28e57d69d059f0176defed99f54149decd",
+      "bytes": 931546
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank0/observation/step0/rank0/stack.json": {
+      "sha256": "b630e20f51e3502bc222ee394aeafdea8cd75c51c3fb1cb9319b815d8f591bc7",
+      "bytes": 255912
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank0/observation/step0/rank0/construct.json": {
+      "sha256": "57e79b2425c1189d628d7d8386032691150b88cf97b111a2337dc6db8c9978e7",
+      "bytes": 109937
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank0/config.json": {
+      "sha256": "a743c0a349c73c23b46cd52815287fd69d394de9223e63de02ed49d8707b9a35",
+      "bytes": 348
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank0/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank0/observation/step1/rank0/dump.json": {
+      "sha256": "8f08470f33ff9d3a7a9ca4a40c3713077f46ed63135cb7424756fd3ea13bae0a",
+      "bytes": 917490
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank0/observation/step1/rank0/stack.json": {
+      "sha256": "3796e5c94d27ffb916423e40432068c43efd31263904704e6dc8fcf314904f1b",
+      "bytes": 253594
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank0/observation/step1/rank0/construct.json": {
+      "sha256": "09927aa81b926f2835cccedd9daa4ef4b95e45530e17ab1ed3d1af5f92457348",
+      "bytes": 109902
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank1/observation/step0/rank1/dump.json": {
+      "sha256": "2223c7bf3b87aa34a835c8a50fb5fed31e90dbe61a7ec67fca418836cd91772e",
+      "bytes": 931753
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank1/observation/step0/rank1/stack.json": {
+      "sha256": "b630e20f51e3502bc222ee394aeafdea8cd75c51c3fb1cb9319b815d8f591bc7",
+      "bytes": 255912
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank1/observation/step0/rank1/construct.json": {
+      "sha256": "57e79b2425c1189d628d7d8386032691150b88cf97b111a2337dc6db8c9978e7",
+      "bytes": 109937
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank1/config.json": {
+      "sha256": "6846e7d9751b3d1d537fd2386b920cec064827678e38da358c6990b33b663a8a",
+      "bytes": 348
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank1/collector_identity.json": {
+      "sha256": "dae56089b478449ae335c3f4a4f0950727238bcf4f0c1fb63e89e3cdd0a7e29c",
+      "bytes": 57124
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank1/observation/step1/rank1/dump.json": {
+      "sha256": "55bec4a3c63b4e6168607c2400f4a879fa49f1163b7f26f7b08e086ff76e4fd0",
+      "bytes": 917535
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank1/observation/step1/rank1/stack.json": {
+      "sha256": "3796e5c94d27ffb916423e40432068c43efd31263904704e6dc8fcf314904f1b",
+      "bytes": 253594
+    },
+    "model-91-bf-a2/model_fault/validation/fault/rank1/observation/step1/rank1/construct.json": {
+      "sha256": "09927aa81b926f2835cccedd9daa4ef4b95e45530e17ab1ed3d1af5f92457348",
+      "bytes": 109902
+    },
+    "npu-851-a3/operator_baseline/baseline/observation/step0/rank0/dump.json": {
+      "sha256": "ee3369faa471f045b6e349721e94c377bec5465f5843fb654f8491f329408e15",
+      "bytes": 1127
+    },
+    "npu-851-a3/operator_baseline/baseline/observation/step0/rank0/stack.json": {
+      "sha256": "0d6c0a7d70cb258571a0b09fc3beac6ae36c1c182ab4cde5f9745bd33a124a0f",
+      "bytes": 1100
+    },
+    "npu-851-a3/operator_baseline/baseline/observation/step0/rank0/construct.json": {
+      "sha256": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217",
+      "bytes": 35
+    },
+    "npu-851-a3/operator_baseline/baseline/config.json": {
+      "sha256": "6d90033ccaaf1989d50e9e3b6eb088054c406e43d46a217b7c4eb2da8156fc75",
+      "bytes": 326
+    },
+    "npu-851-a3/operator_baseline/baseline/collector_identity.json": {
+      "sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+      "bytes": 57055
+    },
+    "npu-851-a3/operator_fault/fault/observation/step0/rank0/dump.json": {
+      "sha256": "c4ea6a9db1e04858ed0693d0179561c9dcb0d62708383cc5168f75b0b55d5adc",
+      "bytes": 1124
+    },
+    "npu-851-a3/operator_fault/fault/observation/step0/rank0/stack.json": {
+      "sha256": "0d6c0a7d70cb258571a0b09fc3beac6ae36c1c182ab4cde5f9745bd33a124a0f",
+      "bytes": 1100
+    },
+    "npu-851-a3/operator_fault/fault/observation/step0/rank0/construct.json": {
+      "sha256": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217",
+      "bytes": 35
+    },
+    "npu-851-a3/operator_fault/fault/config.json": {
+      "sha256": "685b6f2f9e1e439c8705505a6ed5bbc32ed2ea4b5dd8f6fc68c3b34ccf34ee75",
+      "bytes": 323
+    },
+    "npu-851-a3/operator_fault/fault/collector_identity.json": {
+      "sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+      "bytes": 57055
+    },
+    "npu-90-a3/operator_baseline/baseline/observation/step0/rank0/dump.json": {
+      "sha256": "ee3369faa471f045b6e349721e94c377bec5465f5843fb654f8491f329408e15",
+      "bytes": 1127
+    },
+    "npu-90-a3/operator_baseline/baseline/observation/step0/rank0/stack.json": {
+      "sha256": "0d6c0a7d70cb258571a0b09fc3beac6ae36c1c182ab4cde5f9745bd33a124a0f",
+      "bytes": 1100
+    },
+    "npu-90-a3/operator_baseline/baseline/observation/step0/rank0/construct.json": {
+      "sha256": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217",
+      "bytes": 35
+    },
+    "npu-90-a3/operator_baseline/baseline/config.json": {
+      "sha256": "6d90033ccaaf1989d50e9e3b6eb088054c406e43d46a217b7c4eb2da8156fc75",
+      "bytes": 326
+    },
+    "npu-90-a3/operator_baseline/baseline/collector_identity.json": {
+      "sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+      "bytes": 57055
+    },
+    "npu-90-a3/operator_fault/fault/observation/step0/rank0/dump.json": {
+      "sha256": "c4ea6a9db1e04858ed0693d0179561c9dcb0d62708383cc5168f75b0b55d5adc",
+      "bytes": 1124
+    },
+    "npu-90-a3/operator_fault/fault/observation/step0/rank0/stack.json": {
+      "sha256": "0d6c0a7d70cb258571a0b09fc3beac6ae36c1c182ab4cde5f9745bd33a124a0f",
+      "bytes": 1100
+    },
+    "npu-90-a3/operator_fault/fault/observation/step0/rank0/construct.json": {
+      "sha256": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217",
+      "bytes": 35
+    },
+    "npu-90-a3/operator_fault/fault/config.json": {
+      "sha256": "685b6f2f9e1e439c8705505a6ed5bbc32ed2ea4b5dd8f6fc68c3b34ccf34ee75",
+      "bytes": 323
+    },
+    "npu-90-a3/operator_fault/fault/collector_identity.json": {
+      "sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+      "bytes": 57055
+    },
+    "npu-91-a3/operator_baseline/baseline/observation/step0/rank0/dump.json": {
+      "sha256": "ee3369faa471f045b6e349721e94c377bec5465f5843fb654f8491f329408e15",
+      "bytes": 1127
+    },
+    "npu-91-a3/operator_baseline/baseline/observation/step0/rank0/stack.json": {
+      "sha256": "e7a06ad19de31786af14e048e1aec6c836aa19facf7300d532fd491977db6fdb",
+      "bytes": 1072
+    },
+    "npu-91-a3/operator_baseline/baseline/observation/step0/rank0/construct.json": {
+      "sha256": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217",
+      "bytes": 35
+    },
+    "npu-91-a3/operator_baseline/baseline/config.json": {
+      "sha256": "6d90033ccaaf1989d50e9e3b6eb088054c406e43d46a217b7c4eb2da8156fc75",
+      "bytes": 326
+    },
+    "npu-91-a3/operator_baseline/baseline/collector_identity.json": {
+      "sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+      "bytes": 57055
+    },
+    "npu-91-a3/operator_fault/fault/observation/step0/rank0/dump.json": {
+      "sha256": "c4ea6a9db1e04858ed0693d0179561c9dcb0d62708383cc5168f75b0b55d5adc",
+      "bytes": 1124
+    },
+    "npu-91-a3/operator_fault/fault/observation/step0/rank0/stack.json": {
+      "sha256": "e7a06ad19de31786af14e048e1aec6c836aa19facf7300d532fd491977db6fdb",
+      "bytes": 1072
+    },
+    "npu-91-a3/operator_fault/fault/observation/step0/rank0/construct.json": {
+      "sha256": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217",
+      "bytes": 35
+    },
+    "npu-91-a3/operator_fault/fault/config.json": {
+      "sha256": "685b6f2f9e1e439c8705505a6ed5bbc32ed2ea4b5dd8f6fc68c3b34ccf34ee75",
+      "bytes": 323
+    },
+    "npu-91-a3/operator_fault/fault/collector_identity.json": {
+      "sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+      "bytes": 57055
+    },
+    "npu-92-a3/operator_baseline/baseline/observation/step0/rank0/dump.json": {
+      "sha256": "ee3369faa471f045b6e349721e94c377bec5465f5843fb654f8491f329408e15",
+      "bytes": 1127
+    },
+    "npu-92-a3/operator_baseline/baseline/observation/step0/rank0/stack.json": {
+      "sha256": "e7a06ad19de31786af14e048e1aec6c836aa19facf7300d532fd491977db6fdb",
+      "bytes": 1072
+    },
+    "npu-92-a3/operator_baseline/baseline/observation/step0/rank0/construct.json": {
+      "sha256": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217",
+      "bytes": 35
+    },
+    "npu-92-a3/operator_baseline/baseline/config.json": {
+      "sha256": "6d90033ccaaf1989d50e9e3b6eb088054c406e43d46a217b7c4eb2da8156fc75",
+      "bytes": 326
+    },
+    "npu-92-a3/operator_baseline/baseline/collector_identity.json": {
+      "sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+      "bytes": 57055
+    },
+    "npu-92-a3/operator_fault/fault/observation/step0/rank0/dump.json": {
+      "sha256": "c4ea6a9db1e04858ed0693d0179561c9dcb0d62708383cc5168f75b0b55d5adc",
+      "bytes": 1124
+    },
+    "npu-92-a3/operator_fault/fault/observation/step0/rank0/stack.json": {
+      "sha256": "e7a06ad19de31786af14e048e1aec6c836aa19facf7300d532fd491977db6fdb",
+      "bytes": 1072
+    },
+    "npu-92-a3/operator_fault/fault/observation/step0/rank0/construct.json": {
+      "sha256": "15dd30e9dcf45d867d07d91f1c14cb037f9a8c08bdd413c9fb6ded2ef8c2e217",
+      "bytes": 35
+    },
+    "npu-92-a3/operator_fault/fault/config.json": {
+      "sha256": "685b6f2f9e1e439c8705505a6ed5bbc32ed2ea4b5dd8f6fc68c3b34ccf34ee75",
+      "bytes": 323
+    },
+    "npu-92-a3/operator_fault/fault/collector_identity.json": {
+      "sha256": "5507222690820097eaad98edd28073ec0038a6a646c7fe45bd71933e527c969f",
+      "bytes": 57055
+    }
+  },
+  "missing_capture_files": [],
+  "fault39_operator_matrix": [
+    {
+      "version": "8.5.1",
+      "status_b": "PASS",
+      "status_f": "PASS",
+      "profile": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+      "off_exact": true,
+      "input_unchanged": true,
+      "verdict": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+      "statistics_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "first_difference": {
+        "step": 0,
+        "relative_path": "observation/step0/rank0",
+        "identity": "Torch.matmul.0.forward/output/0",
+        "record_index": 3,
+        "difference": {
+          "field": "/Max",
+          "reason": "STATISTIC_DIFFERS",
+          "baseline": -0.3359375,
+          "fault": "+Inf"
+        },
+        "earlier_steps_comparable": true,
+        "unobservable_fields_before_or_at_first": [
+          {
+            "index": 0,
+            "identity": "Torch.matmul.0.forward/input_args/0",
+            "field": "/Mean"
+          },
+          {
+            "index": 0,
+            "identity": "Torch.matmul.0.forward/input_args/0",
+            "field": "/Norm"
+          },
+          {
+            "index": 1,
+            "identity": "Torch.matmul.0.forward/input_args/1",
+            "field": "/Mean"
+          },
+          {
+            "index": 1,
+            "identity": "Torch.matmul.0.forward/input_args/1",
+            "field": "/Norm"
+          },
+          {
+            "index": 2,
+            "identity": "Torch.matmul.0.forward/input_kwargs/out",
+            "field": "/Mean"
+          },
+          {
+            "index": 2,
+            "identity": "Torch.matmul.0.forward/input_kwargs/out",
+            "field": "/Norm"
+          }
+        ]
+      }
+    },
+    {
+      "version": "9.0.0",
+      "status_b": "PASS",
+      "status_f": "PASS",
+      "profile": "11db8ad490fa999e0d822668e23d4d6dec096edbeb2500b7d630b488d0f56442",
+      "off_exact": true,
+      "input_unchanged": true,
+      "verdict": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+      "statistics_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "first_difference": {
+        "step": 0,
+        "relative_path": "observation/step0/rank0",
+        "identity": "Torch.matmul.0.forward/output/0",
+        "record_index": 3,
+        "difference": {
+          "field": "/Max",
+          "reason": "STATISTIC_DIFFERS",
+          "baseline": -0.3359375,
+          "fault": "+Inf"
+        },
+        "earlier_steps_comparable": true,
+        "unobservable_fields_before_or_at_first": [
+          {
+            "index": 0,
+            "identity": "Torch.matmul.0.forward/input_args/0",
+            "field": "/Mean"
+          },
+          {
+            "index": 0,
+            "identity": "Torch.matmul.0.forward/input_args/0",
+            "field": "/Norm"
+          },
+          {
+            "index": 1,
+            "identity": "Torch.matmul.0.forward/input_args/1",
+            "field": "/Mean"
+          },
+          {
+            "index": 1,
+            "identity": "Torch.matmul.0.forward/input_args/1",
+            "field": "/Norm"
+          },
+          {
+            "index": 2,
+            "identity": "Torch.matmul.0.forward/input_kwargs/out",
+            "field": "/Mean"
+          },
+          {
+            "index": 2,
+            "identity": "Torch.matmul.0.forward/input_kwargs/out",
+            "field": "/Norm"
+          }
+        ]
+      }
+    },
+    {
+      "version": "9.1.0",
+      "status_b": "PASS",
+      "status_f": "PASS",
+      "profile": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+      "off_exact": true,
+      "input_unchanged": true,
+      "verdict": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+      "statistics_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "first_difference": {
+        "step": 0,
+        "relative_path": "observation/step0/rank0",
+        "identity": "Torch.matmul.0.forward/output/0",
+        "record_index": 3,
+        "difference": {
+          "field": "/Max",
+          "reason": "STATISTIC_DIFFERS",
+          "baseline": -0.3359375,
+          "fault": "+Inf"
+        },
+        "earlier_steps_comparable": true,
+        "unobservable_fields_before_or_at_first": [
+          {
+            "index": 0,
+            "identity": "Torch.matmul.0.forward/input_args/0",
+            "field": "/Mean"
+          },
+          {
+            "index": 0,
+            "identity": "Torch.matmul.0.forward/input_args/0",
+            "field": "/Norm"
+          },
+          {
+            "index": 1,
+            "identity": "Torch.matmul.0.forward/input_args/1",
+            "field": "/Mean"
+          },
+          {
+            "index": 1,
+            "identity": "Torch.matmul.0.forward/input_args/1",
+            "field": "/Norm"
+          },
+          {
+            "index": 2,
+            "identity": "Torch.matmul.0.forward/input_kwargs/out",
+            "field": "/Mean"
+          },
+          {
+            "index": 2,
+            "identity": "Torch.matmul.0.forward/input_kwargs/out",
+            "field": "/Norm"
+          }
+        ]
+      }
+    },
+    {
+      "version": "9.2.0",
+      "status_b": "PASS",
+      "status_f": "PASS",
+      "profile": "daa0c9f3c3a34605b1bebcd6bb4c85033b6112a04e468673ea2ff3f1821eed54",
+      "off_exact": true,
+      "input_unchanged": true,
+      "verdict": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+      "statistics_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "first_difference": {
+        "step": 0,
+        "relative_path": "observation/step0/rank0",
+        "identity": "Torch.matmul.0.forward/output/0",
+        "record_index": 3,
+        "difference": {
+          "field": "/Max",
+          "reason": "STATISTIC_DIFFERS",
+          "baseline": -0.3359375,
+          "fault": "+Inf"
+        },
+        "earlier_steps_comparable": true,
+        "unobservable_fields_before_or_at_first": [
+          {
+            "index": 0,
+            "identity": "Torch.matmul.0.forward/input_args/0",
+            "field": "/Mean"
+          },
+          {
+            "index": 0,
+            "identity": "Torch.matmul.0.forward/input_args/0",
+            "field": "/Norm"
+          },
+          {
+            "index": 1,
+            "identity": "Torch.matmul.0.forward/input_args/1",
+            "field": "/Mean"
+          },
+          {
+            "index": 1,
+            "identity": "Torch.matmul.0.forward/input_args/1",
+            "field": "/Norm"
+          },
+          {
+            "index": 2,
+            "identity": "Torch.matmul.0.forward/input_kwargs/out",
+            "field": "/Mean"
+          },
+          {
+            "index": 2,
+            "identity": "Torch.matmul.0.forward/input_kwargs/out",
+            "field": "/Norm"
+          }
+        ]
+      }
+    }
+  ],
+  "provider33_native_launch": [
+    {
+      "arm": "baseline",
+      "status": "PASS_NATIVE_LAUNCH",
+      "actual_launches": 140,
+      "stages": [
+        {
+          "stage": "warm_native",
+          "calls": 28,
+          "applied": 0,
+          "sinner": [
+            8192
+          ]
+        },
+        {
+          "stage": "native",
+          "calls": 84,
+          "applied": 0,
+          "sinner": [
+            8192
+          ]
+        },
+        {
+          "stage": "off_native",
+          "calls": 28,
+          "applied": 0,
+          "sinner": [
+            8192
+          ]
+        }
+      ],
+      "all_discovered_candidates_covered": true,
+      "off_exact": true,
+      "repeat_stable": true,
+      "changed": false,
+      "logits_max_abs": 0.0,
+      "top1_equal": true,
+      "matching_layers": 28,
+      "requests_per_call": 8,
+      "kernel_argument_raw_observed": false,
+      "public_host_raw_observed": true,
+      "independent_binding": [
+        "call_id",
+        "pid",
+        "tid",
+        "monotonic_begin",
+        "actual_launch",
+        "sdk_bmm"
+      ],
+      "enter_marker_scope_token_recorded": false
+    },
+    {
+      "arm": "fault",
+      "status": "PASS_NATIVE_LAUNCH",
+      "actual_launches": 140,
+      "stages": [
+        {
+          "stage": "warm_native",
+          "calls": 28,
+          "applied": 0,
+          "sinner": [
+            8192
+          ]
+        },
+        {
+          "stage": "native",
+          "calls": 84,
+          "applied": 84,
+          "sinner": [
+            1024
+          ]
+        },
+        {
+          "stage": "off_native",
+          "calls": 28,
+          "applied": 0,
+          "sinner": [
+            8192
+          ]
+        }
+      ],
+      "all_discovered_candidates_covered": true,
+      "off_exact": true,
+      "repeat_stable": true,
+      "changed": true,
+      "logits_max_abs": 0.02734375,
+      "top1_equal": true,
+      "matching_layers": 28,
+      "requests_per_call": 8,
+      "kernel_argument_raw_observed": false,
+      "public_host_raw_observed": true,
+      "independent_binding": [
+        "call_id",
+        "pid",
+        "tid",
+        "monotonic_begin",
+        "actual_launch",
+        "sdk_bmm"
+      ],
+      "enter_marker_scope_token_recorded": false
+    }
+  ],
+  "builds": {
+    "build-851-a5/build_manifest.json": {
+      "sha256": "08f8a109897b672fbf7717a50f9aa7d94494d198b3b3d6e63695cc7fa5c014e7",
+      "manifest": {
+        "schema": "fault39.native.build_manifest.v1",
+        "profile_sha256": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+        "status": "PASS_CPU_BUILD_ONLY",
+        "actual_npu_calls": 0,
+        "files": {
+          "libfault39_native_v1.so": "43fa7b69b2fb7fea5e2d4c79288678c72873eddf211e5d32ff971acc3c3a3543",
+          "libopapi.so": "f0d5b161a733f4fe672f5546719f5cc00c401799d493361dd3fafd399028590a",
+          "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+          "version_profile.json": "9b3e3a4f29552b4355312a528135962b9c14821c464c0b4c0974c0a8834689bd",
+          "abi_facts.json": "9e0434cddcc4904842985a5d0cc41b15d4b88db5bbd94f8d68ed9ac14081cd21",
+          "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+          "libopapi_nn.so": "cd81d35557822a22f31a25b3488288a20f6c18717ad9cb31cb45408e8b06050b",
+          "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0"
+        }
+      }
+    },
+    "build-90-a5/build_manifest.json": {
+      "sha256": "a7bf3a770021544c73d53c5ac106b02a7c9d0826da405e200d5c0a1dfffbadff",
+      "manifest": {
+        "schema": "fault39.native.build_manifest.v1",
+        "profile_sha256": "11db8ad490fa999e0d822668e23d4d6dec096edbeb2500b7d630b488d0f56442",
+        "status": "PASS_CPU_BUILD_ONLY",
+        "actual_npu_calls": 0,
+        "files": {
+          "libfault39_native_v1.so": "6a02bb856e703248c88aba6bf31dc7c8f603f4d44228150a14657130c80f2fc0",
+          "libopapi.so": "326d93accd044081633ceec0a471b32421af8fa9938c4ff6faf8eb3670482f48",
+          "real/libopapi_real.so": "de28a62587a8cb137d376fb476f05b97288e66e43881cad7722d3a4fe69ea394",
+          "version_profile.json": "b90e5091f453590b0594ba33af3850994f4d497301875cccc9ea4f2bbf3741b5",
+          "abi_facts.json": "9e0434cddcc4904842985a5d0cc41b15d4b88db5bbd94f8d68ed9ac14081cd21",
+          "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+          "libopapi_nn.so": "5255f22970f284c2101c1cfbf30f5118ef372db094a482426d1d5d6fb49a29e0",
+          "real/libopapi_nn_real.so": "a76558eb4d2427cb4ebe35d15e291cc3ffaaf95d754de0664ac5329827724922"
+        }
+      }
+    },
+    "build-91-a5/build_manifest.json": {
+      "sha256": "c5e12d99f511fd7e34132a926a46965f0d06df1e105cd1ecf94a41897f4c412e",
+      "manifest": {
+        "schema": "fault39.native.build_manifest.v1",
+        "profile_sha256": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+        "status": "PASS_CPU_BUILD_ONLY",
+        "actual_npu_calls": 0,
+        "files": {
+          "libfault39_native_v1.so": "6ba27381807618e93e78effce3ddea8b4d40fdf9e6f20f3bd35ba184e7cfa0e3",
+          "libopapi.so": "d2919c40835b5215785b699d551a0548c1afb83eddee30452f60410a0e42d6ef",
+          "real/libopapi_real.so": "b66f263aef3cd41c0b3d09212fd3deef24cd714e9ae208e8fb3ffca483d0fc64",
+          "version_profile.json": "b1d6525f846ce0547cc025502665dcfed0398a9cf99e8570f77cefee4f4fa8da",
+          "abi_facts.json": "9e0434cddcc4904842985a5d0cc41b15d4b88db5bbd94f8d68ed9ac14081cd21",
+          "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+          "libopapi_nn.so": "3b82bff91dd08f2cdbd71d21f9e791af88be3ed0665eed36ee3bd860949a0229",
+          "real/libopapi_nn_real.so": "580d60e07db24062c214abbe5fd5c822b7e470442d5e2929738bbc8b256d03b9"
+        }
+      }
+    },
+    "build-92-a5/build_manifest.json": {
+      "sha256": "302e8d07b415107c35ceceaf357b9c127da30a9860b45e98677a33e18d5b2f8a",
+      "manifest": {
+        "schema": "fault39.native.build_manifest.v1",
+        "profile_sha256": "daa0c9f3c3a34605b1bebcd6bb4c85033b6112a04e468673ea2ff3f1821eed54",
+        "status": "PASS_CPU_BUILD_ONLY",
+        "actual_npu_calls": 0,
+        "files": {
+          "libfault39_native_v1.so": "7f02c88f3c734f31e149096b2ad1459f2907cbb0aa3ae555fa7049122527e546",
+          "libopapi.so": "ca4db682352baae81f18017ae829d2cf1d60e641d75f8d3fc7e180c6fd0db917",
+          "real/libopapi_real.so": "43bd7d4d17ba4b33b05146ebbc198075b84294fcfd35bc6c9bfff938405c7a6f",
+          "version_profile.json": "0f15ebf25de92cadfafb2ffc9307f5f4b5a64487b3c879b7f00d308682ee2401",
+          "abi_facts.json": "9e0434cddcc4904842985a5d0cc41b15d4b88db5bbd94f8d68ed9ac14081cd21",
+          "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+          "libopapi_nn.so": "a21740cd02fa858345528ee795b5b235f77453ad4c3dcb61a2271e1953332b97",
+          "real/libopapi_nn_real.so": "65c3d618e20fe6c3f3f181b6245d847b7c364971417eb50d679b11eb08d2f5c1"
+        }
+      }
+    },
+    "build20-a1/build.json": {
+      "sha256": "9fbf0e3a851a0505682b27ff9655549217ff7184a3bc57cbe65cf705553827a0",
+      "manifest": {
+        "mechanism": "20.buffer_substitute",
+        "variant": "v17_mantissa",
+        "files": {
+          "libdcat20.so": "47f582568322aacaf4fb0cfc094b2558ab3c72472e9088f0645cd601389fdf4b",
+          "libopapi.so": "8276a6c9cb588e2ad56918e6efc852608ea06622a99ad7af549649fc40803f28",
+          "libopapi_nn.so": "35f8d494885bcfd0121f98d994bd3c2173fd9c461b95cf1d1c3df45fb98914ed",
+          "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+          "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996"
+        }
+      }
+    },
+    "build26-a2/build.json": {
+      "sha256": "35fd0bc079986a6d31616a7639624e54833e66309590d383763e3e0731cb6934",
+      "manifest": {
+        "schema": "demoncat.native26.deployment.v1",
+        "files": {
+          "libcust_opapi.so": "efc84d1913ca523d2d3909e0a22ae9b152071f0eedcbd1d73c65727b9a4419c6",
+          "libfault26_readonly_trace_abi0.so": "33450a69ce79df52225cf68ccaf1e531d801438db9447b18f0a090027d114e1f",
+          "libfault26_fia_writer_proxy_abi0.so": "aafd2a6ffa7691950beabe5606a839d9dcfbe6007ddeb2bc257a5a404d401742",
+          "libfault26_fia_opapi_proxy.so": "fef82446f3a89b3f8bae646b08a1e554422f005144dd663e46c70c223c4ec854",
+          "libopapi.so": "fbb6452c8533c97b4b871deb487d5a83a026979b7f977905f6a22d77a2985866",
+          "libfault26_qmm_output_underflow_abi0.so": "b17068d24ce2004938f69e3d94dd20d86c2e04ffff6f817ef6c071d428dbdcbc",
+          "libopapi_nn.so": "93c16a69debd35ca90c7c95a4fc9a4c919df83cc19a31a1341d9a8c44533cdb7",
+          "real/libcust_opapi_real.so": "28765842049552da1a8723f0f733f326a1014c1b0441b2f384e0f0b9f71f38ca",
+          "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+          "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996"
+        }
+      }
+    },
+    "quant-scoped-a1/runtime/build.json": {
+      "sha256": "56492164a38f982f834270eeacd41fd8d71d3ad6d31d8ee0e2b698c41fcfaa07",
+      "manifest": {
+        "schema": "demoncat.quant.thread_scope.v1",
+        "command": [
+          "g++",
+          "-std=c++17",
+          "-O2",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-fPIC",
+          "-shared",
+          "/work/quant-scoped-a1/native_backend.cpp",
+          "-I/usr/local/Ascend/cann-9.1.0/include",
+          "-L/usr/local/Ascend/cann-9.1.0/lib64",
+          "-lascendcl",
+          "-lnnopbase",
+          "-ldl",
+          "-pthread",
+          "-Wl,-z,defs",
+          "-Wl,-soname,libcust_opapi.so",
+          "-o",
+          "/work/quant-scoped-a1/runtime/vendor/op_api/lib/libcust_opapi.so"
+        ],
+        "source_sha256": "e172c3c2fa0f7122f143e2b7b215c6a20a74331789540c6613a36ba15d58e414",
+        "library_sha256": "cbbc7896d9a0f7e5f1c0c81e24eec8d98921f263126cf1c10a88402686ddcdd1",
+        "parent_native_sha256": "895e635d4674dae95c03869bb9da4d66617519ea056f5e2b4c671bf7e3c9675c",
+        "control_sha256": "5ce739c4272840f110044cfe898827fe403b5730273258e8ba0eda437685b38c"
+      }
+    }
+  }
+}

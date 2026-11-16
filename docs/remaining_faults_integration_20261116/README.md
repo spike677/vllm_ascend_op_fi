@@ -1,5 +1,10 @@
 # 其余15个机制：统一接入与验收边界
 
+后续更新：5条部署 provider 已新增实际实现及124推理测试，最新范围与限制见
+[provider验收总结](../../experiments/provider_adaptation_20261116/README.md)和
+[`fault_injection/catalog.py`](../../fault_injection/catalog.py)。下文的CPU回执与旧状态表
+保留首次整合时的范围，不作为新版provider的当前验收结论。
+
 本轮以已发布 Fault39 提交 `c1f5726a` 为基线，只整理其余机制。
 原工作区、Fault39实现及统计、历史实验与原生源码均不覆盖。
 旧统一实现以 [导入清单](import_manifest.json) 保存文件身份；FA策略框架的31份源码/资源

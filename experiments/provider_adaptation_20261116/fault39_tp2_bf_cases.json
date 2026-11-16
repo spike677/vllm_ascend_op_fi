@@ -1,0 +1,56 @@
+[
+  {
+    "id": "model_baseline",
+    "tool": "vllm_validate.py",
+    "args": [
+      "--model",
+      "/model",
+      "--stage",
+      "pattern",
+      "--target-policy",
+      "max_k_min_m_unique",
+      "--max-tokens",
+      "4",
+      "--capture-steps",
+      "2",
+      "--capture-group",
+      "baseline",
+      "--lossless-receipt",
+      "/validation/lossless.json",
+      "--output",
+      "/evidence/validation",
+      "--tp",
+      "2",
+      "--ranks",
+      "0",
+      "1"
+    ]
+  },
+  {
+    "id": "model_fault",
+    "tool": "vllm_validate.py",
+    "args": [
+      "--model",
+      "/model",
+      "--stage",
+      "pattern",
+      "--target-policy",
+      "max_k_min_m_unique",
+      "--max-tokens",
+      "4",
+      "--capture-steps",
+      "2",
+      "--capture-group",
+      "fault",
+      "--lossless-receipt",
+      "/validation/lossless.json",
+      "--output",
+      "/evidence/validation",
+      "--tp",
+      "2",
+      "--ranks",
+      "0",
+      "1"
+    ]
+  }
+]

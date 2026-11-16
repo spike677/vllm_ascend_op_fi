@@ -11,10 +11,17 @@ symbols, shared memory, routes, or global reload/reset are included.
 `bash build.sh --cpu-test` compiles mathematical, layout, bound, alias, pattern,
 padding-preservation, and finite/nonfinite observer tests without CANN. A plain
 `bash build.sh` additionally builds the aarch64 ABI0 interposer and metadata
-proxy against the real 8.5.1 installation. `FAULT39_ASCEND_TOOLKIT`,
-`FAULT39_REAL_LIBOPAPI`, and `FAULT39_OUTPUT_DIR` select paths; a 9.1 installation
-cannot be enabled by changing an expected-path string. The default toolkit is
-`/usr/local/Ascend/cann-8.5.1/aarch64-linux`; `pkg_inc` is required.
+proxy against the selected real installation. `FAULT39_ASCEND_TOOLKIT`,
+`FAULT39_REAL_LIBOPAPI`, and `FAULT39_OUTPUT_DIR` select paths. Toolkit selection
+defaults to `ASCEND_HOME_PATH`, then `/usr/local/Ascend/ascend-toolkit/latest`.
+Use a new output directory for every build. No toolkit-version string is an
+allowlist: missing declarations/symbols or mixed installations are refused.
+The runtime/proxies compare exact loaded code and file hashes to their generated
+`version_profile.json`; they cannot be reused with another toolkit's libraries.
+Successful identity checks pin those existing library mappings until process
+exit. Keep the build/libraries immutable and restart workers for any upgrade.
+See [the actual 8.x/9.x matrix](../docs/cann_version_adaptation.md). New-version
+CPU builds do not inherit the historical real discovery/lossless acceptance.
 
 The build produces `libfault39_native_v1.so`, `libopapi.so`, and
 `real/libopapi_real.so`. The first must be preloaded into the actual worker, and
@@ -88,6 +95,6 @@ Finite min/max/max_abs/mean_abs are null if no finite elements were observed.
 The production runtime has no fake NPU backend. CPU tests validate only the
 pure transformation and validation core, not vendor ABI compatibility, actual
 worker interception, device stream lifetime, or intermediate overflow location.
-Those require root-controlled live 8.5.1 validation. A nonfinite result after
+Those require separately authorized live validation of each exact build. A nonfinite result after
 the mathematically zero cancellation construction is evidence of an
 intermediate-range failure, not proof of a specific accumulator implementation.

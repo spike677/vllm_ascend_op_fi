@@ -1,4 +1,4 @@
-"""Blue-area vLLM 0.18 validation extension, not the unseen internal controller.
+"""Blue-area vLLM 0.18/0.23 validation extension, not the unseen internal controller.
 
 The original worker is not subclassed or replaced. Its extension RPC installs
 an ownership-scoped wrapper on the *actual* model runner after initialization.

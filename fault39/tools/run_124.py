@@ -14,6 +14,7 @@ import re
 import stat
 import subprocess
 import time
+from deployment_profile import verify_build
 
 IMAGE = 'quay.io/ascend/vllm-ascend:v0.18.0'
 LABEL = 'dcat.task=fault39-20261116'
@@ -108,7 +109,9 @@ def main():
     p.add_argument('--model', type=Path, default=Path('/home/gyl/models/Qwen3-0.6B'))
     p.add_argument('--lossless-receipt', type=Path)
     p.add_argument('--timeout', type=int, default=900)
+    p.add_argument('--image', default=IMAGE, help='Image containing the exact toolkit used by this build')
     a = p.parse_args()
+    profile=verify_build(a.native)
     cases = json.loads(a.cases.read_text())
     if not isinstance(cases, list) or not 1 <= len(cases) <= 8 or len(set(a.cards)) != len(a.cards):
         p.error('Require 1..8 cases and distinct cards')
@@ -119,9 +122,27 @@ def main():
             p.error('Arguments must be strings')
     a.attempt.mkdir(parents=True, exist_ok=False)
     receipt = {'schema': 'fault39.runner.v1', 'source_manifest_sha256': verify_source(a.source),
-               'image': IMAGE, 'cards': a.cards, 'cases': [], 'status': 'PREPARING'}
+               'image': a.image, 'cards': a.cards, 'cases': [], 'status': 'PREPARING',
+               'build_profile_sha256':profile['profile_sha256'],
+               'cann_version':profile['installation']['ascend_toolkit_install.info']['version']}
     def save():
         (a.attempt / 'controller.json').write_text(json.dumps(receipt, indent=2))
+    save()
+    # CPU-only preflight: reject a mixed toolkit before granting any device.
+    # The image's device-enabling runtime/entrypoint is deliberately bypassed.
+    preflight=['docker','run','--rm','--runtime=runc','--network','none','--label',LABEL,
+               '-e','ASCEND_VISIBLE_DEVICES=void',
+               '--mount','type=bind,src='+str(a.source.resolve())+',dst=/source,readonly',
+               '--mount','type=bind,src='+str(a.native.resolve())+',dst=/native,readonly',
+               '--entrypoint','/bin/bash',a.image,'-c','source "$1" >&2; shift; exec python3 "$@"',
+               'fault39-preflight',profile['environment_script']['path'],'/source/fault39/tools/deployment_profile.py',
+               '--native','/native','--verify-installed','--verify-environment']
+    try:
+        preflight_result=subprocess.run(preflight,text=True,capture_output=True,timeout=120,check=True)
+        receipt['installed_preflight']=json.loads(preflight_result.stdout)
+        receipt['environment_setup_log']=preflight_result.stderr
+    except Exception as error:
+        receipt['status']='BUILD_IMAGE_MISMATCH';receipt['preflight_error']=str(error);save();return 2
     save()
     with open('/var/tmp/fault22_npu_2_5.lock', 'a') as lock:
         try:
@@ -141,13 +162,15 @@ def main():
                 args += ['--device', '/dev/davinci' + str(card)]
             for dev in ('davinci_manager', 'devmm_svm', 'hisi_hdc'):
                 args += ['--device', '/dev/' + dev]
-            for src, dst, ro in [(a.source, '/source', True), (a.native, '/native', True),
-                                 (a.native / 'libopapi_nn.so', '/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so', True),
+            mounts=[(a.source, '/source', True), (a.native, '/native', True),
                                  (out, '/evidence', False), (a.model, '/model', True),
                                  (Path('/usr/local/Ascend/driver'), '/usr/local/Ascend/driver', True),
                                  (Path('/usr/local/dcmi'), '/usr/local/dcmi', True),
                                  (Path('/dev/null'), '/etc/ld.so.preload', True),
-                                 (Path('/home/batch-scale-dynamic-msprobe-20261023/python_packages'), '/msprobe_packages', True)]:
+                                 (Path('/home/batch-scale-dynamic-msprobe-20261023/python_packages'), '/msprobe_packages', True)]
+            if profile['proxy_layout']=='main_and_nn':
+                mounts.append((a.native/'libopapi_nn.so',profile['toolkit']+'/lib64/libopapi_nn.so',True))
+            for src, dst, ro in mounts:
                 args += ['--mount', 'type=bind,src=' + str(src.resolve()) + ',dst=' + dst + (',readonly' if ro else '')]
             # Device cgroups expose only the selected physical devices. The
             # driver enumerates them as logical 0..N-1; physical IDs here are
@@ -160,9 +183,9 @@ def main():
                 args += ['--mount', 'type=bind,src=' + str(a.lossless_receipt.resolve()) + ',dst=/validation/lossless.json,readonly']
             for key, value in env.items():
                 args += ['-e', key + '=' + value]
-            # Preserve the image's matched 8.5.1 dependencies after our two prefixes.
-            entry = 'unset ASCEND_RT_VISIBLE_DEVICES; export LD_PRELOAD=/native/libfault39_native_v1.so:/native/libopapi.so; export LD_LIBRARY_PATH=/native:$LD_LIBRARY_PATH; export PYTHONPATH=/source/fault39/src:/msprobe_packages:$PYTHONPATH; exec python3 "$@"'
-            args += ['--entrypoint', '/bin/bash', IMAGE, '-c', entry, 'fault39', '/source/fault39/tools/' + case['tool'], *case['args']]
+            # Preserve the selected image's matched dependencies after our prefixes.
+            entry = 'source "$1"; shift; unset ASCEND_RT_VISIBLE_DEVICES; export LD_PRELOAD=/native/libfault39_native_v1.so:/native/libopapi.so; export LD_LIBRARY_PATH=/native:$LD_LIBRARY_PATH; export PYTHONPATH=/source/fault39/src:/msprobe_packages:$PYTHONPATH; exec python3 "$@"'
+            args += ['--entrypoint', '/bin/bash', a.image, '-c', entry, 'fault39', profile['environment_script']['path'], '/source/fault39/tools/' + case['tool'], *case['args']]
             item['command'] = args; item['started_utc'] = datetime.now(timezone.utc).isoformat(); save()
             print(json.dumps({'status': 'CASE_START', 'id': case['id'], 'cards': a.cards}), flush=True)
             try:

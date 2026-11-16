@@ -1,0 +1,68 @@
+[
+  {
+    "id": "provider20_model_baseline",
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a3",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build20-a1",
+        "/native",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build20-a1/libopapi_nn.so",
+        "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so",
+        "ro"
+      ],
+      [
+        "/home/gyl/models/Qwen3-0.6B",
+        "/model",
+        "ro"
+      ]
+    ],
+    "env": {
+      "FAULT20_BUFFER_LOG_PATH": "/evidence/buffer.jsonl",
+      "FAULT20_METADATA_LOG_PATH": "/evidence/metadata.jsonl",
+      "FAULT20_API_INVENTORY": "1"
+    },
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh; export LD_PRELOAD=/native/libdcat20.so:/native/libopapi.so; export LD_LIBRARY_PATH=/native:$LD_LIBRARY_PATH; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python3 /source/experiments/provider_adaptation_20261116/probe20.py --arm baseline --model /model",
+    "timeout": 900
+  },
+  {
+    "id": "provider20_model_fault",
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "mounts": [
+      [
+        "/home/provider-adaptation-20261116/provider-source-a3",
+        "/source",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build20-a1",
+        "/native",
+        "ro"
+      ],
+      [
+        "/home/provider-adaptation-20261116/build20-a1/libopapi_nn.so",
+        "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so",
+        "ro"
+      ],
+      [
+        "/home/gyl/models/Qwen3-0.6B",
+        "/model",
+        "ro"
+      ]
+    ],
+    "env": {
+      "FAULT20_BUFFER_LOG_PATH": "/evidence/buffer.jsonl",
+      "FAULT20_METADATA_LOG_PATH": "/evidence/metadata.jsonl",
+      "FAULT20_API_INVENTORY": "1"
+    },
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh; export LD_PRELOAD=/native/libdcat20.so:/native/libopapi.so; export LD_LIBRARY_PATH=/native:$LD_LIBRARY_PATH; export PYTHONPATH=/source:/source/experiments/provider_adaptation_20261116:/msprobe_packages:$PYTHONPATH; exec python3 /source/experiments/provider_adaptation_20261116/probe20.py --arm fault --model /model",
+    "timeout": 900
+  }
+]
