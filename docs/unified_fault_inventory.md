@@ -1,5 +1,7 @@
 # 本地故障能力清单与自动适配边界
 
+[文档索引](README.md) · [9171f3b 全局审计](#9171f3b-全局审计)
+
 核查日期：2026-11-16。本文是本地源码与既有验收记录的整理，不是一次新的 NPU 验收。历史冻结源码、采集文件和编号不在本轮改写。
 
 以下资产表保留旧实现/证据的边界。本轮新增适配器（含17/18重新实现）及当前接入状态单独列在[统一机制与验收范围](unified_mechanisms_20261116.md)，不能把新CPU验证回填成旧NPU验收。
@@ -74,3 +76,164 @@ Attention 的公共注册与模型支持分开检查：
 `fault27_alias_detach_20261028` 是故障15的历史单次资产别名，不新增一个不同的“27能力”。正确编号在目录索引中更正即可，原schema、hash、源码字节保持原样。
 
 故障28的合法切分控制与 `28.fia.denominator_replay` 分别注册、分别展示验收；33的分页decode不能复用28的prefill合同。新通用接口的版本、结构测试及未来NPU报告独立保存，不回填历史冻结manifest或把旧模型通过记录推广到新的模型。
+
+## 9171f3b 全局审计
+
+生产接线分支新增机器可读的 `audit`，沿用同一机制目录、宿主导出和拒绝路径。每条记录列出源文件、合同、实际部署入口、证据级别与作用域及缺口标签。详见[本分支对账与验收](../experiments/production_wiring_20261116/README.md)。
+
+### 审查范围
+
+| 对象 | 本轮定位 |
+| --- | --- |
+| Git 公共目录 | `C:/Users/admin/Documents/demoncatpfi/.git` |
+| 发布审计工作树 | `.publish/native-provider-adaptation-20261116`，`codex/native-provider-adaptation`，HEAD `9171f3bacd78b1550cc39cc74e126e3a13cfdb07`。审计前已有未跟踪实验记录，已跟踪内容与提交一致。 |
+| 本地原型 | `.publish/auto-adaptation-20261116`，`codex/auto-adaptation-20261116`，HEAD `052db5c1db1ab9ea6b85eb9ce5020d8a95e3ac4d`，有未提交实现和证据。包含 QualifiedNativeSession、MatMul/QMM 回调、CandidateSet 和覆盖报告，具备本地 CPU/主机测试。 |
+| 父工作树 | `fault28-native-fa-publish/demoncatpfi`，`codex/unified-model-injection-20261116`，HEAD `1eba3308c0cd274825fd777d0a4b6e703560f510`，有未提交实现和实验记录。 |
+
+本轮检验为本地审计。发布提交、相关部署工作树和可见的本地项目副本均未找到黄区当前的 `src/demoncat`。正式宿主版本、现有 CLI 命令及真实 Controller/Worker API 是实施输入。蓝区 CLI 提供 `catalog` 和 `host-manifest` 两个只读命令。[发布 CLI](../fault_injection/__main__.py) · [宿主合同](remaining_faults_integration_20261116/README.md#内源项目接线契约)
+
+17 个目录变体对应 15 条 `model_fault.<机制 ID>` 统一宿主合同、1 条 `fault39.native.matmul` 独立宿主合同及 1 个缺合同的输出代理。15 条统一合同中，5 条由会话构造适配器，5 条经部署 Provider，5 条没有统一可执行会话。两条 `39.*` 均在发布版 `ModelFaultBackend` 配置入口之外。所有宿主合同的正式接线状态为 `INNER_FRAMEWORK_INTEGRATION_PENDING`。[统一导出](../fault_injection/integration.py) · [Fault39 独立合同](../fault39/src/demoncat_fault39/contracts.py)
+
+### 面板 A · 17 条机制能力矩阵
+
+I = `IMPLEMENTED`，C = `CPU_VERIFIED`，N = `NATIVE_VERIFIED`，M = `MODEL_VERIFIED`。这些标记仅属于单元格所指路径。17 条的 `PRODUCTION_INTEGRATED` 均待验收。新统一入口的 `COVERAGE_VERIFIED` 需有独立分母、全量命中和整组恢复。目前只有下表所列的限定场景证据。
+
+| 变体 | 发布范围 | 历史或独立实机 | 恢复与本阶段缺口 |
+| --- | --- | --- | --- |
+| `8.restore_offset` | 合同，证据入口 | 历史 N/M | 历史新进程恢复。缺可复用 worker、真实路由与请求归属。P5 |
+| `15.alias_detach` | I/C，公开视图 API | 历史 N，机制级 | 退出包装。缺自然模型中的写入、原 base 消费和 native 内部调用。P5 |
+| `17.spatial_padding` | I/C，标准 Conv3d | 历史 N/M，独立视觉试验 | CPU 清理后输出恢复。缺新入口真实视觉链与 NPU 恢复。P5 |
+| `18.api_half` | I/C，标准 RMSNorm | 历史 N/M，API 增益代理 | CPU 清理后输出恢复。旧实机只确认 wrapper 恢复，缺新入口的实际调用和 OFF 数值。P5 |
+| `20.buffer_substitute` | I/C/N/M，发布 MatmulWeightNz | 历史 QMM 另有证据 | 发布双模型同进程 OFF。P1 生产接线，P3 新 QMM 独立实测。 |
+| `22.wrong_row` | 合同，证据入口 | 历史 N/M，固定 RoPE | 旧 wrapper 移除后新请求恢复。缺复用 worker、缓存和消费者绑定。P5 |
+| `25.reduce_scatter` | 合同，待实现 | 待验 | 缺真实 collective 执行、进程组、rank 对齐和 drain。P5 |
+| `26.residual_stomp` | I/C/N/M，发布 QMM | 旧邻接原生试验 | 发布 45 次/rank，消费、恢复完成。rank1 step0 独立首差受 NaN 阻断。P3 |
+| `26.fia_destination` | I/C/N/M，发布 FIA V3 | 旧 writer 试验 | 发布 126 次/rank 有消费与恢复，首层按条件透传。仍缺新布局、跨阶段和失败场景。P3 |
+| `quant.batch_shared_scale` | I/C/N/M，发布固定 decode | 旧量化后端证据 | 同进程 OFF 精确。缺动态调度及多 eligible 模块的行映射。P3 |
+| `28.fa.legal_tiling` | 独立策略 I/C/N/M，统一会话待接 | 固定 FA S1S2 证书 | 旧 scope 恢复。缺普通模型 forward 到策略、请求和 launch 的绑定。P5 |
+| `28.fia.legal_tiling` | I/C，统一 Attention 路由 | 历史 N/M，合法候选数值差异 | 旧固定模型 OFF。新路由缺 NPU launch，对应旧模型 0.1% 统计阈值未达标。P5 |
+| `28.fia.denominator_replay` | I/C，统一 Attention 路由 | 历史 N/M，独立算术变体通过 | 旧重启及 OFF。需复查新路由实际 replay key 和恢复。P5 |
+| `33.paged_decode` | I/C/N/M，发布固定 teacher decode | 旧固定布局及模型实验 | 28 层 × 3 次切分，独立 launch 审计与 OFF。当前独立首差在下游。P3 |
+| `41.tail_column` | 合同，dispatcher 待查 | 旧尝试未命中目标 | 缺实际 writer、slot、storage、consumer 与恢复。P5 |
+| `39.matmul_range` | 独立 I/C/N/M，统一接线待做 | 具体四版本算子，部分模型 | 独立包 OFF。未发布 QualifiedNativeSession 仅本地 CPU/主机验证。P2 |
+| `39.output_proxy` | 通用桥，部署和宿主合同缺失 | 历史 N/M，返回代理 | 历史单点后新请求恢复。缺独立 Provider、写入合同和生产清理。P5 |
+
+### 逐项能力卡
+
+以下统一合同 ID 为 `model_fault.<变体>`。8、22、25、28 FA、41 的合同允许描述能力和拒绝原因。两条 39 的绑定见各自卡片。
+
+#### 8.restore_offset
+
+历史专用 worker 在 Qwen3-VL MoE TP2 eager 首次多 token prefill 中绑定真实请求和 owner 线程。实际 `npu_moe_token_unpermute` 使用配对替换的恢复 indices 和 top-k 权重，设备读回、同步和临时对象释放分别核对。历史 token combine 观察 48 次/rank，恢复使用新进程。发布通用入口缺 Worker、请求/路由映射和消费者证据。[历史原件说明](../artifacts/fault8/systemic_restore_offset_20260916/INJECTION_LOGIC.md)
+
+#### 15.alias_detach
+
+`attach` 使用 `AliasSession` 自动识别当前模型 owner 线程里的公开 `torch.as_strided`。F 将 NZ29 BF16 base 的 16×16 存储转成独立 format2 临时存储，目标 view 为 8×8、stride 16/1、offset 17。真实 `copy_` 后原 base 可丢失写回。旧试验 6 次目标、4 次透传。关闭还原包装，使用新 base 验证写回。缺模型自然写链、原 base 消费者和内部 native API 覆盖。[适配器](../fault_injection/alias.py)
+
+#### 17.spatial_padding
+
+`ModuleFaultSession` 按实际标准 Conv3d 对象、16×16 patch 及输入几何选点，调用原 `Functional.conv3d` 时将 padding (0,0,0) 改为 (0,7,7)，沿用原权重与 bias。当前在单 owner 模型 forward 内工作并移除 hook。CPU 真 Conv3d 回归已过。历史 Qwen3-VL TP2 视觉证据使用独立入口，需重新验证新入口真实图像、输出消费及 OFF。[适配器](../fault_injection/module_faults.py) · [历史视觉结果](../artifacts/fault17/spatial_padding_hw7_20260920/README.md)
+
+#### 18.api_half
+
+`ModuleFaultSession` 按标准 `nn.RMSNorm` 对象选点，在模块返回处乘 0.5，生成新张量。owner forward 结束后可撤销挂钩，CPU 已验证。历史 Qwen3-VL TP2 用 API 返回代理，native RMSNorm 记录可能先看到健康值。需在真实 NPU 路径区分算子返回与下游消费证据。[适配器](../fault_injection/module_faults.py) · [历史采集](../artifacts/fault18/systemic_api_half_20260915/README.md)
+
+#### 20.buffer_substitute
+
+发布路径是 `attach` + `Buffer20Runtime`，由 actual Linear 对象、当前 forward、typed GWS 和 `OpExecCache::Run` 的 live slot 选定 `aclnnMatmulWeightNz`。F 在独立临时 self 中截断尾数，沿用原 mat2、out 和真实 Run。CANN 8.5.1 试验使用 BF16 ND 输入、NZ29 权重、专用同步 Worker。同进程撤销后完整输出精确恢复。本地另有隔离的 QMM x1 与 WeightNz self 回调。新回调的资源、故障参数和 ABI/profile 单独验收。[部署适配器](../fault_injection/deployments/buffer20.py) · [实测](../experiments/provider_adaptation_20261116/README.md#推理范围与恢复)
+
+#### 22.wrong_row
+
+历史 Qwen3-32B W8A8 TP2 eager 按请求定位首次 prefill 的真实 RoPE。原 `aten.index_select.default` 返回后、消费者读取前，选取 BF16 结果的第 13 行并填入第 0 行值。独立返回存储及原输入/索引保护，单次受控命中。旧移除 wrapper 后新请求 token/text 恢复。需实现可复用 Worker、真实 cache/索引/消费的确认及拒绝路径。[历史边界](../artifacts/fault22/wrong_row_output_proxy_steps012_20260929/INJECTION_LOGIC.md)
+
+#### 25.reduce_scatter
+
+当前只读目录保留机制位。需要先确认实际 ReduceScatter API、executing rank、通信组及所有参与者的顺序和 dtype，再实现 dedicated native 干预、同步、退出和同输入恢复。调用、存储和实机证据均待建立。[能力目录](../fault_injection/catalog.py)
+
+#### 26.residual_stomp
+
+`Residual26WorkerExtension` 经已加载模型及 Provider 选择本 forward 的 AddRmsNormBias 残差。两块 live allocation 相邻时才在实际 QMM output-base 写入点启用，保存正常 out/padding，实际消费者后恢复残差。TP2 逐 rank 记账，相邻或 producer 证据不足时透传。现有 OFF 核对同引擎的 token/text/logprobs，独立首差限制见面板 C。[Provider](../fault_injection/deployments/residual26.py) · [Worker 接线](../fault_injection/deployments/residual26_worker.py)
+
+#### 26.fia_destination
+
+同一 Worker 生命周期按实际 Attention 对象选点。真实 FIA V3 的目标改绑到本 forward 的 live residual，正常输出复制回原 out，消费者真正读取后恢复受害存储。TP2 每 rank 两次没有当前 producer 的回调透传。基线 126 次为无损演练，F 126 次才是故障写入。已验证作用域内消费和恢复，后续需证明更宽 layout、缺消费者时的清理和异常退出。[Provider](../fault_injection/deployments/residual26.py) · [正式推理日志摘要](../experiments/provider_adaptation_20261116/validation_summary.json)
+
+#### quant.batch_shared_scale
+
+`QuantWorkerExtension` 在实际 runner/量化方法中选择首个 eligible 模块。真实 scheduler 校验请求、行、前缀和健康输入 SHA，再允许 DynamicQuantV2 将逐行归约变为共享尺度。TLS 绑定 owner，保留原输入。TP2/B8 pure decode，每 rank 3 次，移除后同进程精确 OFF。动态 batch、请求迁移和多模块传播需分别验证。[Worker 和 scheduler 检查](../fault_injection/deployments/batch_scale.py)
+
+#### 28.fa.legal_tiling
+
+`NativeStrategyBridge` 通过 `StrategySession` 按真实 `npu_fusion_attention_v3` S1S2 的参数、布局、合法切分证书及请求映射工作。改 host M/nRatio 后启动实际 kernel，各调用作用域退出后恢复原策略。已有固定 910B4/CANN9.1 试验，缺跨模型 forward 的统一挂接和新的 launch 证据。[策略桥](../fault_injection/strategy.py)
+
+#### 28.fia.legal_tiling
+
+`AttentionSession` 从共享注册表识别真实 Attention 对象，将满足私有 build、mask/scale 和 BNSD FP16 几何的调用交给 `FiaBackend`。合法切分在 M/S2 512→128 的健康模板间切换。当前 Python 包证据为路由和 host selector，实际 launch 需独立关联。会话退出还原注册与 config，旧证据固定 Qwen3、pre-fill shape 和图/eager 条件。[FIA 适配器](../fault_injection/fia.py)
+
+#### 28.fia.denominator_replay
+
+同一 `FiaBackend` 在 M128/S2=128 选择 replay key，使真实 kernel 的第二块重复首块分母贡献。输入 Q/K/V 保持原路由，单进程 owner scope 后恢复正常 key。历史 Qwen3 28 层、B8 三步首差是 FIA output Norm，变化约 0.7968%，有 OFF 与重启证据。新接线需对 actual key、完整输出和恢复重新关联。[FIA 适配器](../fault_injection/fia.py) · [冻结历史证据](https://github.com/spike677/vllm_ascend_op_fi/tree/f879af9bd19a4c1ca099c81c515e4c33cbee20c7)
+
+#### 33.paged_decode
+
+`Paged33Runtime` 由真实共享 Attention 对象、当前 DynamicCache 存活关系及完整 page-table 逆映射选点。真实 IFA host 切 SInner 8192→1024，B8 每次包含 8 个请求，保留 KV 逻辑布局。在同进程固定 teacher decode，裁回同一 cache 前缀后按原策略执行 OFF，完整 logits 精确。连续生成、其他分页环境和独立 IFA 统计定位待验。[Provider](../fault_injection/deployments/paged33.py)
+
+#### 41.tail_column
+
+历史 preload 尚未观测到实际 dispatcher。先观察原生 cache writer、尾列映射、有效存储身份及后续 reader，再定义单点干预、同步和验证。当前无运行写入及 OFF 回执。[历史阻塞](../fault20_fast_validation/reports/fault41/README.md)
+
+#### 39.matmul_range
+
+独立 `fault39.native.matmul` 使用 NativeBackend 和 Worker RPC，按真实 Worker/rank、GWS、cache、BF16 ND self/mat2/out 的 live slot 自动选点。在有界临时存储写入有限正负数并调用原 `aclnnMatmul`，以原输入保护、输出设备读回、sync 和 lease 核对。旧故障回执保留 `input_device_readback_verified=false`。独立原生单点及同作用域 OFF 已通过，常用计划上限 1。统一接线需保留 v1 和真实请求归属。本地 QualifiedNativeSession 的 D2D/临时输入读回是新路径。[独立包证据](../fault39/reports/README.md)
+
+#### 39.output_proxy
+
+历史 Qwen3-32B W8A8、8.5.1、TP2 eager rank0 的 MatMul 真 Run 结束后，向已证明的 BF16 out slot 写入限定非有限值，再读回并 disarm。历史 12 个故障样本有新请求恢复。当前通用桥只声明 `output_proxy_bounds` 等证据要求。仍缺可部署 Provider、宿主合同、边界与异常 drain 验收。[历史单独验收](../fault20_fast_validation/reports/fault39_float_matmul_output_nonfinite_proxy_validation.md)
+
+### 面板 B · 模型、算子与构建兼容性
+
+表内未列明的模型实现、算子版本、形状、SoC、执行模式和 TP 均需重新审查。运行检查以精确构建指纹为键。跨模型的发现能力与具体算子支持分别登记。
+
+| 模型和范围 | 实际位置及语义 | 环境及 Provider/build | 结论 |
+| --- | --- | --- | --- |
+| Qwen3-0.6B，SmolLM2-135M（Llama） | Linear 的 `aclnnMatmulWeightNz`，BF16 ND self ≤64KiB、NZ29 weight，B2 单 token forward | 124 / 910B4 / CANN 8.5.1 / 同步 eager / 单卡，`Buffer20Runtime`，`build20-a1` | 两模型通过 B/F/OFF |
+| Distill-Qwen-32B-W8A8 | QMM output-base、当前 allocator 邻接与残差；FIA V3 destination、同 forward producer/consumer | 124 / CANN 8.5.1 / vLLM eager / TP2，`Residual26Runtime`，`build26-a2` + `provider-source-a11` | 两条独立模型回执 |
+| Distill-Qwen-32B-W8A8 | 量化模块、DynamicQuantV2、真实 scheduler 行，B8 pure decode | 124 / CANN 9.1 / vLLM TP2，`quant-scoped-a1` TLS | 三轮 B/F/OFF |
+| Qwen3-0.6B | 分页 IFA，FP16 B8/Q1/KV16384/H16/KV8/D128/page128 | 124 / CANN 9.1 / 单卡 eager，`Paged33Runtime` 固定审计 vendor | 固定 teacher decode B/F/OFF；下游统计首差 |
+| 固定 BF16 ND MatMul，M1/K12800/N5120 | `aclnnMatmul`，typed self/mat2/out，独立包 | 124 / CANN 8.5.1、9.0.0、9.1.0、9.2.0 / rank0，四个独立 profile | 算子实测 |
+| Qwen3-0.6B；旧 SmolLM2/Llama 另有模型回执 | 实际 BF16 MatMul Linear、选中投影形状和原生 slot | Qwen 当前匹配构建为 8.5.1 TP1/TP2、9.1 TP2；旧 SmolLM2 回执单列 | 独立包实测 |
+| Qwen3、GLM、DeepSeek-V3、Llama 小型 CPU 模型 | 实际模块结构和 Attention 注册路由 | 既有 CPU 套件 | 结构与路由验证 |
+
+Fault20 记录中的 `Buffer20Runtime`、probe20 使用 `provider-source-a3`，L4 Run 源码和桥使用 `provider-source-a1`。上述发布源经 Git blob 的 LF 规范化重新对比，**35 条审查记录无不一致**。Fault39 四个 profile 各有 13 条部署源码检查均匹配的回执。20 的 `build20-a1/build.json` SHA-256 为 `9fbf0e3a851a0505682b27ff9655549217ff7184a3bc57cbe65cf705553827a0`，包含五个 DSO 的哈希。新宿主仍需核对实际加载的 proxy/real DSO、构建配置和运行镜像。另一个工作树的 scoped WeightNz 采用 3 位尾数，发布试验参数为 0 位。[源码审查](../experiments/provider_adaptation_20261116/source_review.json) · [构建和验收摘要](../experiments/provider_adaptation_20261116/validation_summary.json)
+
+### 面板 C · 效果、覆盖与可观测性
+
+下表中的 20/26/量化调用计数来自该次试验的 Provider 回执。独立调用分母和计划目标分母分别记录，欠缺时留空。实际命中、首个可观测统计差异和生产覆盖资格各自有证据。
+
+| 试验 | 目标与实际调用 | 透传、恢复与独立首差 |
+| --- | --- | --- |
+| 20 两模型 | Qwen3 197、SmolLM2 211 个发现的 Linear。分别 591、633 次/组，三轮同输入前向。 | 请求 token 张量哈希不变，同进程 OFF。三步首差为 `Functional.linear.0.forward/output/0/Max`，3.4375→2.296875 或 4.125→2.9375。 |
+| 26 QMM `provider26-final-a2` | 每 rank 258 个结构候选，512 次回调。F 45 次写入且消费恢复，B 0 次故障写。 | 467 次/rank 透传（463 不邻接、4 缺 producer），pending=0，OFF 精确。rank0 step0 首差为 RoPE 输入 Max 7.5→7.46875。rank1 step0 双方 NaN，最早位置未证明。 |
+| 26 FIA `provider26-final-a2` | 64 个结构候选，128 次回调/rank。每 rank 126 次有效 scoped writer，B 无损对照。 | 2 次/rank 缺当前 producer 透传，pending=0。4/8 生成 token/text 变化，OFF 精确。两 rank step0 同见残差消费输入 Max 23.5→23.25。step1 输入含已变化 token。 |
+| 共享量化 `quant-model-a2` | 首个 eligible 模块，3 次/组/rank，8 个真实请求行；其余模块透传。 | 6/8 logprobs 变化，token/text 未变，OFF 精确。两 rank 三步首差 quant output0 Max 127→98。 |
+| 33 `provider33-model-a2` | 28 层 × 3 轮，84 次 F 切分。独立 native 审计每组 140 个 launch，含 warm 28、采集 84、OFF 28。 | 固定 cache 前缀 OFF 精确，logits maxabs 0.02734375，Top-1 未变。三步固定容差首差在 `Tensor.mean.3.forward/output/0/Max`，IFA 唯一归因未取得。 |
+| 39 独立包 | 四版本各自单点算子，模型采用已验证请求和 rank 范围。 | 算子 step0 `Torch.matmul.0.forward/output/0/Max` −0.3359375→+Inf。Qwen 的可观测首差出现在 step1 Linear 输出。 |
+
+同一 run 的 build、用例、组别、rank、真实 step、比较结果、原件 SHA 关联在发布摘要。发布摘要索引 385 个私有采集文件、22 份比较结果与 41 条用例回执。原始私有采集位于 124 的 `/home/provider-adaptation-20261116/`，本轮校验发布摘要，不访问 124。使用本地留存的 Fault39 原始统计重新运行比较器，算子 rank0 step0 首差与上表一致，旧 Qwen rank0 step0–7 的首差为 step1 `Functional.linear.3.forward/output/0/Max` 0.76953125→+Inf。比较器 Git blob SHA-256 分别为 `8404ce2214e190556f953a70e28c7d30365ab082d36601a36a2ecd062417f6f8`（跨 step）、`28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe`（统计叶）。保留 null、NaN、Inf、缺步和不可比较字段。新统计原件保存在验证机。[统计与原件索引](../experiments/provider_adaptation_20261116/validation_summary.json) · [覆盖验收标准](fault_coverage_acceptance_standard.md)
+
+### 缺口依赖与工量
+
+估算单位为工程人日，从实际宿主源码、匹配镜像和已有模型均可用起算，实机排队另计。
+
+| 优先级 | 主要缺口和依赖 | 工量估算 |
+| --- | --- | --- |
+| P1 · 20 WeightNz | 获取真实 CLI/Catalog/Binding/Controller/Worker 接口及隔离 IPC 的同步 Worker。第一条 native 正式接线。 | 2–3 |
+| P2 · 39 MatMul | 复用 P1 控制面，映射 WorkerEndpoint、作用域与 v1 ABI。补实际 watchdog/部分失败恢复。 | 1–3 |
+| P3 · 20 QMM | 匹配构建、实际 x1/scale/out 槽、D2D 和恢复。 | 1–3 |
+| P3 · 26 两变体 | QMM rank1 原始统计可比性，writer/consumer 新场景和异常 drain。 | 1–2／变体 |
+| P3 · 共享量化、33 | 动态请求/页映射或原生 IFA 可观测性和恢复。 | 1–3／变体 |
+| P4 · 覆盖 | 20/39 从单点到有界多目标，补多 rank、独立分母和整组恢复。 | 3–5／试点 |
+| P5 · 15、17、18、28 三变体 | 模块/逻辑层、实际 operator 和独立 kernel 或 consumer 证明。 | 1–3／变体 |
+| P5 · 8、22、25、41、39 输出代理 | 可复用 Worker 或 Native Provider、实际语义、资源和恢复。25/41 先确认执行边界再拆工。 | 2–5／初次可运行验证，待边界确认 |
+
+本轮已通过 85 个发布文件校验、35 条源码 LF 校验；发布工作树的 12 个统一合同、39 个 Fault39 合同测试通过。本地原型的 6 个覆盖及 9 个适配测试通过。后续代码触点和测试入口见[生产接线规划](unified_model_injection.md#生产接线规划)。

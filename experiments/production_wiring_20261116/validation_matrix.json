@@ -1,0 +1,217 @@
+{
+  "schema": "demoncat.production_wiring.validation_matrix.v1",
+  "baseline_commit": "9171f3bacd78b1550cc39cc74e126e3a13cfdb07",
+  "state": {
+    "COVERAGE_CONTRACT_IMPLEMENTED": "VERIFIED",
+    "FAULT20_HOST_INTEGRATED": "PENDING",
+    "FAULT20_REAL_OPERATOR_HIT_VERIFIED": "PENDING",
+    "FAULT20_RECOVERY_VERIFIED": "PENDING",
+    "FAULT39_HOST_INTEGRATED": "PENDING",
+    "FAULT39_REAL_OPERATOR_HIT_VERIFIED": "PENDING",
+    "FAULT39_RECOVERY_VERIFIED": "PENDING",
+    "INNER_FRAMEWORK_MAPPING_VERIFIED": "PENDING",
+    "INVENTORY_17_AUDIT_VERIFIED": "VERIFIED",
+    "MULTI_TARGET_CPU_VERIFIED": "VERIFIED",
+    "PRODUCTION_CLI_E2E_PASSED": "PENDING",
+    "PROVIDER_SOURCE_IDENTITY_VERIFIED": "VERIFIED",
+    "SOURCE_BASELINE_VERIFIED": "VERIFIED"
+  },
+  "GITHUB_DELIVERY_READY": "VERIFIED_FOR_OFFLINE_ARTIFACTS",
+  "static_audit": {
+    "catalog_variants": 17,
+    "unified_contracts": 15,
+    "independent_contracts": 1,
+    "missing_contracts": 1,
+    "python_routes": 10,
+    "deployment_providers": 5,
+    "missing_unified_entries": 7,
+    "gaps_source": "fault_injection.catalog.list_faults.audit",
+    "native_abi_v1_unchanged": true
+  },
+  "cpu": {
+    "suites": [
+      {
+        "suite": "unified",
+        "tests": 206,
+        "directory": "tests",
+        "returncode": 0,
+        "log_sha256": "0838a8e8f2e3c887ba6145fccd7a4ff94c4c0f1b4af726cd248e13309a23bd31",
+        "skipped": false
+      },
+      {
+        "suite": "native_strategy",
+        "tests": 69,
+        "directory": "native_execution_strategy/tests",
+        "returncode": 0,
+        "log_sha256": "c9038ecc396de60e6c95096f472cdf2f3a3b934c4dab1b85b6326cd8d7c02716",
+        "skipped": false
+      },
+      {
+        "suite": "fault39_package",
+        "tests": 60,
+        "directory": "fault39/tests",
+        "returncode": 0,
+        "log_sha256": "cdc44d5008c16d522deb1634facb3e67dca3e98d36805ae5378b8518a4d55109",
+        "skipped": false
+      },
+      {
+        "suite": "fault39_tools",
+        "tests": 47,
+        "directory": "fault39/tools",
+        "returncode": 0,
+        "log_sha256": "d3edc3d74f76e94951afad27b75a4af1a992bbc9bd9501a140cd32f8e41d9236",
+        "skipped": false
+      }
+    ],
+    "total": 382,
+    "host_fixture_log_sha256": "6eefd51bbf8bba597ad7be1fa764969e22e4755c08a0e34daf3c8c8272f8fe4e",
+    "host_checks": [
+      "PASS local C++ callback, lossless, substitutions, OFF and slot rejection",
+      "PASS scoped host callback, D2D fixture and OFF for aclnnQuantMatmulWeightNz",
+      "PASS scoped host callback, D2D fixture and OFF for aclnnMatmulWeightNz",
+      "PASS isolated and v17 syntax checks on stub ACL headers"
+    ],
+    "actual_npu_calls": 0
+  },
+  "native_build": {
+    "fault20_isolated": {
+      "status": "PASS_CPU_BUILD_ONLY",
+      "attempt": "/home/production-wiring-20261116/sdk-attempt-20261116t121641z-a95a7a40",
+      "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+      "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+      "host_platform": "aarch64",
+      "npu_device_grants": 0,
+      "actual_npu_calls": 0,
+      "source_archive_sha256": "6d8ebb6f148e9c74c793f4d001b452db3e8dd3af9302805d40b69448d0cbb78e",
+      "sources": 15,
+      "patchelf_sha256": "1246b772ea813e9d12e8e637adbe45b2f90b68682ecac31811e1069c7e1220c8",
+      "container_id": "b800120ba36b5e1de232af002e61714e2eb8a3ec30909350f09d8e34c1ccca63",
+      "device_free_prestart_verified": true,
+      "returncode": 0,
+      "native_profile": "5d5fc76b20b7c5162edf5f1e3677007065a08540f5eeb1cd616cacd10c27532e",
+      "artifact_dir": "/home/production-wiring-20261116/sdk-attempt-20261116t121641z-a95a7a40/output/build",
+      "artifacts": {
+        "libdcat20_qmm.so": "437495d1cf60b4ab95e34696318f62fcb3356bba4206ec6f52781b6c4b96269d",
+        "libopapi.so": "ea9fee69825dfc4b37d27313257e8ee372f7294e5146ad32df362edca4b0e114",
+        "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+        "version_profile.json": "62d74677beb1068554283571fd3cc7580a0e3eeefbc8ed610563e0f2b6ca6b1d",
+        "abi_facts.json": "0612a7af869f238942c5c18f61e33bfe70ab1f7f013b17a58779090e57d98f9c",
+        "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+        "libopapi_nn.so": "b98be7db6ab5517e7fbfe5c7d1270222c07c111cc413c95fa1017dcd572f5354",
+        "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0"
+      },
+      "build_manifest_sha256": "8ed5939b7e767fbf0e4603f7eb733df2ea70d268cdc72fc2b9e5f9f928631e1b",
+      "container_removed": true,
+      "log_sha256": "f404756a640b6af5b5e332203e9f1a95c5f487d99b11bc4f0fd02a5cd7e5d809",
+      "build_log": "/home/production-wiring-20261116/sdk-attempt-20261116t121641z-a95a7a40/build.log",
+      "level": "NATIVE_BUILD_PASSED",
+      "receipt_path": "/home/production-wiring-20261116/sdk-attempt-20261116t121641z-a95a7a40/receipt.json",
+      "receipt_sha256": "2e1590a3fd658b2ba165979fb5a52b7257a78616706e679ddfd56e048bd0fd7e",
+      "source_manifest_sha256": "befe1ea483ac9f494ca0aec6890c5414842c6bcef7f609c44bd0dfd4710357a2",
+      "cann": {
+        "version": "8.5.1",
+        "build": "V100R001C25SPC002B220",
+        "aclTensor_bytes": 544,
+        "OpExecCache_bytes": 320
+      },
+      "worker_load_status": "PENDING",
+      "real_device_status": "PENDING"
+    },
+    "fault39_v1": "EXISTING_PUBLISHED_RECEIPTS"
+  },
+  "real_host_and_worker_status": "PENDING_SOURCE",
+  "resource_probe": {
+    "source": "124 npu-dual read-only idle_gate, proc/containerd inventory, lslocks",
+    "time_utc": "2026-11-16T12:10:47.068252+00:00",
+    "cards": [
+      2,
+      5
+    ],
+    "idle_at_observation": true,
+    "blocker_count": 0,
+    "permission_grants": 2,
+    "pod_uids_observed": {},
+    "lock": "/var/tmp/fault22_npu_2_5.lock",
+    "lock_held_observed": false,
+    "npu_workloads_started": 0
+  },
+  "published_stats": {
+    "root": "/home/provider-adaptation-20261116",
+    "json_triplet_config_and_identity_hash_count": 385,
+    "distinct_comparisons": 22,
+    "missing_capture_files": [],
+    "comparators": {
+      "fault39/tools/compare_model_capture.py": "8404ce2214e190556f953a70e28c7d30365ab082d36601a36a2ecd062417f6f8",
+      "fault39/tools/compare_msprobe.py": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+      "fault39/src/demoncat_fault39/msprobe.py": "8dae0102883c8aa8a3e4d5d5593b6a0d31ecd4da9cc228792fd7e6025738062b",
+      "experiments/provider_adaptation_20261116/compare_pair.py": "ecbfc74e89b07c8e2f6cca6b97c97bc1552aa3302363b82a1723101fae41f0cf",
+      "experiments/provider_adaptation_20261116/validation_summary.json": "856082739038e888cd08f417199c685ab254a1948558e2de03880be1615816a7"
+    },
+    "original_bytes_published": false,
+    "independent_raw_recheck": {
+      "operator": {
+        "path": "fault39/evidence/124_20261116/operator",
+        "rank": 0,
+        "baseline_steps": [
+          0
+        ],
+        "fault_steps": [
+          0
+        ],
+        "first_difference": {
+          "step": 0,
+          "relative_path": "observation/step0/rank0",
+          "identity": "Torch.matmul.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": -0.3359375,
+            "fault": "+Inf"
+          }
+        },
+        "source": "existing_abi_v1_capture_only"
+      },
+      "model_qwen": {
+        "path": "fault39/evidence/124_20261116/model_qwen",
+        "rank": 0,
+        "baseline_steps": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "fault_steps": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "first_difference": {
+          "step": 1,
+          "relative_path": "observation/step1/rank0",
+          "identity": "Functional.linear.3.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 0.76953125,
+            "fault": "+Inf"
+          }
+        },
+        "source": "existing_abi_v1_capture_only"
+      }
+    },
+    "known_limits": [
+      "26 QMM rank1 step0 NaN prevents earliest localization",
+      "33 fixed teacher decode first observable statistics at downstream Tensor.mean",
+      "new host paths require distinct B/F and same-worker OFF evidence"
+    ]
+  }
+}

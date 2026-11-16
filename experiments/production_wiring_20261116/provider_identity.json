@@ -1,0 +1,527 @@
+{
+  "schema": "demoncat.production_wiring.provider_identity.v1",
+  "release_base": "9171f3bacd78b1550cc39cc74e126e3a13cfdb07",
+  "capture_root": "/home/provider-adaptation-20261116",
+  "fault20_v17": {
+    "eligible_proven_api": "aclnnMatmulWeightNz",
+    "target": "self",
+    "variant": "v17_mantissa",
+    "keep_bits_in_published_probe": 0,
+    "source_review": [
+      {
+        "path": "fault_injection/deployments/buffer20.py",
+        "deployed": "provider-source-a3/fault_injection/deployments/buffer20.py",
+        "reviewed_sha256": "1d0024da8945faa6d4e8adf08023882ef2d63e4918dbdd253098868ab8a2b466",
+        "actual_sha256": "1d0024da8945faa6d4e8adf08023882ef2d63e4918dbdd253098868ab8a2b466",
+        "match": true,
+        "canonical_lf_sha256": "1d0024da8945faa6d4e8adf08023882ef2d63e4918dbdd253098868ab8a2b466"
+      },
+      {
+        "path": "fault_injection/native_adapters/legacy20_bridge.inc",
+        "deployed": "provider-source-a1/fault_injection/native_adapters/legacy20_bridge.inc",
+        "reviewed_sha256": "fa835b729c78c0919bc3565f2a6a006d830d5356ed7ec16e1bd1250f363c4e57",
+        "actual_sha256": "fa835b729c78c0919bc3565f2a6a006d830d5356ed7ec16e1bd1250f363c4e57",
+        "match": true,
+        "canonical_lf_sha256": "fa835b729c78c0919bc3565f2a6a006d830d5356ed7ec16e1bd1250f363c4e57"
+      },
+      {
+        "path": "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp",
+        "deployed": "provider-source-a1/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp",
+        "reviewed_sha256": "1346eb5efd49eb0d3638556870f3e898618ab3990eb1cf14ffda7ab9cdcf8bd5",
+        "actual_sha256": "1346eb5efd49eb0d3638556870f3e898618ab3990eb1cf14ffda7ab9cdcf8bd5",
+        "match": true,
+        "canonical_lf_sha256": "1346eb5efd49eb0d3638556870f3e898618ab3990eb1cf14ffda7ab9cdcf8bd5"
+      },
+      {
+        "path": "experiments/provider_adaptation_20261116/probe20.py",
+        "deployed": "provider-source-a3/experiments/provider_adaptation_20261116/probe20.py",
+        "reviewed_sha256": "e76ab705db7899bb6c0cabf1e334182eb32aff6b20528e06197e44b89b1453dc",
+        "actual_sha256": "e76ab705db7899bb6c0cabf1e334182eb32aff6b20528e06197e44b89b1453dc",
+        "match": true,
+        "canonical_lf_sha256": "e76ab705db7899bb6c0cabf1e334182eb32aff6b20528e06197e44b89b1453dc"
+      }
+    ],
+    "build": {
+      "sha256": "9fbf0e3a851a0505682b27ff9655549217ff7184a3bc57cbe65cf705553827a0",
+      "manifest": {
+        "mechanism": "20.buffer_substitute",
+        "variant": "v17_mantissa",
+        "files": {
+          "libdcat20.so": "47f582568322aacaf4fb0cfc094b2558ab3c72472e9088f0645cd601389fdf4b",
+          "libopapi.so": "8276a6c9cb588e2ad56918e6efc852608ea06622a99ad7af549649fc40803f28",
+          "libopapi_nn.so": "35f8d494885bcfd0121f98d994bd3c2173fd9c461b95cf1d1c3df45fb98914ed",
+          "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+          "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996"
+        }
+      }
+    },
+    "published_model_receipts": {
+      "provider20-model-a1/provider20_model_baseline/result.json": {
+        "status": "PASS",
+        "arm": "baseline",
+        "stage": "native_provider_model_probe",
+        "full_pretrained_model": true,
+        "off_exact": true,
+        "input_unchanged": true,
+        "changed": false,
+        "repeat_stable": true,
+        "receipt_sha256": "c970c606cc08686cd851a7c18859da7004be8026316318218042cb0cb912ca2a",
+        "routing": {
+          "candidate_count": 197,
+          "event_status_counts": {
+            "routed": 591
+          },
+          "all_discovered_candidates_covered": true,
+          "all_observed_supported_calls_routed": true,
+          "cleanup_completed": true,
+          "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+        }
+      },
+      "provider20-model-a1/provider20_model_fault/result.json": {
+        "status": "PASS",
+        "arm": "fault",
+        "stage": "native_provider_model_probe",
+        "full_pretrained_model": true,
+        "off_exact": true,
+        "input_unchanged": true,
+        "changed": true,
+        "repeat_stable": true,
+        "receipt_sha256": "a1e9b562c4b6dbe2035af2026c611b4aad2d06ee43b89cb54a3e07a92d6e1e8e",
+        "routing": {
+          "candidate_count": 197,
+          "event_status_counts": {
+            "routed": 591
+          },
+          "all_discovered_candidates_covered": true,
+          "all_observed_supported_calls_routed": true,
+          "cleanup_completed": true,
+          "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+        }
+      },
+      "provider20-smollm-a1/provider20_smollm_baseline/result.json": {
+        "status": "PASS",
+        "arm": "baseline",
+        "stage": "native_provider_model_probe",
+        "full_pretrained_model": true,
+        "off_exact": true,
+        "input_unchanged": true,
+        "changed": false,
+        "repeat_stable": true,
+        "receipt_sha256": "9d1d6fb16718433b2c86440458fbf3d7bbb09d39d2f8f084451533e5848ccc60",
+        "routing": {
+          "candidate_count": 211,
+          "event_status_counts": {
+            "routed": 633
+          },
+          "all_discovered_candidates_covered": true,
+          "all_observed_supported_calls_routed": true,
+          "cleanup_completed": true,
+          "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+        }
+      },
+      "provider20-smollm-a1/provider20_smollm_fault/result.json": {
+        "status": "PASS",
+        "arm": "fault",
+        "stage": "native_provider_model_probe",
+        "full_pretrained_model": true,
+        "off_exact": true,
+        "input_unchanged": true,
+        "changed": true,
+        "repeat_stable": true,
+        "receipt_sha256": "19c18e7c47bd8e2e9d2f2bc7626fdaed90b07c9a19fd0e1e0fda12a2368926ba",
+        "routing": {
+          "candidate_count": 211,
+          "event_status_counts": {
+            "routed": 633
+          },
+          "all_discovered_candidates_covered": true,
+          "all_observed_supported_calls_routed": true,
+          "cleanup_completed": true,
+          "report_scope": "Automatic routing/observation only; not msprobe or native/model acceptance"
+        }
+      }
+    }
+  },
+  "fault20_isolated": {
+    "adapter": "fault20-isolated-cache-abi0-v1",
+    "status": "NATIVE_BUILD_PASSED",
+    "sdk_receipt": {
+      "path": "/home/production-wiring-20261116/sdk-attempt-20261116t121641z-a95a7a40/receipt.json",
+      "sha256": "2e1590a3fd658b2ba165979fb5a52b7257a78616706e679ddfd56e048bd0fd7e",
+      "source_manifest_sha256": "befe1ea483ac9f494ca0aec6890c5414842c6bcef7f609c44bd0dfd4710357a2",
+      "native_profile": "5d5fc76b20b7c5162edf5f1e3677007065a08540f5eeb1cd616cacd10c27532e"
+    },
+    "api_slots": {
+      "aclnnMatmulWeightNz": "self",
+      "aclnnQuantMatmulWeightNz": "x1"
+    },
+    "weight_nz_keep_bits": 3,
+    "isolation": [
+      "typed_GWS_slot",
+      "live_address",
+      "thread_token",
+      "cache_registration_generation",
+      "worker_model_instance",
+      "input_sha256_before_fault"
+    ],
+    "legacy_receipts_apply": false,
+    "source": [
+      {
+        "path": "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp",
+        "bytes": 286107,
+        "sha256": "76c94ad2417aaece0dc792018bc7da19cee1c69110e98dbf1a1095d9de5bae5c"
+      },
+      {
+        "path": "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp",
+        "bytes": 56924,
+        "sha256": "faf7acf511d9fce2744b8cda0f14d311a4d21a58e507a8d2d1c6c068954f2bd0"
+      },
+      {
+        "path": "fault_injection/deployments/matmul.py",
+        "bytes": 9947,
+        "sha256": "4f5565212246c09baf8f9971fdd5db7561a306226ec293acb5df6b58f1b4b0eb"
+      },
+      {
+        "path": "fault_injection/native_adapters/build_qmm.sh",
+        "bytes": 2467,
+        "sha256": "2775d1175e346f15518563e283baeaaf357adc5f6e55c7bf390b9b76b27e6998"
+      },
+      {
+        "path": "fault_injection/native_adapters/fault20_abi_probe.cpp",
+        "bytes": 2449,
+        "sha256": "294f309b424244f3c5db390ed7371f32a1b0ed1d8d7e96ccb3a4170a95f77648"
+      },
+      {
+        "path": "fault_injection/native_adapters/matmul_auto.h",
+        "bytes": 15525,
+        "sha256": "00b377be0b0bdba8ac7783347c49212f6ccd03e29a49d0266cf175d55a8be692"
+      },
+      {
+        "path": "fault_injection/native_adapters/qmm_auto.inc",
+        "bytes": 13053,
+        "sha256": "fde5af7b077da17b4cdb357561d56a7b11fc7a3379d0a16ac8b8402f2173d505"
+      }
+    ]
+  },
+  "fault39": {
+    "native_abi": 1,
+    "independent_source_ancestor": "c1f5726a9a7b9bc8208d15401eca89be43887619",
+    "v1_config_bytes": 368,
+    "existing_four_version_profiles": [
+      {
+        "version": "8.5.1",
+        "profile_sha256": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+        "checks_matched": 13
+      },
+      {
+        "version": "9.0.0",
+        "profile_sha256": "11db8ad490fa999e0d822668e23d4d6dec096edbeb2500b7d630b488d0f56442",
+        "checks_matched": 13
+      },
+      {
+        "version": "9.1.0",
+        "profile_sha256": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+        "checks_matched": 13
+      },
+      {
+        "version": "9.2.0",
+        "profile_sha256": "daa0c9f3c3a34605b1bebcd6bb4c85033b6112a04e468673ea2ff3f1821eed54",
+        "checks_matched": 13
+      }
+    ],
+    "existing_operator_evidence_pointer": {
+      "path": "../provider_adaptation_20261116/validation_summary.json",
+      "field": "fault39_operator_matrix"
+    },
+    "existing_model_receipts": {
+      "model-851-lossless-a1/model_lossless/lossless/validation.json": {
+        "status": "LOSSLESS_VALIDATED",
+        "stage": "lossless",
+        "tp": 1,
+        "ranks": [
+          0
+        ],
+        "baseline_stable": true,
+        "native_build_profiles": {
+          "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+        },
+        "receipt_sha256": "4c4652f653d461c4f1ebbabf8227d46f002b05ff1e42ef19ab152f273c9d6500",
+        "phases": [
+          {
+            "label": "lossless/mask1/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "REAL_OPERATOR_HIT_VERIFIED"
+            }
+          },
+          {
+            "label": "lossless/mask2/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "REAL_OPERATOR_HIT_VERIFIED"
+            }
+          },
+          {
+            "label": "lossless/mask3/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "REAL_OPERATOR_HIT_VERIFIED"
+            }
+          }
+        ],
+        "cleanup_status": "DISABLED_CONFIRMED"
+      },
+      "model-851-bf-a1/model_baseline/validation/validation.json": {
+        "status": "BASELINE_MODEL_CAPTURED",
+        "stage": "pattern",
+        "tp": 1,
+        "ranks": [
+          0
+        ],
+        "baseline_stable": true,
+        "native_build_profiles": {
+          "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+        },
+        "receipt_sha256": "db3d5265d02b393fc00112a083637ff51b00e0b13baf519a13f40ea145e2440a",
+        "phases": [
+          {
+            "label": "pattern/mask3/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "INSUFFICIENT_NATIVE_EVIDENCE"
+            }
+          }
+        ],
+        "cleanup_status": "DISABLED_CONFIRMED"
+      },
+      "model-851-bf-a1/model_fault/validation/validation.json": {
+        "status": "PATTERN_NATIVE_VALIDATED_MSPROBE_ANALYSIS_PENDING",
+        "stage": "pattern",
+        "tp": 1,
+        "ranks": [
+          0
+        ],
+        "baseline_stable": true,
+        "native_build_profiles": {
+          "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+        },
+        "receipt_sha256": "2b49217864feb24f6910d711be2ae3d0b0a60446b60b07806bf51579a8c04504",
+        "phases": [
+          {
+            "label": "pattern/mask3/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED"
+            }
+          }
+        ],
+        "cleanup_status": "DISABLED_CONFIRMED"
+      },
+      "tp2-851-lossless-a1/model_lossless/lossless/validation.json": {
+        "status": "LOSSLESS_VALIDATED",
+        "stage": "lossless",
+        "tp": 2,
+        "ranks": [
+          0,
+          1
+        ],
+        "baseline_stable": true,
+        "native_build_profiles": {
+          "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+          "1": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+        },
+        "receipt_sha256": "61214a1c746790da77938d1f4c5a9fa0700d2fc45b0702c085854247a3d4cbf1",
+        "phases": [
+          {
+            "label": "lossless/mask1/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "REAL_OPERATOR_HIT_VERIFIED",
+              "1": "REAL_OPERATOR_HIT_VERIFIED"
+            }
+          },
+          {
+            "label": "lossless/mask2/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "REAL_OPERATOR_HIT_VERIFIED",
+              "1": "REAL_OPERATOR_HIT_VERIFIED"
+            }
+          },
+          {
+            "label": "lossless/mask3/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "REAL_OPERATOR_HIT_VERIFIED",
+              "1": "REAL_OPERATOR_HIT_VERIFIED"
+            }
+          }
+        ],
+        "cleanup_status": "DISABLED_CONFIRMED"
+      },
+      "tp2-851-bf-a1/model_baseline/validation/validation.json": {
+        "status": "BASELINE_MODEL_CAPTURED",
+        "stage": "pattern",
+        "tp": 2,
+        "ranks": [
+          0,
+          1
+        ],
+        "baseline_stable": true,
+        "native_build_profiles": {
+          "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+          "1": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+        },
+        "receipt_sha256": "e62696ced521232428b082ae8ce117b61fdffcbe27d0ff09b4464bde2d452941",
+        "phases": [
+          {
+            "label": "pattern/mask3/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "INSUFFICIENT_NATIVE_EVIDENCE",
+              "1": "INSUFFICIENT_NATIVE_EVIDENCE"
+            }
+          }
+        ],
+        "cleanup_status": "DISABLED_CONFIRMED"
+      },
+      "tp2-851-bf-a1/model_fault/validation/validation.json": {
+        "status": "PATTERN_NATIVE_VALIDATED_MSPROBE_ANALYSIS_PENDING",
+        "stage": "pattern",
+        "tp": 2,
+        "ranks": [
+          0,
+          1
+        ],
+        "baseline_stable": true,
+        "native_build_profiles": {
+          "0": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc",
+          "1": "d1ff83c0d67010673b09af6fefc76582c085ababce332fdd6ba95af281f6acbc"
+        },
+        "receipt_sha256": "7e0d69a9e05829212e65187f771d72f7eec8c24febc4a0f440874887872f02a5",
+        "phases": [
+          {
+            "label": "pattern/mask3/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+              "1": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED"
+            }
+          }
+        ],
+        "cleanup_status": "DISABLED_CONFIRMED"
+      },
+      "model-91-lossless-a2/model_lossless/lossless/validation.json": {
+        "status": "LOSSLESS_VALIDATED",
+        "stage": "lossless",
+        "tp": 2,
+        "ranks": [
+          0,
+          1
+        ],
+        "baseline_stable": true,
+        "native_build_profiles": {
+          "0": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+          "1": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b"
+        },
+        "receipt_sha256": "e5a9c00d32651397045f6e06926cc35dbc54bd04a1487a78c897803ca8087c22",
+        "phases": [
+          {
+            "label": "lossless/mask1/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "REAL_OPERATOR_HIT_VERIFIED",
+              "1": "REAL_OPERATOR_HIT_VERIFIED"
+            }
+          },
+          {
+            "label": "lossless/mask2/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "REAL_OPERATOR_HIT_VERIFIED",
+              "1": "REAL_OPERATOR_HIT_VERIFIED"
+            }
+          },
+          {
+            "label": "lossless/mask3/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "REAL_OPERATOR_HIT_VERIFIED",
+              "1": "REAL_OPERATOR_HIT_VERIFIED"
+            }
+          }
+        ],
+        "cleanup_status": "DISABLED_CONFIRMED"
+      },
+      "model-91-bf-a2/model_baseline/validation/validation.json": {
+        "status": "BASELINE_MODEL_CAPTURED",
+        "stage": "pattern",
+        "tp": 2,
+        "ranks": [
+          0,
+          1
+        ],
+        "baseline_stable": true,
+        "native_build_profiles": {
+          "0": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+          "1": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b"
+        },
+        "receipt_sha256": "8463ae84354b6ca94f3591029a45a2efb77b73b7488903bf3e55b5341bd93078",
+        "phases": [
+          {
+            "label": "pattern/mask3/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "INSUFFICIENT_NATIVE_EVIDENCE",
+              "1": "INSUFFICIENT_NATIVE_EVIDENCE"
+            }
+          }
+        ],
+        "cleanup_status": "DISABLED_CONFIRMED"
+      },
+      "model-91-bf-a2/model_fault/validation/validation.json": {
+        "status": "PATTERN_NATIVE_VALIDATED_MSPROBE_ANALYSIS_PENDING",
+        "stage": "pattern",
+        "tp": 2,
+        "ranks": [
+          0,
+          1
+        ],
+        "baseline_stable": true,
+        "native_build_profiles": {
+          "0": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b",
+          "1": "220eb21546ba739d175756561c27fc4cca666cd5e5b6c6b05be2b371cbec982b"
+        },
+        "receipt_sha256": "18847a45089bab3db13aba3a4526929e647da097b1d5985cc9c1e52fd3888f56",
+        "phases": [
+          {
+            "label": "pattern/mask3/prompt0",
+            "validated": true,
+            "recovery_verified": true,
+            "native_verdicts": {
+              "0": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED",
+              "1": "MATMUL_INTERMEDIATE_RANGE_FAILURE_REPRODUCED"
+            }
+          }
+        ],
+        "cleanup_status": "DISABLED_CONFIRMED"
+      }
+    },
+    "new_host_gate": "CPU_CONTRACT_TESTED",
+    "native_runtime_hash": "5c53c52877189c0a49511f86aad0b8c00a6edd5a3cf120e26039b564634415fe"
+  }
+}

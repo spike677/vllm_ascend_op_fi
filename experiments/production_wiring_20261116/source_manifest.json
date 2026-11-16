@@ -1,0 +1,273 @@
+{
+  "schema": "demoncat.production_wiring.source_manifest.v1",
+  "base_commit": "9171f3bacd78b1550cc39cc74e126e3a13cfdb07",
+  "branch": "codex/production-provider-wiring-20261116",
+  "git_common_dir": "C:/Users/admin/Documents/demoncatpfi/.git",
+  "workspaces": [
+    {
+      "role": "parent_worktree",
+      "path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi",
+      "branch": "codex/unified-model-injection-20261116",
+      "head": "1eba3308c0cd274825fd777d0a4b6e703560f510",
+      "remote": "https://github.com/spike677/vllm_ascend_op_fi.git",
+      "tracked_changes": 11,
+      "untracked_status_entries": 15,
+      "inner_framework_source_present": false
+    },
+    {
+      "role": "published_worktree_with_prior_audit",
+      "path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.publish/native-provider-adaptation-20261116",
+      "branch": "codex/native-provider-adaptation",
+      "head": "9171f3bacd78b1550cc39cc74e126e3a13cfdb07",
+      "remote": "https://github.com/spike677/vllm_ascend_op_fi.git",
+      "tracked_changes": 2,
+      "untracked_status_entries": 30,
+      "inner_framework_source_present": false
+    },
+    {
+      "role": "separate_unpublished_prototype",
+      "path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.publish/auto-adaptation-20261116",
+      "branch": "codex/auto-adaptation-20261116",
+      "head": "052db5c1db1ab9ea6b85eb9ce5020d8a95e3ac4d",
+      "remote": "https://github.com/spike677/vllm_ascend_op_fi.git",
+      "tracked_changes": 19,
+      "untracked_status_entries": 20,
+      "inner_framework_source_present": false
+    }
+  ],
+  "verified_publication_files": 85,
+  "matched_deployed_sources": 35,
+  "audited_profile_source_counts": {
+    "8.5.1": 13,
+    "9.0.0": 13,
+    "9.1.0": 13,
+    "9.2.0": 13
+  },
+  "hash_normalization": "CRLF to LF for Git publication/source; prototype hashes use exact file bytes",
+  "audited_publication_manifest_sha256": "319778722a593568573a624727ac9c1d7d9a81d38beb85d42e1efa9e7ad4f5d4",
+  "prior_66_cpu_tests_audit": {
+    "suites": {
+      "unified_host_contract": 12,
+      "fault39_contract": 39,
+      "coverage": 6,
+      "auto_adaptation": 9
+    },
+    "prior_worktree_doc_path": "docs/unified_fault_inventory.md",
+    "prior_worktree_doc_sha256": "79cf01e6a47849af3ecdb849def4e112c6f5129f15daf0d4a8004e59b1101bc5"
+  },
+  "audit_docs": [
+    {
+      "path": "docs/README.md",
+      "bytes": 754,
+      "sha256": "199fba2af2b418b455fda65480f09d4adb61fb7160ee6313dedcf14bf23c6da4"
+    },
+    {
+      "path": "docs/unified_fault_inventory.md",
+      "bytes": 33973,
+      "sha256": "816e602607b9d524f06647bb9c62db67b4a077ef05955db9a1a3a724fe58eb37"
+    },
+    {
+      "path": "docs/unified_model_injection.md",
+      "bytes": 16801,
+      "sha256": "ae2445b1b02ba2623b836995afd8e3ac4df87c2aa90d39696a0f7aa1a89be0c4"
+    },
+    {
+      "path": "docs/fault_coverage_acceptance_standard.md",
+      "bytes": 8070,
+      "sha256": "7a1f59335eb8b00f8246ed6bfbc737984209ee5d8a9ab786b1a254de5ccd0e3e"
+    }
+  ],
+  "prior_prototype": [
+    {
+      "path": "fault_injection/native_adapters/qmm_auto.inc",
+      "sha256": "ba06676aca31772590d4b8b12ab7d5f0535ea842960f3a315bba81351c7c7833"
+    },
+    {
+      "path": "fault_injection/native_adapters/matmul_auto.h",
+      "sha256": "d6a8a513391bcad9e35687f2d070807993ded11fa096fe556828f418c5c26a16"
+    },
+    {
+      "path": "fault_injection/native_adapters/build_qmm.sh",
+      "sha256": "2f10a7c2d22868d220cd1ae986d1c430c64e5555f036ba849b0e95b751fe33bd"
+    },
+    {
+      "path": "fault_injection/deployments/matmul.py",
+      "sha256": "60cae17c5bab42039808eceddbbf540b92f366c539f0a62d6f2633a29132781d"
+    },
+    {
+      "path": "fault_injection/qualification.py",
+      "sha256": "e154c2456e7b82a8a143703f2766bd6541c57351aa049d86d2c2da6df65e0fed"
+    },
+    {
+      "path": "fault_injection/coverage.py",
+      "sha256": "a30d012a7958a1d669e28962f13dc30fb8acc6aa95fdc1aed072db64641dda82"
+    },
+    {
+      "path": "tests/test_auto_adaptation.py",
+      "sha256": "1f7953c1f5515774df26c7a0f82f9b76de966358f33ac053bd64594b0bdb982b"
+    },
+    {
+      "path": "tests/test_coverage_planning.py",
+      "sha256": "b767d935a1fde8883ca4df0b84c1c4d2fca7cbdd55c9b77ee871ba864457ce8f"
+    },
+    {
+      "path": "tests/native/test_matmul_auto.cpp",
+      "sha256": "1ab6343704707b4ae4366472194d8f7a1b6fbd56bce7e248662ad7fe9bed2b68"
+    },
+    {
+      "path": ".codex-tmp/all-mechanism-review-a1/native/host-validation.log",
+      "sha256": "b5fb8229f2adf2e5851dbf8e80ae18b69cc1cda20f7ee67120b78822a6a2ee35"
+    },
+    {
+      "path": ".codex-tmp/all-mechanism-review-a1/validation-final/receipt.json",
+      "sha256": "fc223bfd492966ad603a5811e73bd62ca4b511b84a8b3061d2b5a72026676f51"
+    }
+  ],
+  "candidate_delivery_source": [
+    {
+      "path": "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp",
+      "bytes": 286107,
+      "sha256": "76c94ad2417aaece0dc792018bc7da19cee1c69110e98dbf1a1095d9de5bae5c"
+    },
+    {
+      "path": "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp",
+      "bytes": 56924,
+      "sha256": "faf7acf511d9fce2744b8cda0f14d311a4d21a58e507a8d2d1c6c068954f2bd0"
+    },
+    {
+      "path": "fault_injection/deployments/matmul.py",
+      "bytes": 9947,
+      "sha256": "4f5565212246c09baf8f9971fdd5db7561a306226ec293acb5df6b58f1b4b0eb"
+    },
+    {
+      "path": "fault_injection/native_adapters/build_qmm.sh",
+      "bytes": 2467,
+      "sha256": "2775d1175e346f15518563e283baeaaf357adc5f6e55c7bf390b9b76b27e6998"
+    },
+    {
+      "path": "fault_injection/native_adapters/fault20_abi_probe.cpp",
+      "bytes": 2449,
+      "sha256": "294f309b424244f3c5db390ed7371f32a1b0ed1d8d7e96ccb3a4170a95f77648"
+    },
+    {
+      "path": "fault_injection/native_adapters/matmul_auto.h",
+      "bytes": 15525,
+      "sha256": "00b377be0b0bdba8ac7783347c49212f6ccd03e29a49d0266cf175d55a8be692"
+    },
+    {
+      "path": "fault_injection/native_adapters/qmm_auto.inc",
+      "bytes": 13053,
+      "sha256": "fde5af7b077da17b4cdb357561d56a7b11fc7a3379d0a16ac8b8402f2173d505"
+    },
+    {
+      "path": "fault39/tools/deployment_profile.py",
+      "bytes": 4910,
+      "sha256": "a1b39803d8241b974e2de44f91fc96f723e9bc6516302d54c4f62b74b3f54ea8"
+    },
+    {
+      "path": "fault39/tools/version_profile.py",
+      "bytes": 9181,
+      "sha256": "12f0c2a01e56963a1f9c8dddc6b80186840773280614d75dac0c5a0d878b3ac1"
+    },
+    {
+      "path": "fault_injection/qualification.py",
+      "bytes": 13748,
+      "sha256": "a76f93c4fd3fa6796c3102bf412c8db6068ec9af9c83a0c53c4ce90dbdd3fd71"
+    },
+    {
+      "path": "fault_injection/runtime_discovery.py",
+      "bytes": 16937,
+      "sha256": "fa8e7217566a77d33d871411af7931257a9be6b9612c6439edcd667ac06134b1"
+    },
+    {
+      "path": "fault_injection/model_discovery.py",
+      "bytes": 13180,
+      "sha256": "ce3ba5c3a6671b80dcf208035a65c44794b4910651788d43488d58f96f302c12"
+    },
+    {
+      "path": "fault_injection/environment.py",
+      "bytes": 11360,
+      "sha256": "4904c159e70e3fcbb4ee7e0ffd6ca038a28695b885095b4b018e5efdbb6315f8"
+    },
+    {
+      "path": "fault_injection/native.py",
+      "bytes": 32131,
+      "sha256": "9e474a5b3a9eef0cba370b66af4f33b8d3f99855ae2e072473ba05d0203d4054"
+    },
+    {
+      "path": "fault_injection/providers.py",
+      "bytes": 7352,
+      "sha256": "da06c0e3a265ba24a52d683a6321024cebe7b7a048fb5017295c841a2a471afb"
+    },
+    {
+      "path": "fault_injection/lifecycle.py",
+      "bytes": 8981,
+      "sha256": "725eff4dd9f3de6657823d00b72ed05388f6ca4b033f27b3289aa2c1e87e396d"
+    },
+    {
+      "path": "fault_injection/coverage.py",
+      "bytes": 22539,
+      "sha256": "9c508a4a04f89ed4ac2c4b8b139ec0f68543ed0baee5ec7bb3b76426f8d48732"
+    },
+    {
+      "path": "fault_injection/catalog.py",
+      "bytes": 12040,
+      "sha256": "f2fd7d3fed5bdc284f02c64b6320dc5eb687264e3310ba2d5ed54f6cb6b4184b"
+    },
+    {
+      "path": "fault_injection/capabilities.py",
+      "bytes": 9611,
+      "sha256": "cec26f528571fcdf31fe07cef5ec948728b3d0c4d0ac80332976b55a7efa0b68"
+    },
+    {
+      "path": "fault_injection/integration.py",
+      "bytes": 9978,
+      "sha256": "0519ed5cb63d9cf4f4627c6ece94b56a6718165ddc9aeccf44a104de7a1b650e"
+    },
+    {
+      "path": "fault39/src/demoncat_fault39/backend.py",
+      "bytes": 11148,
+      "sha256": "b07338e6c012570a18c7862f60cebdbea25fcafb4dba6c46b0fb0a1280a31d96"
+    },
+    {
+      "path": "fault39/src/demoncat_fault39/contracts.py",
+      "bytes": 3970,
+      "sha256": "0c742d4ea85c4263bcdacb0dc096cf561d39eea8ce9b9da528410891a66c828e"
+    },
+    {
+      "path": "fault39/src/demoncat_fault39/host_qualification.py",
+      "bytes": 11024,
+      "sha256": "0cb8336cbf4541b84bfa96e40f22b5d5883f3782a96b02d175d85cd1cdda3a7d"
+    },
+    {
+      "path": "tests/native/test_matmul_auto.cpp",
+      "bytes": 11034,
+      "sha256": "f345e0901ea7c3306af59df23c357fd5ed3dcf53a3c1ac2b625be810d58e4c82"
+    },
+    {
+      "path": "tests/native/check_matmul_ctypes.py",
+      "bytes": 2634,
+      "sha256": "9393bb351ad7596a32a50619b443689dec08b9a9791070f1fd411d20b1d61ca7"
+    },
+    {
+      "path": "tests/test_auto_adaptation.py",
+      "bytes": 24111,
+      "sha256": "dddf9d6c0cb2f5baf8293ab650f9a40e5c2650ac06f9731e5ab3460a74aeda9b"
+    },
+    {
+      "path": "tests/test_coverage_planning.py",
+      "bytes": 16126,
+      "sha256": "6ebc360a740bea964fa26ab53699d58c9a7edeaea7c1fe2e8f990829e7ab4a19"
+    },
+    {
+      "path": "fault39/tests/test_host_qualification.py",
+      "bytes": 7420,
+      "sha256": "4374d0f6c523e0961a2fe17112dc3ee54b437c5b522917d1119226425e8e331f"
+    },
+    {
+      "path": "tests/test_capabilities.py",
+      "bytes": 5972,
+      "sha256": "f718f8fd03785f80b6e107dd5b31cfbcbfcfa9202c7b3a6d335a61d165a5bc6b"
+    }
+  ]
+}
