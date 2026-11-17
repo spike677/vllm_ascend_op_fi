@@ -11,6 +11,34 @@ def fused_cpu(input, residual, gamma, epsilon):
     return normalized * gamma, total
 LIB.impl('npu_add_rms_norm', fused_cpu, 'CPU')
 
+# The observed vLLM-Ascend fused schema returns y, rstd, residual in that order.
+# This CPU implementation checks the adapter's tuple/lineage contract only.
+ASCEND = torch.library.Library('_C_ascend', 'FRAGMENT')
+ASCEND.define('npu_add_rms_norm_bias(Tensor x1, Tensor x2, Tensor gamma, Tensor? beta=None, '
+              'float epsilon=9.9999999999999995e-07) -> (Tensor y, Tensor rstd, Tensor x)')
+
+def fused_three_cpu(x1, x2, gamma, beta=None, epsilon=1e-6):
+    residual = x1 + x2
+    rstd = torch.rsqrt(residual.square().mean(-1, keepdim=True) + epsilon)
+    normalized = residual * rstd * gamma
+    return normalized if beta is None else normalized + beta, rstd, residual
+
+ASCEND.impl('npu_add_rms_norm_bias', fused_three_cpu, 'CPU')
+
+
+class CustomFusedNorm(torch.nn.Module):
+    def __init__(self):
+        super().__init__(); self.weight = torch.nn.Parameter(torch.ones(8))
+        self._forward_method = self.forward_oot
+        self.actual_auxiliary = None
+    def forward(self, *args, **kwargs):
+        return self._forward_method(*args, **kwargs)
+    def forward_oot(self, hidden, residual):
+        normalized, _, residual = torch.ops._C_ascend.npu_add_rms_norm_bias(
+            hidden, residual, self.weight)
+        self.actual_auxiliary = residual
+        return normalized, residual
+
 
 class FusedNorm(torch.nn.Module):
     def __init__(self):
@@ -51,6 +79,26 @@ class Network(torch.nn.Module):
 
 
 class NaturalRMSNormTests(unittest.TestCase):
+    def test_observed_custom_op_schema_preserves_actual_residual_identity(self):
+        class Model(torch.nn.Module):
+            def __init__(self):
+                super().__init__(); self.norm = CustomFusedNorm()
+            def forward(self, x, residual):
+                y, residual = self.norm(x, residual)
+                return y * 3, residual
+        model = Model().eval(); x = torch.arange(24.).reshape(3, 8); residual = torch.ones_like(x)
+        before = model(x, residual)
+        with RMSNormReturnSession(model, arm='fault', simulation=True) as session:
+            after = model(x, residual)
+        self.assertTrue(torch.equal(after[0], before[0] * .5))
+        self.assertTrue(torch.equal(after[1], before[1]))
+        self.assertIs(after[1], model.norm.actual_auxiliary)
+        event, = session.report()['events']
+        self.assertEqual(event['native_operator'], '_C_ascend.npu_add_rms_norm_bias.default')
+        self.assertTrue(event['return_readback_exact'])
+        self.assertTrue(event['auxiliary_return_storage_unchanged'])
+        self.assertTrue(event['consumers'])
+
     def test_serving_span_tracks_actual_last_token_gemm_without_post_root_injection(self):
         class Hidden(torch.nn.Module):
             def __init__(self):

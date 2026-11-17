@@ -13,18 +13,19 @@ from pathlib import Path
 from .call_binding import ForwardBinding
 from .serving_context import require, require_serial_eager, snapshot_fresh_prefill, discover_logits_boundary
 from .providers.tensor_modules import _capture, _identity, _same
-from .providers.tensor_natural import NaturalTensorGroupProvider, _sha, inspect_source
+from .providers.tensor_natural import NaturalTensorGroupProvider, _sha
 
 
 class ServingTensorGroup:
-    def __init__(self, worker, *, prompt, weight_manifest, workload_sha256, environment_sha256):
+    def __init__(self, worker, *, prompt, weight_manifest, workload_sha256, environment_sha256,
+                 _simulation=False, _synchronize=None):
         from vllm.model_executor.layers.logits_processor import LogitsProcessor
-        from fault_injection.tensor_observer import NaturalTensorObserver
         self.worker, self.runner, self.model = worker, worker.model_runner, worker.model_runner.model
         require_serial_eager(self.runner)
         identity = worker.demoncat_worker_identity()
         require(identity['status'] == 'WORKER_IDENTIFIED' and not identity.get('quarantined'),
                 'READY_ACTUAL_WORKER_IDENTITY_REQUIRED')
+        self.worker_identity = dict(identity['worker'])
         boundary = discover_logits_boundary(self.model, actual_logits_processor_type=LogitsProcessor,
             actual_vocab_size=self.runner.vllm_config.model_config.hf_config.vocab_size)
         self.processor = boundary['processor']; self.boundary_guard = boundary.get('branch_guard')
@@ -40,34 +41,67 @@ class ServingTensorGroup:
         def no_direct_replay(*args):
             raise RuntimeError('STANDARD_WORKER_REQUIRES_REAL_ENQUEUED_FORWARD')
         import torch
+        require(type(_simulation) is bool and (_synchronize is None or _simulation),
+                'SYNCHRONIZER_OVERRIDE_IS_CPU_CONTRACT_ONLY')
+        synchronize = _synchronize if _simulation else torch.npu.synchronize
+        require(callable(synchronize), 'ACTUAL_SYNCHRONIZER_REQUIRED')
         self.provider = NaturalTensorGroupProvider(self.model, '18.api_half', replay=no_direct_replay,
-            synchronize=torch.npu.synchronize, workload_sha256=workload_sha256,
+            synchronize=synchronize, workload_sha256=workload_sha256, simulation=_simulation,
             environment_sha256=environment_sha256, model_weights_sha256=_sha(weight_manifest),
             model_source_sha256=_sha(sources), worker_identity=identity['worker'])
         self.provenance = dict(worker_identity=identity, weights=weight_manifest, model_sources=sources,
-                               logits_boundary=self.boundary, standard_worker=True)
+                               logits_boundary=self.boundary, standard_worker=not _simulation,
+                               simulation=_simulation)
         self.binding = ForwardBinding(self.model)
         self.prompt = list(prompt)
         self.thread = threading.get_ident()
         self.seen, self.phases, self.handles = [], [], []
+        self._callbacks = {}
         self.expected = self.current = self.adapter = self.observer = self.root_post_handle = None
         self.provider.owned_host_hooks = lambda: len(self.handles) + int(self.root_post_handle is not None)
         self._install_context()
 
     def _install_context(self):
         require(not self.handles, 'SERVING_CONTEXT_ALREADY_INSTALLED')
-        self.handles.append(self.model.register_forward_pre_hook(self._pre, with_kwargs=True, prepend=True))
-        self.handles.append(self.processor.register_forward_hook(self._logits, with_kwargs=True, always_call=True))
+        try:
+            callback = self._pre
+            handle = self.model.register_forward_pre_hook(callback, with_kwargs=True, prepend=True)
+            self.handles.append(handle); self._callbacks[handle.id] = callback
+            callback = self._logits
+            handle = self.processor.register_forward_hook(callback, with_kwargs=True, always_call=True)
+            self.handles.append(handle); self._callbacks[handle.id] = callback
+        except BaseException:
+            for handle in reversed(self.handles):
+                self._remove_hook(handle)
+            self.handles.clear()
+            raise
 
-    def _context(self):
+    def _remove_hook(self, handle):
+        hooks = handle.hooks_dict_ref()
+        require(hooks is not None and (handle.id not in hooks or
+            hooks[handle.id] is self._callbacks.get(handle.id)), 'SERVING_TENSOR_HOOK_OWNERSHIP_CHANGED')
+        handle.remove(); self._callbacks.pop(handle.id, None)
+
+    def _context(self, *, verify_targets=True):
         require(threading.get_ident() == self.thread, 'SERVING_TENSOR_THREAD_CHANGED')
         require(self.worker.model_runner is self.runner and self.runner.model is self.model,
                 'SERVING_TENSOR_MODEL_LIFETIME_CHANGED')
+        for handle in self.handles + ([self.root_post_handle] if self.root_post_handle is not None else []):
+            hooks = handle.hooks_dict_ref()
+            require(hooks is not None and hooks.get(handle.id) is self._callbacks.get(handle.id),
+                    'SERVING_TENSOR_HOOK_OWNERSHIP_CHANGED')
+        if not verify_targets:
+            # Cleanup still verifies owned resources but must not depend on a
+            # changed target implementation being acceptable for inference.
+            return
+        identity = self.worker.demoncat_worker_identity()
+        require(identity['status'] == 'WORKER_IDENTIFIED' and not identity.get('quarantined')
+                and identity.get('worker') == self.worker_identity, 'SERVING_TENSOR_WORKER_IDENTITY_CHANGED')
         require(not self.model.training, 'INFERENCE_MODEL_REQUIRED')
         modules = {path or '<root>': module for path, module in self.model.named_modules()}
         for path, (module, source) in self.provider.target_sources.items():
-            require(modules.get(path) is module and inspect_source(module) == source,
-                    'SERVING_TENSOR_TARGET_SOURCE_CHANGED:' + path)
+            require(modules.get(path) is module, 'SERVING_TENSOR_TARGET_MODEL_CHANGED:' + path)
+            self.provider.target_guards[path].verify()
 
     def expect(self, request_id, phase, arm=None):
         from fault_injection.tensor_observer import NaturalTensorObserver
@@ -89,13 +123,16 @@ class ServingTensorGroup:
             self.provider.enabled = False
         if arm is not None:
             self.adapter = RMSNormReturnSession(self.model, arm=arm,
-                admission=self.provider._admission, observe_post_root_consumers=True)
+                admission=self.provider._admission, observe_post_root_consumers=True,
+                simulation=self.provider.simulation)
             self.adapter.__enter__()
             self.provider.active_adapter = self.adapter
         self.observer = NaturalTensorObserver(self.model,
             on_module_enter=self.provider._module_enter,
             on_operator_enter=self.provider._operator_enter).__enter__()
-        self.root_post_handle = self.model.register_forward_hook(self._post, with_kwargs=True, always_call=True)
+        callback = self._post
+        self.root_post_handle = self.model.register_forward_hook(callback, with_kwargs=True, always_call=True)
+        self._callbacks[self.root_post_handle.id] = callback
         return dict(expected=request_id, phase=phase, arm=arm)
 
     def _pre(self, module, args, kwargs):
@@ -126,7 +163,7 @@ class ServingTensorGroup:
         self._context()
         require(self.current is not None and self.current['logits_returned'], 'TENSOR_REQUEST_NOT_COMPLETED')
         self.provider.synchronize()
-        self.root_post_handle.remove(); self.root_post_handle = None
+        self._remove_hook(self.root_post_handle); self.root_post_handle = None
         self.observer.close()
         if self.adapter:
             self.adapter.close()
@@ -160,15 +197,15 @@ class ServingTensorGroup:
         require(self.expected is None and self.current is None and self.adapter is None,
                 'SERVING_TENSOR_REQUEST_PENDING')
         for handle in reversed(self.handles):
-            handle.remove()
+            self._remove_hook(handle)
         self.handles.clear()
         return self.provider.close_group()
 
     def abort(self):
         from fault_injection.coverage import Outcome
-        self._context()
+        self._context(verify_targets=False)
         if self.root_post_handle is not None:
-            self.root_post_handle.remove(); self.root_post_handle = None
+            self._remove_hook(self.root_post_handle); self.root_post_handle = None
         if self.observer is not None:
             self.observer.close(); self.observer = None
         if self.adapter is not None:
@@ -189,11 +226,11 @@ class ServingTensorGroup:
         return cleanup
 
     def close(self):
-        self._context()
+        self._context(verify_targets=False)
         require(self.expected is None and self.current is None and self.adapter is None,
                 'SERVING_TENSOR_PHASE_PENDING')
         for handle in reversed(self.handles):
-            handle.remove()
+            self._remove_hook(handle)
         self.handles.clear()
         return dict(owned_serving_hooks=0, active_adapter=False, independent_observer=False,
-                    standard_worker=True, requests=self.seen)
+                    standard_worker=not self.provider.simulation, requests=self.seen)

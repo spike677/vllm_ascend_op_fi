@@ -1,8 +1,7 @@
 # Tensor workflow handoff, 2026-11-17
 
-Root requested that this workflow save progress and release its agent slot while
-the postwrite workflow fixes a separate collector ownership failure. No new NPU
-or container was started by this workflow. All new raw statistics stay on 124.
+All NPU/container execution is root-queued. This workflow performs source work,
+CPU contracts and read-only inspection. All new raw statistics stay on 124.
 
 ## Reviewed handoffs already sent to root
 
@@ -28,7 +27,41 @@ python experiments/c2c3_closure_20261117/natural_tensor_group_probe.py \
 This is natural pretrained HF inference, MODEL_LOCAL, not a standard Worker.
 The live C2/C3 proof binds actual weight-manifest and model-source hashes. The
 proxy halves the actual RMSNorm returned value, never a Reduce internal value.
-No qualification count was changed by this workflow.
+No public qualification count was changed by this workflow.
+
+## Actual HF18 model-local result and observable boundary
+
+Root completed `natural18-group-a2/natural-group-18/probe/result.json`: 113 actual
+RMSNorm targets, C2 113/113, C3 226/226 across two forwards, exact full-model OFF,
+and no owned hooks, leases or in-flight calls after recovery. This remains
+natural pretrained MODEL_LOCAL evidence, not standard Worker evidence.
+
+The a1 capture retained a construct mismatch from observer-owned Tensor.stride
+queries. Commit `88b403c` put those metadata queries in the same reviewed public
+collector pause as the provider diagnostics. Root recaptured a2; no existing raw
+JSON was edited and no construct field was ignored. Its independent B/B-repeat
+dump, stack and construct files are byte-identical. Root's independent Decimal
+audit at `/home/17-fault-c2c3-20261117/natural18-group-a2-baseline-fault` reports:
+
+- first observable difference: `Functional.linear.0.forward/input_args/0.Max`,
+  1.734375 -> 0.8671875, relative difference 0.5;
+- 84 preceding null cells, 9796 null cells in all, zero incomparable cells;
+- E5 observable under unchanged rtol=1e-5, atol=1e-8. Null is not equality.
+
+This is an actual downstream consumer input, not localization inside the RMSNorm
+operator. The reviewed msprobe `module_processor.py`, SHA256
+`4876e89f7f726cd552fc1bf0e7b7745a898461deec2cb2abf33b02deba7329d7`, inserts its
+module forward hook at the front of `_forward_hooks` (lines 236–240). The owned
+RMSNorm return-gain hook runs afterwards. Thus the collector's module-output
+record can still contain the original return, while the actual next consumer
+receives the half-scaled value. The proxy arithmetic is an excluded owned
+diagnostic operation; no artificial tensor was added to become the first
+difference. The result supports output-half propagation only, never native
+Reduce-internal corruption or an earlier RMS operator first-difference claim.
+
+The original a1 remains preserved with its failed E5 alignment. Root separately
+audited its C2/C3 counts and all 229 canonical-object SHA references at
+`/home/17-fault-c2c3-20261117/natural18-group-a1-coverage-audit`.
 
 ## Actual natural observations supplied by root
 
@@ -57,7 +90,7 @@ GLM-4-9B, SmolLM2, HunyuanVideo VAE and a DeepSeek-R1-Distill-Qwen directory.
 No installed Qwen-VL or other genuine visual patch16 weights were found in the
 inspected model roots. DeepSeek MoE remains the next genuine Fault8 census.
 
-## Saved Worker18 work in progress — not ready for NPU acceptance
+## Worker18 implementation ready for a root-queued runtime check
 
 Files:
 
@@ -73,26 +106,36 @@ Files:
 - `NaturalTensorGroupProvider`: factored healthy observation join/group open
   and close for a serving host; added INITIALIZED_WORKER scope/request mapping.
 
-Latest CPU checks: 13 tests passed (RMSNorm, model-local groups, statistics
-windows, old tensor Worker contracts), including an actual CPU last-token
-selection/GEMM consumer and no outside-root injection. Both new serving files
-parse. **The serving controller itself has not been executed in vLLM.**
+`tensor_callable.py` now binds both the original bound `forward` and actual
+bound `_forward_method`, including function/code identity, owning instance and
+module globals, exact source-file hash and defaults. A changed dispatch method
+cannot retain qualification through unchanged `CustomOp.forward` text. Only
+the separately reviewed, exact msprobe wrapper can be traversed; generic
+`__wrapped__` or unreviewed closure callables are refused.
 
-Before declaring this WIP ready:
+Executed CPU controller contracts cover four real healthy forwards, C2 fault
+and OFF, two C3 fault forwards and OFF, post-root actual last-token indexing and
+logits GEMM, full recovery, callback ownership, target implementation drift and
+Worker identity drift. These fixtures explicitly declare CPU simulation and
+never report real Worker evidence. The actual `_C_ascend` three-return schema
+is also exercised with CPU dispatch: only the normalized output is halved;
+the actual residual tensor object is preserved.
 
-1. Review exact live callable identity for vLLM `CustomOp.forward` plus its
-   `_forward_method`. The current source guard authenticates the reviewed
-   msprobe wrapper and original `forward`, but a generic forwarding method
-   alone does not bind a changed `_forward_method` implementation.
-2. Exercise genuine Worker RPC-thread/mode ownership, final-norm logits
-   materialization, fused RMS tuple output lineage, and every failure path.
-3. Review the trusted `qualify_observations` host entry and the explicit OFF
-   before group-close sequence. It must not become an arbitrary RPC evidence
-   submission interface.
-4. Verify lifecycle ownership of the serving host's pre/post/logits hooks;
-   they are removed before group health. Failure abort retains unresolved
-   group evidence and does not claim recovered fault state.
-5. Add the standard-Worker statistics span separately; HF E5 cannot qualify it.
+The focused CPU regression passed 51 tests: serving controller, callable guards,
+natural RMS/row-reader groups, observer/statistics windows, old C1 tensor
+providers, route8/index22 contracts and shared coverage-session contracts.
 
-Root should continue using `50a822b` for the queued HF18 capture. The WIP commit
-must not silently replace that immutable executed source snapshot.
+Root may queue:
+
+```
+python experiments/c2c3_closure_20261117/natural_rms_worker_probe.py \
+  --model /model --out /evidence/probe
+```
+
+Use the existing genuine vLLM-Ascend 0.18.0/CANN8.5.1 Worker image and Qwen3-0.6B
+model. This probe still needs actual RPC-thread/mode ownership, live dispatch
+source and final-norm consumer validation. A conservative gate refusal must be
+kept, not reclassified as a pass. A separate standard Worker statistics span is
+still required; HF E5 does not certify Worker capture. The original WIP commit
+`a33a874` plus the subsequent tested hardening form this handoff, and do not
+replace any immutable source snapshot already executed by root.

@@ -39,8 +39,12 @@ class NaturalTensorGroupProvider:
         import fault_injection.rmsnorm_return as rms
         import fault_injection.index22 as rope
         import fault_injection.tensor_observer as observer
+        import fault_injection.tensor_callable as callable_proof
+        import fault_injection._scoped_dispatch as scoped
+        import fault_injection.module_faults as module_faults
         self.source_sha = _sha({str(Path(p).name): hashlib.sha256(Path(p).read_bytes()).hexdigest()
-            for p in (__file__, rms.__file__, rope.__file__, observer.__file__)})
+            for p in (__file__, rms.__file__, rope.__file__, observer.__file__,
+                      callable_proof.__file__, scoped.__file__, module_faults.__file__)})
         self.scope = CoverageScope(mechanism, workload_sha256, environment_sha256, self.source_sha,
             evidence_kind='cpu_contract' if simulation else
                 'natural_worker' if worker_identity else 'natural_pretrained_model',
@@ -51,6 +55,7 @@ class NaturalTensorGroupProvider:
         self.group = self.active_adapter = self.candidates = None
         self.selected = {}
         self.target_sources = {}
+        self.target_guards = {}
         self.enabled = False
         self.off_row = None
         self.generation = 0
@@ -141,8 +146,9 @@ class NaturalTensorGroupProvider:
         if self.model.training:
             raise ProviderError('NATURAL_INFERENCE_MODEL_CHANGED')
         for path, (module, source_sha) in self.target_sources.items():
-            if actual_modules.get(path) is not module or inspect_source(module) != source_sha:
+            if actual_modules.get(path) is not module:
                 raise ProviderError('NATURAL_TARGET_SOURCE_OR_MODEL_LIFETIME_CHANGED', path)
+            self.target_guards[path].verify()
         self._running = True
         self.calls = []
         self.current_invocation = 'model-local-forward:' + uuid.uuid4().hex
@@ -257,8 +263,11 @@ class NaturalTensorGroupProvider:
                     or not event.get('original_execution_verified') or not event.get('consumers')):
                 raise ProviderError('NATURAL_ELIGIBLE_CALL_OR_CONSUMER_UNPROVEN', str(key))
             module = modules[key[0]]
-            source = inspect_source(module)
+            from fault_injection.tensor_callable import TensorCallableGuard
+            guard = TensorCallableGuard(module)
+            source = guard.source_sha256
             self.target_sources[key[0]] = (module, source)
+            self.target_guards[key[0]] = guard
             device = next(iter(first['independent']['forwards'][0]['output']))['device'].split(':')
             target = BoundaryTargetIdentity(process_id=self.context['process_id'],
                 process_start_identity=self.context['process_start_identity'], worker_id=self.context['worker_id'],
@@ -268,7 +277,7 @@ class NaturalTensorGroupProvider:
                 module_object_identity=id(module), module_roles=('RMSNORM_RETURN',) if self.mechanism == '18.api_half'
                     else ('ROPE_ROW_READER',), operator_api=event.get('operator', event['boundary']),
                 tensor_signature=json.dumps(_signature(event, self.mechanism), sort_keys=True),
-                boundary=PythonHookBoundary(str(id(getattr(module.forward, '__func__', module.forward))), source, key[1]),
+                boundary=PythonHookBoundary(guard.callable_identity, source, key[1]),
                 provider_identity='natural_tensor:' + self.mechanism,
                 provider_proof=(('implementation_sha256', self.source_sha),))
             self.selected[key] = target
@@ -296,7 +305,8 @@ class NaturalTensorGroupProvider:
         self.input_sha = _sha(_identity(self.reference_input))
         self.lossless_sha = _sha(lossless)
         return dict(candidate_set=self.candidates.report(), independent_discovery_sha256=self.discovery_sha,
-                    native_baseline_exact=True, lossless_exact=True)
+                    native_baseline_exact=True, lossless_exact=True,
+                    actual_dispatch={path: guard.report() for path, guard in self.target_guards.items()})
 
     def _recover(self, lease):
         from fault_injection.coverage import RecoveryReport
@@ -413,9 +423,5 @@ class NaturalTensorGroupProvider:
 
 
 def inspect_source(module):
-    import inspect
-    from fault_injection.module_faults import _original_standard_forward
-    original = _original_standard_forward(module)
-    if original is None:
-        raise ProviderError('ACTUAL_MODULE_SOURCE_IDENTITY_REQUIRED')
-    return hashlib.sha256(inspect.getsource(original).encode()).hexdigest()
+    from fault_injection.tensor_callable import TensorCallableGuard
+    return TensorCallableGuard(module).source_sha256

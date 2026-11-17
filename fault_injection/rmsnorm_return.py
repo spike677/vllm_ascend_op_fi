@@ -185,9 +185,11 @@ class RMSNormReturnSession(ScopedDispatch):
             event.update(original_execution_verified=True, source_contract=contract,
                          native_calls=None, module_object_id=id(module))
         injecting = self.arm == 'fault' and self.is_selected(event)
-        # One identical call site in lossless and fault arms makes the API
-        # collector see the real return boundary in both arms. Healthy *1 is
-        # checked against an entirely unhooked baseline by the replay provider.
+        # One identical call site is used in lossless and fault arms. The
+        # reviewed collector's prepended module-output hook runs before this
+        # return hook, so its first changed statistic can be the next actual
+        # consumer input. This never claims an internal RMS operator fault.
+        # Healthy *1 is checked against an entirely unhooked model baseline.
         gain = 0.5 if injecting else 1.0
         with self.diagnostics():
             changed = values[0] * gain
