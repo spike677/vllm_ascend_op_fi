@@ -25,6 +25,7 @@ python3 "$root/tests/native/test_qmm_pta_gate_elf.py" --output "$output/pta_gate
 python3 "$root/tests/native/test_qmm_pta_resolver_elf.py" --output "$output/pta_resolver_elf_cpu_receipt.json"
 source="$root/fault20_fast_validation/source"
 native="$root/fault39/native"
+python3 "$native/test_metadata_ownership.py" --output "$output/metadata_array_cpu_receipt.json"
 flags=(-std=c++17 -O2 -fPIC -D_GLIBCXX_USE_CXX11_ABI=0 -DDEMONCAT_QMM_AUTO -I"$toolkit/include" -I"$toolkit/include/aclnn" -I"$toolkit/pkg_inc" -I"$output" -I"$native")
 g++ "${flags[@]}" "$root/fault_injection/native_adapters/fault20_abi_probe.cpp" -o "$output/abi_probe"
 "$output/abi_probe" > "$output/abi_facts.json"
@@ -48,6 +49,7 @@ for base in opapi opapi_nn; do
       -Wl,-rpath,'$ORIGIN/real:/native/real' -ldl -lpthread -o "$output/lib${base}.so"
     nm -D "$output/lib${base}.so" | grep -E '[[:space:]]CanUsePTACache$'
     nm -D "$output/lib${base}.so" | grep -E '[[:space:]]dcat20_pta_gate_status_v1$'
+    nm -D "$output/lib${base}.so" | grep -E '[[:space:]]dcat20_metadata_arrays_v1$'
 done
 # torch_npu 2.9.0.post1 probes this feature handle before nn/main. The
 # gate-only proxy retains the real math library and exports no replacement

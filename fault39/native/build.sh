@@ -7,6 +7,7 @@ output_dir="${FAULT39_OUTPUT_DIR:-$source_dir/build}"
 mkdir -p "$output_dir"
 g++ -std=c++17 -O2 -Wall -Wextra -pedantic "$source_dir/test_core.cpp" -o "$output_dir/test_core"
 "$output_dir/test_core"
+python3 "$source_dir/test_metadata_ownership.py" --output "$output_dir/metadata_array_cpu_receipt.json"
 if [[ "${1:-}" == --cpu-test ]]; then exit 0; fi
 [[ "$(uname -m)" == aarch64 ]] || { echo 'REFUSE: native build requires aarch64' >&2; exit 1; }
 toolkit="${FAULT39_ASCEND_TOOLKIT:-${ASCEND_HOME_PATH:-/usr/local/Ascend/ascend-toolkit/latest}}"
@@ -41,10 +42,12 @@ python3 "$source_dir/../tools/version_profile.py" "${profile_args[@]}"
 g++ "${flags[@]}" -shared "$source_dir/runtime.cpp" -Wl,-soname,libfault39_native_v1.so -ldl -lpthread -o "$output_dir/libfault39_native_v1.so"
 g++ "${flags[@]}" -shared "$source_dir/metadata_proxy.cpp" -L"$output_dir/real" -Wl,--no-as-needed -l:libopapi_real.so \
  -Wl,-soname,libopapi.so -Wl,-rpath,'$ORIGIN/real' -Wl,-z,origin -ldl -lpthread -o "$output_dir/libopapi.so"
+nm -D "$output_dir/libopapi.so" | grep -E '[[:space:]]fault39_metadata_arrays_v1$'
 if [[ -f "$split_source" ]]; then
  g++ "${flags[@]}" -shared -DFAULT39_SPLIT_PROXY '-DFAULT39_REAL_LIBRARY="libopapi_nn_real.so"' "$source_dir/metadata_proxy.cpp" \
   -L"$output_dir/real" -Wl,--no-as-needed -l:libopapi_nn_real.so -Wl,-soname,libopapi_nn.so \
   -Wl,-rpath,'$ORIGIN/real:/native/real' -Wl,-z,origin -ldl -lpthread -o "$output_dir/libopapi_nn.so"
+ nm -D "$output_dir/libopapi_nn.so" | grep -E '[[:space:]]fault39_metadata_arrays_v1$'
 fi
 if readelf -d "$output_dir/libfault39_native_v1.so" | grep -Eq 'libopapi|libnnopbase|libascendcl'; then
  echo 'REFUSE: native runtime unexpectedly links CANN directly' >&2;exit 1

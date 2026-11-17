@@ -7,6 +7,7 @@
 #include <aclnnop/aclnn_quant_matmul_weight_nz.h>
 
 #include "../l4_buffer_substitute_allhit_v1/fault20_buffer_api.h"
+#include "../../../fault39/native/metadata_array_owner.h"
 #include "../fault26_readonly_trace_v1/fault26_trace_shared.h"
 
 #include <atomic>
@@ -352,17 +353,18 @@ bool is_contiguous(const int64_t *shape, uint64_t shape_count, const int64_t *st
 }
 
 bool capture_x1_metadata(const aclTensor *x1, const aclTensor *out, bool transpose_x1,
-                         bool transpose_x2, int64_t group_size, Fault20X1Metadata *metadata) {
+                         bool transpose_x2, int64_t group_size, Fault20X1Metadata *metadata) try {
+    dcat_metadata::CaptureScope capture_scope;
     if (x1 == nullptr || out == nullptr || metadata == nullptr) {
         return false;
     }
     aclDataType dtype = ACL_DT_UNDEFINED;
     aclFormat format = ACL_FORMAT_UNDEFINED;
     int64_t view_offset = 0;
-    int64_t *view_dims = nullptr;
-    int64_t *storage_dims = nullptr;
-    int64_t *strides = nullptr;
-    int64_t *out_dims = nullptr;
+    dcat_metadata::OwnedArray view_dims;
+    dcat_metadata::OwnedArray storage_dims;
+    dcat_metadata::OwnedArray strides;
+    dcat_metadata::OwnedArray out_dims;
     uint64_t view_count = 0;
     uint64_t storage_count = 0;
     uint64_t stride_count = 0;
@@ -370,10 +372,10 @@ bool capture_x1_metadata(const aclTensor *x1, const aclTensor *out, bool transpo
     if (aclGetDataType(x1, &dtype) != ACL_SUCCESS ||
         aclGetFormat(x1, &format) != ACL_SUCCESS ||
         aclGetViewOffset(x1, &view_offset) != ACL_SUCCESS ||
-        aclGetViewShape(x1, &view_dims, &view_count) != ACL_SUCCESS ||
-        aclGetStorageShape(x1, &storage_dims, &storage_count) != ACL_SUCCESS ||
-        aclGetViewStrides(x1, &strides, &stride_count) != ACL_SUCCESS ||
-        aclGetViewShape(out, &out_dims, &out_count) != ACL_SUCCESS ||
+        view_dims.read(aclGetViewShape, x1, &view_count) != ACL_SUCCESS ||
+        storage_dims.read(aclGetStorageShape, x1, &storage_count) != ACL_SUCCESS ||
+        strides.read(aclGetViewStrides, x1, &stride_count) != ACL_SUCCESS ||
+        out_dims.read(aclGetViewShape, out, &out_count) != ACL_SUCCESS ||
         view_count == 0 || storage_count == 0 || stride_count == 0 || out_count == 0 ||
         view_count > FAULT20_MAX_DIMS || storage_count > FAULT20_MAX_DIMS ||
         stride_count > FAULT20_MAX_DIMS || out_count > FAULT20_MAX_DIMS) {
@@ -419,18 +421,22 @@ bool capture_x1_metadata(const aclTensor *x1, const aclTensor *out, bool transpo
     value.transpose_x2 = transpose_x2 ? 1U : 0U;
     *metadata = value;
     return true;
+} catch (...) {
+    dcat_metadata::capture_exception();
+    return false;
 }
 
-bool capture_tensor_metadata(const aclTensor *tensor, Fault20TensorMetadata *metadata) {
+bool capture_tensor_metadata(const aclTensor *tensor, Fault20TensorMetadata *metadata) try {
+    dcat_metadata::CaptureScope capture_scope;
     if (tensor == nullptr || metadata == nullptr) {
         return false;
     }
     aclDataType dtype = ACL_DT_UNDEFINED;
     aclFormat format = ACL_FORMAT_UNDEFINED;
     int64_t view_offset = 0;
-    int64_t *view_dims = nullptr;
-    int64_t *storage_dims = nullptr;
-    int64_t *strides = nullptr;
+    dcat_metadata::OwnedArray view_dims;
+    dcat_metadata::OwnedArray storage_dims;
+    dcat_metadata::OwnedArray strides;
     uint64_t view_count = 0;
     uint64_t storage_count = 0;
     uint64_t stride_count = 0;
@@ -438,9 +444,9 @@ bool capture_tensor_metadata(const aclTensor *tensor, Fault20TensorMetadata *met
     if (aclGetDataType(tensor, &dtype) != ACL_SUCCESS ||
         aclGetFormat(tensor, &format) != ACL_SUCCESS ||
         aclGetViewOffset(tensor, &view_offset) != ACL_SUCCESS ||
-        aclGetViewShape(tensor, &view_dims, &view_count) != ACL_SUCCESS ||
-        aclGetStorageShape(tensor, &storage_dims, &storage_count) != ACL_SUCCESS ||
-        aclGetViewStrides(tensor, &strides, &stride_count) != ACL_SUCCESS ||
+        view_dims.read(aclGetViewShape, tensor, &view_count) != ACL_SUCCESS ||
+        storage_dims.read(aclGetStorageShape, tensor, &storage_count) != ACL_SUCCESS ||
+        strides.read(aclGetViewStrides, tensor, &stride_count) != ACL_SUCCESS ||
         aclGetRawTensorAddr(tensor, &raw_addr) != ACL_SUCCESS || view_count == 0 ||
         storage_count == 0 || stride_count == 0 || view_count > FAULT20_MAX_DIMS ||
         storage_count > FAULT20_MAX_DIMS || stride_count > FAULT20_MAX_DIMS) {
@@ -488,6 +494,9 @@ bool capture_tensor_metadata(const aclTensor *tensor, Fault20TensorMetadata *met
     value.data_addr = reinterpret_cast<uintptr_t>(tensor->GetData());
     *metadata = value;
     return true;
+} catch (...) {
+    dcat_metadata::capture_exception();
+    return false;
 }
 
 bool capture_optional_tensor_metadata(const aclTensor *tensor,
@@ -593,6 +602,7 @@ uint64_t checked_bytes(int64_t elements, size_t element_size) {
 }
 
 size_t append_dims(char *line, size_t capacity, size_t used, const int64_t *dims, uint64_t count) {
+    if (count && dims == nullptr) return capacity;
     const uint64_t limit = count < kMaxDims ? count : kMaxDims;
     for (uint64_t i = 0; i < limit && used < capacity; ++i) {
         const int written = std::snprintf(line + used, capacity - used, "%s%" PRId64,
@@ -751,7 +761,8 @@ void log_tensor_value_summary(const char *role, uint64_t invocation, aclOpExecut
 }
 
 void log_tensor(const char *api, const char *role, uint64_t invocation, aclOpExecutor *executor,
-                const aclTensor *tensor) {
+                const aclTensor *tensor) try {
+    dcat_metadata::CaptureScope capture_scope;
     char line[4096];
     if (tensor == nullptr) {
         const int written = std::snprintf(
@@ -773,20 +784,20 @@ void log_tensor(const char *api, const char *role, uint64_t invocation, aclOpExe
     aclDataType dtype = ACL_DT_UNDEFINED;
     aclFormat format = ACL_FORMAT_UNDEFINED;
     int64_t view_offset = 0;
-    int64_t *view_dims = nullptr;
-    int64_t *storage_dims = nullptr;
-    int64_t *strides = nullptr;
+    dcat_metadata::OwnedArray view_dims;
+    dcat_metadata::OwnedArray storage_dims;
+    dcat_metadata::OwnedArray strides;
     uint64_t view_count = 0;
     uint64_t storage_count = 0;
     uint64_t stride_count = 0;
     void *raw_addr = nullptr;
-    (void)aclGetDataType(tensor, &dtype);
-    (void)aclGetFormat(tensor, &format);
-    (void)aclGetViewOffset(tensor, &view_offset);
-    (void)aclGetViewShape(tensor, &view_dims, &view_count);
-    (void)aclGetStorageShape(tensor, &storage_dims, &storage_count);
-    (void)aclGetViewStrides(tensor, &strides, &stride_count);
-    (void)aclGetRawTensorAddr(tensor, &raw_addr);
+    if (aclGetDataType(tensor, &dtype) != ACL_SUCCESS ||
+        aclGetFormat(tensor, &format) != ACL_SUCCESS ||
+        aclGetViewOffset(tensor, &view_offset) != ACL_SUCCESS ||
+        view_dims.read(aclGetViewShape, tensor, &view_count) != ACL_SUCCESS ||
+        storage_dims.read(aclGetStorageShape, tensor, &storage_count) != ACL_SUCCESS ||
+        strides.read(aclGetViewStrides, tensor, &stride_count) != ACL_SUCCESS ||
+        aclGetRawTensorAddr(tensor, &raw_addr) != ACL_SUCCESS) return;
 
     const int64_t numel = tensor->Numel();
     const int64_t storage_elements = tensor->Size();
@@ -848,6 +859,8 @@ void log_tensor(const char *api, const char *role, uint64_t invocation, aclOpExe
     }
     used += static_cast<size_t>(written);
     write_line(line, used);
+} catch (...) {
+    dcat_metadata::capture_exception();
 }
 
 void log_matmul_summary(const char *event, uint64_t invocation,
@@ -878,6 +891,10 @@ void log_matmul_summary(const char *event, uint64_t invocation,
 }
 
 }  // namespace
+
+extern "C" int dcat20_metadata_arrays_v1(DcatMetadataArrayStateV1* output) {
+    return dcat_metadata::snapshot(output);
+}
 
 extern "C" uint32_t fault20_metadata_proxy_abi_v17() {
     return FAULT20_METADATA_ABI_VERSION;

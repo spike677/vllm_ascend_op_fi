@@ -1,5 +1,6 @@
 // Minimal extraction of the CANN 8.5.1 historical lifecycle proxy.
 #include "fault39_metadata.h"
+#include "metadata_array_owner.h"
 #include "fault39_build_profile.h"
 #include <acl/acl.h>
 #include <aclnn/acl_meta.h>
@@ -58,6 +59,9 @@ void resolve() {
 }
 }
 extern "C" uint32_t fault39_metadata_proxy_abi_v1(){return 1;}
+extern "C" int fault39_metadata_arrays_v1(DcatMetadataArrayStateV1* output) {
+ return dcat_metadata::snapshot(output);
+}
 extern "C" aclnnStatus aclnnMatmulGetWorkspaceSize(const aclTensor* self,const aclTensor* mat2,
  aclTensor* out,int8_t cube_math_type,uint64_t* workspace_size,aclOpExecutor** executor) {
  std::call_once(once,resolve); if(!getws)return 1;

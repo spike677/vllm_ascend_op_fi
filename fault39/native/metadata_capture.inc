@@ -39,16 +39,17 @@ bool is_contiguous(const int64_t *shape, uint64_t shape_count, const int64_t *st
     return true;
 }
 
-bool capture_tensor_metadata(const aclTensor *tensor, Fault39TensorMetadata *metadata) {
+bool capture_tensor_metadata(const aclTensor *tensor, Fault39TensorMetadata *metadata) try {
+    dcat_metadata::CaptureScope capture_scope;
     if (tensor == nullptr || metadata == nullptr) {
         return false;
     }
     aclDataType dtype = ACL_DT_UNDEFINED;
     aclFormat format = ACL_FORMAT_UNDEFINED;
     int64_t view_offset = 0;
-    int64_t *view_dims = nullptr;
-    int64_t *storage_dims = nullptr;
-    int64_t *strides = nullptr;
+    dcat_metadata::OwnedArray view_dims;
+    dcat_metadata::OwnedArray storage_dims;
+    dcat_metadata::OwnedArray strides;
     uint64_t view_count = 0;
     uint64_t storage_count = 0;
     uint64_t stride_count = 0;
@@ -56,9 +57,9 @@ bool capture_tensor_metadata(const aclTensor *tensor, Fault39TensorMetadata *met
     if (aclGetDataType(tensor, &dtype) != ACL_SUCCESS ||
         aclGetFormat(tensor, &format) != ACL_SUCCESS ||
         aclGetViewOffset(tensor, &view_offset) != ACL_SUCCESS ||
-        aclGetViewShape(tensor, &view_dims, &view_count) != ACL_SUCCESS ||
-        aclGetStorageShape(tensor, &storage_dims, &storage_count) != ACL_SUCCESS ||
-        aclGetViewStrides(tensor, &strides, &stride_count) != ACL_SUCCESS ||
+        view_dims.read(aclGetViewShape, tensor, &view_count) != ACL_SUCCESS ||
+        storage_dims.read(aclGetStorageShape, tensor, &storage_count) != ACL_SUCCESS ||
+        strides.read(aclGetViewStrides, tensor, &stride_count) != ACL_SUCCESS ||
         aclGetRawTensorAddr(tensor, &raw_addr) != ACL_SUCCESS || view_count == 0 ||
         storage_count == 0 || stride_count == 0 || view_count > 16 ||
         storage_count > 16 || stride_count > 16) {
@@ -106,5 +107,7 @@ bool capture_tensor_metadata(const aclTensor *tensor, Fault39TensorMetadata *met
     value.data_addr = reinterpret_cast<uintptr_t>(tensor->GetData());
     *metadata = value;
     return true;
+} catch (...) {
+    dcat_metadata::capture_exception();
+    return false;
 }
-

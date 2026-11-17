@@ -111,6 +111,8 @@ def generate(toolkit,real,split,out,abi_facts,source_opapi,operator='matmul',mat
         preload = fault20_sources / 'l4_buffer_substitute_allhit_v1'
         source_paths = [
             native / 'runtime_identity.h', native / 'test_identity.py',
+            native / 'metadata_array_owner.h', native / 'test_metadata_ownership.py',
+            native / 'metadata_ownership_fixture.cpp',
             Path(__file__).resolve(), Path(__file__).resolve().with_name('deployment_profile.py'),
             *(adapter_dir / name for name in ('build_qmm.sh', 'fault20_abi_probe.cpp',
                                              'matmul_auto.h', 'qmm_auto.inc',
@@ -138,6 +140,13 @@ def generate(toolkit,real,split,out,abi_facts,source_opapi,operator='matmul',mat
         proxy_layout='main_nn_math' if math else ('main_and_nn' if split else 'main_only'),abi_facts=facts,sources=sources,
         installation=metadata,headers=headers,libraries=libraries,upstream_libraries=upstream,required_exports=needs,
         acceptance='BUILD_IDENTITY_ONLY_REQUIRES_REAL_DISCOVERY_AND_LOSSLESS',actual_npu_calls=0)
+    profile['metadata_array_ownership'] = dict(
+        schema='demoncat.metadata_arrays.v1',
+        state_symbol='dcat20_metadata_arrays_v1' if isolated_fault20 else 'fault39_metadata_arrays_v1',
+        proxy_images=['libopapi.so'] + (['libopapi_nn.so'] if split else []),
+        state_version=1, counter_scope='SDK_GETTER_ARRAYS_PER_LOADED_PROXY',
+        reset_supported=False, runtime_quiescent_readback_required=True,
+        numerical_or_resource_qualification=False)
     if isolated_fault20:
         distribution = importlib.metadata.distribution('torch-npu')
         torch_npu_library = Path(distribution.locate_file('torch_npu/lib/libtorch_npu.so'))
