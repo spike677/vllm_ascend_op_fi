@@ -774,7 +774,8 @@ void log_tensor(const char *api, const char *role, uint64_t invocation, aclOpExe
             "\"present\":false}",
             api, role, static_cast<long>(getpid()), static_cast<long>(syscall(SYS_gettid)),
             monotonic_ns(), g_sequence.fetch_add(1, std::memory_order_relaxed) + 1, invocation,
-            executor, nullptr, tensor);
+            static_cast<void*>(executor), static_cast<void*>(nullptr),
+            const_cast<void*>(static_cast<const void*>(tensor)));
         if (written > 0 && static_cast<size_t>(written) < sizeof(line)) {
             write_line(line, static_cast<size_t>(written));
         }
@@ -821,7 +822,9 @@ void log_tensor(const char *api, const char *role, uint64_t invocation, aclOpExe
         ",\"view_offset\":%" PRId64 ",\"view_shape\":[",
         api, role, static_cast<long>(getpid()), static_cast<long>(syscall(SYS_gettid)),
         monotonic_ns(), g_sequence.fetch_add(1, std::memory_order_relaxed) + 1, invocation,
-        executor, nullptr, tensor, storage, storage_addr, raw_addr, data_addr,
+        static_cast<void*>(executor), static_cast<void*>(nullptr),
+        const_cast<void*>(static_cast<const void*>(tensor)),
+        const_cast<void*>(static_cast<const void*>(storage)), storage_addr, raw_addr, data_addr,
         static_cast<int>(dtype), static_cast<int>(format), element_size, numel,
         nominal_view_bytes, storage_elements, storage_bytes, view_offset);
     if (written < 0 || static_cast<size_t>(written) >= sizeof(line)) {
