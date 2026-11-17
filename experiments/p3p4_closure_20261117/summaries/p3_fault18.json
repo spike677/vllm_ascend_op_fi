@@ -1,0 +1,1392 @@
+{
+  "schema": "demoncat.msprobe.call_diagnostics.group.v1",
+  "status": "DIAGNOSTICS_ONLY_STRICT_RESULT_RETAINED",
+  "strict_original_result": {
+    "schema_version": 1,
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "generated_responses_read": false,
+    "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+    "rank": 0,
+    "step_semantics": "Actual collector steps in numeric order; not inferred token numbers",
+    "comparison_policy": {
+      "rtol": 1e-05,
+      "atol": 1e-08,
+      "rule": "abs(F-B) > atol + rtol*abs(B)"
+    },
+    "limitations": [
+      "Null statistics remain unobservable; equality of hidden values is not established.",
+      "Later generated inputs can differ between B/F; this comparator does not infer their cause.",
+      "Step numbers and matching stacks do not independently prove request identity.",
+      "Statistical first difference does not uniquely establish a physical fault mechanism."
+    ],
+    "steps": [
+      {
+        "step": 0,
+        "relative_path": "observation/step0/rank0",
+        "report": {
+          "baseline": {
+            "dump.json": "5204d029ca21d21b0fea1b63cdff3a4eaf62ab206cbcc79622994b38c7432173",
+            "stack.json": "2eb768c408fcbcfbf1a30f24d1b608fe08fe1cab24498a6ff9ed3ae95394a8f0",
+            "construct.json": "c132927cae6267bb4b194c4dbfc01df25635c8deb8c75df75d503cff547690a2"
+          },
+          "fault": {
+            "dump.json": "1935dc175548a8e91180b02fd3e5940199a38c5a20e320d44cfebed60bc5eba4",
+            "stack.json": "30ceb1f52692f77e7b7b778cc3b2d4780f144125c9887862c6961af313dfa121",
+            "construct.json": "7f577d42a42b2c17a712c194031bc4d0a15dab1d58bd04fb1797320b0cb3ca5a"
+          },
+          "source": "RAW_MSPROBE_STATISTICS_MIX",
+          "native_logs_read": false,
+          "private_tensors_read": false,
+          "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "status": "ALIGNMENT_MISMATCH",
+          "mismatched": "structure"
+        },
+        "status": "ALIGNMENT_MISMATCH"
+      },
+      {
+        "step": 1,
+        "relative_path": "observation/step1/rank0",
+        "report": {
+          "baseline": {
+            "dump.json": "5204d029ca21d21b0fea1b63cdff3a4eaf62ab206cbcc79622994b38c7432173",
+            "stack.json": "2eb768c408fcbcfbf1a30f24d1b608fe08fe1cab24498a6ff9ed3ae95394a8f0",
+            "construct.json": "c132927cae6267bb4b194c4dbfc01df25635c8deb8c75df75d503cff547690a2"
+          },
+          "fault": {
+            "dump.json": "1935dc175548a8e91180b02fd3e5940199a38c5a20e320d44cfebed60bc5eba4",
+            "stack.json": "30ceb1f52692f77e7b7b778cc3b2d4780f144125c9887862c6961af313dfa121",
+            "construct.json": "7f577d42a42b2c17a712c194031bc4d0a15dab1d58bd04fb1797320b0cb3ca5a"
+          },
+          "source": "RAW_MSPROBE_STATISTICS_MIX",
+          "native_logs_read": false,
+          "private_tensors_read": false,
+          "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "status": "ALIGNMENT_MISMATCH",
+          "mismatched": "structure"
+        },
+        "status": "ALIGNMENT_MISMATCH"
+      },
+      {
+        "step": 2,
+        "relative_path": "observation/step2/rank0",
+        "report": {
+          "baseline": {
+            "dump.json": "5204d029ca21d21b0fea1b63cdff3a4eaf62ab206cbcc79622994b38c7432173",
+            "stack.json": "2eb768c408fcbcfbf1a30f24d1b608fe08fe1cab24498a6ff9ed3ae95394a8f0",
+            "construct.json": "c132927cae6267bb4b194c4dbfc01df25635c8deb8c75df75d503cff547690a2"
+          },
+          "fault": {
+            "dump.json": "1935dc175548a8e91180b02fd3e5940199a38c5a20e320d44cfebed60bc5eba4",
+            "stack.json": "30ceb1f52692f77e7b7b778cc3b2d4780f144125c9887862c6961af313dfa121",
+            "construct.json": "7f577d42a42b2c17a712c194031bc4d0a15dab1d58bd04fb1797320b0cb3ca5a"
+          },
+          "source": "RAW_MSPROBE_STATISTICS_MIX",
+          "native_logs_read": false,
+          "private_tensors_read": false,
+          "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+          "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+          "status": "ALIGNMENT_MISMATCH",
+          "mismatched": "structure"
+        },
+        "status": "ALIGNMENT_MISMATCH"
+      }
+    ],
+    "first_difference": null,
+    "blocking_steps": [
+      0,
+      1,
+      2
+    ],
+    "baseline_steps": [
+      0,
+      1,
+      2
+    ],
+    "fault_steps": [
+      0,
+      1,
+      2
+    ],
+    "missing_from_baseline": [],
+    "missing_from_fault": [],
+    "all_steps_aligned": false,
+    "status": "INCOMPLETE_COMPARISON"
+  },
+  "strict_acceptance_overridden": false,
+  "global_first_difference": null,
+  "native_logs_read": false,
+  "tensor_payloads_read": false,
+  "rules": {
+    "version": "source-invocation-diagnostics-v1",
+    "identity": "operator family + exact resolved source stack + exact construct entry",
+    "uniqueness": "exactly one record for that context on each side; repeated contexts are ambiguous",
+    "order": "all shared unique anchors must preserve relative order",
+    "missing_context": "missing/empty stack or missing construct refuses pairing; null construct is disclosed",
+    "arguments": "scalar argument changes keep invocation identity but forbid same-arguments attribution",
+    "outputs": "scalar output changes are observations, not argument identity changes",
+    "tensor_statistics": "only compare matching complete tensor descriptions; preserve null/nonfinite",
+    "unpaired": "retain every record and its surrounding shared anchors; never delete inserted calls",
+    "global_first_difference": "never supplied by this diagnostic; retain the unchanged strict report",
+    "formula": "abs(F-B) > 1e-8 + 1e-5*abs(B)"
+  },
+  "rules_sha256": "aa8b43b5672e79fb2fe2d13d967a98e39f4ffe599a89bb920fcd4a69bc584b18",
+  "implementation_sha256": {
+    "diagnostics.py": "50af14f23b3d24471ae2e4f5f29f444dcee2e267980eb9771b7e4c9e417b0881",
+    "diagnose_call_sequence.py": "39d318810fa0f1188dc17669f184788b53908152a7b1536e86f9ebfa2da96bd4",
+    "compare_msprobe.py": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+    "compare_model_capture.py": "8404ce2214e190556f953a70e28c7d30365ab082d36601a36a2ecd062417f6f8"
+  },
+  "limitations": [
+    "No global first difference is inferred by diagnostic pairing",
+    "Shared callsite does not prove scheduler request mapping or producer-consumer storage identity",
+    "Unchanged argument descriptions/statistics do not establish complete input equality",
+    "Null and paired NaN are unobservable/uncomparable, never equality",
+    "Collector step numbers are preserved, not interpreted as decode tokens"
+  ],
+  "prior_strict_report": {
+    "sha256": "0b10bcdf59247bb9da6bf35c2e4874146d1345f1c0b3033c065f19fe76d713ac",
+    "same_as_recomputed": true,
+    "status": "INCOMPLETE_COMPARISON",
+    "first_difference": null
+  },
+  "summary_only": true,
+  "steps": [
+    {
+      "step": 0,
+      "rank": 0,
+      "schema": "demoncat.msprobe.call_diagnostics.v1",
+      "rules_sha256": "aa8b43b5672e79fb2fe2d13d967a98e39f4ffe599a89bb920fcd4a69bc584b18",
+      "strict_acceptance_overridden": false,
+      "global_first_difference": null,
+      "source": "RAW_STATISTICS_STACK_CONSTRUCT_ONLY",
+      "native_logs_read": false,
+      "tensor_payloads_read": false,
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "capture_metadata_aligned": true,
+      "anchor_order_preserved": true,
+      "counts": {
+        "baseline": 3,
+        "fault": 5,
+        "matched": 3
+      },
+      "unpaired_windows": [
+        {
+          "side": "fault",
+          "index": 1,
+          "operator": "Tensor.__mul__.0.forward",
+          "reason": "AMBIGUOUS_REPEATED_CONTEXT",
+          "previous_shared_anchor": "Module.a.RMSNorm.forward.0",
+          "next_shared_anchor": "Module.b.RMSNorm.forward.0",
+          "first_raw_stack_frame": "File /source/fault_injection/module_faults.py, line 145, in leave, \n return output * 0.5 if self.arm == 'fault' else None",
+          "scalar_records": [
+            {
+              "path": "/input_args/1",
+              "record": {
+                "type": "float",
+                "value": 0.5
+              }
+            }
+          ],
+          "tensor_observations": [
+            {
+              "path": "/input_args/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 1.7051955461502075,
+                "Min": -1.7051955461502075,
+                "Mean": null,
+                "Norm": null
+              }
+            },
+            {
+              "path": "/output/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 0.8525977730751038,
+                "Min": -0.8525977730751038,
+                "Mean": null,
+                "Norm": null
+              }
+            }
+          ],
+          "producer_consumer_identity": "UNPROVEN",
+          "numerical_comparison_accepted": false
+        },
+        {
+          "side": "fault",
+          "index": 3,
+          "operator": "Tensor.__mul__.1.forward",
+          "reason": "AMBIGUOUS_REPEATED_CONTEXT",
+          "previous_shared_anchor": "Module.b.RMSNorm.forward.0",
+          "next_shared_anchor": "Tensor.__add__.0.forward",
+          "first_raw_stack_frame": "File /source/fault_injection/module_faults.py, line 145, in leave, \n return output * 0.5 if self.arm == 'fault' else None",
+          "scalar_records": [
+            {
+              "path": "/input_args/1",
+              "record": {
+                "type": "float",
+                "value": 0.5
+              }
+            }
+          ],
+          "tensor_observations": [
+            {
+              "path": "/input_args/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 1.7051955461502075,
+                "Min": -1.7051955461502075,
+                "Mean": null,
+                "Norm": null
+              }
+            },
+            {
+              "path": "/output/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 0.8525977730751038,
+                "Min": -0.8525977730751038,
+                "Mean": null,
+                "Norm": null
+              }
+            }
+          ],
+          "producer_consumer_identity": "UNPROVEN",
+          "numerical_comparison_accepted": false
+        }
+      ],
+      "changed_tensor_fields": [
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Max",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": 1.7051955461502075,
+          "fault": 0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Min",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": -1.7051955461502075,
+          "fault": -0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Max",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": 1.7051955461502075,
+          "fault": 0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Min",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": -1.7051955461502075,
+          "fault": -0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Max",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": 3.410391092300415,
+          "fault": 1.7051955461502075,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -1.7051955461502075,
+          "absolute_difference": 1.7051955461502075,
+          "threshold": 3.411391092300415e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Min",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": -3.410391092300415,
+          "fault": -1.7051955461502075,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 1.7051955461502075,
+          "absolute_difference": 1.7051955461502075,
+          "threshold": 3.411391092300415e-05,
+          "relative_change_reason": null
+        }
+      ],
+      "changed_scalar_outputs": [],
+      "first_local_tensor_change": {
+        "baseline_operator": "Tensor.__add__.0.forward",
+        "fault_operator": "Tensor.__add__.0.forward",
+        "path": "/input_args/0",
+        "field": "Max",
+        "same_argument_descriptions": true,
+        "not_global_first_difference": true,
+        "baseline": 1.7051955461502075,
+        "fault": 0.8525977730751038,
+        "exact_change": true,
+        "exceeds_tolerance": true,
+        "relative_change": 0.5,
+        "status": "OBSERVABLE_FINITE",
+        "signed_difference": -0.8525977730751038,
+        "absolute_difference": 0.8525977730751038,
+        "threshold": 1.7061955461502077e-05,
+        "relative_change_reason": null
+      },
+      "status": "DIAGNOSTIC_ONLY_NO_GLOBAL_FIRST_DIFFERENCE",
+      "baseline_raw_sha256": {
+        "dump.json": "5204d029ca21d21b0fea1b63cdff3a4eaf62ab206cbcc79622994b38c7432173",
+        "stack.json": "2eb768c408fcbcfbf1a30f24d1b608fe08fe1cab24498a6ff9ed3ae95394a8f0",
+        "construct.json": "c132927cae6267bb4b194c4dbfc01df25635c8deb8c75df75d503cff547690a2"
+      },
+      "fault_raw_sha256": {
+        "dump.json": "1935dc175548a8e91180b02fd3e5940199a38c5a20e320d44cfebed60bc5eba4",
+        "stack.json": "30ceb1f52692f77e7b7b778cc3b2d4780f144125c9887862c6961af313dfa121",
+        "construct.json": "7f577d42a42b2c17a712c194031bc4d0a15dab1d58bd04fb1797320b0cb3ca5a"
+      },
+      "complete_record_ledger_sha256": "a7fed20900a6b1984983bf6cd31fda95b031e4849e4673351c000c53b058dfd7",
+      "ledger_preserved_in_private_details": true,
+      "unobservable_fields_count": 18,
+      "unobservable_fields": [
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        }
+      ],
+      "paired_invocation_changes": []
+    },
+    {
+      "step": 1,
+      "rank": 0,
+      "schema": "demoncat.msprobe.call_diagnostics.v1",
+      "rules_sha256": "aa8b43b5672e79fb2fe2d13d967a98e39f4ffe599a89bb920fcd4a69bc584b18",
+      "strict_acceptance_overridden": false,
+      "global_first_difference": null,
+      "source": "RAW_STATISTICS_STACK_CONSTRUCT_ONLY",
+      "native_logs_read": false,
+      "tensor_payloads_read": false,
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "capture_metadata_aligned": true,
+      "anchor_order_preserved": true,
+      "counts": {
+        "baseline": 3,
+        "fault": 5,
+        "matched": 3
+      },
+      "unpaired_windows": [
+        {
+          "side": "fault",
+          "index": 1,
+          "operator": "Tensor.__mul__.0.forward",
+          "reason": "AMBIGUOUS_REPEATED_CONTEXT",
+          "previous_shared_anchor": "Module.a.RMSNorm.forward.0",
+          "next_shared_anchor": "Module.b.RMSNorm.forward.0",
+          "first_raw_stack_frame": "File /source/fault_injection/module_faults.py, line 145, in leave, \n return output * 0.5 if self.arm == 'fault' else None",
+          "scalar_records": [
+            {
+              "path": "/input_args/1",
+              "record": {
+                "type": "float",
+                "value": 0.5
+              }
+            }
+          ],
+          "tensor_observations": [
+            {
+              "path": "/input_args/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 1.7051955461502075,
+                "Min": -1.7051955461502075,
+                "Mean": null,
+                "Norm": null
+              }
+            },
+            {
+              "path": "/output/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 0.8525977730751038,
+                "Min": -0.8525977730751038,
+                "Mean": null,
+                "Norm": null
+              }
+            }
+          ],
+          "producer_consumer_identity": "UNPROVEN",
+          "numerical_comparison_accepted": false
+        },
+        {
+          "side": "fault",
+          "index": 3,
+          "operator": "Tensor.__mul__.1.forward",
+          "reason": "AMBIGUOUS_REPEATED_CONTEXT",
+          "previous_shared_anchor": "Module.b.RMSNorm.forward.0",
+          "next_shared_anchor": "Tensor.__add__.0.forward",
+          "first_raw_stack_frame": "File /source/fault_injection/module_faults.py, line 145, in leave, \n return output * 0.5 if self.arm == 'fault' else None",
+          "scalar_records": [
+            {
+              "path": "/input_args/1",
+              "record": {
+                "type": "float",
+                "value": 0.5
+              }
+            }
+          ],
+          "tensor_observations": [
+            {
+              "path": "/input_args/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 1.7051955461502075,
+                "Min": -1.7051955461502075,
+                "Mean": null,
+                "Norm": null
+              }
+            },
+            {
+              "path": "/output/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 0.8525977730751038,
+                "Min": -0.8525977730751038,
+                "Mean": null,
+                "Norm": null
+              }
+            }
+          ],
+          "producer_consumer_identity": "UNPROVEN",
+          "numerical_comparison_accepted": false
+        }
+      ],
+      "changed_tensor_fields": [
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Max",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": 1.7051955461502075,
+          "fault": 0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Min",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": -1.7051955461502075,
+          "fault": -0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Max",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": 1.7051955461502075,
+          "fault": 0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Min",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": -1.7051955461502075,
+          "fault": -0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Max",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": 3.410391092300415,
+          "fault": 1.7051955461502075,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -1.7051955461502075,
+          "absolute_difference": 1.7051955461502075,
+          "threshold": 3.411391092300415e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Min",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": -3.410391092300415,
+          "fault": -1.7051955461502075,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 1.7051955461502075,
+          "absolute_difference": 1.7051955461502075,
+          "threshold": 3.411391092300415e-05,
+          "relative_change_reason": null
+        }
+      ],
+      "changed_scalar_outputs": [],
+      "first_local_tensor_change": {
+        "baseline_operator": "Tensor.__add__.0.forward",
+        "fault_operator": "Tensor.__add__.0.forward",
+        "path": "/input_args/0",
+        "field": "Max",
+        "same_argument_descriptions": true,
+        "not_global_first_difference": true,
+        "baseline": 1.7051955461502075,
+        "fault": 0.8525977730751038,
+        "exact_change": true,
+        "exceeds_tolerance": true,
+        "relative_change": 0.5,
+        "status": "OBSERVABLE_FINITE",
+        "signed_difference": -0.8525977730751038,
+        "absolute_difference": 0.8525977730751038,
+        "threshold": 1.7061955461502077e-05,
+        "relative_change_reason": null
+      },
+      "status": "DIAGNOSTIC_ONLY_NO_GLOBAL_FIRST_DIFFERENCE",
+      "baseline_raw_sha256": {
+        "dump.json": "5204d029ca21d21b0fea1b63cdff3a4eaf62ab206cbcc79622994b38c7432173",
+        "stack.json": "2eb768c408fcbcfbf1a30f24d1b608fe08fe1cab24498a6ff9ed3ae95394a8f0",
+        "construct.json": "c132927cae6267bb4b194c4dbfc01df25635c8deb8c75df75d503cff547690a2"
+      },
+      "fault_raw_sha256": {
+        "dump.json": "1935dc175548a8e91180b02fd3e5940199a38c5a20e320d44cfebed60bc5eba4",
+        "stack.json": "30ceb1f52692f77e7b7b778cc3b2d4780f144125c9887862c6961af313dfa121",
+        "construct.json": "7f577d42a42b2c17a712c194031bc4d0a15dab1d58bd04fb1797320b0cb3ca5a"
+      },
+      "complete_record_ledger_sha256": "a7fed20900a6b1984983bf6cd31fda95b031e4849e4673351c000c53b058dfd7",
+      "ledger_preserved_in_private_details": true,
+      "unobservable_fields_count": 18,
+      "unobservable_fields": [
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        }
+      ],
+      "paired_invocation_changes": []
+    },
+    {
+      "step": 2,
+      "rank": 0,
+      "schema": "demoncat.msprobe.call_diagnostics.v1",
+      "rules_sha256": "aa8b43b5672e79fb2fe2d13d967a98e39f4ffe599a89bb920fcd4a69bc584b18",
+      "strict_acceptance_overridden": false,
+      "global_first_difference": null,
+      "source": "RAW_STATISTICS_STACK_CONSTRUCT_ONLY",
+      "native_logs_read": false,
+      "tensor_payloads_read": false,
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "capture_metadata_aligned": true,
+      "anchor_order_preserved": true,
+      "counts": {
+        "baseline": 3,
+        "fault": 5,
+        "matched": 3
+      },
+      "unpaired_windows": [
+        {
+          "side": "fault",
+          "index": 1,
+          "operator": "Tensor.__mul__.0.forward",
+          "reason": "AMBIGUOUS_REPEATED_CONTEXT",
+          "previous_shared_anchor": "Module.a.RMSNorm.forward.0",
+          "next_shared_anchor": "Module.b.RMSNorm.forward.0",
+          "first_raw_stack_frame": "File /source/fault_injection/module_faults.py, line 145, in leave, \n return output * 0.5 if self.arm == 'fault' else None",
+          "scalar_records": [
+            {
+              "path": "/input_args/1",
+              "record": {
+                "type": "float",
+                "value": 0.5
+              }
+            }
+          ],
+          "tensor_observations": [
+            {
+              "path": "/input_args/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 1.7051955461502075,
+                "Min": -1.7051955461502075,
+                "Mean": null,
+                "Norm": null
+              }
+            },
+            {
+              "path": "/output/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 0.8525977730751038,
+                "Min": -0.8525977730751038,
+                "Mean": null,
+                "Norm": null
+              }
+            }
+          ],
+          "producer_consumer_identity": "UNPROVEN",
+          "numerical_comparison_accepted": false
+        },
+        {
+          "side": "fault",
+          "index": 3,
+          "operator": "Tensor.__mul__.1.forward",
+          "reason": "AMBIGUOUS_REPEATED_CONTEXT",
+          "previous_shared_anchor": "Module.b.RMSNorm.forward.0",
+          "next_shared_anchor": "Tensor.__add__.0.forward",
+          "first_raw_stack_frame": "File /source/fault_injection/module_faults.py, line 145, in leave, \n return output * 0.5 if self.arm == 'fault' else None",
+          "scalar_records": [
+            {
+              "path": "/input_args/1",
+              "record": {
+                "type": "float",
+                "value": 0.5
+              }
+            }
+          ],
+          "tensor_observations": [
+            {
+              "path": "/input_args/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 1.7051955461502075,
+                "Min": -1.7051955461502075,
+                "Mean": null,
+                "Norm": null
+              }
+            },
+            {
+              "path": "/output/0",
+              "description": {
+                "type": "torch.Tensor",
+                "dtype": "torch.float32",
+                "shape": [
+                  4,
+                  32
+                ],
+                "requires_grad": false
+              },
+              "statistics": {
+                "Max": 0.8525977730751038,
+                "Min": -0.8525977730751038,
+                "Mean": null,
+                "Norm": null
+              }
+            }
+          ],
+          "producer_consumer_identity": "UNPROVEN",
+          "numerical_comparison_accepted": false
+        }
+      ],
+      "changed_tensor_fields": [
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Max",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": 1.7051955461502075,
+          "fault": 0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Min",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": -1.7051955461502075,
+          "fault": -0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Max",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": 1.7051955461502075,
+          "fault": 0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Min",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": -1.7051955461502075,
+          "fault": -0.8525977730751038,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 0.8525977730751038,
+          "absolute_difference": 0.8525977730751038,
+          "threshold": 1.7061955461502077e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Max",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": 3.410391092300415,
+          "fault": 1.7051955461502075,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": -1.7051955461502075,
+          "absolute_difference": 1.7051955461502075,
+          "threshold": 3.411391092300415e-05,
+          "relative_change_reason": null
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Min",
+          "same_argument_descriptions": true,
+          "not_global_first_difference": true,
+          "baseline": -3.410391092300415,
+          "fault": -1.7051955461502075,
+          "exact_change": true,
+          "exceeds_tolerance": true,
+          "relative_change": 0.5,
+          "status": "OBSERVABLE_FINITE",
+          "signed_difference": 1.7051955461502075,
+          "absolute_difference": 1.7051955461502075,
+          "threshold": 3.411391092300415e-05,
+          "relative_change_reason": null
+        }
+      ],
+      "changed_scalar_outputs": [],
+      "first_local_tensor_change": {
+        "baseline_operator": "Tensor.__add__.0.forward",
+        "fault_operator": "Tensor.__add__.0.forward",
+        "path": "/input_args/0",
+        "field": "Max",
+        "same_argument_descriptions": true,
+        "not_global_first_difference": true,
+        "baseline": 1.7051955461502075,
+        "fault": 0.8525977730751038,
+        "exact_change": true,
+        "exceeds_tolerance": true,
+        "relative_change": 0.5,
+        "status": "OBSERVABLE_FINITE",
+        "signed_difference": -0.8525977730751038,
+        "absolute_difference": 0.8525977730751038,
+        "threshold": 1.7061955461502077e-05,
+        "relative_change_reason": null
+      },
+      "status": "DIAGNOSTIC_ONLY_NO_GLOBAL_FIRST_DIFFERENCE",
+      "baseline_raw_sha256": {
+        "dump.json": "5204d029ca21d21b0fea1b63cdff3a4eaf62ab206cbcc79622994b38c7432173",
+        "stack.json": "2eb768c408fcbcfbf1a30f24d1b608fe08fe1cab24498a6ff9ed3ae95394a8f0",
+        "construct.json": "c132927cae6267bb4b194c4dbfc01df25635c8deb8c75df75d503cff547690a2"
+      },
+      "fault_raw_sha256": {
+        "dump.json": "1935dc175548a8e91180b02fd3e5940199a38c5a20e320d44cfebed60bc5eba4",
+        "stack.json": "30ceb1f52692f77e7b7b778cc3b2d4780f144125c9887862c6961af313dfa121",
+        "construct.json": "7f577d42a42b2c17a712c194031bc4d0a15dab1d58bd04fb1797320b0cb3ca5a"
+      },
+      "complete_record_ledger_sha256": "a7fed20900a6b1984983bf6cd31fda95b031e4849e4673351c000c53b058dfd7",
+      "ledger_preserved_in_private_details": true,
+      "unobservable_fields_count": 18,
+      "unobservable_fields": [
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.a.RMSNorm.forward.0",
+          "fault_operator": "Module.a.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Module.b.RMSNorm.forward.0",
+          "fault_operator": "Module.b.RMSNorm.forward.0",
+          "path": "/parameters/weight",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/input_args/1",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Mean",
+          "status": "UNOBSERVABLE"
+        },
+        {
+          "baseline_operator": "Tensor.__add__.0.forward",
+          "fault_operator": "Tensor.__add__.0.forward",
+          "path": "/output/0",
+          "field": "Norm",
+          "status": "UNOBSERVABLE"
+        }
+      ],
+      "paired_invocation_changes": []
+    }
+  ]
+}

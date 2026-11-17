@@ -1,0 +1,19 @@
+{
+  "rules": {
+    "version": "source-invocation-diagnostics-v1",
+    "identity": "operator family + exact resolved source stack + exact construct entry",
+    "uniqueness": "exactly one record for that context on each side; repeated contexts are ambiguous",
+    "order": "all shared unique anchors must preserve relative order",
+    "missing_context": "missing/empty stack or missing construct refuses pairing; null construct is disclosed",
+    "arguments": "scalar argument changes keep invocation identity but forbid same-arguments attribution",
+    "outputs": "scalar output changes are observations, not argument identity changes",
+    "tensor_statistics": "only compare matching complete tensor descriptions; preserve null/nonfinite",
+    "unpaired": "retain every record and its surrounding shared anchors; never delete inserted calls",
+    "global_first_difference": "never supplied by this diagnostic; retain the unchanged strict report",
+    "formula": "abs(F-B) > 1e-8 + 1e-5*abs(B)"
+  },
+  "rules_sha256": "aa8b43b5672e79fb2fe2d13d967a98e39f4ffe599a89bb920fcd4a69bc584b18",
+  "fixed_rtol": 1e-05,
+  "fixed_atol": 1e-08,
+  "strict_comparator_modified": false
+}

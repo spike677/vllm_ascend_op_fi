@@ -1,0 +1,296 @@
+{
+  "schema": "demoncat.p3p4.mechanism_delta.v1",
+  "baseline": "d1c8a20c8d3f832b911011628e0901766be36cea",
+  "previous_matrix_sha256": "6413779ec7027e59b18bd3ffc83c486b2b69064a28efde38cfa48022b74280cd",
+  "new_common_worker_positive_mechanisms": 2,
+  "all_eligible_qualified_mechanisms": 0,
+  "new_raw_statistics_published": false,
+  "models": {
+    "glm": {
+      "status": "PASS_PRETRAINED_NPU_INFERENCE_NOT_FAULT_ACCEPTANCE",
+      "actual_model_class": "vllm.model_executor.models.glm4.Glm4ForCausalLM",
+      "actual_model_type": "glm4",
+      "native_fault_qualified": false,
+      "evidence": "summaries/glm-admission.json"
+    },
+    "deepseek": {
+      "status": "PASS_PRETRAINED_NPU_INFERENCE_NOT_FAULT_ACCEPTANCE",
+      "actual_model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+      "actual_model_type": "deepseek_v2",
+      "native_fault_qualified": false,
+      "evidence": "summaries/deepseek-admission.json"
+    }
+  },
+  "mechanisms": [
+    {
+      "mechanism": "8.restore_offset",
+      "previous_current_level": "AUDITED",
+      "previous_result": "历史配对路由源码已找回；依赖和共享 Provider 未闭合，未在新 MoE 模型注入。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "REUSABLE_BUNDLE_INCOMPLETE",
+        "REQUEST_MAPPING_UNPROVEN",
+        "COMMON_WORKER_PROVIDER_MISSING"
+      ],
+      "next_action": "补齐fault8_extension/request_scope等依赖和可信scheduler契约；复用已有Worker身份/生命周期而非直接运行旧全局wrapper。"
+    },
+    {
+      "mechanism": "15.alias_detach",
+      "previous_current_level": "NATIVE_VERIFIED",
+      "previous_result": "构造 NPU 模块 B/F/OFF 通过；视图写入正确，F 原 base 未更新，消费者读旧值。",
+      "change": "P3_DIAGNOSTIC_ALIGNMENT_ADDED_STRICT_FAILURE_RETAINED",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "NATURAL_MODEL_WRITE_CONSUMER_MISSING",
+        "NATIVE_INTERNAL_VIEW_UNOBSERVED",
+        "G9_ALIGNMENT_MISMATCH"
+      ],
+      "next_action": "P3诊断已完成；自然模型与完整首差缺口保留，见本阶段README。",
+      "diagnostic_only": true,
+      "strict_global_first_difference_passed": false
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "previous_current_level": "NATIVE_VERIFIED",
+      "previous_result": "构造 NPU Conv3d B/F/OFF 通过；实际 padding 0,0,0→0,7,7，输出数值改变。",
+      "change": "P3_DIAGNOSTIC_ALIGNMENT_ADDED_STRICT_FAILURE_RETAINED",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "PRETRAINED_VISION_PATH_UNVERIFIED",
+        "G9_ALIGNMENT_MISMATCH"
+      ],
+      "next_action": "P3诊断已完成；自然模型与完整首差缺口保留，见本阶段README。",
+      "diagnostic_only": true,
+      "strict_global_first_difference_passed": false
+    },
+    {
+      "mechanism": "18.api_half",
+      "previous_current_level": "NATIVE_VERIFIED",
+      "previous_result": "两个标准 RMSNorm 自动选点，8/8 适用调用返回减半，OFF 精确恢复。",
+      "change": "P3_DIAGNOSTIC_ALIGNMENT_ADDED_STRICT_FAILURE_RETAINED",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "CUSTOM_RMSNORM_NOT_SUPPORTED",
+        "G9_ALIGNMENT_MISMATCH"
+      ],
+      "next_action": "P3诊断已完成；自然模型与完整首差缺口保留，见本阶段README。",
+      "diagnostic_only": true,
+      "strict_global_first_difference_passed": false
+    },
+    {
+      "mechanism": "20.buffer_substitute",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "共享 Worker 隔离/恢复通过；WeightNz 未观测，QMM TP2 每 rank 观测 3 次，但跨轮稳定目标未成立。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": true,
+      "remaining": [
+        "DEFAULT_PTA_PATH_UNQUALIFIED",
+        "QMM_FAULT_QUALIFICATION_PENDING",
+        "MULTI_TARGET_UNQUALIFIED",
+        "OTHER_DEPLOYMENTS_UNVERIFIED"
+      ],
+      "next_action": "Give an actual quantized intermediate module its own input/output/consumer contract; qualify QMM separately without relabeling the FLOAT output head.",
+      "scope": [
+        "Qwen3-0.6B",
+        "SmolLM2-135M / actual Llama",
+        "TP1 BF16 eager fresh prefill",
+        "one natural output projection",
+        "explicit NZ / controlled PTA deployment"
+      ],
+      "evidence": [
+        "summaries/fault20-fault.json",
+        "summaries/fault20-smollm.json",
+        "summaries/fault20-independent-statistics.json",
+        "summaries/qmm-readonly.json"
+      ]
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "previous_current_level": "AUDITED",
+      "previous_result": "历史错误行代理证据已核对，未找到可重用源码本体；不能称为 uint32 溢出。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "REUSABLE_SOURCE_MISSING",
+        "CACHE_CONSUMER_BINDING_MISSING"
+      ],
+      "next_action": "查experiments/indexselect_wrong_source_row_proxy/source/quick_extension.py，SHA a9bb9cc575e8df871d0a7056b3ad9ef41a5014052d329cf9e23d128ed5defffb。"
+    },
+    {
+      "mechanism": "25.reduce_scatter",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "补齐真实通信组/差值回放设计与 CPU 准入测试，尚无真实 collective 注入。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "NATIVE_IMPLEMENTATION_MISSING",
+        "ACTUAL_GROUP_UNOBSERVED",
+        "SAME_INPUT_DELTA_SAMPLE_MISSING"
+      ],
+      "next_action": "从现有worker确认调用的是torch/HCCL还是ATB/LCCL；取得完整调用和group证明再实现对应typed adapter。"
+    },
+    {
+      "mechanism": "26.residual_stomp",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "保留历史推理闭环；NaN 位于写前目标统计，来源分配尚未证明，严格首差仍阻塞。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "RANK1_FIRST_DIFF_NAN_BLOCKED",
+        "COMMON_WORKER_ADAPTER_PENDING"
+      ],
+      "next_action": "进一步观察写前destination的实际allocation/初始化生命周期；如需全新采集应保持原始记录并独立复核，不靠删除写前NaN通过。"
+    },
+    {
+      "mechanism": "26.fia_destination",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "保留历史真实推理 writer/consumer 证据；共享 Worker 宿主适配待接入。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "COMMON_WORKER_ADAPTER_PENDING",
+        "OTHER_LAYOUTS_UNVERIFIED"
+      ],
+      "next_action": "为共用Extension增加部署factory与trusted replay，保留真实consumer完成/恢复门禁。"
+    },
+    {
+      "mechanism": "quant.batch_shared_scale",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "保留历史 TP2 decode；全张量统计不证明每请求 scale/Q 改变，逐行影响证据不足。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "ALL_ELIGIBLE_MAPPING_UNVERIFIED",
+        "PER_REQUEST_SCALE_Q_IMPACT_UNPROVEN",
+        "COMMON_WORKER_ADAPTER_PENDING"
+      ],
+      "next_action": "核对已保存scheduler row映射、scale/Q逐行辅助证据；缺少则限定为全张量统计与请求输入映射已证。"
+    },
+    {
+      "mechanism": "28.fa.legal_tiling",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "StrategySession CPU 回归通过；共享模型 forward 的原生 FA Provider 接线尚缺。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "MODEL_NATIVE_PROVIDER_NOT_WIRED",
+        "COMMON_WORKER_ADAPTER_PENDING"
+      ],
+      "next_action": "从实际FA API观察构建NativeFAInvocation，只有证书覆盖形状能执行；不同FIA路径不能复用此通过状态。"
+    },
+    {
+      "mechanism": "28.fia.legal_tiling",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "保留合法切分历史数值结果；新 router NPU 未验收，不能承诺统计幅度达标。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "NEW_ROUTER_NPU_PENDING",
+        "FIXED_GEOMETRY_ONLY",
+        "STATISTICAL_MAGNITUDE_TARGET_UNMET"
+      ],
+      "next_action": "用当前router在证书形状验证一次原生launch/恢复；新增形状须新增合法模板及独立证据。"
+    },
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "保留分母重复累计独立机制及历史完整模型证据；新 router 尚缺匹配构建实测。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "NEW_ROUTER_NPU_PENDING",
+        "GENERALIZATION_UNVERIFIED"
+      ],
+      "next_action": "取得匹配vendor源码/manifest并在新router单目标实测，再评估覆盖扩展；无matching build拒绝。"
+    },
+    {
+      "mechanism": "33.paged_decode",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "保留历史分页 decode；严格首差在后续统计，不能声称唯一定位 IFA，连续生成仍待测。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "UNIQUE_FIRST_DIFF_AT_IFA_UNPROVEN",
+        "COMMON_WORKER_ADAPTER_PENDING",
+        "CONTINUOUS_GENERATION_UNVERIFIED"
+      ],
+      "next_action": "先确认整张量统计为何FIA不可见或低阈值，再扩更多decode长度；持续生成需独立验收。"
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "previous_current_level": "CPU_VERIFIED",
+      "previous_result": "真实共享 Worker 的缺回放拒绝、隔离和恢复通过；缺可信 scheduler replay，未执行新注入。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": true,
+      "remaining": [
+        "MULTI_TARGET_UNQUALIFIED",
+        "OTHER_PRETRAINED_MODEL_FAULTS_UNVERIFIED",
+        "OTHER_COMMON_WORKER_VERSION_COMBINATIONS_UNVERIFIED"
+      ],
+      "next_action": "Qualify other actual models and runtime/build combinations; keep old native-version evidence separate and define multi-target recovery before all_eligible.",
+      "scope": [
+        "Qwen3-0.6B",
+        "TP1 BF16 ND eager fresh prefill",
+        "one natural output projection",
+        "CANN 8.5.1 / observed 910B4"
+      ],
+      "evidence": [
+        "summaries/fault39-qwen.json",
+        "summaries/fault39-final-build.json",
+        "summaries/fault39-independent-statistics.json"
+      ]
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "previous_current_level": "AUDITED",
+      "previous_result": "与 matmul_range 分开登记；历史 native 代理存在，专属共享 Worker 合同仍缺。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "DEDICATED_HOST_CONTRACT_MISSING",
+        "NEW_WORKER_PROVIDER_MISSING",
+        "CURRENT_STORAGE_PROOF_MISSING"
+      ],
+      "next_action": "增加专属Host合同和typed output观察者，再做单次无损writeback→故障→fresh-request OFF验证。"
+    },
+    {
+      "mechanism": "41.tail_column",
+      "previous_current_level": "AUDITED",
+      "previous_result": "实际 dispatcher/cache writer/consumer 尚未闭合，保留拒绝与具体实施方案。",
+      "change": "UNCHANGED_FROM_D1C8A20",
+      "common_worker_all_eligible": false,
+      "new_common_worker_fault_verified": false,
+      "remaining": [
+        "DISPATCHER_NOT_INTERCEPTED",
+        "CACHE_STORAGE_PROOF_MISSING",
+        "CONSUMER_MISSING",
+        "NATIVE_PROVIDER_MISSING"
+      ],
+      "next_action": "从实际wrapper/dispatcher观察合法cache写API，完成只读存储身份闭环后才能开发故障路径。"
+    }
+  ],
+  "retained_failures": [
+    "15/17/18 strict ALIGNMENT_MISMATCH",
+    "26 residual rank1 pre-write NaN and allocation initialization unproven",
+    "Earlier same-Worker different-phase KV-slot statistics first difference"
+  ],
+  "source_of_truth": "Actual scoped receipts; family names and historical qualification are not inherited",
+  "phase": "P3_COMPLETE_P4_IN_PROGRESS"
+}
