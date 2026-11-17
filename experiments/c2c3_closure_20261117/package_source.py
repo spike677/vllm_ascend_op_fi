@@ -10,7 +10,8 @@ import tarfile
 
 PREFIXES = ('fault_injection/', 'src/demoncat/', 'fault39/native/', 'fault39/tools/',
             'fault39/src/', 'native_execution_strategy/',
-            'experiments/c2c3_closure_20261117/', 'experiments/engineering_20261117/',
+            'experiments/c2c3_closure_20261117/', 'experiments/c2c3_postwrite_20261117/',
+            'experiments/engineering_20261117/',
             'experiments/worker_positive_20261117/',
             'experiments/provider_adaptation_20261116/', 'tests/',
             'fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/',
