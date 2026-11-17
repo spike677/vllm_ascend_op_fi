@@ -1,0 +1,562 @@
+{
+  "schema": "demoncat.agent7.vision17_recorded_group_review.v1",
+  "original_receipt": {
+    "path": "/home/17-fault-c2c3-20261117/natural-vision17-moe8-rope22-card2-a1/natural-vision17-group/probe/result.json",
+    "bytes": 5048713,
+    "sha256": "98390141cbdf84ea1565693e5cd06e76d725b7fdd4acd451659a9a10c540aff8"
+  },
+  "auditor": {
+    "path": "/home/17-fault-c2c3-20261117/agent7_review_vision17_group_v2.py",
+    "bytes": 20363,
+    "sha256": "dfb2ed5739c0123a8d0a433cfdc2df203ab807a7ac3042abe40c8544c1d0387e"
+  },
+  "frozen_coverage_auditor": {
+    "path": "/home/17-fault-c2c3-20261117/source-a36/fault_injection/coverage_audit.py",
+    "bytes": 12739,
+    "sha256": "55af44a8acd8e2530209d6c75a941172b5201fa1088796da033f9a0bb45feca4"
+  },
+  "source_bindings": {
+    "controller": {
+      "path": "/home/17-fault-c2c3-20261117/natural-vision17-moe8-rope22-card2-a1/controller.json",
+      "bytes": 166874,
+      "sha256": "a051e38a024c3e771d6d7e8fbbbd53d8e0a671cce7f20dd49ea7a1931863e3ae"
+    },
+    "exit_code": 0,
+    "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+    "source_manifest": {
+      "path": "/home/17-fault-c2c3-20261117/source-a36/source_manifest.json",
+      "bytes": 117474,
+      "sha256": "b50acc508d8fa15e51bae75dd4e219541262f4ec785abf5ef5595ece229e00c0"
+    },
+    "source_commit": "83b1aad10d88f176e4c04e550b6d746450d62351",
+    "source_files_verified": 625,
+    "model_sources": {
+      "/source/experiments/c2c3_closure_20261117/natural_vision_input.py": "883cb154a05a46d754f82850e169c67b7a5d3337fad8810dc85814ef851e1366",
+      "/usr/local/python3.11.14/lib/python3.11/site-packages/transformers/models/qwen3_vl/modeling_qwen3_vl.py": "dd63ed3b124232735b3dca1bfa28f9d6b0d3f7182afcb75dde8f3e724b2b22da",
+      "/usr/local/python3.11.14/lib/python3.11/site-packages/torch/nn/modules/conv.py": "ba25b53dfc94b341b21d96ed628babe8204963454ca768c18d981452f2c61d9c",
+      "/usr/local/python3.11.14/lib/python3.11/site-packages/torch/nn/modules/sparse.py": "9efa8d236f5b29c42ffb2ed2822c01d8b255c54bb5853a8f919e70c06d101fab",
+      "/usr/local/python3.11.14/lib/python3.11/site-packages/torch/nn/modules/container.py": "114f37d0b6d343570ae38ba9b0c024b098f040969e8b888072c978e106ebf08c",
+      "/usr/local/python3.11.14/lib/python3.11/site-packages/torch/nn/modules/normalization.py": "40345630f4974fca9c6c3c40f43716a6205b4ffcabc2b48e49cc2942a70dd7c0",
+      "/usr/local/python3.11.14/lib/python3.11/site-packages/torch/nn/modules/linear.py": "63fb3cae2a1561fec5e183e45c171d177080113a3996f1046eea35530cd33247",
+      "/usr/local/python3.11.14/lib/python3.11/site-packages/transformers/activations.py": "3dd5a81b1e5e0c5371256f00efec19df52255420318737db1e03430a98cf4264",
+      "/usr/local/python3.11.14/lib/python3.11/site-packages/torch/nn/modules/activation.py": "ecb5e2cef1419d4bf7222fc7b35a3dffc0e5b1bc979031c95c3f1151d94fc961"
+    },
+    "weights": {
+      "model.safetensors": {
+        "sha256": "7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0",
+        "bytes": 4255140312
+      }
+    },
+    "provider_sources": {
+      "tensor_natural.py": "f39c327d3c81bf815ef61ec8f0122084c85f14d1065fd1952737e6b4f9c9851c",
+      "rmsnorm_return.py": "45a3b92e102333de960bd444109b0a706af960c23c90188489fb400b1fc84888",
+      "index22.py": "40f89ddcfc896aaccec4822b2978d2baada7129d8143540eb7791fbed0e089b4",
+      "tensor_observer.py": "e7a612d856f0ccfd2938bd03ff38132c379002fb94d484b53173458a90084e08",
+      "tensor_callable.py": "c03715df7c90144a7f07fbff42d2aa3d3017e38818bda674f1fc273625c5e5dd",
+      "_scoped_dispatch.py": "5fc8c3b525ed064ffcfb9cd74b488caa6d768dd798120617ed5e0917d09e5a87",
+      "module_faults.py": "c31aa053ebd13099224f953e6bca027ea74e646de6f09c834bc20ab201256f2c",
+      "route8.py": "c2a75189c1f9391417965f786a97628d3b35316891cfb8495e8f2a48dae93239",
+      "moe_census.py": "a86954ca23541a70bdf19e23a9457952ef1f29eef0c1b3638b67dbeb47e7f4d3",
+      "moe_restore.py": "fdd3d4d2701a9d94bd4de3cc6c1e4b5086fc6fe0d72e2f6f010571fe566009b9",
+      "conv3d_natural.py": "8608f9eebe7bef6c3a429dc0a51ab1b6ce299f0ada610200ed9c70cda84715e1",
+      "serving_tensor.py": "202b8417805c23d0c890acf1793df9a6fcad959b48275e5847ddae21f72f7afd",
+      "serving_moe.py": "126650b77e1b6b09ae0119a92e6f6490c6712437328d6cd30e195dbcc3a8d441"
+    },
+    "provider_digest": "09ff290a635f59d67359802d6a13fed6538e916b3f385d321890038ba7a7aeca",
+    "probe_sha256": "ef0b0a1aee2022ff84fe1aa1bc904519fabc4edb633abd95ef1f8855d135e53e",
+    "proof_authority": {
+      "path": "/home/17-fault-c2c3-20261117/source-a36/fault_injection/coverage_session.py",
+      "bytes": 31951,
+      "sha256": "ddbf76e0a6f898681f9d62593427b6792747787bcf28ac1c2d4388a7d27bde1c"
+    },
+    "model_config_sha256": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b",
+    "image_input_sha256": "077e3d965090c9028c69c00931675f42e1acc815c6eb450ab291b3b72d211a8e",
+    "live_proof_basis": "Frozen direct object handoff and issued-proof gate; offline audit cannot reissue a live capability."
+  },
+  "record_checks_passed": true,
+  "scope": "MODEL_LOCAL_NATURAL_PRETRAINED_IMAGE_PREFILL",
+  "model": "Qwen/Qwen3-VL-2B-Instruct",
+  "revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+  "runtime": {
+    "torch": "2.9.0+cpu",
+    "torch_npu": "2.9.0.post1+gitee7ba04",
+    "device": "Ascend910B4",
+    "cann_home": "/usr/local/Ascend/cann-8.5.1",
+    "dtype": "torch.bfloat16"
+  },
+  "phases": [
+    {
+      "index": 0,
+      "phase": "native_baseline",
+      "structural_targets": 1,
+      "actual_calls": 1,
+      "fault_applied": false,
+      "output": {
+        "shape": [
+          1,
+          901,
+          151936
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "951f864f0b7089168938ae2cb3ac81bda759da4591d89edb2dc3798942ec99d0",
+        "finite": true
+      },
+      "input_sha256": "87a452a0c200831206a480c83d92b2862a9a0ce71f4c433d795c5b8adb5b4623",
+      "independent_pre_intervention_padding": [
+        0,
+        0,
+        0
+      ],
+      "cleanup": {
+        "cleanup_confirmed": true,
+        "hook_owned": false,
+        "leases": 0,
+        "inflight": 0
+      },
+      "provider_applied_padding": null,
+      "event_output": null,
+      "provider_consumer_records": 0,
+      "independent_consumer_lineage_complete": false
+    },
+    {
+      "index": 1,
+      "phase": "baseline",
+      "structural_targets": 1,
+      "actual_calls": 1,
+      "fault_applied": false,
+      "output": {
+        "shape": [
+          1,
+          901,
+          151936
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "951f864f0b7089168938ae2cb3ac81bda759da4591d89edb2dc3798942ec99d0",
+        "finite": true
+      },
+      "input_sha256": "87a452a0c200831206a480c83d92b2862a9a0ce71f4c433d795c5b8adb5b4623",
+      "independent_pre_intervention_padding": [
+        0,
+        0,
+        0
+      ],
+      "cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "provider_applied_padding": [
+        0,
+        0,
+        0
+      ],
+      "event_output": {
+        "shape": [
+          3536,
+          1024,
+          1,
+          1,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "3120c7e1f19165725e7c51cfb2aef76f277ca8eefded20ce2c592c3db2317b70"
+      },
+      "provider_consumer_records": 6,
+      "independent_consumer_lineage_complete": false
+    },
+    {
+      "index": 2,
+      "phase": "baseline_repeat",
+      "structural_targets": 1,
+      "actual_calls": 1,
+      "fault_applied": false,
+      "output": {
+        "shape": [
+          1,
+          901,
+          151936
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "951f864f0b7089168938ae2cb3ac81bda759da4591d89edb2dc3798942ec99d0",
+        "finite": true
+      },
+      "input_sha256": "87a452a0c200831206a480c83d92b2862a9a0ce71f4c433d795c5b8adb5b4623",
+      "independent_pre_intervention_padding": [
+        0,
+        0,
+        0
+      ],
+      "cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "provider_applied_padding": [
+        0,
+        0,
+        0
+      ],
+      "event_output": {
+        "shape": [
+          3536,
+          1024,
+          1,
+          1,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "3120c7e1f19165725e7c51cfb2aef76f277ca8eefded20ce2c592c3db2317b70"
+      },
+      "provider_consumer_records": 2,
+      "independent_consumer_lineage_complete": false
+    },
+    {
+      "index": 3,
+      "phase": "lossless",
+      "structural_targets": 1,
+      "actual_calls": 1,
+      "fault_applied": false,
+      "output": {
+        "shape": [
+          1,
+          901,
+          151936
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "951f864f0b7089168938ae2cb3ac81bda759da4591d89edb2dc3798942ec99d0",
+        "finite": true
+      },
+      "input_sha256": "87a452a0c200831206a480c83d92b2862a9a0ce71f4c433d795c5b8adb5b4623",
+      "independent_pre_intervention_padding": [
+        0,
+        0,
+        0
+      ],
+      "cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "provider_applied_padding": [
+        0,
+        0,
+        0
+      ],
+      "event_output": {
+        "shape": [
+          3536,
+          1024,
+          1,
+          1,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "3120c7e1f19165725e7c51cfb2aef76f277ca8eefded20ce2c592c3db2317b70"
+      },
+      "provider_consumer_records": 2,
+      "independent_consumer_lineage_complete": false
+    },
+    {
+      "index": 4,
+      "phase": "once:0",
+      "structural_targets": 1,
+      "actual_calls": 1,
+      "fault_applied": true,
+      "output": {
+        "shape": [
+          1,
+          901,
+          151936
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "ecd51816a24c20f81a6205be858ff330306106a0d0b0aa4e7a8808c9b6bf9d0b",
+        "finite": true
+      },
+      "input_sha256": "87a452a0c200831206a480c83d92b2862a9a0ce71f4c433d795c5b8adb5b4623",
+      "independent_pre_intervention_padding": [
+        0,
+        0,
+        0
+      ],
+      "cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "provider_applied_padding": [
+        0,
+        7,
+        7
+      ],
+      "event_output": {
+        "shape": [
+          3536,
+          1024,
+          1,
+          1,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "d539ffb67cd068310adf775f81ff088c58d83123fc257f4930740beb17fe77b7"
+      },
+      "provider_consumer_records": 393,
+      "independent_consumer_lineage_complete": false
+    },
+    {
+      "index": 5,
+      "phase": "off",
+      "structural_targets": 1,
+      "actual_calls": 1,
+      "fault_applied": false,
+      "output": {
+        "shape": [
+          1,
+          901,
+          151936
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "951f864f0b7089168938ae2cb3ac81bda759da4591d89edb2dc3798942ec99d0",
+        "finite": true
+      },
+      "input_sha256": "87a452a0c200831206a480c83d92b2862a9a0ce71f4c433d795c5b8adb5b4623",
+      "independent_pre_intervention_padding": [
+        0,
+        0,
+        0
+      ],
+      "cleanup": {
+        "cleanup_confirmed": true,
+        "hook_owned": false,
+        "leases": 0,
+        "inflight": 0
+      },
+      "provider_applied_padding": null,
+      "event_output": null,
+      "provider_consumer_records": 0,
+      "independent_consumer_lineage_complete": false
+    },
+    {
+      "index": 6,
+      "phase": "every_match:0",
+      "structural_targets": 1,
+      "actual_calls": 1,
+      "fault_applied": true,
+      "output": {
+        "shape": [
+          1,
+          901,
+          151936
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "ecd51816a24c20f81a6205be858ff330306106a0d0b0aa4e7a8808c9b6bf9d0b",
+        "finite": true
+      },
+      "input_sha256": "87a452a0c200831206a480c83d92b2862a9a0ce71f4c433d795c5b8adb5b4623",
+      "independent_pre_intervention_padding": [
+        0,
+        0,
+        0
+      ],
+      "cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "provider_applied_padding": [
+        0,
+        7,
+        7
+      ],
+      "event_output": {
+        "shape": [
+          3536,
+          1024,
+          1,
+          1,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "d539ffb67cd068310adf775f81ff088c58d83123fc257f4930740beb17fe77b7"
+      },
+      "provider_consumer_records": 40,
+      "independent_consumer_lineage_complete": false
+    },
+    {
+      "index": 7,
+      "phase": "every_match:1",
+      "structural_targets": 1,
+      "actual_calls": 1,
+      "fault_applied": true,
+      "output": {
+        "shape": [
+          1,
+          901,
+          151936
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "ecd51816a24c20f81a6205be858ff330306106a0d0b0aa4e7a8808c9b6bf9d0b",
+        "finite": true
+      },
+      "input_sha256": "87a452a0c200831206a480c83d92b2862a9a0ce71f4c433d795c5b8adb5b4623",
+      "independent_pre_intervention_padding": [
+        0,
+        0,
+        0
+      ],
+      "cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "provider_applied_padding": [
+        0,
+        7,
+        7
+      ],
+      "event_output": {
+        "shape": [
+          3536,
+          1024,
+          1,
+          1,
+          1
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "d539ffb67cd068310adf775f81ff088c58d83123fc257f4930740beb17fe77b7"
+      },
+      "provider_consumer_records": 4,
+      "independent_consumer_lineage_complete": false
+    },
+    {
+      "index": 8,
+      "phase": "off",
+      "structural_targets": 1,
+      "actual_calls": 1,
+      "fault_applied": false,
+      "output": {
+        "shape": [
+          1,
+          901,
+          151936
+        ],
+        "dtype": "torch.bfloat16",
+        "sha256": "951f864f0b7089168938ae2cb3ac81bda759da4591d89edb2dc3798942ec99d0",
+        "finite": true
+      },
+      "input_sha256": "87a452a0c200831206a480c83d92b2862a9a0ce71f4c433d795c5b8adb5b4623",
+      "independent_pre_intervention_padding": [
+        0,
+        0,
+        0
+      ],
+      "cleanup": {
+        "cleanup_confirmed": true,
+        "hook_owned": false,
+        "leases": 0,
+        "inflight": 0
+      },
+      "provider_applied_padding": null,
+      "event_output": null,
+      "provider_consumer_records": 0,
+      "independent_consumer_lineage_complete": false
+    }
+  ],
+  "coverage": {
+    "c2": {
+      "schema": "demoncat.saved_coverage_audit.v1",
+      "report_sha256": "35311b1994aded99a1f7f70275171f5a0964177bd1bd3b7e072c945a079e7cea",
+      "report_consistent": true,
+      "errors": [],
+      "recomputed": {
+        "targets": 1,
+        "calls": 2,
+        "eligible_calls": 1,
+        "hits": 1
+      },
+      "referenced_artifacts": 5,
+      "missing_artifact_sha256": [],
+      "referenced_artifact_bytes_verified": true,
+      "public_qualification_granted": false,
+      "c2_qualification_granted": false,
+      "c3_qualification_granted": false,
+      "remaining_review": [
+        "actual independent observer universe and eligibility",
+        "lossless target proofs",
+        "Native intervention and effect semantics",
+        "real device drain and same-process restoration",
+        "actual source/build/loaded-library identity",
+        "live C2 proof admission for C3"
+      ]
+    },
+    "c3": {
+      "schema": "demoncat.saved_coverage_audit.v1",
+      "report_sha256": "4f3042530904fda16a72692c2c70359c1ed6d409b7d7c4413900afba454bceb4",
+      "report_consistent": true,
+      "errors": [],
+      "recomputed": {
+        "targets": 1,
+        "calls": 3,
+        "eligible_calls": 2,
+        "hits": 2
+      },
+      "referenced_artifacts": 7,
+      "missing_artifact_sha256": [],
+      "referenced_artifact_bytes_verified": true,
+      "public_qualification_granted": false,
+      "c2_qualification_granted": false,
+      "c3_qualification_granted": false,
+      "remaining_review": [
+        "actual independent observer universe and eligibility",
+        "lossless target proofs",
+        "Native intervention and effect semantics",
+        "real device drain and same-process restoration",
+        "actual source/build/loaded-library identity",
+        "live C2 proof admission for C3"
+      ]
+    }
+  },
+  "structural_target_count": 1,
+  "c2_recorded_hits": 1,
+  "c3_recorded_hits": 2,
+  "full_output_shape": [
+    1,
+    901,
+    151936
+  ],
+  "provider_consumer_first": {
+    "operator": "aten.add.Tensor",
+    "returned": true,
+    "module_path": "actual.model.visual",
+    "actual_conv_output_lineage": true
+  },
+  "independent_consumer_lineage_complete": false,
+  "independent_final_native_arguments_verified": false,
+  "native_argument_limit": "Outer independent observer records original padding [0,0,0]; changed [0,7,7] is provider-recorded at the reviewed inner native call, not an independent post-adapter launch trace.",
+  "consumer_limit": "393 provider storage-id lineage records are not 393 independently proven consumers; freed storage identities can be reused. The independent census does not record the first add inputs.",
+  "full_output_comparison_basis": "Complete CPU-copy hashes recorded during actual execution; this audit does not reload private tensor payloads.",
+  "resource_scope": "Owned fault hooks, in-flight calls and explicit leases; not all model allocator memory or observer CPU copies.",
+  "recommendation": "Recorded MODEL_LOCAL C2/C3 coverage and OFF contracts consistent; final acceptance belongs to root and consumer-lineage limitation remains.",
+  "standard_worker_qualification": false,
+  "public_qualification_granted": false,
+  "e5": false,
+  "statistics_status": "NOT_COLLECTED_SEPARATE_E5_REQUIRED",
+  "historical_failed_card5_attempt_not_upgraded": true
+}
