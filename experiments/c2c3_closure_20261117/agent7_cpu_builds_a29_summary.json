@@ -1,0 +1,529 @@
+{
+  "schema": "demoncat.independent_cpu_build_review.v1",
+  "auditor": {
+    "path": "/home/17-fault-c2c3-20261117/agent7_audit_cpu_builds_v5.py",
+    "bytes": 19412,
+    "sha256": "6a6747921760a819e45e43ea0c289cad12620147f4377a089757884edaa0c55a"
+  },
+  "source_a29": {
+    "manifest": {
+      "path": "/home/17-fault-c2c3-20261117/source-a29/source_manifest.json",
+      "bytes": 108469,
+      "sha256": "c9bb2fbbb49d85b4961f1810eb443a1ad9227ef5895bd69aebd24acc8862488b"
+    },
+    "source_commit": "1076720aca23ad55decaf2fe42e174176c0e0a5f",
+    "files": {
+      "checked": 578,
+      "actual_inventory_sha256": "7ea22e3d489ce9c3008a92e2cd47dff847f31c114c68ed179004d15e1764139e",
+      "mismatches": []
+    }
+  },
+  "native26": {
+    "manifest": {
+      "path": "/home/17-fault-c2c3-20261117/native26-group-v2-a1/build.json",
+      "bytes": 2178,
+      "sha256": "5a6adbf86bd0fdbb5a18ab16953714db6a292ff315bdc0dce28c1a59654b7653"
+    },
+    "receipt": {
+      "path": "/home/17-fault-c2c3-20261117/native26-group-v2-a1/build-receipt.json",
+      "bytes": 5064,
+      "sha256": "ec4fe00b0da1d68ac97545d84b5da06708f1fed431e20d9bca67659de3d17ef0"
+    },
+    "artifacts": {
+      "checked": 9,
+      "actual_inventory_sha256": "8fd361588d24df1c2c54c4c4cc46f2b97bab7cecd18890b70f97c9ccd4efeb42",
+      "mismatches": []
+    },
+    "sources": {
+      "checked": 6,
+      "actual_inventory_sha256": "7562f6fec0051cd02f5f4815d5b7c73206afcc2437636ae707692596b704ab0d",
+      "mismatches": []
+    },
+    "image": {
+      "id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+      "architecture": "arm64"
+    },
+    "sdk_headers": [
+      {
+        "image_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h",
+        "expected": "4f7170f7a0c1a2ebe2cb016b07b1f04816bc20de98a4a392883206399856ec8b",
+        "actual": {
+          "path": "/home/docker-system/overlay2/85413bc33b48f12021b08b19ec88523cf692c2b736228e11743a5f86a9f7fc22/diff/usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h",
+          "bytes": 810,
+          "sha256": "4f7170f7a0c1a2ebe2cb016b07b1f04816bc20de98a4a392883206399856ec8b"
+        }
+      },
+      {
+        "image_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/include/aclnn/opdev/common_types.h",
+        "expected": "4e365e2b0805beb6f97e1cbcd686724aff778110797d17ffdb8724330bbbf620",
+        "actual": {
+          "path": "/home/docker-system/overlay2/85413bc33b48f12021b08b19ec88523cf692c2b736228e11743a5f86a9f7fc22/diff/usr/local/Ascend/cann-8.5.1/aarch64-linux/include/aclnn/opdev/common_types.h",
+          "bytes": 14302,
+          "sha256": "4e365e2b0805beb6f97e1cbcd686724aff778110797d17ffdb8724330bbbf620"
+        }
+      }
+    ],
+    "sdk_version": {
+      "path": "/home/docker-system/overlay2/85413bc33b48f12021b08b19ec88523cf692c2b736228e11743a5f86a9f7fc22/diff/usr/local/Ascend/cann-8.5.1/aarch64-linux/ascend_toolkit_install.info",
+      "bytes": 241,
+      "sha256": "c43a7a2e011fdfedaa05dce3e8a194abf47df6133fe83e3656c9a257bda192e2"
+    },
+    "abi_exported_functions": [
+      "dcat26_group_state_v2",
+      "dcat26_group_install_v2",
+      "dcat26_group_pass_v2",
+      "dcat26_group_continue_v2",
+      "dcat26_group_receipt_v2",
+      "dcat26_group_acknowledge_v2",
+      "dcat26_group_seal_v2",
+      "dcat26_group_stop_v2",
+      "dcat26_group_drain_v2",
+      "dcat26_group_restore_v2",
+      "dcat26_group_remove_v2",
+      "fault26_qmm_underflow_prepare",
+      "fault26_qmm_underflow_complete",
+      "fault26_fia_writer_prepare_output",
+      "fault26_fia_writer_gws_complete",
+      "fault26_fia_writer_before_execute",
+      "fault26_fia_writer_after_execute",
+      "fault26_qmm_underflow_consumer_complete"
+    ],
+    "symbol_semantics_match": true,
+    "symbol_text_bytes_equal": false,
+    "elf_symbol_version_requirements": [
+      "CXXABI_1.3",
+      "CXXABI_1.3.9",
+      "GCC_3.0",
+      "GLIBCXX_3.4",
+      "GLIBCXX_3.4.11",
+      "GLIBCXX_3.4.18",
+      "GLIBCXX_3.4.29",
+      "GLIBC_2.17",
+      "GLIBC_2.32",
+      "GLIBC_2.34"
+    ],
+    "contract": {
+      "core": {
+        "status": "PASS_CPU_MEMORY_SIMULATION",
+        "actual_npu_calls": 0,
+        "mechanisms": 2,
+        "config_bytes": 72,
+        "call_bytes": 144,
+        "lease_bytes": 248,
+        "receipt_bytes": 296,
+        "state_bytes": 136
+      },
+      "sdk": {
+        "status": "PASS_SDK_ABI_CONTROL_ONLY",
+        "actual_npu_calls": 0,
+        "runtime_state_bytes": 240
+      }
+    },
+    "contract_rerun": {
+      "core": {
+        "executable": {
+          "path": "/home/17-fault-c2c3-20261117/native26-group-v2-a1/test_group_core",
+          "bytes": 56664,
+          "sha256": "059c7635caf9797cc0d186bc0cbc993b79276c491ab71a96a5470d8544813550"
+        },
+        "returncode": 0,
+        "stdout": "{\"status\":\"PASS_CPU_MEMORY_SIMULATION\",\"actual_npu_calls\":0,\"mechanisms\":2,\"config_bytes\":72,\"call_bytes\":144,\"lease_bytes\":248,\"receipt_bytes\":296,\"state_bytes\":136}\n",
+        "stderr": "",
+        "verified": true
+      },
+      "sdk": {
+        "executable": {
+          "path": "/home/17-fault-c2c3-20261117/native26-group-v2-a1/test_group_control",
+          "bytes": 67160,
+          "sha256": "76953c83fdd294dd2a1c4eff471f04b3a64a88883d06ac86f4712beeccbe64aa"
+        },
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "/home/17-fault-c2c3-20261117/native26-group-v2-a1/test_group_control: /usr/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /home/17-fault-c2c3-20261117/native26-group-v2-a1/test_group_control)\n",
+        "matched_image_cpu_runtime": {
+          "files": {
+            "ld-linux-aarch64.so.1": {
+              "path": "/home/docker-system/overlay2/129e0a85feda22555ff4d60996b8d8e5c0b2e6ec56c226ac297b8543caa10549/diff/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+              "bytes": 187776,
+              "sha256": "fb4cb0c8dd9bac3bbd40f4b284d16ac11d282ab9069298de858d2301ada5e646"
+            },
+            "libstdc++.so.6": {
+              "path": "/home/docker-system/overlay2/0828eac0b67284524a9ae5ae5d58105ecd385e24c2a31414839ce466fb456a55/diff/usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.30",
+              "bytes": 2198944,
+              "sha256": "03efc8de2eb1f016fa59a937b8858c48ad893558737ef61fe16bbb622283c759"
+            },
+            "libgcc_s.so.1": {
+              "path": "/home/docker-system/overlay2/0828eac0b67284524a9ae5ae5d58105ecd385e24c2a31414839ce466fb456a55/diff/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+              "bytes": 84296,
+              "sha256": "d4bbb45d5d80f4b15d4bf50bfc8ded0a26a44c638859df97be40a6339adb3485"
+            },
+            "libm.so.6": {
+              "path": "/home/docker-system/overlay2/129e0a85feda22555ff4d60996b8d8e5c0b2e6ec56c226ac297b8543caa10549/diff/usr/lib/aarch64-linux-gnu/libm.so.6",
+              "bytes": 551064,
+              "sha256": "bef4f59cfd4875e401d732ac93fc9bc17c6ddeeca1edb1247f8b82d91ac49bd6"
+            },
+            "libc.so.6": {
+              "path": "/home/docker-system/overlay2/129e0a85feda22555ff4d60996b8d8e5c0b2e6ec56c226ac297b8543caa10549/diff/usr/lib/aarch64-linux-gnu/libc.so.6",
+              "bytes": 1661968,
+              "sha256": "f09403ee90fc8a4980e98d844ed73e8d5aaafc3e68b53398d9a17d2f01fa45a9"
+            }
+          },
+          "command": [
+            "/home/docker-system/overlay2/129e0a85feda22555ff4d60996b8d8e5c0b2e6ec56c226ac297b8543caa10549/diff/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1",
+            "--library-path",
+            "/home/docker-system/overlay2/129e0a85feda22555ff4d60996b8d8e5c0b2e6ec56c226ac297b8543caa10549/diff/usr/lib/aarch64-linux-gnu:/home/docker-system/overlay2/0828eac0b67284524a9ae5ae5d58105ecd385e24c2a31414839ce466fb456a55/diff/usr/lib/aarch64-linux-gnu",
+            "/home/17-fault-c2c3-20261117/native26-group-v2-a1/test_group_control"
+          ],
+          "returncode": 0,
+          "stdout": "{\"status\":\"PASS_SDK_ABI_CONTROL_ONLY\",\"actual_npu_calls\":0,\"runtime_state_bytes\":240}\n",
+          "stderr": ""
+        },
+        "verified": true
+      }
+    },
+    "legacy_writers_absent": true,
+    "checks_passed": true,
+    "errors": [],
+    "actual_npu_calls": 0,
+    "c2": false,
+    "c3": false
+  },
+  "fa28": {
+    "controller": {
+      "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/controller.json",
+      "bytes": 3292,
+      "sha256": "bcdbcd510c2c359d1fefd46147844d6653227862d65f6ff0bba5a34593e0aa9f"
+    },
+    "completion": {
+      "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/completion.json",
+      "bytes": 218371,
+      "sha256": "7189c077dad9411e53240d6a0cc9190477d00433d5b1325833c0fcb26c7cac5d"
+    },
+    "driver_snapshot": {
+      "manifest": {
+        "path": "/home/17-fault-c2c3-20261117/source-a28/source_manifest.json",
+        "bytes": 105445,
+        "sha256": "35a8e32ca7f8a6ac959af6ea5a7a02ddd05a7d34e7215703da9553c08c7c7764"
+      },
+      "source_commit": "c6af00601535e007eae8f88e74cafd7788bf50a0",
+      "files": {
+        "checked": 562,
+        "actual_inventory_sha256": "b8009969422599eb51ac53848dfd1b0fcdb396268756f96968e345ef2853efb5",
+        "mismatches": []
+      }
+    },
+    "official_ops_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+    "patched_sources": {
+      "checked": 4,
+      "actual_inventory_sha256": "96e703c324f2e9a79775fb713a879b2b2fd7424b1a3fc1c08c8462597bd5e45b",
+      "mismatches": []
+    },
+    "imported_sources": {
+      "checked": 7,
+      "actual_inventory_sha256": "f9a14dcbd08fa82b9ff97c32fced9454edd51ca51a651e5c647ae40608cd9795",
+      "mismatches": []
+    },
+    "vendor_artifacts": {
+      "checked": 851,
+      "actual_inventory_sha256": "baa6347bf6c45a878921630f30894321ebb224149b307555e8e67ba2bcebd44f",
+      "mismatches": []
+    },
+    "image": {
+      "id": "sha256:9008234fbe4948ce9e0383c34972044b369e42dc7711d44d5878f52267b8614a",
+      "architecture": "arm64"
+    },
+    "sdk_interfaces": [
+      {
+        "expected": {
+          "kind": "sdk",
+          "path": "include/exe_graph/runtime/tiling_context.h",
+          "bytes": 28701,
+          "sha256": "32e4addf6b18587d3c0d6c96b3cb997eaf9672eb7464835acbc1d076c2fa3f37"
+        },
+        "actual": {
+          "path": "/home/docker-system/overlay2/7c31ac8b4081145ef06f7a036edef0df3ab4a9dac44d21f0d046c146cae91d13/diff/usr/local/Ascend/cann-9.1.0/aarch64-linux/include/exe_graph/runtime/tiling_context.h",
+          "bytes": 28701,
+          "sha256": "32e4addf6b18587d3c0d6c96b3cb997eaf9672eb7464835acbc1d076c2fa3f37"
+        }
+      },
+      {
+        "expected": {
+          "kind": "sdk",
+          "path": "include/exe_graph/runtime/shape.h",
+          "bytes": 5843,
+          "sha256": "5e9f78065fae63e17e09e9a7f70f659610759519827f1c8f65335c2f5f3971a5"
+        },
+        "actual": {
+          "path": "/home/docker-system/overlay2/7c31ac8b4081145ef06f7a036edef0df3ab4a9dac44d21f0d046c146cae91d13/diff/usr/local/Ascend/cann-9.1.0/aarch64-linux/include/exe_graph/runtime/shape.h",
+          "bytes": 5843,
+          "sha256": "5e9f78065fae63e17e09e9a7f70f659610759519827f1c8f65335c2f5f3971a5"
+        }
+      },
+      {
+        "expected": {
+          "kind": "sdk",
+          "path": "include/ascendc/host_api/tiling/template_argument.h",
+          "bytes": 14591,
+          "sha256": "0993117c58ee7bff1e8ef972c63504e9f1a38375ed3618b63baed99927d3ac79"
+        },
+        "actual": {
+          "path": "/home/docker-system/overlay2/7c31ac8b4081145ef06f7a036edef0df3ab4a9dac44d21f0d046c146cae91d13/diff/usr/local/Ascend/cann-9.1.0/aarch64-linux/asc/include/utils/tiling/template_argument.h",
+          "bytes": 14591,
+          "sha256": "0993117c58ee7bff1e8ef972c63504e9f1a38375ed3618b63baed99927d3ac79"
+        }
+      },
+      {
+        "expected": {
+          "kind": "sdk",
+          "path": "aarch64-linux/tikcpp/ascendc_kernel_cmake/fwk_modules/makeself.cmake",
+          "bytes": 2250,
+          "sha256": "d9a781b1fe35a7b6db1631fa5bd67a1b3309d7973f5d19ba3a209a43f456934b"
+        },
+        "actual": {
+          "path": "/home/docker-system/overlay2/7c31ac8b4081145ef06f7a036edef0df3ab4a9dac44d21f0d046c146cae91d13/diff/usr/local/Ascend/cann-9.1.0/aarch64-linux/tikcpp/ascendc_kernel_cmake/fwk_modules/makeself.cmake",
+          "bytes": 2250,
+          "sha256": "d9a781b1fe35a7b6db1631fa5bd67a1b3309d7973f5d19ba3a209a43f456934b"
+        }
+      },
+      {
+        "expected": {
+          "kind": "sdk",
+          "path": "aarch64-linux/ascendc/include/highlevel_api/kernel_tiling/kernel_tiling.h",
+          "bytes": 19847,
+          "sha256": "0f50fe7d81d4e01f80b62c19d816ad28151ac1502f708b70454efc8599ddaf44"
+        },
+        "actual": {
+          "path": "/home/docker-system/overlay2/7c31ac8b4081145ef06f7a036edef0df3ab4a9dac44d21f0d046c146cae91d13/diff/usr/local/Ascend/cann-9.1.0/aarch64-linux/asc/include/adv_api/kernel_tiling.h",
+          "bytes": 19847,
+          "sha256": "0f50fe7d81d4e01f80b62c19d816ad28151ac1502f708b70454efc8599ddaf44"
+        }
+      }
+    ],
+    "named_artifacts": {
+      "public_pod_schema_sha256": {
+        "expected": "ed9a39c5fe780f5cbcd8ce3f0f66a09f1cee896c7b583aa1e318dca49c16b364",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/fa_public_schema.json",
+          "bytes": 29208,
+          "sha256": "ed9a39c5fe780f5cbcd8ce3f0f66a09f1cee896c7b583aa1e318dca49c16b364"
+        }
+      },
+      "public_pod_decoder_sha256": {
+        "expected": "17adafc55a6ab899397cf95903114925d9975896012d4837d5a59f0a6dd9417a",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/fa_pod_decoder",
+          "bytes": 114864,
+          "sha256": "17adafc55a6ab899397cf95903114925d9975896012d4837d5a59f0a6dd9417a"
+        }
+      },
+      "decoder_headers_sha256": {
+        "expected": "809d2376f1e2cfba6bdc383cfa5b81ccf408b6f1f0967f256ee3206170421a09",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/fa_decoder_headers.json",
+          "bytes": 35990,
+          "sha256": "809d2376f1e2cfba6bdc383cfa5b81ccf408b6f1f0967f256ee3206170421a09"
+        }
+      },
+      "binary_summary_registration_sha256": {
+        "expected": "0936e050d07fbf50479f36184cbfcd38e5611ad9c17866149af060874174b433",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/binary_summary_registration.json",
+          "bytes": 1023,
+          "sha256": "0936e050d07fbf50479f36184cbfcd38e5611ad9c17866149af060874174b433"
+        }
+      },
+      "build_tools_sha256": {
+        "expected": "66a2b41ca11b7cc4165161854c0af1883498464b9a7de40f45a7457851c507b8",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/build_tools.json",
+          "bytes": 704,
+          "sha256": "66a2b41ca11b7cc4165161854c0af1883498464b9a7de40f45a7457851c507b8"
+        }
+      },
+      "dependency_manifest_sha256": {
+        "expected": "30110c230be054823ab502258b65d31404b7eb512d901e1535e96c1baabab64e",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/dependency_sources.json",
+          "bytes": 579324,
+          "sha256": "30110c230be054823ab502258b65d31404b7eb512d901e1535e96c1baabab64e"
+        }
+      },
+      "host_package_sha256": {
+        "expected": "b2e7071918614e2706087c9cd6d8e90aebaff5fc18aab7208e3549e909d4b5f5",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/source/build_out/cann-ops-transformer-dcat_f28_fa_linux-aarch64.run",
+          "bytes": 5676664,
+          "sha256": "b2e7071918614e2706087c9cd6d8e90aebaff5fc18aab7208e3549e909d4b5f5"
+        }
+      },
+      "kernel_binary_sha256": {
+        "expected": "967265862973a761ae7de2c7b54600e246f067898cd2c97f297aa9a12e784eb0",
+        "matching_vendor_entries": [
+          {
+            "path": "op_impl/ai_core/tbe/kernel/ascend910b/flash_attention_score/FlashAttentionScore_d510be03e39ccdbb4abc4f0db5af9547.o",
+            "bytes": 143008,
+            "sha256": "967265862973a761ae7de2c7b54600e246f067898cd2c97f297aa9a12e784eb0"
+          }
+        ]
+      },
+      "kernel_metadata_sha256": {
+        "expected": "d26f3099e2dc66b370530ec4ac014628b4232b3fb1f87013a1129c0d114bf082",
+        "matching_vendor_entries": [
+          {
+            "path": "op_impl/ai_core/tbe/kernel/ascend910b/flash_attention_score/FlashAttentionScore_d510be03e39ccdbb4abc4f0db5af9547.json",
+            "bytes": 11465,
+            "sha256": "d26f3099e2dc66b370530ec4ac014628b4232b3fb1f87013a1129c0d114bf082"
+          }
+        ]
+      }
+    },
+    "public_pod_cpu_roundtrip": {
+      "status": "PASS_PUBLIC_POD_CPU_ROUNDTRIP",
+      "size": 1464,
+      "fields": 205,
+      "array_elements": 65,
+      "stock_abi_validated": false
+    },
+    "compiled_keys": [
+      22619644976
+    ],
+    "actual_compiled_core_type": "MIX",
+    "sdk_interface_manifest_sha256": null,
+    "checks_passed": true,
+    "errors": [],
+    "actual_npu_calls": 0,
+    "actual_launch_verified": false,
+    "actual_serialized_pod_verified": false,
+    "loading_allowed": false,
+    "c2": false,
+    "c3": false
+  },
+  "scope_noninheritance": {
+    "original_receipts": {
+      "18.worker": {
+        "expected": "d344b70b98103cc0e22450bebd659adc7d2c9c785c48cea11cfda8f0bd9d9dca",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/natural18-worker-a1/natural-worker-rms-group/probe/result.json",
+          "bytes": 18598810,
+          "sha256": "d344b70b98103cc0e22450bebd659adc7d2c9c785c48cea11cfda8f0bd9d9dca"
+        }
+      },
+      "20.worker": {
+        "expected": "bb683594bd2aee0bad5e0d41d2c8ca1db415f4cca7817fdc721b8787decc8178",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/result.json",
+          "bytes": 158696235,
+          "sha256": "bb683594bd2aee0bad5e0d41d2c8ca1db415f4cca7817fdc721b8787decc8178"
+        }
+      },
+      "39.worker": {
+        "expected": "aa77add1286acd563b9a080399820aa3d088c35422c87f1c24f9066c5f1f58d0",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/result.json",
+          "bytes": 223958040,
+          "sha256": "aa77add1286acd563b9a080399820aa3d088c35422c87f1c24f9066c5f1f58d0"
+        }
+      }
+    },
+    "original_receipt_bytes_unchanged": true,
+    "old_worker18_scope": {
+      "mechanism": "18.api_half",
+      "workload_sha256": "ce89ea3859e1bf115c2a0dd901292f220839d922ee142ed2bfdd388ffb595eb0",
+      "environment_sha256": "71655f68200a317bfac09e54bbbc1d8e8d42e5ab285194568884993c93c7408b",
+      "implementation_sha256": "4fed69214272bb3d5117ba377f988000693410b134728e2307352dad461c98be",
+      "evidence_kind": "natural_worker",
+      "model_weights_sha256": "67193440cd35bdba51605f78b1f20d4f056b728a03b5dc99a9972b878cbdd487",
+      "model_source_sha256": "8bf269f3fa6b20e2aa42bcde6afd094f470ab951d34e448598000561294959f8"
+    },
+    "current_shared_tensor_source_sha256": "09ff290a635f59d67359802d6a13fed6538e916b3f385d321890038ba7a7aeca",
+    "current_shared_tensor_files": {
+      "tensor_natural.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/src/demoncat/runtime/vllm_ascend/worker_extension/providers/tensor_natural.py",
+        "bytes": 29690,
+        "sha256": "f39c327d3c81bf815ef61ec8f0122084c85f14d1065fd1952737e6b4f9c9851c"
+      },
+      "rmsnorm_return.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/rmsnorm_return.py",
+        "bytes": 11312,
+        "sha256": "45a3b92e102333de960bd444109b0a706af960c23c90188489fb400b1fc84888"
+      },
+      "index22.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/index22.py",
+        "bytes": 7243,
+        "sha256": "40f89ddcfc896aaccec4822b2978d2baada7129d8143540eb7791fbed0e089b4"
+      },
+      "tensor_observer.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/tensor_observer.py",
+        "bytes": 14407,
+        "sha256": "e7a612d856f0ccfd2938bd03ff38132c379002fb94d484b53173458a90084e08"
+      },
+      "tensor_callable.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/tensor_callable.py",
+        "bytes": 4333,
+        "sha256": "c03715df7c90144a7f07fbff42d2aa3d3017e38818bda674f1fc273625c5e5dd"
+      },
+      "_scoped_dispatch.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/_scoped_dispatch.py",
+        "bytes": 7402,
+        "sha256": "5fc8c3b525ed064ffcfb9cd74b488caa6d768dd798120617ed5e0917d09e5a87"
+      },
+      "module_faults.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/module_faults.py",
+        "bytes": 18276,
+        "sha256": "c31aa053ebd13099224f953e6bca027ea74e646de6f09c834bc20ab201256f2c"
+      },
+      "route8.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/route8.py",
+        "bytes": 8344,
+        "sha256": "c2a75189c1f9391417965f786a97628d3b35316891cfb8495e8f2a48dae93239"
+      },
+      "moe_census.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/moe_census.py",
+        "bytes": 10687,
+        "sha256": "a86954ca23541a70bdf19e23a9457952ef1f29eef0c1b3638b67dbeb47e7f4d3"
+      },
+      "moe_restore.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/moe_restore.py",
+        "bytes": 10960,
+        "sha256": "fdd3d4d2701a9d94bd4de3cc6c1e4b5086fc6fe0d72e2f6f010571fe566009b9"
+      },
+      "conv3d_natural.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/conv3d_natural.py",
+        "bytes": 6625,
+        "sha256": "8608f9eebe7bef6c3a429dc0a51ab1b6ce299f0ada610200ed9c70cda84715e1"
+      },
+      "serving_tensor.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/src/demoncat/runtime/vllm_ascend/worker_extension/serving_tensor.py",
+        "bytes": 17158,
+        "sha256": "202b8417805c23d0c890acf1793df9a6fcad959b48275e5847ddae21f72f7afd"
+      },
+      "serving_moe.py": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/src/demoncat/runtime/vllm_ascend/worker_extension/serving_moe.py",
+        "bytes": 1854,
+        "sha256": "126650b77e1b6b09ae0119a92e6f6490c6712437328d6cd30e195dbcc3a8d441"
+      }
+    },
+    "old_scope_does_not_match_new_source": true,
+    "coverage_contract": {
+      "old": {
+        "path": "/home/17-fault-c2c3-20261117/source-a20/fault_injection/coverage_session.py",
+        "bytes": 30554,
+        "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+      },
+      "current": {
+        "path": "/home/17-fault-c2c3-20261117/source-a29/fault_injection/coverage_session.py",
+        "bytes": 30554,
+        "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+      },
+      "unchanged": true
+    },
+    "report_only": true,
+    "qualification_count_modified": false,
+    "new_model_local17_qualified": false,
+    "new_moe8_qualified": false,
+    "read_only22_census_qualified": false
+  },
+  "qualifications_granted": false,
+  "actual_npu_calls": 0,
+  "checks_passed": true
+}
