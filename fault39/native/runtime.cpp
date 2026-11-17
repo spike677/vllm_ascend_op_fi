@@ -152,6 +152,10 @@ struct State {
  uint64_t substituted=0,rejected=0,completed=0,serving_input_rejections=0;
  bool enabled=false; int error=0; std::string status="DISABLED",actual_ids="[]",last_run_api;
  std::map<Cache*,Registered> registry; std::map<std::string,Candidate> candidates;
+ // Read-only denominator: independent of enabled/owner/mode/target/max_hits.
+ // A bounded full counter map never silently evicts an observed cache lifetime.
+ std::map<std::string,Candidate> independent_candidates;
+ uint64_t independent_runs=0,independent_cache_count=0;bool independent_complete=true;
  std::map<Cache*,uint64_t> cache_epochs;uint64_t next_cache_epoch=0;
  Cache* selected_cache=nullptr;uint64_t selected_epoch=0,observation_cache=0,observation_epoch=0;
  std::vector<Lease> retained; fault39::Counts counts{};
@@ -311,6 +315,23 @@ aclnnStatus run(Cache* cache,void* workspace,aclrtStream stream,const std::vecto
  {
   std::lock_guard<std::mutex> lock(s.mutex);++s.run_calls;
   if(ready && api_info)s.last_run_api=api_info();
+  if(ready && s.last_run_api.compare(0,12,"aclnnMatmul_")==0) {
+   const auto entry=s.registry.find(cache);int device=-1;const int rank=actual_rank();
+   if(entry!=s.registry.end() && entry->second.cache_epoch &&
+      s.cache_epochs[cache]==entry->second.cache_epoch && get_device(&device)==ACL_SUCCESS &&
+      rank==entry->second.rank && device==entry->second.device && proof(entry->second,addresses,512ull*1024*1024)) {
+    ++s.independent_runs;const auto& actual=entry->second;
+    const auto signature=fault39::signature(actual.metadata,rank,device);
+    const auto identity=std::make_pair(cache,actual.cache_epoch);
+    auto found=s.independent_candidates.find(signature);
+    const bool known=found!=s.independent_candidates.end() && found->second.caches.count(identity);
+    if(known || s.independent_cache_count<8192) {
+     auto& observed=s.independent_candidates[signature];observed.metadata=actual.metadata;observed.rank=rank;observed.device=device;
+     if(observed.caches.insert(identity).second)++s.independent_cache_count;
+     ++observed.observations;++observed.cache_observations[identity];
+    } else s.independent_complete=false;
+   }
+  }
   if(s.enabled && ready) {
    auto it=s.registry.find(cache);int device=-1;const int rank=actual_rank();
    const bool correct_api=s.last_run_api.compare(0,12,"aclnnMatmul_")==0;
@@ -511,6 +532,8 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
    <<",\"substituted\":"<<s.substituted<<",\"completed\":"<<s.completed<<",\"rejected\":"<<s.rejected
    <<",\"serving_input_rejections\":"<<s.serving_input_rejections
    <<",\"exact_cache_api_version\":2,\"selected_cache_address\":"<<reinterpret_cast<uintptr_t>(s.selected_cache)<<",\"selected_cache_epoch\":"<<s.selected_epoch
+   <<",\"independent_eligible_runs\":"<<s.independent_runs<<",\"independent_observer_complete\":"<<(s.independent_complete?"true":"false")
+   <<",\"independent_observer_max_bytes\":536870912,\"independent_observer_max_caches\":8192"
    <<",\"actual_request_ids_json\":"<<quote(s.actual_ids)<<",\"worker_rank\":"<<actual_rank()<<",\"observer\":"<<counts_json(s.counts)
    <<",\"last_observation\":{\"generation\":"<<s.observation_generation<<",\"owner\":"<<quote(s.observation_owner)<<",\"hit\":"<<s.observation_hit
    <<",\"cache_address\":"<<s.observation_cache<<",\"cache_epoch\":"<<s.observation_epoch
@@ -546,7 +569,16 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
     const auto seen=c.cache_observations.find(identity);
     j<<"{\"address\":"<<reinterpret_cast<uintptr_t>(identity.first)<<",\"epoch\":"<<identity.second
      <<",\"observations\":"<<(seen==c.cache_observations.end()?0:seen->second)
-     <<",\"live\":"<<(live?"true":"false")<<'}';}
+     <<",\"registration_live\":"<<(live?"true":"false")<<'}';}
+   j<<"]}";}
+  j<<"],\"independent_candidates\":[";first=true;
+  for(const auto& entry:s.independent_candidates){if(!first)j<<',';first=false;const auto& c=entry.second;
+   j<<"{\"signature\":"<<quote(entry.first)<<",\"rank\":"<<c.rank<<",\"device\":"<<c.device<<",\"cache_identities\":[";
+   bool first_cache=true;for(const auto& identity:c.caches){if(!first_cache)j<<',';first_cache=false;
+    const auto current=s.cache_epochs.find(identity.first);const auto registered=s.registry.find(identity.first);
+    const bool live=current!=s.cache_epochs.end() && current->second==identity.second && registered!=s.registry.end() && registered->second.cache_epoch==identity.second;
+    j<<"{\"address\":"<<reinterpret_cast<uintptr_t>(identity.first)<<",\"epoch\":"<<identity.second
+     <<",\"observations\":"<<c.cache_observations.at(identity)<<",\"registration_live\":"<<(live?"true":"false")<<'}';}
    j<<"]}";}
   j<<"]}";const auto text=j.str();if(text.size()>=INT32_MAX)return F39_BUSY;
   const size_t need=text.size()+1;if(out && capacity>=need)std::memcpy(out,text.c_str(),need);return int(need);
