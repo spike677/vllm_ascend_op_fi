@@ -186,10 +186,12 @@ def run_child(args,verified):
             tensors=[dict(shape=list(t.shape),dtype=str(t.dtype),sha256=h) for t,h in zip(cpu,input_hashes)]))
         class FiaProbe(torch.nn.Module):
             def forward(self,q,k,v,mask):
-                return torch_npu.npu_fused_infer_attention_score(q,k,v,atten_mask=mask,
+                def invoke():return torch_npu.npu_fused_infer_attention_score(q,k,v,atten_mask=mask,
                     actual_seq_lengths=[2048]*args.batch,actual_seq_lengths_kv=[2048]*args.batch,
                     num_heads=16,num_key_value_heads=8,scale=128**-0.5,input_layout='BNSD',
                     pre_tokens=2147483647,next_tokens=0,sparse_mode=2,inner_precise=0)[0]
+                observer=getattr(args,'independent_launch_call',None)
+                return observer(invoke) if observer is not None else invoke()
         model=FiaProbe().eval()
         phases=['off','fault','restore','restore'] if args.phase=='off_recovery' else [args.phase]*2
         require(not args.statistics or args.phase in ('baseline','fault'),'STATISTICS_ONLY_FOR_BF_PAIRS')

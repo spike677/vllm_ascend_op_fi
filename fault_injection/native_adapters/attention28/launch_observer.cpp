@@ -5,6 +5,7 @@
 #endif
 #include <runtime/kernel.h>
 #include <runtime/dev.h>
+#include <acl/acl_rt.h>
 #include <sys/uio.h>
 #include <sys/syscall.h>
 #include <sys/stat.h>
@@ -28,6 +29,8 @@ std::mutex gate;
 std::atomic<uint64_t> serial{0};
 struct Binary { std::string file; uint64_t generation=0; };
 std::map<void*, Binary> registered;
+struct Function { void* binary=nullptr; uint64_t generation=0,key=0; std::string name; };
+std::map<void*, Function> functions;
 uint64_t captured_bytes=0,captured_count=0;
 thread_local std::string token;
 thread_local bool nested=false;
@@ -99,6 +102,7 @@ void register_binary(const rtDevBinary_t* input, void** handle, rtError_t result
 }
 struct Snapshot {
     bool valid=false;rtArgsEx_t args{};std::vector<uint8_t> bytes,host;
+    bool aclHostArgs=false;std::vector<uint8_t> placeholders;
     int schedule=-1;
 };
 Snapshot snapshot(const rtArgsEx_t* args,const rtTaskCfgInfo_t* config) {
@@ -116,7 +120,7 @@ Snapshot snapshot(const rtArgsEx_t* args,const rtTaskCfgInfo_t* config) {
     s.valid=true;return s;
 }
 void launched(const char* api,void* handle,uint64_t key,uint32_t blocks,rtStream_t stream,
-              const Snapshot& s,uint64_t begin,rtError_t result) {
+              const Snapshot& s,uint64_t begin,rtError_t result,void* function=nullptr) {
     Binary binary;{std::lock_guard<std::mutex> lock(gate);auto i=registered.find(handle);if(i!=registered.end())binary=i->second;}
     std::ostringstream row;row<<"\"event\":\"launch\",\"api\":\""<<api<<"\",\"launch_begin_ns\":"<<begin
         <<",\"launch_end_ns\":"<<now()<<",\"handle\":"<<reinterpret_cast<uintptr_t>(handle)
@@ -127,7 +131,10 @@ void launched(const char* api,void* handle,uint64_t key,uint32_t blocks,rtStream
         <<",\"has_tiling\":"<<unsigned(s.args.hasTiling)<<",\"no_h2d_copy\":"<<unsigned(s.args.isNoNeedH2DCopy)
         <<",\"tiling_addr_offset\":"<<s.args.tilingAddrOffset<<",\"tiling_data_offset\":"<<s.args.tilingDataOffset
         <<",\"host_input_count\":"<<s.args.hostInputInfoNum<<",\"host_input_hex\":\""<<hex(s.host.data(),s.host.size())
-        <<"\",\"args_hex\":\""<<hex(s.bytes.data(),s.bytes.size())<<"\",\"observer_mutates_arguments\":false";
+        <<"\",\"args_hex\":\""<<hex(s.bytes.data(),s.bytes.size())<<"\",\"observer_mutates_arguments\":false"
+        <<",\"argument_layout\":\""<<(s.aclHostArgs?"aclrt_host_placeholders":"rtArgsEx")<<"\""
+        <<",\"function_handle\":"<<reinterpret_cast<uintptr_t>(function)
+        <<",\"placeholders_hex\":\""<<hex(s.placeholders.data(),s.placeholders.size())<<"\"";
     emit(row.str());
 }
 }
@@ -177,4 +184,109 @@ extern "C" rtError_t rtStreamSynchronize(rtStream_t stream) {
     auto rc=original<decltype(&rtStreamSynchronize)>("rtStreamSynchronize")(stream);
     if(!token.empty())try{emit("\"event\":\"stream_sync\",\"stream\":"+
         std::to_string(reinterpret_cast<uintptr_t>(stream))+",\"result\":"+std::to_string(rc));}catch(...){}return rc;
+}
+
+// Modern CANN nnopbase uses these public ACL calls rather than rtArgsEx.
+// Enabled only when the exact SDK headers declare all required interfaces.
+#ifdef DCAT_OBSERVE_ACL_HOST_ARGS
+namespace {
+void acl_binary_bytes(const void* data,size_t length,aclrtBinHandle* handle,aclError result) {
+    rtDevBinary_t bin{};bin.data=data;bin.length=length;
+    register_binary(&bin,reinterpret_cast<void**>(handle),result);
+}
+void function_binding(aclrtBinHandle binary,aclrtFuncHandle* function,uint64_t entry,const char* name,aclError result) {
+    if(result!=0 || !function || !*function)return;
+    Binary b;{std::lock_guard<std::mutex> lock(gate);auto i=registered.find(binary);
+        if(i==registered.end())return;b=i->second;
+        functions[*function]={binary,b.generation,entry,name?name:""};}
+    // The runtime's returned function handle is the actual launch binding.
+    std::ostringstream row;row<<"\"event\":\"function_bind\",\"handle\":"<<reinterpret_cast<uintptr_t>(binary)
+        <<",\"generation\":"<<b.generation<<",\"function_handle\":"<<reinterpret_cast<uintptr_t>(*function)
+        <<",\"tiling_key\":\""<<entry<<"\",\"result\":"<<result;
+    emit(row.str());
+}
+Snapshot acl_snapshot(void* args,size_t size,aclrtPlaceHolderInfo* placeholders,size_t count,const aclrtLaunchKernelCfg* config) {
+    Snapshot s;s.aclHostArgs=true;
+    if(size>1024*1024 || count>1024 || !read_self(args,size,s.bytes))return s;
+    s.args.argsSize=static_cast<uint32_t>(size);
+    if(count && !read_self(placeholders,count*sizeof(*placeholders),s.placeholders))return s;
+    if(!config)return s;
+    std::vector<uint8_t> desc,attrs;
+    if(!read_self(config,sizeof(*config),desc))return s;
+    aclrtLaunchKernelCfg cfg{};std::memcpy(&cfg,desc.data(),sizeof(cfg));
+    if(cfg.numAttrs>128 || !read_self(cfg.attrs,cfg.numAttrs*sizeof(*cfg.attrs),attrs))return s;
+    for(size_t i=0;i<cfg.numAttrs;++i){aclrtLaunchKernelAttr attr{};
+        std::memcpy(&attr,attrs.data()+i*sizeof(attr),sizeof(attr));
+        if(attr.id==ACL_RT_LAUNCH_KERNEL_ATTR_SCHEM_MODE){if(s.schedule!=-1)return s;s.schedule=attr.value.schemMode;}}
+    s.valid=true;return s;
+}
+}
+extern "C" aclError aclrtBinaryLoadFromData(const void* data,size_t length,
+    const aclrtBinaryLoadOptions* options,aclrtBinHandle* handle) {
+    const auto rc=original<decltype(&aclrtBinaryLoadFromData)>("aclrtBinaryLoadFromData")(data,length,options,handle);
+    try{acl_binary_bytes(data,length,handle,rc);}catch(...){}return rc;
+}
+extern "C" aclError aclrtBinaryLoadFromFile(const char* path,aclrtBinaryLoadOptions* options,aclrtBinHandle* handle) {
+    std::vector<uint8_t> bytes;struct stat before{},after{};int fd=-1;bool captured=false;
+    if(path && !directory().empty())try{
+        fd=open(path,O_RDONLY|O_CLOEXEC|O_NOFOLLOW);
+        if(fd>=0 && !fstat(fd,&before) && S_ISREG(before.st_mode) && before.st_size>0 && before.st_size<=128*1024*1024){
+            bytes.resize(before.st_size);size_t done=0;
+            while(done<bytes.size()){auto n=read(fd,bytes.data()+done,bytes.size()-done);if(n<=0)break;done+=n;}
+            captured=done==bytes.size();}
+    }catch(...){}
+    const auto rc=original<decltype(&aclrtBinaryLoadFromFile)>("aclrtBinaryLoadFromFile")(path,options,handle);
+    if(fd>=0){captured=captured && !fstat(fd,&after) && before.st_dev==after.st_dev && before.st_ino==after.st_ino
+        &&before.st_size==after.st_size&&before.st_mtim.tv_sec==after.st_mtim.tv_sec&&before.st_mtim.tv_nsec==after.st_mtim.tv_nsec;
+        close(fd);}
+    if(captured)try{acl_binary_bytes(bytes.data(),bytes.size(),handle,rc);}catch(...){}return rc;
+}
+extern "C" aclError aclrtBinaryGetFunctionByEntry(aclrtBinHandle binary,uint64_t entry,aclrtFuncHandle* function) {
+    const auto rc=original<decltype(&aclrtBinaryGetFunctionByEntry)>("aclrtBinaryGetFunctionByEntry")(binary,entry,function);
+    try{function_binding(binary,function,entry,nullptr,rc);}catch(...){}return rc;
+}
+extern "C" aclError aclrtBinaryGetFunction(const aclrtBinHandle binary,const char* name,aclrtFuncHandle* function) {
+    const auto rc=original<decltype(&aclrtBinaryGetFunction)>("aclrtBinaryGetFunction")(binary,name,function);
+    // Named/static kernels are observed but are not admitted as dynamic FIA keys.
+    try{function_binding(binary,function,0,name,rc);}catch(...){}return rc;
+}
+extern "C" aclError aclrtBinaryUnLoad(aclrtBinHandle binary) {
+    const auto rc=original<decltype(&aclrtBinaryUnLoad)>("aclrtBinaryUnLoad")(binary);
+    if(rc==0){std::lock_guard<std::mutex> lock(gate);registered.erase(binary);
+        for(auto i=functions.begin();i!=functions.end();){if(i->second.binary==binary)i=functions.erase(i);else ++i;}}
+    return rc;
+}
+extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle function,uint32_t blocks,
+    aclrtStream stream,aclrtLaunchKernelCfg* cfg,void* args,size_t size,
+    aclrtPlaceHolderInfo* placeholders,size_t count) {
+    auto real=original<decltype(&aclrtLaunchKernelWithHostArgs)>("aclrtLaunchKernelWithHostArgs");
+    if(token.empty()||nested)return real(function,blocks,stream,cfg,args,size,placeholders,count);
+    nested=true;Snapshot s;try{s=acl_snapshot(args,size,placeholders,count,cfg);}catch(...){}
+    Function f;{std::lock_guard<std::mutex> lock(gate);auto i=functions.find(function);if(i!=functions.end())f=i->second;}
+    const auto begin=now();const auto rc=real(function,blocks,stream,cfg,args,size,placeholders,count);
+    try{launched("aclrtLaunchKernelWithHostArgs",f.binary,f.key,blocks,stream,s,begin,rc,function);}catch(...){}
+    nested=false;return rc;
+}
+#endif
+
+extern "C" aclError aclrtSynchronizeDevice() {
+    auto rc=original<decltype(&aclrtSynchronizeDevice)>("aclrtSynchronizeDevice")();
+    if(!token.empty())try{emit("\"event\":\"device_sync\",\"api\":\"aclrtSynchronizeDevice\",\"result\":"+std::to_string(rc));}catch(...){}
+    return rc;
+}
+extern "C" aclError aclrtSynchronizeStream(aclrtStream stream) {
+    auto rc=original<decltype(&aclrtSynchronizeStream)>("aclrtSynchronizeStream")(stream);
+    if(!token.empty())try{emit("\"event\":\"stream_sync\",\"api\":\"aclrtSynchronizeStream\",\"stream\":"+
+        std::to_string(reinterpret_cast<uintptr_t>(stream))+",\"result\":"+std::to_string(rc));}catch(...){}return rc;
+}
+extern "C" aclError aclrtSynchronizeStreamWithTimeout(aclrtStream stream,int32_t timeout) {
+    auto rc=original<decltype(&aclrtSynchronizeStreamWithTimeout)>("aclrtSynchronizeStreamWithTimeout")(stream,timeout);
+    if(!token.empty())try{emit("\"event\":\"stream_sync\",\"api\":\"aclrtSynchronizeStreamWithTimeout\",\"stream\":"+
+        std::to_string(reinterpret_cast<uintptr_t>(stream))+",\"result\":"+std::to_string(rc));}catch(...){}return rc;
+}
+extern "C" int dcat_attention_observer_synchronize_v1() {
+    if(token.empty())return -1;
+    // Explicit public ACL completion, also when torch resolves its sync through
+    // a handle-specific dlsym which bypasses ELF interposition.
+    return aclrtSynchronizeDevice();
 }

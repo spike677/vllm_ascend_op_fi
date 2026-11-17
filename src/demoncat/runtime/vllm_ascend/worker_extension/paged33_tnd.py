@@ -15,7 +15,7 @@ import uuid
 
 from .paged33_audit import Paged33Audit, _meta
 from .serving_context import require
-from fault_injection.native_adapters.attention28.launch import LaunchObserver, verify_launch, sha
+from fault_injection.native_adapters.attention28.launch import LaunchObserver, verify_launch, sha, bundle_kernel_abi
 
 COMMIT = 'c77c0829f1f0f0b8f882db1d9b051a758b605472'
 KEYS = {103000000010200003, 103000000010300003, 104000000010200003, 104000000010300003}
@@ -103,6 +103,8 @@ class TNDNativeAdapter:
         require(arm in ('baseline', 'fault', 'off') and type(max_calls) is int and 1 <= max_calls <= 224,
                 'TND33_BOUNDED_ARM_REQUIRED')
         self.build = verify_bundle(completion, completion_sha256, vendor)
+        self.kernel_metadata, self.kernel_abi = bundle_kernel_abi(self.build['vendor'], self.build['artifacts'],
+            self.build['completion']['kernel_binary_sha256'])
         require(os.environ.get('ASCEND_CUSTOM_OPP_PATH') == self.build['vendor']
                 and os.environ.get('ACLNN_CACHE_LIMIT') == '0' and os.environ.get('TASK_QUEUE_ENABLE') == '0',
                 'TND33_PREIMPORT_PRIVATE_VENDOR_UNCACHED_SYNC_REQUIRED')
@@ -153,6 +155,7 @@ class TNDNativeAdapter:
             with self.observer.scope(call_id):
                 result = invoke_once()
                 torch.npu.synchronize()
+                self.observer.synchronize()
             rows = [json.loads(line) for line in log.read_text().splitlines()]
             matches = [row for row in rows if row.get('token') == call_id]
             require(len(matches) == 1, 'TND33_EXACT_ONE_NATIVE_HOST_CALLBACK_REQUIRED')
@@ -162,7 +165,8 @@ class TNDNativeAdapter:
                     and host['selected_s2'] == (256 if self.arm == 'fault' else 512),
                     'TND33_ACTUAL_HOST_STRATEGY_DIFFERS')
             launch = verify_launch(self.runtime_dir, call_id, schema=self.schema, host=host,
-                                   kernel_sha256=self.build['completion']['kernel_binary_sha256'])
+                                   kernel_sha256=self.build['completion']['kernel_binary_sha256'],
+                                   kernel_metadata=self.kernel_metadata, kernel_abi=self.kernel_abi)
             require(launch['typed']['innerSplitParams.s2BaseSize'] == host['selected_s2'],
                     'TND33_FINAL_KERNEL_S2_DIFFERS')
             row = dict(call_id=call_id, module_path=boundary['module_path'],

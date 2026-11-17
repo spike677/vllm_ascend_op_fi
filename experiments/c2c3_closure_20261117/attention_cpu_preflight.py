@@ -76,8 +76,14 @@ def main():
                 include.update(x for x in base.rglob('*') if x.is_dir() and len(x.parts)-len(base.parts) <= 4)
         include = sorted(x for x in include if x.is_dir())
         flags = ['-I' + str(x) for x in include]
+        acl_header = sdk/'include/acl/acl_rt.h'
+        require_acl = ('aclrtLaunchKernelWithHostArgs', 'aclrtBinaryLoadFromData', 'aclrtBinaryGetFunctionByEntry')
+        acl_host_args = acl_header.is_file() and all(name in acl_header.read_text() for name in require_acl)
+        if acl_host_args:
+            flags.append('-DDCAT_OBSERVE_ACL_HOST_ARGS=1')
+        report['launch_interfaces'] = dict(rtArgsEx=True, aclrt_host_args=acl_host_args)
         report['headers'] = [dict(path=str(x), sha256=sha(x)) for x in
-            sorted({kernel, *kernel.parent.glob('*.h'), *kernel.parent.parent.glob('rt_external*.h')})]
+            sorted({kernel, acl_header, *kernel.parent.glob('*.h'), *kernel.parent.parent.glob('rt_external*.h')})]
         source = a.repo/'fault_injection/native_adapters/attention28/launch_observer.cpp'
         report['observer_source'] = dict(path=str(source), sha256=sha(source))
         library = a.out/'libdcat_attention_observer.so'

@@ -45,7 +45,38 @@ def decode_raw(raw, schema):
     return result
 
 
-def verify_launch(directory, call_id, *, kernel_sha256, schema, host):
+def derive_fia_kernel_abi(source, metadata):
+    """Read the pinned source entry declaration, not expected host data bytes."""
+    text = Path(source).read_text()
+    match = re.findall(r'void\s+fused_infer_attention_score\((.*?)\)\s*\{', text, re.S)
+    require(len(match) == 1, 'FIA_KERNEL_ENTRY_DECLARATION_AMBIGUOUS')
+    declarations = [part.strip() for part in match[0].split(',')]
+    names = []
+    for declaration in declarations:
+        found = re.fullmatch(r'__gm__\s+uint8_t\s*\*\s*(\w+)', declaration)
+        require(found, 'FIA_KERNEL_ARGUMENT_ABI_UNADAPTED')
+        names.append(found[1])
+    require(names[-2:] == ['workspace', 'tiling'] and len(set(names)) == len(names)
+            and len(metadata['parameters']) == len(names)-1
+            and all(value is None for value in metadata['parameters']), 'FIA_KERNEL_METADATA_SIGNATURE_DIFFERS')
+    return dict(source_sha256=sha(source), pointer_bytes=8, names=names,
+                tiling_pointer_offset=(len(names)-1)*8)
+
+
+def bundle_kernel_abi(vendor, files, kernel_sha256):
+    root = Path(vendor)
+    binaries = [name for name, row in files.items() if name.endswith('.o') and row['sha256'] == kernel_sha256]
+    require(len(binaries) == 1, 'ONE_MANIFEST_KERNEL_REQUIRED')
+    meta_path = root/Path(binaries[0]).with_suffix('.json')
+    require(meta_path.relative_to(root).as_posix() in files, 'KERNEL_METADATA_NOT_IN_MANIFEST')
+    metadata = json.loads(meta_path.read_bytes())
+    require(metadata['sha256'] == kernel_sha256, 'KERNEL_METADATA_BINARY_SHA_DIFFERS')
+    sources = [root/name for name in files if name.endswith('/fused_infer_attention_score/op_kernel/fused_infer_attention_score.cpp')]
+    require(sources and len({sha(path) for path in sources}) == 1, 'NEW_KERNEL_ENTRY_SOURCE_MISSING_OR_AMBIGUOUS')
+    return metadata, derive_fia_kernel_abi(sources[0], metadata)
+
+
+def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_metadata=None, kernel_abi=None):
     """One synchronous API scope, exactly one final matching kernel launch.
 
     No scanning for the expected host raw bytes or key is used: the runtime's
@@ -91,15 +122,37 @@ def verify_launch(directory, call_id, *, kernel_sha256, schema, host):
             and binary.stat().st_size == registered['binary_bytes'] and sha(binary) == kernel_sha256,
             'ACTUAL_REGISTERED_BINARY_DIFFERS_FROM_NEW_BUILD')
     raw_args = bytes.fromhex(launch['args_hex'])
-    offset, size = launch['tiling_data_offset'], schema['size']
-    require(len(raw_args) == launch['args_size'] and launch['has_tiling'] == 1
-            and launch['no_h2d_copy'] == 0 and type(offset) is int and 0 <= offset
+    size = schema['size']
+    if launch.get('argument_layout') == 'aclrt_host_placeholders':
+        require(kernel_metadata and kernel_abi and kernel_metadata['sha256'] == kernel_sha256
+                and kernel_abi['pointer_bytes'] == 8, 'ACL_FINAL_ARGUMENT_KERNEL_ABI_REQUIRED')
+        bindings = [row for row in records if row['event'] == 'function_bind'
+                    and row['pid'] == launch['pid'] and row['function_handle'] == launch['function_handle']
+                    and row['handle'] == launch['handle'] and row['generation'] == launch['generation']
+                    and row['monotonic_ns'] <= launch['launch_begin_ns']]
+        require(bindings and all(row['result'] == 0 and int(row['tiling_key']) == int(launch['tiling_key'])
+                                 for row in bindings), 'ACL_ACTUAL_FUNCTION_BINDING_DIFFERS')
+        require(int(launch['tiling_key']) in {int(row['tilingKey']) for row in kernel_metadata['kernelList']},
+                'ACL_FUNCTION_KEY_NOT_IN_NEW_BINARY')
+        placeholders = bytes.fromhex(launch['placeholders_hex'])
+        require(len(placeholders) > 0 and len(placeholders) % 8 == 0, 'ACL_PLACEHOLDER_DESCRIPTOR_INVALID')
+        pairs = list(struct.iter_unpack('<II', placeholders))
+        require(len({addr for addr, _ in pairs}) == len(pairs), 'ACL_DUPLICATE_PLACEHOLDER_ADDRESS')
+        # The exact compiled entry declaration places `tiling` after workspace.
+        # Select its argument slot, never a matching byte pattern or host value.
+        selected = [(addr, data) for addr, data in pairs if addr == kernel_abi['tiling_pointer_offset']]
+        require(len(selected) == 1, 'ACL_KERNEL_TILING_PLACEHOLDER_MISSING')
+        address_offset, offset = selected[0]
+        host_inputs = b''.join(struct.pack('<II', addr, data) for addr, data in pairs if addr != address_offset)
+    else:
+        offset, address_offset = launch['tiling_data_offset'], launch['tiling_addr_offset']
+        require(launch['has_tiling'] == 1 and launch['no_h2d_copy'] == 0, 'FINAL_INLINE_TILING_ARGUMENT_UNAVAILABLE')
+        host_inputs = bytes.fromhex(launch['host_input_hex'])
+        require(len(host_inputs) == launch['host_input_count'] * 8, 'HOST_INPUT_DESCRIPTOR_SIZE_DIFFERS')
+    require(len(raw_args) == launch['args_size'] and type(offset) is int and 0 <= offset
             and offset + size <= len(raw_args), 'FINAL_INLINE_TILING_ARGUMENT_UNAVAILABLE')
-    address_offset = launch['tiling_addr_offset']
     require(type(address_offset) is int and 0 <= address_offset and address_offset + 8 <= offset,
             'TILING_ADDRESS_OFFSET_INVALID')
-    host_inputs = bytes.fromhex(launch['host_input_hex'])
-    require(len(host_inputs) == launch['host_input_count'] * 8, 'HOST_INPUT_DESCRIPTOR_SIZE_DIFFERS')
     for addr, data in struct.iter_unpack('<II', host_inputs):
         require(addr + 8 <= offset and offset + size <= data < len(raw_args),
                 'TILING_AND_HOST_INPUT_BYTES_OVERLAP_OR_UNADAPTED')
@@ -134,6 +187,8 @@ class LaunchObserver:
         self.lib.dcat_attention_observer_begin_v1.restype = ctypes.c_int
         self.lib.dcat_attention_observer_end_v1.argtypes = []
         self.lib.dcat_attention_observer_end_v1.restype = ctypes.c_int
+        self.lib.dcat_attention_observer_synchronize_v1.argtypes = []
+        self.lib.dcat_attention_observer_synchronize_v1.restype = ctypes.c_int
         self.owner, self.active = threading.get_ident(), False
 
     @contextmanager
@@ -146,3 +201,7 @@ class LaunchObserver:
         finally:
             self.active = False
             require(self.lib.dcat_attention_observer_end_v1() == 0, 'OBSERVER_SCOPE_END_FAILED')
+
+    def synchronize(self):
+        require(self.active and threading.get_ident() == self.owner, 'OBSERVER_SYNC_REQUIRES_OWNED_SCOPE')
+        require(self.lib.dcat_attention_observer_synchronize_v1() == 0, 'OBSERVER_ACTUAL_ACL_SYNC_FAILED')

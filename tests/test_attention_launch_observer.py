@@ -7,7 +7,7 @@ import struct
 import tempfile
 import unittest
 
-from fault_injection.native_adapters.attention28.launch import verify_launch, decode_raw
+from fault_injection.native_adapters.attention28.launch import verify_launch, decode_raw, derive_fia_kernel_abi
 
 
 def fixture(root):
@@ -100,6 +100,38 @@ class RuntimeLaunchTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'OVERLAP'):decode_raw(bytes(8),schema)
         schema['fields'][1]['offset']=8
         with self.assertRaisesRegex(RuntimeError,'OUT_OF_BOUNDS'):decode_raw(bytes(8),schema)
+
+    def test_acl_function_binding_and_exact_kernel_slot_select_raw(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);cid,binary,schema,host,rows=fixture(root)
+            launch=rows[2]
+            launch.update(argument_layout='aclrt_host_placeholders',function_handle=99,
+                placeholders_hex=struct.pack('<II',8,16).hex(),has_tiling=0,tiling_data_offset=0,tiling_addr_offset=0)
+            rows.insert(1,dict(rows[0],event='function_bind',monotonic_ns=2,function_handle=99,
+                               tiling_key=launch['tiling_key']))
+            metadata=dict(sha256=binary,parameters=[None],kernelList=[dict(tilingKey=int(launch['tiling_key']))])
+            entry=root/'entry.cpp'
+            entry.write_text('extern "C" __global__ __aicore__ void fused_infer_attention_score('
+                             '__gm__ uint8_t* workspace, __gm__ uint8_t* tiling) {}')
+            abi=derive_fia_kernel_abi(entry,metadata)
+            self.assertEqual(abi['tiling_pointer_offset'],8)
+            def verify():
+                (root/'runtime.jsonl').write_text(''.join(json.dumps(row)+'\n' for row in rows))
+                return verify_launch(root,cid,kernel_sha256=binary,schema=schema,host=host,
+                                      kernel_metadata=metadata,kernel_abi=abi)
+            self.assertTrue(verify()['kernel_argument_raw_observed'])
+            launch['placeholders_hex']=struct.pack('<II',0,16).hex()
+            with self.assertRaisesRegex(RuntimeError,'TILING_PLACEHOLDER_MISSING'):verify()
+            launch['placeholders_hex']=struct.pack('<II',8,16).hex()
+            rows[1]['tiling_key']='2'
+            with self.assertRaisesRegex(RuntimeError,'FUNCTION_BINDING_DIFFERS'):verify()
+
+    def test_kernel_metadata_cannot_substitute_a_different_argument_abi(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            entry=Path(tmp)/'entry.cpp'
+            entry.write_text('void fused_infer_attention_score(__gm__ uint8_t* workspace, __gm__ uint8_t* tiling) {}')
+            with self.assertRaisesRegex(RuntimeError,'METADATA_SIGNATURE_DIFFERS'):
+                derive_fia_kernel_abi(entry,dict(parameters=[None,None]))
 
 
 if __name__=='__main__':unittest.main()

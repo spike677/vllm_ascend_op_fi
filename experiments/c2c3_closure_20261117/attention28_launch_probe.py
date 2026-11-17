@@ -4,7 +4,6 @@ Root resource controller owns devices/locks. This entry point starts no containe
 and grants no public Worker/C2/C3 certificate. Raw statistics remain untouched.
 """
 import argparse
-import functools
 import importlib.util
 import json
 import os
@@ -15,7 +14,7 @@ import traceback
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO/'experiments/engineering_20261117'))
-from fault_injection.native_adapters.attention28.launch import LaunchObserver, verify_launch, require, sha
+from fault_injection.native_adapters.attention28.launch import LaunchObserver, verify_launch, require, sha, bundle_kernel_abi
 
 spec = importlib.util.spec_from_file_location('attention28_fresh_implementation',
         REPO/'experiments/engineering_20261117/fresh_fia_qualification.py')
@@ -64,44 +63,49 @@ def main():
         env['LD_LIBRARY_PATH'] = ':'.join([str(Path(verified['vendor_root'])/'op_api/lib'), env.get('LD_LIBRARY_PATH', '')])
         os.execve(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:], '--child'], env)
     import torch
-    import torch_npu
     observer = LaunchObserver(library['path'], library['sha256'])
     schema = json.loads(a.public_schema.read_bytes())
-    original = torch_npu.npu_fused_infer_attention_score
+    metadata, kernel_abi = bundle_kernel_abi(verified['vendor_root'], verified['files'], verified['kernel_binary_sha256'])
     launches, failures = [], []
-    @functools.wraps(original)
-    def observed(*args, **kwargs):
+    def observed(invoke):
         call_id = os.environ.get('FAULT28_FIA_GRAPH_TOKEN')
         require(call_id, 'ACTUAL_FRESH_HOST_SCOPE_REQUIRED')
         with observer.scope(call_id):
-            result = original(*args, **kwargs)
+            result = invoke()
             torch.npu.synchronize()
+            observer.synchronize()
         rows = [json.loads(line) for line in Path(os.environ['FAULT28_FIA_GRAPH_LOG']).read_text().splitlines()]
         hosts = [row for row in rows if row.get('token') == call_id]
         require(len(hosts) == 1, 'ONE_ACTUAL_HOST_CALLBACK_REQUIRED')
         try:
             launches.append(verify_launch(observer_dir, call_id, kernel_sha256=verified['kernel_binary_sha256'],
-                                          schema=schema, host=hosts[0]))
+                                          schema=schema, host=hosts[0], kernel_metadata=metadata, kernel_abi=kernel_abi))
         except BaseException as error:
             failures.append(dict(call_id=call_id, error=repr(error), traceback=traceback.format_exc()))
             # Preserve the ordinary B/F/OFF result even when new independent
             # evidence is unavailable. Qualification still fails below.
         return result
-    torch_npu.npu_fused_infer_attention_score = observed
+    # Enter the scope at the actual module call site. This preserves whatever
+    # exact wrapper msprobe currently owns, instead of overwriting its API.
+    a.independent_launch_call = observed
+    code, execution_error = 2, None
     try:
         code = fresh.run_child(a, verified)
-    finally:
-        require(torch_npu.npu_fused_infer_attention_score is observed, 'OBSERVER_API_OWNERSHIP_CHANGED')
-        torch_npu.npu_fused_infer_attention_score = original
+    except BaseException as error:
+        execution_error = dict(error=repr(error), traceback=traceback.format_exc())
+        failures.append(dict(stage='experiment_execution', **execution_error))
     expected = 4 if a.phase == 'off_recovery' else 2
     qualified = code == 0 and len(launches) == expected and not failures
     report = dict(schema='demoncat.attention28.new_launch_probe.v1',
         status='FINAL_ARGUMENTS_AND_LAUNCHES_VERIFIED' if qualified else 'INDEPENDENT_LAUNCH_QUALIFICATION_INCOMPLETE',
         phase=a.phase, variant=verified['variant'], completion_sha256=a.completion_sha256,
         observer_receipt_sha256=a.observer_receipt_sha256, launches=launches, failures=failures,
-        runtime_result_sha256=sha(a.out/'result.json'), native_launch_verified=qualified,
+        runtime_result_sha256=sha(a.out/'result.json') if (a.out/'result.json').is_file() else None,
+        execution_error=execution_error, api_wrapper_installed=False, native_launch_verified=qualified,
         public_worker_qualified=False, c2=False, c3=False, statistics='SEPARATE_RAW_COMPARATOR_REQUIRED')
-    (a.out/'independent_launch.json').write_text(json.dumps(report, indent=2, allow_nan=False)+'\n')
+    a.out.mkdir(parents=True, exist_ok=True)
+    with (a.out/'independent_launch.json').open('x') as output:
+        json.dump(report, output, indent=2, allow_nan=False);output.write('\n')
     print(json.dumps({key: report[key] for key in ('status', 'phase', 'variant', 'native_launch_verified')}))
     return 0 if qualified else 3
 
