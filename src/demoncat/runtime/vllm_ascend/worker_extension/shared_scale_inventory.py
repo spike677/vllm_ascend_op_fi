@@ -11,7 +11,7 @@ from .serving_context import require
 
 
 class SharedScaleInventory(PublicQuantInventory):
-    def __init__(self, model, candidates, *, worker_identity, native, folder, row_lineage):
+    def __init__(self, model, candidates, *, worker_identity, native, folder, row_lineage, row_transfer=None):
         super().__init__(model, candidates, worker_identity=worker_identity)
         self.native = native
         self.folder = Path(folder)
@@ -21,14 +21,21 @@ class SharedScaleInventory(PublicQuantInventory):
         self.lifetime = dict(worker=worker_identity, process_start_identity=_process_start_identity(),
             model_object_identity=id(model), native_thread=self.native_thread, device=native.device)
         self.row_lineage = row_lineage
+        self.row_transfer = row_transfer
+        self.row_trace = None
         self.native_call = None
         self.native_forwards = []
         self._initial = None
 
     def begin(self, *args, **kwargs):
+        self.row_trace = None
         self._initial = self.native.state()
         require(not self._initial['pending'] and not self._initial['executing'], 'NATIVE_QUANT_FORWARD_NOT_IDLE')
         super().begin(*args, **kwargs)
+
+    def _projection_complete(self, frame, result):
+        if self.row_transfer is not None and frame['row']['public_chain_verified']:
+            frame['row']['output_row_lineage'] = self.row_transfer(frame, result)
 
     def _api(self, name, original, args, kwargs):
         if name != 'npu_dynamic_quant':
@@ -95,12 +102,14 @@ class SharedScaleInventory(PublicQuantInventory):
                 reasons.extend(row['errors'])
                 if not row.get('request_row_lineage', {}).get('verified'):
                     reasons.append('ACTUAL_PER_REQUEST_PROJECTION_ROW_LINEAGE_UNPROVEN')
+            if self.row_trace is not None and not self.row_trace['complete']:
+                reasons.append('COMPLETE_REQUEST_ROW_OPERATOR_OBSERVATION_UNPROVEN')
             candidates.append(dict(native=event, public_api_index=public_indices[id(row)] if row is not None else None,
                 module_object_identity=row['module_object_identity'] if row else None, reasons=reasons,
                 status='NATIVE_CALL_AND_REQUEST_ROWS_OBSERVED_NOT_LOSSLESS_QUALIFIED' if not reasons else 'UNVERIFIED',
                 qualified=False))
         self.native_forwards.append(dict(forward_id=self.current['forward_id'], before=self._initial, after=after,
-            native_events=native, candidates=candidates, complete_native_denominator=True))
+            native_events=native, candidates=candidates, complete_native_denominator=True, row_provenance=self.row_trace))
         super().end(*args, **kwargs)
         self.save()
 

@@ -167,7 +167,7 @@ class SharedScaleInventoryTests(unittest.TestCase):
         self.assertEqual(C.sizeof(QuantEvent), 128)
         self.assertEqual(C.sizeof(QuantState), 128)
 
-    def test_complete_actual_cpu_prefill_decode_hook_order_and_remove(self):
+    def run_complete_serving(self, *, unknown_boundary=False):
         from demoncat.runtime.vllm_ascend.worker_extension import serving_quant as serving
         from demoncat.runtime.vllm_ascend.worker_extension.serving_shared_scale_inventory import SharedScaleInventorySession
         self.observer.close()
@@ -188,7 +188,10 @@ class SharedScaleInventoryTests(unittest.TestCase):
                 self.head = torch.nn.Linear(4, 3, bias=False, dtype=torch.bfloat16)
                 self.processor = CpuProcessor()
             def forward(self, input_ids, positions, inputs_embeds=None, intermediate_tensors=None):
-                return super().forward(self.norm(self.embed(input_ids)))
+                hidden = self.first(self.norm(self.embed(input_ids)))
+                if unknown_boundary:
+                    hidden = torch.roll(hidden, 1, dims=0)
+                return self.second(hidden)
         model = Model().eval()
         runner = NS(model=model, vllm_config=NS(model_config=NS(hf_config=NS(vocab_size=3))),
             logits_indices=torch.arange(8), with_prefill=True)
@@ -236,12 +239,29 @@ class SharedScaleInventoryTests(unittest.TestCase):
                 session.close()
                 report = session.report()
                 self.assertEqual(report['actual_native_calls'], 4)
-                self.assertEqual(report['request_row_proven_calls'], 2)
                 self.assertTrue(report['complete_healthy_replays'])
                 self.assertTrue(report['recovered'])
+                self.assertTrue(report['row_operator_observation_complete'])
+                self.assertFalse(report['c2'] or report['c3'])
                 self.assertEqual((report['owned_hooks'], report['owned_method_patches'], report['owned_api_patches']), (0, 0, 0))
+                return report, session.inventory.report()
             finally:
                 session.close(abort=True)
+
+    def test_complete_actual_cpu_prefill_decode_hook_order_and_row_bridge_then_remove(self):
+        report, inventory = self.run_complete_serving()
+        self.assertEqual(report['request_row_proven_calls'], 4)
+        self.assertEqual(inventory['qualified_native_targets'], 0)
+        self.assertTrue(all(not candidate['reasons'] for row in inventory['native_forwards'] for candidate in row['candidates']))
+
+    def test_unknown_row_permutation_retains_all_native_calls_without_inheriting_rows(self):
+        report, inventory = self.run_complete_serving(unknown_boundary=True)
+        self.assertEqual((report['actual_native_calls'], report['request_row_proven_calls']), (4, 2))
+        for row in inventory['native_forwards']:
+            self.assertEqual(len(row['candidates']), 2)
+            self.assertIn('ACTUAL_PER_REQUEST_PROJECTION_ROW_LINEAGE_UNPROVEN', row['candidates'][1]['reasons'])
+            self.assertTrue(any(event['operator'] == 'aten.roll.default' and not event['row_preserving']
+                                for event in row['row_provenance']['events']))
 
 
 if __name__ == '__main__':

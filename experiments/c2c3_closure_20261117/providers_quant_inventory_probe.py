@@ -22,10 +22,10 @@ def actual(worker):
 
 
 def setup(worker, prompts, build_sha):
-    from demoncat.runtime.vllm_ascend.worker_extension import serving_shared_scale_inventory, shared_scale_inventory
+    from demoncat.runtime.vllm_ascend.worker_extension import serving_shared_scale_inventory, shared_scale_inventory, quant_row_provenance
     from fault_injection.deployments import dynamic_quant_inventory
     sources = []
-    for module in (serving_shared_scale_inventory, shared_scale_inventory, dynamic_quant_inventory):
+    for module in (serving_shared_scale_inventory, shared_scale_inventory, dynamic_quant_inventory, quant_row_provenance):
         path = Path(inspect.getfile(module)).resolve()
         if not path.is_relative_to('/installed'):
             raise RuntimeError('FRESH_INSTALLED_NATIVE_QUANT_OBSERVER_REQUIRED')

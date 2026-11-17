@@ -5,7 +5,7 @@ import json
 import os
 from pathlib import Path
 
-from .serving_quant import QuantServingSession, same_tensor
+from .serving_quant import QuantServingSession
 from .serving_context import require
 
 
@@ -15,10 +15,13 @@ class SharedScaleInventorySession(QuantServingSession):
         from fault_injection.deployments.dynamic_quant_inventory import NativeDynamicQuantInventory
         from .shared_scale_inventory import SharedScaleInventory
         self.native_reader = NativeDynamicQuantInventory(self.runtime)
+        from .quant_row_provenance import RequestRowProvenance
+        self.row_observer = RequestRowProvenance()
         identity = self.worker.demoncat_worker_identity()
         require(identity['status'] == 'WORKER_IDENTIFIED' and not identity.get('quarantined'), 'READY_ACTUAL_WORKER_REQUIRED')
         self.inventory = SharedScaleInventory(self.model, self.candidates, worker_identity=identity['worker'],
-            native=self.native_reader, folder=self.folder / 'inventory', row_lineage=self.row_lineage)
+            native=self.native_reader, folder=self.folder / 'inventory', row_lineage=self.row_lineage,
+            row_transfer=self.projection_rows)
         self.norm_evidence = None
 
     def install(self):
@@ -70,6 +73,11 @@ class SharedScaleInventorySession(QuantServingSession):
             digest = hashlib.sha256(json.dumps([input_sha, positions_sha]).encode()).hexdigest()
             self.inventory.begin(self.active['decode']['request_ids'][0], digest,
                 request_ids=tuple(self.active['decode']['request_ids']), row_mapping=self.active['decode'])
+            self.row_observer.begin(self.active['decode']['request_ids'][0])
+            for _, owner in self.model.named_modules():
+                for name, tensor in owner._parameters.items():
+                    if tensor is not None and not tensor.requires_grad:
+                        self.row_observer.register_broadcast_parameter(owner, name, tensor, kind='_parameters')
 
     def norm(self, module, args, kwargs, output):
         prior = self.normalized
@@ -80,17 +88,31 @@ class SharedScaleInventorySession(QuantServingSession):
             self.norm_evidence = dict(module_object_identity=id(module), module_class=type(module).__module__ + '.' + type(module).__name__,
                 source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
                 embedding=live_tensor(self.embedding), normalized=live_tensor(self.normalized))
+            self.row_observer.seed(self.normalized, dict(verified=True,
+                source='ACTUAL_SCHEDULER_EMBEDDING_RMSNORM_SAME_TENSOR_PROJECTION',
+                actual_rows=self.active['decode'], norm=self.norm_evidence))
 
     def row_lineage(self, x):
-        if (self.active and self.active.get('decode') and self.norm_evidence is not None
-                and same_tensor(x, self.normalized)):
-            return dict(verified=True, source='ACTUAL_SCHEDULER_EMBEDDING_RMSNORM_SAME_TENSOR_PROJECTION',
-                actual_rows=self.active['decode'], norm=self.norm_evidence)
-        return dict(verified=False, reason='NO_REVIEWED_ROW_PRESERVING_CHAIN_FROM_ACTUAL_REQUEST_INPUT',
-                    shape_is_not_request_row_proof=True)
+        return self.row_observer.query(x)
+
+    def projection_rows(self, frame, result):
+        rows = [self.inventory.public_calls[index] for index in frame['row']['api_call_indices']]
+        dynamic = [row for row in rows if row['operator'] == 'npu_dynamic_quant']
+        if len(dynamic) != 1 or not dynamic[0].get('request_row_lineage', {}).get('verified'):
+            return self.row_observer.query(result)
+        binding = dynamic[0].get('independent_native', {}).get('binding', {})
+        if not binding.get('complete_formals'):
+            return self.row_observer.query(result)
+        return self.row_observer.projection(frame['input'], result, evidence=dict(
+            complete_native_dynamic_formals=True, owned_public_qmm_chain=frame['row']['public_chain_verified'],
+            actual_native_dynamic_call=binding, native_build=self.runtime.build_identity,
+            public_api_indices=frame['row']['api_call_indices'], module_object_identity=frame['row']['module_object_identity'],
+            method_source_sha256=frame['row']['method_source_sha256'], weight_object_identity=frame['row']['weight_object_identity']))
 
     def logits(self, module, args, kwargs, output):
         decode = self.active is not None and bool(self.active.get('decode'))
+        if self.row_observer.active:
+            self.inventory.row_trace = self.row_observer.end()
         super().logits(module, args, kwargs, output)
         if decode:
             try:
@@ -119,6 +141,8 @@ class SharedScaleInventorySession(QuantServingSession):
         self.save()
 
     def close(self, *, abort=False):
+        if self.row_observer.active:
+            self.inventory.row_trace = self.row_observer.end()
         if not abort:
             self.collect()
         if self.inventory.active:
@@ -134,9 +158,14 @@ class SharedScaleInventorySession(QuantServingSession):
             actual_public_calls=report['actual_public_api_calls'], actual_native_calls=report['actual_native_calls'],
             native_public_binding_complete=report['native_public_binding_complete'],
             request_row_proven_calls=report['request_row_proven_calls'],
+            row_operator_observation_complete=bool(report['native_forwards']) and all(
+                row.get('row_provenance') is not None and row['row_provenance']['complete'] for row in report['native_forwards']),
+            row_operator_unknown_edges=[len((row.get('row_provenance') or {}).get('unknown_edges', []))
+                for row in report['native_forwards']],
             native_qualified_targets=0, c1=False, c2=False, c3=False, native_faults=0 if not self.error else None,
             owned_hooks=len(self.handles), owned_method_patches=report['owned_method_patches'],
-            owned_api_patches=report['owned_api_patches'], native_build=self.runtime.build_identity,
+            owned_api_patches=report['owned_api_patches'], owned_row_dispatch_modes=int(self.row_observer.active),
+            native_build=self.runtime.build_identity,
             complete_healthy_replays=report['complete_healthy_replays'],
             scope='ALL_NATIVE_DYNAMIC_QUANT_V2_IN_TWO_ACTUAL_B8_FIRST_DECODES',
             inventory=str(self.inventory.folder / 'shared_scale_inventory.json'))
@@ -166,7 +195,7 @@ def remove_shared_scale_inventory(worker):
     session = worker._demoncat_shared_scale_inventory
     session.close(abort=not session.recovered)
     report = session.report()
-    require(not any(report[key] for key in ('owned_hooks', 'owned_method_patches', 'owned_api_patches')),
+    require(not any(report[key] for key in ('owned_hooks', 'owned_method_patches', 'owned_api_patches', 'owned_row_dispatch_modes')),
             'SHARED_SCALE_INVENTORY_STILL_OWNS_HOOKS')
     del worker._demoncat_shared_scale_inventory
     return report

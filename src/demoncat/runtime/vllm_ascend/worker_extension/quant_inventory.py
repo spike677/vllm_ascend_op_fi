@@ -87,6 +87,7 @@ class PublicQuantInventory:
                         if not same_tensor(result, frame['qmm_output']):
                             frame['row']['errors'].append('PROJECTION_RESULT_NOT_ACTUAL_QMM_OUTPUT')
                         frame['row']['public_chain_verified'] = not frame['row']['errors']
+                        self._projection_complete(frame, result)
                         return result
                     except BaseException as error:
                         frame['row']['errors'].append('ORIGINAL_PROJECTION_FAILED:' + type(error).__name__)
@@ -102,6 +103,9 @@ class PublicQuantInventory:
         except BaseException:
             self.close()
             raise
+
+    def _projection_complete(self, frame, result):
+        pass
 
     def begin(self, forward_id, input_sha256, *, request_ids, row_mapping=None):
         self._thread()

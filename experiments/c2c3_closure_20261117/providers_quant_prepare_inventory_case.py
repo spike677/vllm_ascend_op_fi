@@ -8,13 +8,13 @@ import re
 
 def main():
     parser = argparse.ArgumentParser()
-    for name in ('installed', 'quant', 'probe', 'source-commit'):
+    for name in ('installed', 'quant', 'probe', 'source-commit', 'image-id'):
         parser.add_argument('--' + name, required=True)
     parser.add_argument('--model', default='/home/haoran/models/DeepSeek-V2-Lite-W8A8')
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
-    if (not re.fullmatch('[0-9a-f]{7,40}', args.source_commit)
+    if (not re.fullmatch('[0-9a-f]{7,40}', args.source_commit) or not re.fullmatch(r'sha256:[0-9a-f]{64}', args.image_id)
             or any(not value.startswith('/') or any(c in value for c in ('\n', '\r', '\0', ','))
                    for value in (args.installed, args.quant, args.probe, args.model))):
         parser.error('Actual immutable source commit and absolute inputs required')
@@ -29,7 +29,7 @@ def main():
             raise ValueError('Actual quant Native bundle changed:' + filename)
     sha = hashlib.sha256(manifest.read_bytes()).hexdigest()
     name = 'providers-quant-deepseek-native-inventory'
-    case = dict(id=name, timeout=1800, image='quay.io/ascend/vllm-ascend:v0.18.0',
+    case = dict(id=name, timeout=1800, image=args.image_id,
         mounts=[[args.installed, '/installed', 'ro'], [args.model, '/model', 'ro'],
             [args.probe, '/probe.py', 'ro'], [args.quant, '/quant', 'ro']],
         env=dict(VLLM_ENABLE_V1_MULTIPROCESSING='0', VLLM_WORKER_MULTIPROC_METHOD='spawn',
@@ -44,13 +44,18 @@ def main():
         review=dict(experiment_id=name, provider='quant.batch_shared_scale / all native V2 calls before admission, read-only',
             model=args.model, cann='8.5.1', soc='Ascend910B4/A2; recheck Worker', physical_cards=[args.card], ranks=[0],
             worker='standard TP1 eager BF16, two identical B8 generation batches; observe only actual first pure decode; fixed64 KVblocks',
-            build_fingerprint=sha, source_commit=args.source_commit, expected_hits=0,
-            resource_budget=dict(timeout_seconds=1800, memory_gib=80, cpus=16, native_events=32768, public_calls=4096),
+            build_fingerprint=sha, source_commit=args.source_commit, expected_hits=0, actual_runtime_image_id=args.image_id,
+            resource_budget=dict(timeout_seconds=1800, memory_gib=80, cpus=16, native_events=32768, public_calls=4096,
+                row_operator_calls_per_forward=16384),
             recovery_plan='No arm function is called. Native descriptor arithmetic and C1 remain unchanged; independent metadata '
                 'records every typed V2 prepare and execute before owner selection. Bind actual input/q/scale/current executor '
-                'registration to public call, retain unowned/missing calls and all request-row gaps. Require repeated full B8 '
+                'registration to public call, retain unowned/missing calls and all request-row gaps. Observe bounded actual '
+                'ATen row provenance; unknown row data/Attention/MoE/indexing never inherit rows from matching shape or bytes. '
+                'Mutations invalidate every overlapping physical storage alias, including distinct Storage wrappers and '
+                'inference tensors without a version counter. Require repeated full B8 '
                 'prefill/decode logits equality, zero native owner/pending/executing, remove owned method/API/model hooks, then '
-                'same-process healthy generation. No C1/C2/C3 qualification is claimed. Root retains failures and removes only '
+                'same-process healthy generation. Remove only the owned dispatcher mode; a foreign mode prevents cleanup. '
+                'No C1/C2/C3 qualification is claimed. Root retains failures and removes only '
                 'its owned container; restart is never OFF evidence.'))
     with args.out.open('x') as stream:
         json.dump([case], stream, indent=2)

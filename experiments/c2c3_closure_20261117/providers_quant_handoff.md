@@ -52,7 +52,7 @@ After the new SDK build and installed packages are reviewed:
 python3 "$SOURCE/experiments/c2c3_closure_20261117/providers_quant_prepare_inventory_case.py" \
   --installed "$INSTALLED" --quant "$BUILD/quant-v2" \
   --probe "$SOURCE/experiments/c2c3_closure_20261117/providers_quant_inventory_probe.py" \
-  --source-commit "$COMMIT" --card 2 --out "$CASE"
+  --source-commit "$COMMIT" --image-id "$IMAGE_ID" --card 2 --out "$CASE"
 ```
 
 Only root runs this case through the global resource queue. The manifest pins
@@ -68,3 +68,90 @@ owner/generation, per-target lossless/effect, unchanged original input and all
 target OFF/drain/release. Missing row proof is an unresolved candidate, not a
 supported exclusion or a reason to reduce the denominator. C3 requires the live
 successful C2 proof in the same Worker.
+
+## Actual row-preserving operator observation
+
+The Python observer now starts an owned `TorchDispatchMode` only during each
+actual first decode. The existing scheduler→embedding→RMSNorm identity supplies
+the first seed. It binds each proven value to its weak tensor reference, actual
+Storage identity/address/extent, offset, dtype, device, shape, strides and real
+PyTorch version. Inference tensors explicitly report version `null`; observed
+writes independently invalidate every overlapping physical storage range,
+including aliases with distinct Tensor/Storage objects and independent version
+counters. No activation is kept alive solely for this graph.
+
+Only exact loaded ATen overload objects with captured actual schemas can
+propagate row labels. Supported edges are explicit row-preserving copies,
+feature-only reshapes/views/splits/concatenations and elementwise operations.
+For binary operations, every row-shaped data operand must already prove the
+same ordered request mapping. Unknown `[B,H]`, `[1,H]` or `[H]` tensors cannot
+borrow row labels. A scalar has no request axis; a frozen parameter may broadcast
+only while its actual module ownership, tensor identity, version/write epoch
+and non-request broadcasting geometry still match. Buffers are not automatically
+treated as static parameters. Unknown in-place writes, indexing, row `roll`,
+cross-row transpose, matrix operations and opaque Attention/MoE outputs remain
+UNVERIFIED, even when shapes and every value happen to be equal.
+
+After the actual dynamic-quant Native input/Q/scale/executor binding and owned
+public QMM/projection-output checks succeed, an existing input row proof may
+continue to that exact projection output. This is a specific verified public/
+Native chain, not a generic matrix multiplication whitelist. The next actual
+projection may then use that output through supported operators. All Native and
+public calls still remain in the independent denominator. An overflow or row
+observer error adds an explicit scope failure rather than discarding calls.
+The row operator trace includes the observer's read-only tensor readback/copy
+operations on that thread; its total is not relabelled as a model-op count.
+The separate Native/public census remains the projection denominator.
+
+Twenty-eight focused CPU contracts passed, including actual CPU model forwards
+with explicit Native/scheduler fixtures. Two successive projections now have
+four observed row mappings across two CPU decodes. Inserting an actual
+same-shape, same-value row permutation preserves all four Native calls while
+leaving only the two first-projection row proofs. These are fixture results;
+they do not prove any natural additional target. Other contracts cover unknown
+binary row data, conflicting request order, parameter mutation, aliases with
+different Storage objects, missing inference version counters, stale versions,
+object reuse, capacity loss and refusal to pop another dispatcher owner.
+
+This increment changes only Python observation. The existing matched Native
+bundle is `/home/17-fault-c2c3-20261117/build-quant-inventory-a1/quant-v2`, with
+`runtime/build.json` SHA256
+`086dbdf473a3e98e02870adb913f0386585873248489983da2d4d65fd6dcfc1e`.
+Read-only inspection of the reviewed vLLM environment recorded immutable image
+ID `sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0`.
+The queue generator now requires an explicit immutable runtime image ID. It
+does not rewrite or claim missing provenance in the older Native build receipt.
+After publishing the new Python package, root can prepare the next read-only
+case without launching anything:
+
+```sh
+python3 "$SOURCE/experiments/c2c3_closure_20261117/providers_quant_prepare_inventory_case.py" \
+  --installed "$INSTALLED" \
+  --quant /home/17-fault-c2c3-20261117/build-quant-inventory-a1/quant-v2 \
+  --probe "$SOURCE/experiments/c2c3_closure_20261117/providers_quant_inventory_probe.py" \
+  --source-commit "$COMMIT" \
+  --image-id sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0 \
+  --card 2 --out /home/17-fault-c2c3-20261117/providers-quant-row-inventory-a1-cases.json
+```
+
+Natural all-projection row qualification is still blocked by actual data.
+Attention needs the exact query-row→output-row relationship through its actual
+layout/slot boundary. MoE needs full actual routing/permutation index values,
+the expert row→request mapping and the matching restore relation, not only
+producer object identities or equal row counts. The reviewed `moe_census.py`
+and `moe_restore.py` joins, and
+`/home/17-fault-c2c3-20261117/natural-moe8-a1/natural-moe8-census/probe/result.json`,
+provide useful producer roles but do not yet establish those complete index
+values for this quant scope. No Attention/MoE exemption is introduced.
+
+There is also an explicit remaining Native execution gap after row proof:
+`dcat_dq_arm/finish` carries TLS ownership and selected counters, not a frozen
+group owner/generation/target/call lease or a per-target restoration receipt.
+The C1 healthy-input equality and finite-input guards remain unchanged. A new
+group ABI must bind each actual prepare/execute registration to its per-call
+lease, preserve C1, distinguish healthy qualification from propagation inputs,
+report real Q/scale effect and unchanged input, retain failed resources for OFF,
+and support whole-group stop/drain/release plus same-Worker health before the
+shared live C2 proof. The row observer neither calls arm nor grants that missing
+authority; quant C2/C3 remain false until every unresolved row and this Native
+contract are actually closed.
