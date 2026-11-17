@@ -19,7 +19,7 @@ struct RuntimeState {
     State core{};JournalState census{};
     uint64_t last_sequence{},public_active{},public_token{},native_stack_active{},callback_active{},completion_active{},
         quarantined{},overlap_entries{},public_gws_entries{},public_execute_entries{},passthrough_calls{},
-        admitted_calls{},completed_calls{},rejected_calls{},unreturned_public_scope{},orphan_descriptors{};
+        admitted_calls{},completed_calls{},rejected_calls{},unreturned_public_scope{},orphan_descriptors{},abi_exceptions{};
     int32_t last_error{},reserved{};
 };
 struct RawRecord {

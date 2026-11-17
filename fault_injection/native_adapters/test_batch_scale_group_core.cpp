@@ -362,15 +362,17 @@ void address_reuse_without_lifetime_proof_cannot_restore() {
     assert(f.engine.recover(f.config,&live)==Liveness && !has_release(f.ops));
     live=f.witness();assert(f.engine.recover(f.config,&live)==Ok);
 }
-void execute_failure_requires_real_retryable_stream_drain() {
+void execute_failure_keeps_unproven_executor_ownership() {
     Fixture f;f.qualify(f.a);f.seal({f.a});assert(f.admit(Fault,f.a)==Ok);
     auto ref=f.prepare(CorrectReference),effect=f.prepare(ModelEffect);assert(f.engine.start(71)==Ok);
     f.execute(CorrectReference,ref,71,false);assert(f.engine.readback(CorrectReference)==Ok);
-    f.execute(ModelEffect,effect,71,true,37);assert(!f.journal.state().pending);
+    f.execute(ModelEffect,effect,71,true,37);assert(f.journal.state().pending==1);
     assert(!f.engine.receipt().effect.drained && !f.engine.receipt().published && f.engine.publish()==StateError);
     assert(f.engine.stop(f.config,f.a)==Ok);f.ops.sync_failure=71;f.ops.actions.clear();
     assert(!f.engine.drain(f.config,f.a) && f.engine.recover(f.config)==Pending && !has_release(f.ops));
-    f.ops.sync_failure=0;assert(f.engine.drain(f.config,f.a));assert(f.recover_live()==Ok);
+    f.ops.sync_failure=0;
+    assert(!f.engine.drain(f.config,f.a) && f.engine.recover(f.config)==Pending && !has_release(f.ops));
+    assert(f.engine.state().device_bytes && f.journal.state().pending==1);
 }
 void observer_capacity_duplicate_helper_and_wrong_thread_refuse() {
     Fixture f;f.qualify(f.a);f.seal({f.a});assert(f.admit(Fault,f.a)==Ok);
@@ -410,7 +412,7 @@ int main(){
     repeated_reference_cannot_replace_frozen_qualification();stopped_ack_waits_for_all_target_drains();
     workspace_has_exact_call_binding_and_ownership();workspace_budget_alias_and_wrong_pointer_refuse();
     alias_allocation_and_descriptor_are_quarantined();address_reuse_without_lifetime_proof_cannot_restore();
-    execute_failure_requires_real_retryable_stream_drain();observer_capacity_duplicate_helper_and_wrong_thread_refuse();
+    execute_failure_keeps_unproven_executor_ownership();observer_capacity_duplicate_helper_and_wrong_thread_refuse();
     stale_execute_ticket_is_not_a_reused_executor_lease();
     std::cout<<"PASS explicit CPU group-core contracts; actual NPU calls=0; no numerical oracle\n";
 }

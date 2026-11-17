@@ -119,7 +119,10 @@ raw callback, or unresolved observer error retains resources. No nonexistent
 executor cancel/destructor is assumed. Retry is possible only when real
 missing completion/synchronization/ownership evidence becomes available;
 stream, copy and release failures have retry contracts. Returning from
-execute, even with a nonzero status, is not a drain proof. Input changes are
+execute is not a drain proof. A nonzero real execute status now retains its
+raw pending registration: there is no verified CANN contract establishing
+executor consumption on that error path, and later successful stream sync
+cannot supply it. Input changes are
 reported and never repaired by overwriting the model input.
 
 ## CPU validation
@@ -143,8 +146,8 @@ GWS and callback omissions, repeated B, unresolved/incomplete group refusal,
 stop/ack bypass, whole-group drain failure, live-token reuse, and overflow.
 
 Host attempt `providers-quant-group-core-cpu-a1` passed the initial core and
-contracts. Attempt `providers-quant-group-core-cpu-a2` passed the final 19 test
-functions with the strict g++ command above. Its header SHA256 is
+contracts. Attempt `providers-quant-group-core-cpu-a2` passed the first core
+commit's 19 test functions with the strict g++ command above. Its header SHA256 is
 `18592e6ca6521dcc28cb7175e4d0fc263ac3687e36bc7e8ca5d3c815696e7f32`,
 and test-source SHA256 is
 `5e9d2b5a33f52af9fe81fd355b6fff766a72e99f56b9cdd4389a4b40d85605ce`.
@@ -193,3 +196,8 @@ isolation, or same-Worker healthy OFF result follows from this core commit.
 E5 still requires the separate raw B/F statistics comparison with fixed
 `rtol=1e-5, atol=1e-8`; the exact-byte comparisons here are mechanism/recovery
 contracts rather than E5 first-difference selection.
+
+The later typed-shim increment and executor-error retention update are
+documented in `providers_quant_group_shim.md`. Their fresh source hashes and
+CPU/SDK attempts supersede the initial core source for the next group bundle;
+the initial receipt is not relabeled as a validation of those newer files.

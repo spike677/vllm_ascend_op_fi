@@ -87,11 +87,17 @@ struct NativeOps final:Ops {
 } operations;
 Journal journal;Engine engine(operations,journal);
 std::recursive_mutex mutex;
-std::atomic<uint64_t> entrants{0},overlaps{0};
+std::atomic<uint64_t> entrants{0},overlaps{0},abi_exceptions{0};
 struct Entry {
     bool overlap{};
     Entry(){overlap=entrants.fetch_add(1)!=0;if(overlap)++overlaps;}
     ~Entry(){--entrants;}
+};
+struct FlagScope {
+    uint64_t& flag;
+    explicit FlagScope(uint64_t& value,uint64_t active=1):flag(value){flag=active;}
+    ~FlagScope() noexcept {flag=0;}
+    FlagScope(const FlagScope&)=delete;FlagScope& operator=(const FlagScope&)=delete;
 };
 Admission admission{};Completed completed{};RuntimeState runtime{};
 struct Envelope {
@@ -100,20 +106,35 @@ struct Envelope {
 uint64_t next_lifetime{};Call callback_call{};bool decided{},accepted{};
 struct PassRecord {Call call{};uint64_t prepare{},prepared{};};
 std::map<uint64_t,PassRecord> passed;
-std::set<uint64_t> orphan_descriptors;
+std::array<uint64_t,8> orphan_descriptors{};
+uint64_t orphan_count(){return std::count_if(orphan_descriptors.begin(),orphan_descriptors.end(),[](uint64_t n){return n!=0;});}
 int reject(int code){++runtime.rejected_calls;runtime.last_error=code;if(engine.state().pending_parent)engine.reject(code);return code;}
+int abi_failure() noexcept {
+    ++abi_exceptions;
+    try {
+        std::lock_guard<std::recursive_mutex> lock(mutex);
+        journal.mark_error();runtime.quarantined=1;reject(Observer);
+    } catch(...) { /* The atomic poison remains visible even if lock acquisition fails. */ }
+    return Observer;
+}
 bool same_owner(const Config* c) {
     return c && c->version==1 && c->size==sizeof(Config) && !c->reserved && c->owner_hi==owner.owner_hi
         && c->owner_lo==owner.owner_lo && c->generation==owner.generation && c->thread==owner.thread
         && c->thread==tid() && c->device==owner.device && device()==owner.device;
 }
+struct Dimensions {
+    int64_t* data{};
+    ~Dimensions() noexcept {delete[] data;}
+    Dimensions()=default;Dimensions(const Dimensions&)=delete;Dimensions& operator=(const Dimensions&)=delete;
+};
 View view(const aclTensor* tensor) {
     View v{};v.descriptor=reinterpret_cast<uint64_t>(tensor);if(!tensor || !api.ready)return v;
-    aclDataType type{};aclFormat format{};int64_t *shape=nullptr,*strides=nullptr,*storage=nullptr;uint64_t count=0,scount=0,stored=0;
+    aclDataType type{};aclFormat format{};Dimensions shape_owner,strides_owner,storage_owner;uint64_t count=0,scount=0,stored=0;
     void* address=nullptr;
     if(api.type(tensor,&type) || api.format(tensor,&format) || api.offset(tensor,&v.offset)
-       || api.shape(tensor,&shape,&count) || api.strides(tensor,&strides,&scount)
-       || api.storage(tensor,&storage,&stored) || api.address(tensor,&address))return v;
+       || api.shape(tensor,&shape_owner.data,&count) || api.strides(tensor,&strides_owner.data,&scount)
+       || api.storage(tensor,&storage_owner.data,&stored) || api.address(tensor,&address))return v;
+    const auto* shape=shape_owner.data;const auto* strides=strides_owner.data;const auto* storage=storage_owner.data;
     v.address=reinterpret_cast<uint64_t>(address);v.dtype=type;v.format=format;v.dimensions=static_cast<uint32_t>(count);
     if(count<1 || count>2 || scount!=count || stored!=count || !shape || !strides || !storage)return v;
     v.rows=shape[0];v.columns=count==2?shape[1]:0;v.stride0=strides[0];v.stride1=count==2?strides[1]:0;
@@ -137,19 +158,25 @@ int recover_inside_stack() {
     bool drained=true;for(const auto& key:keys)drained=engine.drain(owner,key) && drained;
     if(!drained){runtime.quarantined=1;return Pending;}
     const auto live=live_witness();const int code=engine.recover(owner,live.lifetime_token?&live:nullptr);
-    runtime.quarantined=code!=Ok || !orphan_descriptors.empty();return code;
+    runtime.quarantined=code!=Ok || orphan_count() || abi_exceptions.load();return code;
 }
 bool aliases(uint32_t role) {
     auto plan=engine.plan(role);
     for(unsigned formal=0;formal<3;++formal) {
         const auto& v=formal==0?plan.input:formal==1?plan.quant:plan.scale;if(v.descriptor)continue;
+        auto slot=std::find(orphan_descriptors.begin(),orphan_descriptors.end(),0);
+        if(slot==orphan_descriptors.end()){runtime.quarantined=1;return false;}
         const int64_t shape[2]{v.rows,v.columns},strides[2]{v.stride0,v.stride1};
         auto* tensor=api.create(shape,v.dimensions,static_cast<aclDataType>(v.dtype),strides,v.offset,
             static_cast<aclFormat>(v.format),shape,v.dimensions,reinterpret_cast<void*>(v.address));
         if(!tensor)return false;
+        // Track before a potentially allocating core transition. An exception
+        // cannot lose the actual descriptor that has already been created.
+        *slot=reinterpret_cast<uint64_t>(tensor);
         if(engine.descriptor(role,formal,reinterpret_cast<uint64_t>(tensor))) {
-            orphan_descriptors.insert(reinterpret_cast<uint64_t>(tensor));runtime.quarantined=1;return false;
+            runtime.quarantined=1;return false;
         }
+        *slot=0; // Ownership transferred to the core's descriptor ledger.
     }
     return true;
 }
@@ -193,27 +220,28 @@ aclnnStatus execute_child(uint32_t role) {
 }
 int notify(Completion& value) {
     if(!completed)return Ok;
-    runtime.completion_active=1;const int code=completed(&value);runtime.completion_active=0;
+    FlagScope active(runtime.completion_active);const int code=completed(&value);
     return code?reject(Observer):Ok;
 }
 }
 
-extern "C" int dcat_dqg_abi_v1(AbiSizes* value) {
+extern "C" int dcat_dqg_abi_v1(AbiSizes* value) try {
     if(!value || value->version!=1 || value->size!=sizeof(AbiSizes))return Identity;
     *value=AbiSizes{};value->view=sizeof(View);value->call=sizeof(Call);value->config=sizeof(Config);value->lease=sizeof(Lease);
     value->event=sizeof(NativeEvent);value->binding=sizeof(ChildBinding);value->journal=sizeof(JournalState);value->plan=sizeof(ChildPlan);
     value->child=sizeof(ChildReceipt);value->receipt=sizeof(Receipt);value->state=sizeof(State);value->public_input=sizeof(PublicInput);
     value->completion=sizeof(Completion);value->runtime=sizeof(RuntimeState);value->raw=sizeof(RawRecord);return Ok;
-}
-extern "C" int dcat_dqg_state_v1(RuntimeState* output) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_state_v1(RuntimeState* output) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!output || output->version!=1 || output->size!=sizeof(RuntimeState))return Identity;
     runtime.core=engine.state();runtime.census=journal.state();runtime.last_sequence=journal.last_sequence();
     runtime.public_active=envelope.active;runtime.public_token=envelope.token;runtime.overlap_entries=overlaps.load();
-    runtime.orphan_descriptors=orphan_descriptors.size();
+    runtime.orphan_descriptors=orphan_count();runtime.abi_exceptions=abi_exceptions.load();
+    runtime.quarantined=runtime.quarantined || runtime.abi_exceptions;
     *output=runtime;return Ok;
-}
-extern "C" int dcat_dqg_raw_v1(uint64_t sequence,RawRecord* output) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_raw_v1(uint64_t sequence,RawRecord* output) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!output || output->version!=1 || output->size!=sizeof(RawRecord))return Identity;
     *output=RawRecord{};
@@ -222,25 +250,25 @@ extern "C" int dcat_dqg_raw_v1(uint64_t sequence,RawRecord* output) {
         output->kind=2;output->native=*event;if(const auto* binding=journal.binding(event->registration))output->binding=*binding;return Ok;
     }
     return Observer;
-}
-extern "C" int dcat_dqg_install_v1(const Config* c,Admission observed,Completed finished) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_install_v1(const Config* c,Admission observed,Completed finished) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!c || c->version!=1 || c->size!=sizeof(Config) || c->thread!=tid() || !observed || !finished || admission || completed
-       || envelope.active || engine.state().pending_parent || runtime.quarantined || !passed.empty() || entrants.load()
+       || envelope.active || engine.state().pending_parent || runtime.quarantined || abi_exceptions.load() || !passed.empty() || entrants.load()
        || !enabled("VLLM_SERVER_DEV_MODE") || !enabled("DCAT_DQ_GROUP_V1_ALLOWED") || enabled("DCAT_DQ_V2_ENABLE") || legacy_present()
        || !resolve() || device()!=c->device)return Identity;
     const auto census=journal.state();if(census.preparing || census.pending || census.executing || census.errors || census.overflow)return Observer;
     const int code=engine.open(*c);if(code)return code;owner=*c;admission=observed;completed=finished;return Ok;
-}
-extern "C" int dcat_dqg_public_begin_v1(const Config* c,const PublicInput* input,uint64_t* token) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_public_begin_v1(const Config* c,const PublicInput* input,uint64_t* token) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(c) || !input || input->version!=1 || input->size!=sizeof(PublicInput) || input->reserved
-       || input->thread!=tid() || input->device!=device() || !token || !admission || envelope.active || runtime.quarantined
+       || input->thread!=tid() || input->device!=device() || !token || !admission || envelope.active || runtime.quarantined || abi_exceptions.load()
        || engine.state().pending_parent || entrants.load() || legacy_present() || !span(input->input.address,input->input.bytes))return Identity;
     const auto census=journal.state();if(census.preparing || census.pending || census.executing || census.errors || census.overflow)return Observer;
     envelope=Envelope{};envelope.active=true;envelope.input=*input;envelope.token=++next_lifetime;*token=envelope.token;return Ok;
-}
-extern "C" int dcat_dqg_public_end_v1(const Config* c,uint64_t token,const View* q,const View* s,int failed,Completion* output) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_public_end_v1(const Config* c,uint64_t token,const View* q,const View* s,int failed,Completion* output) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(c) || !envelope.active || token!=envelope.token || runtime.native_stack_active || runtime.callback_active
        || !output || output->version!=1 || output->size!=sizeof(Completion))return Identity;
@@ -252,63 +280,65 @@ extern "C" int dcat_dqg_public_end_v1(const Config* c,uint64_t token,const View*
         runtime.quarantined=1;++runtime.unreturned_public_scope;
     }
     return correct?Ok:reject(Liveness);
-}
-extern "C" int dcat_dqg_pass_v1(const Config* c,const Call* call) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_pass_v1(const Config* c,const Call* call) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(c) || !call || !runtime.callback_active || decided || !same_call(*call,callback_call))return reject(Identity);
     decided=true;accepted=false;return Ok;
-}
-extern "C" int dcat_dqg_continue_v1(const Lease* lease) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_continue_v1(const Lease* lease) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    if(!lease || !runtime.callback_active || decided || !envelope.active || callback_call.lifetime_token!=envelope.token
+    if(!lease || !runtime.callback_active || decided || !envelope.active || abi_exceptions.load() || callback_call.lifetime_token!=envelope.token
        || !same_call(lease->expected,callback_call) || tid()!=owner.thread || device()!=owner.device || legacy_present())return reject(Identity);
     decided=true;const int code=engine.admit(callback_call.token,*lease);
     if(code)return reject(code);
     accepted=true;envelope.admitted=true;++runtime.admitted_calls;return Ok;
-}
-extern "C" int dcat_dqg_seal_v1(const Config* c,const Key* keys,uint64_t count,uint64_t unresolved,const Key* scope) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_seal_v1(const Config* c,const Key* keys,uint64_t count,uint64_t unresolved,const Key* scope) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(c) || !keys || !count || count>512 || !scope || envelope.active || entrants.load())return Identity;
     return engine.seal(std::vector<Key>(keys,keys+count),unresolved,*scope);
-}
-extern "C" int dcat_dqg_stop_v1(const Config* c,const Key* target) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_stop_v1(const Config* c,const Key* target) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(c) || !target || runtime.callback_active)return Identity;
     return engine.stop(*c,*target);
-}
-extern "C" int dcat_dqg_drain_v1(const Config* c,const Key* target) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_drain_v1(const Config* c,const Key* target) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(c) || !target || runtime.callback_active)return Identity;
+    if(abi_exceptions.load())return Pending;
     return engine.drain(*c,*target)?Ok:Pending;
-}
-extern "C" int dcat_dqg_recover_v1(const Config* c) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_recover_v1(const Config* c) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(c) || runtime.callback_active)return Identity;
     // No exported caller-supplied lifetime witness exists. Outside the actual
     // execute stack, public storage cannot be read or restored, even when its
     // previous address/shape still happen to match.
     if(engine.state().pending_parent && (!runtime.native_stack_active || !envelope.active))return Liveness;
+    if(abi_exceptions.load())return Observer;
     const auto live=live_witness();const int code=engine.recover(*c,live.lifetime_token?&live:nullptr);
-    if(!code && orphan_descriptors.empty())runtime.quarantined=0;
+    if(!code && !orphan_count() && !abi_exceptions.load())runtime.quarantined=0;
     return code;
-}
-extern "C" int dcat_dqg_remove_v1(const Config* c,Admission observed,Completed finished) {
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_remove_v1(const Config* c,Admission observed,Completed finished) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     const auto state=engine.state();const auto census=journal.state();
     if(!same_owner(c) || observed!=admission || finished!=completed || envelope.active || entrants.load() || state.installed
        || state.pending_parent || state.device_bytes || state.host_bytes || state.owned_descriptors || state.borrowed_workspace_bytes
-       || state.quarantined_bytes || runtime.quarantined || !orphan_descriptors.empty() || !passed.empty()
+       || state.quarantined_bytes || runtime.quarantined || orphan_count() || abi_exceptions.load() || !passed.empty()
        || census.preparing || census.pending || census.executing)return Pending;
     admission=nullptr;completed=nullptr;return Ok;
-}
+} catch(...) {return abi_failure();}
 
-extern "C" bool CanUsePTACache(const char* name) {
+extern "C" bool CanUsePTACache(const char* name) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(name && std::strcmp(name,"aclnnDynamicQuantV2")==0)return false;
     return resolve() && api.cache(name);
-}
+} catch(...) {abi_failure();return false;}
 extern "C" aclnnStatus aclnnDynamicQuantV2GetWorkspaceSize(const aclTensor* x,const aclTensor* a,const aclTensor* b,int64_t dtype,
-    const aclTensor* q,const aclTensor* s,const aclTensor* o,uint64_t* workspace,aclOpExecutor** executor) {
+    const aclTensor* q,const aclTensor* s,const aclTensor* o,uint64_t* workspace,aclOpExecutor** executor) try {
     Entry entry;std::lock_guard<std::recursive_mutex> lock(mutex);++runtime.public_gws_entries;
     const bool ready=resolve();
     Call call{};call.thread=tid();call.device=device();call.input=view(x);call.quant=view(q);call.scale=view(s);
@@ -318,13 +348,14 @@ extern "C" aclnnStatus aclnnDynamicQuantV2GetWorkspaceSize(const aclTensor* x,co
         if(envelope.gws_calls==1 && same_view(call.input,envelope.input.input,true,false))call.lifetime_token=envelope.token;
     }
     call=journal.parent(call); // Independent actual public entry, before admission.
-    if(!ready || !workspace || !executor || !call.token || entry.overlap || runtime.quarantined || legacy_present()
+    if(!ready || !workspace || !executor || !call.token || entry.overlap || runtime.quarantined || abi_exceptions.load() || legacy_present()
        || (admission && (tid()!=owner.thread || device()!=owner.device)) || engine.state().pending_parent) {
         reject(Identity);runtime.quarantined=runtime.quarantined || engine.state().pending_parent!=0;return invalid;
     }
     *workspace=0;*executor=nullptr;callback_call=call;decided=accepted=false;
     if(admission) {
-        runtime.callback_active=1;const int code=admission(&callback_call);runtime.callback_active=0;
+        int code=0;
+        {FlagScope active(runtime.callback_active);code=admission(&callback_call);}
         if(code || !decided){reject(Observer);if(engine.state().pending_parent)recover_inside_stack();return invalid;}
     }
     if(accepted) {
@@ -341,12 +372,12 @@ extern "C" aclnnStatus aclnnDynamicQuantV2GetWorkspaceSize(const aclTensor* x,co
     }
     if(status && *executor)runtime.quarantined=1;
     return status;
-}
-extern "C" aclnnStatus aclnnDynamicQuantV2(void* workspace,uint64_t size,aclOpExecutor* executor,aclrtStream stream) {
+} catch(...) {abi_failure();return invalid;}
+extern "C" aclnnStatus aclnnDynamicQuantV2(void* workspace,uint64_t size,aclOpExecutor* executor,aclrtStream stream) try {
     Entry entry;std::lock_guard<std::recursive_mutex> lock(mutex);++runtime.public_execute_entries;
     if(!resolve())return invalid;
     const auto before=engine.receipt();const bool selected=engine.state().pending_parent && before.effect.executor==reinterpret_cast<uint64_t>(executor);
-    if(entry.overlap || runtime.quarantined || legacy_present() || (admission && (tid()!=owner.thread || device()!=owner.device))
+    if(entry.overlap || runtime.quarantined || abi_exceptions.load() || legacy_present() || (admission && (tid()!=owner.thread || device()!=owner.device))
        || (selected && (!envelope.active || before.lifetime_token!=envelope.token || !envelope.admitted))) {
         const auto raw=journal.execute(reinterpret_cast<uint64_t>(executor),tid(),device(),reinterpret_cast<uint64_t>(stream),reinterpret_cast<uint64_t>(workspace),size);
         journal.executed(raw,invalid,0);reject(Liveness);runtime.quarantined=1;return invalid;
@@ -361,10 +392,11 @@ extern "C" aclnnStatus aclnnDynamicQuantV2(void* workspace,uint64_t size,aclOpEx
         result.status=real_execute(workspace,size,executor,stream,0,&result.execute_enter,&result.execute_exit);
         passed.erase(found);++runtime.passthrough_calls;++runtime.completed_calls;
         if(notify(result))result.status=invalid;
+        if(result.status)runtime.quarantined=1;
         if(envelope.active && result.call.lifetime_token==envelope.token){envelope.completion=result;envelope.returned=true;}
         return result.status;
     }
-    runtime.native_stack_active=reinterpret_cast<uint64_t>(stream);
+    FlagScope stack_lifetime(runtime.native_stack_active,reinterpret_cast<uint64_t>(stream));
     int code=engine.start(reinterpret_cast<uint64_t>(stream),reinterpret_cast<uint64_t>(workspace),size);
     if(!code && before.mode==Fault) {
         code=execute_child(CorrectReference);if(!code)code=engine.readback(CorrectReference);
@@ -379,6 +411,5 @@ extern "C" aclnnStatus aclnnDynamicQuantV2(void* workspace,uint64_t size,aclOpEx
     envelope.completion=result;envelope.returned=true;++runtime.completed_calls;
     // This is the last point at which the public caller's output allocations
     // remain borrowed under the actual Native execute stack contract.
-    runtime.native_stack_active=0;
     return result.status;
-}
+} catch(...) {abi_failure();return invalid;}

@@ -5,27 +5,51 @@
 #include "batch_scale_group_runtime.cpp"
 #include <cassert>
 #include <iostream>
+#include <new>
 #include <sys/wait.h>
+namespace array_accounting {
+void* live[256]{};uint64_t allocated{},released{};
+uint64_t count(){return std::count_if(std::begin(live),std::end(live),[](void* p){return p!=nullptr;});}
+}
+void* operator new[](size_t bytes) {
+    void* p=std::malloc(bytes?bytes:1);if(!p)throw std::bad_alloc();
+    auto slot=std::find(std::begin(array_accounting::live),std::end(array_accounting::live),nullptr);
+    assert(slot!=std::end(array_accounting::live));*slot=p;++array_accounting::allocated;return p;
+}
+void operator delete[](void* p) noexcept {
+    if(!p)return;
+    auto slot=std::find(std::begin(array_accounting::live),std::end(array_accounting::live),p);
+    assert(slot!=std::end(array_accounting::live));*slot=nullptr;++array_accounting::released;std::free(p);
+}
+void operator delete[](void* p,size_t) noexcept {::operator delete[](p);}
 namespace {
 struct Tensor {
     void* data{};aclDataType type{};uint64_t rank{};
-    int64_t shape[2]{},strides[2]{};
+    int64_t shape[4]{},strides[4]{};
 };
 struct Executor {Tensor x{},q{},s{};uint64_t workspace{16};};
 Tensor* tensor(const aclTensor* t){return reinterpret_cast<Tensor*>(const_cast<aclTensor*>(t));}
 std::map<void*,size_t> allocations;
 std::set<const aclTensor*> descriptors;
-uint64_t allocations_made{},releases{},real_prepares{},real_executes{},copies{},late_copies{};
+uint64_t allocations_made{},releases{},real_prepares{},real_executes{},copies{},late_copies{},executor_handles{},getter_calls{};
 bool public_storage_live=true,uniform_outputs=false,fail_completion=false;
+bool throw_completion=false,throw_device=false;
+uint64_t throw_copy_at{},throw_getter_at{},fail_getter_at{};
 int fail_prepare_at=0,fail_execute_at=0;uint64_t fail_sync_stream=0;
 int selected_mode=Reference;
 Config configured{};Key selected_target{{1,2,3,4}},other_target{{5,6,7,8}},rows_proof{{11,12,13,14}};
-aclError fake_device(int32_t* d){*d=0;return 0;}
+aclError fake_device(int32_t* d){if(throw_device)throw std::bad_alloc();*d=0;return 0;}
 aclnnStatus fake_type(const aclTensor* t,aclDataType* out){*out=tensor(t)->type;return 0;}
 aclnnStatus fake_format(const aclTensor*,aclFormat* out){*out=ACL_FORMAT_ND;return 0;}
 aclnnStatus fake_offset(const aclTensor*,int64_t* out){*out=0;return 0;}
-aclnnStatus fake_shape(const aclTensor* t,int64_t** out,uint64_t* n){*out=tensor(t)->shape;*n=tensor(t)->rank;return 0;}
-aclnnStatus fake_strides(const aclTensor* t,int64_t** out,uint64_t* n){*out=tensor(t)->strides;*n=tensor(t)->rank;return 0;}
+aclnnStatus fake_dimensions(const aclTensor* t,int64_t** out,uint64_t* n,bool strides) {
+    ++getter_calls;*n=tensor(t)->rank;*out=new int64_t[*n];
+    const auto* source=strides?tensor(t)->strides:tensor(t)->shape;std::copy(source,source+*n,*out);
+    if(getter_calls==throw_getter_at)throw std::bad_alloc();
+    return getter_calls==fail_getter_at?37:0;
+}
+aclnnStatus fake_shape(const aclTensor* t,int64_t** out,uint64_t* n){return fake_dimensions(t,out,n,false);}
+aclnnStatus fake_strides(const aclTensor* t,int64_t** out,uint64_t* n){return fake_dimensions(t,out,n,true);}
 aclnnStatus fake_address(const aclTensor* t,void** out){*out=tensor(t)->data;return 0;}
 aclTensor* fake_create(const int64_t* shape,uint64_t rank,aclDataType type,const int64_t* strides,int64_t offset,
     aclFormat format,const int64_t* storage,uint64_t stored,void* address) {
@@ -38,7 +62,8 @@ aclnnStatus fake_destroy(const aclTensor* t){assert(descriptors.erase(t)==1);del
 aclError fake_allocate(void** p,size_t bytes,aclrtMemMallocPolicy){*p=std::malloc(bytes);assert(*p);allocations[*p]=bytes;++allocations_made;return 0;}
 aclError fake_release(void* p){assert(allocations.erase(p)==1);std::free(p);++releases;return 0;}
 aclError fake_copy(void* out,size_t cap,const void* in,size_t bytes,aclrtMemcpyKind) {
-    ++copies;if(!public_storage_live){++late_copies;return 1;}
+    ++copies;if(copies==throw_copy_at)throw std::bad_alloc();
+    if(!public_storage_live){++late_copies;return 1;}
     assert(cap>=bytes);std::memmove(out,in,bytes);return 0;
 }
 aclError fake_sync(aclrtStream stream){return reinterpret_cast<uint64_t>(stream)==fail_sync_stream?1:0;}
@@ -46,7 +71,8 @@ bool fake_cache(const char*){return true;}
 aclnnStatus fake_prepare(const aclTensor* x,const aclTensor* a,const aclTensor* b,int64_t dtype,const aclTensor* q,
     const aclTensor* s,const aclTensor* o,uint64_t* workspace,aclOpExecutor** executor) {
     assert(!a && !b && !o && dtype==ACL_INT8);++real_prepares;
-    auto* record=new Executor{*tensor(x),*tensor(q),*tensor(s),16};*workspace=16;*executor=reinterpret_cast<aclOpExecutor*>(record);
+    auto* record=new Executor{*tensor(x),*tensor(q),*tensor(s),16};++executor_handles;
+    *workspace=16;*executor=reinterpret_cast<aclOpExecutor*>(record);
     return int(real_prepares)==fail_prepare_at?37:0;
 }
 aclnnStatus fake_execute(void* workspace,uint64_t size,aclOpExecutor* handle,aclrtStream) {
@@ -58,7 +84,8 @@ aclnnStatus fake_execute(void* workspace,uint64_t size,aclOpExecutor* handle,acl
     const float scale[2]{uniform_outputs?.5f:.25f,.5f};
     if(flattened){const float scalar=.5f;std::memcpy(record->s.data,&scalar,4);}
     else std::memcpy(record->s.data,scale,8);
-    delete record;return int(real_executes)==fail_execute_at?19:0;
+    if(int(real_executes)==fail_execute_at)return 19; // Consumption on error is deliberately NOT assumed.
+    delete record;--executor_handles;return 0;
 }
 int observe(const Call* call) {
     if(!selected_mode)return dcat_dqg_pass_v1(&configured,call);
@@ -66,7 +93,7 @@ int observe(const Call* call) {
     lease.generation=configured.generation;lease.thread=configured.thread;lease.target=selected_target;
     lease.actual_row_proof=rows_proof;lease.expected=*call;return dcat_dqg_continue_v1(&lease);
 }
-int finish(const Completion* value){assert(value->call.token);return fail_completion?1:0;}
+int finish(const Completion* value){assert(value->call.token);if(throw_completion)throw std::bad_alloc();return fail_completion?1:0;}
 void install() {
     api.device=fake_device;api.type=fake_type;api.format=fake_format;api.offset=fake_offset;
     api.shape=fake_shape;api.storage=fake_shape;api.strides=fake_strides;api.address=fake_address;
@@ -179,6 +206,54 @@ void exported_recovery_requires_all_target_drains() {
     assert(dcat_dqg_recover_v1(&configured)==Ok && !engine.state().host_bytes);
     assert(dcat_dqg_remove_v1(&configured,observe,finish)==Ok);
 }
+void execute_error_cannot_infer_executor_consumption_from_sync() {
+    install();qualify();seal();selected_mode=Fault;fail_execute_at=int(real_executes)+2;
+    Invocation call;call.begin();assert(!call.prepare());const auto freed=releases;
+    assert(call.execute() && executor_handles==1 && journal.state().pending==1);
+    assert(releases==freed && !allocations.empty() && !runtime.native_stack_active);
+    assert(dcat_dqg_drain_v1(&configured,&selected_target)==Pending);
+    assert(call.end(1)==Liveness);public_storage_live=false;
+    assert(dcat_dqg_recover_v1(&configured)==Liveness && !late_copies && releases==freed);
+}
+void throwing_execute_region_cannot_leave_a_live_witness(bool during_completion) {
+    install();qualify();seal();selected_mode=Fault;Invocation call;call.begin();assert(!call.prepare());
+    const auto freed=releases;
+    if(during_completion)throw_completion=true;else throw_copy_at=copies+1;
+    assert(call.execute());
+    RuntimeState state{};assert(dcat_dqg_state_v1(&state)==Ok);
+    assert(state.abi_exceptions==1 && state.quarantined && !state.native_stack_active
+        && !state.callback_active && !state.completion_active && state.public_active);
+    // The public envelope has deliberately not ended yet. A stale numerical
+    // stack marker would therefore be enough to forge the old live witness.
+    public_storage_live=false;const auto copy_count=copies;
+    assert(dcat_dqg_recover_v1(&configured)==Liveness && copies==copy_count && !late_copies && releases==freed);
+    assert(call.end(1)==Liveness);
+}
+void throw_during_start(){throwing_execute_region_cannot_leave_a_live_witness(false);}
+void throw_during_completion(){throwing_execute_region_cannot_leave_a_live_witness(true);}
+void control_abi_catches_exceptions() {
+    install();PublicInput input{};input.thread=tid();input.device=0;uint64_t token=0;
+    throw_device=true;assert(dcat_dqg_public_begin_v1(&configured,&input,&token)==Observer);throw_device=false;
+    RuntimeState state{};assert(dcat_dqg_state_v1(&state)==Ok);
+    assert(state.abi_exceptions==1 && state.quarantined && !state.public_active && !state.native_stack_active);
+}
+void sdk_metadata_arrays_release_on_all_view_exits() {
+    install();Invocation call;const auto* input=reinterpret_cast<const aclTensor*>(&call.xx);
+    const auto alive=array_accounting::count();
+    for(uint64_t failure:{0u,1u,2u,3u}) {
+        getter_calls=0;fail_getter_at=failure;
+        const auto allocated=array_accounting::allocated,released_arrays=array_accounting::released;
+        const auto observed=view(input);
+        assert((failure && !observed.bytes) || (!failure && observed.bytes==sizeof(call.x)));
+        const auto expected=failure?failure:3;
+        assert(array_accounting::allocated-allocated==expected && array_accounting::released-released_arrays==expected
+            && array_accounting::count()==alive);
+    }
+    fail_getter_at=0;call.xx.rank=3;assert(!view(input).bytes && array_accounting::count()==alive);call.xx.rank=2;
+    getter_calls=0;throw_getter_at=2;bool caught=false;
+    try{(void)view(input);}catch(const std::bad_alloc&){caught=true;}
+    assert(caught && array_accounting::count()==alive);throw_getter_at=0;
+}
 void run(const char* name,void(*test)()) {
     const pid_t pid=fork();assert(pid>=0);
     if(!pid){test();std::cout<<"PASS "<<name<<"\n"<<std::flush;_exit(0);}
@@ -198,5 +273,10 @@ int main() {
     run("actual fixture no effect",genuine_no_effect_does_not_publish);
     run("unknown rows refused",inactive_stack_rejects_forged_lifetime_and_unknown_row);
     run("exported whole-group recovery barrier",exported_recovery_requires_all_target_drains);
-    std::cout<<"PASS 9 typed-shim CPU memory contracts; actual NPU calls=0; mocked Native functions; SDK status depends on build headers\n";
+    run("failed execute retains executor registration",execute_error_cannot_infer_executor_consumption_from_sync);
+    run("exception at native start revokes stack",throw_during_start);
+    run("exception at completion revokes stack",throw_during_completion);
+    run("C control ABI catches exceptions",control_abi_catches_exceptions);
+    run("SDK metadata ownership on all exits",sdk_metadata_arrays_release_on_all_view_exits);
+    std::cout<<"PASS 14 typed-shim CPU memory contracts; actual NPU calls=0; mocked Native functions; SDK status depends on build headers\n";
 }

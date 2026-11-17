@@ -41,7 +41,26 @@ to restore memory. Success is synchronized, compared, published, exactly read
 back and acknowledged before leaving that Native stack. If a failure occurs,
 the shim attempts all-target stop, all-target/child drain, exact rollback and
 release while the original call is still active. A prepared executor without
-an observed execute cannot pass that barrier and is never forgotten.
+an observed successful execute cannot pass that barrier and is never forgotten.
+A real execute returning nonzero retains its raw pending registration; later
+stream synchronization cannot prove that the executor was consumed. The CPU
+mock now retains the executor on that failure instead of inventing a release.
+
+Native, admission and completion stack flags use RAII, including exceptional
+unwinding. Every exported C ABI catches C++ exceptions and poisons the runtime
+without attempting a late memory recovery. Even before the public envelope
+ends, a returned Native execute cannot leave a usable stack witness. Newly
+created descriptors are tracked in fixed slots before a potentially allocating
+core ownership transfer, so a vector allocation exception does not lose them.
+
+The CANN 8.5 getter arrays are caller-owned and must be deleted after use;
+`view()` now releases shape, strides and storage shape with `delete[]` on every
+success, error and exception exit. This follows the official
+[aclGetViewShape](https://www.hiascend.com/doc_center/source/en/canncommercial/850/API/aolapi/operatorlist_00038.html)
+and [aclGetViewStrides](https://www.hiascend.com/doc_center/source/en/canncommercial/850/API/aolapi/operatorlist_00039.html)
+contracts. The mock allocates real arrays and counts allocation/deallocation;
+it no longer returns descriptor-owned arrays. Earlier C1/20/39 sources and
+receipts are not rewritten by this correction; their audit is separate.
 
 On public return, the scope is revoked. A retained transaction is quarantined;
 external recover refuses to read or write the former input/Q/scale. A later
@@ -61,6 +80,11 @@ Host attempt `providers-quant-group-shim-cpu-a1` failed `-Werror` for an unused
 test-fixture variable and is preserved. Attempt `providers-quant-group-shim-cpu-a2`
 passed 9 typed-shim memory contracts and the existing 19 core contracts with
 `g++ -std=c++17 -O2 -Wall -Wextra -Werror -pedantic`.
+After the executor/exception/metadata fixes, fresh host attempt
+`providers-quant-group-shim-cpu-a3` passed 14 typed-shim contracts and the
+updated 19 core contracts. Added cases cover execute-error ownership despite
+successful sync, exceptions at start/completion and a control ABI, and metadata
+arrays on success, partial getter error, rejected rank and exception exits.
 
 Those host tests explicitly use `tests/native_quant_group_mock_sdk` and injected
 CPU memory functions inside the test translation unit. They prove control-flow
@@ -78,6 +102,12 @@ SDK include directories as `-isystem`; all four strict warning flags remain
 enabled for our source. Official headers are unchanged. Retry uses a new
 output directory rather than rewriting attempt a1.
 
+Root's actual SDK attempt `native-quant-group-v1-a2` passed for the earlier
+source revision. Its manifest SHA256 is
+`5004df441af3f542f2ac241f01825448bd0b7432c10c9157854ea3fc1922bd01`.
+It does not validate the subsequent three ownership fixes. A fresh a3 bundle
+with a new source/build fingerprint is required before managed use.
+
 Root should run the following only after reviewing the commit and creating a
 fresh immutable source snapshot. This builds in the actual reviewed CANN 8.5.1
 image with its real headers, no device/driver mount, `runc`, no network, 4 CPUs,
@@ -90,7 +120,7 @@ container with the matching name/owner label/image can be removed.
 python3 "$SOURCE/experiments/c2c3_closure_20261117/providers_quant_build_group.py" \
   --source "$SOURCE" --source-commit "$COMMIT" \
   --image-id sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0 \
-  --out /home/17-fault-c2c3-20261117/native-quant-group-v1-a1
+  --out /home/17-fault-c2c3-20261117/native-quant-group-v1-a3
 ```
 
 The bundle's `build.json` and its SHA are required inputs to the forthcoming

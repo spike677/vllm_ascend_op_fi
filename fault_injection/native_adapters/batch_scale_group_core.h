@@ -172,7 +172,9 @@ public:
         const auto* source=event(begin);NativeEvent e{};
         if(!source || source->kind!=ExecuteEnter){++state_.errors;}else e=*source;
         e.kind=ExecuteExit;e.status=status;e.original_calls=original_calls;
-        if(original_calls==1) {if(!pending_.erase(e.executor))++state_.errors;}
+        // A nonzero real execute result has no established executor-consumption
+        // contract. Stream completion alone cannot release that registration.
+        if(original_calls==1 && status==0) {if(!pending_.erase(e.executor))++state_.errors;}
         if(!executing_.erase(e.executor))++state_.errors;
         return append(e);
     }
@@ -205,6 +207,7 @@ public:
         const auto found=bindings_.find(registration);return found==bindings_.end()?nullptr:&found->second;
     }
     uint64_t last_sequence() const {return sequence_;}
+    void mark_error() noexcept {++state_.errors;}
 };
 
 struct ChildPlan {
