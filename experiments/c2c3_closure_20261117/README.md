@@ -5,7 +5,7 @@ Frozen source: `91decf5efe48dfdf8c5494e52d258ccde788cc5d` (implementation
 the previous engineering reports and all original 124 evidence remain intact.
 
 The frozen starting point was **C2 0/17, C3 0/17**. The current strict result is
-**C2 1/17, C3 1/17**, for the bounded Fault18 standard-Worker scope. A new source
+**C2 2/17, C3 2/17**, for the bounded Fault18 and MoE8 standard-Worker scopes. A new source
 and actual-build audit found unfreed SDK metadata arrays in the previously
 accepted Fault20 and native Fault39 builds. Their numerical, coverage and OFF
 receipts remain intact, but full-resource C2/C3 qualification is withdrawn
@@ -21,7 +21,8 @@ natural-path gaps, queued experiments and version/hardware limits individually.
 
 | Reviewed route | C2 | C3 | Independent statistics limitation |
 | --- | --- | --- | --- |
-|18.api_half, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|226/226 calls in two requests|Separate Worker capture pending; HF statistics cannot substitute|
+|8.restore_offset, standard DeepSeek-V2-Lite-W8A8 Worker, BF16 fixed10-token fresh prefill, TP1|26/26 targets|52/52 calls in two requests|No raw statistics in this group; E5 pending|
+|18.api_half, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|226/226 calls in two requests|Fresh Worker raw first consumer input Max1.734375→0.8671875;102 preceding nulls retained|
 |20.buffer_substitute, standard DeepSeek-V2-Lite-W8A8 Worker, BF16 fixed3-token fresh prefill, TP1|Requalification required;135/135 interventions observed|Requalification required;270/270 calls observed|First QMM output Max16.25→14.0;2 later NaN fields prevent whole-capture E5; host metadata arrays were not released|
 |39.matmul_range, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|Requalification required;113/113 interventions observed|Requalification required;226/226 calls observed|C2 first linear output5.1875→Inf with later NaNs; C3 raw capture missing; host metadata arrays were not released|
 |18.api_half, natural HF model, separately reviewed|113/113 targets|226/226 calls|First consumer linear input1.734375→0.8671875; nulls retained|
@@ -32,6 +33,17 @@ semantics. All rows above are actual8.5.1/Ascend910B4(A2); none qualifies CANN9.
 A3, concurrent requests, multiple Workers or another model automatically.
 See [RESUME.md](RESUME.md) for the current running attempts; unreviewed runtime
 successes do not silently change this table.
+
+Root accepts the bounded MoE8 C2/C3 scope after its
+[independent actual-Worker audit](AGENT7_MOE8_GROUP_CARD2_REVIEW.md):26 natural
+MoE layers,234 native unpermutes across nine requests, actual paired I/P
+consumption,26 once hits and52 every-match hits. Complete hidden/logits repeat
+and OFF restore,161 unique referenced artifacts and source/weight identities
+were independently verified. All output tokens remain185; E5 is still pending.
+This is a paired contribution-group remap, not an out-of-bounds address fault.
+The new [Worker18 raw statistics review](WORKER18_STATISTICS_REVIEW.md) separately
+locates the first observable change at a linear consumer input. It does not
+resolve preceding nulls or uniquely identify the earlier RMSNorm boundary.
 
 Root additionally reviewed [Native39 a6](AGENT7_NATIVE39_A6_REVIEW.md):342 C2 and
 568 C3 references match original bytes. Each of113 targets changes in the once
@@ -70,11 +82,11 @@ explicitly rejects TND/page16 for the existing9.1 BNSD strategies.
 Natural MoE group implementation now preserves original input objects and storage
 on healthy, unselected and once-exhausted calls; only an admitted fault constructs
 paired remapped indices/probabilities. This corrects a source-review finding and
-has now completed a fresh standard-Worker group run oncard2, with independent
-qualification review pending. The pretrained Qwen3-VL image group also exited
+has now passed the bounded standard-Worker group review described above.
+The pretrained Qwen3-VL image group also exited
 normally oncard2 as MODEL_LOCAL. Its long storage-id consumer list is not proof
 of complete live-storage lineage; address reuse must not inflate coverage.
-Neither unreviewed result increases the current strict count. No raw statistics
+That MODEL_LOCAL result does not increase the standard-Worker count. No raw statistics
 were collected in these two group runs. Native26 has a separate v2 recovery ABI and host-memory
 failure contracts. Its SDK build passed and its conditional complete-set executor
 now has a prepared same-Worker C2-to-C3 queue: any unresolved target, overlap or

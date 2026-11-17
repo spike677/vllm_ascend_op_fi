@@ -1,7 +1,7 @@
 # Reviewed checkpoint, not final 17/17 acceptance
 
-Root decisions after the SDK metadata ownership audit: **C2 1/17, C3 1/17**.
-Only Fault18 retains its bounded standard-Worker qualification. Fault20 and
+Root decisions after the SDK metadata ownership and MoE8 audits: **C2 2/17, C3 2/17**.
+Fault18 and MoE8 have bounded standard-Worker qualification. Fault20 and
 native Fault39 had actual full-set numerical/OFF evidence, but their builds did
 not release SDK-allocated host metadata arrays. Complete-resource qualification
 is withdrawn pending repaired builds and new verification. Original historical and constructed results remain attached to
@@ -11,10 +11,10 @@ See the [executed-build ownership audit](coverage_frozen_metadata_ownership_revi
 
 | Mechanism | Actual new observation and scope | C2 | C3 | Remaining gate / statistics |
 | --- | --- | --- | --- | --- |
-|8.restore_offset|Natural pretrained DeepSeek-V2-Lite-W8A8 Worker:26 MoE sites; fresh card2 group exited normally|Pending independent review|Pending independent review|Runtime group receipt is not its own qualification certificate. Full permutation, lifetime, denominator and group recovery are under separate review; no raw statistics in this group run.|
+|8.restore_offset|Natural pretrained DeepSeek-V2-Lite-W8A8 Worker, TP1, fixed10-token fresh prefill;26 MoE sites|**26/26**|**52/52**, two requests|Independent actual producer/native-consumer joins,161 referenced artifacts, target effects and group OFF verified. No raw statistics in this group; E5 pending. Paired contribution-group remap, not out-of-bounds writing.|
 |15.alias_detach|Natural pretrained causal VAE observation: format30/base NCDHW, not private NZ|Not established|Not established|No qualifying natural private-base/view/write/base-consumer chain; preserve earlier constructed NZ evidence.|
-|17.spatial_padding|Full pretrained Qwen3-VL patch16 MODEL_LOCAL census and group completed oncard2;901 tokens/3536 patches|Not established for standard Worker|Not established for standard Worker|Natural group review pending. Long consumer lists based only on storage-id can include reused addresses and do not independently prove every consumer. No E5 capture in this group. Existing text Worker rejects multimodal request identity.|
-|18.api_half|Standard Qwen3-0.6B Worker BF16, fixed fresh prefill, TP1; actual native/custom RMSNorm return proxy|**113/113**|**226/226**, two requests|Complete hidden/logits OFF and healthy generation verified. Fresh Worker raw capture queued; separately accepted HF statistics are not Worker E5.|
+|17.spatial_padding|Full pretrained Qwen3-VL patch16 MODEL_LOCAL census and group completed oncard2;901 tokens/3536 patches|Not established for standard Worker|Not established for standard Worker|Independent audit completed: final native padding arguments and full consumer lineage are not independently proven. Storage-id reuse cannot expand coverage. No E5 capture in this group. Existing text Worker rejects multimodal request identity.|
+|18.api_half|Standard Qwen3-0.6B Worker BF16, fixed fresh prefill, TP1; actual native/custom RMSNorm return proxy|**113/113**|**226/226**, two requests|Complete hidden/logits OFF and healthy generation verified. Fresh Worker B/repeat/F raw statistics align; first observable linear input Max1.734375→0.8671875,102 preceding/6106 total nulls. Separate from HF evidence.|
 |20.buffer_substitute|Standard DeepSeek-V2-Lite-W8A8 Worker BF16, fixed3-token fresh prefill, TP1; actual dynamic QMM|Requalification required;135/135 observed|Requalification required;270/270 observed|Whole-group output OFF exact, but SDK metadata host arrays leaked outside tracked counters. First QMM output Max16.25→14.0;2 later NaN fields prevent whole-capture E5.133 later calls already receive propagated changes.|
 |22.wrong_row|Fresh Qwen Worker census:56 fused vllm.npu_rotary_embedding calls across two requests; one shared RoPE module|Not established|Not established|Baseline repeats and healthy output exact, no injections. Reader joins and shared-module callsite denominator incomplete; current legal-address wrong-row proxy does not cover this fused path or demonstrate uint32 overflow.|
 |25.reduce_scatter|Both8.5.1 and9.1: six bounded dtype/size cases, four actual native repeats, healthy collective and normal dual-rank exit|No sample|No sample|All cases NO_REPLAY_SAMPLE. No fabricated F; drain success cannot manufacture a numerical difference.|
@@ -24,9 +24,9 @@ See the [executed-build ownership audit](coverage_frozen_metadata_ownership_revi
 |28.fa.legal_tiling|Fresh9.1 FA a5: four actual launches independently verified, complete24 output leaves; M128/nRatio8→M64/nRatio4|Not established|Not established|Repeat/OFF complete output byte exact; F changes1112 attention-output elements. Independent new B/F statistics:4 exact changes,0 exceedances,10 nulls. Standalone joint strategy; no E5 first exceedance, stock bridge/model/Worker scope.|
 |28.fia.legal_tiling|Fresh9.1 standalone B8, actual final arguments/registered ELF/launch verified; M/S2 512/512→128/128|Not established|Not established|Fresh disclosed CPU-FP64 statistics have no observable fixed-tolerance first difference. Native output-byte change is separate evidence, not E5 or model acceptance.|
 |28.fia.denominator_replay|Fresh9.1 standalone B8, distinct real kernel entry, eight-launch review includes this B/F pair|Not established|Not established|Raw fixed-tolerance first difference is FIA output Mean; Norm118.30810159723288→116.27198217667856. Natural model/Worker coverage still pending; no historical default-root-cause claim.|
-|33.paged_decode|Natural stock Qwen Worker TND/page16/KV1025 full payload repeats and OFF passed; fresh six-entry FAI build verified|Pending|Pending|Private B initialization failed from custom-library shadowing; fixed library coexistence is CPU-symbol verified. New device-backed B, independent stock bridge and F remain mandatory.|
+|33.paged_decode|Natural stock Qwen Worker TND/page16/KV1025 full payload repeats and OFF passed; fresh six-entry FAI build verified|Pending|Pending|Fresh private B passed actual Worker library coexistence, then warm generation failed: native paged flash-decode key5100000000010200103 missing. Requires actual FD branch/template adaptation; no forced route change, private-B bridge or F qualification.|
 |39.matmul_range|Standard Qwen3-0.6B Worker BF16,14-token fresh prefill, TP1; actual vLLM GEMM→Native MatMul|Requalification required;113/113 observed|Requalification required;226/226 observed|Output OFF/whole logits/healthy generation exact, but SDK metadata host arrays leaked outside tracked counters. C2 first linear output Max5.1875→Inf; later1906 NaNs prevent whole E5. C3 has no captured raw triad.|
-|39.output_proxy|Natural HF Qwen aten.matmul→actual mul consumer: single-target effect and OFF observed;140 eligible chains inventoried|Pending|New multi-lease implementation unverified on NPU|Concurrent contribution adds bounded independent leases and retryable recovery; fresh Native build and actual group proof remain required. Infinity propagation leaves raw NaNs; separate from native39 input substitution.|
+|39.output_proxy|Natural HF Qwen aten.matmul→actual mul consumer: single-target effect and OFF observed;140 eligible chains inventoried|Pending|New multi-lease implementation unverified on NPU|Concurrent contribution adds bounded independent leases and retryable recovery. Fresh exact-SDK build completed; actual group proof remains required. Infinity propagation leaves raw NaNs; separate from native39 input substitution.|
 |41.tail_column|Natural standard Qwen Worker KV writer→same V storage→actual FIA, prior one-target effect/restoration observed|Pending|Pending|New28-target once/every-match probe prepared; baseline was externally stopped during initialization. No completed group proof follows.|
 
 The earlier numerical/coverage reviews refer to [Native20](native20_group_summary.json),
@@ -38,9 +38,9 @@ reported separately from target effects.
 
 ## Models, versions and hardware
 
-All three observed standard-Worker group scopes use the exact tested vLLM0.18
+All four observed standard-Worker group scopes use the exact tested vLLM0.18
 image, **CANN8.5.1 and Ascend910B4/A2**. Fault18 and native39 use Qwen3-0.6B;
-Fault20 uses DeepSeek-V2-Lite-W8A8. This is multi-model engineering progress, not
+Fault20 and MoE8 use DeepSeek-V2-Lite-W8A8. This is multi-model engineering progress, not
 a promise that every mechanism accepts every architecture. The original model,
 weights, layouts, scheduler context and code identities remain part of admission.
 
@@ -69,7 +69,7 @@ add a mechanism qualification.
 |build_recipes|Fresh native builds and exact API/ELF checks exist; each build remains separate from NPU qualification.|
 |request_context|Actual enqueued/internal request and model invocation mapping used in accepted Workers; decode/B8 mappings require route-specific validation.|
 |unique_binding|Original continuation and owned binding identity verified; stock/private33 library resolution now has an explicit environment gate.|
-|independent_statistics|Fixed baseline-reference comparator preserves null, NaN and alignment failure; fresh Worker18/C3-native39 evidence gaps remain explicit.|
+|independent_statistics|Fixed baseline-reference comparator preserves null, NaN and alignment failure; fresh Worker18 first observable consumer difference is reviewed. Missing MoE8 and C3-native39 captures remain explicit.|
 |m1_m2_integrate|Reviewed code is integrated locally; final all17 qualification and yellow-zone host integration are unfinished.|
 
 ## Current execution constraint

@@ -1,5 +1,78 @@
 # Current execution checkpoint
 
+## Active checkpoint — MoE8 accepted; Worker18 raw first difference; repaired Native retry
+
+- Latest published GitHub checkpoint4e913d98 was verified through the connector.
+  Later local commits40c91306/14048655 add actual loaded-counter gates and
+  SDK bind-mount alias validation. Vision auditcbd4453→31773e8d,26 raw ownership
+  fix0f06f27→e5adbf64,MoE8 audit4edc942a→9a406c9d. Root reviewed and accepts
+  the bounded MoE8 standard-Worker scope:26 C2 targets/52 C3 calls. Strict
+  count is now2/17 for both levels:MoE8 and Fault18. Vision stays MODEL_LOCAL
+  with independent final-argument/complete consumer-lineage limits; no E5.
+- Root main CPU suite at40c91306:884 tests,882 pass,2 platform skips,0 failures.
+  Receipt126072913a3416ef34d56d0235d45ca570b093d277a2222fe14f61d9071b20e0.
+  The first receipt writer failed on serializing unittest skip objects; its
+  partial file is preserved and not a complete test receipt. Corrected fresh
+  run is root-tests-a40-receipt-a2.json. Later focused34 tests passed33/1skip;
+  7 MoE audit regressions passed. Counts overlap, do not sum.
+- source-a39 head31773e8d7dedb30fae55e7ccf1c993722d2773bf,685 files,
+  archive4d11cbc5b4078a753b409406391ae2f52e9a6111725660220b1795b33e4c9b1a,
+  manifest04836e2bf636eca8f26b9f02853c5573cf4914e97963e99ba4993243725ce746.
+  Actual Linux loader/alias contract passed;receipt93c4f3fc39034a5b4e7250f180140bd46240d9cb93e7778d86b7a78ee3776aca.
+  Fresh native-repair-builds-a1 device-free SDK builds all exited0:Native39,
+  Native20,postwrite. packages-a14 receiptSHA
+  d3eccffc9ac2ada897330af9ae7dd9e7eb3a28fe7969430b386773bf32293620.
+- New Native39 root:R/native-repair-builds-a1/native39/cache/
+  4b75983d1afa5c4631344b701146c192079b1aa334d121344204a87e10b29caf/
+  attempt-74f4f41384ac4e2d88bf5c0d2159dceb/native;
+  manifestab14a84f71de35b6012f05690f1f72f83e6eeb46c7052cbf56b2dc87df972a2b,
+  profile8a36582b915df19d43ab7a18964147649d40db403351934be7a9f16a2d0c9feb.
+  Native20 root:R/native-repair-builds-a1/native20/cache/
+  2f4404862941aafb025170d9bc499f1606de90d4043b92f2e6c893c2e4505400/
+  attempt-2d2e4afd71a84d11a10666c9ae6f117e/native;
+  manifest59fa799751a1c2459ffc0c8717fe3dca4553d23ac1bcfe524ea5fa6d905069c9,
+  profile6fba6b9ae2664505558fa78f36fd28ea024003e7d65a8b2a86c4f62bed798c59.
+  Every build-manifest file rehashed. SDK builds do not restore qualification.
+- Active root NPU session5078:native20-39-requalification-card2-a1,2 serial
+  cases/card2,source39/packages14 and new Native packages;Native39 then20,
+  both--statistics--c3. Fresh exact r2 UID/hash/attempt gate, no card5 use.
+  CaseSHA4e72521cfbf9b7363a8993d6d84bff7f95bd067bfef335f53af38849e329716c,
+  scopeSHA35e8f814c06086dc91aeb4374ad231300f071ee63b1a4224b844e689bbfe60a2.
+  At last read Native39 had completed three C2 preparation phases; await result.
+- source-a40 heade5adbf64c97420d1fa82fe750200abd6f483ff3f,685 files,
+  archivec72bdea79b4845208166bf2e3ae646ee2a96797b53cfbe20187b34daa3de7cb9,
+  manifest1b8830b7471d91b6afd861f79bba06389463b09b28f97c49c1e609bf8e048550.
+  Fault26 actual helper/trace/group CPU fixture passes214 scenarios,
+  279 actual new[]/279 delete[],live0 in metadata-ownership-writer26-cpu-a1.
+  Parent-dependency and loaded26 gates ca84f3c0 are integrated asf30b41b0.
+  Root focused32 tests:31 pass/1 platform skip. Next run the new four-image
+  Linux ELF contract and revised null-capture fixture, then rebuild the trace
+  parent and v2 bundle. Never reuse the old trace/opapi parent for the new shim.
+- Quant managed ABI/isolation07601a1c is integrated asbdedabcf. Root focused79
+  tests:78 pass/1 platform skip. One initial command named a nonexistent test
+  module; the corrected explicit suite passed. This is Python/CPU preparation,
+  not Serving or NPU qualification. Native a3 remains compatible; empty-owner
+  cancellation and actual Serving/Coverage adaptation are the specialist's next
+  tasks and will require a fresh Native build if the ABI/source changes.
+- Finished worker18-statistics-card2-a2:3 cases source37/card2 all exited0.
+  casebf5e36983813b73ffe99037a670353f7962e027ebb452476ce4683a76b6ef216,
+  scopecd4fefba564a9d96cb5b244634eeacf34cff335061f3e14b54aa43abb0274ea5.
+  Root raw-only comparator froze Bself/repeat/BF reports; Bself and repeat0
+  changes. B/F first observable linear input Max1.734375→0.8671875,
+  4347 exceedances,6106null including102 earlier,nulls not equal. Three
+  publishable summaries fetched and rehashed, raw triplets retained on124.
+  Full BF reportSHAae655acf59b9e6184a3eb2fd93bc06e8058832b9c28a5bc550455d605ca4d09e.
+- Fault33 private B normal failure retained:resultSHA
+  c2321ef8e5f05729ad82f5f87f2cebb52b5f385d2f46fdfe87e4afe4c8ea8b99.
+  Actual Worker library coexistence passed. Warm request's paged flash-decode
+  key5100000000010200103 was missing. Source GetTilingKey confirms FD offset;
+  it is not a prefill-key inference. Attention specialist resumed for actual
+  FD adaptation, no forcing FD off or claiming the six-key package qualified.
+- Agent7 finished both natural-group audits and released its slot. Active
+  specialists:Attention33,nativeproviders quant Serving,Tensor/RoPE22.
+  Metadata26 specialist finished; root owns its rebuild and runtime review.
+  No active CPU build sessions remain. Root NPU queue5078 is the only device job.
+
 ## Active checkpoint — merged contributor work; fresh group review and SDK repairs
 
 - Concurrent remote contribution9dfdb0c6 was preserved by clean merge80299176,
