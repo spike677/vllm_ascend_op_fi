@@ -1,0 +1,24 @@
+{
+  "schema": "demoncat.engineering.linux_loader_test_receipt.v1",
+  "environment": {
+    "runtime": "Ubuntu 22.04 on WSL",
+    "architecture": "x86_64",
+    "python": "3.10.12",
+    "cc": "GCC 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04.3)"
+  },
+  "command": "python3 -m unittest discover -s engineering_closure/engineering_tests/linux_loader -v",
+  "status": "PASS",
+  "tests_passed": [
+    "test_existing_libc_symbol_matches_loaded_image",
+    "test_load_evidence_alone_never_confirms_an_entry",
+    "test_real_ld_preload_and_call_counter"
+  ],
+  "source_sha256": {
+    "engineering_closure/native_observer.py": "a92142c8a553b2666b06e88643358d5fa0847bfabd5e61ca82ffe786284ccda1",
+    "engineering_closure/engineering_tests/linux_loader/test_elf_ownership.py": "a2df53ea5d564ed3c08a06d586f343d4183076276353f4fe41e6611e3791ea90"
+  },
+  "scope": "CPU ELF mapping, pinned content and real LD_PRELOAD interposition of a local fixture",
+  "cann_runtime_executed": false,
+  "npu_calls": 0,
+  "recorded_at": "2026-11-17T17:40:55.201225+00:00"
+}

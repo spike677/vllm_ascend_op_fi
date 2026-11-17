@@ -61,6 +61,8 @@ class LiveKVSlotLease:
         self.thread = threading.get_ident()
         self.native = None
         self.consumer_calls = 0
+        self.consuming = False
+        self.arm_attempted = False
         self.stopped = False
         self.report = dict(owner=owner, generation=generation, boundary=plan.proof,
             native_applied=False, original_calls=0, consumer_returned=False,
@@ -70,8 +72,11 @@ class LiveKVSlotLease:
 
     def arm(self, *, fault):
         # The caller retains this object before apply, including on failure.
-        if self.stopped or self.native is None or 'readback_exact' in self.report:
+        if threading.get_ident() != self.thread:
+            raise PostwriteRefused('TAIL_COLUMN_LEASE_OWNER_REQUIRED')
+        if self.stopped or self.native is None or self.arm_attempted:
             raise PostwriteRefused('TAIL_COLUMN_ARM_STATE_MISMATCH')
+        self.arm_attempted = True
         changed = self.native.apply(4 if fault else 0, self.plan.indices)
         self.report.update(native_applied=fault, changed_elements=changed,
                            selected_elements=len(self.plan.indices), readback_exact=True)
@@ -83,6 +88,7 @@ class LiveKVSlotLease:
                 or threading.get_ident() != self.thread):
             raise PostwriteRefused('TAIL_COLUMN_CONSUMER_ONCE_OWNER_REQUIRED')
         self.consumer_calls += 1
+        self.consuming = True
         self.report['original_calls'] = 1
         failure = None
         try:
@@ -94,6 +100,7 @@ class LiveKVSlotLease:
             self.report['consumer_error'] = repr(error)
             raise
         finally:
+            self.consuming = False
             self.stopped = True
             # Native restore synchronizes the actual device before checking or
             # restoring bytes. The consumer has already been called exactly once.
@@ -103,6 +110,10 @@ class LiveKVSlotLease:
                 if failure is None:raise
 
     def recover(self):
+        if threading.get_ident() != self.thread:
+            raise PostwriteRefused('TAIL_COLUMN_LEASE_OWNER_REQUIRED')
+        if self.consuming:
+            raise PostwriteRefused('TAIL_COLUMN_CONSUMER_WINDOW_ACTIVE')
         self.stopped = True
         if self.native is not None:
             self.native.recover()

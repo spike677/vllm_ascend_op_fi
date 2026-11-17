@@ -28,6 +28,10 @@ class PostwriteRefused(RuntimeError):
     pass
 
 
+MAX_POSTWRITE_LEASES = 256
+MAX_POSTWRITE_SPAN_BYTES = 160 * 1024 * 1024
+
+
 def _storage(tensor):
     return (str(tensor.device), tensor.untyped_storage()._cdata,
             tensor.untyped_storage().data_ptr(), tensor.untyped_storage().nbytes())
@@ -91,6 +95,18 @@ class NativePostwriteLibrary:
             self._snapshot.argtypes, self._snapshot.restype = [ptr, u64, i32, ptr], ctypes.c_int
         if self.lib.dcat_pw_abi() != 1:
             raise PostwriteRefused('POSTWRITE_ABI_MISMATCH')
+        capacity = getattr(self.lib, 'dcat_pw_lease_capacity', None)
+        byte_capacity = getattr(self.lib, 'dcat_pw_lease_byte_capacity', None)
+        self.lease_capacity = 1
+        self.lease_byte_capacity = 1024 * 1024
+        if capacity is not None and byte_capacity is not None:
+            capacity.argtypes, capacity.restype = [], u32
+            byte_capacity.argtypes, byte_capacity.restype = [], u64
+            self.lease_capacity = capacity()
+            self.lease_byte_capacity = byte_capacity()
+            if (not 1 <= self.lease_capacity <= MAX_POSTWRITE_LEASES
+                    or not 1 <= self.lease_byte_capacity <= MAX_POSTWRITE_SPAN_BYTES):
+                raise PostwriteRefused('POSTWRITE_LEASE_CAPACITY_UNADAPTED')
         self._verify_loaded_file(path)
         if hashlib.sha256(path.read_bytes()).hexdigest() != actual:
             raise PostwriteRefused('POSTWRITE_LOADED_BYTES_CHANGED')
@@ -185,6 +201,7 @@ class _NativeLease:
     def __init__(self, library, tensor, owner, generation, *, element_offset=0, elements=None):
         self.library, self.tensor = library, tensor  # Strong reference until exact restoration.
         self.owner, self.generation = owner, generation
+        self.thread = threading.get_ident()
         self.storage = _storage(tensor)
         self.geometry = tensor_geometry(tensor)
         self.element_offset = element_offset
@@ -198,6 +215,8 @@ class _NativeLease:
             raise PostwriteRefused(f'POSTWRITE_OPEN_{code}')
 
     def _check(self):
+        if threading.get_ident() != self.thread:
+            raise PostwriteRefused('POSTWRITE_SYNCHRONOUS_OWNER_REQUIRED')
         if (self.closed or _storage(self.tensor) != self.storage
                 or tensor_geometry(self.tensor) != self.geometry):
             raise PostwriteRefused('POSTWRITE_LIVE_STORAGE_CHANGED')
@@ -225,7 +244,10 @@ class _NativeLease:
         self.closed = True
 
     def live(self):
-        return self.library.lib.dcat_pw_live(self.handle, self.owner, self.generation) == 1
+        state = self.library.lib.dcat_pw_live(self.handle, self.owner, self.generation)
+        if state not in (0, 1):
+            raise PostwriteRefused('POSTWRITE_NATIVE_LEASE_OWNER_MISMATCH')
+        return state == 1
 
 
 @dataclass
@@ -280,7 +302,7 @@ class _ObserveDispatch(TorchDispatchMode):
         operands = _tensors((args, kwargs))
         read_storages = {_storage(t) for t in operands}
         previous = [c for c in self.candidates if c.storage in read_storages]
-        if p._lease is not None and self._writes(func, args, kwargs, p._lease.storage):
+        if any(self._writes(func, args, kwargs, lease.storage) for lease in p._live_leases()):
             raise PostwriteRefused('WRITE_AFTER_SELECTED_WRITER_REFUSED')
         result = func(*args, **kwargs)  # Exactly one real original operation.
         record = self.inventory.original_returned(func, p._stack[-1][0], p._stack[-1][1], result)
@@ -386,6 +408,7 @@ class PostwriteProvider:
         self._thread = threading.get_ident()
         self._stack, self._rejections, self._history = [], [], []
         self._lease = self._target = self._input_hash = self._model_identity = None
+        self._group_leases = {}
         self._last_intervention = None
         self._buffers = {id(t): t for t in model.buffers()}
         self._lock = threading.Lock()
@@ -409,7 +432,7 @@ class PostwriteProvider:
         self._last_observer = observer
         self._last_intervention = None
         try:
-            if self._lease is not None:
+            if self.live_lease_count:
                 raise PostwriteRefused('POSTWRITE_RECOVERY_REQUIRED')
             for name, module in self.model.named_modules():
                 def pre(current, inputs, name=name):
@@ -464,15 +487,19 @@ class PostwriteProvider:
                 self._coverage.forward_returned(observer, copied)
             return copied, candidates, report
         finally:
-            for hook in reversed(hooks):
-                hook.remove()
-            self._stack.clear()
             try:
-                self.recover()
+                for hook in reversed(hooks):
+                    hook.remove()
             finally:
-                self._lock.release()
+                self._stack.clear()
+                try:
+                    self._recover_owned_entries()
+                finally:
+                    self._lock.release()
 
     def qualify(self, *args, **kwargs):
+        if threading.get_ident() != self._thread or self._lock.locked():
+            raise PostwriteRefused('POSTWRITE_SYNCHRONOUS_OWNER_REQUIRED')
         if self._qualified or self._fault_attempted:
             raise PostwriteRefused('NEW_PROVIDER_REQUIRED_FOR_NEW_QUALIFICATION')
         identity, input_hash = self._identity(), _hash_inputs(args, kwargs)
@@ -508,6 +535,8 @@ class PostwriteProvider:
                     requires_lossless=True)
 
     def run(self, phase, *args, model_observation=None, **kwargs):
+        if threading.get_ident() != self._thread or self._lock.locked():
+            raise PostwriteRefused('POSTWRITE_SYNCHRONOUS_OWNER_REQUIRED')
         if phase not in ('baseline', 'fault', 'off'):
             raise ValueError('phase must be baseline, fault or off')
         if not self._qualified or self._identity() != self._model_identity:
@@ -533,17 +562,58 @@ class PostwriteProvider:
         return output, report
 
     def recover(self):
+        if threading.get_ident() != self._thread:
+            raise PostwriteRefused('POSTWRITE_SYNCHRONOUS_OWNER_REQUIRED')
+        if self._lock.locked():
+            raise PostwriteRefused('POSTWRITE_CONSUMER_WINDOW_ACTIVE')
+        self._recover_owned_entries()
+
+    def _recover_owned_entries(self):
+        entries = list(self._group_leases.items())
         if self._lease is not None:
-            self._lease.recover()
-            if self._lease.live():
-                raise PostwriteRefused('POSTWRITE_NATIVE_LEASE_REMAINS')
-            self._lease = None
+            entries.append((None, self._lease))
+        errors = []
+        for key, lease in reversed(entries):
+            try:
+                lease.recover()
+                if lease.live():
+                    raise PostwriteRefused('POSTWRITE_NATIVE_LEASE_REMAINS')
+            except Exception as error:
+                errors.append(error)
+                continue
+            if key is None:
+                self._lease = None
+            else:
+                del self._group_leases[key]
+        if len(errors) == 1:
+            raise errors[0]
+        if errors:
+            raise PostwriteRefused('POSTWRITE_MULTIPLE_RECOVERIES_PENDING:' + ', '.join(map(repr, errors))) from errors[0]
+
+    def _live_leases(self):
+        group = tuple(self._group_leases.values())
+        return group if self._lease is None else (self._lease, *group)
+
+    @property
+    def live_lease_count(self):
+        return len(self._group_leases) + int(self._lease is not None)
+
+    def _reserve_group_output(self, candidate):
+        if (self._coverage is None or threading.get_ident() != self._thread
+                or self._lease is not None or candidate.key in self._group_leases
+                or self.live_lease_count >= getattr(self.transport, 'lease_capacity', 1)):
+            raise PostwriteRefused('POSTWRITE_GROUP_LEASE_SCOPE_OR_CAPACITY')
+        if any(candidate.storage == live.storage for live in self._group_leases.values()):
+            raise PostwriteRefused('POSTWRITE_GROUP_STORAGE_ALREADY_RESERVED')
+        lease = self.transport.open(candidate.tensor, self.owner, self.generation)
+        self._group_leases[candidate.key] = lease
+        return lease
 
     def query(self):
         return dict(mechanism=self.mechanism, owner=self.owner, generation=self.generation,
             execution_boundary='public_acl_postwrite', transport=self.transport.transport_kind,
             qualified=self._qualified, lossless=self._lossless, attempted=self._fault_attempted,
-            leases=int(self._lease is not None), recovery_pending=self._lease is not None,
+            leases=self.live_lease_count, recovery_pending=bool(self.live_lease_count),
             history=list(self._history), qualification_diagnostics=self._qualification_diagnostics,
             public_worker_qualified=False)
 

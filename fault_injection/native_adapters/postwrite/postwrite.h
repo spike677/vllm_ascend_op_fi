@@ -6,6 +6,10 @@ extern "C" {
 #endif
 /* Public ACL transfer ABI. No OpCache layout or externally supplied executor. */
 uint32_t dcat_pw_abi(void);
+/* Maximum disjoint spans for one owner, generation, thread and device. */
+uint32_t dcat_pw_lease_capacity(void);
+/* Total retained span bytes, counting each device span once. */
+uint64_t dcat_pw_lease_byte_capacity(void);
 /* Read-only bounded evidence copy; no lease, write or execution authority. */
 int dcat_pw_read_span(const void *tensor, uint64_t bytes, int32_t device, void *host);
 /* The caller retains the actual tensor until restore/release succeeds. */
@@ -17,7 +21,7 @@ int dcat_pw_apply(uint64_t handle, uint64_t owner, uint64_t generation,
                   uint64_t *changed);
 int dcat_pw_restore(uint64_t handle, uint64_t owner, uint64_t generation);
 int dcat_pw_release(uint64_t handle, uint64_t owner, uint64_t generation);
-/* 1 when the exact lease still exists. -1 means a different owner. */
+/* 1 for the exact live lease, 0 for an absent handle, -1 for a foreign scope. */
 int dcat_pw_live(uint64_t handle, uint64_t owner, uint64_t generation);
 #ifdef __cplusplus
 }
