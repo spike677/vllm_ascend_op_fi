@@ -1,5 +1,6 @@
 """Complete tensor evidence contracts; CPU fixtures grant no native admission."""
 from pathlib import Path
+import hashlib
 import tempfile
 import sys
 from types import ModuleType
@@ -7,6 +8,7 @@ import unittest
 from unittest.mock import patch
 
 import torch
+from demoncat.runtime.vllm_ascend.worker_extension import call_binding
 from demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd_probe import logical_cache_file, tensor_file, payload_identity, class_forward_binding
 
 
@@ -15,22 +17,31 @@ class CompleteNaturalPayloadTests(unittest.TestCase):
         class Module:
             def forward(self, lm_head, hidden_states):
                 return hidden_states
-        collector=ModuleType('msprobe.pytorch.dump.module_dump.module_processor')
-        exec('def wrap_forward_with_hook_safety(module):\n'
-             ' original_forward=module.forward\n'
-             ' def wrapped_forward(*args,**kwargs):\n'
-             '  if module is None: raise ValueError()\n'
-             '  return original_forward(*args,**kwargs)\n'
-             ' module.forward=wrapped_forward\n',collector.__dict__)
+        source=('def wrap_forward_with_hook_safety(module):\n'
+                ' original_forward=module.forward\n'
+                ' def wrapped_forward(*args,**kwargs):\n'
+                '  if module is None: raise ValueError()\n'
+                '  return original_forward(*args,**kwargs)\n'
+                ' module.forward=wrapped_forward\n')
+        folder=Path(self.enterContext(tempfile.TemporaryDirectory()))
+        path=folder/'module_processor.py'
+        path.write_text(source,encoding='utf-8')
+        collector=ModuleType(call_binding.COLLECTOR_MODULE)
+        collector.__file__=str(path)
+        exec(compile(path.read_bytes(),str(path),'exec'),collector.__dict__)
+        self.enterContext(patch.dict(sys.modules,{collector.__name__:collector}))
+        self.enterContext(patch.object(call_binding,'REVIEWED_COLLECTOR_SHA256',
+                                      hashlib.sha256(path.read_bytes()).hexdigest()))
         module=Module();head=object();hidden=object()
         collector.wrap_forward_with_hook_safety(module)
-        with patch.dict(sys.modules,{collector.__name__:collector}):
-            binding=class_forward_binding(module)
-            actual=binding.bind(module,(head,hidden),{})
-            self.assertIs(actual['hidden_states'],hidden)
-            self.assertIs(module.forward(head,hidden),hidden)
-            module.forward=lambda *a,**k:hidden
-            with self.assertRaises(RuntimeError):binding.bind(module,(head,hidden),{})
+        wrapper=module.forward
+        binding=class_forward_binding(module)
+        actual=binding.bind(module,(head,hidden),{})
+        self.assertIs(actual['hidden_states'],hidden)
+        self.assertIs(module.forward,wrapper)
+        self.assertIs(module.forward(head,hidden),hidden)
+        module.forward=lambda *a,**k:hidden
+        with self.assertRaises(RuntimeError):binding.bind(module,(head,hidden),{})
 
     def test_page_allocator_permutation_does_not_change_logical_evidence(self):
         with tempfile.TemporaryDirectory() as temporary:
