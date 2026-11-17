@@ -1,5 +1,47 @@
 # Current execution checkpoint
 
+## Active checkpoint — 4e9e4ca9, continuing actual validation
+
+This section supersedes the older running-session notes below. R is still
+`/home/17-fault-c2c3-20261117`; no old evidence was overwritten.
+
+- Native39 `providers39-a6` exited0. Fresh live C2 has113 targets/113 hits;
+  subsequent C3 has113 targets/226 hits. Independent Agent7 review found342/568
+  reference bytes matching and same-Worker recovery; its reviewed summary is
+  pending root integration. C3 has no raw dump triplet, so C2 statistics cannot
+  be presented as C3 E5. C2 first linear output5.1875->Inf, later NaNs retained.
+- Natural DeepSeek MoE census `natural-moe8-a1` completed with two exact healthy
+  replays:52 actual unpermute calls,26 per request, all five source-bound roles
+  observed, no trace errors. Full permutation values and fault effects still
+  require qualification; no C2/C3 claim follows from the census.
+- Source-a24 SHA `e4c7ecde9dee180475b83401f32dc8f248d733ca014fff27a3e5a499cdd48367`
+  and packages-a7 contain fresh Worker18 statistics and stock/private33 loading.
+  Source-a25 SHA `5b2b8106e6599dc2c0c6b3caa8aae2ba4b20bbaf1e18225733e618f7cbaeb543`
+  and packages-a8 additionally contain the whole Native quant inventory.
+  Source-a26 SHA `33d4d0a2cf83d8aa58431ebad259005ec919ec26f5ec5ff77e7d54c2d7ee8c19`
+  adds only a no-device stock extension diagnostic; no new wheels required yet.
+- Both optimized26 inventory SDK builds passed (a2). The first QMM run under
+  `reviewed-next8-a1` was externally stopped: Docker signal15 then9, exit137,
+  OOMKilled=false, no controller timeout. Preserve `external_stop_events.jsonl`.
+  No mechanism or same-process recovery conclusion is possible from that run.
+- Current NPU queue is `reviewed-next8-a2`, root session16640, physical5. Order:
+  four28 FP64 B/F cases,41 group B/F,26 FIA inventory,26 QMM inventory. The four28
+  cases exited0; independent raw E5 and final launch rechecks remain separate.
+ 41 B has started. Every case retains the original lock and fresh idle gate.
+- Source-a24 CPU-only quant Native build passed at `build-quant-inventory-a1`;
+  `providers-quant-inventory-a1-cases.json` is ready with source-a25/packages-a8.
+  `worker18-statistics-a1-cases.json` is ready with source-a24. Neither has run.
+  `postwrite39-c2-a1-cases.json` also remains queued, not executed.
+- Correction to the older33 note: private **libcust_opapi.so** shadowed the stock
+  custom library's Norm entry, not libopapi.so. Actual absolute-path bootstrap
+  and official platform vendor registration now verify Norm->stock/FIA->private.
+  No-device full extension import aborts identically in both private and stock-only
+  controls (`attention33-loading-cpu-a2`, `attention33-loading-stock-control-a1`).
+  This does not establish NPU failure or full import success. A new private B and
+  independent stock bridge remain mandatory before F.
+- Integration a5db7141: main unittest discovery692 passed/2 skipped; separate
+  Worker Extension discovery191 passed. Do not add these overlapping counts.
+
 ## Active checkpoint — integration f572c9f8 plus root review
 
 This section supersedes the older source-a15 checkpoint below. Root resumed the
