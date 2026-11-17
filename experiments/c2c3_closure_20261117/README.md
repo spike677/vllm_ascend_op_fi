@@ -62,15 +62,20 @@ card5 initialization Resource_Busy and a card2 gate with another TP2 Worker.
 A later [a5 independent review](AGENT7_FA_A5_AND_GATE_REVIEW.md) verified all four
 actual B/repeat/F/OFF launches and24 complete output files: repeat/OFF are byte
 exact, F differs. It remains standalone joint M/nRatio switching, with no stock
-bridge or C2/C3. Fresh raw B/F statistics are collected separately. A new read-only FIA prefill reader records the actual Worker boundary and
+bridge or C2/C3. The [independent raw B/F review](AGENT7_FA_STATISTICS_A2_REVIEW.md)
+finds four exact changes, zero fixed-tolerance exceedances and ten null fields.
+No first exceedance or0.1% magnitude target is established. A new read-only FIA prefill reader records the actual Worker boundary and
 explicitly rejects TND/page16 for the existing9.1 BNSD strategies.
 
 Natural MoE group implementation now preserves original input objects and storage
 on healthy, unselected and once-exhausted calls; only an admitted fault constructs
 paired remapped indices/probabilities. This corrects a source-review finding and
-still requires a fresh NPU group run. The new vision adapter prepares full
-pretrained Qwen3-VL image prefill as MODEL_LOCAL; it does not inherit standard
-Worker qualification. Native26 has a separate v2 recovery ABI and host-memory
+has now completed a fresh standard-Worker group run oncard2, with independent
+qualification review pending. The pretrained Qwen3-VL image group also exited
+normally oncard2 as MODEL_LOCAL. Its long storage-id consumer list is not proof
+of complete live-storage lineage; address reuse must not inflate coverage.
+Neither unreviewed result increases the current strict count. No raw statistics
+were collected in these two group runs. Native26 has a separate v2 recovery ABI and host-memory
 failure contracts. Its SDK build passed and its conditional complete-set executor
 now has a prepared same-Worker C2-to-C3 queue: any unresolved target, overlap or
 budget overflow rejects the whole set. Actual natural group proof is still pending.

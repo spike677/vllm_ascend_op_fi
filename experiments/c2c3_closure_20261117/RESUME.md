@@ -1,5 +1,48 @@
 # Current execution checkpoint
 
+## Active checkpoint — merged contributor work; fresh group review and SDK repairs
+
+- Concurrent remote contribution9dfdb0c6 was preserved by clean merge80299176,
+  not force-pushed away. Root validated222 CPU tests:220 passed,2 Linux-only
+  skips. Its historical CSV remains a historical snapshot; it cannot restore
+  withdrawn Native20/39 resource qualification. Current strict count stays1/17.
+- Root integrated FA raw-only audit cd3004d as52521140. Fixed tolerance gives
+  4 exact changes,0 exceedances,10 nulls; summarySHA
+  31d61e61d578b69ab088e9a56a2fe3a3fba1239a85b599f988fbbdf11765662c.
+  Eight direct-Decimal regressions passed; seven quant builder tests passed.
+- Metadata RAII/counters aa57fad integrated as95740931, pointer-format fix
+  8140275 as261ea2a6. Original host CPU a1 failed strict formatting compilation;
+  fresh a2 passed144 scenarios with201 actual new[]/201 delete[],live0.
+  Loaded counter gates, fresh exact-SDK builds and NPU requalification still
+  required. Native26's actual dependency arrays also require repair.
+- source-a37 head1e76ca0452683255ed52362835b05d24208ea1b5 has678 files,
+  archive94186b9cb6f34a2a598afa824958080088274adea5ab048dd07aa0a44c55e518,
+  manifest0a71b5209274ceb16b28fbd302dae30a19c35b3dc3a8263ae15e09635d02fc1e.
+  source-a38 head261ea2a6b684cee372a8780173126e5eeccec4d5 has678 files,
+  archiveba51c7424d563c3d4401b8dc71d701477998cc09fd4a5ae5a8c7697f197d2443,
+  manifestf009641401b38c6601dd36d52003baf59c45052f26f1821e689302358d867642.
+  All deployed file hashes checked. Native quant a3 uses source37/actual8.5.1
+  headers and passed SDK+CPU contracts; build manifestSHA
+  9c243c468fe42c12cc2af091dfb8642f4c9249f6b842ee2810e3306916654f0e.
+  No managed group or NPU qualification follows from that build.
+- natural-vision17-moe8-rope22-card2-a1 finished. Vision17 and MoE8 exited0;
+  resultSHA98390141cbdf84ea1565693e5cd06e76d725b7fdd4acd451659a9a10c540aff8
+  and0bc9d2c82134f41a5ffdb61d980fdc9d4c99d23621e00354f098870322ad4a5d.
+  Agent7 independent group reviews are pending. Vision remains MODEL_LOCAL,
+  and storage-id address reuse prevents trusting the full consumer list.
+  Both group runs have no raw statistics. RoPE22 census exited2, zero injection:
+  resultSHA0660280aa90a1a120a28876d2824f148fa104e4bf18c97176f9d2020e4ccc0ec.
+  Healthy/repeated output exact; actual custom op56 calls, reader adapter joins
+  zero and shared-module structural denominator incomplete. This is an
+  observation-adapter gap, not demonstrated numerical nondeterminism.
+- Active NPU session92741:attention33-worker18-card2-a1,4 serial cases/card2,
+  source37 controller with fresh exact r2 UID/checkpoint/attempt scope.
+  CaseSHAf2a2afaa36419b20f5221066fc3c42aee97f241774106820a7d9ecbbad41778e,
+  scopeSHAab8f1291362cdb9b6fc82e35030d72faff8b6156606955879ce951f195511cf0.
+  Actual33 probe stays frozen source27/packages9; Worker18 statistics use
+  source37. No card5 job. Check result before continuing; do not start a
+  concurrent NPU queue. Device-free quant SDK session28447 completed0.
+
 ## Active checkpoint — strict qualification corrected, card2 natural group running
 
 - Latest root source edits/receipts are on codex/17-fault-c2c3-closure-20261117.
