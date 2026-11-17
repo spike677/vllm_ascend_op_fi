@@ -312,7 +312,10 @@ def native_facts(details, proof_kinds, fault):
     start = _process_start_identity()
     if worker.get('process_start_identity', start) != start:
         raise UnsupportedCall('Native observation process lifetime changed')
-    result['worker']['process_start_identity'] = start
+    # Keep the v1 Worker binding byte-for-byte compatible with provider-owned
+    # identity dictionaries; the independently observed lifetime is additive
+    # evidence, not a mutation of that existing binding.
+    result['process_start_identity'] = start
     material = {key: result[key] for key in ('layout', 'slots')}
     result['layout_sha256'] = hashlib.sha256(
         json.dumps(material, sort_keys=True, separators=(',', ':')).encode()
@@ -461,7 +464,7 @@ def _candidate_set(report, model, plan, finished):
                 provider_identity=(f'{report["mechanism"]}:{matches[0]["implementation_version"]}'
                                    if len(matches) == 1 else None),
                 provider_proof=(('layout_sha256', facts['layout_sha256']),) if len(matches) == 1 else (),
-                process_start_identity=worker.get('process_start_identity'),
+                process_start_identity=facts.get('process_start_identity'),
             )
         if len(matches) > 1 or (facts and facts['candidate_count'] > 1):
             status, reason = Eligibility.AMBIGUOUS, 'NATIVE_CALL_OR_PROFILE_IDENTITY_AMBIGUOUS'

@@ -193,6 +193,8 @@ class AdaptationTests(unittest.TestCase):
                         format='ND', shape=[2, 4], stride=[4, 1], offset=0),
             slots=[dict(formal='self' if operator == 'aclnnMatmul' else 'x1', slot=0, storage_bytes=16)])
         normalized = native_facts(facts, set(FixtureObserver.kinds), fault)
+        self.assertEqual(normalized['worker'], facts['worker'])
+        self.assertTrue(normalized['process_start_identity'])
         profile = ProviderProfile(implementation_version='cpu-fixture-only', validation_level=level,
             evidence_sha256='4' * 64, environment_fingerprint=environment_fingerprint(environment, required),
             required_libraries=required, build_profile_sha256=facts['build_profile_sha256'],
