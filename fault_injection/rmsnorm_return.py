@@ -107,15 +107,16 @@ class RMSNormReturnSession(ScopedDispatch):
         if id(module) in self.pending:
             raise UnsupportedCall('MULTIPLE_RMS_NATIVE_RETURNS_REQUIRE_SEPARATE_ADAPTER')
         result = func(*args, **kwargs)
-        outputs = tuple(tensors(result))
-        if not outputs or not outputs[0].is_floating_point() or module.training:
-            event.update(status='unsupported', reason='INFERENCE_NATIVE_RMS_TENSOR_RETURN_REQUIRED')
-            return result
-        event.update(original_execution_verified=True, native_calls=1,
-            native_operator=str(func), schema=str(schema), weight_object_id=id(module.weight),
-            native_output_storage=int(outputs[0].untyped_storage()._cdata),
-            source_contract='ACTUAL_NATIVE_RMS_WEIGHT_AND_MODULE_RETURN_LINEAGE')
-        self.pending[id(module)] = (event, outputs[0], tuple(outputs[1:]))
+        with self.diagnostics():
+            outputs = tuple(tensors(result))
+            if not outputs or not outputs[0].is_floating_point() or module.training:
+                event.update(status='unsupported', reason='INFERENCE_NATIVE_RMS_TENSOR_RETURN_REQUIRED')
+                return result
+            event.update(original_execution_verified=True, native_calls=1,
+                native_operator=str(func), schema=str(schema), weight_object_id=id(module.weight),
+                native_output_storage=int(outputs[0].untyped_storage()._cdata),
+                source_contract='ACTUAL_NATIVE_RMS_WEIGHT_AND_MODULE_RETURN_LINEAGE')
+            self.pending[id(module)] = (event, outputs[0], tuple(outputs[1:]))
         return result
 
     def _read_call(self, func, args, kwargs):
@@ -163,6 +164,14 @@ class RMSNormReturnSession(ScopedDispatch):
         return leave
 
     def _return(self, module, args, output):
+        # Native return-lineage stride/offset queries are owned diagnostics too.
+        # The real model/native call already returned before this hook starts.
+        if id(module) not in self.pending and self.eager.get(id(module)) is None:
+            return None
+        with self.diagnostics():
+            return self._proxy_return(module, args, output)
+
+    def _proxy_return(self, module, args, output):
         import torch
         pending = self.pending.pop(id(module), None)
         contract = self.eager.get(id(module))

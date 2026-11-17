@@ -57,17 +57,33 @@ class TensorStatisticsCapture:
         if phase not in ('statistics_baseline', 'statistics_baseline_repeat', 'statistics_fault'):
             yield
             return
+        self.begin(model, phase)
+        completed = False
+        try:
+            yield
+            completed = True
+        finally:
+            self.end(completed=completed)
+
+    def begin(self, model, phase):
+        """Open one actual request window; end may run in the next same-thread RPC."""
         self._owner()
+        if phase not in ('statistics_baseline', 'statistics_baseline_repeat', 'statistics_fault'):
+            raise RuntimeError('EXPLICIT_STATISTICS_PHASE_REQUIRED')
         if self.active or self.depth:
             raise RuntimeError('COLLECTOR_CAPTURE_WINDOW_ALREADY_ACTIVE')
         self.model = model
         self.rows.append(dict(phase=phase, step=len(self.rows), pauses=0, completed=False))
         self.collector.start(model=model, rank_id=0)
         self.active = True
+
+    def end(self, *, completed):
+        self._owner()
+        if not self.active or self.depth:
+            raise RuntimeError('COLLECTOR_CAPTURE_WINDOW_NOT_READY_TO_CLOSE')
         try:
-            yield
             self.synchronize()
-            self.rows[-1]['completed'] = True
+            self.rows[-1]['completed'] = bool(completed)
         finally:
             self.active = False
             self.collector.stop()

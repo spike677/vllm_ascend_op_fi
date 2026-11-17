@@ -222,3 +222,73 @@ Q/K aliasing contract, and prove actual returned Q/K propagation plus OFF.
 Changing or copying an arbitrary Q/K output row is not an equivalent mechanism.
 The existing ordinary-row output proxy does not cover this boundary, and no
 new Fault22 qualification or uint32-overflow claim is made by this handoff.
+
+## Actual Worker18 result and fresh-Worker statistics preparation
+
+Root completed and independently audited
+`/home/17-fault-c2c3-20261117/natural18-worker-a1/natural-worker-rms-group/probe/result.json`:
+113/113 C2 targets, 226/226 C3 calls, nine actual managed requests, exact full
+hidden/logits OFF, and zero owned resources after group recovery. Root's audit
+matched all 229 C2 and 455 C3 artifact references to canonical bytes. This is
+actual standard Worker runtime evidence. Its E5 statistics remain separate
+from the already observed HF model-local E5 result.
+
+`natural_rms_worker_statistics.py` now prepares an actual full-request
+statistics/mix window in a fresh Worker. Each invocation executes precisely:
+
+1. One ordinary warmup generation, then four actual healthy managed requests
+   (native baseline, baseline, independent baseline repeat, lossless).
+2. Source/actual-dispatch/independent-observation qualification of all targets.
+3. One fifth managed request captured at a common code location. Its arm is
+   baseline or fault. This is the sixth explicit driver request including the
+   warmup, identically in all fresh Workers.
+4. A sixth managed OFF request proving full hidden/logit recovery, owned
+   adapter cleanup, then one ordinary healthy generation after removal.
+
+Three separate root-owned containers provide B, B-repeat and F, each with the
+same `/source`, `/model` and `/evidence/probe` paths and the same actual request
+ordinal. The raw collector captures every API/module from after `advance` to
+before `collect`, including actual runner preparation, model, logits and
+sampler. Only owned scheduler verification, observer metadata, complete CPU
+snapshots and proxy/readback arithmetic use the reviewed public diagnostics
+pause. Native RMS return-lineage stride queries also use that pause. The actual
+native RMS operator executes outside it. Collector stop/start pauses do not
+advance the step or reset raw API ordinals; each fresh Worker writes step0.
+
+No statistic/construct/stack field is filtered or rewritten. Actual token IDs
+and whether they changed are reported independently; sampler differences stay
+in the raw capture. The same fixed rtol=1e-5/atol=1e-8, null-unobservable policy
+applies. This new probe grants no additional C2/C3 coverage by itself. Its
+observed target count and every half-return/real-consumer check must pass in
+that actual Worker, and E5 still requires a separate raw audit.
+
+Prepare manifests without executing them:
+
+```
+python experiments/c2c3_closure_20261117/prepare_tensor_natural_cases.py \
+  --source /home/17-fault-c2c3-20261117/<frozen-new-source> \
+  --task worker18-statistics --card 2 --out <new-statistics-cases.json>
+
+python experiments/c2c3_closure_20261117/prepare_tensor_natural_cases.py \
+  --source /home/17-fault-c2c3-20261117/source-a21 \
+  --task moe8-census --card 2 --out <new-moe-cases.json>
+```
+
+The first manifest needs the new statistics implementation snapshot; the
+already prepared source-a21 contains the MoE census implementation. Both
+manifests passed the main worktree's actual `queue_contract.validate_cases`.
+Worker18 creates three cases with 1800-second/48-GiB-host budgets. MoE creates
+one zero-injection case with its unchanged 1800-second/64-GiB-host budget.
+
+For the independent audit, root can use its existing `audit_statistics.py`
+twice: B against B-repeat, then B against F. Pass each case's unmodified
+`probe/statistics/observation/step0/rank0`, `config.json`, and
+`collector_identity.json`. The audit receives no provider hits, tensor payloads
+or target selectors; source raw triplet SHA256 values remain in each result.
+Any raw alignment, nonfinite or pre-effect difference must remain a failure or
+reported limitation, not be normalized away.
+
+CPU validation passed 58 focused regressions, followed by nine current
+window/controller tests including the additional native-RMS lineage pause
+test. Those tests explicitly use fake collector controls/CPU fixtures and do
+not substitute for the root-queued raw capture.

@@ -11,6 +11,7 @@ import torch
 from test_rmsnorm_natural import CanonicalNorm
 from fault_injection.runtime_discovery import _process_start_identity
 from demoncat.runtime.vllm_ascend.worker_extension import serving_tensor
+from test_tensor_statistics_window import GuardWindow
 
 
 class Processor(torch.nn.Module):
@@ -144,6 +145,56 @@ class ServingTensorGroupTests(unittest.TestCase):
             self.session.close()
         finally:
             self.worker.demoncat_worker_identity = original
+
+    def test_rpc_capture_includes_model_logits_and_sampler_but_excludes_owned_snapshots(self):
+        from fault_injection.rmsnorm_return import RMSNormReturnSession
+        class RpcWindow(GuardWindow):
+            def begin(self, model, phase):
+                self.rows.append(phase); self.active = True
+            def end(self, *, completed):
+                self.completed = completed; self.active = False
+        for phase, arm in (('native_baseline', None), ('baseline', 'baseline'),
+                           ('baseline_repeat', 'baseline'), ('lossless', 'baseline')):
+            self.request(phase, arm)
+        self.session.qualify(); capture = RpcWindow()
+        self.session.configure_statistics(capture, 'fault')
+        original_capture = serving_tensor._capture
+        original_cpu = RMSNormReturnSession.cpu
+        original_stride = torch.Tensor.stride
+        snapshots = []
+        def guarded_capture(value):
+            self.assertFalse(capture.active); snapshots.append('complete_snapshot')
+            return original_capture(value)
+        def guarded_cpu(adapter, tensor):
+            self.assertFalse(capture.active); snapshots.append('local_readback')
+            return original_cpu(adapter, tensor)
+        def guarded_stride(tensor, *args):
+            self.assertFalse(capture.active); snapshots.append('owned_metadata')
+            return original_stride(tensor, *args)
+        returns = []
+        h1 = self.model.first.register_forward_hook(lambda *args: returns.append(('model', capture.active)))
+        h2 = self.model.processor.register_forward_pre_hook(lambda *args: returns.append(('logits', capture.active)))
+        try:
+            with patch.object(serving_tensor, '_capture', guarded_capture), \
+                 patch.object(RMSNormReturnSession, 'cpu', guarded_cpu), \
+                 patch.object(torch.Tensor, 'stride', guarded_stride):
+                self.session.expect('cpu-captured-request', 'statistics_request', 'fault')
+                hidden = self.model(input_ids=torch.tensor([1, 2, 3]), positions=torch.arange(3))
+                logits = self.model.logits(hidden)
+                self.assertTrue(capture.active)
+                torch.argmax(logits, dim=-1)  # Real sampling work remains in the capture.
+                row = self.session.collect()
+        finally:
+            h1.remove(); h2.remove()
+        self.assertTrue(capture.completed)
+        self.assertFalse(capture.active)
+        self.assertEqual(returns, [('model', True), ('logits', True)])
+        self.assertEqual(row['statistics']['local_hits'], 2)
+        self.assertFalse(row['statistics']['grants_coverage'])
+        self.assertEqual(set(snapshots), {'complete_snapshot', 'local_readback', 'owned_metadata'})
+        self.request('statistics_off')
+        self.assertIsNotNone(self.session.provider.off_row)
+        self.session.close()
 
 
 if __name__ == '__main__':
