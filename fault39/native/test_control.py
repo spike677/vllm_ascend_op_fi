@@ -5,6 +5,7 @@ These tests do not claim a successful configure, Run, drain, or NPU lifetime tes
 import ctypes as C
 import json
 import sys
+import threading
 
 
 class Config(C.Structure):
@@ -21,6 +22,10 @@ lib.fault39_snapshot_v1.argtypes = [C.c_void_p, C.c_size_t]
 lib.fault39_disable_v1.argtypes = [C.c_char_p, C.c_uint64, C.c_uint32]
 lib.fault39_clean_v1.argtypes = [C.c_char_p, C.c_uint64, C.c_uint32]
 lib.fault39_set_context_v1.argtypes = [C.c_char_p, C.c_char_p]
+lib.fault39_set_serving_inputs_v1.argtypes = [C.c_char_p, C.POINTER(C.c_uint64), C.c_size_t]
+lib.fault39_set_serving_inputs_v1.restype = C.c_int
+lib.fault39_clear_context_v1.argtypes = []
+lib.fault39_clear_context_v1.restype = None
 lib.fault39_bind_worker_rank_v1.argtypes = [C.c_int32]
 lib.fault39_build_profile_v1.restype = C.c_char_p
 
@@ -65,6 +70,36 @@ for invalid in (b'[]', b'[ ]', b'[null]', b'[""]', b'["a",]', b'["a" "b"]', b'["
     assert lib.fault39_set_context_v1(b'cpu-test', invalid) == -1, invalid
 assert lib.fault39_set_context_v1(b'cpu-test', b'["actual-request-1","request\\u0032"]') == 0
 lib.fault39_clear_context_v1()
+# Synthetic addresses are never dereferenced: this setter is a CPU/TLS guard.
+values = [0x1000, 32, 0x2000, 48, 2, 8, 3, 0, 0, 8, 1, 1, 8]
+raw = (C.c_uint64 * 13)(*values)
+assert lib.fault39_set_serving_inputs_v1(b'cpu-test', raw, 13) == -1
+assert lib.fault39_set_context_v1(b'cpu-test', b'["guard-request"]') == 0
+assert lib.fault39_set_serving_inputs_v1(b'foreign', raw, 13) == -4
+thread_results = []
+thread = threading.Thread(target=lambda: thread_results.append(
+    lib.fault39_set_serving_inputs_v1(b'cpu-test', raw, 13)))
+thread.start()
+thread.join()
+assert thread_results == [-1]
+assert lib.fault39_set_serving_inputs_v1(b'cpu-test', raw, 13) == 0
+assert lib.fault39_set_serving_inputs_v1(b'cpu-test', raw, 13) == -3
+lib.fault39_clear_context_v1()
+for index, invalid in ((0, 0), (1, 31), (1, 30), (2, 0x1000), (4, 0),
+                       (5, 2**63), (7, 2**64 - 1), (9, 0), (12, 2**63)):
+    assert lib.fault39_set_context_v1(b'cpu-test', b'["guard-invalid"]') == 0
+    changed = list(values)
+    changed[index] = invalid
+    assert lib.fault39_set_serving_inputs_v1(b'cpu-test', (C.c_uint64 * 13)(*changed), 13) == -1
+    assert lib.fault39_set_serving_inputs_v1(b'cpu-test', raw, 13) == -3
+    lib.fault39_clear_context_v1()
+assert lib.fault39_set_context_v1(b'cpu-test', b'["guard-short"]') == 0
+assert lib.fault39_set_serving_inputs_v1(b'cpu-test', raw, 12) == -1
+lib.fault39_clear_context_v1()
+assert lib.fault39_set_context_v1(b'cpu-test', b'["guard-new-context"]') == 0
+assert lib.fault39_set_serving_inputs_v1(b'cpu-test', raw, 13) == 0
+lib.fault39_clear_context_v1()
+assert snapshot()['last_observation']['serving_live_inputs_verified'] is False
 before = snapshot()
 assert lib.fault39_disable_v1(b'foreign-owner', 0, 0) == -4
 assert lib.fault39_clean_v1(b'foreign-owner', 0, 0) == -4

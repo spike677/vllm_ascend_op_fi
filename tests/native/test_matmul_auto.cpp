@@ -42,7 +42,28 @@ extern "C" uint32_t dcat20_weight_nz_state_v1(Callback requester) {
     return weight_nz_bridge.state(requester) | runtime_matched;
 }
 
-int fixture_qmm_run_for_generation(uint64_t generation, int8_t first = 37, int* run_calls = nullptr) {
+#define FIXTURE_REQUEST_ABI(prefix, instance) \
+extern "C" int prefix##install_v2(Callback cb, int32_t, const char* owner, uint64_t generation) { \
+    return instance.install_request(cb, owner, generation); \
+} \
+extern "C" int prefix##pause_v2(Callback cb, const char* owner, uint64_t generation) { \
+    return instance.pause(cb, owner, generation); \
+} \
+extern "C" int prefix##resume_v2(Callback cb, const char* owner, uint64_t generation) { \
+    return instance.resume(cb, owner, generation); \
+} \
+extern "C" int prefix##remove_v2(Callback cb, const char* owner, uint64_t generation) { \
+    return instance.remove_request(cb, owner, generation); \
+} \
+extern "C" uint32_t prefix##state_v2(Callback cb, const char* owner, uint64_t generation) { \
+    return instance.request_state(cb, owner, generation) | runtime_matched; \
+}
+FIXTURE_REQUEST_ABI(dcat20_qmm_, bridge)
+FIXTURE_REQUEST_ABI(dcat20_weight_nz_, weight_nz_bridge)
+#undef FIXTURE_REQUEST_ABI
+
+int fixture_qmm_run_for_generation(uint64_t generation, int8_t first = 37, int* run_calls = nullptr,
+                                    uint64_t current_token = 0) {
     int8_t x[]{first, -39};
     int8_t weight[]{1, 3};
     int32_t out = 0;
@@ -53,6 +74,8 @@ int fixture_qmm_run_for_generation(uint64_t generation, int8_t first = 37, int* 
     int64_t shape[]{1, 2}, stride[]{2, 1};
     const auto details = descriptor("aclnnQuantMatmulWeightNz", "fixture:qmm", &bridge, 0, profile,
                                     "INT8", shape, stride, 0, slots, generation);
+    const auto packet = current_token ? details.substr(0, details.size() - 1)
+        + ",\"current_typed_call\":{\"gws_token\":" + std::to_string(current_token) + "}}" : details;
     auto run = [&](const auto& set) {
         if (run_calls) ++*run_calls;
         const auto* input = static_cast<const int8_t*>(set[0]);
@@ -60,7 +83,7 @@ int fixture_qmm_run_for_generation(uint64_t generation, int8_t first = 37, int* 
         return 0;
     };
     if (!bridge.on_owner()) { run(addresses); return out; }
-    uint32_t status = bridge.dispatch(details, [&](uint32_t arm, Audit& audit, const auto* expected) {
+    uint32_t status = bridge.dispatch(packet, [&](uint32_t arm, Audit& audit, const auto* expected) {
         const auto transform = [](size_t index, void* host, size_t n) {
             assert(index == 0);
             auto* values = static_cast<int8_t*>(host);
@@ -68,12 +91,13 @@ int fixture_qmm_run_for_generation(uint64_t generation, int8_t first = 37, int* 
             return true;
         };
         return audited_run(arm, slots, addresses, host_memory(), transform, run, audit, expected);
-    });
+    }, details);
     assert(x[0] == first && x[1] == -39 && weight[0] == 1 && weight[1] == 3);
     return status ? 9999 : out;
 }
 
 extern "C" int fixture_qmm_run() { return fixture_qmm_run_for_generation(1); }
+extern "C" int fixture_qmm_run_current(uint64_t token) { return fixture_qmm_run_for_generation(1, 37, nullptr, token); }
 
 extern "C" int fixture_weight_nz_run() {
     uint16_t input[]{0x3f89, 0x400f}, weight[]{0x3f80, 0x4000}, out = 0;

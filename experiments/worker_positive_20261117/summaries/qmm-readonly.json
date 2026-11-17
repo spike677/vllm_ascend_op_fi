@@ -1,0 +1,3095 @@
+{
+  "schema": "demoncat.worker_positive.readonly20.v1",
+  "status": "READONLY_DISCOVERY_COMPLETED_NOT_FAULT_ACCEPTANCE",
+  "source": "/home/worker-positive-20261117/closure-batch-a2/fault20-qmm-discovery",
+  "source_hashes": {
+    "result.json": "c514758e3f2d6a924d9e56d988dea5d4545a5af6beec562931877d162aef844c",
+    "observer-rank0.json": "44345c53697b49f21377d5acfcd096b66292debc86cfc8ed5c5ea7c76e31dd3a"
+  },
+  "operator": "aclnnQuantMatmulWeightNz",
+  "actual_fault_injection": false,
+  "observed_forwards": 2,
+  "observed_events": 268,
+  "observed_modules": 134,
+  "actual_original_calls": 268,
+  "all_observed_identities_stable": true,
+  "native_idle": true,
+  "generated_tokens": {
+    "before": [
+      185
+    ],
+    "observed": [
+      [
+        185
+      ],
+      [
+        185
+      ]
+    ],
+    "after": [
+      185
+    ]
+  },
+  "rows": [
+    {
+      "path": "model.layers.0.mlp.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.0.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.0.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.0.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.1.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.1.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.1.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.1.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.1.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.10.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.10.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.10.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.10.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.10.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.11.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.11.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.11.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.11.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.11.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.12.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.12.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.12.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.12.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.12.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.13.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.13.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.13.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.13.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.13.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.14.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.14.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.14.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.14.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.14.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.15.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.15.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.15.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.15.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.15.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.16.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.16.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.16.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.16.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.16.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.17.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.17.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.17.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.17.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.17.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.18.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.18.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.18.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.18.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.18.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.19.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.19.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.19.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.19.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.19.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.2.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.2.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.2.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.2.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.2.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.20.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.20.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.20.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.20.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.20.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.21.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.21.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.21.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.21.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.21.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.22.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.22.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.22.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.22.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.22.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.23.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.23.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.23.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.23.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.23.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.24.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.24.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.24.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.24.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.24.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.25.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.25.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.25.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.25.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.25.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.26.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.26.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.26.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.26.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.26.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.3.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.3.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.3.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.3.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.3.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.4.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.4.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.4.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.4.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.4.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.5.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.5.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.5.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.5.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.5.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.6.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.6.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.6.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.6.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.6.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.7.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.7.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.7.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.7.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.7.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.8.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.8.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.8.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.8.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.8.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.9.mlp.shared_experts.down_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_DOWN_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2816
+        ],
+        "stride": [
+          2816,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.9.mlp.shared_experts.gate_up_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [
+        "MLP_GATE_UP_PROJ"
+      ],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.9.self_attn.kv_a_proj_with_mqa",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.9.self_attn.o_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    },
+    {
+      "path": "model.layers.9.self_attn.q_proj",
+      "observed_calls": [
+        1,
+        1
+      ],
+      "observed_identity_stable": true,
+      "canonical_roles": [],
+      "observed_layout": {
+        "dtype": "INT8",
+        "format": "ND",
+        "shape": [
+          14,
+          2048
+        ],
+        "stride": [
+          2048,
+          1
+        ],
+        "offset": 0
+      }
+    }
+  ],
+  "limitations": [
+    "Only the observed current-call paths; no all_eligible denominator or qualification",
+    "No lossless/fault/OFF substitution trial for QMM in the common serving interface",
+    "Token equality in this read-only probe does not prove full logits equality",
+    "The pretrained output head is FLOAT; its natural invocation cannot be relabeled QMM"
+  ]
+}

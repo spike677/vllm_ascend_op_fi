@@ -177,6 +177,45 @@ class WorkerExtensionTest(unittest.TestCase):
         self.assertEqual(len(actual_owners), 1)
         self.assertNotIn(lease['owner'], actual_owners)
 
+    def test_host_driven_pending_replay_excludes_other_owners(self):
+        self.worker.load_model()
+        tenant = self._attach()
+        lease = self._check(tenant)
+        self.provider.callbacks['execute'] = lambda: self.provider.state.update(replay_pending=True)
+        self.assertEqual(self.worker.demoncat_fault_rpc('execute', lease)['status'], 'ACTION_COMPLETED')
+        self.assertFalse(self.worker.demoncat_fault_query(lease)['quarantined'])
+        self.assertEqual(self._prepare(tenant, mechanism=OTHER_MECHANISM)['reason'], 'WORKER_REPLAY_IN_PROGRESS')
+        other = dict(tenant_id='other', worker=tenant['worker'])
+        self.assertEqual(self.worker.demoncat_attach(other)['reason'], 'WORKER_REPLAY_IN_PROGRESS')
+        self.assertEqual(self.worker.demoncat_fault_rpc('advance', dict(lease, settings={'request_id':'mock-enqueued'}))['status'],
+                         'ACTION_COMPLETED')
+        self.provider.callbacks['finish'] = lambda: self.provider.state.update(replay_pending=False)
+        self.assertEqual(self.worker.demoncat_fault_rpc('finish', lease)['phase'], 'FINISHED')
+
+    def test_pending_hook_cannot_be_hidden_by_idle_native_on_finish(self):
+        self.worker.load_model()
+        lease = self._check(self._attach())
+        self.provider.callbacks['execute'] = lambda: self.provider.state.update(replay_pending=True)
+        self.worker.demoncat_fault_rpc('execute', lease)
+        failed = self.worker.demoncat_fault_rpc('finish', lease)
+        self.assertEqual(failed['status'], 'RECOVERY_REQUIRED')
+        self.assertTrue(self.worker.demoncat_fault_query(lease)['quarantined'])
+        self.provider.callbacks['unregister'] = lambda: self.provider.state.update(replay_pending=False)
+        self.assertEqual(self.worker.demoncat_fault_rpc('unregister', lease)['status'], 'ACTION_COMPLETED')
+
+    def test_failed_serving_replay_requires_off_only_recovery(self):
+        self.worker.load_model()
+        lease = self._check(self._attach())
+        self.worker.demoncat_fault_rpc('execute', lease)
+        self.provider.state.update(replay_pending=True, replay_failed=True)
+        self.assertTrue(self.worker.demoncat_fault_query(lease)['quarantined'])
+        self.assertEqual(self.worker.demoncat_fault_rpc('advance', lease)['reason'], 'RECOVERY_REQUIRED')
+        self.provider.callbacks['recover'] = lambda: self.provider.state.update(replay_failed=False)
+        reply = self.worker.demoncat_fault_rpc('recover', lease)
+        self.assertEqual(reply['status'], 'ACTION_COMPLETED')
+        self.assertEqual(reply['phase'], 'ATTEMPTED')
+        self.assertEqual(self.worker.demoncat_fault_rpc('execute', lease)['reason'], 'ATTEMPT_CONSUMED')
+
     def test_wrong_worker_owner_version_or_generation_does_not_dispatch(self):
         self.worker.load_model()
         attached = self._attach()

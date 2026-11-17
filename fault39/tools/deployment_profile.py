@@ -16,7 +16,7 @@ def read_profile(native):
     if (profile.get('schema')!='fault39.cann.build_profile.v1' or
             hashlib.sha256(json.dumps(content,sort_keys=True,separators=(',',':')).encode()).hexdigest()!=identity):
         raise ValueError('BUILD_PROFILE_IDENTITY_MISMATCH')
-    if profile.get('proxy_layout') not in ('main_only','main_and_nn'):
+    if profile.get('proxy_layout') not in ('main_only','main_and_nn','main_nn_math'):
         raise ValueError('UNSUPPORTED_PROXY_LAYOUT')
     toolkit=PurePosixPath(profile['toolkit'])
     if not toolkit.is_absolute() or '..' in toolkit.parts:raise ValueError('INVALID_TOOLKIT_PATH')
@@ -30,10 +30,17 @@ def artifacts(profile):
         'fault20-isolated-cache-abi0-v1': 'libdcat20_qmm.so',
     }.get(adapter)
     if library is None or (adapter == 'fault20-isolated-cache-abi0-v1'
-                           and profile['proxy_layout'] != 'main_and_nn'):
+                           and profile['proxy_layout'] not in ('main_and_nn', 'main_nn_math')):
         raise ValueError('UNSUPPORTED_BUILD_ADAPTER')
     paths=[library,'libopapi.so','real/libopapi_real.so','version_profile.json','abi_facts.json','identity_tests.json']
-    if profile['proxy_layout']=='main_and_nn':paths+=['libopapi_nn.so','real/libopapi_nn_real.so']
+    if profile['proxy_layout'] in ('main_and_nn','main_nn_math'):
+        paths+=['libopapi_nn.so','real/libopapi_nn_real.so']
+    if profile['proxy_layout']=='main_nn_math':
+        if adapter != 'fault20-isolated-cache-abi0-v1':
+            raise ValueError('UNSUPPORTED_MATH_PROXY_ADAPTER')
+        paths+=['libopapi_math.so','real/libopapi_math_real.so']
+    if adapter == 'fault20-isolated-cache-abi0-v1' and profile.get('controlled_pta_cache'):
+        paths += ['pta_gate_identity.json']
     return paths
 
 
@@ -46,7 +53,8 @@ def verify_build(native):
         raise ValueError('BUILD_MANIFEST_MISMATCH')
     for name,expected in manifest['files'].items():
         if sha(native/name)!=expected:raise ValueError('BUILD_ARTIFACT_MISMATCH: '+name)
-    for name,file in [('opapi','real/libopapi_real.so'),('split','real/libopapi_nn_real.so')]:
+    for name,file in [('opapi','real/libopapi_real.so'),('split','real/libopapi_nn_real.so'),
+                      ('math','real/libopapi_math_real.so')]:
         if name in profile['libraries'] and sha(native/file)!=profile['libraries'][name]['file_sha256']:
             raise ValueError('PROFILE_LIBRARY_MISMATCH: '+name)
     return profile

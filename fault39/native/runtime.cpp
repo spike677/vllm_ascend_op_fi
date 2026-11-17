@@ -84,10 +84,64 @@ int actual_rank() {
 struct Capture { bool active=false; uint32_t adds=0,params=0; Cache* cache=nullptr; uint64_t tensors[3]{}; };
 thread_local Capture capture;
 thread_local bool forwarding_param=false;
-struct Context { std::string owner,ids; };
+// BEGIN CPU_TESTABLE_SERVING_INPUT_GUARD
+// The owner/request context and the live model input evidence have one TLS
+// lifetime. A malformed owner-scoped binding poisons this context instead of
+// silently reverting to the legacy (unguarded) admission path.
+constexpr size_t kServingInputCount=13;
+struct ServingInputs {
+ bool requested=false,valid=false;
+ uint64_t values[kServingInputCount]{};
+};
+struct Context { std::string owner,ids; ServingInputs serving; };
 thread_local Context context;
-struct Registered { Fault39MatmulMetadata metadata{}; int device=-1,rank=-1; uint64_t tensors[3]{}; };
-struct Candidate { Fault39MatmulMetadata metadata{}; int rank=-1,device=-1; std::set<Cache*> caches; uint64_t observations=0; };
+bool serving_values_valid(const uint64_t* v,size_t count) {
+ if(!v || count!=kServingInputCount)return false;
+ for(size_t i=0;i<count;++i)
+  if(i>=4 && v[i]>uint64_t(INT64_MAX))return false;
+ for(size_t i:{size_t(0),size_t(1),size_t(2),size_t(3),size_t(4),size_t(5),size_t(6),
+               size_t(9),size_t(10),size_t(11),size_t(12)})if(!v[i])return false;
+ if((v[1]&1) || (v[3]&1) || v[1]>uint64_t(SIZE_MAX) || v[3]>uint64_t(SIZE_MAX) ||
+    !fault39::disjoint(v[0],v[1],v[2],v[3]))return false;
+ // MxK self and KxN mat2, including any nonzero storage offset and padding.
+ const uint64_t rows[]={v[4],v[5]},cols[]={v[5],v[6]},offsets[]={v[7],v[8]},
+                s0[]={v[9],v[11]},s1[]={v[10],v[12]},bytes[]={v[1],v[3]};
+ for(int i=0;i<2;++i) {
+  uint64_t last=offsets[i],step=0;
+  if(!fault39::mul(rows[i]-1,s0[i],step) || !fault39::add(last,step,last) ||
+     !fault39::mul(cols[i]-1,s1[i],step) || !fault39::add(last,step,last) ||
+     last>=bytes[i]/2)return false;
+ }
+ return true;
+}
+int bind_serving_inputs(Context& ctx,const char* owner,const uint64_t* values,size_t count) {
+ if(!owner || !*owner || ctx.owner.empty() || ctx.ids.empty() || ctx.ids=="[]")return F39_INVALID_CONFIG;
+ if(ctx.owner!=owner)return F39_OWNER_MISMATCH;
+ const bool already_bound=ctx.serving.requested;
+ ctx.serving={};ctx.serving.requested=true;
+ if(already_bound)return F39_BUSY;
+ if(!serving_values_valid(values,count))return F39_INVALID_CONFIG;
+ std::copy(values,values+kServingInputCount,ctx.serving.values);
+ ctx.serving.valid=true;return F39_OK;
+}
+bool serving_inputs_match(const Context& ctx,const Fault39MatmulMetadata& m,
+                          const std::vector<void*>& addresses) {
+ if(!ctx.serving.requested)return true;  // Explicit legacy context only.
+ if(!ctx.serving.valid || addresses.size()!=3)return false;
+ if(m.mat2.view_shape[0]!=m.self.view_shape[1] ||
+    m.out.view_shape[0]!=m.self.view_shape[0] || m.out.view_shape[1]!=m.mat2.view_shape[1])return false;
+ const uint64_t actual[kServingInputCount]={
+  reinterpret_cast<uintptr_t>(addresses[0]),m.self.storage_bytes,
+  reinterpret_cast<uintptr_t>(addresses[1]),m.mat2.storage_bytes,
+  uint64_t(m.self.view_shape[0]),uint64_t(m.self.view_shape[1]),uint64_t(m.mat2.view_shape[1]),
+  uint64_t(m.self.view_offset),uint64_t(m.mat2.view_offset),
+  uint64_t(m.self.strides[0]),uint64_t(m.self.strides[1]),
+  uint64_t(m.mat2.strides[0]),uint64_t(m.mat2.strides[1])};
+ return std::equal(actual,actual+kServingInputCount,ctx.serving.values);
+}
+// END CPU_TESTABLE_SERVING_INPUT_GUARD
+struct Registered { Fault39MatmulMetadata metadata{}; int device=-1,rank=-1; uint64_t tensors[3]{},cache_epoch=0; };
+struct Candidate { Fault39MatmulMetadata metadata{}; int rank=-1,device=-1; std::set<std::pair<Cache*,uint64_t>> caches; uint64_t observations=0; };
 struct Lease {
  void* device[2]{}; void* host[3]{}; aclrtStream stream=nullptr; uint64_t generation=0;
  aclrtContext context=nullptr; int32_t device_id=-1; std::thread::id thread;
@@ -95,14 +149,16 @@ struct Lease {
 struct State {
  std::mutex mutex; std::condition_variable cv;
  Fault39ConfigV1 config{}; uint64_t generation=0,inflight=0,hits=0,run_calls=0,metadata_calls=0;
- uint64_t substituted=0,rejected=0,completed=0;
+ uint64_t substituted=0,rejected=0,completed=0,serving_input_rejections=0;
  bool enabled=false; int error=0; std::string status="DISABLED",actual_ids="[]",last_run_api;
  std::map<Cache*,Registered> registry; std::map<std::string,Candidate> candidates;
+ std::map<Cache*,uint64_t> cache_epochs;uint64_t next_cache_epoch=0;
  std::vector<Lease> retained; fault39::Counts counts{};
  fault39::Counts original[2]{},temporary[2]{};
  uint64_t changed[2]{},unchanged[2]{};
- bool self_verified=false,columns_verified=false;
+ bool self_verified=false,columns_verified=false,serving_live_inputs_verified=false;
  std::string proof_json="{}";
+ std::string storage_before[2],storage_after[2],output_sha256;
  uint64_t observation_generation=0,observation_hit=0;std::string observation_owner,observation_ids="[]";
  int pre_sync=-2147483647,run_status=-2147483647,post_sync=-2147483647,free_status=-2147483647,copy_status=-2147483647;
 };
@@ -189,6 +245,7 @@ aclnnStatus run_selected(Cache* cache,void* workspace,aclrtStream stream,const s
        reinterpret_cast<uintptr_t>(lease.device[1]),ts[1]->storage_bytes))return recovery();
    }
    if(record(&State::copy_status,copy(lease.host[i],ts[i]->storage_bytes,addresses[i],ts[i]->storage_bytes,ACL_MEMCPY_DEVICE_TO_HOST))!=ACL_SUCCESS)return recovery();
+   {std::lock_guard<std::mutex> lock(s.mutex);s.storage_before[i]=f39identity::digest(lease.host[i],ts[i]->storage_bytes);}
    const auto original=fault39::observe(lease.host[i],*ts[i]);
    std::vector<uint16_t> before;
    if(cfg.mode==F39_INJECT) {
@@ -225,6 +282,15 @@ aclnnStatus run_selected(Cache* cache,void* workspace,aclrtStream stream,const s
  const aclnnStatus result=real_run(cache,workspace,stream,replaced);
  record(&State::run_status,result);
  if(record(&State::post_sync,sync_stream(stream))!=ACL_SUCCESS)return recovery();
+ // Read the entire ORIGINAL input allocations again after the real Run. The
+ // temporary allocations never stand in for protection of the live inputs.
+ for(int i=0;i<2;++i) {
+  if(record(&State::copy_status,copy(lease.host[i],ts[i]->storage_bytes,addresses[i],ts[i]->storage_bytes,ACL_MEMCPY_DEVICE_TO_HOST))!=ACL_SUCCESS)return recovery();
+  const auto hash=f39identity::digest(lease.host[i],ts[i]->storage_bytes);
+  bool unchanged;
+  {std::lock_guard<std::mutex> lock(s.mutex);s.storage_after[i]=hash;unchanged=hash==s.storage_before[i];}
+  if(!unchanged)return recovery();
+ }
  if(result==ACL_SUCCESS) {
   if(host_alloc(&lease.host[2],ts[2]->storage_bytes)!=ACL_SUCCESS) {
    if(!free_lease(lease))return recovery();
@@ -232,7 +298,8 @@ aclnnStatus run_selected(Cache* cache,void* workspace,aclrtStream stream,const s
   }
   if(record(&State::copy_status,copy(lease.host[2],ts[2]->storage_bytes,addresses[2],ts[2]->storage_bytes,ACL_MEMCPY_DEVICE_TO_HOST))!=ACL_SUCCESS)return recovery();
   const auto counts=fault39::observe(lease.host[2],*ts[2]);
-  std::lock_guard<std::mutex> lock(s.mutex);s.counts=counts;++s.completed;s.status="COMPLETED";
+  const auto output_hash=f39identity::digest(lease.host[2],ts[2]->storage_bytes);
+  std::lock_guard<std::mutex> lock(s.mutex);s.counts=counts;s.output_sha256=output_hash;++s.completed;s.status="COMPLETED";
   if(counts.nan || counts.posinf || counts.neginf)s.enabled=false;
  } else {std::lock_guard<std::mutex> lock(s.mutex);s.enabled=false;s.status="RUN_FAILED";}
  if(record(&State::free_status,free_lease(lease)?0:-1)!=0)return recovery();
@@ -246,12 +313,19 @@ aclnnStatus run(Cache* cache,void* workspace,aclrtStream stream,const std::vecto
   if(s.enabled && ready) {
    auto it=s.registry.find(cache);int device=-1;const int rank=actual_rank();
    const bool correct_api=s.last_run_api.compare(0,12,"aclnnMatmul_")==0;
-   if(correct_api && it!=s.registry.end() && get_device(&device)==ACL_SUCCESS && device==s.config.device && rank==s.config.rank &&
-      it->second.device==device && it->second.rank==rank && proof(it->second,addresses,s.config.max_bytes)) {
+   const bool serving_match=it!=s.registry.end() && serving_inputs_match(context,it->second.metadata,addresses);
+   if(correct_api && context.owner==s.config.owner && context.serving.requested && !serving_match) {
+    ++s.rejected;++s.serving_input_rejections;s.status="SERVING_INPUTS_MISMATCH";
+   }
+   if(correct_api && context.owner==s.config.owner && !context.ids.empty() && context.ids!="[]" &&
+      it!=s.registry.end() && it->second.cache_epoch && s.cache_epochs[cache]==it->second.cache_epoch &&
+      get_device(&device)==ACL_SUCCESS && device==s.config.device && rank==s.config.rank &&
+      it->second.device==device && it->second.rank==rank && serving_match &&
+      proof(it->second,addresses,s.config.max_bytes)) {
     r=it->second;const std::string sig=fault39::signature(r.metadata,rank,device);
     if(sig.size()<sizeof(s.config.target_signature)) {
      auto& candidate=s.candidates[sig];candidate.metadata=r.metadata;candidate.rank=rank;candidate.device=device;
-     candidate.caches.insert(cache);++candidate.observations;
+     candidate.caches.insert({cache,r.cache_epoch});++candidate.observations;
      if(s.config.mode!=F39_DISCOVER && sig==s.config.target_signature) {
       if(candidate.caches.size()!=1){s.enabled=false;fail(s,F39_AMBIGUOUS_TARGET);}
       else if(context.owner!=s.config.owner || context.ids.empty() || context.ids=="[]") {
@@ -263,6 +337,8 @@ aclnnStatus run(Cache* cache,void* workspace,aclrtStream stream,const std::vecto
        s.counts={};s.original[0]={};s.original[1]={};s.temporary[0]={};s.temporary[1]={};
        s.changed[0]=s.changed[1]=s.unchanged[0]=s.unchanged[1]=0;
        s.self_verified=s.columns_verified=false;s.proof_json="{}";
+       s.serving_live_inputs_verified=context.serving.requested && context.serving.valid && serving_match;
+       s.storage_before[0].clear();s.storage_before[1].clear();s.storage_after[0].clear();s.storage_after[1].clear();s.output_sha256.clear();
        s.pre_sync=s.run_status=s.post_sync=s.free_status=s.copy_status=-2147483647;
        s.error=0;s.status="INFLIGHT";
        s.observation_owner=cfg.owner;s.observation_ids=context.ids;s.observation_generation=generation;s.observation_hit=s.hits+1;
@@ -298,6 +374,8 @@ int stop(const char* owner,uint64_t generation,uint32_t timeout,bool clean) {
   for(int i=0;i<2;++i){s.original[i]={};s.temporary[i]={};s.changed[i]=s.unchanged[i]=0;}
   s.proof_json="{}";s.observation_ids="[]";s.observation_generation=0;s.observation_hit=0;s.observation_owner.clear();
   s.self_verified=s.columns_verified=false;
+  s.serving_live_inputs_verified=false;
+  s.storage_before[0].clear();s.storage_before[1].clear();s.storage_after[0].clear();s.storage_after[1].clear();s.output_sha256.clear();
   s.pre_sync=s.copy_status=s.run_status=s.post_sync=s.free_status=-2147483647;
  }
  return 0;
@@ -339,6 +417,9 @@ extern "C" int fault39_set_context_v1(const char* owner,const char* ids) {
  try{context.owner=owner;context.ids=ids;return 0;}catch(...){context={};return F39_BUSY;}
 }
 extern "C" void fault39_clear_context_v1(){context={};}
+extern "C" int fault39_set_serving_inputs_v1(const char* owner,const uint64_t* values,size_t count) {
+ return bind_serving_inputs(context,owner,values,count);
+}
 extern "C" int fault39_configure_v1(const Fault39ConfigV1* cfg,uint64_t* generation) {
  if(!cfg || !generation)return F39_INVALID_CONFIG;
  if(cfg->abi_version!=1 || cfg->struct_size!=sizeof(*cfg))return F39_ABI_MISMATCH;
@@ -360,6 +441,8 @@ extern "C" int fault39_configure_v1(const Fault39ConfigV1* cfg,uint64_t* generat
   auto it=s.candidates.find(cfg->target_signature);
   if(it==s.candidates.end())return fail(s,F39_TARGET_NOT_FOUND);
   if(it->second.caches.size()!=1 || it->second.observations<2)return fail(s,F39_AMBIGUOUS_TARGET);
+  const auto cache_identity=*it->second.caches.begin();
+  if(s.cache_epochs[cache_identity.first]!=cache_identity.second)return fail(s,F39_TARGET_NOT_FOUND);
   if(it->second.rank!=cfg->rank || it->second.device!=cfg->device)return fail(s,F39_TARGET_NOT_FOUND);
   if(!fault39::matmul_valid(it->second.metadata,cfg->max_bytes))return fail(s,F39_INVALID_CONFIG);
   if(next.exponent==-1){next.exponent=fault39::auto_exponent(it->second.metadata.self.view_shape[1]);if(next.exponent<0)return fail(s,F39_NO_OVERFLOW_SOLUTION);}
@@ -369,10 +452,24 @@ extern "C" int fault39_configure_v1(const Fault39ConfigV1* cfg,uint64_t* generat
  for(int i=0;i<2;++i){s.original[i]={};s.temporary[i]={};s.changed[i]=s.unchanged[i]=0;}
  s.proof_json="{}";s.actual_ids="[]";s.observation_ids="[]";s.observation_generation=0;s.observation_hit=0;s.observation_owner.clear();
  s.self_verified=s.columns_verified=false;
+ s.serving_live_inputs_verified=false;
+ s.storage_before[0].clear();s.storage_before[1].clear();s.storage_after[0].clear();s.storage_after[1].clear();s.output_sha256.clear();
  s.pre_sync=s.copy_status=s.run_status=s.post_sync=s.free_status=-2147483647;return 0;
 }
 extern "C" int fault39_disable_v1(const char* owner,uint64_t generation,uint32_t timeout){return stop(owner,generation,timeout,false);}
 extern "C" int fault39_clean_v1(const char* owner,uint64_t generation,uint32_t timeout){return stop(owner,generation,timeout,true);}
+// An explicitly scoped serving continuation may pause discovery between real
+// scheduler requests. Resume the SAME disabled discovery generation; configure
+// still always clears inventory and injection cannot use this entry point.
+extern "C" int fault39_resume_discovery_v1(const char* owner,uint64_t generation) {
+ if(!owner || !resolve())return F39_UNSUPPORTED_RUNTIME;
+ State& s=state();std::lock_guard<std::mutex> lock(s.mutex);
+ if(s.config.owner!=std::string(owner))return F39_OWNER_MISMATCH;
+ if(s.generation!=generation)return F39_GENERATION_MISMATCH;
+ if(s.config.mode!=F39_DISCOVER || s.enabled || s.inflight || !s.retained.empty())return F39_BUSY;
+ if(context.owner!=owner || context.ids.empty() || context.ids=="[]")return F39_INVALID_CONFIG;
+ s.enabled=true;s.status="DISCOVERY_RESUMED";return 0;
+}
 extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
  try {
   const bool ready=resolve();State& s=state();std::lock_guard<std::mutex> lock(s.mutex);std::ostringstream j;
@@ -385,10 +482,12 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
    <<",\"status\":"<<quote(s.status)<<",\"last_error\":"<<s.error<<",\"target_signature\":"<<quote(s.config.target_signature)
    <<",\"interposed_run_calls\":"<<s.run_calls<<",\"last_run_api\":"<<quote(s.last_run_api)<<",\"typed_metadata_calls\":"<<s.metadata_calls<<",\"hits\":"<<s.hits
    <<",\"substituted\":"<<s.substituted<<",\"completed\":"<<s.completed<<",\"rejected\":"<<s.rejected
+   <<",\"serving_input_rejections\":"<<s.serving_input_rejections
    <<",\"actual_request_ids_json\":"<<quote(s.actual_ids)<<",\"worker_rank\":"<<actual_rank()<<",\"observer\":"<<counts_json(s.counts)
    <<",\"last_observation\":{\"generation\":"<<s.observation_generation<<",\"owner\":"<<quote(s.observation_owner)<<",\"hit\":"<<s.observation_hit
    <<",\"exponent\":"<<s.config.exponent<<",\"pattern\":"<<s.config.pattern
    <<",\"self_constant_positive_verified\":"<<(s.self_verified?"true":"false")<<",\"per_column_sign_counts_verified\":"<<(s.columns_verified?"true":"false")
+   <<",\"serving_live_inputs_verified\":"<<(s.serving_live_inputs_verified?"true":"false")
    <<",\"amplitude_equal\":"<<((s.config.mode==F39_INJECT && s.temporary[0].total && s.temporary[1].total &&
        s.temporary[0].finite==s.temporary[0].total && s.temporary[1].finite==s.temporary[1].total &&
        !s.temporary[0].zero && !s.temporary[1].zero && s.temporary[0].minimum==s.temporary[0].maximum &&
@@ -401,6 +500,9 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
    <<",\"actual_request_ids_json\":"<<quote(s.observation_ids)<<",\"temporary_source\":\"host_constructed\",\"output_source\":\"post_run_device_readback\",\"input_device_readback_verified\":false"
    <<",\"original_self\":"<<counts_json(s.original[0])<<",\"original_mat2\":"<<counts_json(s.original[1])
    <<",\"temporary_self\":"<<counts_json(s.temporary[0])<<",\"temporary_mat2\":"<<counts_json(s.temporary[1])<<",\"output\":"<<counts_json(s.counts)
+   <<",\"original_storage_sha256_before\":["<<quote(s.storage_before[0])<<','<<quote(s.storage_before[1])<<"]"
+   <<",\"original_storage_sha256_after\":["<<quote(s.storage_after[0])<<','<<quote(s.storage_after[1])<<"]"
+   <<",\"output_storage_sha256\":"<<quote(s.output_sha256)
    <<",\"changed\":["<<s.changed[0]<<','<<s.changed[1]<<"],\"unchanged\":["<<s.unchanged[0]<<','<<s.unchanged[1]<<"],\"proof\":"<<s.proof_json
    <<",\"pre_sync_status\":"<<s.pre_sync<<",\"copy_status\":"<<s.copy_status<<",\"run_status\":"<<s.run_status<<",\"post_sync_status\":"<<s.post_sync<<",\"free_status\":"<<s.free_status<<"},\"candidates\":[";
   bool first=true;for(const auto& entry:s.candidates){if(!first)j<<',';first=false;const auto& c=entry.second;
@@ -421,11 +523,13 @@ extern "C" int fault39_gws_commit_v1(const Fault39MetadataEnvelopeV1* envelope) 
  if(!c.active || c.adds!=1 || !c.cache || c.params!=3 || !m.all_present || m.any_empty_storage || m.any_shared_storage ||
   c.tensors[0]!=m.self.tensor_ptr || c.tensors[1]!=m.mat2.tensor_ptr || c.tensors[2]!=m.out.tensor_ptr)return F39_INVALID_CONFIG;
  int device=-1;if(!get_device || get_device(&device)!=ACL_SUCCESS)return F39_UNSUPPORTED_RUNTIME;
- Registered r{};r.metadata=m;r.device=device;r.rank=actual_rank();std::copy(c.tensors,c.tensors+3,r.tensors);s.registry[c.cache]=r;return 0;
+ Registered r{};r.metadata=m;r.device=device;r.rank=actual_rank();r.cache_epoch=s.cache_epochs[c.cache];
+ if(!r.cache_epoch)return F39_INVALID_CONFIG;
+ std::copy(c.tensors,c.tensors+3,r.tensors);s.registry[c.cache]=r;return 0;
 }
 namespace op::internal {
 void AddParamToBuf(const aclTensor* tensor){resolve();const bool nested=forwarding_param;forwarding_param=true;if(real_paramc)real_paramc(tensor);forwarding_param=nested;if(!nested && capture.active){const auto i=capture.params++;if(i<3)capture.tensors[i]=reinterpret_cast<uintptr_t>(tensor);}}
 void AddParamToBuf(aclTensor* tensor){resolve();const bool nested=forwarding_param;forwarding_param=true;if(real_param)real_param(tensor);forwarding_param=nested;if(!nested && capture.active){const auto i=capture.params++;if(i<3)capture.tensors[i]=reinterpret_cast<uintptr_t>(tensor);}}
-bool AddOpExecCache(OpExecCache* cache){resolve();const bool result=real_add?real_add(cache):false;{auto& s=state();std::lock_guard<std::mutex> lock(s.mutex);s.registry.erase(cache);}if(capture.active){++capture.adds;capture.cache=cache;}return result;}
+bool AddOpExecCache(OpExecCache* cache){resolve();const bool result=real_add?real_add(cache):false;{auto& s=state();std::lock_guard<std::mutex> lock(s.mutex);s.registry.erase(cache);s.cache_epochs[cache]=++s.next_cache_epoch;}if(capture.active){++capture.adds;capture.cache=cache;}return result;}
 aclnnStatus OpExecCache::Run(void* workspace,const aclrtStream stream,const std::vector<void*>& addresses){try{return run(this,workspace,stream,addresses);}catch(...){auto& s=state();std::lock_guard<std::mutex> lock(s.mutex);s.enabled=false;s.error=F39_RECOVERY_FAILED;s.status="RECOVERY_FAILED";return 1;}}
 }

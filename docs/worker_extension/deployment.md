@@ -68,6 +68,11 @@ export VLLM_SERVER_DEV_MODE=1
 
 ## 部署方提供的回放
 
+11月17日新增了[Host 驱动真实请求的单目标入口](host_driven_replay.md)，已取得
+限定部署的 Fault20/Fault39 正向证据。它通过真实 enqueue/advance/wait 顺序
+推进资格，不把同步 RPC 内的任意回调当成可信 scheduler。下述旧同步回放入口
+仍保留，不能与新入口的已验收范围混用。
+
 扩展可在普通 serving Worker 上做身份、附着、Native 准备和只读状态查询。正式注册需要部署方在 Worker 内绑定可验证的排他回放。Fault20 通过 `register_worker_matmul` 绑定实际 Worker 身份、构建 profile 和回放，`prepare` 默认查询 `aclnnMatmulWeightNz`，QMM 使用 `settings.operator="aclnnQuantMatmulWeightNz"`。Fault39 通过现有 `register_runtime` 接收 `Fault39WorkerReplay`，由调度集成提供实际请求 ID、作用域和排他预约。当前探测验证普通 Worker 缺少该绑定时的拒绝路径，不包含生产调度适配。
 
 124 每次设备实验使用既有锁和空闲门禁。原始采集、vendor bundle 和张量保留在验证机，公开结果按路径和 SHA-256 追溯。[Worker 实机探测](../../experiments/worker_extension_20261116/probe.py) · [Fault20 隔离构建与回执](../../experiments/production_wiring_20261116/README.md) · [Fault39 原生版本适配](../../fault39/docs/cann_version_adaptation.md) · [附着合同](../contracts/worker_extension_contract.md)

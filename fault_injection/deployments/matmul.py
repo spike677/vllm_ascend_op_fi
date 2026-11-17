@@ -10,6 +10,7 @@ import uuid
 from ..core import UnsupportedCall
 from ..native import NativeCall, NativeProof, UninstalledObserver, _STACK
 from ..providers import ProviderProfile, register_runtime
+from .pta_resolver import inspect_loaded_pta_resolution, validate_loaded_pta_resolution
 
 
 _CALLBACK = ctypes.CFUNCTYPE(ctypes.c_uint32, ctypes.c_uint64, ctypes.c_char_p)
@@ -19,6 +20,7 @@ _SYMBOLS = {
 }
 _MECHANISM = '20.buffer_substitute'
 _INSTALLED, _INFLIGHT, _QUARANTINED, _OWNED, _MATCHED = 1, 2, 4, 8, 16
+_PAUSED, _REQUEST_CONTROLLED = 32, 64
 _REQUIRED_BUNDLE = frozenset({
     'libnnopbase.so', 'libascendcl.so', 'libdcat20_qmm.so',
     'libopapi.so', 'libopapi_nn.so', 'libopapi_real.so', 'libopapi_nn_real.so',
@@ -62,23 +64,133 @@ class CtypesMatmulRuntime:
         if identity is None or len(identity) != 64 or not all(byte in b'0123456789abcdef' for byte in identity):
             raise UnsupportedCall('Scoped Fault20 bundle returned an invalid build profile')
         self.build_profile = identity.decode('ascii')
+        self._pta_configuration = os.environ.get('DEMONCAT_F20_REQUIRE_TYPED_GWS', '')
+        self.pta_gate_status = self._verify_pta_gate()
         self.evidence_dir = Path(evidence_dir)
         self._pending = self._callback = None
+        self._request_identity = None
         self.last_error = None
+
+    def configure_request_lifecycle(self, *, owner, generation):
+        """Bind a real Worker lease once; installation will begin paused."""
+        if (self._callback is not None or self._pending is not None
+                or self._request_identity is not None):
+            raise UnsupportedCall('Fault20 request lifecycle must be configured once before installation')
+        if (not isinstance(owner, str) or not owner or '\0' in owner
+                or len(owner.encode('utf-8')) > 128 or type(generation) is not int
+                or not 0 < generation < 1 << 64):
+            raise UnsupportedCall('Expected a bounded real owner and positive uint64 generation')
+        prefix = _SYMBOLS[self.operator]
+        methods = {}
+        try:
+            for action in ('install', 'pause', 'resume', 'remove'):
+                method = getattr(self._library, prefix + action + '_v2')
+                method.argtypes = ([_CALLBACK, ctypes.c_int32, ctypes.c_char_p, ctypes.c_uint64]
+                                   if action == 'install' else
+                                   [_CALLBACK, ctypes.c_char_p, ctypes.c_uint64])
+                method.restype = ctypes.c_int
+                methods[action] = method
+            for native_prefix in _SYMBOLS.values():
+                getattr(self._library, native_prefix + 'state_v2')
+        except AttributeError as error:
+            raise UnsupportedCall('Fault20 owner/generation request ABI v2 is required') from error
+        self._request_methods = methods
+        self._request_identity = (owner.encode('utf-8'), generation)
+
+    def _request_action(self, action):
+        identity = self._request_identity
+        if identity is None or self._callback is None or self._pending is not None:
+            raise UnsupportedCall('Fault20 request control has no idle owned callback')
+        if self._request_methods[action](self._callback, *identity):
+            raise UnsupportedCall('Fault20 native ' + action + ' refused owner/generation/thread or active execution')
+        state = self.snapshot()[self.operator]
+        if (not state['native_owned'] or not state['request_controlled']
+                or state['inflight'] or state['leases']
+                or state['paused'] != (action == 'pause')):
+            raise UnsupportedCall('Fault20 native request state did not confirm ' + action)
+        return state
+
+    def pause(self):
+        return self._request_action('pause')
+
+    def resume(self):
+        return self._request_action('resume')
+
+    def _verify_pta_gate(self):
+        """The opt-in routing change is admission, never proof of a real hit."""
+        if os.environ.get('DEMONCAT_F20_REQUIRE_TYPED_GWS', '') != self._pta_configuration:
+            raise UnsupportedCall('Fault20 PTA policy changed during the Worker lifetime')
+        if self._pta_configuration not in ('', '0', '1'):
+            raise UnsupportedCall('Invalid explicit Fault20 PTA policy')
+        if self._pta_configuration != '1':
+            return {}
+        try:
+            resolution = inspect_loaded_pta_resolution()
+            actual_provider = validate_loaded_pta_resolution(resolution)
+        except (AttributeError, OSError, ValueError, TypeError) as error:
+            raise UnsupportedCall('Fault20 actual PTA resolver route is unproven: ' + str(error)) from error
+        previous = getattr(self, 'pta_resolver_status', None)
+        if previous is not None and previous['configuration'] != resolution['configuration']:
+            raise UnsupportedCall('Fault20 custom opapi resolver configuration changed')
+        identity = {key: actual_provider[key] for key in ('provider', 'provider_sha256', 'address')}
+        if getattr(self, '_pta_provider_identity', identity) != identity:
+            raise UnsupportedCall('Fault20 actual PTA function provider changed')
+        self._pta_provider_identity = identity
+        self.pta_resolver_status = resolution
+        wheels = resolution.get('loaded_torch_npu_images', [])
+        if len(wheels) != 1 or len(wheels[0].get('file_sha256', '')) != 64:
+            raise UnsupportedCall('Fault20 requires one actual profiled torch_npu resolver image')
+        result = {}
+        for name in ('libopapi_math.so', 'libopapi.so', 'libopapi_nn.so'):
+            try:
+                handle = ctypes.CDLL(name, mode=os.RTLD_NOLOAD | os.RTLD_NOW)
+                status = handle.dcat20_pta_gate_status_v1
+                status.argtypes, status.restype = [], ctypes.c_char_p
+                raw = status()
+                if not raw or len(raw) > 65536:
+                    raise ValueError('Invalid gate status')
+                row = json.loads(raw)
+            except (AttributeError, OSError, ValueError, TypeError) as error:
+                raise UnsupportedCall('Matched loaded Fault20 PTA proxy required: ' + name) from error
+            if (row.get('schema') != 'dcat20.pta_gate.v1' or row.get('profile_sha256') != self.build_profile
+                    or row.get('entry') != name
+                    or row.get('resolver_wheel_sha256') != wheels[0]['file_sha256']
+                    or any(row.get(key) is not True for key in
+                           ('requested', 'config_valid', 'identity_valid', 'profile_match', 'original_available', 'ready'))
+                    or row.get('refused') is not False):
+                raise UnsupportedCall('Fault20 PTA control refused: ' + name + '/' + str(row.get('reason')))
+            if name == 'libopapi_math.so' and row.get('original_math_identity_valid') is not True:
+                raise UnsupportedCall('Fault20 original math provider identity is unproven')
+            result[name] = row
+        return result
 
     def snapshot(self):
         """Query both native bridges, including any callback owned elsewhere."""
+        self.pta_gate_status = self._verify_pta_gate()
         states = {}
         for operator, prefix in _SYMBOLS.items():
-            try:
-                state = getattr(self._library, prefix + 'state_v1')
-            except AttributeError as exc:
-                raise UnsupportedCall('NATIVE_STATE_UNAVAILABLE: Fault20 state ABI not preloaded') from exc
-            state.argtypes, state.restype = [ctypes.c_void_p], ctypes.c_uint32
             requester = ctypes.cast(self._callback, ctypes.c_void_p) if operator == self.operator else None
-            flags = state(requester)
-            if (flags & ~(_INSTALLED | _INFLIGHT | _QUARANTINED | _OWNED | _MATCHED)
-                    or flags & (_INFLIGHT | _OWNED) and not flags & _INSTALLED):
+            try:
+                state = getattr(self._library, prefix + 'state_v2')
+                version = 2
+            except AttributeError:
+                if self._request_identity is not None:
+                    raise UnsupportedCall('NATIVE_STATE_UNAVAILABLE: request state ABI v2 required')
+                try:
+                    state = getattr(self._library, prefix + 'state_v1')
+                    version = 1
+                except AttributeError as exc:
+                    raise UnsupportedCall('NATIVE_STATE_UNAVAILABLE: Fault20 state ABI not preloaded') from exc
+            if version == 2:
+                state.argtypes, state.restype = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_uint64], ctypes.c_uint32
+                identity = self._request_identity if operator == self.operator else None
+                flags = state(requester, *(identity or (None, 0)))
+            else:
+                state.argtypes, state.restype = [ctypes.c_void_p], ctypes.c_uint32
+                flags = state(requester)
+            if (flags & ~(_INSTALLED | _INFLIGHT | _QUARANTINED | _OWNED | _MATCHED | _PAUSED | _REQUEST_CONTROLLED)
+                    or flags & (_INFLIGHT | _OWNED | _PAUSED | _REQUEST_CONTROLLED) and not flags & _INSTALLED
+                    or flags & _PAUSED and (not flags & _REQUEST_CONTROLLED or flags & _INFLIGHT)):
                 raise UnsupportedCall('NATIVE_STATE_UNAVAILABLE: invalid Fault20 state flags')
             states[operator] = {
                 'native_registered': bool(flags & _INSTALLED),
@@ -87,6 +199,9 @@ class CtypesMatmulRuntime:
                 'inflight': int(bool(flags & _INFLIGHT)),
                 'recovery_required': bool(flags & _QUARANTINED),
                 'leases': int(bool(flags & (_INFLIGHT | _QUARANTINED))),
+                'paused': bool(flags & _PAUSED),
+                'enabled': bool(flags & _INSTALLED and not flags & _PAUSED),
+                'request_controlled': bool(flags & _REQUEST_CONTROLLED),
             }
         return states
 
@@ -162,13 +277,20 @@ class CtypesMatmulRuntime:
                     self._pending = None
 
         native_callback = _CALLBACK(dispatch)
-        if self._install(native_callback, self.worker['rank']):
+        identity = self._request_identity
+        status = (self._request_methods['install'](native_callback, self.worker['rank'], *identity)
+                  if identity is not None else self._install(native_callback, self.worker['rank']))
+        if status:
             raise UninstalledObserver('Native callback refused the loaded ABI, rank or existing owner')
         self._callback = native_callback
 
         def remove():
-            if self._pending is not None or self._remove(native_callback):
+            if self._pending is not None:
                 raise RuntimeError('Native callback still owns execution or unresolved allocations')
+            result = (self._request_methods['remove'](native_callback, *identity) if identity is not None
+                      else self._remove(native_callback))
+            if result:
+                raise RuntimeError('Native callback still owns execution or unresolved allocations; request owner must be paused')
             self._callback = None
 
         return remove
@@ -193,8 +315,11 @@ def register_worker_matmul(mechanism, *, worker_identity, replay, profiles, evid
     if mechanism != _MECHANISM or not callable(worker_identity):
         raise ValueError('Expected Fault20 and a real worker identity reader')
     profiles = tuple(profiles)
+    required = _REQUIRED_BUNDLE
+    if os.environ.get('DEMONCAT_F20_REQUIRE_TYPED_GWS') == '1':
+        required = required | {'libopapi_math.so', 'libopapi_math_real.so'}
     if not profiles or any(not isinstance(profile, ProviderProfile)
-                           or not _REQUIRED_BUNDLE.issubset(profile.required_libraries) for profile in profiles):
+                           or not required.issubset(profile.required_libraries) for profile in profiles):
         raise ValueError('Each profile must fingerprint the loaded Fault20 bundle and both CANN proxies')
     operators = {profile.operator for profile in profiles}
     if len(operators) != 1 or not operators <= _SYMBOLS.keys():

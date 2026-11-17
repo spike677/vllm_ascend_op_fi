@@ -1,0 +1,272 @@
+{
+  "schema": "demoncat.pretrained_admission.summary.v1",
+  "status": "PASS_PRETRAINED_NPU_INFERENCE_NOT_FAULT_ACCEPTANCE",
+  "source": "/home/worker-positive-20261117/glm-admission-a1/pretrained-admission-glm/result.json",
+  "source_sha256": "57c2ad7360c0786d1ac33286efb5a99fa685881c108298d86a5a66ec9eae4e4f",
+  "actual_model_class": "vllm.model_executor.models.glm4.Glm4ForCausalLM",
+  "actual_model_type": "glm4",
+  "actual_model_source_sha256": "e9a552c4f4ab3558a4afd8577b8af9372a65244ed82a78b6e89c0400eb1adaa9",
+  "boundary": {
+    "status": "STRUCTURAL_LOGITS_BOUNDARY_ONLY_NOT_EXECUTION_ACCEPTANCE",
+    "processor_path": "logits_processor",
+    "lm_head_path": "lm_head",
+    "compute_processor_attribute": "logits_processor",
+    "compute_head_attribute": "lm_head",
+    "compute_logits_source": {
+      "source_sha256": "d50f0cd6fd8c653767fa1a270b34245f62c4ae528147b66c2e1e141293485964",
+      "file": "/vllm-workspace/vllm/vllm/model_executor/models/glm4.py",
+      "first_line": 367
+    },
+    "get_logits_source": {
+      "source_sha256": "f9fabcb8a46ad93f0977fe87e77c46eda275c6282d2e146932cb7c35212e7bdd",
+      "file": "/vllm-workspace/vllm-ascend/vllm_ascend/ops/vocab_parallel_embedding.py",
+      "first_line": 274
+    },
+    "ascend_dispatch_source": {
+      "source_sha256": "ab309fb78e87a053bb0219f2ed12aca039a67af3c21f7690e53ef63b3baabac4",
+      "file": "/vllm-workspace/vllm-ascend/vllm_ascend/ops/vocab_parallel_embedding.py",
+      "first_line": 247
+    },
+    "vocab_size": 151552,
+    "gather_contract": "Observe returned full-vocab tensor; None is not success",
+    "output_contract": [
+      1,
+      151552
+    ]
+  },
+  "loaded_from_pretrained": true,
+  "actual_fault_injection": false,
+  "requests": [
+    [
+      {
+        "prompt_token_ids": [
+          840,
+          20726,
+          304,
+          825,
+          11646,
+          3170,
+          279,
+          12877,
+          7951,
+          6303,
+          13
+        ],
+        "tokens": [
+          576,
+          12877,
+          7951,
+          6303
+        ],
+        "text": " The sky appears blue"
+      }
+    ],
+    [
+      {
+        "prompt_token_ids": [
+          840,
+          20726,
+          304,
+          825,
+          11646,
+          3170,
+          279,
+          12877,
+          7951,
+          6303,
+          13
+        ],
+        "tokens": [
+          576,
+          12877,
+          7951,
+          6303
+        ],
+        "text": " The sky appears blue"
+      }
+    ]
+  ],
+  "complete_logits": [
+    {
+      "shape": [
+        1,
+        151552
+      ],
+      "sha256": "43afea7bd31c4045d7e77c688f4cba5a849d365c5c75e8e20b837f072251c24c",
+      "finite": true,
+      "top1": [
+        576
+      ]
+    },
+    {
+      "shape": [
+        1,
+        151552
+      ],
+      "sha256": "3ef9bcd649ffa11ecfd82cc488d11143dc5e961feb8fde435898322c5ed3ef85",
+      "finite": true,
+      "top1": [
+        12877
+      ]
+    },
+    {
+      "shape": [
+        1,
+        151552
+      ],
+      "sha256": "21834f3ebad3e6e5e8b0c7685f21dff5f36241db4402df94e27afa1185c9e875",
+      "finite": true,
+      "top1": [
+        7951
+      ]
+    },
+    {
+      "shape": [
+        1,
+        151552
+      ],
+      "sha256": "917b5147bd17f1b0995df7e701e986c6b661fd81ba180127836cd1c606656e10",
+      "finite": true,
+      "top1": [
+        6303
+      ]
+    },
+    {
+      "shape": [
+        1,
+        151552
+      ],
+      "sha256": "43afea7bd31c4045d7e77c688f4cba5a849d365c5c75e8e20b837f072251c24c",
+      "finite": true,
+      "top1": [
+        576
+      ]
+    },
+    {
+      "shape": [
+        1,
+        151552
+      ],
+      "sha256": "3ef9bcd649ffa11ecfd82cc488d11143dc5e961feb8fde435898322c5ed3ef85",
+      "finite": true,
+      "top1": [
+        12877
+      ]
+    },
+    {
+      "shape": [
+        1,
+        151552
+      ],
+      "sha256": "21834f3ebad3e6e5e8b0c7685f21dff5f36241db4402df94e27afa1185c9e875",
+      "finite": true,
+      "top1": [
+        7951
+      ]
+    },
+    {
+      "shape": [
+        1,
+        151552
+      ],
+      "sha256": "917b5147bd17f1b0995df7e701e986c6b661fd81ba180127836cd1c606656e10",
+      "finite": true,
+      "top1": [
+        6303
+      ]
+    }
+  ],
+  "actual_matmul_runs": 1613,
+  "native_idle": true,
+  "build_profile_sha256": "df08dae9203b39821119acc238e8b2c4f244d91ec230108c1a17d0ce08fc8c0e",
+  "limits": [
+    "Two deterministic 4-token generations, TP1/eager/BF16 on 124 A2/CANN8.5.1",
+    "No native fault qualification; no model quality or all-layer coverage claim"
+  ],
+  "public_checkpoint": {
+    "repository": "zai-org/GLM-4-9B-0414",
+    "revision": "645b8482494e31b6b752272bf7f7f273ef0f3caf",
+    "download_receipt_sha256": "eb1a0f083872d4f5d28cbe3d965821101214b01da6c29cc97c8cdbf211f18546",
+    "files": [
+      {
+        "name": "LICENSE",
+        "bytes": 1064,
+        "sha256": "d08ac7b31e69ddf9845d56f2705325e69873f87b0b34b4bd53a3185428a784ae",
+        "expected_lfs_sha256": null
+      },
+      {
+        "name": "README.md",
+        "bytes": 43961,
+        "sha256": "ee4acfb2911d66b487f5d49373910e08d8f1c776c7adbfab2aebeafbb9350b7f",
+        "expected_lfs_sha256": null
+      },
+      {
+        "name": "chat_template.jinja",
+        "bytes": 1015,
+        "sha256": "db700f25fa300e53634c6fc78dee86b7fbd6d27e624edb855b18a4078c83a822",
+        "expected_lfs_sha256": null
+      },
+      {
+        "name": "config.json",
+        "bytes": 689,
+        "sha256": "98794d8150da03ca7baec63208584810d01caf43427e376071c00e770f4b4fa7",
+        "expected_lfs_sha256": null
+      },
+      {
+        "name": "generation_config.json",
+        "bytes": 160,
+        "sha256": "56ee0be8c595f22a6a80a822096533e10455fcd1e859e0fc36a6e760088147fa",
+        "expected_lfs_sha256": null
+      },
+      {
+        "name": "model-00001-of-00004.safetensors",
+        "bytes": 4984283160,
+        "sha256": "f428f8621a3b09c8dc85640d35b147fd52515c4de3eeed71a0bd24fe28a475e8",
+        "expected_lfs_sha256": "f428f8621a3b09c8dc85640d35b147fd52515c4de3eeed71a0bd24fe28a475e8"
+      },
+      {
+        "name": "model-00002-of-00004.safetensors",
+        "bytes": 4895274600,
+        "sha256": "5fe3a4f6c126a8f831df97dcd3436660b5e744f7307b84e8512d4847c369b359",
+        "expected_lfs_sha256": "5fe3a4f6c126a8f831df97dcd3436660b5e744f7307b84e8512d4847c369b359"
+      },
+      {
+        "name": "model-00003-of-00004.safetensors",
+        "bytes": 4895274616,
+        "sha256": "9716302a052d79c2750e3c98d34f4c4048871092831fc158cd89286513df83d9",
+        "expected_lfs_sha256": "9716302a052d79c2750e3c98d34f4c4048871092831fc158cd89286513df83d9"
+      },
+      {
+        "name": "model-00004-of-00004.safetensors",
+        "bytes": 4025786080,
+        "sha256": "d81b5e2c294f5f2aecd6c82ae522f86a4ce25c00d24bab19bb41386ab6874de4",
+        "expected_lfs_sha256": "d81b5e2c294f5f2aecd6c82ae522f86a4ce25c00d24bab19bb41386ab6874de4"
+      },
+      {
+        "name": "model.safetensors.index.json",
+        "bytes": 43614,
+        "sha256": "76d38dfcac7d59e0250f1fcf03e25061127e6a2d1be7c2b7096c6561b7ffa45a",
+        "expected_lfs_sha256": null
+      },
+      {
+        "name": "special_tokens_map.json",
+        "bytes": 601,
+        "sha256": "35a6dd9ff6e2474ba72b180db853851d2a84fce3d12095089285f447c7474541",
+        "expected_lfs_sha256": null
+      },
+      {
+        "name": "tokenizer.json",
+        "bytes": 19966496,
+        "sha256": "76ebeac0d8bd7879ead7b43c16b44981f277e47225de2bd7de9ae1a6cc664a8c",
+        "expected_lfs_sha256": "76ebeac0d8bd7879ead7b43c16b44981f277e47225de2bd7de9ae1a6cc664a8c"
+      },
+      {
+        "name": "tokenizer_config.json",
+        "bytes": 4170,
+        "sha256": "e316474d867ad1f91165a12d90c73b27a7e0f9a1c9293831cca66c792bfe9a36",
+        "expected_lfs_sha256": null
+      }
+    ],
+    "remote_code_executed": false
+  }
+}

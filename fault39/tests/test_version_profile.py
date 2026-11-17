@@ -3,6 +3,7 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
 import struct
 import tempfile
 import unittest
@@ -53,7 +54,7 @@ class ElfIdentityTests(unittest.TestCase):
             toolkit = root / 'aarch64-linux'
             libraries = toolkit / 'lib64'
             libraries.mkdir(parents=True)
-            for name in ('libnnopbase.so', 'libascendcl.so', 'libopapi.so', 'libopapi_nn.so'):
+            for name in ('libnnopbase.so', 'libascendcl.so', 'libopapi.so', 'libopapi_nn.so', 'libopapi_math.so'):
                 (libraries/name).write_bytes(elf())
             for name in ('acl/acl.h', 'aclnn/acl_meta.h', 'aclnn/opdev/op_cache.h', 'aclnnop/aclnn_matmul.h',
                          'aclnnop/aclnn_quant_matmul_weight_nz.h'):
@@ -66,19 +67,30 @@ class ElfIdentityTests(unittest.TestCase):
             abi = dict(weight_nz_signature='verified', qmm_signature='verified',
                        private_cache_signatures='verified', actual_npu_calls=0)
             facts.write_text(json.dumps(abi))
-            exports = set(profile.PRIVATE + profile.METADATA + profile.FAULT20_EXPORTS + profile.ACL)
-            with patch.object(profile, 'exports', return_value=exports):
+            exports = set(profile.PRIVATE + profile.METADATA + profile.FAULT20_EXPORTS + profile.ACL
+                          + ('CanUsePTACache', 'aclnnAdd', 'aclnnAddGetWorkspaceSize'))
+            wheel = root / 'libtorch_npu.so'
+            wheel.write_bytes(b'CPU fixture; not a real torch_npu library')
+            wheel_digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+            distribution = SimpleNamespace(version='cpu-fixture', locate_file=lambda _: wheel)
+            with (patch.object(profile, 'exports', return_value=exports),
+                  patch.object(profile.importlib.metadata, 'distribution', return_value=distribution),
+                  patch.object(profile, 'AUDITED_PTA_RESOLVER_WHEEL', wheel_digest)):
                 args = (toolkit, libraries/'libopapi.so', libraries/'libopapi_nn.so', root/'build',
                         facts, libraries/'libopapi.so')
-                result = profile.generate(*args, operator='fault20-isolated')
+                with self.assertRaisesRegex(ValueError, 'main, nn and math'):
+                    profile.generate(*args, operator='fault20-isolated')
+                result = profile.generate(*args, operator='fault20-isolated', math=libraries/'libopapi_math.so')
                 self.assertEqual(result['adapter'], 'fault20-isolated-cache-abi0-v1')
                 for library in ('opapi', 'split'):
                     self.assertEqual(set(result['required_exports'][library]), set(profile.FAULT20_EXPORTS))
                 self.assertIn('fault_injection/native_adapters/fault20_abi_probe.cpp', result['sources'])
                 self.assertNotIn('runtime.cpp', result['sources'])
+                self.assertEqual(result['proxy_layout'], 'main_nn_math')
+                self.assertEqual(result['controlled_pta_cache']['resolver_wheel']['file_sha256'], wheel_digest)
                 facts.write_text(json.dumps(dict(abi, qmm_signature='unverified')))
                 with self.assertRaisesRegex(ValueError, 'ABI compile probe'):
-                    profile.generate(*args, operator='fault20-isolated')
+                    profile.generate(*args, operator='fault20-isolated', math=libraries/'libopapi_math.so')
 
 
 if __name__=='__main__':unittest.main()

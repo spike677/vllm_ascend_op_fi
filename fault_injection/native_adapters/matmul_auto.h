@@ -13,6 +13,7 @@ enum Arm : uint32_t { original = 0, reference = 1, lossless = 2, fault = 3 };
 enum StateFlag : uint32_t {
     callback_installed = 1, call_inflight = 2, recovery_required = 4,
     callback_owned = 8, runtime_matched = 16,
+    callback_paused = 32, request_controlled = 64,
 };
 constexpr uint64_t byte_limit = 512ULL * 1024 * 1024;
 using Callback = uint32_t (*)(uint64_t, const char*);
@@ -197,6 +198,9 @@ class Bridge {
     std::mutex control_;
     Callback callback_ = nullptr;
     std::thread::id owner_;
+    std::string request_owner_;
+    uint64_t request_generation_ = 0;
+    bool paused_ = false;
     uint64_t serial_ = 0;
     Flight* flight_ = nullptr;
     bool quarantined_ = false;
@@ -206,6 +210,25 @@ class Bridge {
     std::vector<std::string> reference_inputs_;
     std::string reference_output_;
     static inline thread_local Bridge* active_ = nullptr;
+
+    bool request_owner_matches(Callback callback, const char* owner, uint64_t generation) const {
+        return callback && callback == callback_ && owner && !request_owner_.empty()
+            && request_owner_ == owner && generation && generation == request_generation_
+            && owner_ == std::this_thread::get_id();
+    }
+
+    void clear_owner() {
+        callback_ = nullptr;
+        owner_ = {};
+        request_owner_.clear();
+        request_generation_ = 0;
+        paused_ = false;
+        gate_ = Gate::empty;
+        fault_attempted_ = false;
+        target_.clear();
+        reference_inputs_.clear();
+        reference_output_.clear();
+    }
 
     bool finish_gate(uint32_t arm, const std::string& details, const Audit& audit) {
         if (arm == original || arm == fault) return true;
@@ -226,7 +249,10 @@ class Bridge {
             gate_ = Gate::empty;
             return false;
         }
-        if (arm == reference && gate_ == Gate::copied && !audit.replacements) {
+        // A matched-phase baseline may make more read-only observations after
+        // qualification. They must preserve the exact target/input/output and
+        // cannot reset the spent fault budget or introduce replacements.
+        if (arm == reference && (gate_ == Gate::copied || gate_ == Gate::ready) && !audit.replacements) {
             gate_ = Gate::ready;
             return true;
         }
@@ -248,15 +274,51 @@ public:
         return 0;
     }
 
+    // Request control retains the callback owner and qualification while idle.
+    // It is a distinct ABI; legacy remove cannot revoke this reservation.
+    int install_request(Callback callback, const char* owner, uint64_t generation) {
+        std::lock_guard<std::mutex> guard(control_);
+        if (!callback || !owner || !*owner || std::strlen(owner) > 128 || !generation
+            || callback_ || quarantined_ || flight_ || active_) return 1;
+        callback_ = callback;
+        owner_ = std::this_thread::get_id();
+        request_owner_ = owner;
+        request_generation_ = generation;
+        paused_ = true;
+        gate_ = Gate::empty;
+        fault_attempted_ = false;
+        return 0;
+    }
+
+    int pause(Callback callback, const char* owner, uint64_t generation) {
+        std::lock_guard<std::mutex> guard(control_);
+        if (!request_owner_matches(callback, owner, generation) || flight_ || active_ || quarantined_)
+            return 1;
+        paused_ = true; // idempotent cleanup; does not reset qualification/spent
+        return 0;
+    }
+
+    int resume(Callback callback, const char* owner, uint64_t generation) {
+        std::lock_guard<std::mutex> guard(control_);
+        if (!request_owner_matches(callback, owner, generation) || !paused_
+            || flight_ || active_ || quarantined_) return 1;
+        paused_ = false;
+        return 0;
+    }
+
+    int remove_request(Callback callback, const char* owner, uint64_t generation) {
+        std::lock_guard<std::mutex> guard(control_);
+        if (!request_owner_matches(callback, owner, generation) || !paused_
+            || flight_ || active_ || quarantined_) return 1;
+        clear_owner();
+        return 0;
+    }
+
     int remove(Callback callback) {
         std::lock_guard<std::mutex> guard(control_);
-        if (callback != callback_ || owner_ != std::this_thread::get_id()
+        if (callback != callback_ || owner_ != std::this_thread::get_id() || !request_owner_.empty()
             || flight_ || quarantined_) return 1;
-        callback_ = nullptr;
-        owner_ = {};
-        target_.clear();
-        reference_inputs_.clear();
-        reference_output_.clear();
+        clear_owner();
         return 0;
     }
 
@@ -275,17 +337,35 @@ public:
         return flags;
     }
 
-    bool on_owner() {
+    uint32_t request_state(Callback requester, const char* owner, uint64_t generation) {
         std::lock_guard<std::mutex> guard(control_);
-        return callback_ && owner_ == std::this_thread::get_id() && !flight_;
+        uint32_t flags = 0;
+        if (callback_) flags |= callback_installed;
+        if (flight_) flags |= call_inflight;
+        if (quarantined_) flags |= recovery_required;
+        if (paused_) flags |= callback_paused;
+        if (!request_owner_.empty()) flags |= request_controlled;
+        const bool matches = request_owner_.empty() ? requester && requester == callback_
+            : request_owner_matches(requester, owner, generation);
+        if (matches) flags |= callback_owned;
+        return flags;
     }
 
-    uint32_t dispatch(const std::string& details, const Execute& execute) {
+    bool on_owner() {
+        std::lock_guard<std::mutex> guard(control_);
+        // A quarantined owner still routes to dispatch's hard refusal. Do not
+        // turn quarantine into the caller's unowned/original passthrough path.
+        return callback_ && !paused_ && owner_ == std::this_thread::get_id() && !flight_;
+    }
+
+    uint32_t dispatch(const std::string& details, const Execute& execute, const std::string& stable_target = {}) {
         Callback callback = nullptr;
-        Flight flight{0, execute, details, false, false, 1, {}};
+        // The packet keeps every current typed-call fact. Qualification compares
+        // a separate stable native identity, never a reused GWS token/address.
+        Flight flight{0, execute, stable_target.empty() ? details : stable_target, false, false, 1, {}};
         {
             std::lock_guard<std::mutex> guard(control_);
-            if (quarantined_ || !callback_ || owner_ != std::this_thread::get_id() || flight_ || active_) return 1;
+            if (quarantined_ || !callback_ || paused_ || owner_ != std::this_thread::get_id() || flight_ || active_) return 1;
             callback = callback_;
             flight.token = ++serial_;
             flight_ = &flight;
@@ -306,7 +386,7 @@ public:
     }
 
     uint32_t invoke(uint64_t token, uint32_t arm) {
-        if (active_ != this || !flight_) return 1;
+        if (active_ != this || !flight_ || paused_) return 1;
         auto& flight = *flight_;
         if (flight.token != token || flight.entered || arm > fault) {
             flight.invalid = true;

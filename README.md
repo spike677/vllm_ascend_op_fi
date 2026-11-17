@@ -7,9 +7,15 @@
 
 ## 当前统一接入
 
-[17条本轮工程整理与实测报告](docs/fault_closure_report.md) · [逐项最终矩阵](experiments/overnight_20261116/fault_matrix.json) · [源码与证据校验](experiments/overnight_20261116/checksums.json)
+[2026-11-17 真实 Worker 正向闭环](experiments/worker_positive_20261117/README.md) · [可信 Serving Replay 接口](docs/worker_extension/host_driven_replay.md)
 
-本轮从 `bfdd6abc` 独立开发：17条机制完成能力卡及门禁审计，445项CPU测试通过；Qwen、GLM、DeepSeek等六种实际模型结构完成CPU适配检查。新增15/17/18的构造NPU推理模块B/F/OFF通过，但原始statistics/mix的全局调用链均未严格对齐，未授予独立首差通过。真实共享Worker完成20/39的拒绝、隔离及恢复，QMM TP2记录到实际调用，但稳定目标及可信回放仍未闭合。本轮新增完整预训练模型故障闭环和共享Worker故障闭环均为0；下文历史模型验证单独保留。
+从 `dcbef7a0` 继续，Fault20 WeightNz 和 Fault39 MatMul 已在标准 vLLM 创建的临时 Worker、安装后的 wheel、完整 Qwen3-0.6B 上取得限定单点的真实注入和 OFF 恢复证据。Host 使用真实 enqueue/scheduler ID 逐阶段推进，Extension 不创建 Worker、不替换核心执行方法。Fault20 使用明确披露的 NZ 部署和 controlled PTA 路径；不能把它称为默认部署已通过。
+
+Fault39 的独立 B/F 原始 statistics/mix 在固定容差下，首个可观测差异为 `Functional.linear.112.forward/output/0` 的 Max：17.625→+Inf；之前的不可观测项保留。GLM-4-9B-0414 和真正 DeepSeek-V2-Lite 预训练模型已取得正常 NPU 推理证据，尚未授予它们故障注入资格。新采集原件留在124，GitHub仅发布实现、总结及哈希。
+
+[2026-11-16 的17条审计报告](docs/fault_closure_report.md) · [当时逐项矩阵](experiments/overnight_20261116/fault_matrix.json) · [当时源码与证据校验](experiments/overnight_20261116/checksums.json)
+
+此前17条能力卡审计、445项CPU测试和15/17/18构造NPU模块B/F/OFF结论保留；其严格统计调用链对齐失败也保留。下文旧能力表均为历史范围。所有机制仍未取得公共 `all_eligible` 资格，本轮单输出投影验收不等于全模型所有层注入。
 
 [文档索引](docs/README.md) · [生产接线分支的实现与验收](experiments/production_wiring_20261116/README.md) · [17 项能力与支持矩阵](docs/unified_fault_inventory.md#9171f3b-全局审计)
 
@@ -17,7 +23,7 @@
 
 124 在 vLLM-Ascend 0.18.0、CANN 8.5.1 和 Qwen3-0.6B BF16 eager 下通过了 Worker 附着验收。TP1 验证了 Fault20／Fault39 预加载后的原生空闲状态、缺少可信回放时的注册拒绝，以及解除附着后的生成一致性。TP2 验证了两个 Worker 的 rank、逻辑卡和正常生成。Worker 重建后，旧租户和旧 owner 票据均失效。
 
-共用入口的实际故障命中、注入后的 OFF 恢复和新 msprobe B/F 取证仍待验收。本次 GitHub 提交包含实现、测试、总结和校验清单，已有原始统计与原始运行回执留在 124。[验收总结](experiments/worker_extension_20261116/validation_summary.json) · [SHA-256 校验清单](experiments/worker_extension_20261116/SHA256SUMS)
+上述是11月16日的附着与负门禁范围；11月17日新增的正向闭环见本节首个链接。旧回执保持原样。[附着验收总结](experiments/worker_extension_20261116/validation_summary.json) · [当时 SHA-256 校验清单](experiments/worker_extension_20261116/SHA256SUMS)
 
 已有 `attach` 和 `ModelFaultBackend` 入口。显式登记合格 Worker Provider 后，Fault20 可走新的单目标回放门禁。Fault39 保留独立 ABI v1，并提供可选宿主资格适配。覆盖资格可在 CPU 核对完整目标集、两种分母、租约和恢复；真实执行按已有单点门禁和各机制发布范围。生产状态与已发布实机证据见实验记录。
 

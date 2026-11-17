@@ -1,13 +1,13 @@
 """Attach the selected Fault20 callback to the loaded evaluation model."""
 
-from dataclasses import replace
+from dataclasses import dataclass, replace
 import ctypes
 import os
 import sys
 
 from fault_injection.core import UnsupportedCall
 from fault_injection.deployments.matmul import CtypesMatmulRuntime
-from fault_injection.providers import qualified_binding
+from fault_injection.providers import qualified_binding, resolve_runtime
 from fault_injection.qualification import QualifiedNativeSession, _digest_output
 
 from ..runtime import NativePreloadNotAttached
@@ -18,12 +18,20 @@ MECHANISM = '20.buffer_substitute'
 OPERATORS = ('aclnnMatmulWeightNz', 'aclnnQuantMatmulWeightNz')
 
 
+@dataclass(frozen=True)
+class Fault20ServingReplay:
+    """Trusted deployment factory, never constructed from user RPC settings."""
+    build_profile_sha256: str
+    make_session: object
+
+
 class Fault20Provider(Scope):
     def __init__(self, worker, model, identity):
         super().__init__(worker, model, identity)
         self.runtime = self.binding = self.session = None
         self.off_expected = None
         self.checked = self.attempted = False
+        self.serving_session = self.serving_backend = None
 
     def _worker_facts(self):
         torch = sys.modules.get('torch')
@@ -68,10 +76,14 @@ class Fault20Provider(Scope):
             require_idle(state, release_owner=True)
             return state
         self.verify(owner, generation)
-        reject_unknown(settings)
+        reject_unknown(settings, ('request_id',) if action == 'advance' else ())
         if action == 'register':
             self._register()
         elif action == 'check':
+            if self.serving_session is not None:
+                require_idle(self._read_native(), release_owner=True)
+                self.checked = True
+                return self.query(owner=owner, generation=generation)
             qualification = self._run(fault=False)
             self.checked = True
             return qualification
@@ -79,8 +91,23 @@ class Fault20Provider(Scope):
             if not self.checked or self.attempted:
                 raise ProviderError('FAULT20_SINGLE_QUALIFIED_ATTEMPT_REQUIRED')
             self.attempted = True
+            if self.serving_session is not None:
+                self.serving_backend.start()
+                self.serving_session.install()
+                return self.query(owner=owner, generation=generation)
             return self._run(fault=True)
+        elif action == 'advance':
+            if self.serving_session is None or not self.attempted:
+                raise ProviderError('HOST_DRIVEN_SERVING_REPLAY_REQUIRED')
+            self.serving_session.expect(settings.get('request_id'))
+        elif action == 'recover':
+            if self.serving_session is None:
+                raise ProviderError('HOST_DRIVEN_SERVING_REPLAY_REQUIRED')
+            self.serving_session.reset_for_recovery()
+            self.serving_backend.request_recovery()
         elif action in ('disable', 'finish', 'abort'):
+            if action == 'finish' and self.serving_backend is not None and not self.serving_backend.recovered:
+                raise ProviderError('SERVING_QUALIFICATION_NOT_FINISHED')
             self._recover()
         elif action in ('clean', 'unregister'):
             self._recover()
@@ -93,6 +120,22 @@ class Fault20Provider(Scope):
 
     def _register(self):
         binding = qualified_binding(MECHANISM)
+        if binding is None:
+            serving = resolve_runtime(MECHANISM, self.model)
+            if type(serving) is Fault20ServingReplay:
+                from ..serving20 import Serving20Session
+                from fault_injection.serving_qualification import ServingQualifiedNativeSession
+                if (serving.build_profile_sha256 != self.runtime.build_profile
+                        or not callable(serving.make_session)
+                        or self.runtime.worker != self._worker_facts()):
+                    raise ProviderError('FAULT20_TRUSTED_BINDING_MISMATCH')
+                require_idle(self._read_native(), release_owner=True)
+                session = serving.make_session(self.worker, self.model, self.runtime, *self._ticket)
+                if type(session) is not Serving20Session or type(session.backend) is not ServingQualifiedNativeSession:
+                    raise ProviderError('REVIEWED_SERVING_SESSION_REQUIRED')
+                self.serving_session, self.serving_backend = session, session.backend
+                self._registered = True
+                return
         if binding is None or not callable(getattr(binding.replay, 'reserve_worker', None)):
             raise ProviderError('FAULT20_TRUSTED_EXCLUSIVE_REPLAY_REQUIRED')
         runtime = binding.factory(self.model)
@@ -148,6 +191,11 @@ class Fault20Provider(Scope):
             self.off_expected = None
 
     def _recover(self):
+        if self.serving_session is not None:
+            self.serving_session.close()
+            self.serving_backend.close()
+            require_idle(self._read_native(), release_owner=True)
+            return
         if self.session is None and self.off_expected is None:
             require_idle(self._read_native(), release_owner=True)
             return
@@ -167,7 +215,8 @@ class Fault20Provider(Scope):
         registered = any(state['native_registered'] for state in states.values())
         return {
             'native_loaded': True, 'registered': self._registered,
-            'native_registered': registered, 'enabled': registered,
+            'native_registered': registered,
+            'enabled': any(state.get('enabled', state['native_registered']) for state in states.values()),
             'inflight': sum(state['inflight'] for state in states.values()),
             'leases': sum(state['leases'] for state in states.values()),
             'build_profile_sha256': self.runtime.build_profile,
@@ -176,4 +225,13 @@ class Fault20Provider(Scope):
 
     def query(self, *, owner, generation):
         self.verify(owner, generation)
-        return {**self._read_native(), 'recovery_validation_pending': self.off_expected is not None}
+        result = {**self._read_native(), 'recovery_validation_pending': self.off_expected is not None}
+        if self.serving_session is not None:
+            result.update(self.serving_backend.query())
+            result['serving'] = self.serving_session.report()
+            result['replay_pending'] = self.serving_session.installed
+            result['replay_failed'] = bool(self._registered and self.serving_backend.failure
+                and not self.serving_backend.recovering and not self.serving_backend.recovered)
+            result['recovery_validation_pending'] = bool(
+                self.serving_backend.fault_started and not self.serving_backend.recovered)
+        return result

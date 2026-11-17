@@ -9,6 +9,9 @@ from .schema import Fault39Config
 ABI_VERSION = 1
 PATTERN_IDS = {"half": 0, "alternating": 1, "block256": 2, "block512": 3, "block1024": 4}
 MODE_IDS = {"discover": 1, "inject": 2, "lossless": 3, "observer": 4}
+SERVING_INPUT_FIELDS = ("self_address", "self_storage_bytes", "mat2_address", "mat2_storage_bytes",
+                        "M", "K", "N", "self_offset", "mat2_offset",
+                        "self_stride0", "self_stride1", "mat2_stride0", "mat2_stride1")
 ERRORS = {-1: "INVALID_CONFIG", -2: "ABI_MISMATCH", -3: "BUSY",
           -4: "OWNER_MISMATCH", -5: "GENERATION_MISMATCH", -6: "AMBIGUOUS_TARGET",
           -7: "TARGET_NOT_FOUND", -8: "UNSUPPORTED_RUNTIME", -9: "RECOVERY_FAILED",
@@ -167,6 +170,46 @@ class CtypesProvider:
     def clean(self, owner, generation, timeout_ms=10000):
         return self._stop("clean", owner, generation, timeout_ms)
 
+    def resume_discovery(self, owner, generation):
+        """Optional build-pinned continuation; no fallback to reconfigure."""
+        fn = getattr(self._symbols, 'fault39_resume_discovery_v1', None)
+        if fn is None:
+            raise RuntimeError('SERVING_DISCOVERY_CONTINUATION_UNAVAILABLE')
+        if type(generation) is not int or not 0 < generation < 2**64:
+            raise ValueError('Invalid generation')
+        fn.argtypes = [ctypes.c_char_p, ctypes.c_uint64]
+        fn.restype = ctypes.c_int
+        code = fn(_bounded_text(owner, 64, 'owner'), generation)
+        if code:
+            raise NativeError(code, 'resume_discovery')
+
+    def bind_serving_inputs(self, owner, values):
+        """Bind current model storage/layout on the actual owner model thread.
+
+        This additive symbol is optional for legacy operator use, mandatory for
+        the guarded serving path. No fallback may report live-input verification.
+        Values follow SERVING_INPUT_FIELDS; strides/offsets count elements.
+        """
+        fn = getattr(self._symbols, 'fault39_set_serving_inputs_v1', None)
+        if fn is None:
+            raise RuntimeError('SERVING_LIVE_INPUT_GUARD_UNAVAILABLE')
+        if (not getattr(self._context_local, 'active', False)
+                or getattr(self._context_local, 'owner', None) != owner):
+            raise RuntimeError('OWNED_SAME_THREAD_REQUEST_CONTEXT_REQUIRED')
+        encoded_owner = _bounded_text(owner, 64, 'owner')
+        fn.argtypes = [ctypes.c_char_p, ctypes.POINTER(ctypes.c_uint64), ctypes.c_size_t]
+        fn.restype = ctypes.c_int
+        if (not isinstance(values, (list, tuple)) or len(values) != len(SERVING_INPUT_FIELDS)
+                or any(type(value) is not int or not 0 <= value < 2**64 for value in values)):
+            # Fail closed even if a caller accidentally catches this exception
+            # and continues executing inside the same request context.
+            fn(encoded_owner, None, 0)
+            raise ValueError('EXACTLY_13_UINT64_SERVING_INPUT_VALUES_REQUIRED')
+        raw = (ctypes.c_uint64 * len(SERVING_INPUT_FIELDS))(*values)
+        code = fn(encoded_owner, raw, len(raw))
+        if code:
+            raise NativeError(code, 'set_serving_inputs')
+
     @contextmanager
     def context(self, owner, request_ids):
         """Bind actual scheduler IDs on the calling model thread only.
@@ -185,6 +228,7 @@ class CtypesProvider:
         if code:
             raise NativeError(code, "set_context")
         self._context_local.active = True
+        self._context_local.owner = owner
         try:
             yield
         finally:
@@ -192,3 +236,4 @@ class CtypesProvider:
                 self._symbols.fault39_clear_context_v1()
             finally:
                 self._context_local.active = False
+                self._context_local.owner = None

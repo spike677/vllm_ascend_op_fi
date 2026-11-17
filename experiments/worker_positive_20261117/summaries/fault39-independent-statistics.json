@@ -1,0 +1,81 @@
+{
+  "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+  "baseline": "/home/worker-positive-20261117/serving-pair-baseline-a1/fault39-serving-qwen-statistics/serving/statistics/observation/step6/rank0",
+  "fault": "/home/worker-positive-20261117/serving-pair-fault-a1/fault39-serving-qwen-statistics/serving/statistics/observation/step6/rank0",
+  "independent_full_sha256": "de6b4adde44f17f1df652b98c36977e08e6eedb159c4b0336f0d7d48775e64f2",
+  "baseline_self": {
+    "baseline": {
+      "dump.json": "5d815da9877531db2cac81bac244040574a6ce39b639e1566d6cfae3236b8d5b",
+      "stack.json": "0b893d7b553a20fe179e5c640404b32f675b508226199c9a2e7c1c3bf3b37eee",
+      "construct.json": "626e5aeadbef1eef8a08fd95b39e01683ada4901c556e2a10669edf32a74deaa"
+    },
+    "fault": {
+      "dump.json": "5d815da9877531db2cac81bac244040574a6ce39b639e1566d6cfae3236b8d5b",
+      "stack.json": "0b893d7b553a20fe179e5c640404b32f675b508226199c9a2e7c1c3bf3b37eee",
+      "construct.json": "626e5aeadbef1eef8a08fd95b39e01683ada4901c556e2a10669edf32a74deaa"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "345d73af085ef354b181e5503cb4892626bbf6cca4c63721d60a2cf50702106c",
+    "fault_config_sha256": "345d73af085ef354b181e5503cb4892626bbf6cca4c63721d60a2cf50702106c",
+    "baseline_collector_sha256": "017a8f84bd2e9603ff45743cba9e723f93cfa67ed58b881e6ab6054e279238f4",
+    "fault_collector_sha256": "017a8f84bd2e9603ff45743cba9e723f93cfa67ed58b881e6ab6054e279238f4",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "records_compared": 3042,
+      "unobservable_fields_count_before_first_or_all": 6150,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  },
+  "comparison": {
+    "baseline": {
+      "dump.json": "5d815da9877531db2cac81bac244040574a6ce39b639e1566d6cfae3236b8d5b",
+      "stack.json": "0b893d7b553a20fe179e5c640404b32f675b508226199c9a2e7c1c3bf3b37eee",
+      "construct.json": "626e5aeadbef1eef8a08fd95b39e01683ada4901c556e2a10669edf32a74deaa"
+    },
+    "fault": {
+      "dump.json": "ee56997ec9e424f1f8e8b524d601a75e7ad070fed86235ad113a04e4b22d6957",
+      "stack.json": "0b893d7b553a20fe179e5c640404b32f675b508226199c9a2e7c1c3bf3b37eee",
+      "construct.json": "626e5aeadbef1eef8a08fd95b39e01683ada4901c556e2a10669edf32a74deaa"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "345d73af085ef354b181e5503cb4892626bbf6cca4c63721d60a2cf50702106c",
+    "fault_config_sha256": "345d73af085ef354b181e5503cb4892626bbf6cca4c63721d60a2cf50702106c",
+    "baseline_collector_sha256": "017a8f84bd2e9603ff45743cba9e723f93cfa67ed58b881e6ab6054e279238f4",
+    "fault_collector_sha256": "017a8f84bd2e9603ff45743cba9e723f93cfa67ed58b881e6ab6054e279238f4",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 3031,
+      "identity": "Functional.linear.112.forward/output/0",
+      "difference": {
+        "field": "/Max",
+        "reason": "STATISTIC_DIFFERS",
+        "baseline": 17.625,
+        "fault": "+Inf"
+      },
+      "unobservable_fields_count_before_first_or_all": 6128,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  }
+}

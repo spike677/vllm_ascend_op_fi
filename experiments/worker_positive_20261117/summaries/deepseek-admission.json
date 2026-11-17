@@ -1,0 +1,186 @@
+{
+  "schema": "demoncat.pretrained_admission.summary.v1",
+  "status": "PASS_PRETRAINED_NPU_INFERENCE_NOT_FAULT_ACCEPTANCE",
+  "source": "/home/worker-positive-20261117/deepseek-admission-a1/pretrained-admission-deepseek/result.json",
+  "source_sha256": "68dd8a8fdcaf3ca94725b461ec24ddeb799e662a39e8aa127cde73f428f95f8c",
+  "actual_model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+  "actual_model_type": "deepseek_v2",
+  "actual_model_source_sha256": "bad4921f88f8343a965e333a399edf6b73f9d3031f6297e0dbf56afe37a31b01",
+  "boundary": {
+    "status": "STRUCTURAL_LOGITS_BOUNDARY_ONLY_NOT_EXECUTION_ACCEPTANCE",
+    "processor_path": "logits_processor",
+    "lm_head_path": "lm_head",
+    "compute_processor_attribute": "logits_processor",
+    "compute_head_attribute": "lm_head",
+    "compute_logits_source": {
+      "source_sha256": "d50f0cd6fd8c653767fa1a270b34245f62c4ae528147b66c2e1e141293485964",
+      "file": "/vllm-workspace/vllm/vllm/model_executor/models/deepseek_v2.py",
+      "first_line": 1404
+    },
+    "get_logits_source": {
+      "source_sha256": "f9fabcb8a46ad93f0977fe87e77c46eda275c6282d2e146932cb7c35212e7bdd",
+      "file": "/vllm-workspace/vllm-ascend/vllm_ascend/ops/vocab_parallel_embedding.py",
+      "first_line": 274
+    },
+    "ascend_dispatch_source": {
+      "source_sha256": "ab309fb78e87a053bb0219f2ed12aca039a67af3c21f7690e53ef63b3baabac4",
+      "file": "/vllm-workspace/vllm-ascend/vllm_ascend/ops/vocab_parallel_embedding.py",
+      "first_line": 247
+    },
+    "vocab_size": 102400,
+    "gather_contract": "Observe returned full-vocab tensor; None is not success",
+    "output_contract": [
+      1,
+      102400
+    ]
+  },
+  "loaded_from_pretrained": true,
+  "actual_fault_injection": false,
+  "requests": [
+    [
+      {
+        "prompt_token_ids": [
+          100000,
+          99297,
+          279,
+          634,
+          4976,
+          2643,
+          254,
+          9539,
+          6266,
+          5501,
+          13
+        ],
+        "tokens": [
+          185,
+          549,
+          9539,
+          6266
+        ],
+        "text": "\nThe sky appears"
+      }
+    ],
+    [
+      {
+        "prompt_token_ids": [
+          100000,
+          99297,
+          279,
+          634,
+          4976,
+          2643,
+          254,
+          9539,
+          6266,
+          5501,
+          13
+        ],
+        "tokens": [
+          185,
+          549,
+          9539,
+          6266
+        ],
+        "text": "\nThe sky appears"
+      }
+    ]
+  ],
+  "complete_logits": [
+    {
+      "shape": [
+        1,
+        102400
+      ],
+      "sha256": "e12afa73c432a8a7e093f2214cd652a9094489b63df7bf09f7647e0ba82c631a",
+      "finite": true,
+      "top1": [
+        185
+      ]
+    },
+    {
+      "shape": [
+        1,
+        102400
+      ],
+      "sha256": "0cda4c8e794baaf2c887c152419ec00a95ec7733e08bdb3564fb3888465398b1",
+      "finite": true,
+      "top1": [
+        549
+      ]
+    },
+    {
+      "shape": [
+        1,
+        102400
+      ],
+      "sha256": "aff5ccc1332f4b4b75d6d43fcacdfec570eb28734972687e1bf4cc273551a972",
+      "finite": true,
+      "top1": [
+        9539
+      ]
+    },
+    {
+      "shape": [
+        1,
+        102400
+      ],
+      "sha256": "4cdf4445d7dcba9cbf8957349b9fc75dba375625e12b4b99afcf0e9af50203ec",
+      "finite": true,
+      "top1": [
+        6266
+      ]
+    },
+    {
+      "shape": [
+        1,
+        102400
+      ],
+      "sha256": "e12afa73c432a8a7e093f2214cd652a9094489b63df7bf09f7647e0ba82c631a",
+      "finite": true,
+      "top1": [
+        185
+      ]
+    },
+    {
+      "shape": [
+        1,
+        102400
+      ],
+      "sha256": "0cda4c8e794baaf2c887c152419ec00a95ec7733e08bdb3564fb3888465398b1",
+      "finite": true,
+      "top1": [
+        549
+      ]
+    },
+    {
+      "shape": [
+        1,
+        102400
+      ],
+      "sha256": "aff5ccc1332f4b4b75d6d43fcacdfec570eb28734972687e1bf4cc273551a972",
+      "finite": true,
+      "top1": [
+        9539
+      ]
+    },
+    {
+      "shape": [
+        1,
+        102400
+      ],
+      "sha256": "4cdf4445d7dcba9cbf8957349b9fc75dba375625e12b4b99afcf0e9af50203ec",
+      "finite": true,
+      "top1": [
+        6266
+      ]
+    }
+  ],
+  "actual_matmul_runs": 4490,
+  "native_idle": true,
+  "build_profile_sha256": "df08dae9203b39821119acc238e8b2c4f244d91ec230108c1a17d0ce08fc8c0e",
+  "limits": [
+    "Two deterministic 4-token generations, TP1/eager/BF16 on 124 A2/CANN8.5.1",
+    "No native fault qualification; no model quality or all-layer coverage claim"
+  ]
+}

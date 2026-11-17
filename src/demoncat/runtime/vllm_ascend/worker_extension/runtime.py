@@ -12,8 +12,8 @@ from .identity import EXTENSION_VERSION, IdentityTracker
 
 _TICKET = {'tenant_id', 'attach_nonce', 'worker'}
 _TARGET = {'mechanism', 'implementation_version', 'owner'}
-_RESTORE = {'abort', 'disable', 'clean', 'unregister'}
-_ACTIONS = {'prepare', 'register', 'check', 'execute', 'enable', 'finish'} | _RESTORE
+_RESTORE = {'abort', 'disable', 'clean', 'unregister', 'recover'}
+_ACTIONS = {'prepare', 'register', 'check', 'execute', 'enable', 'advance', 'finish'} | _RESTORE
 
 
 class Rejected(ValueError):
@@ -84,6 +84,7 @@ class _Lease:
     phase: str = 'PREPARING'
     attempted: bool = False
     recovery_required: bool = False
+    replay_pending: bool = False
 
     def ticket(self):
         return dict(self.tenant.ticket(), mechanism=self.mechanism,
@@ -180,6 +181,8 @@ class WorkerFaultRuntime:
             raise Rejected('TENANT_ALREADY_ATTACHED')
         if self._quarantined():
             raise Rejected('WORKER_RECOVERY_REQUIRED')
+        if any(lease.replay_pending for lease in self._leases.values()):
+            raise Rejected('WORKER_REPLAY_IN_PROGRESS')
         tenant = _Tenant(tenant_id, secrets.token_hex(16), deepcopy(context.worker))
         self._tenants[tenant_id] = tenant
         return {'status': 'ATTACHED', 'ticket': tenant.ticket()}
@@ -220,6 +223,13 @@ class WorkerFaultRuntime:
                 return None
             if type(state.get('native_registered')) is not bool:
                 return None
+            pending = state.get('replay_pending', False)
+            failed = state.get('replay_failed', False)
+            if type(pending) is not bool or type(failed) is not bool:
+                return None
+            lease.replay_pending = pending
+            if failed:
+                lease.recovery_required = True
             return json.loads(_json(state))
         except BaseException as error:
             lease.recovery_required = True
@@ -253,6 +263,7 @@ class WorkerFaultRuntime:
         return {'status': 'QUERY_OK' if state is not None else 'NATIVE_STATE_UNAVAILABLE',
                 'ticket': lease.ticket(), 'phase': lease.phase,
                 'recovery_required': lease.recovery_required, 'native': state,
+                'replay_pending': lease.replay_pending,
                 'quarantined': self._quarantined()}
 
     def _dispatch(self, worker, context, action, payload):
@@ -274,6 +285,8 @@ class WorkerFaultRuntime:
                 raise Rejected('MECHANISM_ALREADY_OWNED')
             if self._quarantined():
                 raise Rejected('WORKER_RECOVERY_REQUIRED')
+            if any(item.replay_pending for item in self._leases.values()):
+                raise Rejected('WORKER_REPLAY_IN_PROGRESS')
             try:
                 provider = _resolve_provider(mechanism, version, worker, context.model, deepcopy(context.worker))
                 if not all(callable(getattr(provider, name, None)) for name in ('dispatch', 'query')):
@@ -292,12 +305,14 @@ class WorkerFaultRuntime:
         return self._run(lease, action, settings)
 
     def _run(self, lease, action, settings):
+        if any(item is not lease and item.replay_pending for item in self._leases.values()):
+            raise Rejected('WORKER_REPLAY_IN_PROGRESS')
         if lease.recovery_required and action not in _RESTORE:
             raise Rejected('RECOVERY_REQUIRED')
         if self._quarantined() and action not in _RESTORE:
             raise Rejected('WORKER_RECOVERY_REQUIRED')
         expected = {'register': 'PREPARED', 'check': 'REGISTERED',
-                    'execute': 'CHECKED', 'enable': 'CHECKED', 'finish': 'ATTEMPTED'}
+                    'execute': 'CHECKED', 'enable': 'CHECKED', 'advance': 'ATTEMPTED', 'finish': 'ATTEMPTED'}
         if action in ('execute', 'enable') and lease.attempted:
             raise Rejected('ATTEMPT_CONSUMED')
         if action in expected and lease.phase != expected[action]:
@@ -331,8 +346,12 @@ class WorkerFaultRuntime:
             verified = self._inert(state)
         elif action in ('register', 'check'):
             verified = self._quiet(state) and state['registered'] is True
-        elif action in ('execute', 'enable', 'finish', 'disable', 'abort'):
+        elif action in ('execute', 'enable', 'advance', 'finish', 'disable', 'abort', 'recover'):
             verified = self._quiet(state)
+        if state is not None and state.get('replay_failed', False):
+            verified = False
+        if action in ('finish', 'disable', 'abort', 'clean', 'unregister') and lease.replay_pending:
+            verified = False
         if not verified:
             lease.recovery_required = True
             return dict(result, status='RECOVERY_REQUIRED' if state is not None else 'NATIVE_STATE_UNAVAILABLE',
@@ -340,6 +359,7 @@ class WorkerFaultRuntime:
 
         lease.phase = {'prepare': 'PREPARED', 'register': 'REGISTERED', 'check': 'CHECKED',
                        'finish': 'FINISHED',
+                       'recover': 'ATTEMPTED',
                        'clean': 'CLEANED', 'unregister': 'UNREGISTERED',
                        'disable': 'STOPPED', 'abort': 'STOPPED'}.get(action, lease.phase)
         if action == 'unregister':

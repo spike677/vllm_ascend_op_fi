@@ -31,6 +31,13 @@ int fault39_clean_v1(const char* owner, uint64_t generation, uint32_t timeout_ms
 int fault39_snapshot_v1(char* out, size_t capacity);
 /* Thread-scoped actual scheduler request IDs; clear on every exit, never inherited. */
 int fault39_set_context_v1(const char* owner, const char* request_ids_json);
+/* Optional serving guard, set once within the same owner-bound TLS context.
+ * Exactly 13 uint64 values: self address/bytes, mat2 address/bytes, M/K/N,
+ * self/mat2 storage offsets, self strides 0/1, mat2 strides 0/1.
+ * Addresses are storage bases; sizes are bytes; offsets/strides are elements.
+ * A rejected binding by the current owner remains guarded (fail closed).
+ */
+int fault39_set_serving_inputs_v1(const char* owner, const uint64_t* values, size_t count);
 void fault39_clear_context_v1(void);
 int fault39_bind_worker_rank_v1(int32_t worker_rank);
 #ifdef __cplusplus

@@ -1,0 +1,245 @@
+{
+  "schema": "demoncat.worker_positive.build_summary.v1",
+  "scope": "CPU_BUILD_AND_TEST_ONLY_NOT_NPU_ACCEPTANCE",
+  "builds": [
+    {
+      "label": "build-a4",
+      "mechanisms": {
+        "build20": {
+          "manifest_sha256": "59e05fd3136959df7ef9897c6cda2d1743883c0193fd8c9918b738edb1808ee5",
+          "status": "PASS_CPU_BUILD_ONLY",
+          "profile_sha256": "c9763d0e352a6cb86b5da3a2450b173fe6190427f6c71a1cf1dd38665cf5af7f",
+          "actual_npu_calls": 0,
+          "artifact_sha256": {
+            "libdcat20_qmm.so": "4e686804899b3e553ed7bbebc0b02449927f8589648e54e7bfa5d8aa7b976c07",
+            "libopapi.so": "c2812b36d5a2e126559375f6df990505634804a4bcfb6b4490201d9821ee5afc",
+            "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+            "version_profile.json": "31b85111eff888f203e4baabe33203381a1a003c1df1dbbfcc3c0e6b14501b2d",
+            "abi_facts.json": "0612a7af869f238942c5c18f61e33bfe70ab1f7f013b17a58779090e57d98f9c",
+            "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+            "libopapi_nn.so": "77c0289ab5e7c93fadc03ca86196e115e8daf0109e4e5761f37be88217ce2926",
+            "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0"
+          },
+          "cpu_receipts": {
+            "current_call_cpu_receipt.txt": {
+              "sha256": "ad53b6330a97015ffb9a25f2424306e5baf839040075f82d2724de30dcd565a0",
+              "result": "PASS CPU current typed GWS/executor scope, cache address refresh, stale/nested/foreign rejection and"
+            }
+          }
+        },
+        "build39": {
+          "manifest_sha256": "f1d760af072b88a4c055f27588ee1615e66fb4cfbfe381d95dc706ff4e49deae",
+          "status": "PASS_CPU_BUILD_ONLY",
+          "profile_sha256": "df08dae9203b39821119acc238e8b2c4f244d91ec230108c1a17d0ce08fc8c0e",
+          "actual_npu_calls": 0,
+          "artifact_sha256": {
+            "libfault39_native_v1.so": "71c0def7de015bd7f10247389d28fbe8f127a791a4a1af3c1387608ea9c9f52e",
+            "libopapi.so": "b3fe1b2f81be4fa390325677ba93e0b21749f90b5b112b7f506cacf3a7ab276d",
+            "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+            "version_profile.json": "bea7374ebd75984e449c8232b765f96b6843c7d7a94e41c39020b7a1c6795c9e",
+            "abi_facts.json": "9e0434cddcc4904842985a5d0cc41b15d4b88db5bbd94f8d68ed9ac14081cd21",
+            "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+            "libopapi_nn.so": "0b26218caefde5a188dd51f665f8696bf4f438b841345214e8b89db1384c4c94",
+            "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0"
+          },
+          "cpu_receipts": {
+            "serving_inputs_cpu.json": {
+              "sha256": "42b216802ccc27d71c0a88e7829073dee76b72949f5b798561e75f28b8150299",
+              "result": "PASS"
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "build-a7",
+      "mechanisms": {
+        "build20": {
+          "manifest_sha256": "ea991d1dfae75a31f2cca9111ac79feea00c4ae52f3cbc10f3daf649fdaee23c",
+          "status": "PASS_CPU_BUILD_ONLY",
+          "profile_sha256": "b7283af417c3c7607bd3f37c8fb74563d759fea42cda0c697340cb4de0958d80",
+          "actual_npu_calls": 0,
+          "artifact_sha256": {
+            "libdcat20_qmm.so": "caad36565144bbc2fd4027730177c40d048b8a0776c44cec965b8262e12893e8",
+            "libopapi.so": "c979ff224895fdac43b7236a19b0791e8c4ae196ab24e7e23dd268e5ec6ede45",
+            "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+            "version_profile.json": "3f0bb168ee0ee761d1525731e2a7e72e0b9d7261791ced57c9069042862045ce",
+            "abi_facts.json": "0612a7af869f238942c5c18f61e33bfe70ab1f7f013b17a58779090e57d98f9c",
+            "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+            "libopapi_nn.so": "4e9d96c7e906e51f8ece98f33b0d6da1754bc83ec27ece55d1f539bd18acf5d6",
+            "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+            "libopapi_math.so": "d2151a28005a6b0ce25b5711fe3fabe856a0fef74cf5e9a30ac845800e6f7879",
+            "real/libopapi_math_real.so": "e5ed3716db8c257ad482fe1b3e4cd03eadb69e5a11444dbfaf8e5dfb1f08c03f",
+            "pta_gate_identity.json": "2e13135cf98e54a67c95840b3d6b0d4812249b658aba69d4cec6e3ed5f03480f"
+          },
+          "cpu_receipts": {
+            "pta_gate_elf_cpu_receipt.json": {
+              "sha256": "dcfdbb70424b4941f5b804c14e02c15de1d00568008431bb6da5e5949f446929",
+              "result": "PASS_CPU_ONLY"
+            },
+            "test_matmul_auto_receipt.txt": {
+              "sha256": "d24459fc243783188abe320cec6cea7459e44d961080b7244e232f8e078505a1",
+              "result": "PASS local C++ callback, lossless, substitutions, OFF and slot rejection\n"
+            },
+            "current_call_cpu_receipt.txt": {
+              "sha256": "ad53b6330a97015ffb9a25f2424306e5baf839040075f82d2724de30dcd565a0",
+              "result": "PASS CPU current typed GWS/executor scope, cache address refresh, stale/nested/foreign rejection and"
+            },
+            "pta_resolver_elf_cpu_receipt.json": {
+              "sha256": "878d88214017a7a92c1cf6e0762d217371e4ed65ac8cba7103fc816906343550",
+              "result": "PASS_CPU_ONLY"
+            },
+            "pta_gate_cpu_receipt.txt": {
+              "sha256": "efd3ab20257e7983cb703f2bd46e417c67d959d67ae7219565353ba3d7a97d87",
+              "result": "PASS_CPU_ONLY exact targets, explicit opt-in, identity/profile/config refusal, passthrough\n"
+            },
+            "test_matmul_requests_receipt.txt": {
+              "sha256": "630f1497ffdafa86f46a5af7d03ef1e471a1c31f2d4d9b664f12d77393f97f7b",
+              "result": "PASS CPU request owner/generation, paused non-execution, qualification retention, stable/current sep"
+            }
+          }
+        },
+        "build39": {
+          "manifest_sha256": "be2c1692bd9ccc7d168b1f6966da095dc6f874e24732aa1fa2a8be7abeb54eea",
+          "status": "PASS_CPU_BUILD_ONLY",
+          "profile_sha256": "7854e4b804d679e7c06c92364384c73eeb0024675f13a0aed9d54785b7bc519c",
+          "actual_npu_calls": 0,
+          "artifact_sha256": {
+            "libfault39_native_v1.so": "3a162b8f27e009a0508b985c8e006262adb74b56981ed341a68011fa53ec4e96",
+            "libopapi.so": "5c975586d7d434c9e5f4c82f1e74f7c95a7f75fd5aa80e95f1d30426e1716d18",
+            "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+            "version_profile.json": "d1a9c8288cb87e8a93c8d269686e9d6cc7a7f4c13f747fb8ed5bddd822374808",
+            "abi_facts.json": "9e0434cddcc4904842985a5d0cc41b15d4b88db5bbd94f8d68ed9ac14081cd21",
+            "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+            "libopapi_nn.so": "aef2e0bf519477b7d6ea1d865804d45e8e298d9cd42dc554226f201c9e431200",
+            "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0"
+          },
+          "cpu_receipts": {
+            "serving_inputs_cpu.json": {
+              "sha256": "42b216802ccc27d71c0a88e7829073dee76b72949f5b798561e75f28b8150299",
+              "result": "PASS"
+            }
+          }
+        }
+      }
+    },
+    {
+      "label": "build-a8",
+      "mechanisms": {
+        "build20": {
+          "manifest_sha256": "391516b57ad633e4344babe7e49f1042213ae2c902d3489c50950739b290d3fe",
+          "status": "PASS_CPU_BUILD_ONLY",
+          "profile_sha256": "6fa99506f19ec6df4fef4560a3e05560c5de5118c5cd35f24eec7800ffd320ff",
+          "actual_npu_calls": 0,
+          "artifact_sha256": {
+            "libdcat20_qmm.so": "65240ea915a990da8e8c333daf6f00f0ffbf59041a0cf7d6b5b506c53d5b6724",
+            "libopapi.so": "101093b6843651e21c6a318fc9c09081569545fa97a4c8391350f4e275352188",
+            "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+            "version_profile.json": "a5d708d9d0dea3b15dfcce19ed6476bae0eb25c24e19d309d70d5fab2a4c71c0",
+            "abi_facts.json": "0612a7af869f238942c5c18f61e33bfe70ab1f7f013b17a58779090e57d98f9c",
+            "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+            "libopapi_nn.so": "ab421f409d67424be3a56d81b661833b73846a90da0fb8dc330926579cacc32c",
+            "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+            "libopapi_math.so": "bfdde238675f9da4c28f365f4dcfdb5fbb7b409a3a05bec90db1f956ef2ca2f9",
+            "real/libopapi_math_real.so": "e5ed3716db8c257ad482fe1b3e4cd03eadb69e5a11444dbfaf8e5dfb1f08c03f",
+            "pta_gate_identity.json": "a32153f28893c25b53239081baff364a3b398cc19dfad6bab6a142db072545df"
+          },
+          "cpu_receipts": {
+            "pta_gate_elf_cpu_receipt.json": {
+              "sha256": "dcfdbb70424b4941f5b804c14e02c15de1d00568008431bb6da5e5949f446929",
+              "result": "PASS_CPU_ONLY"
+            },
+            "test_matmul_auto_receipt.txt": {
+              "sha256": "d24459fc243783188abe320cec6cea7459e44d961080b7244e232f8e078505a1",
+              "result": "PASS local C++ callback, lossless, substitutions, OFF and slot rejection\n"
+            },
+            "current_call_cpu_receipt.txt": {
+              "sha256": "ad53b6330a97015ffb9a25f2424306e5baf839040075f82d2724de30dcd565a0",
+              "result": "PASS CPU current typed GWS/executor scope, cache address refresh, stale/nested/foreign rejection and"
+            },
+            "pta_resolver_elf_cpu_receipt.json": {
+              "sha256": "8f706a7faed8db26fbaada9f405383c065c0444c741f3dc1a38bf41ae6cf8d16",
+              "result": "PASS_CPU_ONLY"
+            },
+            "pta_gate_cpu_receipt.txt": {
+              "sha256": "efd3ab20257e7983cb703f2bd46e417c67d959d67ae7219565353ba3d7a97d87",
+              "result": "PASS_CPU_ONLY exact targets, explicit opt-in, identity/profile/config refusal, passthrough\n"
+            },
+            "test_matmul_requests_receipt.txt": {
+              "sha256": "630f1497ffdafa86f46a5af7d03ef1e471a1c31f2d4d9b664f12d77393f97f7b",
+              "result": "PASS CPU request owner/generation, paused non-execution, qualification retention, stable/current sep"
+            }
+          }
+        },
+        "build39": {
+          "manifest_sha256": "be2c1692bd9ccc7d168b1f6966da095dc6f874e24732aa1fa2a8be7abeb54eea",
+          "status": "PASS_CPU_BUILD_ONLY",
+          "profile_sha256": "7854e4b804d679e7c06c92364384c73eeb0024675f13a0aed9d54785b7bc519c",
+          "actual_npu_calls": 0,
+          "artifact_sha256": {
+            "libfault39_native_v1.so": "3a162b8f27e009a0508b985c8e006262adb74b56981ed341a68011fa53ec4e96",
+            "libopapi.so": "5c975586d7d434c9e5f4c82f1e74f7c95a7f75fd5aa80e95f1d30426e1716d18",
+            "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+            "version_profile.json": "d1a9c8288cb87e8a93c8d269686e9d6cc7a7f4c13f747fb8ed5bddd822374808",
+            "abi_facts.json": "9e0434cddcc4904842985a5d0cc41b15d4b88db5bbd94f8d68ed9ac14081cd21",
+            "identity_tests.json": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+            "libopapi_nn.so": "aef2e0bf519477b7d6ea1d865804d45e8e298d9cd42dc554226f201c9e431200",
+            "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0"
+          },
+          "cpu_receipts": {
+            "serving_inputs_cpu.json": {
+              "sha256": "42b216802ccc27d71c0a88e7829073dee76b72949f5b798561e75f28b8150299",
+              "result": "PASS"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "packages": [
+    {
+      "label": "packages-a4",
+      "receipt_sha256": "54745abb922492e0d5a596b7b298b730cbfd84f4da37275d35d90dfebfac6307",
+      "exit_code": 0,
+      "actual_npu_calls": 0,
+      "wheels": {
+        "demoncat_worker_extension-0.1.0-py3-none-any.whl": "d87a26e3bd0a2e33240a55d18f6fd1b7ee01913220c520dc79283f85a511af37",
+        "demoncatpfi-0.2.0-py3-none-any.whl": "6b271d650a8be36f886cc70aa125b2db2942f2cf45be34c5f8764383f4091a1b",
+        "demoncat_fault39_core-0.1.0-py3-none-any.whl": "c793d3fafd11b6f0c37f4377a47520f3e1d6d7a20d5b426af0a3b33857c0001d"
+      }
+    },
+    {
+      "label": "packages-a7",
+      "receipt_sha256": "34a912ddf3d79182295fdbac6254dc44426e5a2fd5242823467a3d7b1e25f9f0",
+      "exit_code": 0,
+      "actual_npu_calls": 0,
+      "wheels": {
+        "demoncat_worker_extension-0.1.0-py3-none-any.whl": "7d7fbc2fab65215be415a30ce0cc9bf7472161b9d87630dea03b0768fef159dc",
+        "demoncatpfi-0.2.0-py3-none-any.whl": "1884defcfd1d49fb6e006cd67a5965a0da59dc05e440fb342888dac384915b8f",
+        "demoncat_fault39_core-0.1.0-py3-none-any.whl": "24c2516e7e069965888395ec6b8debfbb64416e211947bf14774e5e4d4e1234a"
+      }
+    },
+    {
+      "label": "packages-a9",
+      "receipt_sha256": "e0e41184e8c0fd9449979523f4b90e4a9c721a855ab6a10f77967c1835c0d84c",
+      "exit_code": 0,
+      "actual_npu_calls": 0,
+      "wheels": {
+        "demoncat_worker_extension-0.1.0-py3-none-any.whl": "bb01e85f2b09b0fa8f512822a1a9d0d896e2ff34e7541cb89e5f022de09ac3e4",
+        "demoncatpfi-0.2.0-py3-none-any.whl": "9d2483152fcea7ae553818f3a1e90c21ee1a1cc0ccc665c6757ccc45da676b2e",
+        "demoncat_fault39_core-0.1.0-py3-none-any.whl": "554192601b11895ac9531ac3bc329d6815a5bbaec15856a7fdbef9f80261ba68"
+      }
+    },
+    {
+      "label": "packages-a11",
+      "receipt_sha256": "0203d0ddf0497a52f8292052887294d540eee2e1274aaeedc347f86c86c2b310",
+      "exit_code": 0,
+      "actual_npu_calls": 0,
+      "wheels": {
+        "demoncat_worker_extension-0.1.0-py3-none-any.whl": "7404026092698310056059fe2ff137597830b0f39c7e062f1e52aa4d6992be56",
+        "demoncatpfi-0.2.0-py3-none-any.whl": "1cdea279c49ea96bf9ebac21d736d3c6a6ac675c66c6c4b8668a5013224bf305",
+        "demoncat_fault39_core-0.1.0-py3-none-any.whl": "f9630e70704361a40053d6ed663095b6759a580612f6e728790cbc6d050e4029"
+      }
+    }
+  ]
+}

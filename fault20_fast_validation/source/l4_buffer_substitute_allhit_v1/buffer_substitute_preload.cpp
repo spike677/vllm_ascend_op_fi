@@ -6081,6 +6081,8 @@ extern "C" void fault20_float_matmul_gws_abort() {
 #include "fault39_build_profile.h"
 #include <type_traits>
 #include "../../../fault_injection/native_adapters/matmul_auto.h"
+#include "../../../fault_injection/native_adapters/qmm_current_call.h"
+#include "../../../fault_injection/native_adapters/qmm_current_call.inc"
 #include "../../../fault_injection/native_adapters/qmm_auto.inc"
 #elif defined(DEMONCAT_NATIVE_PROVIDER_BRIDGE)
 #include "../../../fault_injection/native_adapters/legacy20_bridge.inc"

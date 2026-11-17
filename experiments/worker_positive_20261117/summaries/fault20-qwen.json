@@ -1,0 +1,709 @@
+{
+  "schema": "demoncat.worker_positive.summary.v1",
+  "source": "/home/worker-positive-20261117/serving20-qwen-a6/fault20-serving-qwen",
+  "source_hashes": {
+    "result.json": "cd89e777e99b6007ca958a8927bba783ba3e897333c1eedcebd99eb39ee0d724",
+    "serving_receipt.json": "fe0dc4317a55ef78c3f2de10130e9c648b419bb8a2da418a43b5d37cb81d6901"
+  },
+  "status": "PASS_COMMON_WORKER_NATIVE_BFOFF",
+  "qualification": {
+    "status": "SCOPED_ATTEMPT_COMPLETED",
+    "recovery_verified": true,
+    "failure": null,
+    "drain_status": "DISABLED_CONFIRMED",
+    "completed_phases": [
+      "discovery_1",
+      "discovery_2",
+      "reference",
+      "lossless",
+      "qualification_off",
+      "fault",
+      "off_observed",
+      "disabled_off"
+    ],
+    "model_output_changed": true,
+    "first_live_validation": true,
+    "manifest_sha256": "859076603b4f328568d3babdd6faadcb5f251b6762a23c427c6823247d23d494",
+    "baseline_control": false,
+    "coverage_scope": "ONE_NATURAL_OUTPUT_PROJECTION_NOT_ALL_ELIGIBLE",
+    "transaction_scope": "REAL_ROOT_FORWARD_RETURNED_THEN_REAL_PROCESSOR_SCOPE",
+    "profile": {
+      "validation_level": "CPU_VERIFIED",
+      "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+      "model_type": "qwen3",
+      "operator": "aclnnMatmulWeightNz",
+      "boundary": "op_exec_cache_run",
+      "soc": "Ascend910B4",
+      "dtype": "BF16",
+      "format": "ND",
+      "execution_mode": "eager",
+      "tp": 1,
+      "rank": 0,
+      "logical_device": 0,
+      "build_profile_sha256": "b7283af417c3c7607bd3f37c8fb74563d759fea42cda0c697340cb4de0958d80",
+      "environment_fingerprint": "58077c601a5297b2b70012560e5bf2a3a142c17254660fc3332bccf9ee7f4bb0"
+    }
+  },
+  "boundary": {
+    "status": "STRUCTURAL_LOGITS_BOUNDARY_ONLY_NOT_EXECUTION_ACCEPTANCE",
+    "processor_path": "logits_processor",
+    "lm_head_path": "model.embed_tokens",
+    "compute_processor_attribute": "logits_processor",
+    "compute_head_attribute": "lm_head",
+    "compute_logits_source": {
+      "source_sha256": "d50f0cd6fd8c653767fa1a270b34245f62c4ae528147b66c2e1e141293485964",
+      "file": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3.py",
+      "first_line": 327
+    },
+    "get_logits_source": {
+      "source_sha256": "f9fabcb8a46ad93f0977fe87e77c46eda275c6282d2e146932cb7c35212e7bdd",
+      "file": "/vllm-workspace/vllm-ascend/vllm_ascend/ops/vocab_parallel_embedding.py",
+      "first_line": 274
+    },
+    "ascend_dispatch_source": {
+      "source_sha256": "ab309fb78e87a053bb0219f2ed12aca039a67af3c21f7690e53ef63b3baabac4",
+      "file": "/vllm-workspace/vllm-ascend/vllm_ascend/ops/vocab_parallel_embedding.py",
+      "first_line": 247
+    },
+    "vocab_size": 151936,
+    "gather_contract": "Observe returned full-vocab tensor; None is not success",
+    "output_contract": [
+      1,
+      151936
+    ]
+  },
+  "phases": [
+    {
+      "phase": "discovery_1",
+      "output_tokens": [
+        [
+          576
+        ]
+      ],
+      "output_text": [
+        " The"
+      ],
+      "actual_external_request_mapping_matches": true,
+      "actual_internal_request_id_sha256": "b0555706ffa134249f8d3b72e6e7b0c13a5a06e9c52b58748ce4501af2eafcb4",
+      "actual_model_request_matches_enqueue": true,
+      "advance_status": "ACTION_COMPLETED",
+      "query_status": "QUERY_OK"
+    },
+    {
+      "phase": "discovery_2",
+      "output_tokens": [
+        [
+          576
+        ]
+      ],
+      "output_text": [
+        " The"
+      ],
+      "actual_external_request_mapping_matches": true,
+      "actual_internal_request_id_sha256": "422080ada2f9a4519b9246e75852e9fd66b85c49e23e95152566e4b0ec51a183",
+      "actual_model_request_matches_enqueue": true,
+      "advance_status": "ACTION_COMPLETED",
+      "query_status": "QUERY_OK"
+    },
+    {
+      "phase": "reference",
+      "output_tokens": [
+        [
+          576
+        ]
+      ],
+      "output_text": [
+        " The"
+      ],
+      "actual_external_request_mapping_matches": true,
+      "actual_internal_request_id_sha256": "d5cfd58fceb38a78fa92dcde2a677b88aeba067afaac75c7a364c78374b36bb9",
+      "actual_model_request_matches_enqueue": true,
+      "advance_status": "ACTION_COMPLETED",
+      "query_status": "QUERY_OK"
+    },
+    {
+      "phase": "lossless",
+      "output_tokens": [
+        [
+          576
+        ]
+      ],
+      "output_text": [
+        " The"
+      ],
+      "actual_external_request_mapping_matches": true,
+      "actual_internal_request_id_sha256": "4d8957d197e82b9517f388dc8715ac4fcc9320b89082f6f0229ec995afbcceeb",
+      "actual_model_request_matches_enqueue": true,
+      "advance_status": "ACTION_COMPLETED",
+      "query_status": "QUERY_OK"
+    },
+    {
+      "phase": "qualification_off",
+      "output_tokens": [
+        [
+          576
+        ]
+      ],
+      "output_text": [
+        " The"
+      ],
+      "actual_external_request_mapping_matches": true,
+      "actual_internal_request_id_sha256": "171bf0c0a610afa2f32c6d63f8687e7aa7463a44c5545799219502e7605a0e40",
+      "actual_model_request_matches_enqueue": true,
+      "advance_status": "ACTION_COMPLETED",
+      "query_status": "QUERY_OK"
+    },
+    {
+      "phase": "fault",
+      "output_tokens": [
+        [
+          576
+        ]
+      ],
+      "output_text": [
+        " The"
+      ],
+      "actual_external_request_mapping_matches": true,
+      "actual_internal_request_id_sha256": "5c463ff2e4eec0eff82e2ffda130f9c6b1c47149d3d9a90a52febf9d3e5ca966",
+      "actual_model_request_matches_enqueue": true,
+      "advance_status": "ACTION_COMPLETED",
+      "query_status": "QUERY_OK"
+    },
+    {
+      "phase": "off_observed",
+      "output_tokens": [
+        [
+          576
+        ]
+      ],
+      "output_text": [
+        " The"
+      ],
+      "actual_external_request_mapping_matches": true,
+      "actual_internal_request_id_sha256": "19a14f884d15d18fcc24e81da3446b9e2e52acd0cae529e25f8f154e720e00d2",
+      "actual_model_request_matches_enqueue": true,
+      "advance_status": "ACTION_COMPLETED",
+      "query_status": "QUERY_OK"
+    },
+    {
+      "phase": "disabled_off",
+      "output_tokens": [
+        [
+          576
+        ]
+      ],
+      "output_text": [
+        " The"
+      ],
+      "actual_external_request_mapping_matches": true,
+      "actual_internal_request_id_sha256": "e5538b486daad03c18a7a954cd266e998b8975b940c6ba796234b92a1bd1245e",
+      "actual_model_request_matches_enqueue": true,
+      "advance_status": "ACTION_COMPLETED",
+      "query_status": "QUERY_OK"
+    }
+  ],
+  "native_phases": [
+    {
+      "phase": "discovery_1",
+      "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+      "model_output_finite": true,
+      "model_output_changed": null,
+      "native_calls": 1,
+      "paused_after": true,
+      "baseline_control": null,
+      "protected_logical_input_sha256": {
+        "hidden_sha256": "47fbeee89d7ea78ceb7d4395cf9e9f8cf0c2ea2b0705920be4494212b4436a50",
+        "weight_sha256": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+        "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21"
+      },
+      "native": [
+        {
+          "operator": "aclnnMatmulWeightNz",
+          "status": "observed_readonly",
+          "actual_original_calls": 1,
+          "current_typed_formals_verified": true,
+          "layout": {
+            "dtype": "BF16",
+            "format": "ND",
+            "shape": [
+              1,
+              1024
+            ],
+            "stride": [
+              1024,
+              1
+            ],
+            "offset": 0
+          },
+          "receipt": null,
+          "original_storage_preserved": null
+        }
+      ]
+    },
+    {
+      "phase": "discovery_2",
+      "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+      "model_output_finite": true,
+      "model_output_changed": null,
+      "native_calls": 1,
+      "paused_after": true,
+      "baseline_control": null,
+      "protected_logical_input_sha256": {
+        "hidden_sha256": "47fbeee89d7ea78ceb7d4395cf9e9f8cf0c2ea2b0705920be4494212b4436a50",
+        "weight_sha256": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+        "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21"
+      },
+      "native": [
+        {
+          "operator": "aclnnMatmulWeightNz",
+          "status": "observed_readonly",
+          "actual_original_calls": 1,
+          "current_typed_formals_verified": true,
+          "layout": {
+            "dtype": "BF16",
+            "format": "ND",
+            "shape": [
+              1,
+              1024
+            ],
+            "stride": [
+              1024,
+              1
+            ],
+            "offset": 0
+          },
+          "receipt": null,
+          "original_storage_preserved": null
+        }
+      ]
+    },
+    {
+      "phase": "reference",
+      "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+      "model_output_finite": true,
+      "model_output_changed": null,
+      "native_calls": 1,
+      "paused_after": true,
+      "baseline_control": null,
+      "protected_logical_input_sha256": {
+        "hidden_sha256": "47fbeee89d7ea78ceb7d4395cf9e9f8cf0c2ea2b0705920be4494212b4436a50",
+        "weight_sha256": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+        "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21"
+      },
+      "native": [
+        {
+          "operator": "aclnnMatmulWeightNz",
+          "status": "routed",
+          "actual_original_calls": 1,
+          "current_typed_formals_verified": true,
+          "layout": {
+            "dtype": "BF16",
+            "format": "ND",
+            "shape": [
+              1,
+              1024
+            ],
+            "stride": [
+              1024,
+              1
+            ],
+            "offset": 0
+          },
+          "receipt": {
+            "mode": 1,
+            "original_calls": 1,
+            "native_status": 0,
+            "replacements": 0,
+            "changed_slots": 0,
+            "resources_released": true,
+            "temporary_readback_verified": false,
+            "device_copy": false,
+            "input_sha256_before": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "input_sha256_after": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "replaced_formals": [],
+            "output_sha256": "c305d13b7fb121d79c791b4d1a865226c66e4971d8b30022da682cbe2c6e8e59"
+          },
+          "original_storage_preserved": true
+        }
+      ]
+    },
+    {
+      "phase": "lossless",
+      "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+      "model_output_finite": true,
+      "model_output_changed": null,
+      "native_calls": 1,
+      "paused_after": true,
+      "baseline_control": null,
+      "protected_logical_input_sha256": {
+        "hidden_sha256": "47fbeee89d7ea78ceb7d4395cf9e9f8cf0c2ea2b0705920be4494212b4436a50",
+        "weight_sha256": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+        "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21"
+      },
+      "native": [
+        {
+          "operator": "aclnnMatmulWeightNz",
+          "status": "routed",
+          "actual_original_calls": 1,
+          "current_typed_formals_verified": true,
+          "layout": {
+            "dtype": "BF16",
+            "format": "ND",
+            "shape": [
+              1,
+              1024
+            ],
+            "stride": [
+              1024,
+              1
+            ],
+            "offset": 0
+          },
+          "receipt": {
+            "mode": 2,
+            "original_calls": 1,
+            "native_status": 0,
+            "replacements": 1,
+            "changed_slots": 0,
+            "resources_released": true,
+            "temporary_readback_verified": true,
+            "device_copy": true,
+            "input_sha256_before": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "input_sha256_after": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "replaced_formals": [
+              "self"
+            ],
+            "output_sha256": "c305d13b7fb121d79c791b4d1a865226c66e4971d8b30022da682cbe2c6e8e59"
+          },
+          "original_storage_preserved": true
+        }
+      ]
+    },
+    {
+      "phase": "qualification_off",
+      "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+      "model_output_finite": true,
+      "model_output_changed": null,
+      "native_calls": 1,
+      "paused_after": true,
+      "baseline_control": null,
+      "protected_logical_input_sha256": {
+        "hidden_sha256": "47fbeee89d7ea78ceb7d4395cf9e9f8cf0c2ea2b0705920be4494212b4436a50",
+        "weight_sha256": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+        "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21"
+      },
+      "native": [
+        {
+          "operator": "aclnnMatmulWeightNz",
+          "status": "routed",
+          "actual_original_calls": 1,
+          "current_typed_formals_verified": true,
+          "layout": {
+            "dtype": "BF16",
+            "format": "ND",
+            "shape": [
+              1,
+              1024
+            ],
+            "stride": [
+              1024,
+              1
+            ],
+            "offset": 0
+          },
+          "receipt": {
+            "mode": 1,
+            "original_calls": 1,
+            "native_status": 0,
+            "replacements": 0,
+            "changed_slots": 0,
+            "resources_released": true,
+            "temporary_readback_verified": false,
+            "device_copy": false,
+            "input_sha256_before": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "input_sha256_after": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "replaced_formals": [],
+            "output_sha256": "c305d13b7fb121d79c791b4d1a865226c66e4971d8b30022da682cbe2c6e8e59"
+          },
+          "original_storage_preserved": true
+        }
+      ]
+    },
+    {
+      "phase": "fault",
+      "model_output_sha256": "7d3c5a90ad3f4529f106c3047692e3c5177183fcaf269a778e077bec28984a7b",
+      "model_output_finite": true,
+      "model_output_changed": true,
+      "native_calls": 1,
+      "paused_after": true,
+      "baseline_control": false,
+      "protected_logical_input_sha256": {
+        "hidden_sha256": "47fbeee89d7ea78ceb7d4395cf9e9f8cf0c2ea2b0705920be4494212b4436a50",
+        "weight_sha256": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+        "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21"
+      },
+      "native": [
+        {
+          "operator": "aclnnMatmulWeightNz",
+          "status": "routed",
+          "actual_original_calls": 1,
+          "current_typed_formals_verified": true,
+          "layout": {
+            "dtype": "BF16",
+            "format": "ND",
+            "shape": [
+              1,
+              1024
+            ],
+            "stride": [
+              1024,
+              1
+            ],
+            "offset": 0
+          },
+          "receipt": {
+            "mode": 3,
+            "original_calls": 1,
+            "native_status": 0,
+            "replacements": 1,
+            "changed_slots": 1,
+            "resources_released": true,
+            "temporary_readback_verified": true,
+            "device_copy": false,
+            "input_sha256_before": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "input_sha256_after": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "replaced_formals": [
+              "self"
+            ],
+            "output_sha256": "a39e7aea5b41cf8eee0dddb196f9cadc3bc78b1a7ad2902007f9d4a4fddb70bd"
+          },
+          "original_storage_preserved": true
+        }
+      ]
+    },
+    {
+      "phase": "off_observed",
+      "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+      "model_output_finite": true,
+      "model_output_changed": null,
+      "native_calls": 1,
+      "paused_after": true,
+      "baseline_control": null,
+      "protected_logical_input_sha256": {
+        "hidden_sha256": "47fbeee89d7ea78ceb7d4395cf9e9f8cf0c2ea2b0705920be4494212b4436a50",
+        "weight_sha256": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+        "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21"
+      },
+      "native": [
+        {
+          "operator": "aclnnMatmulWeightNz",
+          "status": "routed",
+          "actual_original_calls": 1,
+          "current_typed_formals_verified": true,
+          "layout": {
+            "dtype": "BF16",
+            "format": "ND",
+            "shape": [
+              1,
+              1024
+            ],
+            "stride": [
+              1024,
+              1
+            ],
+            "offset": 0
+          },
+          "receipt": {
+            "mode": 1,
+            "original_calls": 1,
+            "native_status": 0,
+            "replacements": 0,
+            "changed_slots": 0,
+            "resources_released": true,
+            "temporary_readback_verified": false,
+            "device_copy": false,
+            "input_sha256_before": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "input_sha256_after": [
+              "8c9606924ac4d58837efbf31103f0b5e3ff8858fc67e494c1299d17eb1a1a1d9",
+              "ae87f1143e1a4a3956c529cd25778aac3d7e1fa47194c6f1640ea543c44c66ab"
+            ],
+            "replaced_formals": [],
+            "output_sha256": "c305d13b7fb121d79c791b4d1a865226c66e4971d8b30022da682cbe2c6e8e59"
+          },
+          "original_storage_preserved": true
+        }
+      ]
+    },
+    {
+      "phase": "disabled_off",
+      "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+      "model_output_finite": true,
+      "model_output_changed": null,
+      "native_calls": 0,
+      "paused_after": true,
+      "baseline_control": null,
+      "protected_logical_input_sha256": {
+        "hidden_sha256": "47fbeee89d7ea78ceb7d4395cf9e9f8cf0c2ea2b0705920be4494212b4436a50",
+        "weight_sha256": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+        "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21"
+      },
+      "native": []
+    }
+  ],
+  "installed_modules": [
+    {
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/runtime.py",
+      "sha256": "e1ba6e6fd62f6b195e320c73532ec7e1b0a5433c9cea2f71e400cb728131e5d0"
+    },
+    {
+      "path": "/installed/fault_injection/serving_qualification.py",
+      "sha256": "54efb926325c0f2a30589416c45fd128778a194aae696bbb5c53bbdae818fc20"
+    },
+    {
+      "path": "/installed/fault_injection/__init__.py",
+      "sha256": "ea458af121a88569df9bd3258902751ac0d1e99f64a983827863ca7f1c9b4a16"
+    }
+  ],
+  "deployment_preparation": {
+    "scope": "EXPLICIT_NZ_OUTPUT_DEPLOYMENT_BEFORE_BASELINE_NOT_FAULT",
+    "source_format": 2,
+    "actual_format": 29,
+    "shape": [
+      151936,
+      1024
+    ],
+    "logical_sha256_before": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+    "logical_sha256_after": "2b285bf929cb2e4b9e2938b77f6e9faf08c1574df4fdb6cb05542eab4a5212a5",
+    "complete_logical_equality": true,
+    "parameter_aliases_preserved": [
+      "model.embed_tokens.weight",
+      "lm_head.weight"
+    ],
+    "boundary": {
+      "status": "STRUCTURAL_LOGITS_BOUNDARY_ONLY_NOT_EXECUTION_ACCEPTANCE",
+      "processor_path": "logits_processor",
+      "lm_head_path": "model.embed_tokens",
+      "compute_processor_attribute": "logits_processor",
+      "compute_head_attribute": "lm_head",
+      "compute_logits_source": {
+        "source_sha256": "d50f0cd6fd8c653767fa1a270b34245f62c4ae528147b66c2e1e141293485964",
+        "file": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3.py",
+        "first_line": 327
+      },
+      "get_logits_source": {
+        "source_sha256": "f9fabcb8a46ad93f0977fe87e77c46eda275c6282d2e146932cb7c35212e7bdd",
+        "file": "/vllm-workspace/vllm-ascend/vllm_ascend/ops/vocab_parallel_embedding.py",
+        "first_line": 274
+      },
+      "ascend_dispatch_source": {
+        "source_sha256": "ab309fb78e87a053bb0219f2ed12aca039a67af3c21f7690e53ef63b3baabac4",
+        "file": "/vllm-workspace/vllm-ascend/vllm_ascend/ops/vocab_parallel_embedding.py",
+        "first_line": 247
+      },
+      "vocab_size": 151936,
+      "gather_contract": "Observe returned full-vocab tensor; None is not success",
+      "output_contract": [
+        1,
+        151936
+      ]
+    },
+    "restored_by_fault_off": false,
+    "activation_format_contract": "Tied embedding output converted to ND with per-call exact logical equality",
+    "off_reference": "Same configured NZ baseline; this temporary Worker is disposed after acceptance"
+  },
+  "healthy_before": {
+    "external_request_id": "0",
+    "prompt_token_ids": [
+      840,
+      20772,
+      304,
+      825,
+      11652,
+      3170,
+      279,
+      12884,
+      7952,
+      6303,
+      2337,
+      279,
+      1899,
+      13
+    ],
+    "outputs": [
+      {
+        "tokens": [
+          576
+        ],
+        "text": " The",
+        "finish_reason": "length"
+      }
+    ]
+  },
+  "healthy_after": {
+    "external_request_id": "9",
+    "prompt_token_ids": [
+      840,
+      20772,
+      304,
+      825,
+      11652,
+      3170,
+      279,
+      12884,
+      7952,
+      6303,
+      2337,
+      279,
+      1899,
+      13
+    ],
+    "outputs": [
+      {
+        "tokens": [
+          576
+        ],
+        "text": " The",
+        "finish_reason": "length"
+      }
+    ]
+  },
+  "cleanup": {
+    "finish": "ACTION_COMPLETED",
+    "unregister": "ACTION_COMPLETED",
+    "detach": "DETACHED",
+    "unbind": "SERVING_DEPLOYMENT_REMOVED"
+  },
+  "limitations": [
+    "TP1, single-request fresh eager prefill; one automatic logits target",
+    "Not multi-target/all_eligible, multi-token decode or text-quality acceptance",
+    "Native observations are auxiliary; statistics first difference is independently computed",
+    "Only this concrete loaded CANN and wheel deployment is covered"
+  ]
+}

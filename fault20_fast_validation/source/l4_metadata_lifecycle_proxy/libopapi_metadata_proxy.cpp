@@ -29,6 +29,45 @@
 
 namespace {
 
+#ifdef DEMONCAT_QMM_AUTO
+using CurrentGwsBegin = uint64_t (*)(uint32_t);
+using CurrentGwsCommit = bool (*)(uint64_t, uint32_t, const Fault20MetadataAbiDescriptor*, const void*);
+using CurrentGwsAbort = void (*)(uint64_t, uint32_t);
+using CurrentExecuteBegin = uint64_t (*)(uint32_t, const void*);
+using CurrentExecuteEnd = void (*)(uint64_t, uint32_t, const void*);
+CurrentGwsBegin g_current_gws_begin = nullptr;
+CurrentGwsCommit g_current_gws_commit = nullptr;
+CurrentGwsAbort g_current_gws_abort = nullptr;
+CurrentExecuteBegin g_current_execute_begin = nullptr;
+CurrentExecuteEnd g_current_execute_end = nullptr;
+
+struct CurrentGwsScope {
+    uint32_t kind;
+    uint64_t token;
+    bool finished = false;
+    explicit CurrentGwsScope(uint32_t value) : kind(value),
+        token(g_current_gws_begin ? g_current_gws_begin(kind) : 0) {}
+    ~CurrentGwsScope() {
+        if (!finished && token && g_current_gws_abort) g_current_gws_abort(token, kind);
+    }
+    void commit(const Fault20MetadataAbiDescriptor& metadata, const void* executor) {
+        if (token && g_current_gws_commit) (void)g_current_gws_commit(token, kind, &metadata, executor);
+        finished = true;
+    }
+};
+
+struct CurrentExecuteScope {
+    uint32_t kind;
+    const void* executor;
+    uint64_t token;
+    CurrentExecuteScope(uint32_t value, const void* actual) : kind(value), executor(actual),
+        token(g_current_execute_begin ? g_current_execute_begin(kind, executor) : 0) {}
+    ~CurrentExecuteScope() {
+        if (token && g_current_execute_end) g_current_execute_end(token, kind, executor);
+    }
+};
+#endif
+
 constexpr const char *kDefaultLogPath =
     "/fault20/runtime/l4_metadata_lifecycle_proxy/metadata.jsonl";
 constexpr size_t kMaxDims = 16;
@@ -180,6 +219,19 @@ void resolve_real() {
     using Profile = const char* (*)();
     const auto profile = reinterpret_cast<Profile>(dlsym(RTLD_DEFAULT, "dcat20_qmm_profile_v1"));
     bool verified = profile && std::strcmp(profile(), f39profile::id) == 0;
+    if (verified) {
+        g_current_gws_begin = reinterpret_cast<CurrentGwsBegin>(dlsym(RTLD_DEFAULT, "dcat20_auto_gws_begin_v1"));
+        g_current_gws_commit = reinterpret_cast<CurrentGwsCommit>(dlsym(RTLD_DEFAULT, "dcat20_auto_gws_commit_v1"));
+        g_current_gws_abort = reinterpret_cast<CurrentGwsAbort>(dlsym(RTLD_DEFAULT, "dcat20_auto_gws_abort_v1"));
+        g_current_execute_begin = reinterpret_cast<CurrentExecuteBegin>(dlsym(RTLD_DEFAULT, "dcat20_auto_execute_begin_v1"));
+        g_current_execute_end = reinterpret_cast<CurrentExecuteEnd>(dlsym(RTLD_DEFAULT, "dcat20_auto_execute_end_v1"));
+        if (!g_current_gws_begin || !g_current_gws_commit || !g_current_gws_abort
+            || !g_current_execute_begin || !g_current_execute_end) {
+            g_current_gws_begin = nullptr;
+            g_current_execute_begin = nullptr;
+            verified = false;
+        }
+    }
     for (void* symbol : {reinterpret_cast<void*>(&aclGetDataType), reinterpret_cast<void*>(&aclGetFormat),
             reinterpret_cast<void*>(&aclGetViewOffset), reinterpret_cast<void*>(&aclGetViewShape),
             reinterpret_cast<void*>(&aclGetStorageShape), reinterpret_cast<void*>(&aclGetViewStrides),
@@ -846,6 +898,9 @@ extern "C" aclnnStatus aclnnQuantMatmulWeightNzGetWorkspaceSize(
                                        (g_fault20_gws_commit_v17 != nullptr ||
                                         g_fault20_gws_commit != nullptr) &&
                                        g_fault20_gws_abort != nullptr;
+#ifdef DEMONCAT_QMM_AUTO
+    CurrentGwsScope current(FAULT20_METADATA_PAYLOAD_QMM);
+#endif
     if (registry_hooks_ready) {
         g_fault20_gws_begin();
     }
@@ -858,7 +913,12 @@ extern "C" aclnnStatus aclnnQuantMatmulWeightNzGetWorkspaceSize(
             capture_qmm_metadata(x1, x2, x1_scale, x2_scale, y_scale, x1_offset,
                                  x2_offset, y_offset, bias, transpose_x1,
                                  transpose_x2, group_size, out, &metadata)) {
+#ifdef DEMONCAT_QMM_AUTO
+            const auto descriptor = make_metadata_descriptor(FAULT20_METADATA_PAYLOAD_QMM, sizeof(metadata), &metadata);
+            current.commit(descriptor, executor ? *executor : nullptr);
+#else
             (void)commit_qmm_metadata(metadata);
+#endif
         } else {
             g_fault20_gws_abort();
         }
@@ -898,6 +958,9 @@ extern "C" aclnnStatus aclnnQuantMatmulWeightNz(void *workspace, uint64_t worksp
                               "aclnnQuantMatmulWeightNz", workspace,
                               workspace_size, executor, stream);
     }
+#ifdef DEMONCAT_QMM_AUTO
+    CurrentExecuteScope current(FAULT20_METADATA_PAYLOAD_QMM, executor);
+#endif
     const aclnnStatus status = g_real_qmm_execute(workspace, workspace_size, executor, stream);
     if (g_fault26_trace_end != nullptr) {
         g_fault26_trace_end(FAULT26_EXECUTE_QMM,
@@ -922,6 +985,9 @@ extern "C" aclnnStatus aclnnMatmulWeightNzGetWorkspaceSize(
                                       (g_fault20_matmul_gws_commit_v17 != nullptr ||
                                        g_fault20_matmul_gws_commit != nullptr) &&
                                       g_fault20_matmul_gws_abort != nullptr;
+#ifdef DEMONCAT_QMM_AUTO
+    CurrentGwsScope current(FAULT20_METADATA_PAYLOAD_MATMUL_WEIGHT_NZ);
+#endif
     if (registry_hooks_ready) {
         g_fault20_matmul_gws_begin();
     }
@@ -953,7 +1019,12 @@ extern "C" aclnnStatus aclnnMatmulWeightNzGetWorkspaceSize(
     }
     if (registry_hooks_ready) {
         if (metadata_ok) {
+#ifdef DEMONCAT_QMM_AUTO
+            const auto descriptor = make_metadata_descriptor(FAULT20_METADATA_PAYLOAD_MATMUL_WEIGHT_NZ, sizeof(metadata), &metadata);
+            current.commit(descriptor, executor ? *executor : nullptr);
+#else
             (void)commit_matmul_metadata(metadata, false);
+#endif
         } else {
             g_fault20_matmul_gws_abort();
         }
@@ -991,6 +1062,9 @@ extern "C" aclnnStatus aclnnMatmulWeightNz(void *workspace, uint64_t workspace_s
                               "aclnnMatmulWeightNz", workspace,
                               workspace_size, executor, stream);
     }
+#ifdef DEMONCAT_QMM_AUTO
+    CurrentExecuteScope current(FAULT20_METADATA_PAYLOAD_MATMUL_WEIGHT_NZ, executor);
+#endif
     const aclnnStatus status =
         g_real_matmul_execute(workspace, workspace_size, executor, stream);
     if (g_fault26_trace_end != nullptr) {
