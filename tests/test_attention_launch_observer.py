@@ -7,7 +7,7 @@ import struct
 import tempfile
 import unittest
 
-from fault_injection.native_adapters.attention28.launch import verify_launch, decode_raw, derive_fia_kernel_abi
+from fault_injection.native_adapters.attention28.launch import verify_launch, decode_raw, derive_fia_kernel_abi, verify_public_values
 
 
 def fixture(root):
@@ -148,6 +148,31 @@ class RuntimeLaunchTests(unittest.TestCase):
             entry.write_text('void fused_infer_attention_score(__gm__ uint8_t* workspace, __gm__ uint8_t* tiling) {}')
             with self.assertRaisesRegex(RuntimeError,'METADATA_SIGNATURE_DIFFERS'):
                 derive_fia_kernel_abi(entry,dict(parameters=[None,None]))
+
+    def test_mixed_core_hidden_pointer_is_derived_from_soc_and_compiled_metadata(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            entry=Path(tmp)/'entry.cpp'
+            entry.write_text('void fused_infer_attention_score(__gm__ uint8_t* workspace, __gm__ uint8_t* tiling) {}')
+            metadata=dict(parameters=[None],coreType='MIX',intercoreSync=1,
+                kernelList=[dict(kernelType='MIX_AIC',crossCoreSync=1,taskRation='1:2')])
+            with self.assertRaisesRegex(RuntimeError,'SYNC_ABI_UNADAPTED'):
+                derive_fia_kernel_abi(entry,metadata)
+            abi=derive_fia_kernel_abi(entry,metadata,soc_family='ascend910b')
+            self.assertEqual(abi['declared_tiling_pointer_offset'],8)
+            self.assertEqual(abi['tiling_pointer_offset'],16)
+            metadata['kernelList'][0]['crossCoreSync']=0
+            with self.assertRaisesRegex(RuntimeError,'SYNC_ABI_UNADAPTED'):
+                derive_fia_kernel_abi(entry,metadata,soc_family='ascend910b')
+
+    def test_only_exact_public_sdk_padding_may_lack_source_getters(self):
+        name='baseParams.FusedInferAttentionBaseParamsPH'
+        schema=dict(type='FusedInferAttentionScoreTilingData',size=1576,
+            fields=[dict(name=name,offset=81,width=1,count=7,dtype='uint8_t')])
+        self.assertEqual(verify_public_values({name:[0]*7},schema,{}),{name:[0]*7})
+        with self.assertRaisesRegex(RuntimeError,'PADDING_DIFFERS'):
+            verify_public_values({name:[1]+[0]*6},schema,{})
+        with self.assertRaisesRegex(RuntimeError,'HOST_ARGUMENT_VALUES_DIFFER'):
+            verify_public_values({'baseParams.headDim':128},schema,{})
 
 
 if __name__=='__main__':unittest.main()

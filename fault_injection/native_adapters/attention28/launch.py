@@ -45,7 +45,31 @@ def decode_raw(raw, schema):
     return result
 
 
-def derive_fia_kernel_abi(source, metadata):
+def verify_public_values(typed, schema, host_typed):
+    # SDK GetFieldInfo exposes its automatically generated alignment arrays;
+    # the source-declared public getters do not. These two exact fields were
+    # independently derived by the fresh 1576-byte public serializer sentinel.
+    # Preserve and check them explicitly rather than dropping unknown fields.
+    known = {
+        'baseParams.FusedInferAttentionBaseParamsPH': (81, 7),
+        'prefixParams.FusedInferAttentionPrefixParamsPH': (1537, 7),
+    } if schema.get('type') == 'FusedInferAttentionScoreTilingData' and schema['size'] == 1576 else {}
+    fields = {field['name']: field for field in schema['fields']}
+    padding = {}
+    for name, value in typed.items():
+        if name in known:
+            offset, count = known[name]
+            field = fields[name]
+            require(field['dtype'] == 'uint8_t' and field['width'] == 1
+                    and field['offset'] == offset and field['count'] == count
+                    and value == [0]*count, 'PUBLIC_SERIALIZER_PADDING_DIFFERS')
+            padding[name] = value
+        else:
+            require(name in host_typed and host_typed[name] == value, 'PUBLIC_SCHEMA_HOST_ARGUMENT_VALUES_DIFFER')
+    return padding
+
+
+def derive_fia_kernel_abi(source, metadata, *, soc_family=None):
     """Read the pinned source entry declaration, not expected host data bytes."""
     text = Path(source).read_text()
     match = re.findall(r'void\s+fused_infer_attention_score\((.*?)\)\s*\{', text, re.S)
@@ -59,8 +83,20 @@ def derive_fia_kernel_abi(source, metadata):
     require(names[-2:] == ['workspace', 'tiling'] and len(set(names)) == len(names)
             and len(metadata['parameters']) == len(names)-1
             and all(value is None for value in metadata['parameters']), 'FIA_KERNEL_METADATA_SIGNATURE_DIFFERS')
+    hidden_prefix = 0
+    if metadata.get('coreType') == 'MIX':
+        require(soc_family == 'ascend910b' and metadata.get('intercoreSync') == 1
+                and metadata.get('kernelList') and all(row.get('kernelType') == 'MIX_AIC'
+                    and row.get('crossCoreSync') == 1 and row.get('taskRation') == '1:2'
+                    for row in metadata['kernelList']), 'FIA_MIXED_CORE_SYNC_ABI_UNADAPTED')
+        # Pinned opbase cd48: indv_soc.cpp59 limits UseCoreTypeMagic to
+        # ascend910b/910_93; indv_executor.cpp637 prepends ctrlAddr for MIX.
+        # The pointer is additional to the public kernel entry declaration.
+        hidden_prefix = 8
     return dict(source_sha256=sha(source), pointer_bytes=8, names=names,
-                tiling_pointer_offset=(len(names)-1)*8)
+                soc_family=soc_family, hidden_hardware_sync_prefix_bytes=hidden_prefix,
+                declared_tiling_pointer_offset=(len(names)-1)*8,
+                tiling_pointer_offset=hidden_prefix+(len(names)-1)*8)
 
 
 def bundle_kernel_abi(vendor, files, kernel_sha256):
@@ -73,7 +109,8 @@ def bundle_kernel_abi(vendor, files, kernel_sha256):
     require(metadata['sha256'] == kernel_sha256, 'KERNEL_METADATA_BINARY_SHA_DIFFERS')
     sources = [root/name for name in files if name.endswith('/fused_infer_attention_score/op_kernel/fused_infer_attention_score.cpp')]
     require(sources and len({sha(path) for path in sources}) == 1, 'NEW_KERNEL_ENTRY_SOURCE_MISSING_OR_AMBIGUOUS')
-    return metadata, derive_fia_kernel_abi(sources[0], metadata)
+    require('/kernel/ascend910b/' in binaries[0], 'FIA_KERNEL_SOC_ABI_UNADAPTED')
+    return metadata, derive_fia_kernel_abi(sources[0], metadata, soc_family='ascend910b')
 
 
 def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_metadata=None, kernel_abi=None):
@@ -174,7 +211,8 @@ def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_met
         require(len(placeholders) > 0 and len(placeholders) % 8 == 0, 'ACL_PLACEHOLDER_DESCRIPTOR_INVALID')
         pairs = list(struct.iter_unpack('<II', placeholders))
         require(len({addr for addr, _ in pairs}) == len(pairs), 'ACL_DUPLICATE_PLACEHOLDER_ADDRESS')
-        # The exact compiled entry declaration places `tiling` after workspace.
+        # The exact compiled entry declaration places `tiling` after workspace;
+        # mixed-core910B also has the documented leading hardware-sync pointer.
         # Select its argument slot, never a matching byte pattern or host value.
         selected = [(addr, data) for addr, data in pairs if addr == kernel_abi['tiling_pointer_offset']]
         require(len(selected) == 1, 'ACL_KERNEL_TILING_PLACEHOLDER_MISSING')
@@ -199,13 +237,14 @@ def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_met
     require(launch['schedule_mode'] >= 0 and launch['schedule_mode'] == host['schedule_mode'],
             'FINAL_LAUNCH_SCHEDULE_UNOBSERVED_OR_DIFFERENT')
     typed = decode_raw(raw, schema)
-    require(all(name in host['typed'] and host['typed'][name] == value for name, value in typed.items()),
-            'PUBLIC_SCHEMA_HOST_ARGUMENT_VALUES_DIFFER')
+    padding = verify_public_values(typed, schema, host['typed'])
     return dict(schema='demoncat.attention.independent_launch.v1', status='FINAL_ARGUMENT_AND_LAUNCH_VERIFIED',
                 call_id=call_id, pid=owner[0], tid=owner[1], kernel_sha256=kernel_sha256,
                 raw_sha256=hashlib.sha256(raw).hexdigest(), runtime_log_sha256=sha(root / 'runtime.jsonl'),
                 tiling_key=int(launch['tiling_key']), block_dim=launch['block_dim'],
                 schedule_mode=launch['schedule_mode'], typed=typed,
+                kernel_argument_abi=kernel_abi,
+                verified_public_serializer_padding=padding,
                 excluded_independently_bound_launches=excluded,
                 kernel_argument_raw_observed=True, native_launch_verified=True,
                 device_completion_observed=True, production_loading_allowed=False,
