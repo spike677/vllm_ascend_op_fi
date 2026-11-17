@@ -1,0 +1,19 @@
+{
+  "schema": "demoncat.c2c3.ownership.v1",
+  "base_commit": "91decf5efe48dfdf8c5494e52d258ccde788cc5d",
+  "root_branch": "codex/17-fault-c2c3-closure-20261117",
+  "remote_evidence_root": "/home/17-fault-c2c3-20261117",
+  "npu_scheduler": "root",
+  "shared_lock": "/var/tmp/fault22_npu_2_5.lock",
+  "max_cases_per_batch": 8,
+  "workstreams": [
+    {"id": "coverage", "owner": "c23_coverage", "owns": ["coverage", "runtime_discovery", "group_recovery"], "mechanisms": []},
+    {"id": "tensors", "owner": "c23_tensors", "owns": ["providers/tensor_modules", "tensor_adapters"], "mechanisms": ["8.restore_offset", "15.alias_detach", "17.spatial_padding", "18.api_half", "22.wrong_row"]},
+    {"id": "collective", "owner": "c23_collective", "owns": ["collective25", "collective_probes"], "mechanisms": ["25.reduce_scatter"]},
+    {"id": "attention", "owner": "c23_attention", "owns": ["attention28", "paged33", "attention_probes"], "mechanisms": ["28.fa.legal_tiling", "28.fia.legal_tiling", "28.fia.denominator_replay", "33.paged_decode"]},
+    {"id": "nativeproviders", "owner": "c23_nativeproviders", "owns": ["providers/fault20", "serving20_qmm", "serving26", "shared_quant", "serving39_range"], "mechanisms": ["20.buffer_substitute", "26.residual_stomp", "26.fia_destination", "quant.batch_shared_scale", "39.matmul_range"]},
+    {"id": "postwrite", "owner": "c23_postwrite", "owns": ["postwrite", "natural_postwrite_probes"], "mechanisms": ["39.output_proxy", "41.tail_column"]},
+    {"id": "evidence", "owner": "c23_evidence", "owns": ["native_build/manager", "evidence", "statistics_compare", "compatibility_tools"], "mechanisms": []}
+  ],
+  "rule": "Each workstream edits only its independent worktree. Root reviews and integrates commits. Shared-file changes require the primary owner's review. No specialty agent starts NPU cases."
+}
