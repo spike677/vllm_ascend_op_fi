@@ -2,12 +2,14 @@ import copy
 import json
 from pathlib import Path
 import sys
+import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'fault39' / 'tools'))
 from queue_contract import validate_cases, LABEL
-from run_queue_124 import cleanup_owned
+from run_queue_124 import cleanup_owned, read_stale_scope, scoped_gate
 
 
 def case():
@@ -22,6 +24,42 @@ def case():
 
 
 class QueueContract(unittest.TestCase):
+    def test_no_scope_keeps_stale_review_disabled(self):
+        self.assertEqual(read_stale_scope(None, '/home/test/attempt-one'), (None, None))
+        gate = Mock(return_value={'idle': False})
+        self.assertFalse(scoped_gate(gate, [5], None, '/home/test/attempt-one')['idle'])
+        gate.assert_called_once_with([5], review_stale=False,
+                                     stale_allocation_scope=None,
+                                     attempt_scope='/home/test/attempt-one')
+
+    def test_scope_binds_attempt_and_preserves_original_bytes(self):
+        scope = dict(schema='demoncat.stale_allocation_scope.v1',
+                     attempt_scope='/home/test/attempt-one',
+                     pod_uid='33991897-e3ed-4910-aa2c-835b9fe682a0',
+                     checkpoint_sha256='b' * 64)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'scope.json'
+            raw = (json.dumps(scope, indent=2) + '\n').encode()
+            path.write_bytes(raw)
+            self.assertEqual(read_stale_scope(path, scope['attempt_scope']), (scope, raw))
+            with self.assertRaises(ValueError):
+                read_stale_scope(path, '/home/test/attempt-two')
+            gate = Mock(return_value={'idle': False})
+            self.assertFalse(scoped_gate(gate, [5], scope, scope['attempt_scope'])['idle'])
+            gate.assert_called_once_with([5], review_stale=True,
+                                         stale_allocation_scope=scope,
+                                         attempt_scope=scope['attempt_scope'])
+
+    def test_duplicate_or_unbounded_scope_rejected_before_gate(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'scope.json'
+            path.write_bytes(b'{"pod_uid":"one","pod_uid":"two"}')
+            with self.assertRaisesRegex(ValueError, 'DUPLICATE'):
+                read_stale_scope(path, '/home/test/attempt-one')
+            path.write_bytes(b' ' * 4097)
+            with self.assertRaisesRegex(ValueError, 'BOUNDED'):
+                read_stale_scope(path, '/home/test/attempt-one')
+
     def test_valid_bounded_review(self):
         self.assertEqual(validate_cases([case()], [2])[0]['id'], 'sample')
 

@@ -17,6 +17,36 @@ def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
+def read_stale_scope(path, attempt_scope):
+    """An explicit one-attempt scope enables review, never unconditional release."""
+    if path is None:
+        return None, None
+    path = Path(path)
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 4096:
+        raise ValueError('BOUNDED_REGULAR_STALE_SCOPE_FILE_REQUIRED')
+    raw = path.read_bytes()
+    if len(raw) > 4096:
+        raise ValueError('BOUNDED_REGULAR_STALE_SCOPE_FILE_REQUIRED')
+
+    def unique_fields(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError('DUPLICATE_STALE_SCOPE_FIELD')
+            result[key] = value
+        return result
+
+    from kubelet_allocations import validate_stale_allocation_scope
+    scope = validate_stale_allocation_scope(
+        json.loads(raw, object_pairs_hook=unique_fields), attempt_scope)
+    return scope, raw
+
+
+def scoped_gate(gate, cards, scope, attempt_scope):
+    return gate(cards, review_stale=scope is not None,
+                stale_allocation_scope=scope, attempt_scope=attempt_scope)
+
+
 def command(args, timeout=30):
     return subprocess.check_output(args, text=True, stderr=subprocess.STDOUT,
                                    timeout=timeout)
@@ -148,18 +178,27 @@ def main():
     p.add_argument('--cases', type=Path, required=True)
     p.add_argument('--attempt', required=True)
     p.add_argument('--cards', nargs='+', type=int, choices=[2, 5], required=True)
+    p.add_argument('--stale-allocation-scope', type=Path,
+                   help='Explicit UID/checkpoint hash scope for this exact attempt only')
     a = p.parse_args()
     if not re.fullmatch(r'[a-z0-9_-]{1,80}', a.attempt):
         p.error('Invalid attempt')
     raw_manifest = a.cases.read_bytes()
     cases = validate_cases(json.loads(raw_manifest), a.cards)
     folder = Path(ROOT) / a.attempt
+    attempt_scope = str(folder.resolve())
+    stale_scope, raw_scope = read_stale_scope(a.stale_allocation_scope, attempt_scope)
     folder.mkdir(parents=True, exist_ok=False)
     (folder / 'reviewed_cases.json').write_bytes(raw_manifest)
+    if raw_scope is not None:
+        (folder / 'reviewed_stale_allocation_scope.json').write_bytes(raw_scope)
     receipt = dict(schema='demoncat.c2c3.queue.v1', cards=a.cards, cases=[],
                    status='WAITING_FOR_LOCK', controller_sha256=digest(__file__),
                    contract_sha256=digest(Path(__file__).with_name('queue_contract.py')),
                    case_manifest_sha256=hashlib.sha256(raw_manifest).hexdigest(),
+                   stale_allocation_scope=stale_scope,
+                   stale_allocation_scope_file_sha256=(hashlib.sha256(raw_scope).hexdigest()
+                                                      if raw_scope is not None else None),
                    grants_mechanism_qualification=False)
 
     def save():
@@ -179,7 +218,7 @@ def main():
                 return 3
             for case in cases:
                 receipt['status'] = 'CHECKING_DEVICE'
-                gate = idle_gate(a.cards)
+                gate = scoped_gate(idle_gate, a.cards, stale_scope, attempt_scope)
                 row = dict(id=case['id'], review=case['review'], gate=gate)
                 receipt['cases'].append(row)
                 save()
@@ -192,7 +231,7 @@ def main():
                 receipt['status'] = 'RUNNING_CASE'
                 save()
                 run_case(case, a.cards, case_folder, save, row)
-                row['post_cleanup_gate'] = idle_gate(a.cards)
+                row['post_cleanup_gate'] = scoped_gate(idle_gate, a.cards, stale_scope, attempt_scope)
                 save()
                 if row.get('exit_code') != 0:
                     receipt['status'] = 'CASE_FAILED'
