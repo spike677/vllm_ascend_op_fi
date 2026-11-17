@@ -59,6 +59,20 @@ failure contracts; its SDK build and complete natural group proof are separate g
 Changes to shared code never upgrade older receipts to the current HEAD: all
 accepted scopes remain bound to the exact reviewed source/build/workload hashes.
 
+The [independent build/scope audit](AGENT7_CPU_BUILDS_A29_REVIEW.md) confirms the
+actual FA and Native26 artifacts, SDK/image bytes and CPU ABI contracts. Native26
+requires the matched image C/C++ runtime; the default host lacks GLIBCXX_3.4.29.
+Source-a29's main unittest run had729 cases, with2 skipped and no failures;
+the separate Worker suite had194 passing cases. These sets overlap. Later focused
+checks cover the new read-only RoPE and FA launch readers, not additional NPU runs.
+
+The full vision processor has not yet been validated: two no-device diagnostics
+stopped during torch_npu import because driver libraries were absent, including
+the retry with Torch backend autoload disabled. No third-party import detector
+was modified. Public configuration files have verified upstream Git blob identities;
+complete pretrained weights are still being prepared. These are preparation
+limits, not evidence that the actual NPU model failed or passed.
+
 Fault20 additionally has a [root review](native20_group_summary.json):408 C2 and
 678 C3 evidence references match actual stored bytes; all targets have native
 readback, unchanged original allocations, exact lossless/OFF and complete logits

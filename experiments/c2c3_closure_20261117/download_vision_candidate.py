@@ -33,10 +33,10 @@ def fetch(url, path, expected_size):
             break
         if offset > expected_size:
             raise ValueError("PARTIAL_FILE_LARGER_THAN_PINNED_SIZE")
-        request = urllib.request.Request(url, headers={"Range": "bytes=%d-" % offset} if offset else {})
+        request = urllib.request.Request(url, headers={"Range": "bytes=%d-" % offset})
         try:
             with urllib.request.urlopen(request, timeout=60) as response:
-                if offset and response.status == 206:
+                if response.status == 206:
                     if not response.headers.get("Content-Range", "").startswith("bytes %d-" % offset):
                         raise ValueError("RANGE_RESPONSE_MISMATCH")
                     mode = "ab"
@@ -47,7 +47,7 @@ def fetch(url, path, expected_size):
                 report_at = offset + 256 * 1024 * 1024
                 with partial.open(mode) as output:
                     while True:
-                        block = response.read(8 * 1024 * 1024)
+                        block = response.read1(8 * 1024 * 1024)
                         if not block:
                             break
                         output.write(block)
@@ -74,6 +74,8 @@ def main():
                         default="https://huggingface.co")
     parser.add_argument("--metadata", type=Path, help="Previously fetched official API response")
     parser.add_argument("--metadata-sha256", help="Root-verified official response SHA256")
+    parser.add_argument("--only-file", choices=NAMES,
+                        help="Prepare one public file; this does not declare a complete model")
     args = parser.parse_args()
     output = args.out.resolve()
     output.mkdir(parents=True, exist_ok=True)
@@ -98,11 +100,12 @@ def main():
     entries = {item["rfilename"]: item for item in metadata["siblings"]}
     if entries["model.safetensors"].get("lfs", {}).get("sha256") != WEIGHT_SHA256:
         raise ValueError("WEIGHT_IDENTITY_MISMATCH")
-    total = sum(entries[name]["size"] for name in NAMES)
+    selected = (args.only_file,) if args.only_file else NAMES
+    total = sum(entries[name]["size"] for name in selected)
     if shutil.disk_usage(output).free < total + 1024 ** 3:
         raise ValueError("INSUFFICIENT_DISK_FOR_PINNED_MODEL")
     files = []
-    for name in NAMES:
+    for name in selected:
         entry, path = entries[name], output / name
         url = "%s/%s/resolve/%s/%s" % (args.endpoint, REPO, REVISION, name)
         source = path if path.exists() else fetch(url, path, entry["size"])
@@ -125,9 +128,12 @@ def main():
                "official_metadata_url": metadata_url, "official_metadata_sha256": metadata_sha256,
                "download_endpoint": args.endpoint,
                "preparation_script_sha256": digest(Path(__file__)),
+               "complete_model_files_prepared": args.only_file is None,
                "files": files, "npu_calls": 0, "model_qualification": False}
     (output / "download_receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"status": "PINNED_PUBLIC_MODEL_DOWNLOADED_NOT_VALIDATED", "bytes": total}), flush=True)
+    status = ("PINNED_PUBLIC_MODEL_DOWNLOADED_NOT_VALIDATED" if args.only_file is None else
+              "PINNED_PUBLIC_FILE_PREPARED_NOT_COMPLETE_MODEL")
+    print(json.dumps({"status": status, "bytes": total}), flush=True)
 
 
 if __name__ == "__main__":

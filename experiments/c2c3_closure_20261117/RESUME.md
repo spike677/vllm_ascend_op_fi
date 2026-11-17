@@ -28,6 +28,36 @@
 
 The older checkpoint notes below retain exact earlier attempt identities.
 
+### Reviewed source-a29 and follow-up preparation
+
+- source-a29 commit1076720aca23ad55decaf2fe42e174176c0e0a5f, archive
+  cacd68443029eff909f8bc02dfd002955dd5d3197d89e28f8ccfe389d076d25b,
+  all578 files independently verified. packages-a11 build/install completed0.
+- Native26 v2 SDK build `R/native26-group-v2-a1` passed without devices. Deployment
+  SHA5a6adbf86bd0fdbb5a18ab16953714db6a292ff315bdc0dce28c1a59654b7653;
+  new DSOe7c21c25eb228ee126b17c6ec76717861ba6942d043bd18302466fd5cd32174a.
+  Independent audit `AGENT7_CPU_BUILDS_A29_REVIEW.md` preserves host GLIBCXX failure
+  and matched-image CPU control success. Candidate B/L/F/OFF code is integrated;
+  complete public C2/C3 dispatch is still being completed by Agent5 with Agent1.
+- New `natural-moe8-group-a2-cases.json` uses source-a29 with the non-target
+  identity fix; it is prepared, not executed. Vision17 census/group queue files
+  also use source-a29; they require complete pinned weights and actual census
+  review before dependent group work. All are single-card5 manifests.
+- Device-free vision processor attempts a1/a2 both retain import failures:
+  absent libascend_hal, first Torch autoload then Transformers explicit NPU import.
+  No model or NPU execution occurred. Configuration files are verified; local
+  official weight download is still in progress (outside the Git tree).
+- Root source-a29 unittest:729 cases,2 skipped,no failures; separate Worker suite
+  194 cases,no failures. Do not add these overlapping counts. New FA/FIA focused
+  suite:48 cases,1 skipped,no failures; RoPE focused contracts also pass.
+- The new FA final-argument reader is integrated. Long Worker runs still await
+  external cleanup coordination. Previous four short FIA cases completed in
+  14-23seconds, so root is reviewing a separately bounded90-second four-call
+  standalone FA case; no implication that the long cleanup window was granted.
+- Agent1 found copied/relabelled C2Proof objects can retain the private issuer.
+  Issued-object identity plus immutable-field verification is being added before
+  publishing the next checkpoint; no old scope or CPU proof is being promoted.
+
 ## Active checkpoint — Native39 accepted; resource coordination pending
 
 This section supersedes the older running-session notes below. R is still
