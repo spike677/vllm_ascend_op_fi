@@ -1,5 +1,53 @@
 # Current execution checkpoint
 
+## Active checkpoint — public vision preparation complete, no device window
+
+- Root committed the CPU probe scope clarification as1a68fd5; it was not the
+  code executed in preflight-a3. The latter ran source-a33's unchanged script
+  SHA f2a857c8f215aa66ee72f9b36e331dfb137ed7a00ea0b690969faa4cff9a3987.
+- SFTP session35322 completed0. The remote verifier independently checked all10
+  files against official metadata and local revalidation; receipt
+  `R/vision-remote-files-verified-a1.json` SHA
+  854c618c173e073df60330e09b1fdd3c3a0816adcd4e5e2e87698ac9d9590faa.
+  `R/models/Qwen3-VL-2B-Instruct/model.safetensors` is now published with an atomic
+  no-clobber hardlink. Its owned `.upload-a1` path is retained on the same inode;
+  it is not a second4.25GB copy. Preserve original download receipts and mirror
+  partial file. No transfer session is still running.
+- Agent7's independent vision audit was integrated as0f71fc4c from0d372c6f.
+  All10 final files were re-read; all609 source-a33 files and exact image/source/
+  processor/input identities match. Public summary SHA
+  97b647b9973a0aa6c6b8f0f8d564418439f513751b30925cd046b5bd94a6fd20;
+  same bytes at`R/agent7-vision-preparation-a1/summary.json`. Root reran its8 CPU
+  contracts successfully. Preparation only: no new NPU, E5 or C2/C3 qualification.
+- Vision processor CPU-a3 (session13407) completed0 and its owned container was
+  removed. It used image35f9e569..., source-a33, no devices/network, readonly host
+  driver libraries and real processor defaults. Inputs:[1,901] token IDs,
+  [3536,1536] pixels. No model construction or weights loaded. Preserve runtime
+  discovery warnings; the old `actual_npu_calls:0` field does not prove zero
+  imported runtime API calls. New code names only explicit compute invocations.
+- Current device gate still blocks2/5: allocation has moved to Pod
+  41507ceb-c235-4321-b248-511583b9e006/container ascend, checkpoint SHA
+  f3ebc0bb6ff7afaee6a4f636a392e931e988b7aa4567ba3cff35bc2f7fae9017.
+  Root read-only gate-a2 receipt SHA
+  f40d56f182c04a95979fa05f5e629faa02ea22f67689c27f7ffce7105d888527.
+  No NPU experiment resumed. Existing resource/cleanup coordination question is
+  still pending; no foreign tasks, host Docker entry or assignments were changed.
+- Later gate-a3 at16:47 UTC again refused both cards: Pod33991897-e3ed-4910-aa2c-
+  835b9fe682a0, receipt SHA69aafccfcab5bbb392c18f51f370e8cbb96ed51dfea7a4a1660a1539f86ee36c.
+  Existing kubelet identity's read-only API calls identified owner AscendJob
+  `reliability-storage-test/stress-910b-train-c4-twohour-20261117-r1`, UID
+  3b123ad9-73ea-4ef7-a16e-130be3c25610. Owner GET returned403; no alternate
+  credential or mutation was attempted. See`resource_window_summary.json`.
+  The exact prior Docker-cleanup source is still unproven. Do not infer authority
+  or a usable window from an absent compute PID or the new owner name.
+- Agent5 is implementing a separate quant group core. Correct-domain reference
+  and flattened fault executions must have separate actual Native child records
+  under one model invocation; neither old healthy inputs nor a guessed CPU
+  rounding oracle may substitute. Agent1 independently reviews identity/recovery;
+  row ambiguity still blocks the complete set. This is not a new qualification.
+- Current C2/C3 remain3/17 each. Natural vision census and B/F/OFF require a fresh
+  allocation gate and actual device window. CPU preparation is not NPU acceptance.
+
 ## Active checkpoint — reviewed integration, no device window
 
 - Updated source-a33 is498325a85bab978af1d40f89859c2f0a4e22453d,609 files,

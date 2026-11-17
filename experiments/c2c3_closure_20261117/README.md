@@ -95,12 +95,40 @@ After this increment and the device-allocation gate, main discovery ran810 tests
 with2 skips and no failures; separate Worker discovery passed228 and queue
 contracts passed6. These suites overlap and are not added together.
 
-The full vision processor has not yet been validated: two no-device diagnostics
-stopped during torch_npu import because driver libraries were absent, including
-the retry with Torch backend autoload disabled. No third-party import detector
-was modified. Public configuration files have verified upstream Git blob identities;
-complete pretrained weights are still being prepared. These are preparation
-limits, not evidence that the actual NPU model failed or passed.
+The public Qwen3-VL-2B-Instruct files are now prepared on124 at pinned revision
+`89644892e4d85e24eaac8bacfd4f463576704203`. All10 remote files match the official
+metadata and the independent local verification:4,266,640,306 bytes total,
+including the4,255,140,312-byte weight with SHA256
+`7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0`.
+The transfer completed before verification and no-clobber publication; the
+verified upload and final filename share one inode. No weights enter Git.
+
+Vision CPU preflight-a3 passed the actual unchanged processor, producing
+`input_ids[1,901]` and `pixel_values[3536,1536]` from the pinned existing image.
+The container had no accelerator device nodes or network, and constructed no
+model or loaded weights. Read-only driver libraries resolved the earlier import
+failure. Imports still attempted runtime device discovery and logged failures;
+the old receipt's `actual_npu_calls:0` does not mean zero runtime API calls.
+Future probe output explicitly distinguishes compute invocations from possible
+runtime discovery. Original a1/a2 failures and a3 bytes remain unchanged.
+Natural model inference, target census, B/F/OFF and C2/C3 remain pending.
+The [independent preparation audit](AGENT7_VISION_PREPARATION_REVIEW.md)
+re-read all10 final files and verified the executed source, image and processor
+identities. Its [hash summary](vision_preparation_summary.json) contains no
+model or tensor payloads;8 CPU negative/regression checks passed after integration.
+
+A fresh read-only allocation check observed that Pod`41507ceb-c235-4321-b248-511583b9e006`
+now holds card2/5, replacing the previously recorded Pod. The gate still refuses
+both devices despite no compute PID. Receipt`root-source-a33-readonly-gate-a2.json`
+SHA256 is`f40d56f182c04a95979fa05f5e629faa02ea22f67689c27f7ffce7105d888527`.
+No allocation was cleared and no external container was stopped.
+The later [resource-owner lookup](resource_window_summary.json) records another
+replacement Pod at16:47 UTC, owned by AscendJob
+`reliability-storage-test/stress-910b-train-c4-twohour-20261117-r1`.
+Only GET requests were used. The node identity could inspect its Pod and API
+discovery, but reading the AscendJob itself returned403; its full replica scope
+and pause behavior remain unverified. This does not identify the origin of the
+earlier external Docker cleanup. The device window remains unavailable.
 
 Fault20 additionally has a [root review](native20_group_summary.json):408 C2 and
 678 C3 evidence references match actual stored bytes; all targets have native

@@ -1,0 +1,48 @@
+{
+  "schema": "demoncat.root.resource_window_summary.v1",
+  "scope": "Read-only device allocation and Kubernetes owner lookup; no task mutation",
+  "node": "localhost.localdomain",
+  "physical_cards": [2, 5],
+  "gate_receipt": "/home/17-fault-c2c3-20261117/root-source-a33-readonly-gate-a3.json",
+  "gate_time_utc": "2026-11-17T16:47:56.548798+00:00",
+  "gate_sha256": "69aafccfcab5bbb392c18f51f370e8cbb96ed51dfea7a4a1660a1539f86ee36c",
+  "idle": false,
+  "reason": "KUBELET_DEVICE_ALLOCATION",
+  "checkpoint_sha256": "b570d0ea0d0280157a26d48c536a6aacff8cdf4fb55037f3b3882e85c1395414",
+  "pod": {
+    "uid": "33991897-e3ed-4910-aa2c-835b9fe682a0",
+    "namespace": "reliability-storage-test",
+    "name": "stress-910b-train-c4-twohour-20261117-r1-master-0",
+    "container": "ascend",
+    "phase": "Running",
+    "deletion_timestamp": null,
+    "ascend_device_limit": "2"
+  },
+  "owner": {
+    "api_version": "mindxdl.gitee.com/v1",
+    "resource": "ascendjobs",
+    "kind": "AscendJob",
+    "name": "stress-910b-train-c4-twohour-20261117-r1",
+    "uid": "3b123ad9-73ea-4ef7-a16e-130be3c25610",
+    "controller": true,
+    "namespaced": true
+  },
+  "read_only_api": {
+    "methods_used": ["GET"],
+    "authentication": "Existing kubelet node identity; no credentials copied into report",
+    "node_pod_list": "SUCCESS",
+    "exact_pod_get": "SUCCESS",
+    "resource_discovery": "SUCCESS",
+    "ascendjob_get_http_status": 403,
+    "privilege_escalation_attempted": false
+  },
+  "limitations": [
+    "This is a selected-field root summary of the read-only API responses, not an archived full API response.",
+    "Pod replacement and retained allocations do not uniquely establish who issued earlier Docker stop/kill commands.",
+    "The AscendJob specification, wider replica scope and supported pause behavior could not be inspected with the existing node identity.",
+    "No controller, Pod, device assignment or host Docker entry was changed."
+  ],
+  "npu_experiment_started": false,
+  "c2_qualification_changed": false,
+  "c3_qualification_changed": false
+}
