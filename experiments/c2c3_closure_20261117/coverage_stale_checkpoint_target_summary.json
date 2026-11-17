@@ -1,0 +1,190 @@
+{
+  "schema": "demoncat.stale_checkpoint_target_summary.v1",
+  "observed_utc": "2026-11-17T17:27:57.368554+00:00",
+  "scope": {
+    "host": "npu-dual / 51.62.10.124",
+    "cards": [
+      2,
+      5
+    ],
+    "terminated_pod_uid": "33991897-e3ed-4910-aa2c-835b9fe682a0",
+    "authorization": "Root-controlled one fresh attempt after the explicitly authorized targeted termination; no broader exemption."
+  },
+  "source_sha256": {
+    "run_124": "21a471d133d968eaf96fc7b02617d8295744132c252ed51e314a1f27ed93202e",
+    "kubelet_allocations": "e8a917c3eb65e1f4899fa7d188f525fbf6402650c7bbb2031cec8d1d236d7146"
+  },
+  "raw_receipt": {
+    "path": "experiments/c2c3_closure_20261117/coverage_stale_checkpoint_gate_readonly_a2.json",
+    "sha256": "048704bfd59cf5a18728b257e4617f4aabdb5dcacd4d6fd1df60d8d60d26640a",
+    "disposition": "Local uncommitted evidence; do not publish unrelated OCI or Pod inventories."
+  },
+  "gate": {
+    "idle": true,
+    "blockers": [],
+    "stale_checkpoint_allocations": [
+      {
+        "original_blocker": {
+          "card": 2,
+          "pod_uid": "33991897-e3ed-4910-aa2c-835b9fe682a0",
+          "container": "ascend",
+          "resource": "huawei.com/Ascend910",
+          "device_id": "Ascend910-2",
+          "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED",
+          "reason": "KUBELET_DEVICE_ALLOCATION",
+          "checkpoint": "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint",
+          "checkpoint_sha256": "b570d0ea0d0280157a26d48c536a6aacff8cdf4fb55037f3b3882e85c1395414",
+          "mtime_utc": "2026-11-17T17:11:24.586580+00:00"
+        },
+        "disposition": "STALE_CHECKPOINT_ALLOCATION",
+        "release_evidence_sha256": "c501de94b2621a7348cd58c67c83f1deb71c021c77626b73545a8c0b206aa9c7"
+      },
+      {
+        "original_blocker": {
+          "card": 5,
+          "pod_uid": "33991897-e3ed-4910-aa2c-835b9fe682a0",
+          "container": "ascend",
+          "resource": "huawei.com/Ascend910",
+          "device_id": "Ascend910-5",
+          "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED",
+          "reason": "KUBELET_DEVICE_ALLOCATION",
+          "checkpoint": "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint",
+          "checkpoint_sha256": "b570d0ea0d0280157a26d48c536a6aacff8cdf4fb55037f3b3882e85c1395414",
+          "mtime_utc": "2026-11-17T17:11:24.586580+00:00"
+        },
+        "disposition": "STALE_CHECKPOINT_ALLOCATION",
+        "release_evidence_sha256": "c501de94b2621a7348cd58c67c83f1deb71c021c77626b73545a8c0b206aa9c7"
+      }
+    ],
+    "stale_checkpoint_review": {
+      "schema": "demoncat.kubelet_stale_checkpoint_review.v1",
+      "status": "NO_LIVE_OWNER_CORROBORATED",
+      "time": "2026-11-17T17:27:56.390191+00:00",
+      "kubelet": {
+        "pid": 2125466,
+        "start_ticks": "55778951",
+        "executable": "/home/mindcluster/k8s-cache/v1.28.15/kubelet",
+        "boot_id_sha256": "de14ab438d2f9599410884089343606ac38066c10895f0740faefdbbfd98b800"
+      },
+      "client": {
+        "client_cn": "system:node:localhost.localdomain",
+        "node_name": "localhost.localdomain",
+        "server": "https://51.62.10.124:6443",
+        "kubeconfig": "/etc/kubernetes/kubelet.conf",
+        "kubeconfig_sha256": "6edc835c865aa8adfc06d7fa596a18d6baa7723ca0e7a03ddd352998b576b0ea"
+      },
+      "before": {
+        "node_uid": "9a216fa1-f73a-4d5d-9b94-9da76a8ea465",
+        "node_name": "localhost.localdomain",
+        "node_sha256": "7a9fc2bb67315422acca55a753d4b1b44872fc8fd57d738603a2afcb277df175",
+        "pods_sha256": "e606ebd7f68b3ebf702e70a6dbeaf0c3af98937f9e7a8a216da3113365c0272e",
+        "pods_resource_version": "2596031",
+        "node_resource_version": "2595672",
+        "pod_count": 439,
+        "pod_scope_sha256": "8c4cd4f76c48da54eb09d90d7e6f8b09b8e8a7367bf0fa82a03493b23c04c9e4",
+        "machine_id_matches": true,
+        "boot_id_matches": true,
+        "ready": true,
+        "kubelet_version": "v1.28.15"
+      },
+      "podresources": {
+        "rpc": "/v1.PodResourcesLister/List",
+        "official_proto": "https://github.com/kubernetes/kubernetes/blob/v1.28.15/staging/src/k8s.io/kubelet/pkg/apis/podresources/v1/api.proto",
+        "socket": "/home/mindcluster/kubelet/pod-resources/kubelet.sock",
+        "peer": {
+          "pid": 2125466,
+          "uid": 0,
+          "gid": 0,
+          "device": 64770,
+          "inode": 40413259
+        },
+        "payload_sha256": "f41bf465a44ed7e408c4471d5556dd4ee440054d7d84805747812c4bac2b205e",
+        "headers_sha256": "f6e1108777e29d868ff75b8296acf2d551d6d2a40251de29f1940e7e5ac9647c",
+        "pod_count": 439,
+        "container_count": 439,
+        "http_status": 200,
+        "grpc_status": 0
+      },
+      "after": {
+        "node_uid": "9a216fa1-f73a-4d5d-9b94-9da76a8ea465",
+        "node_name": "localhost.localdomain",
+        "node_sha256": "7a9fc2bb67315422acca55a753d4b1b44872fc8fd57d738603a2afcb277df175",
+        "pods_sha256": "e606ebd7f68b3ebf702e70a6dbeaf0c3af98937f9e7a8a216da3113365c0272e",
+        "pods_resource_version": "2596031",
+        "node_resource_version": "2595672",
+        "pod_count": 439,
+        "pod_scope_sha256": "8c4cd4f76c48da54eb09d90d7e6f8b09b8e8a7367bf0fa82a03493b23c04c9e4",
+        "machine_id_matches": true,
+        "boot_id_matches": true,
+        "ready": true,
+        "kubelet_version": "v1.28.15"
+      },
+      "checkpoint_sha256": {
+        "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint": "b570d0ea0d0280157a26d48c536a6aacff8cdf4fb55037f3b3882e85c1395414"
+      },
+      "checkpoint_pod_uids": [
+        "33991897-e3ed-4910-aa2c-835b9fe682a0"
+      ],
+      "oci_tasks_sha256": "b4255f1d58cb341cb33e373ed9ae74ab1a6d92e4dc5ebee9a17d48e463e3768c",
+      "machine_id_sha256": "c617df57b31fa0a089d579c49507b265a928132262f8a458378f5b0c2d670600",
+      "boot_id_sha256": "3249dc1f016dfcff62142faa546c246c62d00ba763e47710731400a8d6f0d32b",
+      "internal_allocation_clearance_proven": false,
+      "driver_initialization_available_proven": false,
+      "exclusive_device_reservation": false,
+      "limitation": "READ_ONLY_NO_LIVE_OWNER_SNAPSHOT_NOT_DRIVER_OR_INTERNAL_ALLOCATION_CLEARANCE",
+      "evidence_sha256": "c501de94b2621a7348cd58c67c83f1deb71c021c77626b73545a8c0b206aa9c7",
+      "post_gate": {
+        "time": "2026-11-17T17:27:56.391605+00:00",
+        "blockers": [
+          {
+            "card": 2,
+            "pod_uid": "33991897-e3ed-4910-aa2c-835b9fe682a0",
+            "container": "ascend",
+            "resource": "huawei.com/Ascend910",
+            "device_id": "Ascend910-2",
+            "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED",
+            "reason": "KUBELET_DEVICE_ALLOCATION",
+            "checkpoint": "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint",
+            "checkpoint_sha256": "b570d0ea0d0280157a26d48c536a6aacff8cdf4fb55037f3b3882e85c1395414",
+            "mtime_utc": "2026-11-17T17:11:24.586580+00:00"
+          },
+          {
+            "card": 5,
+            "pod_uid": "33991897-e3ed-4910-aa2c-835b9fe682a0",
+            "container": "ascend",
+            "resource": "huawei.com/Ascend910",
+            "device_id": "Ascend910-5",
+            "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED",
+            "reason": "KUBELET_DEVICE_ALLOCATION",
+            "checkpoint": "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint",
+            "checkpoint_sha256": "b570d0ea0d0280157a26d48c536a6aacff8cdf4fb55037f3b3882e85c1395414",
+            "mtime_utc": "2026-11-17T17:11:24.586580+00:00"
+          }
+        ],
+        "npu_smi_sha256": "3f749a919d3821d254660d28c2b692520839b954ca3cae082a081ce8a1c8c5cd",
+        "state_sha256": "9698a3719a5dac54a31337175a3721e5d58bf51eeb59e75b34de1d7d58a99e53"
+      }
+    }
+  },
+  "checkpoint_history": {
+    "sha256": "b570d0ea0d0280157a26d48c536a6aacff8cdf4fb55037f3b3882e85c1395414",
+    "earlier_observation_utc": "2026-11-17T17:10:51Z",
+    "earlier_mtime_utc": "2026-11-17T16:44:53.399855+00:00",
+    "current_mtime_utc": "2026-11-17T17:11:24.586580+00:00",
+    "inference": "mtime advanced while bytes stayed identical; this is not proof that the checkpoint was never rewritten."
+  },
+  "validation": {
+    "cpu_contract_tests_passed": 44,
+    "command": "python -B -m unittest test_device_allocation_gate test_kubelet_live_allocation_gate",
+    "host_python": "3.12.4 | packaged by Anaconda, Inc. | (main, Jun 18 2024, 15:03:55) [GCC 11.2.0]",
+    "remote_mutations": 0,
+    "workload_or_container_starts": 0,
+    "device_initialization_attempts": 0
+  },
+  "limits": [
+    "No proof that internal allocatedDevices or pendingAdmissionPod is empty.",
+    "No proof that aclInit is available or that the host is isolated.",
+    "No attribution of the earlier FA a3 Resource_Busy to Kubernetes; a3 had zero calls and a4 had an explicit process blocker.",
+    "If the one authorized new attempt still returns Resource_Busy, preserve failure and stop; do not clear checkpoints or widen exemptions."
+  ]
+}

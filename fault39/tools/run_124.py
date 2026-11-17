@@ -196,7 +196,7 @@ def runtime_device_inventory(cards, devices, *, proc_root=Path('/proc'),
                              default_checkpoint=Path('/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint')):
     """Read actual daemon roots and retained kubelet allocations, never clear them."""
     report = dict(blockers=[], device_access_grants=[], containerd_states=[],
-                  kubelet_checkpoint_sources=[], kubelet_allocation_checks=[])
+                  kubelet_checkpoint_sources=[], kubelet_allocation_checks=[], oci_tasks=[])
     states, checkpoints = {}, {}
 
     def unknown(reason, **where):
@@ -219,7 +219,7 @@ def runtime_device_inventory(cards, devices, *, proc_root=Path('/proc'),
                 for checkpoint, basis in kubelet_checkpoint_paths(proc, root):
                     checkpoints[str(checkpoint)] = checkpoint
                     report['kubelet_checkpoint_sources'].append(dict(pid=int(proc.name), root_dir=str(root),
-                        checkpoint=str(checkpoint), **basis))
+                        checkpoint=str(checkpoint), kubeconfig=_runtime_option(arguments, ('--kubeconfig',)), **basis))
         except FileNotFoundError:
             if proc.exists():
                 unknown('RUNTIME_ALLOCATION_SOURCE_MISSING', pid=int(proc.name))
@@ -247,7 +247,13 @@ def runtime_device_inventory(cards, devices, *, proc_root=Path('/proc'),
                             continue
                         config = task / 'config.json'
                         try:
-                            item = json.loads(config.read_text())
+                            raw = config.read_bytes()
+                            item = json.loads(raw)
+                            if namespace.name == 'k8s.io':
+                                annotations = item.get('annotations', {})
+                                report['oci_tasks'].append(dict(task=task.name, config=str(config),
+                                    config_sha256=hashlib.sha256(raw).hexdigest(),
+                                    pod_uid=annotations.get('io.kubernetes.cri.sandbox-uid')))
                             report['device_access_grants'].extend(oci_device_grants(
                                 item, devices, task=task.name, config=str(config)))
                         except (OSError, ValueError, TypeError, AttributeError) as error:
@@ -270,7 +276,7 @@ def runtime_device_inventory(cards, devices, *, proc_root=Path('/proc'),
     return report
 
 
-def idle_gate(cards):
+def idle_gate(cards, *, review_stale=True):
     report = {'time': datetime.now(timezone.utc).isoformat(), 'cards': cards, 'blockers': [], 'device_access_grants': []}
     report['npu_smi'] = command(['npu-smi', 'info'])
     rows = report['npu_smi'].splitlines()
@@ -313,6 +319,30 @@ def idle_gate(cards):
     report['blockers'].extend(runtime.pop('blockers'))
     report['device_access_grants'].extend(runtime.pop('device_access_grants'))
     report.update(runtime)
+    if (review_stale and report['blockers']
+            and all(row['reason'] == 'KUBELET_DEVICE_ALLOCATION' for row in report['blockers'])):
+        try:
+            from kubelet_allocations import digest, review_stale_allocations
+            proof = review_stale_allocations(report['blockers'], report['kubelet_checkpoint_sources'], report['oci_tasks'])
+            # Recheck actual compute/FDs, runtime tasks, permissions and retained
+            # checkpoints after the live API window. Never recurse into review.
+            post = idle_gate(cards, review_stale=False)
+            fields = ('blockers', 'device_access_grants', 'oci_tasks', 'containerd_states',
+                      'kubelet_checkpoint_sources', 'kubelet_allocation_checks')
+            report['stale_checkpoint_post_gate'] = dict(time=post['time'], blockers=post['blockers'],
+                npu_smi_sha256=hashlib.sha256(post['npu_smi'].encode()).hexdigest(),
+                state_sha256=digest({key: post[key] for key in fields}))
+            if any(digest(report[key]) != digest(post[key]) for key in fields):
+                raise ValueError('DEVICE_OR_RUNTIME_STATE_CHANGED_DURING_LIVE_REVIEW')
+            proof['post_gate'] = report['stale_checkpoint_post_gate']
+            proof['evidence_sha256'] = digest({key: value for key, value in proof.items() if key != 'evidence_sha256'})
+            report['stale_checkpoint_allocations'] = [dict(original_blocker=row, disposition='STALE_CHECKPOINT_ALLOCATION',
+                release_evidence_sha256=proof['evidence_sha256']) for row in report['blockers']]
+            report['blockers'] = []
+            report['stale_checkpoint_review'] = proof
+        except Exception as error:
+            report['stale_checkpoint_review'] = dict(status='UNKNOWN_OR_STILL_RESERVED',
+                reason=type(error).__name__ + ':' + str(error)[:512])
     report['idle'] = not report['blockers']
     return report
 
