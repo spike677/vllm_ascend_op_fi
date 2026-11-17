@@ -92,14 +92,25 @@ def _capture(directory, config, collector):
     collector_identity.pop('package', None)
     if not isinstance(collector_identity.get('files'), dict) or not collector_identity['files']:
         raise ValueError('COLLECTOR_IDENTITY_INCOMPLETE')
-    rows, structure = [], []
+    rows, structure, boolean_extrema = [], [], []
     def walk(value, path):
         if isinstance(value, dict):
             if value.get('type') == 'torch.Tensor':
                 if not set(METRICS).issubset(value):
                     raise ValueError('INCOMPLETE_RAW_TENSOR_STATISTICS:' + path)
                 structure.append((path, {k: v for k, v in value.items() if k not in METRICS}))
-                rows.append((path, {name: value[name] for name in METRICS}))
+                metrics = {name: value[name] for name in METRICS}
+                # msprobe emits actual torch.bool extrema as JSON booleans.
+                # Interpret only these declared boolean-tensor Max/Min values
+                # as 0/1; retain their original JSON values in the report.
+                # A boolean masquerading as a floating statistic still refuses.
+                if value.get('dtype') == 'torch.bool':
+                    for name in ('Max', 'Min'):
+                        if type(metrics[name]) is bool:
+                            boolean_extrema.append(dict(identity=path, field=name,
+                                raw_json_value=metrics[name], numeric_value=str(int(metrics[name]))))
+                            metrics[name] = Decimal(int(metrics[name]))
+                rows.append((path, metrics))
             else:
                 structure.append((path, ['dict', list(value)]))
                 for name, child in value.items():
@@ -114,7 +125,7 @@ def _capture(directory, config, collector):
         walk(values, operator)
     return dict(records=rows, structure=structure, stack=documents['stack.json'],
                 construct=documents['construct.json'], config=configuration,
-                collector=collector_identity, files=files)
+                collector=collector_identity, files=files, boolean_extrema=boolean_extrema)
 
 
 def _inventory(rows):
@@ -141,6 +152,7 @@ def compare_raw_statistics(*, baseline, fault, baseline_config, fault_config,
         comparison_rule='abs(F-B) > atol + rtol*abs(B)', numerical_encoding='decimal_text',
         native_logs_read=False, private_tensors_read=False, expected_location_read=False,
         files=dict(baseline=b['files'], fault=f['files']), full_dump_inventory=inventories,
+        boolean_extrema=dict(baseline=b['boolean_extrema'], fault=f['boolean_extrema']),
         comparator_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         public_qualification_granted=False, root_cause_identified=False)
     mismatches = [name for name in ('config', 'collector', 'structure', 'stack', 'construct') if b[name] != f[name]]

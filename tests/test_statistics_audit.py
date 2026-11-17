@@ -74,6 +74,28 @@ class StatisticsAuditTests(unittest.TestCase):
         self.assertFalse(result['e5_statistics_comparable'])
         self.assertIsNone(result['first_exceedance'])
 
+    def test_boolean_tensor_extrema_compare_without_changing_raw_bytes(self):
+        left = dict(tensor(Max=False, Min=False, Mean=None, Norm=None), dtype='torch.bool')
+        right = dict(left, Max=True)
+        self.capture(self.b, [('Torch.where.0.forward', left)])
+        self.capture(self.f, [('Torch.where.0.forward', right)])
+        original = (self.f/'dump.json').read_bytes()
+        report = self.pair()
+        self.assertTrue(report['baseline_self_comparable'])
+        self.assertEqual(report['first_exceedance']['baseline'], '0')
+        self.assertEqual(report['first_exceedance']['fault'], '1')
+        self.assertEqual(report['first_exceedance']['tolerance'], '1E-8')
+        self.assertTrue(report['boolean_extrema']['fault'][0]['raw_json_value'])
+        self.assertEqual((self.f/'dump.json').read_bytes(), original)
+
+    def test_boolean_value_in_float_tensor_remains_invalid(self):
+        self.capture(self.b, [('Torch.where.0.forward', tensor(Max=True))])
+        self.capture(self.f, [('Torch.where.0.forward', tensor(Max=True))])
+        report = self.pair()
+        self.assertFalse(report['baseline_self_comparable'])
+        self.assertEqual(report['full_dump_inventory']['baseline']['counts']['unsupported'], 1)
+        self.assertEqual(report['boolean_extrema']['baseline'], [])
+
     def test_nan_after_difference_blocks_whole_dump_qualification(self):
         self.capture(self.b,[('NPU.fia.0.forward',tensor()),('Torch.mm.0.forward',tensor(Mean='NaN'))])
         self.capture(self.f,[('NPU.fia.0.forward',tensor(Norm=3)),('Torch.mm.0.forward',tensor(Mean='NaN'))])
