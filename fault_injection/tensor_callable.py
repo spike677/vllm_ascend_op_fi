@@ -48,11 +48,15 @@ def _method(module, name):
 
 class TensorCallableGuard:
     """Live object/function/code and exact source guard for one model module."""
-    def __init__(self, module):
+    def __init__(self, module, *, extra_methods=(), bind_optional_dispatch=True):
         self.module = module
         forward, _ = _method(module, 'forward')
         self.names = ('forward', '_forward_method') if (
-            '_forward_method' in forward.__code__.co_names or hasattr(module, '_forward_method')) else ('forward',)
+            '_forward_method' in forward.__code__.co_names or
+            bind_optional_dispatch and hasattr(module, '_forward_method')) else ('forward',)
+        self.names += tuple(extra_methods)
+        if len(set(self.names)) != len(self.names):
+            raise UnsupportedCall('DUPLICATE_TENSOR_CALLABLE_BOUNDARY')
         self._functions = {}
         self._codes = {}
         self.sources = []

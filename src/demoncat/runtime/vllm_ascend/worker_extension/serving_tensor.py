@@ -19,7 +19,7 @@ from .providers.tensor_natural import NaturalTensorGroupProvider, _sha
 
 class ServingTensorGroup:
     def __init__(self, worker, *, prompt, weight_manifest, workload_sha256, environment_sha256,
-                 _simulation=False, _synchronize=None):
+                 _simulation=False, _synchronize=None, _mechanism='18.api_half'):
         from vllm.model_executor.layers.logits_processor import LogitsProcessor
         self.worker, self.runner, self.model = worker, worker.model_runner, worker.model_runner.model
         require_serial_eager(self.runner)
@@ -46,7 +46,7 @@ class ServingTensorGroup:
                 'SYNCHRONIZER_OVERRIDE_IS_CPU_CONTRACT_ONLY')
         synchronize = _synchronize if _simulation else torch.npu.synchronize
         require(callable(synchronize), 'ACTUAL_SYNCHRONIZER_REQUIRED')
-        self.provider = NaturalTensorGroupProvider(self.model, '18.api_half', replay=no_direct_replay,
+        self.provider = NaturalTensorGroupProvider(self.model, _mechanism, replay=no_direct_replay,
             synchronize=synchronize, workload_sha256=workload_sha256, simulation=_simulation,
             environment_sha256=environment_sha256, model_weights_sha256=_sha(weight_manifest),
             model_source_sha256=_sha(sources), worker_identity=identity['worker'])
@@ -108,8 +108,6 @@ class ServingTensorGroup:
             self.provider.target_guards[path].verify()
 
     def expect(self, request_id, phase, arm=None):
-        from fault_injection.tensor_observer import NaturalTensorObserver
-        from fault_injection.rmsnorm_return import RMSNormReturnSession
         self._context()
         require(self.expected is None and self.current is None and self.adapter is None,
                 'PREVIOUS_TENSOR_REQUEST_NOT_COLLECTED')
@@ -132,16 +130,10 @@ class ServingTensorGroup:
         if phase.endswith('off'):
             self.provider.enabled = False
         if arm is not None:
-            self.adapter = RMSNormReturnSession(self.model, arm=arm,
-                admission=self.provider._admission, observe_post_root_consumers=True,
-                simulation=self.provider.simulation,
-                diagnostics_context=self._diagnostics)
+            self.adapter = self._make_adapter(arm)
             self.adapter.__enter__()
             self.provider.active_adapter = self.adapter
-        self.observer = NaturalTensorObserver(self.model,
-            on_module_enter=self.provider._module_enter,
-            on_operator_enter=self.provider._operator_enter,
-            diagnostics_context=self._diagnostics).__enter__()
+        self.observer = self._make_observer().__enter__()
         callback = self._post
         self.root_post_handle = self.model.register_forward_hook(callback, with_kwargs=True, always_call=True)
         self._callbacks[self.root_post_handle.id] = callback
@@ -149,12 +141,24 @@ class ServingTensorGroup:
             self.statistics_capture.begin(self.model, 'statistics_' + arm)
         return dict(expected=request_id, phase=phase, arm=arm)
 
+    def _make_adapter(self, arm):
+        from fault_injection.rmsnorm_return import RMSNormReturnSession
+        return RMSNormReturnSession(self.model, arm=arm, admission=self.provider._admission,
+            observe_post_root_consumers=True, simulation=self.provider.simulation,
+            diagnostics_context=self._diagnostics)
+
+    def _make_observer(self):
+        from fault_injection.tensor_observer import NaturalTensorObserver
+        return NaturalTensorObserver(self.model, on_module_enter=self.provider._module_enter,
+            on_operator_enter=self.provider._operator_enter, diagnostics_context=self._diagnostics)
+
     def _diagnostics(self):
         return self.statistics_capture.diagnostics() if self.statistics_capture is not None else nullcontext()
 
     def configure_statistics(self, capture, arm):
         self._context()
-        require(arm in ('baseline', 'fault') and self.statistics_capture is None
+        require(self.provider.mechanism == '18.api_half'
+                and arm in ('baseline', 'fault') and self.statistics_capture is None
                 and self.provider.candidates is not None and self.provider.group is None
                 and len(self.seen) == 4 and self.expected is None,
                 'QUALIFIED_FRESH_WORKER_STATISTICS_REQUIRED')
@@ -255,15 +259,16 @@ class ServingTensorGroup:
 
     def abort(self):
         from fault_injection.coverage import Outcome
+        failure = dict(phase=getattr(self, 'phase', None), request_id=self.expected)
         if self.statistics_capture is not None and self.statistics_capture.active:
             self.statistics_capture.end(completed=False)
         self._context(verify_targets=False)
         if self.root_post_handle is not None:
             self._remove_hook(self.root_post_handle); self.root_post_handle = None
         if self.observer is not None:
-            self.observer.close(); self.observer = None
+            self.observer.close(); failure['independent'] = self.observer.report(); self.observer = None
         if self.adapter is not None:
-            self.adapter.close(); self.adapter = None
+            self.adapter.close(); failure['mechanism'] = self.adapter.report(); self.adapter = None
         self.provider.active_adapter = None; self.provider._running = False
         self.provider.enabled = False
         self.provider._statistics_arm = None
@@ -278,6 +283,7 @@ class ServingTensorGroup:
         cleanup = self.close()
         cleanup['group_recovery'] = (self.provider.group.report() if self.provider.group is not None else None)
         cleanup['failed_request_recovery_claimed'] = False
+        cleanup['failed_phase'] = failure
         return cleanup
 
     def close(self):

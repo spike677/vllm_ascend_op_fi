@@ -292,3 +292,69 @@ CPU validation passed 58 focused regressions, followed by nine current
 window/controller tests including the additional native-RMS lineage pause
 test. Those tests explicitly use fake collector controls/CPU fixtures and do
 not substitute for the root-queued raw capture.
+
+## Natural Fault8 adaptation after the actual census
+
+Root's no-injection census completed at
+`/home/17-fault-c2c3-20261117/natural-moe8-a1/natural-moe8-census/probe/result.json`
+from source-a21: 52 real unpermute calls, two genuine requests with 26 each.
+All five producer/pipeline roles also have 52 observations; complete=true,
+errors=[], exact full-output B-repeat and unchanged healthy generation token
+185. This census alone grants no injection qualification.
+
+Every target used the original AllGather schema: H BF16 `[60,2048]`, I int32
+`[60]`, P BF16 `[10,6]`, all contiguous NPU format2; padded_mode=false,
+restore_shape=null; native output BF16 `[10,2048]`. The original top-k is 6.
+P is the same object through selection, pipeline, routing metadata and combine.
+The actual quantized MLP consumes routing's int8 tensor and returns exactly the
+BF16 H consumed by unpermute. I is the actual `abs(expanded_row_idx)` result.
+No model format, dtype, expert count, routing or scheduler change is needed.
+
+`ServingMoEGroup`/`MoERestoreTrace` connect that real opaque internal boundary
+to the shared coverage session. Only the reviewed actual Python combine frame
+opens the nested mode. An independent pre-remap callback verifies all five
+producer identities and issues the actual request ticket before injection.
+The captured original dispatcher is called exactly once; consumed named
+arguments and native return are recorded, including on subsequent validation
+failure. The combine and routed pipeline must return that same native object.
+No model method or custom-op registration is replaced.
+
+The mechanism preserves the original paired-group rule `g(t)=min(t+1,T-1)`.
+H and original I/P remain unchanged and dtypes are preserved. Natural
+qualification requires actual I values to form a full `[0,T*K)` permutation,
+exact lossless full-model output, and exact full native output against the
+existing FP32 grouped contribution oracle rounded to the return dtype. This
+additional gate is conservative: a different real kernel arithmetic/order
+causes pre-fault refusal with mismatch counts, never tolerance relaxation or
+denominator reduction. Fault-time checks use each call's current actual H/I/P,
+so legitimate upstream propagation does not require later H to equal baseline.
+
+Automatic structural inventory uses actual top_k/forward_impl modules; each
+must yield one observed, value-qualified unpermute in this bounded prefill.
+Both forward and forward_impl identities are bound along with reviewed
+producer sources. An inherited unused CustomOp dispatch field is not used as
+a substitute for the actual overridden forward. Unsupported communication
+paths, source drift, producer replacement, partial permutations and missing
+structural modules refuse before qualification.
+
+Root may prepare one new C2/C3 case:
+
+```
+python experiments/c2c3_closure_20261117/prepare_tensor_natural_cases.py \
+  --source /home/17-fault-c2c3-20261117/<new-frozen-source> \
+  --task moe8-group --card 2 --out <new-moe-group-cases.json>
+```
+
+Its entry point is `natural_moe_worker_probe.py --model /model --out
+/evidence/probe --memory .55`. It shares the proven nine-request lifecycle:
+four real healthy qualification requests; C2 all targets/OFF; two C3
+every-match requests/OFF; owned cleanup and ordinary healthy generation.
+Reports explicitly identify mechanism8. The expected 26/52 are not acceptance
+counts until the real run and independent audit. Raw MoE statistics/mix is
+still a separate subsequent requirement.
+
+CPU validation passed 63 regressions and then 13 focused tests after further
+callable/queue checks. The opaque-call fixture proves paired remapping through
+two dependent MoE modules, C2/C3 tickets and exact OFF. Refusal cases cover
+duplicate indices, replacement P producer and an unobserved structural module.
+No NPU was started here; no new natural Fault8 acceptance is claimed.

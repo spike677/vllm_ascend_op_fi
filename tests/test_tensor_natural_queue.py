@@ -24,6 +24,13 @@ class TensorQueueTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 cases(source, 'worker18-statistics', card)
 
+    def test_actual_moe_group_requires_runtime_counts_and_full_recovery(self):
+        row, = cases('/home/17-fault-c2c3-20261117/source-next', 'moe8-group')
+        self.assertIn('natural_moe_worker_probe.py', row['command'])
+        self.assertNotEqual(row['review']['expected_hits'], 0)
+        self.assertIn('Runtime-qualified', row['review']['expected_hits'])
+        self.assertIn('no layer/router changes', row['review']['recovery_plan'])
+
 
 if __name__ == '__main__':
     unittest.main()

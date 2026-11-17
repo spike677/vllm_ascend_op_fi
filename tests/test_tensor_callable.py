@@ -26,6 +26,20 @@ class Dispatch(torch.nn.Module):
 
 
 class TensorCallableTests(unittest.TestCase):
+    def test_actual_extra_method_is_bound_even_when_generic_dispatch_is_unused(self):
+        class Direct(torch.nn.Module):
+            def forward(self, x):
+                return self.forward_impl(x)
+            def forward_impl(self, x):
+                return x * 2
+        module = Direct().eval()
+        module._forward_method = lambda x: x  # Not used by this overridden forward.
+        guard = TensorCallableGuard(module, extra_methods=('forward_impl',), bind_optional_dispatch=False)
+        self.assertEqual(guard.names, ('forward', 'forward_impl'))
+        module.forward_impl = types.MethodType(Dispatch.alternative, module)
+        with self.assertRaisesRegex(UnsupportedCall, 'DISPATCH_CALLABLE_CHANGED'):
+            guard.verify()
+
     def test_forward_and_actual_dispatch_both_bound(self):
         module = Dispatch().eval(); guard = TensorCallableGuard(module)
         self.assertEqual([row['name'] for row in guard.report()['methods']], ['forward', '_forward_method'])

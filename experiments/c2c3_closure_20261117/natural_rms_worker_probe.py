@@ -20,7 +20,7 @@ def actual(worker):
     return worker.worker if isinstance(worker, WorkerWrapperBase) else worker
 
 
-def setup(worker, prompt, weights, workload):
+def setup(worker, prompt, weights, workload, mechanism='18.api_half'):
     import torch
     import torch_npu
     from demoncat.runtime.vllm_ascend.worker_extension.serving_tensor import ServingTensorGroup
@@ -29,7 +29,16 @@ def setup(worker, prompt, weights, workload):
         raise RuntimeError('FOREIGN_SERVING_TENSOR_OWNER')
     environment = dict(torch=torch.__version__, torch_npu=torch_npu.__version__,
                        device=torch.npu.get_device_name(0))
-    session = ServingTensorGroup(worker, prompt=prompt, weight_manifest=weights,
+    if mechanism == '8.restore_offset':
+        from demoncat.runtime.vllm_ascend.worker_extension.serving_moe import ServingMoEGroup
+        factory = ServingMoEGroup
+    elif mechanism == '18.api_half':
+        factory = ServingTensorGroup
+    else:
+        raise RuntimeError('UNREVIEWED_NATURAL_WORKER_TENSOR_MECHANISM')
+    # The internal trusted RPC host slot is shared for compatibility. Its
+    # mechanism is explicit in the provider, scope and every result report.
+    session = factory(worker, prompt=prompt, weight_manifest=weights,
         workload_sha256=workload, environment_sha256=digest(environment))
     worker._natural_rms_group = session
     return dict(provenance=session.provenance, environment=environment)
@@ -65,13 +74,20 @@ def cleanup(worker, failed):
     return report
 
 
-def main():
+def main(mechanism='18.api_half'):
+    if mechanism not in ('18.api_half', '8.restore_offset'):
+        raise ValueError('Explicit reviewed natural Worker mechanism required')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--model', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
-    parser.add_argument('--memory', type=float, default=.35)
-    args = parser.parse_args(); args.out.mkdir(parents=True, exist_ok=False)
-    report = dict(status='STARTED', mechanism='18.api_half', standard_vllm_worker=True,
+    parser.add_argument('--memory', type=float, default=.55 if mechanism == '8.restore_offset' else .35)
+    args = parser.parse_args()
+    if not .1 <= args.memory <= .8:
+        parser.error('Bounded Worker memory fraction .1..8 required')
+    args.out.mkdir(parents=True, exist_ok=False)
+    success = ('STANDARD_WORKER_MOE_GROUP_CONTRACT_COMPLETE' if mechanism == '8.restore_offset'
+               else 'STANDARD_WORKER_RMS_GROUP_CONTRACT_COMPLETE')
+    report = dict(status='STARTED', mechanism=mechanism, standard_vllm_worker=True,
                   public_qualification_granted=False, requests=[])
     llm = None; installed = False; completed = False; seen = []
     def save():
@@ -83,6 +99,17 @@ def main():
             for path in sorted({*args.model.glob('*.safetensors'), *args.model.glob('pytorch_model*.bin')})}
         if not weights:
             raise RuntimeError('ACTUAL_PRETRAINED_WEIGHTS_REQUIRED')
+        model_config = None
+        if mechanism == '8.restore_offset':
+            config_path = args.model/'config.json'
+            if sha_file(config_path) != '229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75':
+                raise RuntimeError('ACTUAL_REVIEWED_DEEPSEEK_W8A8_CONFIG_REQUIRED')
+            if len(weights) != 4 or not (args.model/'quant_model_description.json').is_file():
+                raise RuntimeError('ACTUAL_FOUR_SHARD_W8A8_MODEL_REQUIRED')
+            model_config = dict(config=json.loads(config_path.read_text()), sha256=sha_file(config_path),
+                quantization_sha256=sha_file(args.model/'quant_model_description.json'),
+                routing_modified=False)
+            report['actual_model_config'] = model_config
         llm = LLM(model=str(args.model), dtype='bfloat16', tensor_parallel_size=1, enforce_eager=True,
             max_model_len=128, max_num_seqs=1, max_num_batched_tokens=128, num_gpu_blocks_override=64,
             enable_prefix_caching=False, enable_chunked_prefill=False, async_scheduling=False,
@@ -99,7 +126,8 @@ def main():
         params = SamplingParams(temperature=0, max_tokens=1, ignore_eos=True)
         healthy, = llm.generate([prompt], params, use_tqdm=False)
         report['healthy_before'] = list(healthy.outputs[0].token_ids)
-        report['setup'] = rpc(setup, tokens, weights, digest(dict(weights=weights, tokens=tokens)))
+        report['setup'] = rpc(setup, tokens, weights,
+            digest(dict(weights=weights, tokens=tokens, model_config=model_config)), mechanism)
         installed = True; save()
         def request(phase, arm=None):
             if llm.llm_engine.has_unfinished_requests():
@@ -132,7 +160,7 @@ def main():
         if not report['c3']['contract_satisfied']:
             raise RuntimeError('STANDARD_WORKER_C3_NOT_COMPLETE')
         completed = True
-        report['status'] = 'STANDARD_WORKER_RMS_GROUP_CONTRACT_COMPLETE'
+        report['status'] = success
         report['statistics_status'] = 'SEPARATE_STANDARD_WORKER_CAPTURE_REQUIRED'
     except BaseException as exc:
         report.update(status='REFUSED_OR_FAILED', error=repr(exc), traceback=traceback.format_exc())
@@ -154,7 +182,7 @@ def main():
                 report.update(status='REFUSED_OR_FAILED', cleanup_error=repr(error))
         save()
     print(json.dumps({key: report[key] for key in ('status', 'error') if key in report}))
-    return 0 if report['status'] == 'STANDARD_WORKER_RMS_GROUP_CONTRACT_COMPLETE' else 2
+    return 0 if report['status'] == success else 2
 
 
 if __name__ == '__main__':

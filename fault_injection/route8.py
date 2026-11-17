@@ -10,12 +10,15 @@ from .core import UnsupportedCall
 class RestoreOffsetSession(ScopedDispatch):
     mechanism = '8.restore_offset'
 
-    def __init__(self, model, *, selected_calls=None, **kwargs):
+    def __init__(self, model, *, selected_calls=None, admission=None, strict_group_oracle=False, **kwargs):
         super().__init__(model, **kwargs)
         self.private_observations = {}
         self.selected_calls = None if selected_calls is None else frozenset(selected_calls)
+        self.admission, self.strict_group_oracle = admission, strict_group_oracle
 
     def is_selected(self, event):
+        if self.admission is not None:
+            return bool(self.admission(event))
         return ((event['path'], event['ordinal']) in self.selected_calls
                 if self.selected_calls is not None else super().is_selected(event))
 
@@ -49,6 +52,9 @@ class RestoreOffsetSession(ScopedDispatch):
                 raise UnsupportedCall('Partial MoE expert/token groups are not admitted')
             original_i, original_p, original_h = self.cpu(indices), self.cpu(probs), self.cpu(hidden)
             if not torch.equal(original_i.long().sort().values,torch.arange(tokens*topk)):
+                event.update(status='unsupported', reason='COMPLETE_CONTRIBUTION_PERMUTATION_REQUIRED',
+                    complete_permutation_value_verified=False, native_calls=0,
+                    token_groups=tokens, topk=topk, unique_indices=int(original_i.unique().numel()))
                 raise UnsupportedCall('Healthy restore indices must cover the complete contribution permutation')
             if not bool(torch.isfinite(original_h).all() and torch.isfinite(original_p).all()):
                 raise UnsupportedCall('Healthy MoE input must be finite')
@@ -74,9 +80,20 @@ class RestoreOffsetSession(ScopedDispatch):
                 raise UnsupportedCall('Original MoE inputs changed')
             # The CPU oracle describes the intended grouped consumer. It is
             # auxiliary evidence, never a substitute for the original NPU call.
-            reference=(original_h.float()[original_i.long()].reshape(tokens,topk,-1)
-                       *original_p.float().unsqueeze(-1)).sum(1)[group_cpu]
+            unshifted=(original_h.float()[original_i.long()].reshape(tokens,topk,-1)
+                       *original_p.float().unsqueeze(-1)).sum(1)
+            reference=unshifted[group_cpu]
             max_abs=float((actual.float()-reference).abs().max())
+            oracle_exact=torch.equal(actual, reference.to(actual.dtype))
+            if self.strict_group_oracle and not oracle_exact:
+                expected = reference.to(actual.dtype)
+                event.update(status='unsupported', reason='COMPLETE_GROUP_ORACLE_NOT_EXACT',
+                    original_execution_verified=True, native_calls=1, token_groups=tokens, topk=topk,
+                    output_shape=list(actual.shape), dtype=str(actual.dtype),
+                    complete_permutation_value_verified=True, complete_native_output_oracle_exact=False,
+                    rounded_oracle_mismatches=int((actual != expected).sum()),
+                    rounded_oracle_max_abs=float((actual.float()-expected.float()).abs().max()))
+                raise UnsupportedCall('NATURAL_NATIVE_UNPERMUTE_COMPLETE_GROUP_ORACLE_NOT_EXACT')
             event.update(status='applied' if injecting else 'baseline',applied=injecting,
                 original_execution_verified=True,native_calls=1,paired_group_readback_exact=True,
                 input_storage_unchanged=True,token_groups=tokens,topk=topk,
@@ -84,6 +101,11 @@ class RestoreOffsetSession(ScopedDispatch):
                 consumer_operator=str(func),consumer_returned=True,auxiliary_fp32_oracle_max_abs=max_abs,
                 boundary='npu_moe_token_unpermute.inputs',
                 semantics='PAIRED_TOKEN_GROUP_REMAP_NOT_ELEMENTWISE_INDEX_OFFSET')
+            if self.strict_group_oracle:
+                event.update(complete_permutation_value_verified=True,
+                    complete_native_output_oracle_exact=True, return_readback_exact=True,
+                    output_changed=not torch.equal(actual, unshifted.to(actual.dtype)),
+                    consumers=[dict(operator=str(func), returned=True, actual_native_input_consumer=True)])
             self.private_observations[(event['path'],event['ordinal'])] = dict(
                 inputs=(original_h,original_i,original_p),output=actual,source_groups=group_cpu)
         return result

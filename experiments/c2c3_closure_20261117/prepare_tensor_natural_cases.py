@@ -10,8 +10,8 @@ def cases(source, task, card=2, image='quay.io/ascend/vllm-ascend:v0.18.0'):
             any(char in source for char in ('\n', '\r', '\x00', ',')) or
             '..' in PurePosixPath(source).parts or card not in (2, 5)):
         raise ValueError('ABSOLUTE_FROZEN_SOURCE_AND_REVIEWED_CARD_REQUIRED')
-    if task == 'moe8-census':
-        phases = [('natural-moe8-census', None)]
+    if task in ('moe8-census', 'moe8-group'):
+        phases = [('natural-moe8-census' if task == 'moe8-census' else 'natural-moe8-group', None)]
         model = '/home/haoran/models/DeepSeek-V2-Lite-W8A8'
     elif task == 'worker18-statistics':
         phases = [('natural-worker18-stats-b', 'baseline'), ('natural-worker18-stats-repeat', 'baseline'),
@@ -25,6 +25,9 @@ def cases(source, task, card=2, image='quay.io/ascend/vllm-ascend:v0.18.0'):
                    '--kind worker --model /model --out /evidence/probe --memory .55 --moe-trace') if arm is None else (
                    'python3 /source/experiments/c2c3_closure_20261117/natural_rms_worker_statistics.py '
                    '--model /model --out /evidence/probe --memory .35 --arm ' + shlex.quote(arm))
+        if task == 'moe8-group':
+            command = ('python3 /source/experiments/c2c3_closure_20261117/natural_moe_worker_probe.py '
+                       '--model /model --out /evidence/probe --memory .55')
         result.append(dict(id=name, image=image, timeout=1800,
             mounts=[[source, '/source', 'ro'], [model, '/model', 'ro']],
             command='source /usr/local/Ascend/cann-8.5.1/set_env.sh\nexec '+command,
@@ -38,13 +41,17 @@ def cases(source, task, card=2, image='quay.io/ascend/vllm-ascend:v0.18.0'):
                 resource_budget=dict(timeout_seconds=1800, memory_gib=64 if arm is None else 48, cpus=8),
                 recovery_plan=('No injection; exact independent B repeat and post-cleanup healthy generation; remove owned observer/modes.'
                     if arm is None else 'Same request ordinal in fresh B/repeat/F Workers; full hidden/logits OFF and same-Worker healthy generation; public collector stop, owned hooks/modes drained; raw bytes retained.'))))
+        if task == 'moe8-group':
+            result[-1]['review'].update(provider='Source-bound actual MoE paired I/P input remap',
+                expected_hits='Runtime-qualified all MoE targets once, then two every-match forwards; prior26 is expectation only',
+                recovery_plan='Four actual healthy qualifications; C2+OFF then C3 two requests+OFF; exact full hidden/logits and post-cleanup healthy generation; owned source-bound profile/modes removed; no layer/router changes.')
     return result
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', required=True)
-    parser.add_argument('--task', choices=('moe8-census', 'worker18-statistics'), required=True)
+    parser.add_argument('--task', choices=('moe8-census', 'moe8-group', 'worker18-statistics'), required=True)
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--image', default='quay.io/ascend/vllm-ascend:v0.18.0')
     parser.add_argument('--out', type=Path, required=True)

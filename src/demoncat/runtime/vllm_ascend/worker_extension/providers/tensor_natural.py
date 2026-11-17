@@ -24,8 +24,8 @@ class NaturalTensorGroupProvider:
     def __init__(self, model, mechanism, *, replay, synchronize, workload_sha256,
                  environment_sha256, model_weights_sha256, model_source_sha256,
                  simulation=False, model_observation=None, worker_identity=None):
-        if mechanism not in ('18.api_half', '22.wrong_row'):
-            raise ValueError('Only reviewed natural RMSNorm-return and RoPE-lookup groups are enabled')
+        if mechanism not in ('8.restore_offset', '18.api_half', '22.wrong_row'):
+            raise ValueError('Only reviewed natural RMSNorm, RoPE-lookup and MoE-restore groups are enabled')
         if not callable(replay) or not callable(synchronize) or model.training or type(simulation) is not bool:
             raise ValueError('An actual inference model replay and synchronizer are required')
         from fault_injection.coverage_session import CoverageScope
@@ -42,9 +42,15 @@ class NaturalTensorGroupProvider:
         import fault_injection.tensor_callable as callable_proof
         import fault_injection._scoped_dispatch as scoped
         import fault_injection.module_faults as module_faults
+        import fault_injection.route8 as moe
+        import fault_injection.moe_census as moe_observer
+        import fault_injection.moe_restore as moe_restore
+        host = Path(__file__).resolve().parents[1]
         self.source_sha = _sha({str(Path(p).name): hashlib.sha256(Path(p).read_bytes()).hexdigest()
             for p in (__file__, rms.__file__, rope.__file__, observer.__file__,
-                      callable_proof.__file__, scoped.__file__, module_faults.__file__)})
+                      callable_proof.__file__, scoped.__file__, module_faults.__file__,
+                      moe.__file__, moe_observer.__file__, moe_restore.__file__,
+                      host/'serving_tensor.py', host/'serving_moe.py')})
         self.scope = CoverageScope(mechanism, workload_sha256, environment_sha256, self.source_sha,
             evidence_kind='cpu_contract' if simulation else
                 'natural_worker' if worker_identity else 'natural_pretrained_model',
@@ -264,7 +270,12 @@ class NaturalTensorGroupProvider:
                 raise ProviderError('NATURAL_ELIGIBLE_CALL_OR_CONSUMER_UNPROVEN', str(key))
             module = modules[key[0]]
             from fault_injection.tensor_callable import TensorCallableGuard
-            guard = TensorCallableGuard(module)
+            guard = TensorCallableGuard(module,
+                extra_methods=('forward_impl',) if self.mechanism == '8.restore_offset' else (),
+                # AscendFusedMoE overrides forward and uses runner/forward_impl;
+                # its inherited, unused CustomOp dispatch field is not this
+                # boundary. A direct _forward_method access always stays bound.
+                bind_optional_dispatch=self.mechanism != '8.restore_offset')
             source = guard.source_sha256
             self.target_sources[key[0]] = (module, source)
             self.target_guards[key[0]] = guard
@@ -274,8 +285,10 @@ class NaturalTensorGroupProvider:
                 scope_kind=self.context['scope_kind'], rank=self.context['rank'], device_type=device[0],
                 logical_device=None if device[0] == 'cpu' else int(device[1]) if len(device) > 1 else 0,
                 model_instance_id=self.context['model_instance_id'], model_object_identity=id(self.model),
-                module_object_identity=id(module), module_roles=('RMSNORM_RETURN',) if self.mechanism == '18.api_half'
-                    else ('ROPE_ROW_READER',), operator_api=event.get('operator', event['boundary']),
+                module_object_identity=id(module), module_roles={
+                    '18.api_half': ('RMSNORM_RETURN',), '22.wrong_row': ('ROPE_ROW_READER',),
+                    '8.restore_offset': ('MOE_RESTORE_INPUTS',)}[self.mechanism],
+                operator_api=event.get('operator', event['boundary']),
                 tensor_signature=json.dumps(_signature(event, self.mechanism), sort_keys=True),
                 boundary=PythonHookBoundary(guard.callable_identity, source, key[1]),
                 provider_identity='natural_tensor:' + self.mechanism,
@@ -294,11 +307,22 @@ class NaturalTensorGroupProvider:
                     rows.append(Candidate(item['path'] + ':unreviewed_rms_source',
                         EligibilityResult(Eligibility.UNSUPPORTED,
                             ('No reviewed eager implementation or actual native RMS weight/return lineage',))))
-        else:
+        elif self.mechanism == '22.wrong_row':
             for path, module in modules.items():
                 if hasattr(module, 'cos_sin_cache') and path not in observed_paths:
                     rows.append(Candidate(path + ':opaque_rope_reader', EligibilityResult(Eligibility.UNSUPPORTED,
                         ('No exposed index_select/advanced-index row reader in this actual workload',))))
+        else:
+            # Independent actual Python-frame inventory must match every MoE
+            # module, including custom ops opaque to the outer dispatch mode.
+            trace = first['independent']['moe_trace']
+            expected = set(trace['structural_moe_paths'])
+            if (expected != observed_paths or len(events) != len(expected)
+                    or len(events) != trace['observed_unpermute_calls']):
+                raise ProviderError('NATURAL_MOE_STRUCTURAL_DENOMINATOR_INCOMPLETE')
+            if not all(event.get('complete_permutation_value_verified')
+                       and event.get('complete_native_output_oracle_exact') for event in events):
+                raise ProviderError('NATURAL_MOE_COMPLETE_GROUP_VALUES_UNPROVEN')
         self.candidates = CandidateSet(tuple(rows), True)
         self.discovery_sha = _sha(dict(baseline=first, repeat=repeat, lossless=lossless))
         self.baseline_sha = _sha(_identity(self.reference_output))
@@ -372,8 +396,10 @@ class NaturalTensorGroupProvider:
         self.group.observer.seal(artifact_sha256=_sha(self.rows[self.group_first_row:]), complete=True)
         report = self.group.report()
         report.update(execution_boundary='python_hook', native_loaded=False,
-            mechanism_semantics='RMSNorm output half proxy' if self.mechanism == '18.api_half'
-                else 'Legal-address RoPE wrong-row lookup output proxy; not uint32 overflow',
+            mechanism_semantics={
+                '18.api_half': 'RMSNorm output half proxy',
+                '22.wrong_row': 'Legal-address RoPE wrong-row lookup output proxy; not uint32 overflow',
+                '8.restore_offset': 'Actual MoE unpermute paired token-group index/probability remap'}[self.mechanism],
             recovery=recovery, independent_statistics='SEPARATE_RAW_COMPARISON_REQUIRED',
             phase_rows=self.rows[self.group_first_row:],
             scheduler_requests_claimed=self.context['scope_kind'] == 'INITIALIZED_WORKER',
