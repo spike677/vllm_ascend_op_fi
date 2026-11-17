@@ -1,4 +1,4 @@
-"""Prepare six separate root-reviewed v2 inventory/lossless/effects candidates."""
+"""Prepare at most eight root-reviewed candidate or complete-set v2 cases."""
 import argparse
 import hashlib
 import json
@@ -13,7 +13,7 @@ def main():
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--max-targets', type=int, default=8)
     parser.add_argument('--statistics', action='store_true')
-    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects'), default=['inventory'])
+    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage'), default=['inventory'])
     parser.add_argument('--mechanisms', nargs='+', choices=('26.residual_stomp', '26.fia_destination'),
                         default=['26.residual_stomp', '26.fia_destination'])
     parser.add_argument('--out', type=Path, required=True)
@@ -39,6 +39,7 @@ def main():
         fia = mechanism == '26.fia_destination'
         model = '/home/fault39-integration-20261116-a1/models-smollm2-135m' if fia else '/home/haoran/models/DeepSeek-V2-Lite-W8A8'
         for stage in args.stages:
+            coverage = stage == 'coverage'
             name = 'providers26-v2-' + ('fia-smol-' if fia else 'qmm-deepseek-') + stage
             command = ('source /usr/local/Ascend/cann-8.5.1/set_env.sh\n'
                 'export ASCEND_CUSTOM_OPP_PATH=/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend\n'
@@ -60,20 +61,33 @@ def main():
                     FAULT26_TRACE_ENABLED='1', FAULT26_TRACE_ALL_APIS='1', FAULT26_TRACE_CAPTURE_TENSORS='1',
                     FAULT26_WRITER_TOPOLOGY_ENABLED='1', FAULT26_TRACE_MAX_EVENTS='100000',
                     FAULT26_TRACE_LOG_PATH='/evidence/trace.jsonl', DCAT26_GROUP_V2_ALLOWED='1'), command=command,
-                review=dict(experiment_id=name, provider=mechanism + ' v2 serial candidate experiment (not C2)',
+                review=dict(experiment_id=name, provider=mechanism + (' v2 all_eligible once then live every_match' if coverage
+                    else ' v2 serial candidate experiment (not C2)'),
                     model=model, cann='8.5.1', soc='Ascend910B4/A2; verify actual Worker', physical_cards=[args.card], ranks=[0],
                     worker='standard TP1 eager BF16; single fresh prefill/request; fixed64 KV blocks; no decode claim',
                     build_fingerprint=sha, source_commit=args.source_commit,
-                    expected_hits=0 if stage != 'effects' else 'one per completely observed and independently lossless-qualified candidate; never C2',
+                    expected_hits=('C2: one per complete frozen eligible target; C3: every existing-target call in two fresh requests; '
+                        'no subset, only after actual live C2' if coverage else 0 if stage != 'effects'
+                        else 'one per completely observed and independently lossless-qualified candidate; never C2'),
                     resource_budget=dict(timeout_seconds=1800, memory_gib=80, cpus=16, independent_events=32768,
                         max_targets=args.max_targets, native_device_bytes=64 * 1024 * 1024, native_host_bytes=512 * 1024 * 1024),
-                    recovery_plan='Every original executes once, one explicit target per request. Retain full Native denominator '
+                    recovery_plan=('Every original executes once. Two complete healthy censuses plus independent target '
+                        'reference/lossless/OFF qualify the full set. Any unresolved, overlapping or over-budget set blocks '
+                        'all group faults. Every Native call is independently observed before admission; frozen eligible failures '
+                        'remain in the denominator. New post-propagation lifetimes pass unchanged and are separately recorded. '
+                        'Stop ALL, drain ALL before ANY target release; exact restoration receipts for every target and '
+                        'same-process full-vocab health plus zero Native/host/hooks precede the live C2 proof. C3 requires '
+                        'that original issued proof object in the same Worker, owner, process lifetime and scope with a new '
+                        'generation. Copying/relabeling proof is rejected before Native fault sealing. Failed backups/leases '
+                        'remain recoverable; absent actual public pointer liveness refuses restoration writes. Container '
+                        'restart is not OFF. All raw evidence remains on 124; raw statistics E5 is separate.' if coverage else
+                        'Every original executes once, one explicit target per request. Retain full Native denominator '
                         'and every UNVERIFIED row. Budget overflow stops the whole resolved target plan, never chooses the first target. '
                         'Reference/lossless/OFF qualify every candidate before any F. Actual next consumer must retain the exact '
                         'public residual and writer output. Stop/drain/restore/readback/release retains failed backups and descriptors; '
                         'unproven pointer liveness refuses recovery writes and quarantines the Worker. Final full-vocab health runs '
                         'after Native resource release in the same Worker, then remove hooks and verify zero resources. '
-                        'Container restart is not OFF. All raw evidence remains on 124; no C2/C3 claim.')))
+                        'Container restart is not OFF. All raw evidence remains on 124; no C2/C3 claim.'))))
     with args.out.open('x') as stream:
         json.dump(cases, stream, indent=2)
 

@@ -42,6 +42,7 @@ class CpuV2:
 
     def install(self, admit, finished):
         self.admit, self.finished, self.installed = admit, finished, True
+        self.sealed = False
 
     def passthrough(self, call):
         assert call.token not in self.passes
@@ -106,7 +107,7 @@ class CpuV2:
             residual.copy_(tx['residual_before'])
             call = tx['call']
             receipt = Receipt(version=2, size=C.sizeof(Receipt), mode=MODES[tx['mode']], mechanism=call.mechanism,
-                owner_hi=1, owner_lo=2, generation=1, token=call.token, target=(C.c_uint64 * 4)(*key_words(tx['target'])),
+                owner_hi=1, owner_lo=2, generation=self.config.generation, token=call.token, target=(C.c_uint64 * 4)(*key_words(tx['target'])),
                 writer_calls=1, consumer_calls=1, writer_complete=1, consumer_complete=1, output_readback_exact=1,
                 padding_readback_exact=1, residual_restored_exact=1, changed_residual_bytes=32,
                 independent_call=call.independent_call, registration=1, cache=call.cache,

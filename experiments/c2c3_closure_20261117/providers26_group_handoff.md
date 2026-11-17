@@ -130,3 +130,70 @@ allocator fixtures are explicitly simulated. Remaining dependent work is the
 valid natural inventory, source/lifetime review of unresolved edges, shared
 CoverageSession all-eligible admission, and a live same-Worker C2 proof before
 every-match. The candidate result reports every one of these remaining gates.
+
+## Conditional complete-set C2/C3 execution
+
+The additional `coverage` stage uses the shared `CoverageSession` and the same
+unchanged Native v2 bundle. It first performs two complete healthy Native/public
+censuses, including every missing callback, unsupported row and unresolved
+writer/consumer lifetime. The complete scope must be stable and contain no
+UNVERIFIED row. A budget overflow or overlap between eligible writer-to-consumer
+intervals blocks the whole group. This implementation supports serial writers
+within one fixed fresh-prefill request; it does not claim decode or multistream
+coverage.
+
+Three further complete healthy requests perform reference, temporary-output
+lossless and OFF for **every** eligible target. Each actual boundary has its own
+Native lease, writer/consumer receipt and complete output/residual readback;
+packing these into three requests does not reuse one target's qualification for
+another. Only then does `all_eligible + once` admit the shared fault request.
+The independent native event precedes admission. An existing eligible target's
+failed geometry remains an eligible failed opportunity. An unknown or newly
+eligible lifetime before the first actual effect, or during OFF, fails the
+scope. Post-effect additions are recorded separately and pass unchanged without
+expanding the frozen target set. A missing eligible callback also fails rather
+than disappearing from the denominator.
+
+Recovery stops all logical targets, drains all of them before any release,
+requires actual OFF readback for every target, and releases the Native runtime.
+A subsequent full-vocabulary healthy request runs in the same Worker. The
+original issued C2 proof is retained only after all owned hooks and public tensor
+references are removed and the common zero-resource health proof passes.
+`every_match` uses that same object, owner, process/model/module lifetimes and
+scope with a higher generation; copied or relabelled proofs are rejected before
+Native fault sealing. C3 observes every existing-target call in two bounded fault
+requests. Unknown pointers and unresolved recovery retain the failed status and
+logical reservations; restarting the container is never an OFF receipt.
+
+Root can prepare two conditional full-set cases after publishing this Python
+increment. This only writes the queue manifest; it does not launch a container:
+
+```sh
+python3 "$SOURCE/experiments/c2c3_closure_20261117/providers26_prepare_group_cases.py" \
+  --installed "$INSTALLED" \
+  --native /home/17-fault-c2c3-20261117/native26-group-v2-a1 \
+  --probe "$SOURCE/experiments/c2c3_closure_20261117/providers26_group_probe.py" \
+  --source-commit "$COMMIT" --card 2 --stages coverage --max-targets 128 --statistics \
+  --out /home/17-fault-c2c3-20261117/providers26-v2-coverage-a1-cases.json
+```
+
+Each case uses the immutable image ID recorded in the matched a29 Native build,
+the fixed model paths above, TP1, fixed 64 KV blocks, 16 CPU/80 GiB/1800-second
+queue budgets, 32,768 independent Native events, 64 MiB Native device and
+512 MiB Native host budgets. A successful C2 session needs eight complete
+requests and C3 nine. The shared native event capacity is checked before the
+dependent plan, including events already used by C2. Results and raw statistics
+remain under the new case's `c2/` and `c3/` evidence directories on 124.
+The phase map records actual collector steps; compare raw reference-all against
+fault for E5 with fixed rtol `1e-5`, atol `1e-8`, preserving null/NaN/alignment.
+Restoration memcmp and runtime-selected targets are not an E5 first-difference
+decision.
+
+Nine group CPU contracts now exercise once followed by the original live C2
+object's every-match, all-stop/all-drain/release ordering, both typed writer
+identities, full-set unresolved/over-budget/overlap rejection, unknown-before-
+effect and frozen-target geometry failures, and copied/relabelled proof
+rejection with Native/hook cleanup. These use explicit mock Native memory and
+cannot grant public C2/C3. The valid natural inventory and actual C2/C3 runs
+remain unverified after the externally stopped attempts; no natural target
+count is inferred here.

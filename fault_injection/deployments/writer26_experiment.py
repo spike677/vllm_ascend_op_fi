@@ -151,8 +151,7 @@ class Writer26Experiment(WriterLifetimeInventory):
         require(self.current is None and request_id not in self.requests and self.phase != 'complete',
                 'FRESH_BOUNDED_WRITER_REQUEST_REQUIRED')
         if self.phase == 'health':
-            self.runtime.close()
-            self.native_removed = True
+            self._before_health()
         self._idle(not self.native_removed)
         require(not self.retained, 'RESIDUAL_LIFETIME_ESCAPED_PREVIOUS_REQUEST')
         self.current = dict(phase=self.phase, request_id=request_id, input_sha256=input_sha256,
@@ -166,6 +165,28 @@ class Writer26Experiment(WriterLifetimeInventory):
         self.current.update(plan=dict(self.entry), admissions=0, completed=0)
         if self.entry['mode'] == 'fault':
             self.fault_started = True
+
+    def _before_health(self):
+        self.runtime.close()
+        self.native_removed = True
+
+    def _observe_callback(self, row, call):
+        pass
+
+    def _requested_mode(self, row):
+        return self.entry['mode'], self.entry['target']
+
+    def _expected_admissions(self):
+        return 1
+
+    def _outcome_complete(self, outcome, row):
+        pass
+
+    def _request_complete(self, row):
+        pass
+
+    def _check_denominator(self, row):
+        require(len(row['candidates']) == len(self.rows[0]['candidates']), 'NATURAL_WRITER_COUNT_CHANGED_KEEP_FULL_DENOMINATOR')
 
     def _post(self, module, args, kwargs, output):
         if self.current is not None:
@@ -224,6 +245,7 @@ class Writer26Experiment(WriterLifetimeInventory):
                         require(self.target_refs[outcome['target']] == dict(output_sha256=output_sha, residual_sha256=residual_after),
                                 'LOSSLESS_OR_OFF_FULL_TARGET_BYTES_DIFFER')
                     self.current['completed'] += 1
+                    self._outcome_complete(outcome, row)
                     self.outcomes.append(outcome)
                     del self.pending[call['token']]
                 self.output_refs.pop(call['token'], None)
@@ -259,6 +281,7 @@ class Writer26Experiment(WriterLifetimeInventory):
     def _callback(self, pointer):
         call = Call.from_buffer_copy(pointer.contents)
         row = dict(native_packet=packet(call), original_continuations=0, claimed=0, errors=[], independent_call=None)
+        observed = False
         try:
             if self.current is None:
                 row['original_continuations'] = 1
@@ -290,9 +313,12 @@ class Writer26Experiment(WriterLifetimeInventory):
                         'INDEPENDENT_FIA_DESTINATION_GEOMETRY_UNSUPPORTED')
             else:
                 self._allocation(call, row)
-            mode, selected = self.entry['mode'], self.entry['target']
+            row['current_candidate_geometry_eligible'] = True
+            self._observe_callback(row, call)
+            observed = True
+            mode, selected = self._requested_mode(row)
             if mode is not None and row['target_key'] == selected:
-                require(self.current['admissions'] == 0 and selected in self.targets,
+                require(self.current['admissions'] < self._expected_admissions() and selected in self.targets,
                         'ONE_QUALIFIED_WRITER_OCCURRENCE_PER_FIXED_REQUEST_REQUIRED')
                 from demoncat.runtime.vllm_ascend.worker_extension.serving import complete_tensor
                 _, residual_sha, _ = complete_tensor(retained['tensor'])
@@ -304,9 +330,16 @@ class Writer26Experiment(WriterLifetimeInventory):
                 self.current['admissions'] += 1
         except BaseException as error:
             row['errors'].append(str(error))
-            if self.current is not None and self.entry['mode'] is not None and row.get('target_key') == self.entry['target']:
+            if (self.current is not None and self.entry['mode'] is not None
+                    and (row.get('target_key') == self.entry['target'] or
+                         self.entry['target'] == '*' and row.get('target_key') in self.targets)):
                 self.failure = str(error)
         finally:
+            if not observed and row.get('independent_event') is not None:
+                try:
+                    self._observe_callback(row, call)
+                except BaseException as error:
+                    self.failure = str(error)
             if not row['original_continuations']:
                 row['original_continuations'] = 1
                 try:
@@ -374,7 +407,7 @@ class Writer26Experiment(WriterLifetimeInventory):
             self.plan.append(dict(phase='health', mode=None, target=None))
             return
         per_request_events = self.rows[1]['native_after']['total_events'] - self.rows[1]['native_before']['total_events']
-        remaining_requests = len(self.targets) * (5 if self.stage == 'effects' else 3) + 1
+        remaining_requests = self._planned_qualification_requests()
         available = self.rows[1]['native_after']['capacity'] - self.rows[1]['native_after']['stored_events']
         if per_request_events * remaining_requests > available:
             self.blockers.append('COMPLETE_TARGET_PLAN_EXCEEDS_INDEPENDENT_NATIVE_EVENT_CAPACITY')
@@ -403,12 +436,13 @@ class Writer26Experiment(WriterLifetimeInventory):
         self.current = None
         self.stack.clear()
         mode = row['plan']['mode']
+        self._request_complete(row)
         require(after['qmm_runs'] - row['native_before']['qmm_runs'] == sum(e['kind_name'] == 'qmm_enter' for e in native),
                 'NATIVE_WRITER_DENOMINATOR_LOSS')
         if mode is not None:
-            require(row['admissions'] == row['completed'] == 1 and not self.failure and not self.pending,
+            require(row['admissions'] == row['completed'] == self._expected_admissions_for(row) and not self.failure and not self.pending,
                     'ACTUAL_CANDIDATE_WRITER_LIFETIME_OR_EFFECT_INCOMPLETE')
-            require(len(row['candidates']) == len(self.rows[0]['candidates']), 'NATURAL_WRITER_COUNT_CHANGED_KEEP_FULL_DENOMINATOR')
+            self._check_denominator(row)
             if mode != 'fault':
                 require(model_output_finite and output_sha256 == self.baseline, 'FULL_VOCAB_LOSSLESS_OR_OFF_CHANGED')
         else:
@@ -424,6 +458,12 @@ class Writer26Experiment(WriterLifetimeInventory):
             self.runtime.seal(tuple(self.targets))
         self.recovered = self.phase == 'complete' and row['phase'] == 'health' and output_sha256 == self.baseline
         self.save()
+
+    def _expected_admissions_for(self, row):
+        return 1
+
+    def _planned_qualification_requests(self):
+        return len(self.targets) * (5 if self.stage == 'effects' else 3) + 1
 
     def recover_live_pending(self):
         """Retry only while actual public output/residual tensors remain owned."""
