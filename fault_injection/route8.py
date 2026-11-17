@@ -58,19 +58,26 @@ class RestoreOffsetSession(ScopedDispatch):
                 raise UnsupportedCall('Healthy restore indices must cover the complete contribution permutation')
             if not bool(torch.isfinite(original_h).all() and torch.isfinite(original_p).all()):
                 raise UnsupportedCall('Healthy MoE input must be finite')
-            groups = torch.arange(tokens,device=indices.device)
             injecting = self.arm=='fault' and self.is_selected(event)
-            if injecting: groups=(groups+1).clamp_max(tokens-1)
-            remapped_i=indices.reshape(tokens,topk).index_select(0,groups).reshape(-1).contiguous()
-            remapped_p=probs.index_select(0,groups).contiguous()
-            self.temps.extend((groups,remapped_i,remapped_p))
-            group_cpu=self.cpu(groups).long()
-            if (not torch.equal(self.cpu(remapped_i),original_i.reshape(tokens,topk)[group_cpu].reshape(-1))
-                    or not torch.equal(self.cpu(remapped_p),original_p[group_cpu])):
-                raise UnsupportedCall('Paired group transformation failed device readback')
-        changed=dict(values,sorted_indices=remapped_i,probs=remapped_p)
+            preserve_actual_arguments = self.strict_group_oracle and not injecting
+            if preserve_actual_arguments:
+                # Natural baseline and rejected/exhausted admissions must send
+                # the original objects to the real consumer, not equal copies.
+                group_cpu = torch.arange(tokens, dtype=torch.long)
+                remapped_i, remapped_p = indices, probs
+            else:
+                groups = torch.arange(tokens,device=indices.device)
+                if injecting: groups=(groups+1).clamp_max(tokens-1)
+                remapped_i=indices.reshape(tokens,topk).index_select(0,groups).reshape(-1).contiguous()
+                remapped_p=probs.index_select(0,groups).contiguous()
+                self.temps.extend((groups,remapped_i,remapped_p))
+                group_cpu=self.cpu(groups).long()
+                if (not torch.equal(self.cpu(remapped_i),original_i.reshape(tokens,topk)[group_cpu].reshape(-1))
+                        or not torch.equal(self.cpu(remapped_p),original_p[group_cpu])):
+                    raise UnsupportedCall('Paired group transformation failed device readback')
         # This is the only call to the actual selected dispatcher operator.
-        result=func(**changed)
+        result=(func(*args,**kwargs) if preserve_actual_arguments else
+                func(**dict(values,sorted_indices=remapped_i,probs=remapped_p)))
         with self.diagnostics():
             actual=self.cpu(result)
             if tuple(actual.shape)!=(tokens,hidden.shape[1]):
@@ -98,6 +105,9 @@ class RestoreOffsetSession(ScopedDispatch):
                 original_execution_verified=True,native_calls=1,paired_group_readback_exact=True,
                 input_storage_unchanged=True,token_groups=tokens,topk=topk,
                 source_groups=group_cpu.tolist(),output_shape=list(actual.shape),dtype=str(actual.dtype),
+                native_inputs_original_objects=remapped_i is indices and remapped_p is probs,
+                native_inputs_original_storage=(remapped_i.untyped_storage()._cdata == indices.untyped_storage()._cdata
+                    and remapped_p.untyped_storage()._cdata == probs.untyped_storage()._cdata),
                 consumer_operator=str(func),consumer_returned=True,auxiliary_fp32_oracle_max_abs=max_abs,
                 boundary='npu_moe_token_unpermute.inputs',
                 semantics='PAIRED_TOKEN_GROUP_REMAP_NOT_ELEMENTWISE_INDEX_OFFSET')

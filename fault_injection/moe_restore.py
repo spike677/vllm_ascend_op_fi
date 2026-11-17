@@ -166,7 +166,10 @@ class MoEPhaseObserver:
         return self
 
     def close(self):
-        self.trace.close(); self.observer.close()
+        try:
+            self.trace.close()
+        finally:
+            self.observer.close()
 
     def report(self):
         row = self.observer.report(); trace = self.trace.report()
