@@ -1,0 +1,67 @@
+{
+  "schema": "demoncat.engineering.batch.v1",
+  "batch": 3,
+  "jobs": [
+    {
+      "id": "output39-coverage",
+      "mechanism": "39.output_proxy",
+      "batch": 3,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "storage_lease_isolation",
+        "consumer_binding",
+        "restoration_transaction",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "natural HF Qwen aten.matmul -> mul",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "单目标效果和OFF;140链inventory",
+      "gap": "140条 eligible 链的 C2 与 live lease C3",
+      "entrypoint": "experiments/c2c3_closure_20261117/../c2c3_postwrite_20261117/natural39_coverage_probe.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_postwrite_20261117/prepare_coverage_cases.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "140条 eligible 链的 C2 与 live lease C3",
+      "remaining_after_stage": [
+        "每次匹配需真实多lease构建、独立C2和实际全部目标可恢复"
+      ]
+    },
+    {
+      "id": "kv41-coverage",
+      "mechanism": "41.tail_column",
+      "batch": 3,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "slot_block_mapping",
+        "restoration_transaction",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "Qwen3-0.6B standard Worker TP1 first decode",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "真实KV writer/V storage/FIA单目标与恢复",
+      "gap": "重新执行被中断的28目标 Baseline后补once/every-match",
+      "entrypoint": "experiments/c2c3_closure_20261117/../c2c3_postwrite_20261117/natural41_coverage_probe.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_postwrite_20261117/prepare41_coverage_cases.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "重新执行被中断的28目标 Baseline后补once/every-match",
+      "remaining_after_stage": []
+    }
+  ]
+}

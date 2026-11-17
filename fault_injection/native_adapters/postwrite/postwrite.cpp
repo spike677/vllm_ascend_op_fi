@@ -2,24 +2,36 @@
 #include <acl/acl.h>
 #include <algorithm>
 #include <cstring>
-#include <memory>
+#include <limits>
+#include <map>
 #include <mutex>
+#include <thread>
 #include <vector>
 
 namespace {
 struct Lease {
     void *tensor;
-    uint64_t owner, generation, handle;
+    uint64_t owner, generation;
     int32_t device;
+    std::thread::id thread;
     std::vector<uint16_t> original, expected;
     bool applied = false;
 };
 std::mutex guard;
-std::unique_ptr<Lease> live;
+std::map<uint64_t, Lease> leases;
 uint64_t serial = 0;
+uint64_t live_span_bytes = 0;
 constexpr uint64_t max_bytes = 1024 * 1024;
-bool matches(uint64_t h, uint64_t o, uint64_t g) {
-    return live && live->handle == h && live->owner == o && live->generation == g;
+constexpr uint32_t max_leases = 256;
+// Original and expected BF16 snapshots consume twice this payload budget.
+constexpr uint64_t max_span_bytes = 160 * 1024 * 1024;
+bool owns(const Lease &lease, uint64_t owner, uint64_t generation) {
+    return lease.owner == owner && lease.generation == generation &&
+        lease.thread == std::this_thread::get_id();
+}
+Lease *owned(uint64_t handle, uint64_t owner, uint64_t generation) {
+    const auto found = leases.find(handle);
+    return found != leases.end() && owns(found->second, owner, generation) ? &found->second : nullptr;
 }
 int sync(int32_t expected_device) {
     int32_t device = -1;
@@ -45,6 +57,8 @@ int write(const Lease &l, const std::vector<uint16_t> &values) {
 bool finite(uint16_t bits) { return (bits & 0x7f80U) != 0x7f80U; }
 }
 extern "C" uint32_t dcat_pw_abi(void) { return 1; }
+extern "C" uint32_t dcat_pw_lease_capacity(void) { return max_leases; }
+extern "C" uint64_t dcat_pw_lease_byte_capacity(void) { return max_span_bytes; }
 extern "C" int dcat_pw_read_span(const void *tensor, uint64_t bytes, int32_t device, void *host) {
     std::lock_guard<std::mutex> lock(guard);
     if (!tensor || !host || device < 0 || bytes == 0 || bytes > max_bytes) return 1;
@@ -55,18 +69,29 @@ extern "C" int dcat_pw_read_span(const void *tensor, uint64_t bytes, int32_t dev
 extern "C" int dcat_pw_open(void *tensor, uint64_t bytes, int32_t device,
                               uint64_t owner, uint64_t generation, uint64_t *handle) {
     std::lock_guard<std::mutex> lock(guard);
-    if (live || !tensor || !handle || !owner || !generation || device < 0 ||
+    if (!tensor || !handle || !owner || !generation || device < 0 ||
         bytes == 0 || bytes > max_bytes || bytes % 2) return 1;
+    const auto begin = reinterpret_cast<uintptr_t>(tensor);
+    if (bytes > std::numeric_limits<uintptr_t>::max() - begin) return 1;
+    if (leases.size() == max_leases || bytes > max_span_bytes - live_span_bytes ||
+        serial == std::numeric_limits<uint64_t>::max()) return 15;
+    for (const auto &entry : leases) {
+        const Lease &lease = entry.second;
+        if (!owns(lease, owner, generation) || lease.device != device) return 2;
+        const auto start = reinterpret_cast<uintptr_t>(lease.tensor);
+        const auto end = start + lease.original.size() * sizeof(uint16_t);
+        if (begin < end && start < begin + bytes) return 14;
+    }
     try {
-        auto next = std::make_unique<Lease>();
-        next->tensor = tensor; next->owner = owner; next->generation = generation;
-        next->device = device; next->handle = ++serial;
-        next->original.resize(bytes / 2);
+        Lease next{tensor, owner, generation, device, std::this_thread::get_id(), {}, {}, false};
+        next.original.resize(bytes / 2);
         std::vector<uint16_t> observed;
-        const int result = read(*next, observed);
+        const int result = read(next, observed);
         if (result) return result;
-        next->original = observed; next->expected = observed;
-        *handle = next->handle; live = std::move(next);
+        next.original = observed; next.expected = observed;
+        leases.emplace(++serial, std::move(next));
+        live_span_bytes += bytes;
+        *handle = serial;
         return 0;
     } catch (...) { return 90; }
 }
@@ -74,7 +99,8 @@ extern "C" int dcat_pw_apply(uint64_t handle, uint64_t owner, uint64_t generatio
                                uint32_t mode, const uint64_t *indices, uint64_t count,
                                uint64_t *changed) {
     std::lock_guard<std::mutex> lock(guard);
-    if (!matches(handle, owner, generation) || !changed || live->applied || mode > 5 ||
+    Lease *live = owned(handle, owner, generation);
+    if (!live || !changed || live->applied || mode > 5 ||
         !indices || count == 0 || count > live->original.size()) return 2;
     try {
         auto selected = std::vector<uint64_t>(indices, indices + count);
@@ -110,7 +136,8 @@ extern "C" int dcat_pw_apply(uint64_t handle, uint64_t owner, uint64_t generatio
 }
 extern "C" int dcat_pw_restore(uint64_t handle, uint64_t owner, uint64_t generation) {
     std::lock_guard<std::mutex> lock(guard);
-    if (!matches(handle, owner, generation)) return 2;
+    Lease *live = owned(handle, owner, generation);
+    if (!live) return 2;
     try {
         std::vector<uint16_t> observed;
         int result = read(*live, observed);
@@ -127,17 +154,20 @@ extern "C" int dcat_pw_restore(uint64_t handle, uint64_t owner, uint64_t generat
 }
 extern "C" int dcat_pw_release(uint64_t handle, uint64_t owner, uint64_t generation) {
     std::lock_guard<std::mutex> lock(guard);
-    if (!matches(handle, owner, generation) || live->applied) return 2;
+    Lease *live = owned(handle, owner, generation);
+    if (!live || live->applied) return 2;
     try {
         std::vector<uint16_t> observed;
         const int result = read(*live, observed);
         if (result) return result;
         if (observed != live->original) return 5;
-        live.reset(); return 0;
+        live_span_bytes -= live->original.size() * sizeof(uint16_t);
+        leases.erase(handle); return 0;
     } catch (...) { return 90; }
 }
 extern "C" int dcat_pw_live(uint64_t handle, uint64_t owner, uint64_t generation) {
     std::lock_guard<std::mutex> lock(guard);
-    if (!live) return 0;
-    return matches(handle, owner, generation) ? 1 : -1;
+    const auto found = leases.find(handle);
+    if (found == leases.end()) return 0;
+    return owns(found->second, owner, generation) ? 1 : -1;
 }

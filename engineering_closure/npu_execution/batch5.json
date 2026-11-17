@@ -1,0 +1,98 @@
+{
+  "schema": "demoncat.engineering.batch.v1",
+  "batch": 5,
+  "jobs": [
+    {
+      "id": "alias-natural",
+      "mechanism": "15.alias_detach",
+      "batch": 5,
+      "after": [],
+      "requires": [
+        "historical_scope_review",
+        "natural_private_nz_chain",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "constructed NZ; natural causal VAE",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "旧 Fault27 六个 NZ 用例与11/16 B/F/OFF",
+      "gap": "自然路径符合时再补 C2/C3",
+      "entrypoint": null,
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": null,
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "entrypoint_status": "NATURAL_PRIVATE_NZ_CHAIN_REQUIRED_FOR_C2_C3",
+      "pre_gate_actions": [
+        {
+          "entrypoint": "experiments/c2c3_closure_20261117/natural_tensor_census.py",
+          "purpose": "查找自然private-NZ链，独立于故障准入",
+          "requires": [
+            "reviewed_source",
+            "resource_window"
+          ]
+        }
+      ],
+      "stage_goal": "自然路径符合时再补 C2/C3",
+      "remaining_after_stage": []
+    },
+    {
+      "id": "conv3d-gap",
+      "mechanism": "17.spatial_padding",
+      "batch": 5,
+      "after": [],
+      "requires": [
+        "historical_scope_review",
+        "historical_source_access",
+        "mechanism_semantics"
+      ],
+      "scope": {
+        "model": "Qwen3-VL-30B-A3B-Instruct-w8a8 TP2",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "padding [0,0,0] -> [0,7,7], white -> red; 旧恢复记录",
+      "gap": "统一 C2/C3 所缺逐目标和同进程恢复",
+      "entrypoint": "engineering_closure/evidence.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": null,
+      "task_kind": "offline_audit",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "统一 C2/C3 所缺逐目标和同进程恢复",
+      "remaining_after_stage": []
+    },
+    {
+      "id": "index22-gap",
+      "mechanism": "22.wrong_row",
+      "batch": 5,
+      "after": [],
+      "requires": [
+        "historical_scope_review",
+        "historical_source_access",
+        "mechanism_semantics"
+      ],
+      "scope": {
+        "model": "Qwen3-32B-w8a8-nopdmix TP2 forward_oot",
+        "cann": "NOT_DOCUMENTED",
+        "soc": "NOT_DOCUMENTED",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "14 token prefill row13<-source0; B/F/R token恢复",
+      "gap": "先确定效果代理和原生溢出验收边界",
+      "entrypoint": "engineering_closure/evidence.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": null,
+      "task_kind": "offline_audit",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "先确定效果代理和原生溢出验收边界",
+      "remaining_after_stage": []
+    }
+  ]
+}

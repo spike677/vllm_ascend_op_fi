@@ -1,0 +1,132 @@
+{
+  "schema": "demoncat.engineering.batch.v1",
+  "batch": 2,
+  "jobs": [
+    {
+      "id": "moe8-census",
+      "mechanism": "8.restore_offset",
+      "batch": 2,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "worker_initialization",
+        "moe_permutation_capture",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "Qwen3-VL TP2; DeepSeek-V2-Lite-W8A8 TP1",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "完整 Qwen B/I/F/R; 两 rank; 48 sites",
+      "gap": "DeepSeek 新路径效果与恢复",
+      "entrypoint": "experiments/c2c3_closure_20261117/natural_tensor_census.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/prepare_tensor_natural_cases.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "补 DeepSeek 实际 permutation 数值与 producer/consumer 映射",
+      "remaining_after_stage": [
+        "无损对照",
+        "逐目标故障效果和恢复"
+      ]
+    },
+    {
+      "id": "native26-residual",
+      "mechanism": "26.residual_stomp",
+      "batch": 2,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "native_inventory_contract",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "DeepSeek-V2-Lite-W8A8 fresh-prefill",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "旧受控写入、劣化、恢复与单目标链",
+      "gap": "完成被外部中断的 inventory 后补 C2/C3",
+      "entrypoint": "experiments/c2c3_closure_20261117/providers26_inventory_probe.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/providers26_prepare_inventory_case.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "先完成独立只读 Native 全量调用与身份清点",
+      "remaining_after_stage": [
+        "将真实 inventory 绑定到相应 Provider 的目标集合",
+        "逐目标作用、同进程恢复、live C2 后 every-match C3"
+      ]
+    },
+    {
+      "id": "native26-fia",
+      "mechanism": "26.fia_destination",
+      "batch": 2,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "native_inventory_contract",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "SmolLM2/GLM fresh-prefill scope per receipt",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "历史 FIA writer lossless 与 destination 单目标证据",
+      "gap": "全量自然调用与 every-match 恢复",
+      "entrypoint": "experiments/c2c3_closure_20261117/providers26_inventory_probe.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/providers26_prepare_inventory_case.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "先完成独立只读 Native 全量调用与身份清点",
+      "remaining_after_stage": [
+        "将真实 inventory 绑定到相应 Provider 的目标集合",
+        "逐目标作用、同进程恢复、live C2 后 every-match C3"
+      ]
+    },
+    {
+      "id": "quant-inventory",
+      "mechanism": "quant.batch_shared_scale",
+      "batch": 2,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "native_inventory_contract",
+        "request_mapping_contract",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "DeepSeek-V2-Lite-W8A8 B8 first-decode",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "已验首个 projection 的真实 B8 路径",
+      "gap": "全量投影逐调用 lease 和整组恢复",
+      "entrypoint": "experiments/c2c3_closure_20261117/providers_quant_inventory_probe.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/providers_quant_prepare_inventory_case.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "先完成独立只读 Native 全量调用与身份清点",
+      "remaining_after_stage": [
+        "将真实 inventory 绑定到相应 Provider 的目标集合",
+        "逐目标作用、同进程恢复、live C2 后 every-match C3"
+      ]
+    }
+  ]
+}

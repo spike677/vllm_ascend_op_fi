@@ -1,4 +1,4 @@
-"""Root-queued natural HF C1 -> all-target C2 -> bounded C3 refusal probe."""
+"""Root-queued natural HF C1 -> all-target C2 -> bounded C3 probe."""
 import argparse
 from contextlib import contextmanager
 import hashlib
@@ -53,10 +53,15 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--try-c3', action='store_true')
+    parser.add_argument('--max-live-leases', type=int, default=1,
+                        help='Explicit simultaneous output-lease limit for every-match only')
     parser.add_argument('--max-seconds', type=int, default=1200)
     parser.add_argument('--prompt', default='Explain what a checksum is in one sentence.')
     args = parser.parse_args()
     if not 1 <= args.max_seconds <= 1500:parser.error('--max-seconds must be between 1 and 1500')
+    if not 1 <= args.max_live_leases <= 256:parser.error('--max-live-leases must be between 1 and 256')
+    if args.max_live_leases > 1 and (not args.try_c3 or args.arm != 'fault'):
+        parser.error('--max-live-leases above one requires --arm fault and --try-c3')
     args.out.mkdir(parents=True, exist_ok=True)
     report = dict(schema='demoncat.postwrite39.natural_coverage_probe.v1', status='STARTED', arm=args.arm,
         mechanism='39.output_proxy', evidence_kind='natural_pretrained_model', worker_extension=False,
@@ -96,7 +101,9 @@ def main():
         inputs = (encoded['input_ids'].npu(), encoded['attention_mask'].npu())
         environment = dict(torch=torch.__version__, torch_npu=torch_npu.__version__,
             device=torch.npu.get_device_name(0), native_library_sha256=native.sha256,
-            build_fingerprint=args.build_fingerprint, loaded_library_path=native.path)
+            build_fingerprint=args.build_fingerprint, loaded_library_path=native.path,
+            transport_lease_capacity=native.lease_capacity,
+            transport_lease_byte_capacity=native.lease_byte_capacity)
         report['environment'] = environment
         provider = Fault39OutputProxyProvider(model, native)
         report['c1']['qualification'] = provider.qualify(*inputs)
@@ -109,9 +116,10 @@ def main():
             digest(environment), digest(report['source_sha256']), evidence_kind='natural_pretrained_model',
             model_weights_sha256=report['weights']['weights_sha256'],
             model_source_sha256=report['model_source']['source_sha256'])
-        group = ProjectionCoverage(provider, scope, max_seconds=args.max_seconds)
+        group = ProjectionCoverage(provider, scope, max_seconds=args.max_seconds,
+                                   max_live_leases=args.max_live_leases)
         report['discovery'] = dict(eligible_targets=len(group.eligible), projection_calls=len(group.call_order),
-            max_fault_forwards=group.max_forwards, scope=scope.__dict__)
+            max_fault_forwards=group.max_forwards, requested_max_live_leases=group.max_live_leases, scope=scope.__dict__)
         save()
         window = collector_window(args.out/'capture', group.max_forwards) if args.statistics else None
         report['c2'] = group.run('once', *inputs, baseline_control=args.arm == 'baseline', model_observation=window)
@@ -140,7 +148,13 @@ def main():
         report.update(status='FAILED_WITH_EVIDENCE', error=repr(error), traceback=traceback.format_exc())
     finally:
         if provider is not None:
-            try:provider.recover()
+            try:
+                if group is not None and group.session is not None and not group.session.recovery_report()['complete']:
+                    report['recovery_retry'] = group.retry_recovery(*inputs)
+                    if not report['recovery_retry']['complete']:
+                        raise RuntimeError('POSTWRITE_GROUP_RECOVERY_STILL_PENDING')
+                else:
+                    provider.recover()
             except BaseException as error:report['recovery_error'] = repr(error)
             report['live_leases'] = provider.query()['leases']
         if group is not None and group.session is not None and 'c2' not in report:

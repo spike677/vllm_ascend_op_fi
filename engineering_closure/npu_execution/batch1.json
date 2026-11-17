@@ -1,0 +1,118 @@
+{
+  "schema": "demoncat.engineering.batch.v1",
+  "batch": 1,
+  "jobs": [
+    {
+      "id": "worker18-statistics",
+      "mechanism": "18.api_half",
+      "batch": 1,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "worker_initialization",
+        "statistics_capture_contract",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "Qwen3-0.6B TP1 BF16 fixed fresh prefill",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "C2 113/113 C3 226/226 与整组恢复",
+      "gap": "补 Worker 独立原始统计",
+      "entrypoint": "experiments/c2c3_closure_20261117/natural_rms_worker_statistics.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/prepare_tensor_natural_cases.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "补 Worker 独立原始统计",
+      "remaining_after_stage": []
+    },
+    {
+      "id": "native20-statistics",
+      "mechanism": "20.buffer_substitute",
+      "batch": 1,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "original_statistics_access"
+      ],
+      "scope": {
+        "model": "DeepSeek-V2-Lite-W8A8 TP1 BF16 3-token prefill",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "C2 135/135 C3 270/270; Max16.25->14",
+      "gap": "审计2个后续 NaN 的可比性与传播范围",
+      "entrypoint": "experiments/c2c3_closure_20261117/audit_statistics.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/audit_statistics.py",
+      "task_kind": "offline_audit",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "审计2个后续 NaN 的可比性与传播范围",
+      "remaining_after_stage": []
+    },
+    {
+      "id": "paged33-device",
+      "mechanism": "33.paged_decode",
+      "batch": 1,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "stock_private_symbol_binding",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "Qwen3-0.6B Worker TND/page16/KV1025",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "stock重复和OFF、六入口构建、CPU符号检查",
+      "gap": "device-backed B、独立 stock bridge、F和OFF",
+      "entrypoint": "experiments/c2c3_closure_20261117/attention33_worker_probe.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/attention33_worker_probe.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "device-backed B、独立 stock bridge、F和OFF",
+      "remaining_after_stage": []
+    },
+    {
+      "id": "native39-statistics",
+      "mechanism": "39.matmul_range",
+      "batch": 1,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "worker_initialization",
+        "statistics_capture_contract",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "Qwen3-0.6B TP1 BF16 14-token prefill",
+        "cann": "8.5.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "C2 113/113 C3 226/226; OFF和完整logits精确",
+      "gap": "补 C3 原始统计; 保留后续 NaN",
+      "entrypoint": "experiments/c2c3_closure_20261117/providers39_worker_probe.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/providers39_prepare_cases.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "补 C3 原始统计; 保留后续 NaN",
+      "remaining_after_stage": []
+    }
+  ]
+}

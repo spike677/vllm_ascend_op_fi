@@ -35,19 +35,22 @@ class CaptureWindowTests(unittest.TestCase):
                 forward_seen = []
                 h = model.register_forward_pre_hook(lambda *unused: forward_seen.append(collector.active))
                 equal = postwrite._equal
-                recover = provider.recover
+                recover = provider._recover_owned_entries
+                recovery_calls = []
                 def checked_equal(*args):
                     self.assertFalse(collector.active)
                     return equal(*args)
                 def checked_recover():
                     self.assertFalse(collector.active)
+                    recovery_calls.append(True)
                     return recover()
                 try:
-                    with patch.object(postwrite, '_equal', checked_equal), patch.object(provider, 'recover', checked_recover):
+                    with patch.object(postwrite, '_equal', checked_equal), patch.object(provider, '_recover_owned_entries', checked_recover):
                         provider.run(phase, inputs, model_observation=lambda actual:
                             statistics_model_call(collector, actual, collector.synchronize))
                 finally:h.remove()
                 self.assertEqual(forward_seen, [True])
+                self.assertEqual(recovery_calls, [True])
                 self.assertEqual(collector.events, ['start', 'synchronize', 'stop'])
                 self.assertFalse(collector.active)
 

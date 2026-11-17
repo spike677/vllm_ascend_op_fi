@@ -59,10 +59,22 @@ def callable_identity(module):
     return row
 
 
+def _dispatch_parameter(value, depth=0):
+    if type(value) is float and not float('-inf') < value < float('inf'):
+        return {'nonfinite': repr(value)}
+    if value is None or type(value) in (bool, int, float):
+        return value
+    if type(value) is str:
+        return {'type': 'str', 'length': len(value)}
+    if type(value) in (list, tuple) and len(value) <= 32 and depth < 4:
+        return [_dispatch_parameter(item, depth + 1) for item in value]
+    return {'type': type(value).__name__}
+
+
 class NaturalTensorObserver:
     """Bounded full eager census; does not depend on any injection implementation."""
     def __init__(self, model, *, max_events=100000, on_module_enter=None, on_operator_enter=None,
-                 diagnostics_context=None):
+                 diagnostics_context=None, record_all_operators=False, operator_context=None):
         if type(max_events) is not int or max_events < 1:
             raise ValueError('A finite event budget is required')
         self.model, self.max_events = model, max_events
@@ -70,6 +82,7 @@ class NaturalTensorObserver:
         self.counts = Counter()
         self.module_inventory = []
         self.outputs, self.views = [], []
+        self._dispatch_outputs = {}
         self.mode = None
         self.thread = None
         self.closed = False
@@ -77,6 +90,8 @@ class NaturalTensorObserver:
         self.on_module_enter = on_module_enter
         self.on_operator_enter = on_operator_enter
         self.diagnostics_context = diagnostics_context
+        self.record_all_operators = record_all_operators
+        self.operator_context = operator_context
         self._metadata_token = None
         self._owner_thread = None
 
@@ -101,6 +116,7 @@ class NaturalTensorObserver:
                                           input=[metadata(x) for x in tensors((args, kwargs))]))
                 self.outputs.clear()
                 self.views.clear()
+                self._dispatch_outputs.clear()
                 self._open_mode()
             if self.mode is not None:
                 if threading.get_ident() != self.thread:
@@ -155,15 +171,27 @@ class NaturalTensorObserver:
             if name == 'aten::copy_' and args and ref() is args[0]]
         base_readers = [(base, row) for ref, base, row in self.views if data_reader and row['writes']
             and base() is not None and int(base().untyped_storage()._cdata) in input_storages]
-        wanted = (name in ('aten::convolution', 'aten::conv3d', 'aten::rms_norm',
+        wanted = (self.record_all_operators or name in ('aten::convolution', 'aten::conv3d', 'aten::rms_norm',
             'npu::npu_rms_norm', 'npu::npu_add_rms_norm', 'npu::npu_moe_token_unpermute',
             'npu::npu_moe_token_permute', 'aten::index_select', 'aten::index')
             or 'rms_norm' in name or 'rotary' in name or 'moe' in name)
         row = self._emit(dict(kind='operator', operator=str(func), schema=str(schema),
             input=[metadata(x) for x in inputs])) if wanted else None
-        result = func(*args, **kwargs)
+        if self.record_all_operators:
+            producers = set()
+            for item in inputs:
+                match = self._dispatch_outputs.get(id(item))
+                if match is not None and match[0]() is item:
+                    producers.add(match[1])
+            row.update(namespace=name.partition('::')[0] if '::' in name else None,
+                       parameters=dict(positional=[_dispatch_parameter(value) for value in args],
+                                       keyword={key: _dispatch_parameter(value) for key, value in kwargs.items()}),
+                       input_producer_sequences=sorted(producers))
+        with self.operator_context(row) if self.operator_context is not None and row is not None else nullcontext():
+            result = func(*args, **kwargs)
         if row is not None:
-            row['output'] = [metadata(x) for x in tensors(result)]
+            outputs = tuple(tensors(result))
+            row['output'] = [metadata(x) for x in outputs]
             row['original_returned'] = True
             if name in ('aten::convolution', 'aten::conv3d'):
                 values = {item.name: item.default_value for item in schema.arguments}
@@ -173,6 +201,9 @@ class NaturalTensorObserver:
                 owners = [(path,module) for path,module,_ in self.stack
                     if getattr(module,'weight',None) is values.get('weight')]
                 row['weight_owner_paths'] = [path for path,_ in owners]
+            if self.record_all_operators:
+                for item in outputs:
+                    self._dispatch_outputs[id(item)] = (weakref.ref(item), row['sequence'])
             if 'rms_norm' in name:
                 owners = [(path, module) for path, module, _ in self.stack
                     if any(getattr(module, 'weight', None) is item for item in inputs)]
@@ -212,6 +243,7 @@ class NaturalTensorObserver:
             raise RuntimeError('TENSOR_OBSERVER_CANNOT_BE_REENTERED')
         self._owner_thread = threading.get_ident()
         self._metadata_token = _METADATA_DIAGNOSTICS.set(self.diagnostics_context)
+        rms_norm = getattr(torch.nn, 'RMSNorm', ())
         for path, module in self.model.named_modules():
             identity = callable_identity(module)
             source = identity.get('source', '')
@@ -219,7 +251,7 @@ class NaturalTensorObserver:
                     'conv3d_structural_candidate' if getattr(getattr(module,'weight',None),'ndim',None) == 5
                     and isinstance(getattr(module,'kernel_size',None),(tuple,list))
                     and len(module.kernel_size) == 3 else
-                    'rmsnorm_source_candidate' if isinstance(module, torch.nn.RMSNorm)
+                    'rmsnorm_source_candidate' if isinstance(module, rms_norm)
                     or ('rsqrt' in source and 'mean' in source) or 'rms_norm' in source else
                     'rope_table_owner' if hasattr(module, 'cos_sin_cache') else None)
             if role:
@@ -247,6 +279,7 @@ class NaturalTensorObserver:
         self.handles.clear()
         self.outputs.clear()
         self.views.clear()
+        self._dispatch_outputs.clear()
         if self._metadata_token is not None:
             _METADATA_DIAGNOSTICS.reset(self._metadata_token)
             self._metadata_token = None

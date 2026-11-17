@@ -1,0 +1,120 @@
+{
+  "schema": "demoncat.engineering.batch.v1",
+  "batch": 4,
+  "jobs": [
+    {
+      "id": "collective25-sample",
+      "mechanism": "25.reduce_scatter",
+      "batch": 4,
+      "after": [],
+      "requires": [
+        "historical_scope_review",
+        "collective_sample_search_protocol",
+        "dual_rank_resource_window"
+      ],
+      "scope": {
+        "model": "bounded dual-rank collective",
+        "cann": "8.5.1|9.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "6种 dtype/size 校准、4次 native repeat、双rank退出",
+      "gap": "寻找真实 replay sample",
+      "entrypoint": "experiments/c2c3_closure_20261117/collective25_closure_probe.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/collective25_closure_probe.py",
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "审计已有校准与候选 replay sample，制定新样本搜索",
+      "remaining_after_stage": [
+        "存在真实样本后才执行故障 replay、数值效果与恢复"
+      ]
+    },
+    {
+      "id": "fa28-qualification",
+      "mechanism": "28.fa.legal_tiling",
+      "batch": 4,
+      "after": [],
+      "requires": [
+        "historical_scope_review",
+        "fa_source_build_identity",
+        "fa_launch_adapter",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "historical standalone FA",
+        "cann": "receipt-specific",
+        "soc": "receipt-specific",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "FA 专用历史实现，来源另行对账",
+      "gap": "独立 FA launch/数值/真实 Worker",
+      "entrypoint": null,
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": null,
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "entrypoint_status": "REQUIRES_FA_SPECIFIC_ADAPTER_REVIEW",
+      "stage_goal": "独立 FA launch/数值/真实 Worker",
+      "remaining_after_stage": []
+    },
+    {
+      "id": "fia28-legal",
+      "mechanism": "28.fia.legal_tiling",
+      "batch": 4,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "original_statistics_access"
+      ],
+      "scope": {
+        "model": "standalone FIA B8",
+        "cann": "9.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "M/S2 512/512->128/128; 当前固定容差无首差",
+      "gap": "取得有效数值差异后再验证模型",
+      "entrypoint": "experiments/c2c3_closure_20261117/audit_statistics.py",
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": "experiments/c2c3_closure_20261117/audit_statistics.py",
+      "task_kind": "offline_audit",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "stage_goal": "取得有效数值差异后再验证模型",
+      "remaining_after_stage": []
+    },
+    {
+      "id": "fia28-replay",
+      "mechanism": "28.fia.denominator_replay",
+      "batch": 4,
+      "after": [],
+      "requires": [
+        "reviewed_source",
+        "matching_build",
+        "actual_launch_binding",
+        "natural_model_adapter",
+        "resource_window"
+      ],
+      "scope": {
+        "model": "standalone FIA B8",
+        "cann": "9.1",
+        "soc": "A2/910B4",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74"
+      },
+      "inherited": "Mean首差; Norm约1.721%; 八次真实launch复核",
+      "gap": "进入真实模型/Worker 的传播和恢复",
+      "entrypoint": null,
+      "execution_state": "UNSCHEDULED",
+      "runtime_qualification": false,
+      "preparation_entrypoint": null,
+      "task_kind": "npu_delta",
+      "prerequisite_semantics": "Review actual evidence for this gap before preparing a new run; provider admission and group recovery are checked live.",
+      "entrypoint_status": "NATURAL_MODEL_ADAPTER_PENDING; standalone launch evidence retained",
+      "stage_goal": "进入真实模型/Worker 的传播和恢复",
+      "remaining_after_stage": []
+    }
+  ]
+}
