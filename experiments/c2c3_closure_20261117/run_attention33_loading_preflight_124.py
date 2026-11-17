@@ -11,6 +11,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for name in ('source','native','out'):
         parser.add_argument('--'+name,type=Path,required=True)
+    parser.add_argument('--stock-extension-control',action='store_true')
     args=parser.parse_args()
     root=Path('/home/17-fault-c2c3-20261117').resolve(strict=True)
     source,native=args.source.resolve(strict=True),args.native.resolve(strict=True)
@@ -33,8 +34,10 @@ def main():
         'exec python3 /repo/experiments/c2c3_closure_20261117/attention33_loading_preflight.py '
         '--completion /native/evidence/completion.json --completion-sha256 '+completion_sha+
         ' --vendor /native/stage/vendors/dcat_f33_fai_transformer --out /build/probe']
+    if args.stock_extension_control:
+        command[-1]+=' --stock-extension-control'
     report=dict(schema='demoncat.paged33.loading_cpu_controller.v1',image=image,command=command,
-                devices=[],actual_npu_tensor_operations=0)
+                devices=[],actual_npu_tensor_operations=0,stock_extension_control=args.stock_extension_control)
     with (output/'controller.json').open('x') as stream:json.dump(report,stream,indent=2)
     try:
         with (output/'process.log').open('xb') as log:
