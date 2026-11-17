@@ -1,5 +1,33 @@
 # Current execution checkpoint
 
+## Active checkpoint — further source review and device-free preparation
+
+- Published checkpoint remains8f73f82 on `codex/17-fault-c2c3-closure-20261117`.
+  Additional reviewed source is being integrated locally; C2/C3 stay3/17 each.
+  No root NPU task is running. The external cleanup coordination question below
+  is still pending; no expired host isolation or unrelated process kill is used.
+- FA source-a28 CPU build completed0 at `R/fa28-fresh-build-a1`. Root independently
+  verified all851 vendor artifact hashes. Completion SHA7189c077dad9411e53240d6a0cc9190477d00433d5b1325833c0fcb26c7cac5d.
+  See `attention28_fa_cpu_build_summary.json`; no actual NPU launch is claimed.
+- Natural MoE group adapter was integrated, then root review found nonselected
+  calls still used equal copies of I/P. Fix d51eb34 (root61ac184f) now sends
+  original objects/storage to the native operator for healthy/unselected/exhausted
+  calls, and releases the independent observer even if trace close fails.
+  `natural-moe8-group-a1-cases.json` still names source-a28 BEFORE this fix: do not
+  run it as the corrected group. Prepare a new source/wheel and attempt instead.
+- Full Qwen3-VL MODEL_LOCAL image census/group and original Conv3d padding adapter
+  are integrated. Pinned public model89644892e4d85e24eaac8bacfd4f463576704203 is
+  being prepared; official weight SHA7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0.
+  No NPU/Worker qualification. Text-only Worker request context remains insufficient
+  for actual multimodal scheduler/encoder ownership.
+- Native26 group v2 is separate from legacy writer DSOs and C1 scope. Its CPU
+  failure/retry contracts pass; root SDK build and Python/natural ownership binding
+  are still being prepared. Old inventoried/unresolved rows cannot be dropped.
+- FIA natural prefill observation is read-only, with no private vendor or policy
+  changes. Actual TND/page16 and8.5.1 do not qualify the9.1 BNSD strategies.
+
+The older checkpoint notes below retain exact earlier attempt identities.
+
 ## Active checkpoint — Native39 accepted; resource coordination pending
 
 This section supersedes the older running-session notes below. R is still

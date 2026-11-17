@@ -43,6 +43,22 @@ finds no above-threshold legal-pair change; replay first differs at FIA output
 Mean, with separate Norm118.30810159723288→116.27198217667856 (1.7210312676%).
 Both pairs retain six nulls. These are standalone step0 results, not model steps.
 
+Fresh FA now has a separate [CPU build review](attention28_fa_cpu_build_summary.json):
+host, new matching kernel and registration completed; all851 vendor artifacts
+match independently recomputed hashes. No NPU launch or C2/C3 follows from that
+build. A new read-only FIA prefill reader records the actual Worker boundary and
+explicitly rejects TND/page16 for the existing9.1 BNSD strategies.
+
+Natural MoE group implementation now preserves original input objects and storage
+on healthy, unselected and once-exhausted calls; only an admitted fault constructs
+paired remapped indices/probabilities. This corrects a source-review finding and
+still requires a fresh NPU group run. The new vision adapter prepares full
+pretrained Qwen3-VL image prefill as MODEL_LOCAL; it does not inherit standard
+Worker qualification. Native26 has a separate v2 recovery ABI and host-memory
+failure contracts; its SDK build and complete natural group proof are separate gates.
+Changes to shared code never upgrade older receipts to the current HEAD: all
+accepted scopes remain bound to the exact reviewed source/build/workload hashes.
+
 Fault20 additionally has a [root review](native20_group_summary.json):408 C2 and
 678 C3 evidence references match actual stored bytes; all targets have native
 readback, unchanged original allocations, exact lossless/OFF and complete logits
