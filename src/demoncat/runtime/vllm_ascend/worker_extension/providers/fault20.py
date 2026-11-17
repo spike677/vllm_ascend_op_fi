@@ -25,6 +25,13 @@ class Fault20ServingReplay:
     make_session: object
 
 
+@dataclass(frozen=True)
+class Fault20CoverageReplay:
+    """Trusted bounded group factory, separate from C1 and user RPC settings."""
+    build_profile_sha256: str
+    make_session: object
+
+
 class Fault20Provider(Scope):
     def __init__(self, worker, model, identity):
         super().__init__(worker, model, identity)
@@ -107,7 +114,9 @@ class Fault20Provider(Scope):
             self.serving_backend.request_recovery()
         elif action in ('disable', 'finish', 'abort'):
             if action == 'finish' and self.serving_backend is not None and not self.serving_backend.recovered:
-                raise ProviderError('SERVING_QUALIFICATION_NOT_FINISHED')
+                from ..quant_group import QuantGroupBackend
+                if type(self.serving_backend) is not QuantGroupBackend or self.serving_backend.phase != 'complete':
+                    raise ProviderError('SERVING_QUALIFICATION_NOT_FINISHED')
             self._recover()
         elif action in ('clean', 'unregister'):
             self._recover()
@@ -122,6 +131,24 @@ class Fault20Provider(Scope):
         binding = qualified_binding(MECHANISM)
         if binding is None:
             serving = resolve_runtime(MECHANISM, self.model)
+            if type(serving) is Fault20CoverageReplay:
+                from ..serving20_coverage import Serving20CoverageSession
+                from ..quant_group import QuantGroupBackend
+                from fault_injection.deployments.matmul import CtypesMatmulGroupRuntime
+                if (serving.build_profile_sha256 != self.runtime.build_profile or not callable(serving.make_session)
+                        or self.runtime.worker != self._worker_facts()):
+                    raise ProviderError('FAULT20_TRUSTED_GROUP_BINDING_MISMATCH')
+                require_idle(self._read_native(), release_owner=True)
+                session = serving.make_session(self.worker, self.model, self.runtime, *self._ticket)
+                if (type(session) is not Serving20CoverageSession or type(session.backend) is not QuantGroupBackend
+                        or type(session.backend.runtime) is not CtypesMatmulGroupRuntime
+                        or session.backend.runtime.worker != self.runtime.worker
+                        or session.backend.runtime.build_profile != self.runtime.build_profile):
+                    raise ProviderError('REVIEWED_GROUP_SESSION_REQUIRED')
+                self.runtime = session.backend.runtime
+                self.serving_session, self.serving_backend = session, session.backend
+                self._registered = True
+                return
             if type(serving) is Fault20ServingReplay:
                 from ..serving20 import Serving20Session
                 from ..serving20_qmm import Serving20QmmSession

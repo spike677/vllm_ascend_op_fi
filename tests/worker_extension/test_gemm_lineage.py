@@ -140,6 +140,7 @@ class GemmLineageTests(unittest.TestCase):
             self.assertEqual(session.backend.owned_hooks, 0)
         finally:
             fixture.tearDown()
+            fixture.doCleanups()
 
 
 if __name__ == '__main__':
