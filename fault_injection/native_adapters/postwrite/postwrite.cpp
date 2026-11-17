@@ -45,6 +45,13 @@ int write(const Lease &l, const std::vector<uint16_t> &values) {
 bool finite(uint16_t bits) { return (bits & 0x7f80U) != 0x7f80U; }
 }
 extern "C" uint32_t dcat_pw_abi(void) { return 1; }
+extern "C" int dcat_pw_read_span(const void *tensor, uint64_t bytes, int32_t device, void *host) {
+    std::lock_guard<std::mutex> lock(guard);
+    if (!tensor || !host || device < 0 || bytes == 0 || bytes > max_bytes) return 1;
+    const int result = sync(device);
+    if (result) return result;
+    return aclrtMemcpy(host, bytes, tensor, bytes, ACL_MEMCPY_DEVICE_TO_HOST) == ACL_SUCCESS ? 0 : 12;
+}
 extern "C" int dcat_pw_open(void *tensor, uint64_t bytes, int32_t device,
                               uint64_t owner, uint64_t generation, uint64_t *handle) {
     std::lock_guard<std::mutex> lock(guard);

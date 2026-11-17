@@ -86,6 +86,9 @@ class NativePostwriteLibrary:
         for name, (args, result) in signatures.items():
             function = getattr(self.lib, name)
             function.argtypes, function.restype = args, result
+        self._snapshot = getattr(self.lib, 'dcat_pw_read_span', None)
+        if self._snapshot is not None:
+            self._snapshot.argtypes, self._snapshot.restype = [ptr, u64, i32, ptr], ctypes.c_int
         if self.lib.dcat_pw_abi() != 1:
             raise PostwriteRefused('POSTWRITE_ABI_MISMATCH')
         self._verify_loaded_file(path)
@@ -116,6 +119,32 @@ class NativePostwriteLibrary:
         if int(torch_npu.get_npu_format(tensor)) not in (0, 2):
             raise PostwriteRefused('POSTWRITE_REQUIRES_BASE_FORMAT')
         _validate_tensor(tensor)
+
+    def snapshot(self, tensor, element_offset=0, elements=None):
+        """Read real bytes without adding diagnostic Tensor ops to msprobe."""
+        if self._snapshot is None:
+            raise PostwriteRefused('POSTWRITE_FRESH_READ_SPAN_BUILD_REQUIRED')
+        if tensor.device.type != 'npu' or not tensor.is_contiguous():
+            raise PostwriteRefused('POSTWRITE_CONTIGUOUS_NPU_SNAPSHOT_REQUIRED')
+        import torch_npu
+        if int(torch_npu.get_npu_format(tensor)) not in (0, 2):
+            raise PostwriteRefused('POSTWRITE_BASE_FORMAT_SNAPSHOT_REQUIRED')
+        elements = tensor.numel() if elements is None else elements
+        if (type(element_offset) is not int or type(elements) is not int or element_offset < 0
+                or elements < 0 or element_offset + elements > tensor.numel()
+                or elements * tensor.element_size() > 1024 * 1024
+                or (tensor.storage_offset() + element_offset + elements) * tensor.element_size()
+                    > tensor.untyped_storage().nbytes()):
+            raise PostwriteRefused('POSTWRITE_SNAPSHOT_SPAN_OUT_OF_BOUNDS')
+        if elements == 0:return b''
+        geometry = tensor_geometry(tensor)
+        size = elements * tensor.element_size()
+        copied = (ctypes.c_ubyte * size)()
+        code = self._snapshot(tensor.data_ptr() + element_offset * tensor.element_size(), size,
+                              tensor.device.index, copied)
+        if code or tensor_geometry(tensor) != geometry:
+            raise PostwriteRefused('POSTWRITE_SNAPSHOT_FAILED:' + str(code))
+        return bytes(copied)
 
     def open(self, tensor, owner, generation):
         self.validate(tensor)

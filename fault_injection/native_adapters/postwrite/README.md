@@ -50,3 +50,13 @@ It does not publish raw data. `tests/test_postwrite_providers.py` uses actual
 CPU Torch dispatch and an explicitly labeled CPU transport to verify selection,
 value propagation, unchanged regions, recovery and refusal paths. CPU tests
 do not establish Native acceptance.
+
+C2/C3 evidence builds additionally export `dcat_pw_read_span`. This additive ABI-1
+function synchronizes the actual device and copies at most 1 MiB to caller-owned
+host memory. It does not open a lease, mutate data or grant execution authority.
+`NativePostwriteLibrary.snapshot` validates the real contiguous base-format tensor
+and exact in-allocation span before invoking it, then rechecks allocation geometry.
+The snapshot avoids adding diagnostic Tensor operations inside a statistics window.
+Older libraries remain usable for existing C1 calls, but snapshot requests refuse
+without the new export. Build new binaries from these exact Native sources and the
+actual CANN fingerprint before coverage experiments; no old receipt is upgraded.

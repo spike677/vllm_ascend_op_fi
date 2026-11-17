@@ -6,6 +6,8 @@ extern "C" {
 #endif
 /* Public ACL transfer ABI. No OpCache layout or externally supplied executor. */
 uint32_t dcat_pw_abi(void);
+/* Read-only bounded evidence copy; no lease, write or execution authority. */
+int dcat_pw_read_span(const void *tensor, uint64_t bytes, int32_t device, void *host);
 /* The caller retains the actual tensor until restore/release succeeds. */
 int dcat_pw_open(void *tensor, uint64_t bytes, int32_t device,
                  uint64_t owner, uint64_t generation, uint64_t *handle);
