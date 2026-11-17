@@ -4,7 +4,7 @@ import unittest
 
 import torch
 from demoncat.runtime.vllm_ascend.worker_extension.paged33_audit import audit_paged_call, _meta
-from demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd import validate_tnd_call, Paged33TNDProvider
+from demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd import validate_tnd_call, validate_fai_launch, Paged33TNDProvider
 
 
 def fixture():
@@ -25,6 +25,28 @@ def fixture():
 
 
 class TNDNativeContracts(unittest.TestCase):
+    def test_final_fai_workspace_and_compiled_entry_must_agree(self):
+        for arm in ('baseline','fault','off'):
+            for mask in (0,1):
+                tile=256 if arm=='fault' else 512;unit=16*128*tile*3
+                typed=dict(numHeads=16,kvHeads=8,batch=1,embeddingSize=128,embeddingSizeV=128,
+                    blockSize=16,maxQSeqlen=1,maxKvSeqlen=1025,sparseMode=3,firstBatchTaskNum=8,
+                    totalTaskNum=8,splitLseTotalSize=0,splitOTotalSize=0,totalSplitNodeNum=0,maskType=mask)
+                typed.update({name:unit*width for name,width in dict(mm1OutSize=4,smOnlineOutSize=2,
+                    mm2OutSize=4,UpdateSize=4,workSpaceSize=14).items()})
+                launch=dict(typed=typed,tiling_key=5000000000010200100+(3 if mask else 0)+
+                    (900000000000000000 if arm=='fault' else 0),block_dim=16,schedule_mode=1)
+                host=dict(route='FAInferTiling',aic=16,native_route_or_decode_flags_changed=False,
+                    workspace=16*1024**2+16*128*tile*4*3*4)
+                self.assertEqual(validate_fai_launch(launch,host,arm=arm,kv_length=1025)['selected_s2'],tile)
+                typed['mm2OutSize']+=1
+                with self.assertRaisesRegex(RuntimeError,'WORKSPACE_DIFFERS'):
+                    validate_fai_launch(launch,host,arm=arm,kv_length=1025)
+                typed['mm2OutSize']-=1
+                launch['tiling_key']=103000000010200003
+                with self.assertRaisesRegex(RuntimeError,'ENTRY_OR_LAUNCH_DIFFERS'):
+                    validate_fai_launch(launch,host,arm=arm,kv_length=1025)
+
     def test_live_flat_page_view_is_retained_and_not_repacked(self):
         actual,boundary=fixture()
         before=actual['key'].untyped_storage()._cdata

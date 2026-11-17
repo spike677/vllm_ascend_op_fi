@@ -18,7 +18,9 @@ from .serving_context import require
 from fault_injection.native_adapters.attention28.launch import LaunchObserver, verify_launch, sha, bundle_kernel_abi
 
 COMMIT = 'c77c0829f1f0f0b8f882db1d9b051a758b605472'
-KEYS = {103000000010200003, 103000000010300003, 104000000010200003, 104000000010300003}
+KEYS = {5000000000000200100, 5000000000000200103,
+        5000000000010200100, 5000000000010200103,
+        5900000000010200100, 5900000000010200103}
 PREFIX = 'DCAT33_TND_'
 
 
@@ -28,7 +30,7 @@ def verify_bundle(completion, completion_sha256, vendor):
     data = json.loads(path.read_bytes())
     require(data.get('schema') == 'demoncat.fia.fresh_build.v1'
             and data.get('status') == 'CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION'
-            and data.get('source_commit') == COMMIT and data.get('variant') == 'tnd_page16_s2_256'
+            and data.get('source_commit') == COMMIT and data.get('variant') == 'tnd_page16_fai_s2_256'
             and data.get('loading_allowed') is False and data.get('npu_executed') is False
             and data.get('previous_experiment_objects_used') is False
             and set(data.get('compiled_keys', [])) == KEYS, 'TND33_INDEPENDENT_FRESH_BUILD_REQUIRED')
@@ -92,7 +94,39 @@ def validate_tnd_call(actual, boundary, *, allow_cpu_test=False):
                  'key_shared_prefix', 'value_shared_prefix', 'query_rope', 'key_rope'):
         require(actual.get(name) is None, 'TND33_OPTIONAL_FEATURE_UNADAPTED:' + name)
     return dict(api='torch_npu.npu_fused_infer_attention_score', layout='TND', page_size=16,
-                kv_length=actual['actual_seq_lengths_kv'][0], native_s2=512, fault_s2=256)
+                kv_length=actual['actual_seq_lengths_kv'][0], native_s2=512, fault_s2=256,
+                native_route='TilingProcess4SplitFuse / FAInferTiling')
+
+
+def validate_fai_launch(launch, host, *, arm, kv_length):
+    """Check the *final observed* FAI ABI against matched kernel specialization.
+
+    FAI encodes its KV tile in the compiled entry, not a mutable s2BaseSize
+    field. The observed function key, fresh ELF, and dependent workspace slices
+    must all agree. Public C2/C3 qualification remains separate.
+    """
+    tile = 256 if arm == 'fault' else 512
+    typed = launch['typed']
+    require(host['route'] == 'FAInferTiling' and host['aic'] == 16
+            and host['native_route_or_decode_flags_changed'] is False,
+            'TND33_ACTUAL_FAI_ROUTE_OR_CORE_BUDGET_DIFFERS')
+    require(all(typed[name] == value for name, value in dict(numHeads=16, kvHeads=8, batch=1,
+        embeddingSize=128, embeddingSizeV=128, blockSize=16, maxQSeqlen=1,
+        maxKvSeqlen=kv_length, sparseMode=3, firstBatchTaskNum=8, totalTaskNum=8,
+        splitLseTotalSize=0, splitOTotalSize=0, totalSplitNodeNum=0).items()),
+        'TND33_FINAL_FAI_GEOMETRY_DIFFERS')
+    mask = typed['maskType']
+    require(mask in (0, 1), 'TND33_FAI_MASK_UNADAPTED')
+    expected_key = 5000000000010200100+(3 if mask == 1 else 0)+(900000000000000000 if arm == 'fault' else 0)
+    require(launch['tiling_key'] == expected_key and launch['block_dim'] == 16 and launch['schedule_mode'] == 1,
+            'TND33_FINAL_FAI_ENTRY_OR_LAUNCH_DIFFERS')
+    unit = 16*128*tile*3
+    require(all(typed[name] == unit*width for name, width in dict(mm1OutSize=4, smOnlineOutSize=2,
+        mm2OutSize=4, UpdateSize=4, workSpaceSize=14).items())
+        and host['workspace'] == 16*1024**2+16*128*tile*4*3*4,
+        'TND33_FINAL_FAI_WORKSPACE_DIFFERS')
+    return dict(selected_s2=tile, selection='EXACT_FRESH_COMPILED_ENTRY_AND_FINAL_WORKSPACE',
+                route='FAInferTiling', host_device_geometry_agrees=True)
 
 
 class TNDNativeAdapter:
@@ -110,6 +144,8 @@ class TNDNativeAdapter:
                 'TND33_PREIMPORT_PRIVATE_VENDOR_UNCACHED_SYNC_REQUIRED')
         require(sha(schema) == schema_sha256, 'TND33_PUBLIC_SCHEMA_HASH_DIFFERS')
         self.schema = json.loads(Path(schema).read_bytes())
+        require(self.schema.get('schema') == 'demoncat.paged33.fai_public_serializer.v1'
+                and self.schema.get('type') == 'FAInferTilingData', 'TND33_ACTUAL_FAI_PUBLIC_SCHEMA_REQUIRED')
         require(sha(observer_receipt) == observer_receipt_sha256, 'TND33_OBSERVER_RECEIPT_HASH_DIFFERS')
         receipt = json.loads(Path(observer_receipt).read_bytes())
         require(receipt.get('observer_compiled') is True and receipt.get('actual_npu_calls') == 0,
@@ -167,11 +203,10 @@ class TNDNativeAdapter:
             launch = verify_launch(self.runtime_dir, call_id, schema=self.schema, host=host,
                                    kernel_sha256=self.build['completion']['kernel_binary_sha256'],
                                    kernel_metadata=self.kernel_metadata, kernel_abi=self.kernel_abi)
-            require(launch['typed']['innerSplitParams.s2BaseSize'] == host['selected_s2'],
-                    'TND33_FINAL_KERNEL_S2_DIFFERS')
+            geometry = validate_fai_launch(launch, host, arm=self.arm, kv_length=shape['kv_length'])
             row = dict(call_id=call_id, module_path=boundary['module_path'],
                        module_object_id=boundary['module_object_id'], virtual_engine=boundary['virtual_engine'],
-                       scheduler=boundary['scheduler'], native=launch, scope=shape,
+                       scheduler=boundary['scheduler'], native=launch, scope=shape, geometry=geometry,
                        cache_repacked=False, api_arguments_changed=False, output_mutated=False)
             self.calls.append(row)
             (self.output/(call_id+'.json')).write_text(json.dumps(row, indent=2)+'\n')

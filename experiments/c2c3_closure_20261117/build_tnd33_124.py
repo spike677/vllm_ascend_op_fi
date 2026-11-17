@@ -11,6 +11,7 @@ def main():
     p.add_argument('--source', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--interfaces', type=Path, required=True)
+    p.add_argument('--strategy', choices=('arch22-investigation', 'actual-fai'), default='actual-fai')
     a = p.parse_args()
     a.out.mkdir(parents=True, exist_ok=False)
     pristine = Path('/home/17-fault-engineering-20261117/ops-transformer-pristine-a1')
@@ -20,7 +21,8 @@ def main():
     if head != 'c77c0829f1f0f0b8f882db1d9b051a758b605472':
         raise RuntimeError('PINNED_OFFICIAL_SOURCE_CHANGED')
     patch = a.out / 'patch'
-    subprocess.run(['python3', str(a.source / 'fault_injection/native_adapters/attention28/fia/apply_tnd33_policy.py'),
+    patch_name = 'apply_tnd33_fai_policy.py' if a.strategy == 'actual-fai' else 'apply_tnd33_policy.py'
+    subprocess.run(['python3', str(a.source / 'fault_injection/native_adapters/attention28/fia' / patch_name),
                     '--source', str(official), '--output', str(patch)], check=True)
     output = a.out / 'build'
     output.mkdir()
@@ -41,7 +43,7 @@ def main():
             '--dependencies /input-dependencies --work /build/run --jobs 4 '
             '--sdk /usr/local/Ascend/cann-8.5.1 --sdk-interface-manifest /sdk_interfaces.json '
             '--sdk-interface-sha256 ' + sdk_sha + ' --opdef-compat ascend910b-cann851']
-    receipt = dict(command=cmd, image_id=image_id, source_commit=head,
+    receipt = dict(command=cmd, image_id=image_id, source_commit=head, strategy=a.strategy,
                    sdk_interfaces_sha256=sdk_sha, actual_npu_calls=0, status='BUILDING')
     record = a.out / 'controller.json'
     record.write_text(json.dumps(receipt, indent=2) + '\n')
