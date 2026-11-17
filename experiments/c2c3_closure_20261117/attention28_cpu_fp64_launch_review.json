@@ -1,0 +1,704 @@
+{
+  "schema": "demoncat.attention28.cpu_fp64_offline_launch_review.v1",
+  "status": "FOUR_CASES_EIGHT_REAL_LAUNCHES_VERIFIED",
+  "read_only_remote_audit": true,
+  "original_evidence_modified": false,
+  "actual_npu_calls": 0,
+  "verifier_sha256": "71c42dce81d83d29d4f6c09ed4d3ae3f7cda924f74aba4099fd6957eaaa5aa57",
+  "public_schema_sha256": "20dd6a361142aa9acd73f0787673e24660daef46846e5b362eb9306b15fe035c",
+  "cases": [
+    {
+      "case_id": "fia-legal-cpu-fp64-baseline",
+      "remote_root": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline",
+      "variant": "legal_tiling",
+      "phase": "baseline",
+      "completion_sha256": "84a1c7d2f1d213f96b94891ea4db9ccfe3c394bd58c4c3e60183ab837b606174",
+      "kernel_sha256": "fc352594d5d02f759cc5936e89ef88e81b449c91ae7f8c1613cb2c6801da3a0a",
+      "kernel_argument_abi": {
+        "source_sha256": "d34068f64e515b4c8ff75f12a2222f22cf9a397fb4e5812dd3dea1c5c573f787",
+        "pointer_bytes": 8,
+        "names": [
+          "query",
+          "key",
+          "value",
+          "pse_shift",
+          "attenMask",
+          "actualSeqLengths",
+          "actualSeqLengthsKV",
+          "deq_scale1",
+          "quant_scale1",
+          "deq_scale2",
+          "quant_scale2",
+          "quant_offset2",
+          "antiquantScale",
+          "antiquantOffset",
+          "blocktable",
+          "queryPaddingSize",
+          "kvPaddingSize",
+          "keyAntiquantScale",
+          "keyAntiquantOffset",
+          "valueAntiquantScale",
+          "valueAntiquantOffset",
+          "keySharedPrefix",
+          "valueSharedPrefix",
+          "actualSharedPrefixLen",
+          "queryRope",
+          "keyRope",
+          "keyRopeAntiquantScale",
+          "dequantScaleQuery",
+          "learnableSink",
+          "qStartIdx",
+          "kvStartIdx",
+          "attentionOut",
+          "softmaxLse",
+          "workspace",
+          "tiling"
+        ],
+        "soc_family": "ascend910b",
+        "hidden_hardware_sync_prefix_bytes": 8,
+        "declared_tiling_pointer_offset": 272,
+        "tiling_pointer_offset": 280
+      },
+      "launches": [
+        {
+          "call_id": "ec31987f23ca459397389ce36a0864b1",
+          "pid": 1,
+          "tid": 1,
+          "status": "FINAL_ARGUMENT_AND_LAUNCH_VERIFIED",
+          "raw_sha256": "cbf18b848769d006e9e4108499036a044c46624e12a0f768349e4520cc6eae72",
+          "runtime_log_sha256": "3cbcc6fcddaabb350fbd0d89d98dd0afbc6698a06199565053c6d0303de474fa",
+          "tiling_key": 109000000000000000,
+          "block_dim": 16,
+          "schedule_mode": 1,
+          "kernel_argument_raw_observed": true,
+          "native_launch_verified": true,
+          "device_completion_observed": true,
+          "verified_public_serializer_padding": {
+            "baseParams.FusedInferAttentionBaseParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "prefixParams.FusedInferAttentionPrefixParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "excluded_independently_bound_launches": [],
+          "public_typed_geometry": {
+            "innerSplitParams.mBaseSize": 512,
+            "innerSplitParams.s2BaseSize": 512
+          }
+        },
+        {
+          "call_id": "0560bc1a16ea4a5c8d814068e0b254fe",
+          "pid": 1,
+          "tid": 1,
+          "status": "FINAL_ARGUMENT_AND_LAUNCH_VERIFIED",
+          "raw_sha256": "cbf18b848769d006e9e4108499036a044c46624e12a0f768349e4520cc6eae72",
+          "runtime_log_sha256": "3cbcc6fcddaabb350fbd0d89d98dd0afbc6698a06199565053c6d0303de474fa",
+          "tiling_key": 109000000000000000,
+          "block_dim": 16,
+          "schedule_mode": 1,
+          "kernel_argument_raw_observed": true,
+          "native_launch_verified": true,
+          "device_completion_observed": true,
+          "verified_public_serializer_padding": {
+            "baseParams.FusedInferAttentionBaseParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "prefixParams.FusedInferAttentionPrefixParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "excluded_independently_bound_launches": [
+            {
+              "api": "aclrtLaunchKernelWithHostArgs",
+              "kernel_sha256": "d5df5e04107510b9131e9589ac168e41594decbea6ef40001ed94ce95c8e2401",
+              "function_handle": 794444320,
+              "tiling_key": "1100400",
+              "reason": "INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA"
+            },
+            {
+              "api": "aclrtLaunchKernelWithHostArgs",
+              "kernel_sha256": "b5a63fdc42951895151da61ec8a76b5fe37b6c1740a8cf0b74d57fdfada4fedd",
+              "function_handle": 798598288,
+              "tiling_key": "1100400",
+              "reason": "INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA"
+            }
+          ],
+          "public_typed_geometry": {
+            "innerSplitParams.mBaseSize": 512,
+            "innerSplitParams.s2BaseSize": 512
+          }
+        }
+      ],
+      "original_evidence_sha256": {
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/runtime/runtime.jsonl": "3cbcc6fcddaabb350fbd0d89d98dd0afbc6698a06199565053c6d0303de474fa",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/result.json": "066a0a3975a3208ffeec833e25916474ab05bc7904cd98c8082fd2e1ade9f216",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/independent_launch.json": "cf846be8105db770d17bc4a56e918d504ecef31c7ef537e2f21d26426c784354",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/statistics_backend.json": "34307448b7344e96c7b32c64e46ece257a3f7f7023b89de597c19f94b2ad336e",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/host-0.jsonl": "8c7a030676073013a98cc5932e2c7fe95393b5bb2a99c6e83dbb6ba41e3c9741",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/host-1.jsonl": "35d6657624e1a1e969c5d95ec8e9d5ed3f0147f6c4931ec1363559b802bbcedf"
+      },
+      "original_execution_status": "EXPERIMENTAL_EXECUTION_COMPLETED_NOT_LAUNCH_QUALIFIED",
+      "original_independent_launch_status": "FINAL_ARGUMENTS_AND_LAUNCHES_VERIFIED",
+      "repeated_complete_output_stable": true,
+      "complete_output_sha256": [
+        "63d153f8892833d3eb5e5b7705b8d093c6e0f544a8cb3ba6180090803e941dda",
+        "63d153f8892833d3eb5e5b7705b8d093c6e0f544a8cb3ba6180090803e941dda"
+      ],
+      "new_collector_runtime_summary": {
+        "backend": "attention-msprobe-cpu-fp64-v1",
+        "adapter_sha256": "1e66f220c1098a71eca9611bbc0cb582a088e7e47819269a5a8dbf3a8bb50b48",
+        "status": "NEW_COLLECTION_COMPLETE",
+        "copied_bytes": 201326592,
+        "errors": [],
+        "original_method_restored": true
+      },
+      "status": "FINAL_ARGUMENTS_AND_LAUNCHES_VERIFIED_OFFLINE"
+    },
+    {
+      "case_id": "fia-legal-cpu-fp64-fault",
+      "remote_root": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault",
+      "variant": "legal_tiling",
+      "phase": "fault",
+      "completion_sha256": "84a1c7d2f1d213f96b94891ea4db9ccfe3c394bd58c4c3e60183ab837b606174",
+      "kernel_sha256": "fc352594d5d02f759cc5936e89ef88e81b449c91ae7f8c1613cb2c6801da3a0a",
+      "kernel_argument_abi": {
+        "source_sha256": "d34068f64e515b4c8ff75f12a2222f22cf9a397fb4e5812dd3dea1c5c573f787",
+        "pointer_bytes": 8,
+        "names": [
+          "query",
+          "key",
+          "value",
+          "pse_shift",
+          "attenMask",
+          "actualSeqLengths",
+          "actualSeqLengthsKV",
+          "deq_scale1",
+          "quant_scale1",
+          "deq_scale2",
+          "quant_scale2",
+          "quant_offset2",
+          "antiquantScale",
+          "antiquantOffset",
+          "blocktable",
+          "queryPaddingSize",
+          "kvPaddingSize",
+          "keyAntiquantScale",
+          "keyAntiquantOffset",
+          "valueAntiquantScale",
+          "valueAntiquantOffset",
+          "keySharedPrefix",
+          "valueSharedPrefix",
+          "actualSharedPrefixLen",
+          "queryRope",
+          "keyRope",
+          "keyRopeAntiquantScale",
+          "dequantScaleQuery",
+          "learnableSink",
+          "qStartIdx",
+          "kvStartIdx",
+          "attentionOut",
+          "softmaxLse",
+          "workspace",
+          "tiling"
+        ],
+        "soc_family": "ascend910b",
+        "hidden_hardware_sync_prefix_bytes": 8,
+        "declared_tiling_pointer_offset": 272,
+        "tiling_pointer_offset": 280
+      },
+      "launches": [
+        {
+          "call_id": "9fe186613b7c4c43a5ec788df5c40b1f",
+          "pid": 1,
+          "tid": 1,
+          "status": "FINAL_ARGUMENT_AND_LAUNCH_VERIFIED",
+          "raw_sha256": "f48d30c9fa49863adc7cb2aa5de9fe2a734c43853fc0130eb12130b58d539ba6",
+          "runtime_log_sha256": "e994fff6c761b86cfdca41e05c617d03371ded8f495877546e6e0828177f3ce3",
+          "tiling_key": 109000000000400000,
+          "block_dim": 16,
+          "schedule_mode": 1,
+          "kernel_argument_raw_observed": true,
+          "native_launch_verified": true,
+          "device_completion_observed": true,
+          "verified_public_serializer_padding": {
+            "baseParams.FusedInferAttentionBaseParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "prefixParams.FusedInferAttentionPrefixParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "excluded_independently_bound_launches": [],
+          "public_typed_geometry": {
+            "innerSplitParams.mBaseSize": 128,
+            "innerSplitParams.s2BaseSize": 128
+          }
+        },
+        {
+          "call_id": "0f618f3af89a40169e4baa2654f21af4",
+          "pid": 1,
+          "tid": 1,
+          "status": "FINAL_ARGUMENT_AND_LAUNCH_VERIFIED",
+          "raw_sha256": "f48d30c9fa49863adc7cb2aa5de9fe2a734c43853fc0130eb12130b58d539ba6",
+          "runtime_log_sha256": "e994fff6c761b86cfdca41e05c617d03371ded8f495877546e6e0828177f3ce3",
+          "tiling_key": 109000000000400000,
+          "block_dim": 16,
+          "schedule_mode": 1,
+          "kernel_argument_raw_observed": true,
+          "native_launch_verified": true,
+          "device_completion_observed": true,
+          "verified_public_serializer_padding": {
+            "baseParams.FusedInferAttentionBaseParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "prefixParams.FusedInferAttentionPrefixParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "excluded_independently_bound_launches": [
+            {
+              "api": "aclrtLaunchKernelWithHostArgs",
+              "kernel_sha256": "d5df5e04107510b9131e9589ac168e41594decbea6ef40001ed94ce95c8e2401",
+              "function_handle": 748697248,
+              "tiling_key": "1100400",
+              "reason": "INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA"
+            },
+            {
+              "api": "aclrtLaunchKernelWithHostArgs",
+              "kernel_sha256": "b5a63fdc42951895151da61ec8a76b5fe37b6c1740a8cf0b74d57fdfada4fedd",
+              "function_handle": 752852240,
+              "tiling_key": "1100400",
+              "reason": "INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA"
+            }
+          ],
+          "public_typed_geometry": {
+            "innerSplitParams.mBaseSize": 128,
+            "innerSplitParams.s2BaseSize": 128
+          }
+        }
+      ],
+      "original_evidence_sha256": {
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/runtime/runtime.jsonl": "e994fff6c761b86cfdca41e05c617d03371ded8f495877546e6e0828177f3ce3",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/result.json": "d421ce7a71f67ac7d0b7cf670bd19f1d15372c5826be245c385e1778dd46090b",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/independent_launch.json": "61a40f8b9c7c5f2448559f3ffcb9e77f9a3ec798ba9acc044b5b7eb25bd8fc0c",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/statistics_backend.json": "34307448b7344e96c7b32c64e46ece257a3f7f7023b89de597c19f94b2ad336e",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/host-0.jsonl": "f99e1b7e15964306effbe8426d729785db23358dca4c9ecdcc08a54ea835a041",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/host-1.jsonl": "0202852bb71b67b8ca3597e73f9a421e003e01a8b370805161aa77996c174dad"
+      },
+      "original_execution_status": "EXPERIMENTAL_EXECUTION_COMPLETED_NOT_LAUNCH_QUALIFIED",
+      "original_independent_launch_status": "FINAL_ARGUMENTS_AND_LAUNCHES_VERIFIED",
+      "repeated_complete_output_stable": true,
+      "complete_output_sha256": [
+        "69d51d91aa24b47211ba843830b27103074629e4cf2c9c6a8be45da4568cd128",
+        "69d51d91aa24b47211ba843830b27103074629e4cf2c9c6a8be45da4568cd128"
+      ],
+      "new_collector_runtime_summary": {
+        "backend": "attention-msprobe-cpu-fp64-v1",
+        "adapter_sha256": "1e66f220c1098a71eca9611bbc0cb582a088e7e47819269a5a8dbf3a8bb50b48",
+        "status": "NEW_COLLECTION_COMPLETE",
+        "copied_bytes": 201326592,
+        "errors": [],
+        "original_method_restored": true
+      },
+      "status": "FINAL_ARGUMENTS_AND_LAUNCHES_VERIFIED_OFFLINE"
+    },
+    {
+      "case_id": "fia-replay-cpu-fp64-baseline",
+      "remote_root": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline",
+      "variant": "denominator_replay",
+      "phase": "baseline",
+      "completion_sha256": "270b01da08331727c04878925c9e3fa7c7b92ab6f1f3a1eb33a82ce3c4f6cedf",
+      "kernel_sha256": "4305610d7521f1bc4d34ed2e0074fd0f42782a3f283b1ac24fce877857519b67",
+      "kernel_argument_abi": {
+        "source_sha256": "d34068f64e515b4c8ff75f12a2222f22cf9a397fb4e5812dd3dea1c5c573f787",
+        "pointer_bytes": 8,
+        "names": [
+          "query",
+          "key",
+          "value",
+          "pse_shift",
+          "attenMask",
+          "actualSeqLengths",
+          "actualSeqLengthsKV",
+          "deq_scale1",
+          "quant_scale1",
+          "deq_scale2",
+          "quant_scale2",
+          "quant_offset2",
+          "antiquantScale",
+          "antiquantOffset",
+          "blocktable",
+          "queryPaddingSize",
+          "kvPaddingSize",
+          "keyAntiquantScale",
+          "keyAntiquantOffset",
+          "valueAntiquantScale",
+          "valueAntiquantOffset",
+          "keySharedPrefix",
+          "valueSharedPrefix",
+          "actualSharedPrefixLen",
+          "queryRope",
+          "keyRope",
+          "keyRopeAntiquantScale",
+          "dequantScaleQuery",
+          "learnableSink",
+          "qStartIdx",
+          "kvStartIdx",
+          "attentionOut",
+          "softmaxLse",
+          "workspace",
+          "tiling"
+        ],
+        "soc_family": "ascend910b",
+        "hidden_hardware_sync_prefix_bytes": 8,
+        "declared_tiling_pointer_offset": 272,
+        "tiling_pointer_offset": 280
+      },
+      "launches": [
+        {
+          "call_id": "58c6ddc8c6cc467b9a7972e540a42c31",
+          "pid": 1,
+          "tid": 1,
+          "status": "FINAL_ARGUMENT_AND_LAUNCH_VERIFIED",
+          "raw_sha256": "f48d30c9fa49863adc7cb2aa5de9fe2a734c43853fc0130eb12130b58d539ba6",
+          "runtime_log_sha256": "577cd6d34bf560368382d4e86552aa20626206c504762afe0371dba069924619",
+          "tiling_key": 109000000000400000,
+          "block_dim": 16,
+          "schedule_mode": 1,
+          "kernel_argument_raw_observed": true,
+          "native_launch_verified": true,
+          "device_completion_observed": true,
+          "verified_public_serializer_padding": {
+            "baseParams.FusedInferAttentionBaseParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "prefixParams.FusedInferAttentionPrefixParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "excluded_independently_bound_launches": [],
+          "public_typed_geometry": {
+            "innerSplitParams.mBaseSize": 128,
+            "innerSplitParams.s2BaseSize": 128
+          }
+        },
+        {
+          "call_id": "953d906a25714f609c6d927625f68f92",
+          "pid": 1,
+          "tid": 1,
+          "status": "FINAL_ARGUMENT_AND_LAUNCH_VERIFIED",
+          "raw_sha256": "f48d30c9fa49863adc7cb2aa5de9fe2a734c43853fc0130eb12130b58d539ba6",
+          "runtime_log_sha256": "577cd6d34bf560368382d4e86552aa20626206c504762afe0371dba069924619",
+          "tiling_key": 109000000000400000,
+          "block_dim": 16,
+          "schedule_mode": 1,
+          "kernel_argument_raw_observed": true,
+          "native_launch_verified": true,
+          "device_completion_observed": true,
+          "verified_public_serializer_padding": {
+            "baseParams.FusedInferAttentionBaseParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "prefixParams.FusedInferAttentionPrefixParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "excluded_independently_bound_launches": [
+            {
+              "api": "aclrtLaunchKernelWithHostArgs",
+              "kernel_sha256": "d5df5e04107510b9131e9589ac168e41594decbea6ef40001ed94ce95c8e2401",
+              "function_handle": 899291328,
+              "tiling_key": "1100400",
+              "reason": "INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA"
+            },
+            {
+              "api": "aclrtLaunchKernelWithHostArgs",
+              "kernel_sha256": "b5a63fdc42951895151da61ec8a76b5fe37b6c1740a8cf0b74d57fdfada4fedd",
+              "function_handle": 903440112,
+              "tiling_key": "1100400",
+              "reason": "INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA"
+            }
+          ],
+          "public_typed_geometry": {
+            "innerSplitParams.mBaseSize": 128,
+            "innerSplitParams.s2BaseSize": 128
+          }
+        }
+      ],
+      "original_evidence_sha256": {
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/runtime/runtime.jsonl": "577cd6d34bf560368382d4e86552aa20626206c504762afe0371dba069924619",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/result.json": "033fb47a73b7a3ff27180d3d9b5e39decdf022a77cc07e1a19e0f1e902f49c1e",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/independent_launch.json": "5070d93a85da8689d3664b016d474ac8b307dd146d015ead5d8dfc7280f7af2f",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/statistics_backend.json": "34307448b7344e96c7b32c64e46ece257a3f7f7023b89de597c19f94b2ad336e",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/host-0.jsonl": "cc93f103dfc3ca1b5152658b133e2a762b30f0185f4d04c209ed8af791f87092",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/host-1.jsonl": "2c0097ba16b6b2f487f18b2841ee4e2fe6d30c3e675d3366398032ebdfb585d5"
+      },
+      "original_execution_status": "EXPERIMENTAL_EXECUTION_COMPLETED_NOT_LAUNCH_QUALIFIED",
+      "original_independent_launch_status": "FINAL_ARGUMENTS_AND_LAUNCHES_VERIFIED",
+      "repeated_complete_output_stable": true,
+      "complete_output_sha256": [
+        "69d51d91aa24b47211ba843830b27103074629e4cf2c9c6a8be45da4568cd128",
+        "69d51d91aa24b47211ba843830b27103074629e4cf2c9c6a8be45da4568cd128"
+      ],
+      "new_collector_runtime_summary": {
+        "backend": "attention-msprobe-cpu-fp64-v1",
+        "adapter_sha256": "1e66f220c1098a71eca9611bbc0cb582a088e7e47819269a5a8dbf3a8bb50b48",
+        "status": "NEW_COLLECTION_COMPLETE",
+        "copied_bytes": 201326592,
+        "errors": [],
+        "original_method_restored": true
+      },
+      "status": "FINAL_ARGUMENTS_AND_LAUNCHES_VERIFIED_OFFLINE"
+    },
+    {
+      "case_id": "fia-replay-cpu-fp64-fault",
+      "remote_root": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault",
+      "variant": "denominator_replay",
+      "phase": "fault",
+      "completion_sha256": "270b01da08331727c04878925c9e3fa7c7b92ab6f1f3a1eb33a82ce3c4f6cedf",
+      "kernel_sha256": "4305610d7521f1bc4d34ed2e0074fd0f42782a3f283b1ac24fce877857519b67",
+      "kernel_argument_abi": {
+        "source_sha256": "d34068f64e515b4c8ff75f12a2222f22cf9a397fb4e5812dd3dea1c5c573f787",
+        "pointer_bytes": 8,
+        "names": [
+          "query",
+          "key",
+          "value",
+          "pse_shift",
+          "attenMask",
+          "actualSeqLengths",
+          "actualSeqLengthsKV",
+          "deq_scale1",
+          "quant_scale1",
+          "deq_scale2",
+          "quant_scale2",
+          "quant_offset2",
+          "antiquantScale",
+          "antiquantOffset",
+          "blocktable",
+          "queryPaddingSize",
+          "kvPaddingSize",
+          "keyAntiquantScale",
+          "keyAntiquantOffset",
+          "valueAntiquantScale",
+          "valueAntiquantOffset",
+          "keySharedPrefix",
+          "valueSharedPrefix",
+          "actualSharedPrefixLen",
+          "queryRope",
+          "keyRope",
+          "keyRopeAntiquantScale",
+          "dequantScaleQuery",
+          "learnableSink",
+          "qStartIdx",
+          "kvStartIdx",
+          "attentionOut",
+          "softmaxLse",
+          "workspace",
+          "tiling"
+        ],
+        "soc_family": "ascend910b",
+        "hidden_hardware_sync_prefix_bytes": 8,
+        "declared_tiling_pointer_offset": 272,
+        "tiling_pointer_offset": 280
+      },
+      "launches": [
+        {
+          "call_id": "299f139677064cbb9ba41f883e0b6341",
+          "pid": 1,
+          "tid": 1,
+          "status": "FINAL_ARGUMENT_AND_LAUNCH_VERIFIED",
+          "raw_sha256": "f48d30c9fa49863adc7cb2aa5de9fe2a734c43853fc0130eb12130b58d539ba6",
+          "runtime_log_sha256": "6079a0e8232396dfcbf36b91e51422714edff4965db9912c61638d1dcd987b4e",
+          "tiling_key": 119000000000400000,
+          "block_dim": 16,
+          "schedule_mode": 1,
+          "kernel_argument_raw_observed": true,
+          "native_launch_verified": true,
+          "device_completion_observed": true,
+          "verified_public_serializer_padding": {
+            "baseParams.FusedInferAttentionBaseParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "prefixParams.FusedInferAttentionPrefixParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "excluded_independently_bound_launches": [],
+          "public_typed_geometry": {
+            "innerSplitParams.mBaseSize": 128,
+            "innerSplitParams.s2BaseSize": 128
+          }
+        },
+        {
+          "call_id": "cb7df212506244a895f2f6416411b613",
+          "pid": 1,
+          "tid": 1,
+          "status": "FINAL_ARGUMENT_AND_LAUNCH_VERIFIED",
+          "raw_sha256": "f48d30c9fa49863adc7cb2aa5de9fe2a734c43853fc0130eb12130b58d539ba6",
+          "runtime_log_sha256": "6079a0e8232396dfcbf36b91e51422714edff4965db9912c61638d1dcd987b4e",
+          "tiling_key": 119000000000400000,
+          "block_dim": 16,
+          "schedule_mode": 1,
+          "kernel_argument_raw_observed": true,
+          "native_launch_verified": true,
+          "device_completion_observed": true,
+          "verified_public_serializer_padding": {
+            "baseParams.FusedInferAttentionBaseParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "prefixParams.FusedInferAttentionPrefixParamsPH": [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ]
+          },
+          "excluded_independently_bound_launches": [
+            {
+              "api": "aclrtLaunchKernelWithHostArgs",
+              "kernel_sha256": "d5df5e04107510b9131e9589ac168e41594decbea6ef40001ed94ce95c8e2401",
+              "function_handle": 1570714272,
+              "tiling_key": "1100400",
+              "reason": "INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA"
+            },
+            {
+              "api": "aclrtLaunchKernelWithHostArgs",
+              "kernel_sha256": "b5a63fdc42951895151da61ec8a76b5fe37b6c1740a8cf0b74d57fdfada4fedd",
+              "function_handle": 1574854848,
+              "tiling_key": "1100400",
+              "reason": "INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA"
+            }
+          ],
+          "public_typed_geometry": {
+            "innerSplitParams.mBaseSize": 128,
+            "innerSplitParams.s2BaseSize": 128
+          }
+        }
+      ],
+      "original_evidence_sha256": {
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/runtime/runtime.jsonl": "6079a0e8232396dfcbf36b91e51422714edff4965db9912c61638d1dcd987b4e",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/result.json": "e40cea1160f239aa0d38b2acf3dfe619efa00b18e4255cc24238f17912b3c2be",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/independent_launch.json": "7c339994bc4360a3d087023a3503b8a6af59cc2e6079168c18e44739b9115ac3",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/statistics_backend.json": "34307448b7344e96c7b32c64e46ece257a3f7f7023b89de597c19f94b2ad336e",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/host-0.jsonl": "f218fb6ec430740545f43830636c0f44a978220fa816a2420f253a46c75aab75",
+        "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/host-1.jsonl": "88dc0724ad070768d0abb444098771a3d7a110bf711fa5eeaeadf9863d91f390"
+      },
+      "original_execution_status": "EXPERIMENTAL_EXECUTION_COMPLETED_NOT_LAUNCH_QUALIFIED",
+      "original_independent_launch_status": "FINAL_ARGUMENTS_AND_LAUNCHES_VERIFIED",
+      "repeated_complete_output_stable": true,
+      "complete_output_sha256": [
+        "90a177655439737314b3f6f437d6732c57deefe7f1c0358f6abff74e04c59be9",
+        "90a177655439737314b3f6f437d6732c57deefe7f1c0358f6abff74e04c59be9"
+      ],
+      "new_collector_runtime_summary": {
+        "backend": "attention-msprobe-cpu-fp64-v1",
+        "adapter_sha256": "1e66f220c1098a71eca9611bbc0cb582a088e7e47819269a5a8dbf3a8bb50b48",
+        "status": "NEW_COLLECTION_COMPLETE",
+        "copied_bytes": 201326592,
+        "errors": [],
+        "original_method_restored": true
+      },
+      "status": "FINAL_ARGUMENTS_AND_LAUNCHES_VERIFIED_OFFLINE"
+    }
+  ],
+  "failures": [],
+  "statistics": "RAW_DUMP_STACK_CONSTRUCT_NOT_READ_NO_E5_CLAIM",
+  "public_worker_qualified": false,
+  "c2": false,
+  "c3": false
+}
