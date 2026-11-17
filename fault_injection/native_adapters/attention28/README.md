@@ -52,6 +52,14 @@ removed before configure; the input dependency tree remains unchanged. Unknown
 objects or changed bytes still fail. The actual configure must keep tests OFF,
 and excluded files must not reappear before completion. The removal receipt
 is `evidence/excluded_test_fixtures.json`.
+Before copying/building sources, `build_fresh.py` checks the actual executable
+path, SHA256 and version of `patch`, CMake, g++, make and Git, checks the
+aarch64 compiler target, and executes a harmless `patch --dry-run` probe.
+The reviewed 9.1 build image has no GNU patch executable. A CPU-only build can
+mount the compatible aarch64 `/usr/bin/patch` from the same 124 host read-only
+at `/buildtools/patch`, put `/buildtools` on PATH, and verify it inside that image
+before the final attempt. This supplies a build tool only; official abseil and
+protobuf patches still execute unchanged. No old host library/object is used.
 
 ```sh
 python build_fresh.py --source /new/patched-source \
@@ -62,7 +70,15 @@ python build_fresh.py --source /new/patched-source \
 
 The output remains `CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION`, with loading
 disallowed. The recipe is not a new artifact certificate and does not relax
-the existing runtime SHA gates. Current remaining gates are successful actual
-fresh build, new artifact binding, actual raw/POD/launch equality, independent
+the existing runtime SHA gates. Each completed fresh attempt is separately
+recorded; completion does not inherit historical qualifications. Remaining
+runtime gates are new artifact binding, actual raw/POD/launch equality, independent
 single-target B/F/OFF and public Worker qualification. Source availability,
 CPU patch checks, and CPU unit tests alone do not close those items.
+
+The experimental workflow and its limits are documented in
+[`FAULT28_FRESH_BUILD.md`](../../../experiments/engineering_20261117/FAULT28_FRESH_BUILD.md).
+It uses a new public serializer decoder compiled from the fresh source and an
+isolated process bound to the new completion manifest. Production `FiaBackend`
+SHA gates remain unchanged. Host raw/POD agreement and mapped library identity
+are reported separately from independent kernel launch evidence.

@@ -60,6 +60,15 @@ class FreshBuildTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'FRESH_BUILD_DIRECTORY_REQUIRED'):
                 build.Builder(SimpleNamespace(work=Path(root)))
 
+    def test_missing_patch_refused_before_any_build_command(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as root:
+            builder = build.Builder(SimpleNamespace(work=Path(root) / 'attempt'))
+            with patch.object(build.shutil, 'which', return_value=None), patch.object(builder, 'run') as run:
+                with self.assertRaisesRegex(RuntimeError, 'REQUIRED_BUILD_TOOL_MISSING:patch'):
+                    builder.preflight_tools()
+                run.assert_not_called()
+
     def test_only_exact_committed_fixture_removed_unknown_object_still_refused(self):
         with tempfile.TemporaryDirectory() as root:
             deps, repo, commit, row, data, git = self.fixtures(root)

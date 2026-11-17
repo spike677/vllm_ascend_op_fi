@@ -11,13 +11,13 @@ def main():
     p.add_argument('--dependencies',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
     a=p.parse_args();a.out.mkdir(parents=True,exist_ok=False)
     mounts=[(a.driver,'/driver'),(a.source,'/input-source'),(a.receipt,'/policy.json'),
-            (a.dependencies,'/input-dependencies')]
+            (a.dependencies,'/input-dependencies'),(Path('/usr/bin/patch'),'/buildtools/patch')]
     cmd=['docker','run','--rm','--runtime=runc','--network=none','--cpus=4','--memory=16g',
          '-e','ASCEND_VISIBLE_DEVICES=void','-e','PYTHONDONTWRITEBYTECODE=1']
     for src,dest in mounts:cmd+=['--mount','type=bind,src='+str(src.resolve())+',dst='+dest+',readonly']
     cmd+=['--mount','type=bind,src='+str(a.out.resolve())+',dst=/build','--entrypoint','bash',
           'cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8','-c',
-          'source /usr/local/Ascend/cann-9.1.0/set_env.sh\nexec python3 /driver/build_fresh.py '
+          'source /usr/local/Ascend/cann-9.1.0/set_env.sh\nexport PATH=/buildtools:$PATH\nexec python3 /driver/build_fresh.py '
           '--source /input-source --policy-receipt /policy.json --dependencies /input-dependencies '
           '--work /build/run --jobs 4']
     with (a.out/'process.log').open('xb') as stream:

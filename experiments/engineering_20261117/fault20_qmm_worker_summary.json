@@ -1,0 +1,1176 @@
+{
+  "schema": "demoncat.qmm20.natural_worker_summary.v1",
+  "status": "PUBLIC_WORKER_C1_E1_E4_PASSED_E5_NOT_PASSED",
+  "raw_statistics_published": false,
+  "private_tensor_payloads_published": false,
+  "runtime_used_for_first_difference": false,
+  "ledger_scopes": [
+    {
+      "mechanism": "20.buffer_substitute",
+      "scope_id": "qmm20-a3",
+      "scope_kind": "NATURAL_PRETRAINED_WORKER",
+      "scope_description": "124 Ascend910B4/A2 CANN8.5.1 TP1 eager BF16 DeepSeek-V2-Lite-W8A8; one fresh prefill of 14 tokens; first actual embedding-normalizer dynamic QMM projection only",
+      "entrypoint": "standard_vllm_worker",
+      "public_worker_qualified": true,
+      "pretrained_model": true,
+      "E1_execution_observed": true,
+      "E2_intervention_observed": true,
+      "E3_effect_observed": true,
+      "E4_off_and_local_recovery": true,
+      "runtime_evidence": {
+        "result": {
+          "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/result.json",
+          "sha256": "bd442c0f6e36306371b870857e13fa62dfef0942a1baa5898ac64402ff119279"
+        },
+        "serving": {
+          "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/runtime/serving_receipt.json",
+          "sha256": "4d561d90ab72e9ba5e28ef393bd68130d5e05fb6a0a82fe887a8d2cd24fbccf4"
+        },
+        "read_only_audit": {
+          "path": "/home/17-fault-engineering-20261117/qmm20-a3-audit-manifest.json",
+          "sha256": "8e06386a6cbe7ec141a1ecb1bdcfaa5d8b8dddd21332ed9ef1136c2ed8898510"
+        },
+        "fault_hits": 1,
+        "changed_slots": 1,
+        "complete_logits_changed": true,
+        "off_exact": true,
+        "native_leases": 0,
+        "native_inflight": 0,
+        "native_registration_released": true
+      },
+      "independent_statistics": {
+        "status": "E5_NOT_PASSED",
+        "raw_first_candidate_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+        "whole_dump_comparable": false,
+        "baseline_self_comparable": false,
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "reference": "baseline",
+        "native_logs_read": false,
+        "private_tensors_read": false,
+        "raw_statistics_modified": false,
+        "report": {
+          "path": "/home/17-fault-engineering-20261117/qmm20-a3-independent.json",
+          "sha256": "8a1d94bdd60459a0ca74c1a9c17a242d980637032f069ee7c617680c315b7dbd"
+        },
+        "first_candidate": {
+          "schema_version": 1,
+          "source": "MSPROBE_STATISTICS_ONLY",
+          "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+          "tensor_payloads": false,
+          "comparison_policy": {
+            "absolute_tolerance": 1e-08,
+            "relative_tolerance": 1e-05,
+            "rule": "abs(F-B) > atol + rtol*abs(B)"
+          },
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "index": 83,
+          "identity": "NPU.npu_quant_matmul.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 25.75,
+            "fault": 15.6875
+          }
+        },
+        "first_candidate_relative_change": 0.3907766990291262,
+        "first_candidate_unobservable_fields": 172,
+        "baseline_self_refusal": {
+          "schema_version": 1,
+          "source": "MSPROBE_STATISTICS_ONLY",
+          "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+          "tensor_payloads": false,
+          "comparison_policy": {
+            "absolute_tolerance": 1e-08,
+            "relative_tolerance": 1e-05,
+            "rule": "abs(F-B) > atol + rtol*abs(B)"
+          },
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "index": 599,
+          "identity": "Tensor.__setitem__.8.forward/input_args/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "NONFINITE_UNCOMPARABLE",
+            "baseline": "NaN",
+            "fault": "NaN"
+          }
+        },
+        "null_fields": {
+          "baseline": 10306,
+          "fault": 10306
+        },
+        "nonfinite_fields": {
+          "baseline": [
+            {
+              "identity": "Tensor.__setitem__.8.forward/input_args/0",
+              "field": "Max",
+              "kind": "NaN"
+            },
+            {
+              "identity": "Tensor.__setitem__.8.forward/input_args/0",
+              "field": "Min",
+              "kind": "NaN"
+            },
+            {
+              "identity": "Tensor.__setitem__.53.forward/input_args/0",
+              "field": "Max",
+              "kind": "NaN"
+            },
+            {
+              "identity": "Tensor.__setitem__.53.forward/input_args/0",
+              "field": "Min",
+              "kind": "NaN"
+            },
+            {
+              "identity": "_C_ascend.moe_gating_top_k.25.forward/output/2",
+              "field": "Max",
+              "kind": "NaN"
+            },
+            {
+              "identity": "_C_ascend.moe_gating_top_k.25.forward/output/2",
+              "field": "Min",
+              "kind": "NaN"
+            }
+          ],
+          "fault": [
+            {
+              "identity": "Tensor.__setitem__.8.forward/input_args/0",
+              "field": "Max",
+              "kind": "NaN"
+            },
+            {
+              "identity": "Tensor.__setitem__.8.forward/input_args/0",
+              "field": "Min",
+              "kind": "NaN"
+            },
+            {
+              "identity": "Tensor.__setitem__.53.forward/input_args/0",
+              "field": "Max",
+              "kind": "NaN"
+            },
+            {
+              "identity": "Tensor.__setitem__.53.forward/input_args/0",
+              "field": "Min",
+              "kind": "NaN"
+            },
+            {
+              "identity": "_C_ascend.moe_gating_top_k.25.forward/output/2",
+              "field": "Max",
+              "kind": "NaN"
+            },
+            {
+              "identity": "_C_ascend.moe_gating_top_k.25.forward/output/2",
+              "field": "Min",
+              "kind": "NaN"
+            }
+          ]
+        },
+        "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+        "configuration": {
+          "task": "statistics",
+          "level": "mix",
+          "precision": "high",
+          "rank": [],
+          "step": [
+            2,
+            5
+          ],
+          "dump_path": "/evidence/serving/statistics/observation",
+          "async_dump": false,
+          "statistics": {
+            "scope": [],
+            "list": [],
+            "data_mode": [
+              "all"
+            ],
+            "summary_mode": "statistics",
+            "tensor_list": []
+          }
+        },
+        "interpretation": "Observed finite prefix first difference at QMM output; baseline NaN prevents whole-dump E5 acceptance. No runtime record selected the first candidate."
+      },
+      "all_eligible": false,
+      "every_match": false
+    }
+  ],
+  "scope": "124 Ascend910B4/A2 CANN8.5.1 TP1 eager BF16 DeepSeek-V2-Lite-W8A8; one fresh prefill of 14 tokens; first actual embedding-normalizer dynamic QMM projection only",
+  "source_packages": {
+    "source": "source-a8",
+    "packages": "packages-a8",
+    "installed_modules": [
+      {
+        "runtime_observation": {
+          "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/runtime.py",
+          "sha256": "4b394e5010cefd9d6bfdb591094c21cc48e400d34d1d5c5b4b621c526fb649d4"
+        },
+        "installed": {
+          "path": "/home/17-fault-engineering-20261117/packages-a8/installed/demoncat/runtime/vllm_ascend/worker_extension/runtime.py",
+          "sha256": "4b394e5010cefd9d6bfdb591094c21cc48e400d34d1d5c5b4b621c526fb649d4",
+          "bytes": 19179
+        },
+        "source": {
+          "path": "/home/17-fault-engineering-20261117/source-a8/src/demoncat/runtime/vllm_ascend/worker_extension/runtime.py",
+          "sha256": "4b394e5010cefd9d6bfdb591094c21cc48e400d34d1d5c5b4b621c526fb649d4",
+          "bytes": 19179
+        },
+        "match": true
+      },
+      {
+        "runtime_observation": {
+          "path": "/installed/fault_injection/serving_qualification.py",
+          "sha256": "3e1c46af64b7aea94a433c6e9423937ca8268059dee299ae53f2d09769e513b6"
+        },
+        "installed": {
+          "path": "/home/17-fault-engineering-20261117/packages-a8/installed/fault_injection/serving_qualification.py",
+          "sha256": "3e1c46af64b7aea94a433c6e9423937ca8268059dee299ae53f2d09769e513b6",
+          "bytes": 41695
+        },
+        "source": {
+          "path": "/home/17-fault-engineering-20261117/source-a8/fault_injection/serving_qualification.py",
+          "sha256": "3e1c46af64b7aea94a433c6e9423937ca8268059dee299ae53f2d09769e513b6",
+          "bytes": 41695
+        },
+        "match": true
+      },
+      {
+        "runtime_observation": {
+          "path": "/installed/fault_injection/__init__.py",
+          "sha256": "21141215ecdfb1bdcbcb55f53126ec3890963b0acdadbf187cfd644b92320b60"
+        },
+        "installed": {
+          "path": "/home/17-fault-engineering-20261117/packages-a8/installed/fault_injection/__init__.py",
+          "sha256": "21141215ecdfb1bdcbcb55f53126ec3890963b0acdadbf187cfd644b92320b60",
+          "bytes": 6976
+        },
+        "source": {
+          "path": "/home/17-fault-engineering-20261117/source-a8/fault_injection/__init__.py",
+          "sha256": "21141215ecdfb1bdcbcb55f53126ec3890963b0acdadbf187cfd644b92320b60",
+          "bytes": 6976
+        },
+        "match": true
+      },
+      {
+        "runtime_observation": {
+          "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving20_qmm.py",
+          "sha256": "6fdd6bd510b75a849175d3d5e2539d3b91d4f631b18e2e61a739ccb6836a6eb1"
+        },
+        "installed": {
+          "path": "/home/17-fault-engineering-20261117/packages-a8/installed/demoncat/runtime/vllm_ascend/worker_extension/serving20_qmm.py",
+          "sha256": "6fdd6bd510b75a849175d3d5e2539d3b91d4f631b18e2e61a739ccb6836a6eb1",
+          "bytes": 18516
+        },
+        "source": {
+          "path": "/home/17-fault-engineering-20261117/source-a8/src/demoncat/runtime/vllm_ascend/worker_extension/serving20_qmm.py",
+          "sha256": "6fdd6bd510b75a849175d3d5e2539d3b91d4f631b18e2e61a739ccb6836a6eb1",
+          "bytes": 18516
+        },
+        "match": true
+      }
+    ],
+    "all_installed_bytes_equal_reviewed_source": true
+  },
+  "environment": {
+    "machine": "aarch64",
+    "python": "3.11.14",
+    "packages": {
+      "torch": {
+        "installed": "2.9.0+cpu",
+        "loaded": "2.9.0+cpu"
+      },
+      "torch-npu": {
+        "installed": "2.9.0.post1+gitee7ba04",
+        "loaded": "2.9.0.post1+gitee7ba04"
+      },
+      "vllm": {
+        "installed": "0.18.0+empty",
+        "loaded": "0.18.0"
+      },
+      "vllm-ascend": {
+        "installed": "0.18.0",
+        "loaded": null
+      }
+    },
+    "toolkit": {
+      "status": "FOUND",
+      "ascend_home_path": "/usr/local/Ascend/cann-8.5.1",
+      "installations": [
+        {
+          "path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/ascend_toolkit_install.info",
+          "sha256": "c43a7a2e011fdfedaa05dce3e8a194abf47df6133fe83e3656c9a257bda192e2",
+          "fields": {
+            "version": "8.5.1",
+            "innerversion": "V100R001C25SPC002B220",
+            "arch": "aarch64",
+            "package_name": "Ascend-cann-toolkit"
+          },
+          "toolkit": "/usr/local/Ascend/cann-8.5.1/aarch64-linux",
+          "abi_headers": {
+            "acl/acl.h": "4f7170f7a0c1a2ebe2cb016b07b1f04816bc20de98a4a392883206399856ec8b",
+            "aclnn/acl_meta.h": "be93460abfc7aa14113d7b9a3536fe2dd45d5148a357f55e15847655c9d5ffed",
+            "aclnn/opdev/op_cache.h": "42758d394c15900c4e0093b5b7b8fbef670f3e842cd94ef150c358de1b0756a1"
+          }
+        }
+      ]
+    },
+    "soc": {
+      "observed_name": "Ascend910B4",
+      "family": "A2",
+      "status": "SOC_FAMILY_CLASSIFIED",
+      "source": "https://docs.vllm.ai/projects/ascend/en/v0.18.0/faqs.html",
+      "product_sku": null,
+      "provider_compatibility": "UNVERIFIED",
+      "logical_device": 0
+    },
+    "loaded_libraries": [
+      {
+        "path": "/native/libdcat20_qmm.so",
+        "name": "libdcat20_qmm.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "3841a861918ccca459dc69a683670720bef447d67c0531e8f9635e36d2ade174",
+        "elf_build_id": "dc705c39f3e595a0296bd20886408298404f8951"
+      },
+      {
+        "path": "/native/libopapi.so",
+        "name": "libopapi.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "84a7d44d718ca4d612945202f392f241516068aab38207784e30a95469477923",
+        "elf_build_id": "f9b88d63e9d2a4ec2e7e2ea7d781e16683145dbc"
+      },
+      {
+        "path": "/native/libopapi_math.so",
+        "name": "libopapi_math.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "41fc755c4656a49ed08f67743ba5f0b7fbe4e26c1bca6e439a8eae7b119d7529",
+        "elf_build_id": "837bb092d70cf9ccd1dc81f33bd45aa98944a8ef"
+      },
+      {
+        "path": "/native/libopapi_nn.so",
+        "name": "libopapi_nn.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "803505e6dff32b0a38f620a11a6b6e853b29ca8ef5cfd2e6010e12fbe7cef4eb",
+        "elf_build_id": "162c04c5de8ae23d1ea134e7ad33b219e0fb6d6f"
+      },
+      {
+        "path": "/native/real/libopapi_math_real.so",
+        "name": "libopapi_math_real.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "e5ed3716db8c257ad482fe1b3e4cd03eadb69e5a11444dbfaf8e5dfb1f08c03f",
+        "elf_build_id": null
+      },
+      {
+        "path": "/native/real/libopapi_nn_real.so",
+        "name": "libopapi_nn_real.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+        "elf_build_id": null
+      },
+      {
+        "path": "/native/real/libopapi_real.so",
+        "name": "libopapi_real.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+        "elf_build_id": null
+      },
+      {
+        "path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libacl_rt.so",
+        "name": "libacl_rt.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "b6d7e6a70c4677b385c45f47aad25006a7ecbaf041a41838f26962b708a557ec",
+        "elf_build_id": null
+      },
+      {
+        "path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libascendcl.so",
+        "name": "libascendcl.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "bdfa66949fc798ff21c0124a025b4227e119678cc819febed9fe1c39f2a87306",
+        "elf_build_id": null
+      },
+      {
+        "path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so",
+        "name": "libnnopbase.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "6dc3b4fcfcf57b10be0018e89f4edbc079f02b4bb0aaadb109df350939fd4c99",
+        "elf_build_id": null
+      },
+      {
+        "path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_cv.so",
+        "name": "libopapi_cv.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "1742c96ef3d752fa888482e30044191a56f429560483a89a6dad97c431e17eeb",
+        "elf_build_id": null
+      },
+      {
+        "path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_oam.so",
+        "name": "libopapi_oam.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "ec101772b741300c97355284b23017f16555016ef5b10cae9807e49b5cecdb4b",
+        "elf_build_id": null
+      },
+      {
+        "path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_transformer.so",
+        "name": "libopapi_transformer.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "f38529da0c43aa1eba26e36bacd7f5e1637ac97a835e26b90556fd6b550a41fa",
+        "elf_build_id": "4abdd06e3dc504e23e5f43417bdd4bd1ad742811"
+      },
+      {
+        "path": "/usr/local/Ascend/driver/lib64/driver/libascend_hal.so",
+        "name": "libascend_hal.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "3ccd859a4df96c13106ef6b950aee89d61cee50cf743172d288fc76591b5a9e6",
+        "elf_build_id": null
+      },
+      {
+        "path": "/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu/lib/libtorch_npu.so",
+        "name": "libtorch_npu.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "dd07e4afb4e31a5123d0b97a4a319acaa96158705a22d704bfc0a91f662a6041",
+        "elf_build_id": "f784d0d51702c5ee243716c8945650872ff18f61"
+      },
+      {
+        "path": "/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend/op_api/lib/libcust_opapi.so",
+        "name": "libcust_opapi.so",
+        "status": "MAPPED_FILE_VERIFIED",
+        "sha256": "de1633c2f1f41e505277697ee82f3ffba940f730bed9986c5aeff4c8514b713f",
+        "elf_build_id": "20cd5f1488515d3eef55f360ca17b22538cae676"
+      }
+    ],
+    "environment_before_is_not_an_execution_certificate": true
+  },
+  "selection": {
+    "policy": "FIRST_ACTUAL_EMBED_NORM_DYNAMIC_PROJECTION",
+    "observed_path": "model.layers.0.self_attn.kv_a_proj_with_mqa",
+    "structural_candidates": 135,
+    "qualified_selected_scope": 1,
+    "actual_healthy_observations": 2,
+    "observed_method_chain": [
+      "vllm_ascend.quantization.method_adapters.AscendLinearMethod",
+      "vllm_ascend.quantization.methods.w8a8_dynamic.AscendW8A8DynamicLinearMethod"
+    ],
+    "quant_apply_source_sha256": "02b61d1806ee82430175c978d32729607bdc31aa2673cccbc4dc63be4f130f54",
+    "logical_roles": [],
+    "logical_role_status": "UNRESOLVED",
+    "profile_validation_label_preserved": "CPU_VERIFIED",
+    "profile_label_is_not_the_new_runtime_acceptance": true,
+    "user_layer_names_required": false,
+    "all_eligible": false,
+    "every_match": false
+  },
+  "native": {
+    "operator": "aclnnQuantMatmulWeightNz",
+    "boundary": "op_exec_cache_run",
+    "build_profile_sha256": "c1222e948c9e52487d0adeee27e126bb029d76d35557f782d2d5fa6ff7a5cf4e",
+    "environment_fingerprint": "6c86b93af8c4a0faa737a8fa259136971e6a6280e1f5d3a8259c8e6c653c82f2",
+    "signature": "qmm:0:0:0:x1,0,2,2,28672,0,v,14,2048,s,2048,1,p,28672:x2,1,2,29,1179648,0,v,2048,576,s,576,1,p,18,128,16,32:x1_scale,2,0,2,56,0,v,14,s,1,p,14:x2_scale,3,27,2,1152,0,v,576,s,1,p,576:out,7,27,2,16128,0,v,14,576,s,576,1,p,8064",
+    "selected_native_formals": [
+      {
+        "formal": "x1",
+        "slot": 0,
+        "storage_bytes": 28672
+      },
+      {
+        "formal": "x2",
+        "slot": 1,
+        "storage_bytes": 1179648
+      },
+      {
+        "formal": "x1_scale",
+        "slot": 2,
+        "storage_bytes": 56
+      },
+      {
+        "formal": "x2_scale",
+        "slot": 3,
+        "storage_bytes": 1152
+      },
+      {
+        "formal": "out",
+        "slot": 7,
+        "storage_bytes": 16128
+      }
+    ],
+    "empty_formals": [
+      "x1_offset",
+      "y_offset",
+      "y_scale"
+    ],
+    "empty_formal_contract": "present=true, shape/storage_shape=[0], strides=[1], BF16 ND, zero addresses/bytes, run_slot=-1",
+    "quantization_output_storage_verified": true,
+    "floating_input_is_native_x1": false,
+    "transform": "INT8 x1 -> 16 * clamp(round_nearest_ties_away_from_zero(x1 / 16), -8, 7) in independent temporary device storage; INT8 ABI, weights and scales unchanged",
+    "input_sha256_before": [
+      "d38323312b04568be13e8cfe4764b12beb00ad8ad8da70514e1de9083f2194b5",
+      "228b58ca2777cac75187d98d29b531ce901be3ca74223ba7e2a4fd25443cce5a",
+      "fe3cdab731d50fe4e0e03edd34881a0536f8f5d12a6a5797d55ced11ed38f69c",
+      "d21a02739322a5559d5f24269ef7ffad6ab5c4ab04e8418988777dec53792d3f"
+    ],
+    "original_inputs_preserved_all_audited_calls": true,
+    "proofs": [
+      {
+        "phase": "discovery_1",
+        "kind": "runtime_call",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-1-runtime_call.json",
+        "sha256": "75dfbe01f4731a884bd54a7461a806da84ed1978ec00e2958c5f2ebbc295af93",
+        "bytes": 5402
+      },
+      {
+        "phase": "discovery_1",
+        "kind": "abi_handshake",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-1-abi_handshake.json",
+        "sha256": "7dd36e793fa30b9794edca2c0b2098a7bd2e0eae3b086aa9971aa4fb7c85c474",
+        "bytes": 382
+      },
+      {
+        "phase": "discovery_1",
+        "kind": "semantic_slot",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-1-semantic_slot.json",
+        "sha256": "b8fb2e26d09f0ca445bf53494865b97800e691a717633253585d99e6ce13b0a0",
+        "bytes": 606
+      },
+      {
+        "phase": "discovery_1",
+        "kind": "live_storage",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-1-live_storage.json",
+        "sha256": "92f51bc56bb78f5bb180525aaf9028d796253903b3f99c491d730b524ad18680",
+        "bytes": 610
+      },
+      {
+        "phase": "discovery_2",
+        "kind": "runtime_call",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-2-runtime_call.json",
+        "sha256": "608633996fa61a8043f95a373e75b6c69d598502cfa151b37dd478a755b55c03",
+        "bytes": 5402
+      },
+      {
+        "phase": "discovery_2",
+        "kind": "abi_handshake",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-2-abi_handshake.json",
+        "sha256": "86d923837b1fb5090a1f05c74be136b2ca7c6dc39d925fe016de757156f6396f",
+        "bytes": 382
+      },
+      {
+        "phase": "discovery_2",
+        "kind": "semantic_slot",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-2-semantic_slot.json",
+        "sha256": "cd096fbdf1d1f628e6d48c452f4f870f46bb654caa7a04b02d0631a65264916f",
+        "bytes": 606
+      },
+      {
+        "phase": "discovery_2",
+        "kind": "live_storage",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-2-live_storage.json",
+        "sha256": "e02de4c2aa8ecaa7fa294ded8746c4bc4a2aadb2abb8c1a33284e5590be0b9ad",
+        "bytes": 610
+      },
+      {
+        "phase": "reference",
+        "kind": "runtime_call",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-3-runtime_call.json",
+        "sha256": "b5f27e23b39cc0f9efb2f5cfca20752c87018ec3827d018b4fd099ae61c9684a",
+        "bytes": 5402
+      },
+      {
+        "phase": "reference",
+        "kind": "abi_handshake",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-3-abi_handshake.json",
+        "sha256": "e4569e67059a5f14d4b24d362c899f31da57e3b6e90e1c167426e64852436d55",
+        "bytes": 382
+      },
+      {
+        "phase": "reference",
+        "kind": "semantic_slot",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-3-semantic_slot.json",
+        "sha256": "79b9ff781f381e236b6eb9cfbaddac5193afde0e21860ea469ae5eddb15f554b",
+        "bytes": 606
+      },
+      {
+        "phase": "reference",
+        "kind": "live_storage",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-3-live_storage.json",
+        "sha256": "57b6f9b4a780a2907956bed904b08d179639d63bc0f4c755c7281ed276016ea8",
+        "bytes": 610
+      },
+      {
+        "phase": "lossless",
+        "kind": "runtime_call",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-4-runtime_call.json",
+        "sha256": "706a240bbefb116b443ef8c36327c30a4d69a3d61f5fbe49d5fe5b5f0c76a1c6",
+        "bytes": 5402
+      },
+      {
+        "phase": "lossless",
+        "kind": "abi_handshake",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-4-abi_handshake.json",
+        "sha256": "d35231cc62c4938ff4c6d618e608470fc01cb7b53d1f1ae770612cbc11789f70",
+        "bytes": 382
+      },
+      {
+        "phase": "lossless",
+        "kind": "semantic_slot",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-4-semantic_slot.json",
+        "sha256": "f752ee9926a816d690f7a7bc794416323d2ed339813ea68c044c34dc834a26b5",
+        "bytes": 606
+      },
+      {
+        "phase": "lossless",
+        "kind": "live_storage",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-4-live_storage.json",
+        "sha256": "c38ceb2fa71ed78c001f528acbda6082f54888d3734b308069afec0239f88373",
+        "bytes": 610
+      },
+      {
+        "phase": "qualification_off",
+        "kind": "runtime_call",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-5-runtime_call.json",
+        "sha256": "bd064bd695ceeced430f8c9e23c8c28fa1fae4d0484ff52f850869aa3ac5a419",
+        "bytes": 5402
+      },
+      {
+        "phase": "qualification_off",
+        "kind": "abi_handshake",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-5-abi_handshake.json",
+        "sha256": "8d6fad2d34269266a3b5810751b1728b4145a2104099602e8ffb407a2ba585e6",
+        "bytes": 382
+      },
+      {
+        "phase": "qualification_off",
+        "kind": "semantic_slot",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-5-semantic_slot.json",
+        "sha256": "7972fe19449b077071602652ce71d3d5ae3390f1edb58191b2b06de97e728171",
+        "bytes": 606
+      },
+      {
+        "phase": "qualification_off",
+        "kind": "live_storage",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-5-live_storage.json",
+        "sha256": "7c7f42675056c60b581647aa5f80410574ceb6aeebe3e177024c60c6b0efcf28",
+        "bytes": 610
+      },
+      {
+        "phase": "fault",
+        "kind": "runtime_call",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-6-runtime_call.json",
+        "sha256": "6fceac338218728a2825cfc1d284a09f5f3a667b0c91fce4ed19b8911a49e19a",
+        "bytes": 5403
+      },
+      {
+        "phase": "fault",
+        "kind": "abi_handshake",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-6-abi_handshake.json",
+        "sha256": "d49379727eebffd9fe2dde4cf20bc5c41638701c122086dbf5d3f028e0fdfbf0",
+        "bytes": 382
+      },
+      {
+        "phase": "fault",
+        "kind": "semantic_slot",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-6-semantic_slot.json",
+        "sha256": "42eeca5b7f841524caaf976960109798d95560bfef4e8f9f4e5dff711e373012",
+        "bytes": 606
+      },
+      {
+        "phase": "fault",
+        "kind": "live_storage",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-6-live_storage.json",
+        "sha256": "477053b8b5d24975182da5a3a01f39907d2a36749e6c10079b1a7d121f045eaf",
+        "bytes": 610
+      },
+      {
+        "phase": "off_observed",
+        "kind": "runtime_call",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-7-runtime_call.json",
+        "sha256": "62de5d4043e404b3117ddd28d05bb62cc8ef2c6aaf885c54a802ba05be02ae23",
+        "bytes": 5403
+      },
+      {
+        "phase": "off_observed",
+        "kind": "abi_handshake",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-7-abi_handshake.json",
+        "sha256": "0e12e9d5899b45ba4d2225ca27876c0e042830b304ed8891a46d452c753ba72b",
+        "bytes": 382
+      },
+      {
+        "phase": "off_observed",
+        "kind": "semantic_slot",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-7-semantic_slot.json",
+        "sha256": "9313aec6ad60c60741b903c72420bf1d767e0151a03f34ad90b45b2e4c80d905",
+        "bytes": 606
+      },
+      {
+        "phase": "off_observed",
+        "kind": "live_storage",
+        "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/native_proofs/572be07db4c54f6382aed564836ed767/572be07db4c54f6382aed564836ed767-7-live_storage.json",
+        "sha256": "f951bf93cc079d32def062d8d0c36de8089be1af88d99bb935566ff1fa0121a5",
+        "bytes": 610
+      }
+    ]
+  },
+  "phases": [
+    {
+      "phase": "discovery_1",
+      "model_output_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "model_output_finite": true,
+      "observed_native_boundaries": 1,
+      "complete_logits_shape": [
+        1,
+        102400
+      ],
+      "top1": 185
+    },
+    {
+      "phase": "discovery_2",
+      "model_output_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "model_output_finite": true,
+      "observed_native_boundaries": 1,
+      "complete_logits_shape": [
+        1,
+        102400
+      ],
+      "top1": 185
+    },
+    {
+      "phase": "reference",
+      "model_output_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "model_output_finite": true,
+      "observed_native_boundaries": 1,
+      "complete_logits_shape": [
+        1,
+        102400
+      ],
+      "top1": 185,
+      "native": {
+        "mode": 1,
+        "original_calls": 1,
+        "native_status": 0,
+        "replacements": 0,
+        "changed_slots": 0,
+        "resources_released": true,
+        "temporary_readback_verified": false,
+        "device_copy": false,
+        "replaced_formals": [],
+        "output_sha256": "bce1b2abd0ba9b587ab621ed4fbd27cd1abd9b87a0e5fdad61ee0e4921eed423"
+      }
+    },
+    {
+      "phase": "lossless",
+      "model_output_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "model_output_finite": true,
+      "observed_native_boundaries": 1,
+      "complete_logits_shape": [
+        1,
+        102400
+      ],
+      "top1": 185,
+      "native": {
+        "mode": 2,
+        "original_calls": 1,
+        "native_status": 0,
+        "replacements": 1,
+        "changed_slots": 0,
+        "resources_released": true,
+        "temporary_readback_verified": true,
+        "device_copy": true,
+        "replaced_formals": [
+          "x1"
+        ],
+        "output_sha256": "bce1b2abd0ba9b587ab621ed4fbd27cd1abd9b87a0e5fdad61ee0e4921eed423"
+      }
+    },
+    {
+      "phase": "qualification_off",
+      "model_output_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "model_output_finite": true,
+      "observed_native_boundaries": 1,
+      "complete_logits_shape": [
+        1,
+        102400
+      ],
+      "top1": 185,
+      "native": {
+        "mode": 1,
+        "original_calls": 1,
+        "native_status": 0,
+        "replacements": 0,
+        "changed_slots": 0,
+        "resources_released": true,
+        "temporary_readback_verified": false,
+        "device_copy": false,
+        "replaced_formals": [],
+        "output_sha256": "bce1b2abd0ba9b587ab621ed4fbd27cd1abd9b87a0e5fdad61ee0e4921eed423"
+      }
+    },
+    {
+      "phase": "fault",
+      "model_output_sha256": "a1770b841f4ff5b38657f6b87a1fa1374c05d5c3e7dc9c746558e39e5b186ac4",
+      "model_output_finite": true,
+      "observed_native_boundaries": 1,
+      "complete_logits_shape": [
+        1,
+        102400
+      ],
+      "top1": 185,
+      "native": {
+        "mode": 3,
+        "original_calls": 1,
+        "native_status": 0,
+        "replacements": 1,
+        "changed_slots": 1,
+        "resources_released": true,
+        "temporary_readback_verified": true,
+        "device_copy": false,
+        "replaced_formals": [
+          "x1"
+        ],
+        "output_sha256": "8a5313cb7c98758a08674604ad76b1b7af837ed816d0486bca30da215a8b4d2a"
+      }
+    },
+    {
+      "phase": "off_observed",
+      "model_output_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "model_output_finite": true,
+      "observed_native_boundaries": 1,
+      "complete_logits_shape": [
+        1,
+        102400
+      ],
+      "top1": 185,
+      "native": {
+        "mode": 1,
+        "original_calls": 1,
+        "native_status": 0,
+        "replacements": 0,
+        "changed_slots": 0,
+        "resources_released": true,
+        "temporary_readback_verified": false,
+        "device_copy": false,
+        "replaced_formals": [],
+        "output_sha256": "bce1b2abd0ba9b587ab621ed4fbd27cd1abd9b87a0e5fdad61ee0e4921eed423"
+      }
+    },
+    {
+      "phase": "disabled_off",
+      "model_output_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "model_output_finite": true,
+      "observed_native_boundaries": 0,
+      "complete_logits_shape": [
+        1,
+        102400
+      ],
+      "top1": 185
+    }
+  ],
+  "actual_request_count": 8,
+  "num_prompt_tokens": 14,
+  "statistics_steps": {
+    "baseline": 2,
+    "fault": 5
+  },
+  "phase_steps_are_not_decode_token_steps": true,
+  "off": {
+    "complete_qmm_output_restored": true,
+    "complete_global_logits_restored": true,
+    "qualification": "DISABLED_CONFIRMED",
+    "unregistered_state": {
+      "enabled": false,
+      "inflight": 0,
+      "leases": 0,
+      "native_owned": false,
+      "native_registered": false,
+      "paused": false,
+      "recovery_required": false,
+      "request_controlled": false,
+      "runtime_matched": true
+    },
+    "detached": {
+      "status": "DETACHED",
+      "recoveries": []
+    },
+    "unbound": {
+      "status": "SERVING_DEPLOYMENT_REMOVED"
+    }
+  },
+  "generation": {
+    "all_eight_top1": 185,
+    "healthy_before": [
+      {
+        "tokens": [
+          185
+        ],
+        "text": "\n",
+        "finish_reason": "length"
+      }
+    ],
+    "healthy_after": [
+      {
+        "tokens": [
+          185
+        ],
+        "text": "\n",
+        "finish_reason": "length"
+      }
+    ],
+    "complete_logits_changed": true,
+    "continuous_generation_accepted": false,
+    "task_accuracy_accepted": false
+  },
+  "independent_statistics": {
+    "status": "E5_NOT_PASSED",
+    "raw_first_candidate_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "whole_dump_comparable": false,
+    "baseline_self_comparable": false,
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "reference": "baseline",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "raw_statistics_modified": false,
+    "report": {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3-independent.json",
+      "sha256": "8a1d94bdd60459a0ca74c1a9c17a242d980637032f069ee7c617680c315b7dbd"
+    },
+    "first_candidate": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 83,
+      "identity": "NPU.npu_quant_matmul.0.forward/output/0",
+      "difference": {
+        "field": "/Max",
+        "reason": "STATISTIC_DIFFERS",
+        "baseline": 25.75,
+        "fault": 15.6875
+      }
+    },
+    "first_candidate_relative_change": 0.3907766990291262,
+    "first_candidate_unobservable_fields": 172,
+    "baseline_self_refusal": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 599,
+      "identity": "Tensor.__setitem__.8.forward/input_args/0",
+      "difference": {
+        "field": "/Max",
+        "reason": "NONFINITE_UNCOMPARABLE",
+        "baseline": "NaN",
+        "fault": "NaN"
+      }
+    },
+    "null_fields": {
+      "baseline": 10306,
+      "fault": 10306
+    },
+    "nonfinite_fields": {
+      "baseline": [
+        {
+          "identity": "Tensor.__setitem__.8.forward/input_args/0",
+          "field": "Max",
+          "kind": "NaN"
+        },
+        {
+          "identity": "Tensor.__setitem__.8.forward/input_args/0",
+          "field": "Min",
+          "kind": "NaN"
+        },
+        {
+          "identity": "Tensor.__setitem__.53.forward/input_args/0",
+          "field": "Max",
+          "kind": "NaN"
+        },
+        {
+          "identity": "Tensor.__setitem__.53.forward/input_args/0",
+          "field": "Min",
+          "kind": "NaN"
+        },
+        {
+          "identity": "_C_ascend.moe_gating_top_k.25.forward/output/2",
+          "field": "Max",
+          "kind": "NaN"
+        },
+        {
+          "identity": "_C_ascend.moe_gating_top_k.25.forward/output/2",
+          "field": "Min",
+          "kind": "NaN"
+        }
+      ],
+      "fault": [
+        {
+          "identity": "Tensor.__setitem__.8.forward/input_args/0",
+          "field": "Max",
+          "kind": "NaN"
+        },
+        {
+          "identity": "Tensor.__setitem__.8.forward/input_args/0",
+          "field": "Min",
+          "kind": "NaN"
+        },
+        {
+          "identity": "Tensor.__setitem__.53.forward/input_args/0",
+          "field": "Max",
+          "kind": "NaN"
+        },
+        {
+          "identity": "Tensor.__setitem__.53.forward/input_args/0",
+          "field": "Min",
+          "kind": "NaN"
+        },
+        {
+          "identity": "_C_ascend.moe_gating_top_k.25.forward/output/2",
+          "field": "Max",
+          "kind": "NaN"
+        },
+        {
+          "identity": "_C_ascend.moe_gating_top_k.25.forward/output/2",
+          "field": "Min",
+          "kind": "NaN"
+        }
+      ]
+    },
+    "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+    "configuration": {
+      "task": "statistics",
+      "level": "mix",
+      "precision": "high",
+      "rank": [],
+      "step": [
+        2,
+        5
+      ],
+      "dump_path": "/evidence/serving/statistics/observation",
+      "async_dump": false,
+      "statistics": {
+        "scope": [],
+        "list": [],
+        "data_mode": [
+          "all"
+        ],
+        "summary_mode": "statistics",
+        "tensor_list": []
+      }
+    },
+    "interpretation": "Observed finite prefix first difference at QMM output; baseline NaN prevents whole-dump E5 acceptance. No runtime record selected the first candidate."
+  },
+  "file_manifest": [
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/result.json",
+      "sha256": "bd442c0f6e36306371b870857e13fa62dfef0942a1baa5898ac64402ff119279",
+      "bytes": 511634
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/runtime/serving_receipt.json",
+      "sha256": "4d561d90ab72e9ba5e28ef393bd68130d5e05fb6a0a82fe887a8d2cd24fbccf4",
+      "bytes": 1000478
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/environment_before.json",
+      "sha256": "3c2f4b98fc0d99148089fe9029db64c325a5f4b2e8e477d3dc4d6a8725d0abc2",
+      "bytes": 12270
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/current-call.jsonl",
+      "sha256": "966aa876e0e8cc813e2aa938109294f00f8d7b8c44905f82a72cb410552e1221",
+      "bytes": 2982451
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/source-a8/source_manifest.json",
+      "sha256": "1fac3956912e5d65353239d29907797b23e697f6ba5f7334f921a4d44418ecdf",
+      "bytes": 46010
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/packages-a8/receipt.json",
+      "sha256": "ad633a0720f0a3e3ffead20c0edc11ddf974e7c935a77a3d3092cc3730208447",
+      "bytes": 847
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3-independent.json",
+      "sha256": "8a1d94bdd60459a0ca74c1a9c17a242d980637032f069ee7c617680c315b7dbd",
+      "bytes": 3028045
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/source-a8/fault_injection/evidence.py",
+      "sha256": "36015a1a75554ea38e301b5450b75e631a2d54f562d19f276c6c053385b5ab4b",
+      "bytes": 9216
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/source-a8/fault39/tools/compare_msprobe.py",
+      "sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+      "bytes": 5057
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/source-a8/fault_injection/native_adapters/qmm_auto.inc",
+      "sha256": "b2b890626426ecbc0cca35be2824ed32e1fd674387e5bb0816facf4f3aa92f0f",
+      "bytes": 17854
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/source-a8/fault_injection/native_adapters/matmul_auto.h",
+      "sha256": "606b34e5df24e71758fef2bc4d4ffc3b86cbeaadf48da3f2e3806169d6aef4b6",
+      "bytes": 19833
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/source-a8/fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/int_equivalent_transform.h",
+      "sha256": "7afe2f05dfadbb978e11aaef12e0cc637637fa179473526c0fd08352e2e38cec",
+      "bytes": 952
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/statistics/config.json",
+      "sha256": "1f3f95b1f109e4ed2d9ea9219b692ba257394db958f071eb5eb21789df92fe20",
+      "bytes": 344
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/statistics/collector_identity.json",
+      "sha256": "36bfacd12b0529bee8c5fbb40da6aa6de18850c4f13461ea45f8ebdd625735a2",
+      "bytes": 57258
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/statistics/observation/step2/rank0/dump.json",
+      "sha256": "a665ac7a621106164e0e1000363bb8c26ca6012750482c9487e4be339c1186aa",
+      "bytes": 1322699
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/statistics/observation/step2/rank0/stack.json",
+      "sha256": "f5291d23d4c43588252b86a6a23e19d68dd421deebc39b284fcfa6fc71358878",
+      "bytes": 461449
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/statistics/observation/step2/rank0/construct.json",
+      "sha256": "f0ce80b742ff5113a491394b02c5ea4d6c6331e93d87e6c4e7201abfc4f0d3a9",
+      "bytes": 178324
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/statistics/observation/step5/rank0/dump.json",
+      "sha256": "0bb4d7f6befd463c01586422de46e226355d2de383d8150afb09095246753e8f",
+      "bytes": 1322567
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/statistics/observation/step5/rank0/stack.json",
+      "sha256": "f5291d23d4c43588252b86a6a23e19d68dd421deebc39b284fcfa6fc71358878",
+      "bytes": 461449
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault/serving/statistics/observation/step5/rank0/construct.json",
+      "sha256": "f0ce80b742ff5113a491394b02c5ea4d6c6331e93d87e6c4e7201abfc4f0d3a9",
+      "bytes": 178324
+    }
+  ],
+  "limitations": [
+    "C1 one actual projection; 135 structural candidates are not an eligible-call coverage denominator.",
+    "Canonical logical roles remain UNRESOLVED; actual embedding/norm/quant lineage is proven independently.",
+    "No decode, TP2, different workload, family-wide, A3 or other CANN-version acceptance is inherited.",
+    "B/F raw statistics contain null and NaN; only an observable prefix first candidate is established, not global E5.",
+    "Complete output hashes establish change/recovery, not an error magnitude or task-quality result.",
+    "The INT4-equivalent input-buffer substitute is a controlled fault mechanism, not evidence of historical kernel behavior."
+  ]
+}

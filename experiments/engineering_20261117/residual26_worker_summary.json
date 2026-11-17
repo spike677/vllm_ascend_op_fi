@@ -1,0 +1,550 @@
+{
+  "schema": "demoncat.residual26.actual_worker_summary.v1",
+  "status": "PASS_COMMON_WRITER26_BFOFF",
+  "mechanism": "26.residual_stomp",
+  "scope_id": "residual26-a2",
+  "scope_kind": "NATURAL_PRETRAINED_WORKER",
+  "qualification": "C1_SINGLE_NATURAL_WRITER_NOT_C3",
+  "pretrained_model": true,
+  "public_worker_qualified": true,
+  "all_eligible": false,
+  "every_match": false,
+  "evidence_levels": {
+    "E1_execution_observed": true,
+    "E2_intervention_observed": true,
+    "E3_effect_observed": true,
+    "E4_off_and_local_recovery": true,
+    "E5_statistics_attribution": false
+  },
+  "model": {
+    "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+    "model_type": "deepseek_v2",
+    "reported_model_name": "DeepSeek-V2-Lite",
+    "full_logits_shape": [
+      1,
+      102400
+    ],
+    "vllm_version": "0.18.0+empty",
+    "vllm_ascend_version": "0.18.0",
+    "tensor_parallel_size": 1,
+    "rank": 0,
+    "logical_device": 0,
+    "scope": "One fresh prefill request of14tokens per phase; one generated token, no continuous generation acceptance"
+  },
+  "extension": {
+    "installed_source_sha256": "d2a863a64f86ac535c379d128486838cd14ea98323e74328870503875f2b5631",
+    "core_methods_replaced": false,
+    "workers_created_by_extension": 0
+  },
+  "original_artifacts": {
+    "runtime_result": {
+      "path": "/home/17-fault-engineering-20261117/residual26-a2/fault26-natural/result.json",
+      "sha256": "bf78241c65370ccbe9cadefab85e072b5e76de96f8fd528c3f9c66904adc4363"
+    },
+    "serving_report": {
+      "path": "/home/17-fault-engineering-20261117/residual26-a2/fault26-natural/serving/runtime/serving.json",
+      "sha256": "fe7cbf1e75e612a866c5bce7dafd54fbfa1e7bed043f22b6ac2d8da6a99745a4"
+    },
+    "native_writer_log": {
+      "path": "/home/17-fault-engineering-20261117/residual26-a2/fault26-natural/serving/runtime/writer.jsonl",
+      "sha256": "1a7d24dea34fa02ad254e1134b528e33b145acf51b913a56e49317a52cfb38e8"
+    },
+    "independent_statistics_report": {
+      "path": "/home/17-fault-engineering-20261117/residual26-a2-independent.json",
+      "sha256": "cbbd1bacc5d989e6348de7e35bf406ebfa9e1aedbbaf4cc6c4b5312c8ab7b1f0"
+    },
+    "native_build_manifest": {
+      "path": "/home/17-fault-engineering-20261117/native26-a2/build.json",
+      "sha256": "018a2357b953b2fa08df57460bfd16a129ca7d9250865ead85a36f461569b65f"
+    }
+  },
+  "phase_results": [
+    {
+      "step": 0,
+      "phase": "reference",
+      "internal_request_id": "1-aa88d66b",
+      "external_request_id": "1",
+      "mapping_source": "ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR",
+      "input_sha256": "5f81051f8055a8f13885d0851e880d331f9904d0a238d9b84bff38965ec18ab8",
+      "hidden_sha256": "58cd625a1d8c888d646f64053817da7939bb157739b04c3ada0dbd48ef8ac7c8",
+      "logits_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "hidden_finite": true,
+      "logits_finite": true,
+      "top1": [
+        185
+      ],
+      "generated_tokens": [
+        185
+      ],
+      "generated_text": "\n",
+      "prompt_tokens": 14,
+      "scheduled_tokens": 14,
+      "computed_tokens_before": 0,
+      "request_count": 1,
+      "physical_block_ids": [
+        2
+      ],
+      "physical_slot_range": [
+        32,
+        45
+      ],
+      "observed_attention_metadata_count": 27,
+      "scheduler_snapshot_alone_proves_device_bytes": false,
+      "input_bytes_evidence": "SEPARATE_ACTUAL_MODEL_PREHOOK_COMPLETE_INPUT_HASH"
+    },
+    {
+      "step": 1,
+      "phase": "lossless",
+      "internal_request_id": "2-978be8c5",
+      "external_request_id": "2",
+      "mapping_source": "ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR",
+      "input_sha256": "5f81051f8055a8f13885d0851e880d331f9904d0a238d9b84bff38965ec18ab8",
+      "hidden_sha256": "58cd625a1d8c888d646f64053817da7939bb157739b04c3ada0dbd48ef8ac7c8",
+      "logits_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "hidden_finite": true,
+      "logits_finite": true,
+      "top1": [
+        185
+      ],
+      "generated_tokens": [
+        185
+      ],
+      "generated_text": "\n",
+      "prompt_tokens": 14,
+      "scheduled_tokens": 14,
+      "computed_tokens_before": 0,
+      "request_count": 1,
+      "physical_block_ids": [
+        3
+      ],
+      "physical_slot_range": [
+        48,
+        61
+      ],
+      "observed_attention_metadata_count": 27,
+      "scheduler_snapshot_alone_proves_device_bytes": false,
+      "input_bytes_evidence": "SEPARATE_ACTUAL_MODEL_PREHOOK_COMPLETE_INPUT_HASH"
+    },
+    {
+      "step": 2,
+      "phase": "comparison",
+      "internal_request_id": "3-922cb84c",
+      "external_request_id": "3",
+      "mapping_source": "ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR",
+      "input_sha256": "5f81051f8055a8f13885d0851e880d331f9904d0a238d9b84bff38965ec18ab8",
+      "hidden_sha256": "3acf69f5263c76934d5f74a07de38ff0e6d8e7fe082387f43792f756fadd758e",
+      "logits_sha256": "428ce67fe410089c6be71d2515d2bbefdaade08bb98310a6fd854413ac640287",
+      "hidden_finite": true,
+      "logits_finite": true,
+      "top1": [
+        185
+      ],
+      "generated_tokens": [
+        185
+      ],
+      "generated_text": "\n",
+      "prompt_tokens": 14,
+      "scheduled_tokens": 14,
+      "computed_tokens_before": 0,
+      "request_count": 1,
+      "physical_block_ids": [
+        4
+      ],
+      "physical_slot_range": [
+        64,
+        77
+      ],
+      "observed_attention_metadata_count": 27,
+      "scheduler_snapshot_alone_proves_device_bytes": false,
+      "input_bytes_evidence": "SEPARATE_ACTUAL_MODEL_PREHOOK_COMPLETE_INPUT_HASH"
+    },
+    {
+      "step": 3,
+      "phase": "off",
+      "internal_request_id": "4-9cbeab7c",
+      "external_request_id": "4",
+      "mapping_source": "ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR",
+      "input_sha256": "5f81051f8055a8f13885d0851e880d331f9904d0a238d9b84bff38965ec18ab8",
+      "hidden_sha256": "58cd625a1d8c888d646f64053817da7939bb157739b04c3ada0dbd48ef8ac7c8",
+      "logits_sha256": "7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262",
+      "hidden_finite": true,
+      "logits_finite": true,
+      "top1": [
+        185
+      ],
+      "generated_tokens": [
+        185
+      ],
+      "generated_text": "\n",
+      "prompt_tokens": 14,
+      "scheduled_tokens": 14,
+      "computed_tokens_before": 0,
+      "request_count": 1,
+      "physical_block_ids": [
+        5
+      ],
+      "physical_slot_range": [
+        80,
+        93
+      ],
+      "observed_attention_metadata_count": 27,
+      "scheduler_snapshot_alone_proves_device_bytes": false,
+      "input_bytes_evidence": "SEPARATE_ACTUAL_MODEL_PREHOOK_COMPLETE_INPUT_HASH"
+    }
+  ],
+  "observed_selected_target": {
+    "module_path": "model.layers.4.mlp.shared_experts.down_proj",
+    "operator": "aclnnQuantMatmulWeightNz",
+    "module_object_id": 281469791378576,
+    "cache": 187667212852976,
+    "output_bytes": 57344,
+    "residual_bytes": 57344,
+    "geometry": [
+      14,
+      2048,
+      14,
+      2048
+    ],
+    "allocation": {
+      "residual_block": [
+        20623426827264,
+        20623426885120
+      ],
+      "output_block": [
+        20623426885120,
+        20623426942976
+      ],
+      "padding": 512,
+      "shift": 544
+    }
+  },
+  "selection": "ACTUAL_MODULE_OWNER_TYPED_QMM_CALL_RETAINED_RESIDUAL_AND_LIVE_ALLOCATOR_ADJACENCY; MODULE_PATH_IS_OBSERVATION_NOT_SELECTOR",
+  "native_runtime": {
+    "baseline_supported": 1,
+    "baseline_claims": 0,
+    "fault_supported": 1,
+    "fault_claims": 1,
+    "fault_completed": 1,
+    "producer_event_sequence": [
+      "fault26_qmm_output_underflow_prepared",
+      "fault26_qmm_output_underflow_applied",
+      "fault26_qmm_output_underflow_consumer_restored"
+    ],
+    "completed_matches_final_native_event": true,
+    "completion": {
+      "event": "fault26_qmm_output_underflow_consumer_restored",
+      "pid": 1,
+      "tid": 1,
+      "ts_ns": 557675261973999,
+      "outcome": "QMM_OUTPUT_BASE_UNDERFLOW_RESIDUAL_STOMP_PROXY_PROVEN",
+      "device": 0,
+      "token": 1,
+      "hit_number": 1,
+      "max_hits": 4096,
+      "all_hits": true,
+      "run_index": 81,
+      "producer_sequence": 225,
+      "consumer_sequence": 226,
+      "cache": "0xaaaead8edef0",
+      "original_output": "0x12c1c4089600",
+      "replacement_output": "0x12c1c40893e0",
+      "output_bytes": 57344,
+      "output_shape": [
+        14,
+        2048
+      ],
+      "residual": "0x12c1c407b400",
+      "residual_bytes": 57344,
+      "residual_shape": [
+        14,
+        2048
+      ],
+      "shift_bytes": 544,
+      "allocator_padding_bytes": 512,
+      "residual_overlap_bytes": 32,
+      "crosses_writer_allocation_boundary": true,
+      "run_status": 0,
+      "pre_sync_status": 0,
+      "host_alloc_status": 0,
+      "residual_d2h_status": 0,
+      "prefix_d2h_status": 0,
+      "post_sync_status": 0,
+      "residual_after_d2h_status": 0,
+      "shifted_output_d2h_status": 0,
+      "output_h2d_status": 0,
+      "output_sync_status": 0,
+      "output_readback_status": 0,
+      "padding_restore_h2d_status": 0,
+      "padding_restore_sync_status": 0,
+      "padding_readback_status": 0,
+      "consumer_status": 0,
+      "restore_h2d_status": 0,
+      "restore_sync_status": 0,
+      "restore_readback_status": 0,
+      "host_free_status": 0,
+      "changed_residual_bytes": 31,
+      "residual_hash_before": "0x8b790030c96509d7",
+      "residual_hash_after": "0x4782a19e41180af2",
+      "residual_hash_restored": "0x8b790030c96509d7",
+      "shifted_output_hash": "0xd42a55dfd421ba59",
+      "original_output_hash": "0xd42a55dfd421ba59",
+      "prefix_hash_before": "0xb661fc04a25d85d4",
+      "padding_hash_before": "0x4294e209ac077af2",
+      "padding_hash_restored": "0x4294e209ac077af2",
+      "output_restored_exact": true,
+      "padding_restored_exact": true,
+      "residual_restored_exact": true
+    },
+    "finish_state": {
+      "active_consumer": 0,
+      "allowed": 1,
+      "callback_active": 0,
+      "environment_enabled": 0,
+      "owner_thread": 0,
+      "pending_consumers": 0,
+      "prepared": 0,
+      "queued_executors": 0,
+      "registered": 0,
+      "runtime_ready": 1,
+      "size": 88,
+      "version": 1
+    },
+    "output_padding_residual_exactly_restored": true,
+    "native_internal_all_hits_is_not_public_every_match": true
+  },
+  "recovery": {
+    "finish": "ACTION_COMPLETED",
+    "unregister": "ACTION_COMPLETED",
+    "detach": "DETACHED",
+    "unset": "DEPLOYMENT_REMOVED",
+    "inflight": 0,
+    "leases": 0,
+    "pending_consumers": 0,
+    "prepared": 0,
+    "queued_executors": 0,
+    "enabled": false,
+    "native_registered": false,
+    "recovery_validation_pending": false,
+    "off_complete_hidden_hash_equal": true,
+    "off_complete_logits_hash_equal": true
+  },
+  "source_build": {
+    "manifest": {
+      "path": "/home/17-fault-engineering-20261117/native26-a2/build.json",
+      "sha256": "018a2357b953b2fa08df57460bfd16a129ca7d9250865ead85a36f461569b65f"
+    },
+    "build_receipt": "/home/17-fault-engineering-20261117/build26-qmm-a2/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/receipt.json",
+    "build_receipt_sha256": "e8c1a48bcdca394297ccb697a4a04b1d01e2b976ed6b3e4d9586fc0122c90fd6",
+    "library": {
+      "path": "/home/17-fault-engineering-20261117/native26-a2/libfault26_qmm_output_underflow_abi0.so",
+      "sha256": "bbb544a741a50807561b34c51431c033d3eba603335002c46835cb084c28c0c6"
+    },
+    "build_receipt_alone_is_not_npu_acceptance": true
+  },
+  "implementation_sources": [
+    {
+      "path": "fault_injection/deployments/residual26.py",
+      "sha256": "a184c2fa960f847c7be689744874bf2478caea750a7eb92bade4642840cb2951"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving26.py",
+      "sha256": "d2a863a64f86ac535c379d128486838cd14ea98323e74328870503875f2b5631"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault26.py",
+      "sha256": "1aad48a9b3a59a59d3a9eed95413d18cd6593b0deadda8c0423530db2f2af99f"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving_context.py",
+      "sha256": "61e51a706d1482e381f248f2cea47558db33f65959ba01a35f24e88b4f461021"
+    },
+    {
+      "path": "fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_qmm_output_underflow.cpp",
+      "sha256": "f8d57f2effce41adad33af502e256c17b9e12af160e9aa44d9a250578a6ff2a7"
+    },
+    {
+      "path": "fault_injection/native_adapters/legacy26_qmm_bridge.inc",
+      "sha256": "efe6b842195c6bc5d4639b35a8f74f1f399c0d0f54cc91a73cb0141a3dac312f"
+    },
+    {
+      "path": "experiments/engineering_20261117/writer26_worker_probe.py",
+      "sha256": "f96d5a513ca290f43eba5750a99e066d773555c7799f03bd237448f085e036c9"
+    }
+  ],
+  "independent_statistics": {
+    "status": "E5_NOT_PASSED",
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "comparison_rule": "abs(F-B) > atol + rtol*abs(B)",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_step": 1,
+    "fault_step": 2,
+    "step_semantics": {
+      "0": "reference",
+      "1": "lossless baseline",
+      "2": "fault comparison",
+      "3": "off"
+    },
+    "prefill_not_decode_steps": true,
+    "baseline_self_comparable": false,
+    "whole_dump_comparable": false,
+    "first_observable_candidate": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 86,
+      "identity": "NPU.npu_kv_rmsnorm_rope_cache.0.forward/input_args/4",
+      "difference": {
+        "field": "/Max",
+        "reason": "STATISTIC_DIFFERS",
+        "baseline": 61,
+        "fault": 77
+      }
+    },
+    "baseline_self_refusal": {
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 764,
+      "identity": "Tensor.__setitem__.11.forward/input_args/0",
+      "difference": {
+        "field": "/Max",
+        "reason": "NONFINITE_UNCOMPARABLE",
+        "baseline": "NaN",
+        "fault": "NaN"
+      }
+    },
+    "null_fields_before_pair_stop": 184,
+    "null_fields_before_self_stop": 1642,
+    "full_dump_inventory": {
+      "baseline": {
+        "null_fields": 10142,
+        "nonfinite_fields": 24
+      },
+      "fault": {
+        "null_fields": 10142,
+        "nonfinite_fields": 28
+      }
+    },
+    "request_mapping_in_statistics_comparator": "UNPROVEN_REQUEST_MAPPING",
+    "attribution": "FIRST_CANDIDATE_IS_PHYSICAL_SLOT_METADATA_NOT_RESIDUAL_CORRUPTION",
+    "limitations": [
+      "Fresh requests use different physical KV pages: B slots48..61, F slots64..77. The model input token hashes agree.",
+      "Actual MLA source passes slots as npu_kv_rmsnorm_rope_cache positional input4; its Max61->77 is earlier than the chosen QMM.",
+      "B self comparison encounters NaN/NaN in Tensor.__setitem__.11.forward/input_args/0 /Max; it is not equal or a valid fault difference.",
+      "All original null/nonfinite fields remain in the raw dumps and hashed independent report; no fields were filtered or rewritten.",
+      "Runtime writer evidence cannot be used to move the independent first difference to the intended fault boundary."
+    ],
+    "original_groups": {
+      "baseline": {
+        "directory": "/home/17-fault-engineering-20261117/residual26-a2/fault26-natural/serving/capture/observation/step1/rank0",
+        "sha256": {
+          "dump.json": "b5e1960d36365a862344fcdc6506ead1971645a1a2c1dbb59caff8b04258c6c5",
+          "stack.json": "a8a0f45208e7ee14f7221806237f0ac726c38290c8e3d270518ef778b05dba9f",
+          "construct.json": "413cc0b504d257f9d2fcab35d18d56e91066fd02efc12dbd18888ea6b916e128"
+        }
+      },
+      "fault": {
+        "directory": "/home/17-fault-engineering-20261117/residual26-a2/fault26-natural/serving/capture/observation/step2/rank0",
+        "sha256": {
+          "dump.json": "83e28ddf6d2e4b4c0bba8beed34dba4600a47d993ad85592ba8c4073c17ecb0b",
+          "stack.json": "a8a0f45208e7ee14f7221806237f0ac726c38290c8e3d270518ef778b05dba9f",
+          "construct.json": "413cc0b504d257f9d2fcab35d18d56e91066fd02efc12dbd18888ea6b916e128"
+        }
+      }
+    },
+    "config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "collector_identity_sha256": "c982264d8995fcc7daab67d6a71fed5c04d67ceb8e1e802daaca0fb83cfb5f89",
+    "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+    "report": {
+      "path": "/home/17-fault-engineering-20261117/residual26-a2-independent.json",
+      "sha256": "cbbd1bacc5d989e6348de7e35bf406ebfa9e1aedbbaf4cc6c4b5312c8ab7b1f0"
+    }
+  },
+  "limitations": [
+    "Single automatically qualified adjacent writer; not all-layer/all-request coverage or every-match acceptance.",
+    "Controlled QMM output-base underflow proxy; not spontaneous reproduction of a historical allocator or kernel defect.",
+    "Selected writer shape14x2048 and an actual512-byte allocator gap; other geometries/deployments require new qualification.",
+    "One token remains185/newline in all phases; numerical propagation is proven by complete logits hashes, not changed generated text.",
+    "Whole raw statistics are not independently comparable; this scope does not pass E5 or support the intended fault first-difference claim.",
+    "Historical mechanism scopes and evidence remain separately retained. New raw statistics, native binaries and full private tensors are not published."
+  ],
+  "ledger_scopes": [
+    {
+      "mechanism": "26.residual_stomp",
+      "scope_id": "residual26-a2",
+      "scope_kind": "NATURAL_PRETRAINED_WORKER",
+      "scope_description": "DeepSeek-V2-Lite TP1 standard Worker, fresh prefill14tokens, one actual adjacent QMM writer and next residual consumer, B/F/OFF exact recovery",
+      "entrypoint": "standard_vllm_worker",
+      "public_worker_qualified": true,
+      "pretrained_model": true,
+      "E1_execution_observed": true,
+      "E2_intervention_observed": true,
+      "E3_effect_observed": true,
+      "E4_off_and_local_recovery": true,
+      "runtime_evidence": {
+        "receipt": {
+          "path": "/home/17-fault-engineering-20261117/residual26-a2/fault26-natural/result.json",
+          "sha256": "bf78241c65370ccbe9cadefab85e072b5e76de96f8fd528c3f9c66904adc4363"
+        },
+        "serving": {
+          "path": "/home/17-fault-engineering-20261117/residual26-a2/fault26-natural/serving/runtime/serving.json",
+          "sha256": "fe7cbf1e75e612a866c5bce7dafd54fbfa1e7bed043f22b6ac2d8da6a99745a4"
+        },
+        "writer": {
+          "path": "/home/17-fault-engineering-20261117/residual26-a2/fault26-natural/serving/runtime/writer.jsonl",
+          "sha256": "1a7d24dea34fa02ad254e1134b528e33b145acf51b913a56e49317a52cfb38e8"
+        },
+        "fault_claims": 1,
+        "fault_completed": 1,
+        "changed_residual_bytes": 31,
+        "overlap_bytes": 32,
+        "output_padding_residual_restored": true,
+        "pending": 0
+      },
+      "independent_statistics": {
+        "status": "E5_NOT_PASSED",
+        "whole_dump_comparable": false,
+        "baseline_self_comparable": false,
+        "report": {
+          "path": "/home/17-fault-engineering-20261117/residual26-a2-independent.json",
+          "sha256": "cbbd1bacc5d989e6348de7e35bf406ebfa9e1aedbbaf4cc6c4b5312c8ab7b1f0"
+        },
+        "first_candidate": {
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "index": 86,
+          "identity": "NPU.npu_kv_rmsnorm_rope_cache.0.forward/input_args/4",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 61,
+            "fault": 77
+          }
+        },
+        "baseline_self_refusal": {
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "index": 764,
+          "identity": "Tensor.__setitem__.11.forward/input_args/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "NONFINITE_UNCOMPARABLE",
+            "baseline": "NaN",
+            "fault": "NaN"
+          }
+        },
+        "null_fields_each": 10142,
+        "nonfinite_fields": {
+          "baseline": 24,
+          "fault": 28
+        }
+      },
+      "all_eligible": false,
+      "every_match": false
+    }
+  ],
+  "implementation_source_identity_scope": "LOCAL_REVIEWED_SOURCE_SNAPSHOT; DEPLOYED_WORKER_IDENTITY_RECORDED_SEPARATELY",
+  "statistics_attribution_source_review": {
+    "path": "/vllm-workspace/vllm-ascend/vllm_ascend/attention/mla_v1.py",
+    "sha256": "17892014ecd431a1804fb81f5380509275e1440b41e1f9e0870ba8440c365516",
+    "line": 1176,
+    "role": "input_args[4] is slots.to(torch.int64); review occurred after independent first-candidate selection"
+  }
+}

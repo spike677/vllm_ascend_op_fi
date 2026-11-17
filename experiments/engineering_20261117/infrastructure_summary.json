@@ -1,0 +1,635 @@
+{
+  "schema": "demoncat.engineering.infrastructure_summary.v1",
+  "build_manager": [
+    {
+      "attempt": "build39-a1",
+      "receipt": {
+        "path": "/home/17-fault-engineering-20261117/build39-a1/cache/ad9994a9862102a725b92b7dac07965d4be5c6b6cf2996e81dd75b55ad316acc/attempt-092c5d90982d4244b63d7870833b85e5/receipt.json",
+        "sha256": "7671faa86a4f391bcd1264b370af95e3df6f914855bdff20b179c8184081a995"
+      },
+      "status": "BUILD_VERIFIED_NO_NPU_QUALIFICATION",
+      "build_key": "ad9994a9862102a725b92b7dac07965d4be5c6b6cf2996e81dd75b55ad316acc",
+      "recipe": "fault39.matmul.abi0.v1",
+      "mechanism": "39.matmul_range",
+      "operator": "aclnnMatmul",
+      "inputs_sha256": "24fa3c8dd50c4ca252d58475d73e08664dfb1323531cc5198a90479975857eed",
+      "images": {
+        "native/libfault39_native_v1.so": {
+          "path": "/build/cache/ad9994a9862102a725b92b7dac07965d4be5c6b6cf2996e81dd75b55ad316acc/attempt-092c5d90982d4244b63d7870833b85e5/native/libfault39_native_v1.so",
+          "bytes": 111976,
+          "sha256": "63231e69b3ae1a793f3719e8015e59094d00e5a1996b6f65651a156f30dfe749",
+          "elf_build_id": "6e9296dd075e42d45ebcac3bc75f684e95d21191"
+        },
+        "native/libopapi.so": {
+          "path": "/build/cache/ad9994a9862102a725b92b7dac07965d4be5c6b6cf2996e81dd75b55ad316acc/attempt-092c5d90982d4244b63d7870833b85e5/native/libopapi.so",
+          "bytes": 47672,
+          "sha256": "520885a08a0c33c9313ed3a9d64bdc9408745c019d6c312ff6a3e7a009c9e1d7",
+          "elf_build_id": "d3b0e374c2ee35f19237e68f96ff33d039059ca6"
+        },
+        "native/libopapi_nn.so": {
+          "path": "/build/cache/ad9994a9862102a725b92b7dac07965d4be5c6b6cf2996e81dd75b55ad316acc/attempt-092c5d90982d4244b63d7870833b85e5/native/libopapi_nn.so",
+          "bytes": 47672,
+          "sha256": "86674b3986db2263efab81de2c1dc2c415865ddc37f516b2557e55d9057522ac",
+          "elf_build_id": "6d4a20208c84a607a500ecb224a48b9c28654046"
+        },
+        "native/real/libopapi_nn_real.so": {
+          "path": "/build/cache/ad9994a9862102a725b92b7dac07965d4be5c6b6cf2996e81dd75b55ad316acc/attempt-092c5d90982d4244b63d7870833b85e5/native/real/libopapi_nn_real.so",
+          "bytes": 15874424,
+          "sha256": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+          "elf_build_id": null
+        },
+        "native/real/libopapi_real.so": {
+          "path": "/build/cache/ad9994a9862102a725b92b7dac07965d4be5c6b6cf2996e81dd75b55ad316acc/attempt-092c5d90982d4244b63d7870833b85e5/native/real/libopapi_real.so",
+          "bytes": 38454680,
+          "sha256": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+          "elf_build_id": null
+        }
+      },
+      "inputs": {
+        "path": "/home/17-fault-engineering-20261117/build39-a1/cache/ad9994a9862102a725b92b7dac07965d4be5c6b6cf2996e81dd75b55ad316acc/attempt-092c5d90982d4244b63d7870833b85e5/inputs.json",
+        "sha256": "24fa3c8dd50c4ca252d58475d73e08664dfb1323531cc5198a90479975857eed"
+      },
+      "actual_npu_calls": 0,
+      "native_qualified": false
+    },
+    {
+      "attempt": "build20-qmm-a1",
+      "receipt": {
+        "path": "/home/17-fault-engineering-20261117/build20-qmm-a1/cache/0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e/attempt-a1a003c417144fd8b7858b1772a34833/receipt.json",
+        "sha256": "1423fe0fa40272a8c5dbcba9aa2e17be487ee8a84593d49fad6d65ed12228c08"
+      },
+      "status": "BUILD_VERIFIED_NO_NPU_QUALIFICATION",
+      "build_key": "0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e",
+      "recipe": "fault20.qmm.abi0.v1",
+      "mechanism": "20.buffer_substitute",
+      "operator": "aclnnQuantMatmulWeightNz",
+      "inputs_sha256": "d79f5ea42a816e7c249aaa81599f205312e96f5951a0bbfa6818498b31d9be4c",
+      "images": {
+        "native/libdcat20_qmm.so": {
+          "path": "/build/cache/0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e/attempt-a1a003c417144fd8b7858b1772a34833/native/libdcat20_qmm.so",
+          "bytes": 150968,
+          "sha256": "3841a861918ccca459dc69a683670720bef447d67c0531e8f9635e36d2ade174",
+          "elf_build_id": "dc705c39f3e595a0296bd20886408298404f8951"
+        },
+        "native/libopapi.so": {
+          "path": "/build/cache/0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e/attempt-a1a003c417144fd8b7858b1772a34833/native/libopapi.so",
+          "bytes": 83048,
+          "sha256": "84a7d44d718ca4d612945202f392f241516068aab38207784e30a95469477923",
+          "elf_build_id": "f9b88d63e9d2a4ec2e7e2ea7d781e16683145dbc"
+        },
+        "native/libopapi_math.so": {
+          "path": "/build/cache/0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e/attempt-a1a003c417144fd8b7858b1772a34833/native/libopapi_math.so",
+          "bytes": 41832,
+          "sha256": "41fc755c4656a49ed08f67743ba5f0b7fbe4e26c1bca6e439a8eae7b119d7529",
+          "elf_build_id": "837bb092d70cf9ccd1dc81f33bd45aa98944a8ef"
+        },
+        "native/libopapi_nn.so": {
+          "path": "/build/cache/0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e/attempt-a1a003c417144fd8b7858b1772a34833/native/libopapi_nn.so",
+          "bytes": 83048,
+          "sha256": "803505e6dff32b0a38f620a11a6b6e853b29ca8ef5cfd2e6010e12fbe7cef4eb",
+          "elf_build_id": "162c04c5de8ae23d1ea134e7ad33b219e0fb6d6f"
+        },
+        "native/real/libopapi_math_real.so": {
+          "path": "/build/cache/0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e/attempt-a1a003c417144fd8b7858b1772a34833/native/real/libopapi_math_real.so",
+          "bytes": 12932696,
+          "sha256": "e5ed3716db8c257ad482fe1b3e4cd03eadb69e5a11444dbfaf8e5dfb1f08c03f",
+          "elf_build_id": null
+        },
+        "native/real/libopapi_nn_real.so": {
+          "path": "/build/cache/0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e/attempt-a1a003c417144fd8b7858b1772a34833/native/real/libopapi_nn_real.so",
+          "bytes": 15874424,
+          "sha256": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+          "elf_build_id": null
+        },
+        "native/real/libopapi_real.so": {
+          "path": "/build/cache/0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e/attempt-a1a003c417144fd8b7858b1772a34833/native/real/libopapi_real.so",
+          "bytes": 38454680,
+          "sha256": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+          "elf_build_id": null
+        }
+      },
+      "inputs": {
+        "path": "/home/17-fault-engineering-20261117/build20-qmm-a1/cache/0e84bd260f91e7dd663a25260d61856ac82adf29aae2610e28100a8c876be38e/attempt-a1a003c417144fd8b7858b1772a34833/inputs.json",
+        "sha256": "d79f5ea42a816e7c249aaa81599f205312e96f5951a0bbfa6818498b31d9be4c"
+      },
+      "actual_npu_calls": 0,
+      "native_qualified": false
+    },
+    {
+      "attempt": "build26-fia-a1",
+      "receipt": {
+        "path": "/home/17-fault-engineering-20261117/build26-fia-a1/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/receipt.json",
+        "sha256": "4832364567aba916ae934fb5ebda16a76464aedcc350759bfea008595ef2ae12"
+      },
+      "status": "BUILD_VERIFIED_NO_NPU_QUALIFICATION",
+      "build_key": "5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5",
+      "recipe": "fault26.fia.abi0.v1",
+      "mechanism": "26.fia_destination",
+      "operator": "aclnnFusedInferAttentionScoreV3",
+      "inputs_sha256": "5c37b386bb9e9f4ba24a1476c78c2b2c6fcf51f5e37abcf10249294f200753e9",
+      "images": {
+        "native/libcust_opapi.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/libcust_opapi.so",
+          "bytes": 26264,
+          "sha256": "efc84d1913ca523d2d3909e0a22ae9b152071f0eedcbd1d73c65727b9a4419c6",
+          "elf_build_id": "d1bb5fe43b1d7f89031bd036fd9ecef82fad0b69"
+        },
+        "native/libfault26_fia_opapi_proxy.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/libfault26_fia_opapi_proxy.so",
+          "bytes": 26320,
+          "sha256": "fef82446f3a89b3f8bae646b08a1e554422f005144dd663e46c70c223c4ec854",
+          "elf_build_id": "f1914e3de68f0d53c8c9bb76e49b83c5c6b5bc91"
+        },
+        "native/libfault26_fia_writer_proxy_abi0.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/libfault26_fia_writer_proxy_abi0.so",
+          "bytes": 63664,
+          "sha256": "584c85381dc927fdedef92b4af7f433aa49c6dddbfe5d23500499537b2569802",
+          "elf_build_id": "e2ceb5f4aa5d3e4a6bf51508de1de6a9d90bf298"
+        },
+        "native/libfault26_qmm_output_underflow_abi0.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/libfault26_qmm_output_underflow_abi0.so",
+          "bytes": 36408,
+          "sha256": "b17068d24ce2004938f69e3d94dd20d86c2e04ffff6f817ef6c071d428dbdcbc",
+          "elf_build_id": "8d94ede6cf12d98bb8b7de546e737a84299921fa"
+        },
+        "native/libfault26_readonly_trace_abi0.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/libfault26_readonly_trace_abi0.so",
+          "bytes": 108160,
+          "sha256": "236228991ce307a0ced55ec6121ff13e5677741415e20bfc5184757610eb7f48",
+          "elf_build_id": "dd0fc874f7250bf7138403e2c912fae0336442a0"
+        },
+        "native/libopapi.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/libopapi.so",
+          "bytes": 56104,
+          "sha256": "fbb6452c8533c97b4b871deb487d5a83a026979b7f977905f6a22d77a2985866",
+          "elf_build_id": "c1dc28cc3ee520273d93caf3753eda4fe0d4d029"
+        },
+        "native/libopapi_nn.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/libopapi_nn.so",
+          "bytes": 50416,
+          "sha256": "93c16a69debd35ca90c7c95a4fc9a4c919df83cc19a31a1341d9a8c44533cdb7",
+          "elf_build_id": "8cdf244f70e76c819cf2967318b13ae61c45a78f"
+        },
+        "native/real/libcust_opapi_real.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/real/libcust_opapi_real.so",
+          "bytes": 6635744,
+          "sha256": "28765842049552da1a8723f0f733f326a1014c1b0441b2f384e0f0b9f71f38ca",
+          "elf_build_id": "20cd5f1488515d3eef55f360ca17b22538cae676"
+        },
+        "native/real/libopapi_nn_real.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/real/libopapi_nn_real.so",
+          "bytes": 15874424,
+          "sha256": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+          "elf_build_id": null
+        },
+        "native/real/libopapi_real.so": {
+          "path": "/build/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/native/real/libopapi_real.so",
+          "bytes": 38454680,
+          "sha256": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+          "elf_build_id": null
+        }
+      },
+      "inputs": {
+        "path": "/home/17-fault-engineering-20261117/build26-fia-a1/cache/5a3ac05c544babc6707fbf34b4bb24c869fa9cb5b73f648ca44c6bdd51c980c5/attempt-8bf2690559154e59b12936a729bdf087/inputs.json",
+        "sha256": "5c37b386bb9e9f4ba24a1476c78c2b2c6fcf51f5e37abcf10249294f200753e9"
+      },
+      "actual_npu_calls": 0,
+      "native_qualified": false
+    },
+    {
+      "attempt": "build26-qmm-a2",
+      "receipt": {
+        "path": "/home/17-fault-engineering-20261117/build26-qmm-a2/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/receipt.json",
+        "sha256": "e8c1a48bcdca394297ccb697a4a04b1d01e2b976ed6b3e4d9586fc0122c90fd6"
+      },
+      "status": "BUILD_VERIFIED_NO_NPU_QUALIFICATION",
+      "build_key": "97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb",
+      "recipe": "fault26.qmm.abi0.v1",
+      "mechanism": "26.residual_stomp",
+      "operator": "aclnnQuantMatmulWeightNz",
+      "inputs_sha256": "f09f8578b35903087a4fa1683c1d74c817c7c2e1f3f7c94b5f862a02d15591ab",
+      "images": {
+        "native/libcust_opapi.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/libcust_opapi.so",
+          "bytes": 26264,
+          "sha256": "efc84d1913ca523d2d3909e0a22ae9b152071f0eedcbd1d73c65727b9a4419c6",
+          "elf_build_id": "d1bb5fe43b1d7f89031bd036fd9ecef82fad0b69"
+        },
+        "native/libfault26_fia_opapi_proxy.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/libfault26_fia_opapi_proxy.so",
+          "bytes": 26320,
+          "sha256": "fef82446f3a89b3f8bae646b08a1e554422f005144dd663e46c70c223c4ec854",
+          "elf_build_id": "f1914e3de68f0d53c8c9bb76e49b83c5c6b5bc91"
+        },
+        "native/libfault26_fia_writer_proxy_abi0.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/libfault26_fia_writer_proxy_abi0.so",
+          "bytes": 63664,
+          "sha256": "584c85381dc927fdedef92b4af7f433aa49c6dddbfe5d23500499537b2569802",
+          "elf_build_id": "e2ceb5f4aa5d3e4a6bf51508de1de6a9d90bf298"
+        },
+        "native/libfault26_qmm_output_underflow_abi0.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/libfault26_qmm_output_underflow_abi0.so",
+          "bytes": 36504,
+          "sha256": "bbb544a741a50807561b34c51431c033d3eba603335002c46835cb084c28c0c6",
+          "elf_build_id": "bcac8be1e343bd46fb0bac02b8f5357d1e0b2d2c"
+        },
+        "native/libfault26_readonly_trace_abi0.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/libfault26_readonly_trace_abi0.so",
+          "bytes": 108160,
+          "sha256": "236228991ce307a0ced55ec6121ff13e5677741415e20bfc5184757610eb7f48",
+          "elf_build_id": "dd0fc874f7250bf7138403e2c912fae0336442a0"
+        },
+        "native/libopapi.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/libopapi.so",
+          "bytes": 56104,
+          "sha256": "fbb6452c8533c97b4b871deb487d5a83a026979b7f977905f6a22d77a2985866",
+          "elf_build_id": "c1dc28cc3ee520273d93caf3753eda4fe0d4d029"
+        },
+        "native/libopapi_nn.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/libopapi_nn.so",
+          "bytes": 50416,
+          "sha256": "93c16a69debd35ca90c7c95a4fc9a4c919df83cc19a31a1341d9a8c44533cdb7",
+          "elf_build_id": "8cdf244f70e76c819cf2967318b13ae61c45a78f"
+        },
+        "native/real/libcust_opapi_real.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/real/libcust_opapi_real.so",
+          "bytes": 6635744,
+          "sha256": "28765842049552da1a8723f0f733f326a1014c1b0441b2f384e0f0b9f71f38ca",
+          "elf_build_id": "20cd5f1488515d3eef55f360ca17b22538cae676"
+        },
+        "native/real/libopapi_nn_real.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/real/libopapi_nn_real.so",
+          "bytes": 15874424,
+          "sha256": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+          "elf_build_id": null
+        },
+        "native/real/libopapi_real.so": {
+          "path": "/build/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/native/real/libopapi_real.so",
+          "bytes": 38454680,
+          "sha256": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+          "elf_build_id": null
+        }
+      },
+      "inputs": {
+        "path": "/home/17-fault-engineering-20261117/build26-qmm-a2/cache/97a8b0db9c499eb1cadafb485d1a06d58f2c8870c9d3438043d4bbd3fbad71bb/attempt-f3d9ada29a61489db5595622d0ae3f14/inputs.json",
+        "sha256": "f09f8578b35903087a4fa1683c1d74c817c7c2e1f3f7c94b5f862a02d15591ab"
+      },
+      "actual_npu_calls": 0,
+      "native_qualified": false
+    },
+    {
+      "attempt": "buildpost-a1",
+      "receipt": {
+        "path": "/home/17-fault-engineering-20261117/buildpost-a1/cache/53971d4039225774992f617a9dfec3113323783317fa9e67fc54d322b308ceaf/attempt-37a8a4a47cbf41ee9c857fdddeaf4649/receipt.json",
+        "sha256": "fd69d1096178a5550f6f831a0e0466f1efd673c63b44d303a229791484abdaf2"
+      },
+      "status": "BUILD_VERIFIED_NO_NPU_QUALIFICATION",
+      "build_key": "53971d4039225774992f617a9dfec3113323783317fa9e67fc54d322b308ceaf",
+      "recipe": "postwrite.output.acl.v1",
+      "mechanism": "39.output_proxy",
+      "operator": "aten.mm.default",
+      "inputs_sha256": "4f67c638bdba00308e6c8917c4d318abb213246fbedc39de567f49cc928ce10e",
+      "images": {
+        "native/libdcat_postwrite.so": {
+          "path": "/build/cache/53971d4039225774992f617a9dfec3113323783317fa9e67fc54d322b308ceaf/attempt-37a8a4a47cbf41ee9c857fdddeaf4649/native/libdcat_postwrite.so",
+          "bytes": 23696,
+          "sha256": "5c3f9c73233ca7336d1b419d7073dcfa05d80e99dbc2a62ec2a645afc79ad8b8",
+          "elf_build_id": "911d98e8d832c380c78b9825c8cee850e367775b"
+        }
+      },
+      "inputs": {
+        "path": "/home/17-fault-engineering-20261117/buildpost-a1/cache/53971d4039225774992f617a9dfec3113323783317fa9e67fc54d322b308ceaf/attempt-37a8a4a47cbf41ee9c857fdddeaf4649/inputs.json",
+        "sha256": "4f67c638bdba00308e6c8917c4d318abb213246fbedc39de567f49cc928ce10e"
+      },
+      "actual_npu_calls": 0,
+      "native_qualified": false
+    }
+  ],
+  "attention_builds": [
+    {
+      "attempt": "fia-legal-fresh-a1",
+      "receipt": {
+        "path": "/home/17-fault-engineering-20261117/fia-legal-fresh-a1/run/evidence/completion.json",
+        "sha256": "2c1fd1bc85a73b9e6f6e466e7fa9acce392709d4ba196ce855f32efe4e6b2594"
+      },
+      "schema": "demoncat.fia.fresh_build.v1",
+      "status": "CPU_BUILD_FAILED",
+      "error": "RuntimeError('BUILT_OBJECT_IN_SOURCE:/build/run/dependencies/opbase/tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/add_n/AddN_8b4ec10fbb39c5c0a65192c606400b29_high_performance.o')",
+      "artifacts": [],
+      "npu_executed": false,
+      "actual_launch_verified": false
+    },
+    {
+      "attempt": "fia-legal-fresh-a2",
+      "receipt": {
+        "path": "/home/17-fault-engineering-20261117/fia-legal-fresh-a2/run/evidence/completion.json",
+        "sha256": "09a45a64f8238a9ec872b5963c23e0bf11794722aec24826a0ce2425255a71be"
+      },
+      "schema": "demoncat.fia.fresh_build.v1",
+      "status": "CPU_BUILD_FAILED",
+      "variant": "legal_tiling",
+      "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+      "patch_receipt_sha256": "fd17af2a6b2af411cbc27a4a31abdf175655aaa0d9e227f2e9d39de7fbc724ca",
+      "contract_sha256": "4b709903ea4ba1a8dc60a0608c4f443df7cc6e05669167391bec43b27077a91d",
+      "dependency_manifest_sha256": "30110c230be054823ab502258b65d31404b7eb512d901e1535e96c1baabab64e",
+      "excluded_test_fixtures_sha256": "e37875f7aa53f54d5def046fb58b0f7c8e8f0ce591bb2642d4ea717b2344ade0",
+      "error": "RuntimeError('BUILD_COMMAND_FAILED:complete_host_package')",
+      "artifacts": [],
+      "npu_executed": false,
+      "actual_launch_verified": false
+    },
+    {
+      "attempt": "fia-legal-fresh-a3",
+      "receipt": {
+        "path": "/home/17-fault-engineering-20261117/fia-legal-fresh-a3/run/evidence/completion.json",
+        "sha256": "1202689f787f4671801a26f326f5d1e77ca7f499e3100c5d33ff053d7478d242"
+      },
+      "schema": "demoncat.fia.fresh_build.v1",
+      "status": "CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION",
+      "variant": "legal_tiling",
+      "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+      "patch_receipt_sha256": "fd17af2a6b2af411cbc27a4a31abdf175655aaa0d9e227f2e9d39de7fbc724ca",
+      "contract_sha256": "4b709903ea4ba1a8dc60a0608c4f443df7cc6e05669167391bec43b27077a91d",
+      "build_tools_sha256": "66a2b41ca11b7cc4165161854c0af1883498464b9a7de40f45a7457851c507b8",
+      "dependency_manifest_sha256": "30110c230be054823ab502258b65d31404b7eb512d901e1535e96c1baabab64e",
+      "excluded_test_fixtures_sha256": "e37875f7aa53f54d5def046fb58b0f7c8e8f0ce591bb2642d4ea717b2344ade0",
+      "host_package_sha256": "520e114479a18709958db5544f7cc7cf726447ec299a3405aea80da22416d68a",
+      "compiled_keys": [
+        103000000000000000,
+        109000000000000000,
+        109000000000400000
+      ],
+      "kernel_binary_sha256": "fc352594d5d02f759cc5936e89ef88e81b449c91ae7f8c1613cb2c6801da3a0a",
+      "kernel_metadata_sha256": "7d873c228096866326df4587a4893e5dd1400ffa9030711992d4e1d89a3b24b7",
+      "generated_input_sha256": "b79b98d4bf56441ddb82850f7dcf3411a806277214c1eff2075203e7bcb30425",
+      "sdk_matcher_sha256": "ae4aa1d25c481e690d1e8855978a1952fa98729cb0f76039969ffa16906196fc",
+      "loading_allowed": false,
+      "qualification_missing": [
+        "new build artifact binding",
+        "actual serialized raw/POD/launch equality",
+        "lossless bridge",
+        "B/F/OFF",
+        "independent statistics",
+        "public Worker boundary"
+      ],
+      "artifacts": [
+        {
+          "path": "op_api/lib/libcust_opapi.so",
+          "bytes": 780920,
+          "sha256": "89f4a4fc6edd595b8824fbbb56e6157c222935f18203c8447671abda1a95f969"
+        },
+        {
+          "path": "op_impl/ai_core/tbe/kernel/ascend910b/fused_infer_attention_score/FusedInferAttentionScore_8cd36e66e4ceb2d60ef96db29a147347.o",
+          "bytes": 160560,
+          "sha256": "fc352594d5d02f759cc5936e89ef88e81b449c91ae7f8c1613cb2c6801da3a0a"
+        },
+        {
+          "path": "op_impl/ai_core/tbe/op_master_device/lib/libcust_opmaster.so",
+          "bytes": 8741736,
+          "sha256": "38a57fa4c32bd52dd782ed7ce629106cdd60797e95b7e85b734b702c8fafa33b"
+        },
+        {
+          "path": "op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+          "bytes": 6382616,
+          "sha256": "2b3dbd31fc398c2c3fc7e92b709b24c6c81fef8225b84d576a9c99d7aa8a641b"
+        },
+        {
+          "path": "op_impl/ai_core/tbe/op_tiling/liboptiling.so",
+          "bytes": 6382616,
+          "sha256": "2b3dbd31fc398c2c3fc7e92b709b24c6c81fef8225b84d576a9c99d7aa8a641b"
+        },
+        {
+          "path": "op_proto/es/lib/linux/aarch64/libes_transformer_cust.so",
+          "bytes": 87912,
+          "sha256": "3e144f39693c5523e55fcfcc7898ad1bc2638621677853172a491b35b17d03e5"
+        },
+        {
+          "path": "op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+          "bytes": 4838304,
+          "sha256": "c2beaf7d3d912d82beefe62e7b44b49040a15fa0cfe0d93b053c0c1b8b48bf42"
+        }
+      ],
+      "npu_executed": false,
+      "actual_launch_verified": false
+    },
+    {
+      "attempt": "fia-replay-fresh-a1",
+      "receipt": {
+        "path": "/home/17-fault-engineering-20261117/fia-replay-fresh-a1/run/evidence/completion.json",
+        "sha256": "c23128afae062b36a010a4b400adbd8a378642a90927b4f285b1d89390875bf6"
+      },
+      "schema": "demoncat.fia.fresh_build.v1",
+      "status": "CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION",
+      "variant": "denominator_replay",
+      "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+      "patch_receipt_sha256": "bf0082b540d15de0e37ea6d885a98b85665c2de05413fd62bcb141604c9fda4a",
+      "contract_sha256": "4b709903ea4ba1a8dc60a0608c4f443df7cc6e05669167391bec43b27077a91d",
+      "build_tools_sha256": "66a2b41ca11b7cc4165161854c0af1883498464b9a7de40f45a7457851c507b8",
+      "dependency_manifest_sha256": "30110c230be054823ab502258b65d31404b7eb512d901e1535e96c1baabab64e",
+      "excluded_test_fixtures_sha256": "e37875f7aa53f54d5def046fb58b0f7c8e8f0ce591bb2642d4ea717b2344ade0",
+      "host_package_sha256": "b4636cd3a2ff336a601293549c6a2eefc6488bd82bb4f2ea889da01737716ba9",
+      "compiled_keys": [
+        103000000000000000,
+        109000000000000000,
+        109000000000400000,
+        119000000000400000
+      ],
+      "kernel_binary_sha256": "4305610d7521f1bc4d34ed2e0074fd0f42782a3f283b1ac24fce877857519b67",
+      "kernel_metadata_sha256": "8cf6cd3f2acf77700f9ac8f72d746a91d64ae65c79dd8d4c34719f4282dd8e15",
+      "generated_input_sha256": "b79b98d4bf56441ddb82850f7dcf3411a806277214c1eff2075203e7bcb30425",
+      "sdk_matcher_sha256": "ae4aa1d25c481e690d1e8855978a1952fa98729cb0f76039969ffa16906196fc",
+      "loading_allowed": false,
+      "qualification_missing": [
+        "new build artifact binding",
+        "actual serialized raw/POD/launch equality",
+        "lossless bridge",
+        "B/F/OFF",
+        "independent statistics",
+        "public Worker boundary"
+      ],
+      "artifacts": [
+        {
+          "path": "op_api/lib/libcust_opapi.so",
+          "bytes": 780920,
+          "sha256": "89f4a4fc6edd595b8824fbbb56e6157c222935f18203c8447671abda1a95f969"
+        },
+        {
+          "path": "op_impl/ai_core/tbe/kernel/ascend910b/fused_infer_attention_score/FusedInferAttentionScore_8cd36e66e4ceb2d60ef96db29a147347.o",
+          "bytes": 212224,
+          "sha256": "4305610d7521f1bc4d34ed2e0074fd0f42782a3f283b1ac24fce877857519b67"
+        },
+        {
+          "path": "op_impl/ai_core/tbe/op_master_device/lib/libcust_opmaster.so",
+          "bytes": 8741736,
+          "sha256": "c1bbae686ddd5f06d05fa8c23a218ea6decca2d94160d65ac0755d2bf94d61cb"
+        },
+        {
+          "path": "op_impl/ai_core/tbe/op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so",
+          "bytes": 6407192,
+          "sha256": "865e0d26a425258a3a34cc4687dc2706a5d464ba6657f4f33a26a3172cee62dd"
+        },
+        {
+          "path": "op_impl/ai_core/tbe/op_tiling/liboptiling.so",
+          "bytes": 6407192,
+          "sha256": "865e0d26a425258a3a34cc4687dc2706a5d464ba6657f4f33a26a3172cee62dd"
+        },
+        {
+          "path": "op_proto/es/lib/linux/aarch64/libes_transformer_cust.so",
+          "bytes": 87912,
+          "sha256": "3e144f39693c5523e55fcfcc7898ad1bc2638621677853172a491b35b17d03e5"
+        },
+        {
+          "path": "op_proto/lib/linux/aarch64/libcust_opsproto_rt2.0.so",
+          "bytes": 4854688,
+          "sha256": "cf2c67249dd9ff426037962437a45f2d71583b4f88908bd021f809e1d53b6326"
+        }
+      ],
+      "npu_executed": false,
+      "actual_launch_verified": false
+    }
+  ],
+  "source_snapshots": [
+    {
+      "name": "source-a10",
+      "manifest": {
+        "path": "/home/17-fault-engineering-20261117/source-a10/source_manifest.json",
+        "sha256": "96b2f8a497f07a7c21bcf7e230a3af819b3b22a6f649bf1ef852e7ffab45b227"
+      },
+      "base_commit": "deb5de1e3efd893620f7202676a15b88aa17d5cf"
+    },
+    {
+      "name": "source-a2",
+      "manifest": {
+        "path": "/home/17-fault-engineering-20261117/source-a2/source_manifest.json",
+        "sha256": "d3b40e812637df73f4a4dc9fc020f7d07843d2e33d8418066908ce7b23b4d185"
+      },
+      "base_commit": "cae9cdf4685543df98598bbc2cf0f3b9892b7635"
+    },
+    {
+      "name": "source-a3",
+      "manifest": {
+        "path": "/home/17-fault-engineering-20261117/source-a3/source_manifest.json",
+        "sha256": "966f586af14a456199a9a334f15ce025024794b636378bf53490d89382480591"
+      },
+      "base_commit": "cae9cdf4685543df98598bbc2cf0f3b9892b7635"
+    },
+    {
+      "name": "source-a4",
+      "manifest": {
+        "path": "/home/17-fault-engineering-20261117/source-a4/source_manifest.json",
+        "sha256": "98ba73c23c6c0066324ca39aaef169d3672d40fb8995e03312187b89f7adaa7f"
+      },
+      "base_commit": "cae9cdf4685543df98598bbc2cf0f3b9892b7635"
+    },
+    {
+      "name": "source-a5",
+      "manifest": {
+        "path": "/home/17-fault-engineering-20261117/source-a5/source_manifest.json",
+        "sha256": "0386e71201d08c6b530432157b008de3997c1777c079417c590b038ade825bd9"
+      },
+      "base_commit": "cae9cdf4685543df98598bbc2cf0f3b9892b7635"
+    },
+    {
+      "name": "source-a6",
+      "manifest": {
+        "path": "/home/17-fault-engineering-20261117/source-a6/source_manifest.json",
+        "sha256": "82d4d04b678231ef09c146ba73a146d4be95ac050ecf664c379f5080f6ff0615"
+      },
+      "base_commit": "cae9cdf4685543df98598bbc2cf0f3b9892b7635"
+    },
+    {
+      "name": "source-a7",
+      "manifest": {
+        "path": "/home/17-fault-engineering-20261117/source-a7/source_manifest.json",
+        "sha256": "5e19002a2e10e0af3e9488b1adc8b0ae67caf545306ac1bd23b171f879392a19"
+      },
+      "base_commit": "cae9cdf4685543df98598bbc2cf0f3b9892b7635"
+    },
+    {
+      "name": "source-a8",
+      "manifest": {
+        "path": "/home/17-fault-engineering-20261117/source-a8/source_manifest.json",
+        "sha256": "1fac3956912e5d65353239d29907797b23e697f6ba5f7334f921a4d44418ecdf"
+      },
+      "base_commit": "deb5de1e3efd893620f7202676a15b88aa17d5cf"
+    },
+    {
+      "name": "source-a9",
+      "manifest": {
+        "path": "/home/17-fault-engineering-20261117/source-a9/source_manifest.json",
+        "sha256": "d1fdb1faa75fccf22d3a76ce2e18c0ebb43e7e28219dbc477429371cd786f3b4"
+      },
+      "base_commit": "deb5de1e3efd893620f7202676a15b88aa17d5cf"
+    }
+  ],
+  "evidence_manager_example": {
+    "status": "SAVED_RUN_RECONCILED_NOT_NEW_ACCEPTANCE",
+    "files": [
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/baseline.json",
+        "sha256": "519b57a96962e0ee53f444cfd8e1532479a33766b90b37421396a8c7b7cffb96"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/baseline.step0.rank0.statistics.json",
+        "sha256": "b2f43f32eee9bcf6d0784886f2b647faa5ce8e03c2bb20a8cb69f5cc54f8272f"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/baseline_repeat.json",
+        "sha256": "2f14c31225ec1312b8e7012b62dfb7890d5f6bd5357e711850a2bb9c5a65b33d"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/candidate_set.json",
+        "sha256": "9f2f411e1decc69f82436785d0d1b1dc509bf0182c22885fa09338c253696763"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/checksums.json",
+        "sha256": "40a5b9c37311d34e59e71d51a86bd99212024a7f32c8b1481d4733f162841f06"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/environment.json",
+        "sha256": "ae9b4270b92a404104b981d7c8fa1ecc7d3a7d34b69969a51fe5f3bf1e4d12e7"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/fault.json",
+        "sha256": "d7bb169e917a18911c58e86f9a86103fbbd0bd013977f149b96d23dfb1db8f81"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/fault.step3.rank0.statistics.json",
+        "sha256": "22020bc5250e5f3cf77f8148cade0cc8a3d56dfb0125a9eda34e997317c60c9c"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/independent_analysis.json",
+        "sha256": "6ad65fb35c9d98f4c60a2b14b02f602f7fef5a00ca80f192579b8565e303c929"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/lossless.json",
+        "sha256": "df0784535ac9e3f6f06019fcfafe83c0c684c0305263af972d34e2dd19904a3b"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/off.json",
+        "sha256": "2dd0204d94e1b0aa90584b736e2f8c0e90dfb8cb9029d3a7af401f293d958e31"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/recovery.json",
+        "sha256": "99d04c81241e37950ed1940cdbf57ac2a7e62bcc2aeeda1f60c21e8be07fb2fe"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/runtime_result.json",
+        "sha256": "c76680aebc035a1210c820d75c530d549f40c12fdec14c51cf0e271a7b93d923"
+      },
+      {
+        "path": "/home/17-fault-engineering-20261117/evidence-tensor15-a4/scope.json",
+        "sha256": "3dfe789c788e0336c16ca7ecea1a29d13b5b7030ecf7debd0960e5133c9c633a"
+      }
+    ],
+    "original_run": {
+      "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor15/result.json",
+      "sha256": "11c951296c721e5362eafa57d67963b110a49e743e8b554db4e2a9d76c8adfb9"
+    }
+  },
+  "limitations": [
+    "Build success is not NPU qualification.",
+    "Prior artifacts and qualification certificates are not inherited by new sources.",
+    "New raw statistics, complete tensors, binaries and model weights remain on the validation host."
+  ]
+}

@@ -30,6 +30,7 @@ def main():
     okay=all(s['exit_code']==0 and s['tests']>0 for s in suites)
     report=dict(schema='demoncat.engineering.cpu_validation.v1',status='CPU_REGRESSION_PASSED_WITH_EXPLICIT_SKIPS'
         if okay and any(s['skips'] for s in suites) else 'CPU_REGRESSION_PASSED' if okay else 'CPU_REGRESSION_FAILED',
+        base_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip(),
         actual_npu_calls=0,tests=sum(s['tests'] for s in suites),suites=suites,
         source_sha256=hashes,runtime_admission_granted=False)
     (a.out/'receipt.json').write_text(json.dumps(report,indent=2)+'\n')

@@ -189,6 +189,9 @@ class _ObserveDispatch(TorchDispatchMode):
         self.candidates = []
         self.counts = {}
         self.original_calls = 0
+        self.operator_counts = {}
+        self.projection_observations = []
+        self.rejections = []
 
     @staticmethod
     def _writes(func, args, kwargs, storage):
@@ -212,6 +215,17 @@ class _ObserveDispatch(TorchDispatchMode):
             raise PostwriteRefused('WRITE_AFTER_SELECTED_WRITER_REFUSED')
         result = func(*args, **kwargs)  # Exactly one real original operation.
         self.original_calls += 1
+        self.operator_counts[operation] = self.operator_counts.get(operation, 0) + 1
+        if operation in ('aten.mm.default', 'aten.addmm.default', 'aten.linear.default',
+                         'aten.matmul.default', 'npu.npu_linear.default') and len(self.projection_observations) < 32:
+            outputs = _tensors(result)
+            self.projection_observations.append(dict(operator=operation, module_path=p._stack[-1][0],
+                admitted_producer_operator=operation == 'aten.mm.default',
+                inputs=[dict(shape=list(t.shape), dtype=str(t.dtype)) for t in operands],
+                outputs=[dict(shape=list(t.shape), dtype=str(t.dtype), contiguous=t.is_contiguous(),
+                    offset=t.storage_offset(), storage_bytes=t.untyped_storage().nbytes(),
+                    logical_bytes=t.numel() * t.element_size(), requires_grad=t.requires_grad,
+                    aliases_input=_storage(t) in read_storages) for t in outputs]))
         for candidate in previous:
             if (operation in self.VALUE_CONSUMERS
                     and not self._writes(func, args, kwargs, candidate.storage)):
@@ -244,6 +258,8 @@ class _ObserveDispatch(TorchDispatchMode):
             p.transport.validate(tensor)
         except PostwriteRefused as error:
             p._rejections.append(str(error))
+            self.rejections.append(dict(reason=str(error), operator=operation, module_path=p._stack[-1][0],
+                                        shape=list(tensor.shape), dtype=str(tensor.dtype)))
             return result
         module_path, module = p._stack[-1]
         signature = (id(module), operation, tuple(tensor.shape), tuple(tensor.stride()),
@@ -297,6 +313,7 @@ class PostwriteProvider:
         self._buffers = {id(t): t for t in model.buffers()}
         self._lock = threading.Lock()
         self._qualified = self._lossless = self._fault_attempted = False
+        self._qualification_diagnostics = None
 
     def _identity(self):
         return (id(self.model), tuple((id(m), type(m).__module__, type(m).__qualname__)
@@ -345,6 +362,12 @@ class PostwriteProvider:
                 rejections=list(self._rejections), scope='controlled single-target inference replay',
                 native_acceptance_inherited=False, public_worker_qualified=False,
                 all_eligible_qualified=False, every_match_qualified=False)
+            report['discovery_diagnostics'] = dict(operator_counts=dict(sorted(observer.operator_counts.items())),
+                projection_observations=observer.projection_observations, projection_observation_limit=32,
+                transport_rejections=observer.rejections,
+                candidates=[dict(module_path=c.module_path, operator=c.operator,
+                    shape=list(c.tensor.shape), dtype=str(c.tensor.dtype), consumers=list(c.consumers))
+                    for c in observer.candidates[:64]], candidate_observation_limit=64)
             if selected:
                 chosen = selected[0]
                 report['actual_target'] = dict(pid=os.getpid(), model_instance=id(self.model),
@@ -367,11 +390,24 @@ class PostwriteProvider:
         if self._qualified or self._fault_attempted:
             raise PostwriteRefused('NEW_PROVIDER_REQUIRED_FOR_NEW_QUALIFICATION')
         identity, input_hash = self._identity(), _hash_inputs(args, kwargs)
-        left, first, _ = self._replay('observe', args, kwargs)
-        right, second, _ = self._replay('observe', args, kwargs)
-        if (not first or [c.key for c in first] != [c.key for c in second]
-                or not _equal(left, right) or self._identity() != identity):
-            raise PostwriteRefused('NO_STABLE_ORIGINAL_WRITER_CONSUMER_REPLAY')
+        self._qualification_diagnostics = dict(status='IN_PROGRESS', observations=[], guards_relaxed=False)
+        left, first, first_report = self._replay('observe', args, kwargs)
+        self._qualification_diagnostics['observations'].append(first_report)
+        right, second, second_report = self._replay('observe', args, kwargs)
+        self._qualification_diagnostics['observations'].append(second_report)
+        keys_equal = [c.key for c in first] == [c.key for c in second]
+        outputs_equal = _equal(left, right)
+        identity_equal = self._identity() == identity
+        failures = []
+        if not first:failures.append('NO_ELIGIBLE_WRITER_WITH_OBSERVED_VALUE_CONSUMER')
+        if not keys_equal:failures.append('ACTUAL_CANDIDATE_SEQUENCE_CHANGED')
+        if not outputs_equal:failures.append('UNCHANGED_REPLAYS_OUTPUT_NOT_EXACT')
+        if not identity_equal:failures.append('MODEL_BINDING_CHANGED_DURING_REPLAY')
+        self._qualification_diagnostics.update(status='REFUSED' if failures else 'QUALIFIED',
+            failure_reasons=failures, candidate_sequences_equal=keys_equal,
+            complete_original_outputs_equal=outputs_equal, model_identity_equal=identity_equal)
+        if failures:
+            raise PostwriteRefused('NO_STABLE_ORIGINAL_WRITER_CONSUMER_REPLAY:' + ','.join(failures))
         self._target = first[0].key
         self._input_hash, self._model_identity = input_hash, identity
         self._qualified = True
@@ -419,7 +455,8 @@ class PostwriteProvider:
             execution_boundary='public_acl_postwrite', transport=self.transport.transport_kind,
             qualified=self._qualified, lossless=self._lossless, attempted=self._fault_attempted,
             leases=int(self._lease is not None), recovery_pending=self._lease is not None,
-            history=list(self._history), public_worker_qualified=False)
+            history=list(self._history), qualification_diagnostics=self._qualification_diagnostics,
+            public_worker_qualified=False)
 
 
 class Fault39OutputProxyProvider(PostwriteProvider):

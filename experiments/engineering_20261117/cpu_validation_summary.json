@@ -1,0 +1,107 @@
+{
+  "schema": "demoncat.engineering.cpu_validation.v1",
+  "status": "CPU_REGRESSION_PASSED_WITH_EXPLICIT_SKIPS",
+  "base_commit": "deb5de1e3efd893620f7202676a15b88aa17d5cf",
+  "actual_npu_calls": 0,
+  "tests": 777,
+  "suites": [
+    {
+      "suite": "unified",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 478,
+      "skips": [
+        "test_two_real_gloo_ranks_observe_no_delta_and_restore (test_collective25.Collective25.test_two_real_gloo_ranks_observe_no_delta_and_restore) ... skipped 'This torch build has no usable Gloo device; no collective was executed'",
+        "test_only_audited_internal_tiling_link_accepted (test_fresh_fia_qualification.FreshFiaQualificationTests.test_only_audited_internal_tiling_link_accepted) ... skipped 'Real symlink creation unavailable; execute this test on Linux'"
+      ],
+      "log_sha256": "f23c42fc358989281469aad5cb17ccd1780b7a79f84daf1870e7a1021e196f3a"
+    },
+    {
+      "suite": "worker_extension",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests/worker_extension",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 137,
+      "skips": [],
+      "log_sha256": "2a54fa4e8ad219c64356ca8e765d5189f334532e4468335f773347503455b2c0"
+    },
+    {
+      "suite": "fault39",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "fault39/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 93,
+      "skips": [],
+      "log_sha256": "fed3a72826c92eeb3fda2462e55f1e302e0b45c5af8ed3dff45e82a2e5c6afb0"
+    },
+    {
+      "suite": "native_strategy",
+      "command": [
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "native_execution_strategy/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "tests": 69,
+      "skips": [],
+      "log_sha256": "2a706e394ddd0aa38ef85f58df4d89dd3a12073703583ab3c14fe0690cde8369"
+    }
+  ],
+  "source_sha256": {
+    "experiments/engineering_20261117/analyse_pair.py": "106be43580c933ac66b2bd3ff8e3c4efb56279c34591bc34654b13bc5f5b85ea",
+    "experiments/engineering_20261117/audit_fia_execution.py": "5137d5730cc992665e490e6bea2e3fb77fe39b915ce3ea609e17569bd6290dd3",
+    "experiments/engineering_20261117/audit_vendor_links.py": "56856a3f676d0ff2667505b3b53cd363fabcd89a8af31fc5b0822ab8784def9c",
+    "experiments/engineering_20261117/collect_engineering_receipts_124.py": "1b00971c6068ed5770b91d67dd53d3942c6a2396c7b70ef6b64f12cf5160b107",
+    "experiments/engineering_20261117/fresh_fia_qualification.py": "0e19bc1dc14f4b43b99fb063194c3fd2bed5866d239a2c037954dce96f88ec7b",
+    "experiments/engineering_20261117/generate_ledger.py": "4f7a0175f1107c03691bec1e5608e3f45532ccc694901a108e8aaecd764c8f43",
+    "experiments/engineering_20261117/postwrite_probe.py": "04cd1a46b07ae1268dedf4513caa6efb2c121945c8ea8c9f0bb6a4a460ce1dd0",
+    "experiments/engineering_20261117/prepare_fresh_fia_cases.py": "b6268b0d0ba8d39ae29437d9c4cb027ef919384bdac0edc3f09e3590279c10bf",
+    "experiments/engineering_20261117/prepare_postwrite_cases.py": "217f76f81857f46d8e2628dd39f3d1d97629400b0748c7921edc9d973d26d908",
+    "experiments/engineering_20261117/reconcile_evidence_124.py": "da0a7c494a13ba274c64b95f822a3a1a57e8d597689feb5f4b8cbd8a024e01d0",
+    "experiments/engineering_20261117/review_publication.py": "42b6328fad7f4494f795b2958284a0757e364a4d579200eac566856112d49734",
+    "experiments/engineering_20261117/run_cpu_validation.py": "559cdddacc7325554607097698f89a8cfbba4cb2ad5dc5be7f0682a30e8f0db4",
+    "experiments/engineering_20261117/run_fia_cpu_contracts.py": "8079c899d9592e5b78128b5245f3e3a221a9104999c82fc2642319ed843c9f70",
+    "experiments/engineering_20261117/run_fresh_fia_build_124.py": "e8417be1a472e36648575352b395d65546112af77357eaa012c2b90b7d34eeee",
+    "experiments/engineering_20261117/summarize_postwrite_refusal.py": "11e3f1c2493dcc1083e2312eb7da635cd6338419fcb4885bb95fedaf7c75052b",
+    "fault_injection/deployments/postwrite.py": "14638dea41c6bb96219f8adae05d1cdb1623595fcc772cfb0c6b86389dd8d85c",
+    "fault_injection/native_adapters/attention28/fia/binary_registration.py": "5e910a20d8985ca5e307efbea02356ea72325f33feacdfa890cdb8212d516ad1",
+    "fault_injection/native_adapters/attention28/fia/build_fresh.py": "c97fa620d2b8a22011ffbc1650bf6102aaef3826b583a7cad4e5ea19c9360594",
+    "fault_injection/native_adapters/attention28/fia/compile_public_schema.py": "8f0e39cd4b4e1fc1ba5727ad58bfe2df415b11b0d697e8a5c0f61973a3929ff6",
+    "fault_injection/native_adapters/attention28/fia/derive_registered_vendor.py": "afe79df85db1f0335b573696714bf3e50c7d4bf4bb330f8f8027f600211c62e9",
+    "fault_injection/native_adapters/attention28/fia/fia_abi_decoder.cpp": "0e51becbd60aca57b452ced1e9d656217f9ce8604666bf323e28b10c48fdbef0",
+    "fault_injection/serving_qualification.py": "3e1c46af64b7aea94a433c6e9423937ca8268059dee299ae53f2d09769e513b6",
+    "src/demoncat/runtime/vllm_ascend/worker_extension/serving20_qmm.py": "6fdd6bd510b75a849175d3d5e2539d3b91d4f631b18e2e61a739ccb6836a6eb1",
+    "tests/test_attention28_fresh_build.py": "d266e24338bb7388ac8f63680d3c97874f3a991ef6e281f7fe582931ed028b1e",
+    "tests/test_fia_binary_registration.py": "4b1c230fa112a3742a55d0cbba9bfb4ebfd003d618d85253cce57ef30f2ecb4e",
+    "tests/test_fresh_fia_qualification.py": "bfadc3f2a1041fa4537eee08ad2be5148c9857b18aa7e82221befda82d9f5246",
+    "tests/test_postwrite_providers.py": "8b33b4fccc17e4da72f7bfdfe34bada68b388cd7161421f7a493359d81ac9d11",
+    "tests/worker_extension/test_serving20_qmm.py": "fe6704b3e8c9db30eb27d4d1312b452e58f12beebada8a3ebd416c99fbec48dd"
+  },
+  "runtime_admission_granted": false
+}

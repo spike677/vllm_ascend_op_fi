@@ -2,7 +2,37 @@
 
 本轮从冻结提交 `cae9cdf4685543df98598bbc2cf0f3b9892b7635` 创建
 `codex/17-fault-engineering-20261117`，保留原工作区、历史实现和四条公共 Worker
-限定验收。正在完成新增机制的源码、部署及实机对账；不宣称 17/17 或 C3 已通过。
+限定验收。本轮已完成第一阶段代码发布及新增实机对账；不宣称 17/17 或 C3 已通过。
+
+## 已核实的本轮结果
+
+| 验收范围 | 结果 | 限制 |
+| --- | --- | --- |
+| 标准 Worker 自然推理 | 新增 26 residual 的 C1；20 增加独立 QMM 路径的 B/F/OFF | 公共 Worker 有限定正向范围的机制数 4→5，20 两条路径仍只算一个机制；不是全部层/请求 |
+| 构造 NPU 推理 | 8、15、17、18、22、39 output、41 七个机制的干预和 OFF 通过 | 不升级为预训练模型或公共 Worker |
+| 新 FIA 小模块 | legal / denominator replay 两个新包各通过 stock/OFF 桥接、B/F重复稳定及 OFF 精确恢复 | 完整输出有差异，原生统计没有可观测首差；未授予独立 launch、模型或公共 Worker 资格 |
+| 独立 statistics/mix | 39 output、41 的完整结构对齐及首差通过 | 其余新增实验保留结构拒绝、NaN 和更早 slot 变化，不用命中日志替代首差 |
+| Native Build Manager | 五个新构建回执：39 MatMul、20 QMM、26 QMM/FIA、ACL postwrite | 构建回执自身不授予 NPU 资格 |
+| CPU 回归 | Windows 777 项：775 通过、2 项跳过；Linux 7 项门禁测试通过 | Linux 补测了 Windows 无权限的真实软链；Windows Gloo 项仍未执行 |
+| 全量覆盖 | C2=0/17、C3=0/17 | 未开放 all_eligible / every_match |
+
+源码阶段已发布提交为 `deb5de1e3efd893620f7202676a15b88aa17d5cf`。新增结果和后续修复
+按本分支后继提交发布，实际验证的源码快照、安装包、构建和比较器均另附 SHA，不能用
+当前工作树替换已经执行的版本。详见 [27 节点与能力矩阵](CAPABILITY_MATRIX.md)、
+[CPU 回执](cpu_validation_summary.json)、[Linux 门禁回执](fia_cpu_contracts_summary.json)、[20 QMM](FAULT20_QMM.md)、
+[26 residual](FAULT26_RESIDUAL_REPORT.md)、[39 output / 41](POSTWRITE_REPORT.md)。
+新 FIA 的失败登记、官方索引修复、B/F/OFF 及统计负结果见
+[新工件报告](FAULT28_FRESH_BUILD.md)。
+
+[Tensor/MoE/通信报告](TENSOR_COLLECTIVE_REPORT.md) 记录五项构造推理及真实双 rank 校准的
+通过范围与失败。 [构建与证据管理摘要](infrastructure_summary.json) 列出五个 Native recipe
+实际构建的输入/工件指纹、两个 FIA 新源码构建及一次真实保存运行的 EvidenceManager
+对账；后者只整理原有运行，不冒充新增验收。
+
+20 的统计首候选为 `NPU.npu_quant_matmul.0.forward/output/0` Max `25.75→15.6875`，
+但 B 自比遇 NaN，整段不可比。26 的首候选是更早的物理 KV slot `61→77`，不能归因于
+residual。39 output 的独立首差为 `Torch.mm.0.forward/output/0` Max `8→+Inf`；
+41 为 `Tensor.index_copy_.0.forward/output/0` Max `4→2`。每项完整限制见各自报告。
 
 ## 入口和实际边界
 
@@ -67,4 +97,16 @@ Extension 不创建 Worker，不替换 `execute_model` 或 `_prepare_inputs`。
 不能将124的910B4/A2、CANN8.5.1构造或特定模型结果推广到它们。Native 8.x/9.x
 能力按实际 recipe/符号/构建和执行证据分别开放，20/26私有ABI的范围仍受限。
 
-本轮完成记录、失败门禁及后续任务将与阶段提交一起更新；基线27节点与历史证据不改写。
+## 仍未关闭的门禁
+
+- 25 实际双 rank 同输入校准没有发现不同输出，因此没有故障重放样本和 F；进程退出
+  曾挂起，不能将局部 OFF 相等记成整组 drain 通过。
+- 33 自然 Worker 的 TND FIA 与历史 BNSD IFA 不同，需要自己的 Native adapter。
+- 39 output 在实际 HF Qwen 前向只观察到 `linear/matmul`，没有当前接受的 `mm`，
+  无损门禁拒绝且未注入。需要独立证明这些 producer/consumer，不能更换名称绕过检查。
+- 28 新 host/kernel、已有实验资格和公共 Worker 接线分别验收；新构建不继承旧证书。
+- Tensor/MoE/RoPE 的自然预训练链、所有机制的 C2/C3、A3及黄区现役 Host Adapter
+  尚未完成。环境缺失和尚待开发的适配不能合并为 PASS。
+
+按计划的有界探索规则，保留每轮拒绝及准确下一步；没有降低门禁、改变机制或增加
+输出扰动来补数字。基线27节点与历史证据不改写。

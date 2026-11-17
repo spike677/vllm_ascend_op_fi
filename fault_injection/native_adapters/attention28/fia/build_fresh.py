@@ -143,10 +143,36 @@ class Builder:
             record.update(finished_unix=time.time(), log_sha256=sha(log) if log.is_file() else None)
             save(self.ev / 'commands.json', self.commands)
 
+    def preflight_tools(self):
+        tools = {}
+        for name in ('patch', 'cmake', 'g++', 'make', 'git'):
+            located = shutil.which(name)
+            require(located is not None, 'REQUIRED_BUILD_TOOL_MISSING:' + name)
+            path = Path(located).resolve(strict=True)
+            require(path.is_file(), 'REQUIRED_BUILD_TOOL_NOT_FILE:' + name)
+            tools[name] = dict(path=str(path), sha256=sha(path))
+            self.run('preflight_' + name.replace('+', 'x'), [path, '--version'], timeout=30)
+        # The image previously lacked GNU patch. Exercise its actual parser
+        # before building anything; do not bypass official dependency patches.
+        probe = self.ev / 'patch_probe';probe.mkdir()
+        (probe / 'input.txt').write_text('before\n')
+        patch_file = probe / 'tool.patch'
+        patch_file.write_text('--- input.txt\n+++ input.txt\n@@ -1 +1 @@\n-before\n+after\n')
+        self.run('preflight_patch_dry_run', [tools['patch']['path'], '--batch', '--dry-run', '-p0', '-i', patch_file],
+                 cwd=probe, timeout=30)
+        require((probe / 'input.txt').read_text() == 'before\n', 'PATCH_DRY_RUN_MUTATED_INPUT')
+        self.run('preflight_compiler_target', [tools['g++']['path'], '-dumpmachine'], timeout=30)
+        target = (self.ev / 'preflight_compiler_target.log').read_text().strip()
+        require(target.startswith('aarch64'), 'MATCHED_AARCH64_HOST_COMPILER_REQUIRED')
+        tools['compiler_target'] = target
+        save(self.ev / 'build_tools.json', tools)
+        self.report['build_tools_sha256'] = sha(self.ev / 'build_tools.json')
+
     def prepare(self):
         args = self.args
         require(platform.machine().lower() in ('aarch64', 'arm64'), 'AARCH64_BUILD_HOST_REQUIRED')
         require(not list(Path('/dev').glob('davinci*')), 'CPU_BUILD_CONTAINER_MUST_NOT_EXPOSE_NPU_DEVICES')
+        self.preflight_tools()
         source_in, dep_in = args.source.resolve(strict=True), args.dependencies.resolve(strict=True)
         self.sdk = args.sdk.resolve(strict=True)
         require(source_in != self.root and source_in not in self.root.parents
@@ -332,9 +358,15 @@ class Builder:
         rows[0]['binInfo']['jsonFilePath'] = 'ascend910b/fused_infer_attention_score/' + metadata.name
         registry = target_root / 'config/ascend910b/fused_infer_attention_score.json'
         registry.parent.mkdir(parents=True, exist_ok=True);save(registry, dict(binList=rows))
+        # The summary index is independently required for ACLNN to discover
+        # this private matching kernel. The per-operator JSON alone is not enough.
+        from binary_registration import register_index
+        registration = register_index(self.source, self.vendor, self.variant)
+        save(self.ev / 'binary_summary_registration.json', registration)
         self.report.update(compiled_keys=keys, kernel_binary_sha256=sha(binary),
                            kernel_metadata_sha256=sha(metadata), generated_input_sha256=sha(input_param),
-                           sdk_matcher_sha256=sha(sdk_matcher))
+                           sdk_matcher_sha256=sha(sdk_matcher),
+                           binary_summary_registration_sha256=sha(self.ev / 'binary_summary_registration.json'))
 
     def finish(self):
         self.check_excluded_fixtures()

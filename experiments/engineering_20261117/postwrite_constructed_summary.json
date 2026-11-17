@@ -1,0 +1,500 @@
+{
+  "schema": "demoncat.postwrite.constructed_acceptance_summary.v1",
+  "status": "CONSTRUCTED_NPU_MECHANISM_AND_STATISTICS_ONLY",
+  "raw_statistics_published": false,
+  "private_tensor_payloads_published": false,
+  "public_worker_qualified": false,
+  "runtime_used_for_first_difference": false,
+  "runtime_summary_source": {
+    "path": "/home/17-fault-engineering-20261117/postwrite-a2-summary.json",
+    "sha256": "72460ebea98f1d6f07b2f49cd2f0a1c783dd13d7072bf9a51b60b9d22d23ee94"
+  },
+  "cases": [
+    {
+      "mechanism": "39.output_proxy",
+      "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+      "actual_step_indices": {
+        "baseline": [
+          0
+        ],
+        "fault": [
+          0
+        ]
+      },
+      "independent_report_source": {
+        "path": "/home/17-fault-engineering-20261117/postwrite-a2-analysis/39.json",
+        "sha256": "0b4e9bf7097a292b8b6d037c9fb0445fe7045719cbc28e7f0ad5c579329a85c5"
+      },
+      "independent_statistics": {
+        "first_difference": {
+          "schema_version": 1,
+          "source": "MSPROBE_STATISTICS_ONLY",
+          "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+          "tensor_payloads": false,
+          "comparison_policy": {
+            "absolute_tolerance": 1e-08,
+            "relative_tolerance": 1e-05,
+            "rule": "abs(F-B) > atol + rtol*abs(B)"
+          },
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "index": 2,
+          "identity": "Torch.mm.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 8.0,
+            "fault": "+Inf"
+          },
+          "unobservable_fields": [
+            {
+              "index": 0,
+              "identity": "Torch.mm.0.forward/input_args/0",
+              "field": "/Mean"
+            },
+            {
+              "index": 0,
+              "identity": "Torch.mm.0.forward/input_args/0",
+              "field": "/Norm"
+            },
+            {
+              "index": 1,
+              "identity": "Torch.mm.0.forward/input_args/1",
+              "field": "/Mean"
+            },
+            {
+              "index": 1,
+              "identity": "Torch.mm.0.forward/input_args/1",
+              "field": "/Norm"
+            }
+          ]
+        },
+        "full_dump_inventory": {
+          "baseline": {
+            "null_fields": [
+              {
+                "identity": "Torch.mm.0.forward/input_args/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Torch.mm.0.forward/input_args/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Torch.mm.0.forward/input_args/1",
+                "field": "Mean"
+              },
+              {
+                "identity": "Torch.mm.0.forward/input_args/1",
+                "field": "Norm"
+              },
+              {
+                "identity": "Torch.mm.0.forward/output/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Torch.mm.0.forward/output/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/input_args/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/input_args/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/output/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/output/0",
+                "field": "Norm"
+              }
+            ],
+            "nonfinite_fields": []
+          },
+          "fault": {
+            "null_fields": [
+              {
+                "identity": "Torch.mm.0.forward/input_args/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Torch.mm.0.forward/input_args/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Torch.mm.0.forward/input_args/1",
+                "field": "Mean"
+              },
+              {
+                "identity": "Torch.mm.0.forward/input_args/1",
+                "field": "Norm"
+              },
+              {
+                "identity": "Torch.mm.0.forward/output/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Torch.mm.0.forward/output/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/input_args/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/input_args/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/output/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/output/0",
+                "field": "Norm"
+              }
+            ],
+            "nonfinite_fields": [
+              {
+                "identity": "Torch.mm.0.forward/output/0",
+                "field": "Max",
+                "kind": "Inf"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/input_args/0",
+                "field": "Max",
+                "kind": "Inf"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/output/0",
+                "field": "Max",
+                "kind": "Inf"
+              }
+            ]
+          }
+        },
+        "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+        "whole_dump_comparable": true,
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+        "baseline_triplet_sha256": {
+          "dump.json": "7ec2a6de2ff2846b9c9698a90964952b916b79ab69a3a1ce593bef52bce2050e",
+          "stack.json": "686c5a3d7bf0517d409fcf6e198cf18dc2bf23a190e13132eea475930e91574a",
+          "construct.json": "e1a70675dc6570095cd11b879c04ddb24655fb742268807e4a77bdf126808ff2"
+        },
+        "fault_triplet_sha256": {
+          "dump.json": "30dc723a3516d5e0246701c860933ee9358da6cb0e7f2d31d3bc7289dd8f2d65",
+          "stack.json": "686c5a3d7bf0517d409fcf6e198cf18dc2bf23a190e13132eea475930e91574a",
+          "construct.json": "e1a70675dc6570095cd11b879c04ddb24655fb742268807e4a77bdf126808ff2"
+        },
+        "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+        "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+        "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+        "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+        "native_logs_read": false,
+        "private_tensors_read": false
+      },
+      "runtime": {
+        "library_sha256": "5c3f9c73233ca7336d1b419d7073dcfa05d80e99dbc2a62ec2a645afc79ad8b8",
+        "source_sha256": {
+          "fault_injection/deployments/postwrite.py": "02d32791c63fd5190f499bae0e0144a93af32e83604454d425499238f40886bd",
+          "fault_injection/native_adapters/postwrite/postwrite.cpp": "e426a26a058a7dc1ebe20836db944dc179bdb0c8b4c6f140430688dee46062bd",
+          "fault_injection/native_adapters/postwrite/postwrite.h": "07de2dce1d74114f3e35ef146c47a663b7170e67caaac1be5b3cda8fb640475b",
+          "experiments/engineering_20261117/model_capture.py": "54f3cbeba36421550756351395a3eca73de9a60046c13b1dc8b44a49580a8da4",
+          "experiments/engineering_20261117/postwrite_probe.py": "ee19d9d56eba66b5a39c780e814d22689061d995bd336260d015444afa87a804"
+        },
+        "baseline_result": {
+          "path": "/home/17-fault-engineering-20261117/postwrite-a2/39-baseline/result.json",
+          "sha256": "8ecbb390d077f860498bfc01a35770cc01ff0eee65004aead97690c129fd9a7e"
+        },
+        "fault_result": {
+          "path": "/home/17-fault-engineering-20261117/postwrite-a2/39-fault/result.json",
+          "sha256": "a34228978461b475df3f2b5c49381f62118a313e56ede18fb72a1e657cbb1cbd"
+        },
+        "automatic_target_selection": "first eligible in stable actual execution order",
+        "qualification_input_sha256": "437e54a616eca2d99d873bd4fba401e894c4ac02a14b41026fa64fd8f9c3ff45",
+        "actual_operator": "aten.mm.default",
+        "shape": [
+          2,
+          4
+        ],
+        "dtype": "torch.bfloat16",
+        "logical_indices": [
+          0
+        ],
+        "consumers": [
+          "aten.add.Tensor"
+        ],
+        "fault_hits": 1,
+        "off_hits": 0,
+        "exact_off": true,
+        "live_leases": 0,
+        "changed_elements": 1,
+        "observed_inf": 1,
+        "observed_nan": 0,
+        "cache_restored_exact": null,
+        "non_target_exact": null,
+        "public_worker_qualified": false,
+        "pretrained_model": false,
+        "all_eligible": false,
+        "every_match": false
+      }
+    },
+    {
+      "mechanism": "41.tail_column",
+      "scope": "CONSTRUCTED_NPU_INFERENCE_MODULE",
+      "actual_step_indices": {
+        "baseline": [
+          0
+        ],
+        "fault": [
+          0
+        ]
+      },
+      "independent_report_source": {
+        "path": "/home/17-fault-engineering-20261117/postwrite-a2-analysis/41.json",
+        "sha256": "ed242b6137a5bfb5c2c70e71f5a5b5e7fa790aa2163be3eb93cf64ef93808563"
+      },
+      "independent_statistics": {
+        "first_difference": {
+          "schema_version": 1,
+          "source": "MSPROBE_STATISTICS_ONLY",
+          "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+          "tensor_payloads": false,
+          "comparison_policy": {
+            "absolute_tolerance": 1e-08,
+            "relative_tolerance": 1e-05,
+            "rule": "abs(F-B) > atol + rtol*abs(B)"
+          },
+          "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "index": 3,
+          "identity": "Tensor.index_copy_.0.forward/output/0",
+          "difference": {
+            "field": "/Max",
+            "reason": "STATISTIC_DIFFERS",
+            "baseline": 4.0,
+            "fault": 2.0
+          },
+          "unobservable_fields": [
+            {
+              "index": 0,
+              "identity": "Tensor.index_copy_.0.forward/input_args/0",
+              "field": "/Mean"
+            },
+            {
+              "index": 0,
+              "identity": "Tensor.index_copy_.0.forward/input_args/0",
+              "field": "/Norm"
+            },
+            {
+              "index": 1,
+              "identity": "Tensor.index_copy_.0.forward/input_args/2",
+              "field": "/Mean"
+            },
+            {
+              "index": 1,
+              "identity": "Tensor.index_copy_.0.forward/input_args/2",
+              "field": "/Norm"
+            },
+            {
+              "index": 2,
+              "identity": "Tensor.index_copy_.0.forward/input_args/3",
+              "field": "/Mean"
+            },
+            {
+              "index": 2,
+              "identity": "Tensor.index_copy_.0.forward/input_args/3",
+              "field": "/Norm"
+            }
+          ]
+        },
+        "full_dump_inventory": {
+          "baseline": {
+            "null_fields": [
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/2",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/2",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/3",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/3",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/output/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/output/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/input_args/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/input_args/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/output/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/output/0",
+                "field": "Norm"
+              }
+            ],
+            "nonfinite_fields": []
+          },
+          "fault": {
+            "null_fields": [
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/2",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/2",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/3",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/input_args/3",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/output/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.index_copy_.0.forward/output/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/input_args/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/input_args/0",
+                "field": "Norm"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/output/0",
+                "field": "Mean"
+              },
+              {
+                "identity": "Tensor.__add__.0.forward/output/0",
+                "field": "Norm"
+              }
+            ],
+            "nonfinite_fields": []
+          }
+        },
+        "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+        "whole_dump_comparable": true,
+        "rtol": 1e-05,
+        "atol": 1e-08,
+        "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+        "baseline_triplet_sha256": {
+          "dump.json": "0628de9ccd0b0ba63dc6489afacf9432499acc5548d27f062d6ae5fcfeef3f07",
+          "stack.json": "1954faa296cf44c8ecc636de00c2de0965ae166c806417a899ce000ff1ea2239",
+          "construct.json": "0817824637c86142e3bc0a47a3c093266ca8ad2537499fc8a849a0d624aef2a7"
+        },
+        "fault_triplet_sha256": {
+          "dump.json": "6df1e5532bc214cab053054330ec5784bbdda2133e1c5d80558ef67fb1a371c4",
+          "stack.json": "1954faa296cf44c8ecc636de00c2de0965ae166c806417a899ce000ff1ea2239",
+          "construct.json": "0817824637c86142e3bc0a47a3c093266ca8ad2537499fc8a849a0d624aef2a7"
+        },
+        "baseline_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+        "fault_config_sha256": "fee72861b0b693d2c3924ca01925e2252d875028d0ecfa9d652479b85b74c70c",
+        "baseline_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+        "fault_collector_sha256": "4bddefb989ba035d95dd62aa2cba9ff2512b1b17a86ae7e73824e32d5f398ac9",
+        "native_logs_read": false,
+        "private_tensors_read": false
+      },
+      "runtime": {
+        "library_sha256": "5c3f9c73233ca7336d1b419d7073dcfa05d80e99dbc2a62ec2a645afc79ad8b8",
+        "source_sha256": {
+          "fault_injection/deployments/postwrite.py": "02d32791c63fd5190f499bae0e0144a93af32e83604454d425499238f40886bd",
+          "fault_injection/native_adapters/postwrite/postwrite.cpp": "e426a26a058a7dc1ebe20836db944dc179bdb0c8b4c6f140430688dee46062bd",
+          "fault_injection/native_adapters/postwrite/postwrite.h": "07de2dce1d74114f3e35ef146c47a663b7170e67caaac1be5b3cda8fb640475b",
+          "experiments/engineering_20261117/model_capture.py": "54f3cbeba36421550756351395a3eca73de9a60046c13b1dc8b44a49580a8da4",
+          "experiments/engineering_20261117/postwrite_probe.py": "ee19d9d56eba66b5a39c780e814d22689061d995bd336260d015444afa87a804"
+        },
+        "baseline_result": {
+          "path": "/home/17-fault-engineering-20261117/postwrite-a2/41-baseline/result.json",
+          "sha256": "653a9f2088135d04104c9a9f1b26a238078ba32cdca0ba6afdf11a08690c07fd"
+        },
+        "fault_result": {
+          "path": "/home/17-fault-engineering-20261117/postwrite-a2/41-fault/result.json",
+          "sha256": "ecffedf0021c6bc8cdabb32a139c6d152d6acc60a17e38efd03c197e7e596d94"
+        },
+        "automatic_target_selection": "first eligible in stable actual execution order",
+        "qualification_input_sha256": "e95e7c216e41a62690a2848200124aa83e58084ae41a764e234b074de35bad05",
+        "actual_operator": "aten.index_copy_.default",
+        "shape": [
+          3,
+          4
+        ],
+        "dtype": "torch.bfloat16",
+        "logical_indices": [
+          6,
+          7
+        ],
+        "consumers": [
+          "aten.add.Tensor"
+        ],
+        "fault_hits": 1,
+        "off_hits": 0,
+        "exact_off": true,
+        "live_leases": 0,
+        "changed_elements": 2,
+        "observed_inf": 0,
+        "observed_nan": 0,
+        "cache_restored_exact": true,
+        "non_target_exact": true,
+        "public_worker_qualified": false,
+        "pretrained_model": false,
+        "all_eligible": false,
+        "every_match": false
+      }
+    }
+  ],
+  "hf39_initial_attempt": {
+    "status": "FAILED",
+    "error": "PostwriteRefused('NO_STABLE_ORIGINAL_WRITER_CONSUMER_REPLAY')",
+    "path": "/home/17-fault-engineering-20261117/postwrite-a2/39hf-baseline/result.json",
+    "sha256": "d0b0dbc620fb5dbb18f4b9dce5fa73a7082972dea67b5b627df91bbee53311ae",
+    "qualified": false
+  }
+}

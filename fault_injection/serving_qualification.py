@@ -269,8 +269,14 @@ class ServingQualifiedNativeSession:
             _require(call.operator == self.runtime.operator and facts['worker'] == self.runtime.worker
                      and facts['build_profile_sha256'] == self.runtime.build_profile,
                      'ACTUAL_CALLBACK_WORKER_OR_BUILD_CHANGED')
+            # Preserve the actual native and public observations even if their
+            # correspondence is refused. A failed check is never proof of a
+            # qualified target, but must remain diagnosable without a retry.
+            event.update(proofs=proofs, native_facts=facts, current_typed_call=current,
+                         observed_transaction=copy.deepcopy(self.current['transaction']),
+                         formal_verification='PENDING')
             self._verify_formals(current, facts, self.current['transaction'])
-            event.update(proofs=proofs, native_facts=facts, current_typed_call=current)
+            event['formal_verification'] = 'VERIFIED'
 
             def once():
                 _require(event['actual_original_calls'] == 0, 'NATIVE_CONTINUATION_ALREADY_CONSUMED')
@@ -612,8 +618,40 @@ class ProjectionQualifiedNativeSession(ServingQualifiedNativeSession):
                  and len({row['formal'] for row in rows}) == len(rows), 'CURRENT_FORMAL_METADATA_REQUIRED')
         formals = {row['formal']: row for row in rows}
         slots = {row['formal']: row for row in facts['slots']}
-        _require(set(slots) == {row['formal'] for row in rows if row.get('present') is True}
+        formal_order = ('x1', 'x2', 'x1_scale', 'x2_scale', 'y_scale', 'x1_offset',
+                        'x2_offset', 'y_offset', 'bias', 'out')
+        _require(tuple(formals) == formal_order and {'x1', 'x2', 'x1_scale', 'x2_scale'} <= set(actual)
+                 and set(actual) <= {'x1', 'x2', 'x1_scale', 'x2_scale', 'bias'}
+                 and set(slots) == {row['formal'] for row in rows
+                                    if row.get('present') is True and row.get('storage_bytes', 0) > 0}
                  and set(slots) == set(actual) | {'out'}, 'CURRENT_FORMAL_SLOT_SET_CHANGED')
+        output_dtype = {'torch.bfloat16': 27, 'torch.float16': 1}.get(transaction.get('output_dtype'))
+        _require(output_dtype is not None and formals['out'].get('dtype') == output_dtype
+                 and formals['out'].get('element_size') == 2 and formals['out'].get('format') == 2,
+                 'ACTUAL_QMM_OUTPUT_DTYPE_UNPROVEN')
+        # The real 8.5.1 lowering supplies three present but zero-length
+        # optional tensors. They have formal ordinals, but no Run storage slot.
+        # Do not infer a slot from `present`, drop nonempty formals, or permit
+        # arbitrary empty metadata: only the observed placeholders are admitted.
+        placeholders = []
+        for name in set(formals) - set(slots):
+            row = formals[name]
+            _require(type(row.get('present')) is bool and row.get('run_slot') == -1
+                     and all(row.get(key) == 0 for key in ('run_address', 'storage_addr', 'raw_addr',
+                         'data_addr', 'storage_bytes', 'view_bytes', 'storage_elements', 'numel', 'view_offset')),
+                     'OPTIONAL_QMM_FORMAL_HAS_UNBOUND_STORAGE:' + name)
+            if row['present'] is True:
+                _require(name in ('y_scale', 'x1_offset', 'y_offset')
+                         and row.get('view_shape') == row.get('storage_shape') == [0]
+                         and row.get('strides') == [1] and row.get('contiguous') is True
+                         and row.get('dtype') == output_dtype and row.get('element_size') == 2
+                         and row.get('format') == 2, 'UNREVIEWED_EMPTY_QMM_FORMAL:' + name)
+                placeholders.append(name)
+            else:
+                _require(row.get('view_shape') == row.get('storage_shape') == row.get('strides') == []
+                         and row.get('element_size') == row.get('dtype') == row.get('format') == 0
+                         and row.get('contiguous') is False, 'INVALID_ABSENT_QMM_FORMAL:' + name)
+        self.events[-1]['verified_empty_optional_formals'] = sorted(placeholders)
         for name, slot in slots.items():
             row = formals[name]
             _require(row.get('run_slot') == slot['slot'] and row.get('storage_bytes') == slot['storage_bytes']
@@ -627,6 +665,9 @@ class ProjectionQualifiedNativeSession(ServingQualifiedNativeSession):
                 ('view_offset', 'storage_offset'), ('view_shape', 'shape'), ('strides', 'stride'),
                 ('element_size', 'element_size'), ('format', 'actual_format'))),
                 'ACTUAL_QUANT_FORMAL_STORAGE_OR_GEOMETRY_MISMATCH:' + name)
+            _require(row.get('dtype') == {'torch.float32': 0, 'torch.float16': 1, 'torch.int8': 2,
+                         'torch.int32': 3, 'torch.bfloat16': 27}.get(tensor.get('dtype')),
+                     'ACTUAL_QUANT_FORMAL_DTYPE_MISMATCH:' + name)
         left, right, out = formals['x1'], formals['x2'], formals['out']
         _require(facts['layout']['dtype'] == 'INT8'
                  and actual['x1']['dtype'] == actual['x2']['dtype'] == 'torch.int8'

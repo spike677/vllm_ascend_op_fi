@@ -121,6 +121,7 @@ def main():
                 provider.recover()
             except BaseException as exc:
                 report.update(status='RECOVERY_FAILED', recovery_error=repr(exc))
+            report['provider_diagnostics'] = provider.query()
     sources = ['fault_injection/deployments/postwrite.py',
                'fault_injection/native_adapters/postwrite/postwrite.cpp',
                'fault_injection/native_adapters/postwrite/postwrite.h',

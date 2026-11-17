@@ -85,16 +85,25 @@ class CpuQmmRuntime(qualification.CpuRuntime):
                 storage_bytes=tensor['storage_bytes'], storage_addr=tensor['storage_addr'],
                 run_address=tensor['storage_addr'], view_offset=tensor['storage_offset'],
                 view_shape=tensor['shape'], strides=tensor['stride'],
-                element_size=tensor['element_size'], format=tensor['actual_format']))
+                element_size=tensor['element_size'], format=tensor['actual_format'],
+                dtype={'torch.int8': 2, 'torch.float32': 0, 'torch.bfloat16': 27}[tensor['dtype']]))
         left = formals[0]
-        formals.append(dict(formal='out', present=True, run_slot=len(formals), storage_addr=333,
-            run_address=333, storage_bytes=32, view_shape=[4, 4]))
+        for name in ('y_scale', 'x1_offset', 'x2_offset', 'y_offset', 'bias'):
+            present = name in ('y_scale', 'x1_offset', 'y_offset')
+            formals.append(dict(formal=name, present=present, run_slot=-1, run_address=0, storage_addr=0,
+                raw_addr=0, data_addr=0, storage_bytes=0, view_bytes=0, storage_elements=0, numel=0, view_offset=0,
+                dtype=27 if present else 0, format=2 if present else 0, element_size=2 if present else 0,
+                contiguous=present, view_shape=[0] if present else [], storage_shape=[0] if present else [],
+                strides=[1] if present else []))
+        formals.append(dict(formal='out', present=True, run_slot=7, storage_addr=333,
+            run_address=333, storage_bytes=32, view_shape=[4, 4], dtype=27, element_size=2, format=2))
         packet = dict(version=1, operator=self.operator, boundary='op_exec_cache_run',
             native_signature='CPU_SIGNATURE_NOT_NATIVE', cache_identity='CPU-QMM-cache', cache_lifecycle='1',
             candidate_count=1, build_profile_sha256=self.build_profile, runtime_identity='MATCHED_BUILD',
             layout=dict(dtype='INT8', format='ND', shape=left['view_shape'],
                         stride=left['strides'], offset=left['view_offset']),
-            slots=[dict(formal=row['formal'], slot=row['run_slot'], storage_bytes=row['storage_bytes']) for row in formals],
+            slots=[dict(formal=row['formal'], slot=row['run_slot'], storage_bytes=row['storage_bytes'])
+                   for row in formals if row['storage_bytes'] > 0],
             current_typed_call=dict(source='typed_gws_execute_scope', executor_bound=True,
                 formal_params_current=True, cached_layout_used=False, gws_token=self.serial, formals=formals))
         if self.packet_edit:
@@ -192,6 +201,8 @@ class Serving20QmmTests(unittest.TestCase):
         self.assertIsNone(backend.head)
         self.assertEqual(backend.runtime.modes, [1, 2, 1, 3, 1])
         self.assertEqual([row['native_calls'] for row in backend.rows], [1] * 7 + [0])
+        self.assertTrue(all(event['verified_empty_optional_formals'] == ['x1_offset', 'y_offset', 'y_scale']
+                            for event in backend.events))
         self.assertTrue(torch.equal(outputs[0], outputs[-1]))
         self.assertFalse(torch.equal(outputs[0], outputs[5]))
         self.assertTrue(all(row['transaction']['root_forward_active'] for row in backend.rows))
@@ -275,6 +286,43 @@ class Serving20QmmTests(unittest.TestCase):
             qmm.bind_qmm_arguments((1, 2, 3), {'invented': 4})
         with self.assertRaisesRegex(Exception, 'DYNAMIC_QMM_SCALE_CONTRACT_REQUIRED'):
             qmm.bind_qmm_arguments((1, 2, 3), {})
+
+    def test_empty_optional_formal_cannot_hide_storage_or_change_lowering(self):
+        for field, value, reason in (
+                ('storage_addr', 123, 'OPTIONAL_QMM_FORMAL_HAS_UNBOUND_STORAGE'),
+                ('view_shape', [1], 'UNREVIEWED_EMPTY_QMM_FORMAL'),
+                ('dtype', 0, 'UNREVIEWED_EMPTY_QMM_FORMAL'),
+                ('run_slot', 4, 'OPTIONAL_QMM_FORMAL_HAS_UNBOUND_STORAGE')):
+            session = self.make_session()
+            def edit(packet, field=field, value=value):
+                row = next(row for row in packet['current_typed_call']['formals'] if row['formal'] == 'y_scale')
+                row[field] = value
+            session.native.packet_edit = edit
+            with self.subTest(field=field), self.assertRaisesRegex(Exception, reason):
+                self.phase(session, len(self.sessions))
+            self.assertEqual(session.native.original_calls, 0)
+            event = session.backend.events[-1]
+            self.assertEqual(event['formal_verification'], 'PENDING')
+            self.assertIn('current_typed_call', event)
+            self.assertIn('observed_transaction', event)
+            session.close()
+            session.backend.close()
+
+    def test_unexpected_optional_formal_name_or_nonempty_slot_still_refuses(self):
+        for change in ('name', 'storage'):
+            session = self.make_session()
+            def edit(packet, change=change):
+                row = next(row for row in packet['current_typed_call']['formals'] if row['formal'] == 'y_scale')
+                if change == 'name':
+                    row['formal'] = 'unknown_scale'
+                else:
+                    row['storage_bytes'] = 2
+            session.native.packet_edit = edit
+            with self.subTest(change=change), self.assertRaisesRegex(Exception, 'CURRENT_FORMAL_SLOT_SET_CHANGED'):
+                self.phase(session, len(self.sessions))
+            self.assertEqual(session.native.original_calls, 0)
+            session.close()
+            session.backend.close()
 
 
 if __name__ == '__main__':

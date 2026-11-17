@@ -163,7 +163,8 @@ class Serving20QmmSession(ServingReplaySession):
             if actual.get('bias') is not None:
                 require(any(same_storage(actual['bias'], value) for value in owners),
                         'QMM_BIAS_NOT_OWNED_BY_PROJECTION')
-            require(actual.get('output_dtype') in (torch.float16, torch.bfloat16),
+            require(actual.get('output_dtype') in (torch.float16, torch.bfloat16)
+                    and actual['output_dtype'] == x.dtype,
                     'QMM_FLOAT_OUTPUT_DTYPE_REQUIRED')
             values = dict(x1=actual['x1'], x2=actual['x2'], x1_scale=per_token_scale, x2_scale=actual['scale'])
             if actual.get('bias') is not None:
@@ -178,6 +179,7 @@ class Serving20QmmSession(ServingReplaySession):
                 quant_apply_live_identity=id(call['method'].apply),
                 source='ACTUAL_QUANT_APPLY_AND_PUBLIC_QMM', input_hashes=hashes,
                 float_input=live_tensor(x), formals={name: live_tensor(value) for name, value in values.items()},
+                output_dtype=str(actual['output_dtype']),
                 quantization_output_storage_verified=True, native_x1_equals_float_input_storage=False,
                 selection=self.selection_report, actual_request_input_sha256=self.current['input_sha256'])
             with self.backend.projection_scope(module):

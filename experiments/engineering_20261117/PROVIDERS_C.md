@@ -1,6 +1,6 @@
 # C 工作流：Tensor、索引、路由与通信实现
 
-本轮从 `cae9cdf4685543df98598bbc2cf0f3b9892b7635` 增加可执行机制代码和公共 Worker 的 Python 执行边界。历史源码、能力卡及实测原件未修改。这里记录源码与 CPU 合同结果，实机结论由本轮总控的原始运行回执单独确认。
+本轮从 `cae9cdf4685543df98598bbc2cf0f3b9892b7635` 增加可执行机制代码和公共 Worker 的 Python 执行边界。历史源码、能力卡及实测原件未修改。这里记录源码、CPU 合同及本轮已审计的有限实机结果；各范围分别判定。
 
 ## 已实现的执行链
 
@@ -42,3 +42,11 @@ python -m unittest tests.test_module_msprobe_wrapper tests.test_tensor_worker_pr
 ```
 
 以下事项仍需独立验收：预训练模型自然调用链与请求归属；真正 vLLM Worker 的部署回执；25 多 rank 恢复与可重放的原生差异；新的 CANN/SoC 组合；每机制 C2/C3。构造模型或 CPU 测试不关闭这些门禁。
+
+## 2026-11-17 实机审计补充
+
+详见 [Tensor / Collective 报告](TENSOR_COLLECTIVE_REPORT.md) 和 [机器可读摘要](tensor_collective_summary.json)。124 / CANN 8.5.1 的 `tensor-a4` 使用 `source-a7`，15/17/18/8/22 五项构造模块均完成实际 B/B/L/F/OFF：F 各一次、完整输出变化，B/B-repeat/L/OFF 精确相同，退出 0。8 另验证完整 F 原生输出等于 B 原生输出按 paired group 映射的结果。该结果不授予预训练模型、标准 vLLM Worker 或 C2/C3 资格。
+
+原生 `statistics/mix` 记录 B step0 / F step3。固定容差 `rtol=1e-5, atol=1e-8` 的独立分析全部为 `ALIGNMENT_MISMATCH`：15/17/18 为 structure，8/22 为 stack。保留全部 null 不可观测项，未宣称首差定位成功。
+
+25 的 `collective25-a2` 使用 `source-a6`，双 rank 实际 HCCL 观察均为 `NO_NATIVE_SAME_INPUT_DIFFERENCE_OBSERVED`；重复与无注入 OFF 相同，没有 F。rank 文件写出后 torchrun 未正常退出，主控停止本轮自有容器；实际回执为 exit 1 / SIGTERM，跨 rank drain 未证，不能认定整组恢复通过。源码实现、构造正向结果和此负结果分别保留，不合并为公共 Worker 完整闭环。

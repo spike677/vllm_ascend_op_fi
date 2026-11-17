@@ -1,0 +1,1103 @@
+{
+  "schema": "demoncat.engineering.tensor_collective_review.v1",
+  "review_date": "2026-11-17",
+  "review_kind": "READ_ONLY_AUDIT_NO_NEW_NPU_EXECUTION",
+  "raw_statistics_published": false,
+  "private_tensor_payloads_published": false,
+  "result": "FIVE_CONSTRUCTED_MECHANISMS_OBSERVED_STATISTICS_ALIGNMENT_REFUSED; COLLECTIVE25_NO_NATIVE_DIFFERENCE_NO_F_AND_GROUP_DRAIN_UNVERIFIED",
+  "environment": {
+    "server": "124",
+    "soc": "Ascend910B4",
+    "cann": "8.5.1",
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+    "additional_cann_versions_validated": false
+  },
+  "source_artifacts": [
+    {
+      "id": "source-a7",
+      "remote_path": "/home/17-fault-engineering-20261117/source-a7",
+      "archive_sha256": "7fd385aed650315d84805a3c33da4c96e571a4da4866a0b6a6360ac9992942ca",
+      "used_by": "tensor-a4"
+    },
+    {
+      "id": "source-a6",
+      "remote_path": "/home/17-fault-engineering-20261117/source-a6",
+      "archive_sha256": "07ec1ef395f0aae9d34c2098655d122bb53b31d92959f50adc504c2dd4f7ee7e",
+      "used_by": "collective25-a2"
+    }
+  ],
+  "audit_inputs": [
+    {
+      "path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.codex-tmp/engineering-20261117/tensor-a4-summary.json",
+      "sha256": "be1eea5cd538536d0e8c50c636729f9084d7152e90d88ec3d97a31829739ebfa",
+      "purpose": "Runtime summaries; not first-difference input"
+    },
+    {
+      "path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.codex-tmp/engineering-20261117/tensor-a4-analysis/summary.json",
+      "sha256": "59ab4b6715eeb5a412c19fa4d66856332a69b41053b19bc6b02cd186555a42b3",
+      "purpose": "Independent raw-statistics comparison summary"
+    },
+    {
+      "path": "/home/17-fault-engineering-20261117/tensor-a4/controller.json",
+      "sha256": "fdd625eb1af83796ae1c93198d72038dfe30d9c9b35149b87db8d9de233973a5",
+      "status": "COMPLETED"
+    }
+  ],
+  "comparator": {
+    "path": "fault39/tools/compare_msprobe.py",
+    "sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+    "rtol": 1E-05,
+    "atol": 1E-08,
+    "reference": "baseline",
+    "rule": "abs(F-B) > atol + rtol*abs(B)",
+    "native_logs_read": false,
+    "private_tensors_read": false
+  },
+  "ledger_scopes": [
+    {
+      "mechanism": "15.alias_detach",
+      "scope_id": "124_tensor_a4_tensor15",
+      "scope_kind": "CONSTRUCTED_NPU_PROVIDER_REPLAY",
+      "scope_description": "Single-card constructed NPU module; one stable observed call; B/Brepeat/lossless/F/OFF; no pretrained model or standard vLLM Worker qualification.",
+      "entrypoint": "constructed_model_replay",
+      "public_worker_qualified": false,
+      "pretrained_model": false,
+      "runtime_evidence": {
+        "result": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor15/result.json",
+          "sha256": "11c951296c721e5362eafa57d67963b110a49e743e8b554db4e2a9d76c8adfb9",
+          "status": "PASS_MECHANISM_ONLY"
+        },
+        "source_artifact": "source-a7",
+        "physical_cards": [
+          5
+        ],
+        "logical_device": "npu:0",
+        "container_exit_code": 0,
+        "phases": [
+          {
+            "phase": "baseline",
+            "output_sha256": "670f47be82b53c17f2f9294bf5ae4eedc7a9ead5ab063e7ce1b2ec9e7e66f1bc",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "baseline_repeat",
+            "output_sha256": "670f47be82b53c17f2f9294bf5ae4eedc7a9ead5ab063e7ce1b2ec9e7e66f1bc",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "lossless",
+            "output_sha256": "670f47be82b53c17f2f9294bf5ae4eedc7a9ead5ab063e7ce1b2ec9e7e66f1bc",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "fault",
+            "output_sha256": "a25f7a4a6ca42b150edb1e9abb539e5bf2792a16c2fb7235a53de393a5701464",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "off",
+            "output_sha256": "670f47be82b53c17f2f9294bf5ae4eedc7a9ead5ab063e7ce1b2ec9e7e66f1bc",
+            "finite": true,
+            "original_model_returned": true
+          }
+        ],
+        "all_phase_input_descriptors_identical": true,
+        "baseline_repeat_exact": true,
+        "lossless_exact": true,
+        "off_exact": true,
+        "constructed_output_changed": true,
+        "intervention_count": 1,
+        "original_execution_verified": true,
+        "selected_call": [
+          "<root>",
+          0
+        ],
+        "mechanism_facts": {
+          "boundary": "as_strided_view_storage",
+          "format": 29,
+          "temporary_format": 2,
+          "dtype": "torch.bfloat16",
+          "base_shape": [
+            16,
+            16
+          ],
+          "view_shape": [
+            8,
+            8
+          ],
+          "stride": [
+            16,
+            1
+          ],
+          "offset": 17,
+          "initial_values_correct": true,
+          "aliases_original_base": false,
+          "view_write_correct": true,
+          "base_matches_expected_update": false,
+          "base_target_retains_prewrite_values": true,
+          "non_target_unchanged": true,
+          "consumer": "aten.add.Tensor",
+          "consumer_uses_original_base": true,
+          "consumer_result_reference_verified": null
+        },
+        "execution_boundary": "python_hook",
+        "state_source": "OWNED_PYTHON_HOOKS",
+        "native_loaded": false,
+        "native_registered": false,
+        "cleanup": {
+          "registered": false,
+          "enabled": false,
+          "hook_owned": false,
+          "leases": 0,
+          "inflight": 0,
+          "recovery_confirmed": null
+        },
+        "recovery_basis": "Exact OFF complete output and no live local hook/lease/inflight; raw recovery_confirmed=null is preserved, not promoted."
+      },
+      "independent_statistics": {
+        "status": "ALIGNMENT_MISMATCH",
+        "whole_dump_comparable": false,
+        "mismatched": "structure",
+        "first_difference": null,
+        "report_private_path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.codex-tmp/engineering-20261117/tensor-a4-analysis/tensor15.json",
+        "report_sha256": "6e905c5a51f325124c082486f747b793dac90594704ffe0edc03d8cd5312b706",
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "rtol": 1E-05,
+        "atol": 1E-08,
+        "reference": "baseline",
+        "baseline": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor15/statistics/observation/step0/rank0",
+          "sha256": {
+            "dump.json": "3ef007a05d416da6a567d7819868e3af742492882b5e595717fa3ec35cfa214d",
+            "stack.json": "23d81078516094efe9ecf37147ccbb1441feea880cbb20964aa724329480a1a6",
+            "construct.json": "4068f1778f6886e9cb9657bd239f273d928f2f4f0e3f4454c73d0ae53a8ed876"
+          },
+          "null_fields_count": 52,
+          "nonfinite_fields_count": 0
+        },
+        "fault": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor15/statistics/observation/step3/rank0",
+          "sha256": {
+            "dump.json": "65bfb5cb0d3debc62e4af4cd1b256180f83dd4fac4e7590ecc6894b635ada1ac",
+            "stack.json": "8206cc1277e98249d8fb63f060028d2aa653f81d1b04df1111c406118addbc12",
+            "construct.json": "6012642e6b285a3ea7245877d1683c15dfbeb6bfbdf43afc6b162f754ebc92f5"
+          },
+          "null_fields_count": 58,
+          "nonfinite_fields_count": 0
+        },
+        "config": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor15/statistics/config.json",
+          "sha256": "95cf55d96513ab2e5ef579565e5edd7362b332e491143677491e8cf9a8e60c32",
+          "bf_identical": true
+        },
+        "collector_identity": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor15/statistics/collector_identity.json",
+          "sha256": "d519458aa3845d9f43e6e082b80fc6fe460e0ac7e407cef528d504655e75fef2",
+          "bf_identical": true,
+          "edited_by_experiment": false
+        },
+        "completion": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor15/statistics/completion.json",
+          "sha256": "020af73996eb1ad5b9b407b91f9b4e537f7b57019e2d74524fde82951743f089",
+          "recorded_steps": [
+            0,
+            3
+          ],
+          "step_meaning": "0=baseline; 3=fault; actual model replay phases, not decode token steps"
+        },
+        "baseline_self": {
+          "same_dump_self_comparison": true,
+          "comparable": true,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "records_compared": 23,
+          "repeated_capture_comparison": false
+        },
+        "native_logs_read": false,
+        "private_tensors_read": false,
+        "nulls_are_unobservable": true,
+        "raw_published": false
+      },
+      "E1_execution_observed": true,
+      "E2_intervention_observed": true,
+      "E3_effect_observed": true,
+      "E4_off_and_local_recovery": true,
+      "E5_independent_first_difference_accepted": false,
+      "all_eligible": false,
+      "every_match": false,
+      "limitations": [
+        "NZ29/BF16 fixed legal geometry only",
+        "consumer_result_reference_verified remains null; no general consumer-oracle claim"
+      ]
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "scope_id": "124_tensor_a4_tensor17",
+      "scope_kind": "CONSTRUCTED_NPU_PROVIDER_REPLAY",
+      "scope_description": "Single-card constructed NPU module; one stable observed call; B/Brepeat/lossless/F/OFF; no pretrained model or standard vLLM Worker qualification.",
+      "entrypoint": "constructed_model_replay",
+      "public_worker_qualified": false,
+      "pretrained_model": false,
+      "runtime_evidence": {
+        "result": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor17/result.json",
+          "sha256": "d128bc0e62415eddd5c558fe10f6910f9c884439e614c6645410c36de2a5ee44",
+          "status": "PASS_MECHANISM_ONLY"
+        },
+        "source_artifact": "source-a7",
+        "physical_cards": [
+          5
+        ],
+        "logical_device": "npu:0",
+        "container_exit_code": 0,
+        "phases": [
+          {
+            "phase": "baseline",
+            "output_sha256": "847bbebd456eaaa02abd8bb9cb8a0aac8c98b3a6009acf587aca9ac55982875e",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "baseline_repeat",
+            "output_sha256": "847bbebd456eaaa02abd8bb9cb8a0aac8c98b3a6009acf587aca9ac55982875e",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "lossless",
+            "output_sha256": "847bbebd456eaaa02abd8bb9cb8a0aac8c98b3a6009acf587aca9ac55982875e",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "fault",
+            "output_sha256": "776de71e48ae2f95c9d8219e7d54a48d4e9bf64be79aeefceb888ed0561e64b3",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "off",
+            "output_sha256": "847bbebd456eaaa02abd8bb9cb8a0aac8c98b3a6009acf587aca9ac55982875e",
+            "finite": true,
+            "original_model_returned": true
+          }
+        ],
+        "all_phase_input_descriptors_identical": true,
+        "baseline_repeat_exact": true,
+        "lossless_exact": true,
+        "off_exact": true,
+        "constructed_output_changed": true,
+        "intervention_count": 1,
+        "original_execution_verified": true,
+        "selected_call": [
+          "patch",
+          0
+        ],
+        "mechanism_facts": {
+          "boundary": "Functional.conv3d.arguments",
+          "module_type": "torch.nn.Conv3d",
+          "input_shape": [
+            2,
+            3,
+            2,
+            16,
+            16
+          ],
+          "weight_shape": [
+            8,
+            3,
+            2,
+            16,
+            16
+          ],
+          "output_shape": [
+            2,
+            8,
+            1,
+            1,
+            1
+          ],
+          "padding": [
+            0,
+            7,
+            7
+          ],
+          "native_calls": 1
+        },
+        "execution_boundary": "python_hook",
+        "state_source": "OWNED_PYTHON_HOOKS",
+        "native_loaded": false,
+        "native_registered": false,
+        "cleanup": {
+          "registered": false,
+          "enabled": false,
+          "hook_owned": false,
+          "leases": 0,
+          "inflight": 0,
+          "recovery_confirmed": null
+        },
+        "recovery_basis": "Exact OFF complete output and no live local hook/lease/inflight; raw recovery_confirmed=null is preserved, not promoted."
+      },
+      "independent_statistics": {
+        "status": "ALIGNMENT_MISMATCH",
+        "whole_dump_comparable": false,
+        "mismatched": "structure",
+        "first_difference": null,
+        "report_private_path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.codex-tmp/engineering-20261117/tensor-a4-analysis/tensor17.json",
+        "report_sha256": "43427030df03506568e964b46173325025f768b68dfce505fd66bce314d7a69e",
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "rtol": 1E-05,
+        "atol": 1E-08,
+        "reference": "baseline",
+        "baseline": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor17/statistics/observation/step0/rank0",
+          "sha256": {
+            "dump.json": "3fc2f194d1ae8c832495e0cb3399268b7a859b1e11eed8061049367da767f86c",
+            "stack.json": "bd554fc876c1fa1b6d9d69765e6096fedc0e6473e4f3530ffc6ba11f35f998ae",
+            "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+          },
+          "null_fields_count": 16,
+          "nonfinite_fields_count": 0
+        },
+        "fault": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor17/statistics/observation/step3/rank0",
+          "sha256": {
+            "dump.json": "f8d345920ac86876e1eb200d4eb695dabf07f4ff80648b306547ca1c49f6d1fc",
+            "stack.json": "95572f553fa771bd6a8d16045df730ba811eb89a72374ed3cb4f7e47c3510cf1",
+            "construct.json": "e2f7dd18e7da3c50f3b0b1f37e2174514640550f8afb58e339b86a966a065c87"
+          },
+          "null_fields_count": 16,
+          "nonfinite_fields_count": 0
+        },
+        "config": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor17/statistics/config.json",
+          "sha256": "95cf55d96513ab2e5ef579565e5edd7362b332e491143677491e8cf9a8e60c32",
+          "bf_identical": true
+        },
+        "collector_identity": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor17/statistics/collector_identity.json",
+          "sha256": "d519458aa3845d9f43e6e082b80fc6fe460e0ac7e407cef528d504655e75fef2",
+          "bf_identical": true,
+          "edited_by_experiment": false
+        },
+        "completion": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor17/statistics/completion.json",
+          "sha256": "020af73996eb1ad5b9b407b91f9b4e537f7b57019e2d74524fde82951743f089",
+          "recorded_steps": [
+            0,
+            3
+          ],
+          "step_meaning": "0=baseline; 3=fault; actual model replay phases, not decode token steps"
+        },
+        "baseline_self": {
+          "same_dump_self_comparison": true,
+          "comparable": true,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "records_compared": 8,
+          "repeated_capture_comparison": false
+        },
+        "native_logs_read": false,
+        "private_tensors_read": false,
+        "nulls_are_unobservable": true,
+        "raw_published": false
+      },
+      "E1_execution_observed": true,
+      "E2_intervention_observed": true,
+      "E3_effect_observed": true,
+      "E4_off_and_local_recovery": true,
+      "E5_independent_first_difference_accepted": false,
+      "all_eligible": false,
+      "every_match": false,
+      "limitations": [
+        "standard nn.Conv3d, fixed 16x16 spatial patch; no arbitrary custom/fused implementation claim"
+      ]
+    },
+    {
+      "mechanism": "18.api_half",
+      "scope_id": "124_tensor_a4_tensor18",
+      "scope_kind": "CONSTRUCTED_NPU_PROVIDER_REPLAY",
+      "scope_description": "Single-card constructed NPU module; one stable observed call; B/Brepeat/lossless/F/OFF; no pretrained model or standard vLLM Worker qualification.",
+      "entrypoint": "constructed_model_replay",
+      "public_worker_qualified": false,
+      "pretrained_model": false,
+      "runtime_evidence": {
+        "result": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor18/result.json",
+          "sha256": "850cdffd6d856016149e86c64ae06bccb89f21ffe3fee73d30a92927a688f71a",
+          "status": "PASS_MECHANISM_ONLY"
+        },
+        "source_artifact": "source-a7",
+        "physical_cards": [
+          5
+        ],
+        "logical_device": "npu:0",
+        "container_exit_code": 0,
+        "phases": [
+          {
+            "phase": "baseline",
+            "output_sha256": "7e1f7e055bca1376bc0c9e872754d4e0e5dcfaffda155c5b6c0c796004405792",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "baseline_repeat",
+            "output_sha256": "7e1f7e055bca1376bc0c9e872754d4e0e5dcfaffda155c5b6c0c796004405792",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "lossless",
+            "output_sha256": "7e1f7e055bca1376bc0c9e872754d4e0e5dcfaffda155c5b6c0c796004405792",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "fault",
+            "output_sha256": "9d0e9890465544bb76f5927fb3f41ea8804a4973b6a49668bb4a5068587f9e39",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "off",
+            "output_sha256": "7e1f7e055bca1376bc0c9e872754d4e0e5dcfaffda155c5b6c0c796004405792",
+            "finite": true,
+            "original_model_returned": true
+          }
+        ],
+        "all_phase_input_descriptors_identical": true,
+        "baseline_repeat_exact": true,
+        "lossless_exact": true,
+        "off_exact": true,
+        "constructed_output_changed": true,
+        "intervention_count": 1,
+        "original_execution_verified": true,
+        "selected_call": [
+          "norm",
+          0
+        ],
+        "mechanism_facts": {
+          "boundary": "module_return_gain_proxy",
+          "module_type": "torch.nn.RMSNorm",
+          "dtype": "torch.float32",
+          "output_shape": [
+            4,
+            32
+          ],
+          "gain": 0.5,
+          "native_reduce_root_cause_claimed": false
+        },
+        "execution_boundary": "python_hook",
+        "state_source": "OWNED_PYTHON_HOOKS",
+        "native_loaded": false,
+        "native_registered": false,
+        "cleanup": {
+          "registered": false,
+          "enabled": false,
+          "hook_owned": false,
+          "leases": 0,
+          "inflight": 0,
+          "recovery_confirmed": null
+        },
+        "recovery_basis": "Exact OFF complete output and no live local hook/lease/inflight; raw recovery_confirmed=null is preserved, not promoted."
+      },
+      "independent_statistics": {
+        "status": "ALIGNMENT_MISMATCH",
+        "whole_dump_comparable": false,
+        "mismatched": "structure",
+        "first_difference": null,
+        "report_private_path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.codex-tmp/engineering-20261117/tensor-a4-analysis/tensor18.json",
+        "report_sha256": "5b8160201b21f0bcde543b5ad777037d67c3ca96425c484802b22884f6625aa6",
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "rtol": 1E-05,
+        "atol": 1E-08,
+        "reference": "baseline",
+        "baseline": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor18/statistics/observation/step0/rank0",
+          "sha256": {
+            "dump.json": "a098a94670b13c8ad189e946ef060bcfdfdf0d1d7b27c23246cdf28550175bef",
+            "stack.json": "0a52889e849bb4d84b15502d0864ce907b9a19056153071bf044c344d73958f7",
+            "construct.json": "8589c9a7b22c101af17424c67487d0717d2fdd2dd4e882e909a5ca4b2f0a767b"
+          },
+          "null_fields_count": 10,
+          "nonfinite_fields_count": 0
+        },
+        "fault": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor18/statistics/observation/step3/rank0",
+          "sha256": {
+            "dump.json": "0152f106c4bdb09479b32d14d1cc03b369c0dc6cd1036036cab807d7a592e71f",
+            "stack.json": "8130c3a4fd0744936e06076513b0c913f5e5e800984e960f4fe9ea52ddb514cf",
+            "construct.json": "caac38f3b12d79666b00a518ee33288e1325b051f5bd8ec584cf97fe386c220b"
+          },
+          "null_fields_count": 14,
+          "nonfinite_fields_count": 0
+        },
+        "config": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor18/statistics/config.json",
+          "sha256": "95cf55d96513ab2e5ef579565e5edd7362b332e491143677491e8cf9a8e60c32",
+          "bf_identical": true
+        },
+        "collector_identity": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor18/statistics/collector_identity.json",
+          "sha256": "d519458aa3845d9f43e6e082b80fc6fe460e0ac7e407cef528d504655e75fef2",
+          "bf_identical": true,
+          "edited_by_experiment": false
+        },
+        "completion": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor18/statistics/completion.json",
+          "sha256": "020af73996eb1ad5b9b407b91f9b4e537f7b57019e2d74524fde82951743f089",
+          "recorded_steps": [
+            0,
+            3
+          ],
+          "step_meaning": "0=baseline; 3=fault; actual model replay phases, not decode token steps"
+        },
+        "baseline_self": {
+          "same_dump_self_comparison": true,
+          "comparable": true,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "records_compared": 5,
+          "repeated_capture_comparison": false
+        },
+        "native_logs_read": false,
+        "private_tensors_read": false,
+        "nulls_are_unobservable": true,
+        "raw_published": false
+      },
+      "E1_execution_observed": true,
+      "E2_intervention_observed": true,
+      "E3_effect_observed": true,
+      "E4_off_and_local_recovery": true,
+      "E5_independent_first_difference_accepted": false,
+      "all_eligible": false,
+      "every_match": false,
+      "limitations": [
+        "standard nn.RMSNorm return-gain proxy; not a native Reduce defect or fused/custom RMSNorm acceptance"
+      ]
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "scope_id": "124_tensor_a4_tensor22",
+      "scope_kind": "CONSTRUCTED_NPU_PROVIDER_REPLAY",
+      "scope_description": "Single-card constructed NPU module; one stable observed call; B/Brepeat/lossless/F/OFF; no pretrained model or standard vLLM Worker qualification.",
+      "entrypoint": "constructed_model_replay",
+      "public_worker_qualified": false,
+      "pretrained_model": false,
+      "runtime_evidence": {
+        "result": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor22/result.json",
+          "sha256": "7a3cfdbe799f6e429b51e508af632721e67964280f74d2ca4b6b2f44c147369d",
+          "status": "PASS_MECHANISM_ONLY"
+        },
+        "source_artifact": "source-a7",
+        "physical_cards": [
+          5
+        ],
+        "logical_device": "npu:0",
+        "container_exit_code": 0,
+        "phases": [
+          {
+            "phase": "baseline",
+            "output_sha256": "b3ce8dd69fc0f4f6e9376549baa4720abca0481469676089eca4969c6376de3c",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "baseline_repeat",
+            "output_sha256": "b3ce8dd69fc0f4f6e9376549baa4720abca0481469676089eca4969c6376de3c",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "lossless",
+            "output_sha256": "b3ce8dd69fc0f4f6e9376549baa4720abca0481469676089eca4969c6376de3c",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "fault",
+            "output_sha256": "c02eeadbcf9676f65ca01cb6089f4bf1a3af1779e0ee3d32805fad006364bdbe",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "off",
+            "output_sha256": "b3ce8dd69fc0f4f6e9376549baa4720abca0481469676089eca4969c6376de3c",
+            "finite": true,
+            "original_model_returned": true
+          }
+        ],
+        "all_phase_input_descriptors_identical": true,
+        "baseline_repeat_exact": true,
+        "lossless_exact": true,
+        "off_exact": true,
+        "constructed_output_changed": true,
+        "intervention_count": 1,
+        "original_execution_verified": true,
+        "selected_call": [
+          "<root>",
+          0
+        ],
+        "mechanism_facts": {
+          "boundary": "aten.index_select.return",
+          "operator": "aten.index_select.default",
+          "dtype": "torch.bfloat16",
+          "source_shape": [
+            16,
+            8
+          ],
+          "output_shape": [
+            4,
+            8
+          ],
+          "target_row": 3,
+          "correct_source_row": 3,
+          "replacement_source_row": 0,
+          "source_unchanged": true,
+          "index_unchanged": true,
+          "non_target_rows_unchanged": true,
+          "replacement_readback_exact": true,
+          "native_calls": 1,
+          "consumer": "aten.mul.Tensor",
+          "same_lookup_storage_consumers": 2,
+          "semantics": "WRONG_ROW_OUTPUT_PROXY_NOT_UINT32_OVERFLOW"
+        },
+        "execution_boundary": "python_hook",
+        "state_source": "OWNED_PYTHON_HOOKS",
+        "native_loaded": false,
+        "native_registered": false,
+        "cleanup": {
+          "registered": false,
+          "enabled": false,
+          "hook_owned": false,
+          "leases": 0,
+          "inflight": 0,
+          "recovery_confirmed": null
+        },
+        "recovery_basis": "Exact OFF complete output and no live local hook/lease/inflight; raw recovery_confirmed=null is preserved, not promoted."
+      },
+      "independent_statistics": {
+        "status": "ALIGNMENT_MISMATCH",
+        "whole_dump_comparable": false,
+        "mismatched": "stack",
+        "first_difference": null,
+        "report_private_path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.codex-tmp/engineering-20261117/tensor-a4-analysis/tensor22.json",
+        "report_sha256": "31ed979ba5e25e3d1c539f77a473824143ea5a48bbacbf9d2a4ce0196bef4847",
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "rtol": 1E-05,
+        "atol": 1E-08,
+        "reference": "baseline",
+        "baseline": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor22/statistics/observation/step0/rank0",
+          "sha256": {
+            "dump.json": "4b5e562cf311c8ca73f35b5a539e6ac206b9decfdca99c133252363910dec311",
+            "stack.json": "4e693f7bbc08e4fc894fe58b5c12592ae6c58793b204337e9d0c3529d58fcdcb",
+            "construct.json": "75686cf94598d937117cf3fd742e291d8b7f0e71298c6614c7b998797cf5a756"
+          },
+          "null_fields_count": 24,
+          "nonfinite_fields_count": 0
+        },
+        "fault": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor22/statistics/observation/step3/rank0",
+          "sha256": {
+            "dump.json": "ee92482209c9dc77b5452d493c1dccb2c93619a34c0fa8d77c4310510592f75b",
+            "stack.json": "6566dc8420457eda08a9361f40b899822cece0d838625b2490c63bb4ec1379e1",
+            "construct.json": "75686cf94598d937117cf3fd742e291d8b7f0e71298c6614c7b998797cf5a756"
+          },
+          "null_fields_count": 24,
+          "nonfinite_fields_count": 0
+        },
+        "config": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor22/statistics/config.json",
+          "sha256": "95cf55d96513ab2e5ef579565e5edd7362b332e491143677491e8cf9a8e60c32",
+          "bf_identical": true
+        },
+        "collector_identity": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor22/statistics/collector_identity.json",
+          "sha256": "d519458aa3845d9f43e6e082b80fc6fe460e0ac7e407cef528d504655e75fef2",
+          "bf_identical": true,
+          "edited_by_experiment": false
+        },
+        "completion": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor22/statistics/completion.json",
+          "sha256": "020af73996eb1ad5b9b407b91f9b4e537f7b57019e2d74524fde82951743f089",
+          "recorded_steps": [
+            0,
+            3
+          ],
+          "step_meaning": "0=baseline; 3=fault; actual model replay phases, not decode token steps"
+        },
+        "baseline_self": {
+          "same_dump_self_comparison": true,
+          "comparable": true,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "records_compared": 12,
+          "repeated_capture_comparison": false
+        },
+        "native_logs_read": false,
+        "private_tensors_read": false,
+        "nulls_are_unobservable": true,
+        "raw_published": false
+      },
+      "E1_execution_observed": true,
+      "E2_intervention_observed": true,
+      "E3_effect_observed": true,
+      "E4_off_and_local_recovery": true,
+      "E5_independent_first_difference_accepted": false,
+      "all_eligible": false,
+      "every_match": false,
+      "limitations": [
+        "constructed RoPE arithmetic with actual mul consumers; not native fused RoPE qualification",
+        "wrong-row output proxy; no uint32 overflow reproduction"
+      ]
+    },
+    {
+      "mechanism": "8.restore_offset",
+      "scope_id": "124_tensor_a4_tensor8",
+      "scope_kind": "CONSTRUCTED_NPU_PROVIDER_REPLAY",
+      "scope_description": "Single-card constructed NPU module; one stable observed call; B/Brepeat/lossless/F/OFF; no pretrained model or standard vLLM Worker qualification.",
+      "entrypoint": "constructed_model_replay",
+      "public_worker_qualified": false,
+      "pretrained_model": false,
+      "runtime_evidence": {
+        "result": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor8/result.json",
+          "sha256": "9bf452f8b0f7c117788305de95f81ae87a8bdaa59ba2a152a544eed2c855a368",
+          "status": "PASS_MECHANISM_ONLY"
+        },
+        "source_artifact": "source-a7",
+        "physical_cards": [
+          5
+        ],
+        "logical_device": "npu:0",
+        "container_exit_code": 0,
+        "phases": [
+          {
+            "phase": "baseline",
+            "output_sha256": "96d3dede6d75685e1d6557ff5a325dc117e53435b9972bae015e588e1040c339",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "baseline_repeat",
+            "output_sha256": "96d3dede6d75685e1d6557ff5a325dc117e53435b9972bae015e588e1040c339",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "lossless",
+            "output_sha256": "96d3dede6d75685e1d6557ff5a325dc117e53435b9972bae015e588e1040c339",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "fault",
+            "output_sha256": "3b980b80cf87b19236d6b7871bd959c1c2c1050776adf33ceb792f2835ed730f",
+            "finite": true,
+            "original_model_returned": true
+          },
+          {
+            "phase": "off",
+            "output_sha256": "96d3dede6d75685e1d6557ff5a325dc117e53435b9972bae015e588e1040c339",
+            "finite": true,
+            "original_model_returned": true
+          }
+        ],
+        "all_phase_input_descriptors_identical": true,
+        "baseline_repeat_exact": true,
+        "lossless_exact": true,
+        "off_exact": true,
+        "constructed_output_changed": true,
+        "intervention_count": 1,
+        "original_execution_verified": true,
+        "selected_call": [
+          "<root>",
+          0
+        ],
+        "mechanism_facts": {
+          "boundary": "npu_moe_token_unpermute.inputs",
+          "operator": "npu.npu_moe_token_unpermute.default",
+          "dtype": "torch.bfloat16",
+          "output_shape": [
+            4,
+            128
+          ],
+          "token_groups": 4,
+          "topk": 2,
+          "baseline_source_groups": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "fault_source_groups": [
+            1,
+            2,
+            3,
+            3
+          ],
+          "paired_group_readback_exact": true,
+          "input_storage_unchanged": true,
+          "complete_native_group_mapping_exact": true,
+          "native_calls": 1,
+          "semantics": "PAIRED_TOKEN_GROUP_REMAP_NOT_ELEMENTWISE_INDEX_OFFSET"
+        },
+        "execution_boundary": "python_hook",
+        "state_source": "OWNED_PYTHON_HOOKS",
+        "native_loaded": false,
+        "native_registered": false,
+        "cleanup": {
+          "registered": false,
+          "enabled": false,
+          "hook_owned": false,
+          "leases": 0,
+          "inflight": 0,
+          "recovery_confirmed": null
+        },
+        "recovery_basis": "Exact OFF complete output and no live local hook/lease/inflight; raw recovery_confirmed=null is preserved, not promoted."
+      },
+      "independent_statistics": {
+        "status": "ALIGNMENT_MISMATCH",
+        "whole_dump_comparable": false,
+        "mismatched": "stack",
+        "first_difference": null,
+        "report_private_path": "C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.codex-tmp/engineering-20261117/tensor-a4-analysis/tensor8.json",
+        "report_sha256": "4e48b5d70d7b90d24aaccbba733a807b4469f0d73be1dc5eaea470ac4f22955f",
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "rtol": 1E-05,
+        "atol": 1E-08,
+        "reference": "baseline",
+        "baseline": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor8/statistics/observation/step0/rank0",
+          "sha256": {
+            "dump.json": "a50697cc419b16005f11f7951370b238ed235e388560010472ece9d989e7ff13",
+            "stack.json": "f46729a2d422302d6a8440afa93dc8d9d6069196d1a0eaabb4f2b0c5dbd41f73",
+            "construct.json": "46bd7db464b99db952bbc9c301ac24b42ed38281c014371d3587e02560aa5998"
+          },
+          "null_fields_count": 12,
+          "nonfinite_fields_count": 0
+        },
+        "fault": {
+          "directory": "/home/17-fault-engineering-20261117/tensor-a4/tensor8/statistics/observation/step3/rank0",
+          "sha256": {
+            "dump.json": "674461e2ec477ab61164695dba1c0c916ada6ffec10b403a10b6183e32de4087",
+            "stack.json": "4d45fd67224b4606ef2e66c67dd890aaae4938c75c317826e90f7454f3669772",
+            "construct.json": "46bd7db464b99db952bbc9c301ac24b42ed38281c014371d3587e02560aa5998"
+          },
+          "null_fields_count": 12,
+          "nonfinite_fields_count": 0
+        },
+        "config": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor8/statistics/config.json",
+          "sha256": "95cf55d96513ab2e5ef579565e5edd7362b332e491143677491e8cf9a8e60c32",
+          "bf_identical": true
+        },
+        "collector_identity": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor8/statistics/collector_identity.json",
+          "sha256": "d519458aa3845d9f43e6e082b80fc6fe460e0ac7e407cef528d504655e75fef2",
+          "bf_identical": true,
+          "edited_by_experiment": false
+        },
+        "completion": {
+          "path": "/home/17-fault-engineering-20261117/tensor-a4/tensor8/statistics/completion.json",
+          "sha256": "020af73996eb1ad5b9b407b91f9b4e537f7b57019e2d74524fde82951743f089",
+          "recorded_steps": [
+            0,
+            3
+          ],
+          "step_meaning": "0=baseline; 3=fault; actual model replay phases, not decode token steps"
+        },
+        "baseline_self": {
+          "same_dump_self_comparison": true,
+          "comparable": true,
+          "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+          "records_compared": 6,
+          "repeated_capture_comparison": false
+        },
+        "native_logs_read": false,
+        "private_tensors_read": false,
+        "nulls_are_unobservable": true,
+        "raw_published": false
+      },
+      "E1_execution_observed": true,
+      "E2_intervention_observed": true,
+      "E3_effect_observed": true,
+      "E4_off_and_local_recovery": true,
+      "E5_independent_first_difference_accepted": false,
+      "all_eligible": false,
+      "every_match": false,
+      "limitations": [
+        "constructed unpermute workload; no production MoE scheduler/producer ownership qualification",
+        "paired indices/probabilities group remap, no elementwise index offset"
+      ]
+    },
+    {
+      "mechanism": "25.reduce_scatter",
+      "scope_id": "124_collective25_a2",
+      "scope_kind": "NPU_HCCL_COLLECTIVE_CALIBRATION",
+      "scope_description": "Two real synchronous HCCL ranks observed twice, then plain OFF; no same-input native output difference, no signed replay sample and no F. Task-owned container was stopped after rank receipts completed but torchrun did not exit.",
+      "entrypoint": "constructed_torchrun_collective",
+      "public_worker_qualified": false,
+      "pretrained_model": false,
+      "runtime_evidence": {
+        "source_artifact": "source-a6",
+        "physical_cards": [
+          2,
+          5
+        ],
+        "world_size": 2,
+        "backend": "hccl",
+        "reduce_op": "SUM",
+        "dtype": "torch.float32",
+        "send_shape": [
+          256
+        ],
+        "receive_shape": [
+          128
+        ],
+        "members": [
+          0,
+          1
+        ],
+        "actual_phases": [
+          "observe_baseline",
+          "observe_repeat",
+          "off_without_injection"
+        ],
+        "fault_executed": false,
+        "calibration_issued": false,
+        "ranks": [
+          {
+            "rank": 0,
+            "path": "/home/17-fault-engineering-20261117/collective25-a2/fault25-natural/rank0.json",
+            "sha256": "8bfa494b6632b058e2faa57b0866e7768310e310e722763bd0439f8891df1ece",
+            "status": "NO_REPLAY_SAMPLE",
+            "reason": "NO_NATIVE_SAME_INPUT_DIFFERENCE_OBSERVED",
+            "repeat_exact": true,
+            "off_exact": true,
+            "observed_collectives": 2,
+            "off_uninstrumented_collectives": 1,
+            "fault_collectives": 0,
+            "interventions": 0,
+            "input_sha256": [
+              "f598f7a5a2b2bc1637d9f99c528d84fde25364c9656554193b91387e44268576",
+              "f598f7a5a2b2bc1637d9f99c528d84fde25364c9656554193b91387e44268576"
+            ],
+            "observed_output_sha256": [
+              "268482ffe9cdd52b3fb36636808051c9faf35bd1082e8af0e1e5b18e1982d1b9",
+              "268482ffe9cdd52b3fb36636808051c9faf35bd1082e8af0e1e5b18e1982d1b9"
+            ],
+            "native_sequences": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "original_execution_verified": true,
+            "group_recovery": "LOCAL_SYNCHRONOUS_DRAIN_ONLY_CROSS_RANK_RECEIPTS_REQUIRED"
+          },
+          {
+            "rank": 1,
+            "path": "/home/17-fault-engineering-20261117/collective25-a2/fault25-natural/rank1.json",
+            "sha256": "1ef37a09e963272b241fde5179db1ebc094231c28ef8bda3b7a2cc3e1a81eb04",
+            "status": "NO_REPLAY_SAMPLE",
+            "reason": "NO_NATIVE_SAME_INPUT_DIFFERENCE_OBSERVED",
+            "repeat_exact": true,
+            "off_exact": true,
+            "observed_collectives": 2,
+            "off_uninstrumented_collectives": 1,
+            "fault_collectives": 0,
+            "interventions": 0,
+            "input_sha256": [
+              "2f2a5da18ab5cb05ac9470e97dd86750f0b4e4cd56e58e9a051e5c55badd933d",
+              "2f2a5da18ab5cb05ac9470e97dd86750f0b4e4cd56e58e9a051e5c55badd933d"
+            ],
+            "observed_output_sha256": [
+              "50a842ed02b930efd9c431014caab7d7dabf5713c62795755cb60416fbd0135d",
+              "50a842ed02b930efd9c431014caab7d7dabf5713c62795755cb60416fbd0135d"
+            ],
+            "native_sequences": [
+              [
+                0,
+                1
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "original_execution_verified": true,
+            "group_recovery": "LOCAL_SYNCHRONOUS_DRAIN_ONLY_CROSS_RANK_RECEIPTS_REQUIRED"
+          }
+        ],
+        "operator_source_sha256": "a0b04f3d88848797c723f543494a7ee96aecafde77ae0361425d86a83ad94dae",
+        "loaded_libraries": {
+          "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libhccl.so": "1a72dbff32076e81fa474179dd60a191f57b6ad290cfbf279952631364e1fbf2",
+          "/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu/lib/libtorch_npu.so": "dd07e4afb4e31a5123d0b97a4a319acaa96158705a22d704bfc0a91f662a6041"
+        },
+        "collective_calls_added": 0,
+        "collective_calls_skipped": 0,
+        "controller": {
+          "path": "/home/17-fault-engineering-20261117/collective25-a2/controller.json",
+          "sha256": "d3a74b1838259a5f6c6db6e9779dfe1a55e9844ba5c7e4524c6616fd7ae15e59",
+          "status": "CASE_FAILED",
+          "exit_code": 1,
+          "container_exit_code": 1,
+          "oom_killed": false
+        },
+        "process_log": {
+          "path": "/home/17-fault-engineering-20261117/collective25-a2/fault25-natural/process.log",
+          "sha256": "4c12e2c5c0dea6696d74d88d10f887c115b86638d2284f3932d15a7780a02d33",
+          "observed_termination": "torchrun PID 1 received signal 15"
+        },
+        "stop_context": "Run controller explicitly stopped its own container after rank receipts had completed but torchrun remained alive; not an external-task interruption.",
+        "group_recovery_verified": false,
+        "clean_process_exit": false,
+        "complete_b_f_off_acceptance": false
+      },
+      "independent_statistics": {
+        "status": "NOT_AVAILABLE_NO_FAULT_ARM",
+        "whole_dump_comparable": false,
+        "first_difference": null,
+        "raw_published": false
+      },
+      "E1_execution_observed": true,
+      "E2_intervention_observed": false,
+      "E3_effect_observed": false,
+      "E4_off_and_local_recovery": false,
+      "E5_independent_first_difference_accepted": false,
+      "all_eligible": false,
+      "every_match": false,
+      "limitations": [
+        "No native same-input difference; no positive injection qualification",
+        "Plain OFF equality does not prove recovery from an injection that did not run",
+        "No cross-rank drain receipt or clean torchrun exit",
+        "No pretrained model, vLLM Worker, LCCL historical defect, or C2/C3 qualification"
+      ]
+    }
+  ],
+  "interpretation": [
+    "E1-E4 apply only to each explicit scope; constructed positive results do not qualify standard vLLM Workers or pretrained-model behavior",
+    "All five B/F independent statistics comparisons reject alignment; no first difference is asserted",
+    "Null statistics and null cleanup recovery_confirmed values remain unknown",
+    "Original raw statistics, complete tensors, and historical logs are not included in this summary"
+  ]
+}

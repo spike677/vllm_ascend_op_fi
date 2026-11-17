@@ -2,8 +2,11 @@
 
 This addition implements an intermediate projection boundary for
 `20.buffer_substitute`. It does not reuse the final floating LogitsProcessor
-head as evidence of QMM. The current status is **CPU verified; actual QMM
-injection and NPU serving acceptance pending**.
+head as evidence of QMM. The third 124 attempt **passed actual DeepSeek C1
+Worker execution, one native substitution, complete-logits change and OFF**.
+The independent statistics comparison finds the first observable candidate at
+QMM output, but baseline NaN prevents whole-dump E5 acceptance. The new scope
+does not qualify every projection or a model family.
 
 ## Selection and invocation ownership
 
@@ -26,7 +29,8 @@ weight and weight scale belong to the actual projection. Every present native
 formal is matched against current typed GWS/Run metadata, including address,
 slot, shape, stride, offset, storage size, element size, and actual format.
 The floating projection input is recorded separately and is never called the
-native INT8 input. Unknown signatures, absent lineage and extra formals refuse.
+native INT8 input. The actual empty optional formals are verified separately
+from nonempty Run slots. Unknown signatures, absent lineage and extra formals refuse.
 
 The inspected vLLM-Ascend `w8a8_dynamic.py` implementation performs real
 dynamic quantization, passes `layer.weight`, `layer.weight_scale`, per-token
@@ -70,12 +74,12 @@ difference; that comparison must use raw collector/config/stack/module data.
   rebuilds native libraries. Use a fresh installed wheel and reviewed native
   bundle, including `/native/serving_review.json`, and the current probe.
 
-CPU validation: 31 existing/new Fault20 tests pass, including eight actual CPU
+CPU validation: 33 existing/new Fault20 tests pass, including eight actual CPU
 module-forward phases, complete logits recovery, exact provider dispatch,
 native scale-address rejection, cloned quantization-output rejection, absent
 natural QMM rejection, and unknown public-signature rejection. The CPU native
-runtime is explicitly mocked. DeepSeek-V2-Lite-W8A8 on 124 remains the next
-actual target; other models require the same observed lineage and native gates.
+runtime is explicitly mocked. Actual DeepSeek-V2-Lite-W8A8 acceptance below is
+separate; other models require the same observed lineage and native gates.
 
 ## First actual deployment attempt
 
@@ -105,3 +109,102 @@ on the actual next Worker before native discovery is allowed.
 Environment refusals now preserve a private `environment_refusal.json` and
 summarize missing or unverified libraries in qualification status. This adds
 diagnostics without excluding extra loaded libraries or weakening any gate.
+
+The second attempt passed environment and MLA prefill checks and observed the
+natural `model.layers.0.self_attn.kv_a_proj_with_mqa` QMM. It refused before
+the original native execution in discovery: the Python verifier incorrectly
+equated a present formal tensor with a nonempty Run storage slot. The saved
+typed observation showed empty `[0]` `y_scale`, `x1_offset` and `y_offset`
+formals, all with zero bytes/addresses and Run slot `-1`. Actual nonempty slots
+were x1=0, x2=1, x1_scale=2, x2_scale=3, out=7.
+
+The verifier now matches all ten formal names/order, admits only these three
+observed empty placeholders with their complete zero-storage, geometry,
+format and output-dtype contract, and still rejects unknown or nonempty
+unbound formals. Actual public INT8/weight/scale storage matching is unchanged.
+No native core was modified. Failed formal checks now retain both raw typed
+observations and the public transaction before refusal. The second attempt
+is not an injection or OFF pass; the third used this precise Python fix with
+the same previously built native core.
+
+## Third actual attempt: limited Worker acceptance
+
+The run is `/home/17-fault-engineering-20261117/qmm20-a3/fault20-qmm-fault`,
+using `source-a8` and the independently installed `packages-a8`. The actual
+environment is Ascend910B4/A2, CANN8.5.1, TP1, eager, BF16, and pretrained
+DeepSeek-V2-Lite-W8A8. Each of the eight host-enqueued requests performs the
+same fresh 14-token prefill. These are qualification request phases, not eight
+decode tokens or a continuous-generation acceptance test.
+
+Automatic actual execution selected
+`model.layers.0.self_attn.kv_a_proj_with_mqa`: INT8 x1 `[14,2048]`, INT8 NZ x2
+`[2048,576]`, FP32 per-token scale `[14]`, BF16 weight scale `[576]`, BF16 output
+`[14,576]`. The native nonempty Run slots are 0/1/2/3/7. The two healthy actual
+requests selected the same object and native identity. There are 135 structural
+projection candidates; that number is not an all-eligible execution denominator.
+The generic canonical-role field remains `UNRESOLVED`; the separately observed
+embedding→normalizer→dynamic quantization→projection lineage establishes this
+limited selection, not complete logical-role adaptation.
+
+The fault maps the selected INT8 input to an INT4-equivalent grid:
+`16 * clamp(round_nearest_ties_away_from_zero(x1 / 16), -8, 7)`. It writes a
+separate temporary device buffer, verifies its contents by device readback,
+and substitutes only the native x1 Run address. The INT8 ABI, original Python
+input, x2 weight and both scales remain unchanged. The original native QMM is
+executed once; there is no output rewrite. Lossless control instead copies the
+original x1 bytes to independent storage. Thus msprobe can observe unchanged
+public QMM inputs and the first numerical change at its output.
+
+| Check | Observed result |
+| --- | --- |
+| Eight phases | discovery 1/2, reference, lossless, qualification OFF, fault, observed OFF, disabled OFF all completed |
+| Selected native boundaries | One per active phase, seven total; disabled OFF has no callback observation and runs the normal model |
+| Fault | One x1 substitution, one changed slot, one original native call, temporary readback and release confirmed |
+| Protected input bytes | Four complete native input hashes identical before/after every audited execution and across phases |
+| Complete QMM output | Fault SHA changes; lossless and observed OFF exactly match reference |
+| Complete global logits | `[1,102400]`, finite in all eight phases; fault SHA changes, both OFF phases exactly restore reference |
+| Generated result | All eight Top-1 IDs remain 185; healthy checks before/after both return newline |
+| Cleanup | Registered/enabled/native-owned false; inflight/leases zero; detached and deployment removed |
+
+Baseline global-logits SHA256 is
+`7f0b59420ae5f51c1ffc6c47cdb18bfc6fd91fa46ad1660c75ce806606d6f262`;
+fault is `a1770b841f4ff5b38657f6b87a1fa1374c05d5c3e7dc9c746558e39e5b186ac4`.
+Hashes prove exact change/recovery; no magnitude or task-quality claim is derived
+from them. No TP2, decode, other shape, other CANN version or A3 acceptance is
+inherited. The adapter does not create Workers or replace execution methods.
+
+## Independent statistics and retained failure
+
+The unfiltered raw `statistics/mix` groups are actual `step2/rank0` (reference)
+and `step5/rank0` (fault), with the same configuration and collector. A separate
+CPU `analyse_pair.py` read only their raw triplets/configuration/collector metadata,
+using baseline-reference `rtol=1e-5`, `atol=1e-8`. It did not read native events,
+the selected path, full tensors or this acceptance summary.
+
+Its first observable candidate is record index 83:
+
+```text
+NPU.npu_quant_matmul.0.forward/output/0
+Max: 25.75 -> 15.6875
+absolute difference: 10.0625
+relative to baseline: 39.0776699%
+```
+
+There are 172 unavailable statistics fields before that candidate. Across each
+complete dump, 10,306 fields are null and 6 are nonfinite. B self-comparison
+refuses at index 599, `Tensor.__setitem__.8.forward/input_args/0`, Max `NaN`
+versus `NaN`. Therefore `baseline_self_comparable=false`,
+`whole_dump_comparable=false`, and **E5_NOT_PASSED** remain the final strict
+statistics outcome. This is a valid observable-prefix location consistent with
+input-buffer substitution, not a clean whole-model first-difference acceptance.
+The comparator also retains `UNPROVEN_REQUEST_MAPPING`; the independent statistics
+do not borrow scheduler mapping from the separately checked runtime receipts.
+
+The read-only audit matched four actual imported module hashes against their
+installed package files and `source-a8` source bytes, and checked all 28 referenced
+native proof hashes. It performed no NPU calls. Raw statistics, complete tensors,
+native binaries and original failed attempts stay on 124.
+[`fault20_qmm_worker_summary.json`](fault20_qmm_worker_summary.json) contains the
+scope, phase results, cleanup, independent candidate and refusal, version/build
+identity, and SHA256 references. This adds a QMM scope to mechanism 20; it does
+not increase the count of distinct public Worker mechanisms.

@@ -121,6 +121,13 @@ class PostwriteTests(unittest.TestCase):
         p = PostwriteProvider(Projection(False), CpuTransport(), '39.output_proxy')
         with self.assertRaisesRegex(PostwriteRefused, 'NO_STABLE'):
             p.qualify(torch.ones(1, 4, dtype=torch.bfloat16))
+        diagnosis = p.query()['qualification_diagnostics']
+        self.assertEqual(diagnosis['failure_reasons'], ['NO_ELIGIBLE_WRITER_WITH_OBSERVED_VALUE_CONSUMER'])
+        self.assertTrue(diagnosis['complete_original_outputs_equal'])
+        self.assertFalse(diagnosis['guards_relaxed'])
+        self.assertEqual(len(diagnosis['observations']), 2)
+        self.assertEqual(diagnosis['observations'][0]['discovery_diagnostics']['operator_counts']['aten.mm.default'], 1)
+        self.assertEqual(diagnosis['observations'][0]['discovery_diagnostics']['candidates'][0]['consumers'], [])
 
     def test_changed_request_and_model_refused(self):
         m = Projection()

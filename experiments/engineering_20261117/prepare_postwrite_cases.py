@@ -7,7 +7,9 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--source',required=True);p.add_argument('--native',required=True)
     p.add_argument('--sha256',required=True);p.add_argument('--out',type=Path,required=True)
     p.add_argument('--hf-model',help='Add a separate pretrained Qwen/HF 39 B/F pair')
+    p.add_argument('--hf-only',action='store_true',help='Run only the separate pretrained pair')
     a=p.parse_args();cases=[]
+    if a.hf_only and not a.hf_model:p.error('--hf-only requires --hf-model')
     for mechanism in ('39.output_proxy','41.tail_column'):
         for arm in ('baseline','fault'):
             cases.append(dict(id=mechanism.split('.')[0]+'-'+arm,
@@ -23,6 +25,7 @@ def main():
             item=copy.deepcopy(case);item['id']=item['id'].replace('39-','39hf-')
             item['mounts'].append([a.hf_model,'/model','ro'])
             item['command']+=' --model /model';cases.append(item)
+    if a.hf_only:cases=[item for item in cases if item['id'].startswith('39hf-')]
     with a.out.open('x') as stream:json.dump(cases,stream,indent=2)
 
 
