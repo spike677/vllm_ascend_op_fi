@@ -1,6 +1,43 @@
 # Current execution checkpoint
 
 Read this section first. The initial checkpoint below is retained as history.
+Latest checkpoint (source-a15, integration fec83416):
+
+- CPU integration: 591 tests passed, 2 platform skips. No NPU qualification follows.
+- `providers39-a4`: both healthy Worker observations contained113 native MatMul
+  calls through `vllm.unquantized_gemm`. The public-pair adapter did not recognize
+  that custom op and refused before injection. Hits0, unregister CLEAN, hooks0.
+  Actual image source is in `R/gemm-source-a1`; do not drop unmatched calls from
+  the denominator. a3 was a separate Resource_Busy failure before inference.
+- `natural18-group-a1`: natural pretrained HF Qwen scope,113 eligible RMSNorm
+  targets. Runtime C2:113/113 once; C3:226/226 across two forwards; same-process
+  OFF exact and leases/hooks0. Standard Worker is NOT qualified. Raw statistics
+  dump identities align but construct maps differ from observer stride queries.
+  E5 remains refused pending fresh collection; never edit the old raw maps.
+- `postwrite-natural-a1`: natural HF39.output_proxy B/F actual matmul output and
+  consumer verified; exact OFF and leases0. Independent raw audit v2 finds
+  Torch.matmul.0.forward/output/0.Max,536->Inf, with228 preceding null fields and0
+  preceding incomparable fields. B self is comparable; F has7492 NaN statistics,
+  so whole-dump E5 remains incomplete. This is a controlled output proxy, not
+  native MatMul range qualification. The41 baseline failed wrapper cleanup;
+  reviewed atomic collector-preserving restoration is integrated. Fresh B/F
+  `postwrite41-natural-a2` is running card5; check before scheduling NPU.
+- `attention-preflight-a3`: modern ACL observer compiled on8.5.1 and9.1. Actual
+  attention28-launch-a2 captured successful launches but lacked binary/function
+  identity and argument snapshots. Collector diagnostics add launches. NOT
+  launch-qualified; use actual registration evidence, never expected profiles.
+- `tnd33-build-a2` and schema-a1 compiled, but exact source analysis found natural
+  Worker TND/page16 follows FAI rather than the built arch22 branch. Preserve as
+  unentered investigation artifacts. Agent4 is adapting real FAI host/device
+  KV stack512->256 with a new matching key and workspace. Actual chip16 AICores;
+  original prefill/default routing must remain intact.
+- `build20-v3-a1` actual8.5.1 SDK build passed; library SHA
+  `0c3e3f5fc73401f7b6e9bcdba261c730cf8ba17d6389c90a3843399da6b3df30`.
+  Full-request group glue is pending review; build success is not NPU acceptance.
+- Immutable source-a15 archive SHA
+  `1c1d1467d60a7adc0254c61414d46f4d7dffcf8c794391d822f423fef1617e6b`.
+  Earlier running/prepared states below are superseded by this checkpoint.
+
 Current scoped qualification remains **C2 0/17, C3 0/17** pending actual receipts.
 Root alone schedules NPU, with shared lock/per-case gates and new attempts. Raw
 data and binaries remain124; no expired Docker isolation or foreign-process kill.
