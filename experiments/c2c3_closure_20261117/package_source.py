@@ -20,7 +20,8 @@ PREFIXES = ('fault_injection/', 'src/demoncat/', 'fault39/native/', 'fault39/too
             'fault20_fast_validation/source/fault26_fia_writer_proxy_v1/',
             'fault20_fast_validation/source/fault26_qmm_writer_proxy_v1/',
             'fault20_fast_validation/source/fault26_add_rms_norm_bias_proxy_v1/')
-SINGLES = {'pyproject.toml', 'src/pyproject.toml', 'fault39/pyproject.toml'}
+SINGLES = {'pyproject.toml', 'src/pyproject.toml', 'fault39/pyproject.toml',
+           'experiments/p3p4_closure_20261117/build_quant_v2.py'}
 EXTENSIONS = {'.py', '.cpp', '.h', '.inc', '.sh', '.json', '.toml', '.cmake', '.txt'}
 
 
