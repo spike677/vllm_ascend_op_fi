@@ -5,6 +5,9 @@ from pathlib import Path
 from types import SimpleNamespace as NS
 import unittest
 from unittest.mock import patch
+import tempfile
+
+from fault_injection.native_build import metadata26
 
 PATH = Path(__file__).resolve().parents[2] / 'experiments/c2c3_closure_20261117/providers26_build_group.py'
 SPEC = importlib.util.spec_from_file_location('writer26_group_build', PATH)
@@ -13,6 +16,42 @@ SPEC.loader.exec_module(build)
 
 
 class GroupBuildTests(unittest.TestCase):
+    def test_old_parent_without_ownership_evidence_is_refused(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with self.assertRaisesRegex(RuntimeError, 'OLD_PARENT_REBUILD_REQUIRED'):
+                metadata26.verify_parent(PATH.parents[2], Path(folder), {})
+
+    def test_parent_metadata_requires_exact_source_images_and_balanced_cpu_allocations(self):
+        source = PATH.parents[2]
+        unit, sources = metadata26.source_contract(source)
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            cpu = dict(schema='demoncat.metadata_arrays.cpu_contract.v1', status='CPU_CONTRACT_PASS',
+                includes_writer26=True, actual_npu_calls=0, actual_sdk_or_numerical_acceptance=False,
+                compiler_returncode=0, returncode=0,
+                generated_unit_sha256=unit, production_sources={k: v for k, v in sources.items()
+                    if not k.endswith('/test_metadata_ownership.py')},
+                counts=dict(actual_new_arrays=3, actual_delete_arrays=3, acquired_arrays=3, released_arrays=3, live_arrays=0))
+            (root / metadata26.CPU_RECEIPT).write_text(json.dumps(cpu))
+            for name in metadata26.SYMBOLS:
+                (root / name).write_bytes(('EXPLICIT_CPU_FIXTURE_' + name).encode())
+            proof = dict(schema=metadata26.SCHEMA, sources=sources,
+                images={name: dict(sha256=metadata26.sha(root / name), symbol=symbol)
+                        for name, symbol in metadata26.SYMBOLS.items()},
+                state_version=1, reset_supported=False, actual_loaded_readback_required=True,
+                actual_npu_calls=0, native_acceptance=False, cpu_receipt_sha256=metadata26.sha(root / metadata26.CPU_RECEIPT))
+            (root / metadata26.RECEIPT).write_text(json.dumps(proof))
+            files = {p.name: metadata26.sha(p) for p in root.iterdir()}
+            self.assertEqual(metadata26.verify_parent(source, root, files), proof)
+            (root / 'libopapi.so').write_bytes(b'stale dependency')
+            with self.assertRaisesRegex(RuntimeError, 'DEPENDENCY_IMAGE_OWNERSHIP_PROOF_MISMATCH'):
+                metadata26.verify_parent(source, root, files)
+            cpu['counts']['actual_delete_arrays'] = 2
+            (root / metadata26.CPU_RECEIPT).write_text(json.dumps(cpu))
+            files[metadata26.CPU_RECEIPT] = metadata26.sha(root / metadata26.CPU_RECEIPT)
+            with self.assertRaisesRegex(RuntimeError, 'CPU_ALLOCATION_RELEASE_COUNTS_INCOMPLETE'):
+                metadata26.verify_parent(source, root, files)
+
     def test_actual_image_id_is_required(self):
         actual = dict(Id='sha256:' + 'a' * 64, Architecture='arm64', Os='linux')
         with patch.object(build.subprocess, 'run', return_value=NS(stdout=json.dumps([actual]))) as run:

@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 from fault_injection.metadata_arrays import (LoadedMetadataArrays, MetadataArraySession,
-    MetadataArrayStateV1, _DlInfo, SCHEMA)
+    LoadedWriter26MetadataArrays, MetadataArrayStateV1, _DlInfo, SCHEMA)
 from metadata_fixture import metadata_report
 
 
@@ -44,6 +44,15 @@ class CounterContractTests(unittest.TestCase):
         self.value['images'] = []
         with self.assertRaisesRegex(RuntimeError, 'EMPTY_LOADED'):
             self.session.read()
+
+    def test_old_writer_bundle_rejects_before_loading_any_symbols(self):
+        with tempfile.TemporaryDirectory() as folder, patch.object(os, 'RTLD_NOLOAD', 4, create=True), \
+                patch('fault_injection.metadata_arrays.ctypes.CDLL') as loader:
+            path = Path(folder) / 'build.json'
+            path.write_text(json.dumps(dict(schema='demoncat.writer26.group_deployment.v2', files={})))
+            with self.assertRaisesRegex(RuntimeError, 'OLD_WRITER_OR_TRACE_DEPENDENCIES_REQUIRE_REBUILD'):
+                LoadedWriter26MetadataArrays(bundle=folder, manifest_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+            loader.assert_not_called()
 
     def test_no_reset_counter_instance_or_image_change(self):
         for change in ('reset', 'instance', 'sha256', 'proxy_set'):

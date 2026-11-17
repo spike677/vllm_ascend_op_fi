@@ -99,6 +99,9 @@ class Writer26Experiment(WriterLifetimeInventory):
         self.initialized = False
         self.native_removed = False
         self.ordinal = 0
+        from ..metadata_arrays import MetadataArraySession
+        self.metadata = MetadataArraySession(getattr(self.runtime, 'metadata_arrays', None), self.runtime.build_identity)
+        self.metadata_initial = None
 
     @property
     def phase(self):
@@ -109,6 +112,9 @@ class Writer26Experiment(WriterLifetimeInventory):
         return self.plan[len(self.rows)]
 
     def _idle(self, registered):
+        metadata = self.metadata.read()
+        if self.metadata_initial is None:
+            self.metadata_initial = metadata
         state = self.runtime.state()
         core = state['core']
         require(bool(core['installed']) is registered and not any(core[n] for n in ('pending', 'executing', 'device_bytes', 'descriptor_pending'))
@@ -451,6 +457,7 @@ class Writer26Experiment(WriterLifetimeInventory):
                 require(output_sha256 == self.baseline and self.native_removed, 'SAME_WORKER_FULL_VOCAB_AFTER_NATIVE_RELEASE_CHANGED')
         self._idle(not self.native_removed)
         self.output_refs.clear()
+        row['metadata_arrays'] = self.metadata.latest
         self.retained.clear()
         if len(self.rows) == 2:
             self._freeze()
@@ -507,6 +514,7 @@ class Writer26Experiment(WriterLifetimeInventory):
             stage=self.stage, phase=self.phase, failure=self.failure, blockers=self.blockers,
             scope='SINGLE_FRESH_PREFILL_ONE_CURRENT_TARGET_PER_REQUEST_NOT_DECODE_NOT_C2',
             lifetime=self.lifetime, build=self.runtime.build_identity, rows=self.rows, candidates=self.candidate_inventory,
+            metadata_arrays_initial=self.metadata_initial, metadata_arrays_latest=self.metadata.latest,
             resolved_candidate_count=len(self.targets), qualified_candidate_count=sum(1 for key in self.targets if
                 any(r['target'] == key and r['mode'] == 'lossless' and r.get('released_receipt') for r in self.outcomes)),
             outcomes=self.outcomes, native_state=self.runtime.state(), owned_hooks=len(self.handles),

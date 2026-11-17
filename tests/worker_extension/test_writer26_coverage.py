@@ -14,6 +14,7 @@ from fault_injection.deployments.writer26_coverage import Writer26Coverage
 from demoncat.runtime.vllm_ascend.worker_extension.serving import complete_tensor
 from test_writer26_group_experiment import CpuV2
 from test_writer26_inventory import CpuReader, CpuWriterModel
+from metadata_fixture import metadata_report
 
 
 class CpuCoverageNative(CpuV2):
@@ -114,6 +115,14 @@ class CompleteWriterCoverageTests(unittest.TestCase):
         self.assertTrue(report['coverage']['contract_satisfied'])
         self.assertEqual(report['coverage']['hits'], 2)
         self.assertTrue(all(row['worker'][4] == 'npu' for row in report['coverage']['calls']))
+
+    def test_no_metadata_array_activity_prevents_group_qualification(self):
+        self.native.metadata_arrays = lambda: metadata_report(0, self.native.build_identity)
+        experiment = self.make()
+        with self.assertRaisesRegex(RuntimeError, 'WRITER_COVERAGE_OR_GROUP_RECOVERY_INCOMPLETE'):
+            self.execute(experiment)
+        self.assertIsNone(experiment.proof)
+        self.assertFalse(experiment.report()['coverage']['contract_satisfied'])
 
     def test_unresolved_denominator_cannot_seal_subset(self):
         self.native.skip_callback = True

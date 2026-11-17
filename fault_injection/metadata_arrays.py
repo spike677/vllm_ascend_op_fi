@@ -11,6 +11,9 @@ from pathlib import Path
 
 
 SCHEMA = 'demoncat.metadata_arrays.v1'
+WRITER26_SYMBOLS = {'libfault26_readonly_trace_abi0.so': 'dcat26_trace_metadata_arrays_v1',
+                   'libopapi.so': 'dcat20_metadata_arrays_v1', 'libopapi_nn.so': 'dcat20_metadata_arrays_v1',
+                   'libdcat26_group_v2.so': 'dcat26_group_metadata_arrays_v1'}
 COUNTERS = ('capture_calls', 'active_captures', 'getter_calls', 'active_getters',
             'getter_failures', 'getter_exceptions', 'capture_exceptions',
             'acquired_arrays', 'released_arrays', 'live_arrays', 'peak_live_arrays',
@@ -154,6 +157,63 @@ class LoadedMetadataArrays:
                     images=rows, scope='SDK_GETTER_ARRAYS_ONLY', reset_supported=False)
 
 
+class LoadedWriter26MetadataArrays(LoadedMetadataArrays):
+    """Same counter contract for the v2 shim AND each actual trace dependency."""
+    def __init__(self, *, bundle, manifest_sha256):
+        require(hasattr(os, 'RTLD_NOLOAD'), 'LINUX_LOADED_WRITER_REQUIRED')
+        root = Path(bundle).resolve(strict=True)
+        manifest_path = root / 'build.json'
+        require(_sha(manifest_path) == manifest_sha256, 'WRITER_MANIFEST_CHANGED')
+        build = json.loads(manifest_path.read_text())
+        spec = build.get('metadata_array_ownership', {})
+        require(build.get('schema') == 'demoncat.writer26.group_deployment.v2'
+                and spec.get('schema') == SCHEMA and spec.get('state_version') == 1
+                and spec.get('images') == WRITER26_SYMBOLS and spec.get('reset_supported') is False
+                and spec.get('runtime_quiescent_readback_required') is True
+                and isinstance(spec.get('parent_receipt_sha256'), str) and len(spec['parent_receipt_sha256']) == 64
+                and spec.get('parent_receipt_sha256') == build.get('files', {}).get('metadata-array-ownership.json'),
+                'OLD_WRITER_OR_TRACE_DEPENDENCIES_REQUIRE_REBUILD')
+        self.pid, self.kind, self.build_profile = os.getpid(), '26', manifest_sha256
+        self.manifest_sha = manifest_sha256
+        self.mapping_names = tuple(WRITER26_SYMBOLS)
+        self.paths = _mapped_proxies(self.mapping_names)
+        require(set(self.paths) == set(WRITER26_SYMBOLS), 'INCOMPLETE_WRITER_PROXY_MAPPING')
+        self.files = {manifest_path: _stamp(manifest_path)}
+        parent_proof = root / 'metadata-array-ownership.json'
+        require(_sha(parent_proof) == spec['parent_receipt_sha256'], 'WRITER_PARENT_PROOF_CHANGED')
+        self.files[parent_proof] = _stamp(parent_proof)
+        loader = ctypes.CDLL(None)
+        locate = loader.dladdr
+        locate.argtypes, locate.restype = [ctypes.c_void_p, ctypes.POINTER(_DlInfo)], ctypes.c_int
+        self.images = []
+        for name, symbol in WRITER26_SYMBOLS.items():
+            path = root / name
+            digest = _sha(path)
+            require(build['files'].get(name) == digest, 'WRITER_DEPENDENCY_HASH_MISMATCH')
+            self.files[path] = _stamp(path)
+            handles, addresses, providers = [], set(), set()
+            for alias in self.paths[name]:
+                mapped = Path(alias)
+                require(mapped.samefile(path) and _sha(mapped) == digest, 'UNKNOWN_PROXY_ALIAS_OR_DUPLICATE')
+                self.files[mapped] = _stamp(mapped)
+                handle = ctypes.CDLL(alias, mode=os.RTLD_NOLOAD | os.RTLD_NOW)
+                fn = getattr(handle, symbol, None)
+                require(fn is not None, 'COUNTER_SYMBOL_MISSING')
+                info = _DlInfo()
+                require(locate(ctypes.cast(fn, ctypes.c_void_p), ctypes.byref(info)) and info.dli_fname,
+                        'SYMBOL_PROVIDER_UNAVAILABLE')
+                provider = Path(os.fsdecode(info.dli_fname)).resolve(strict=True)
+                require(str(provider) in self.paths[name] and provider.samefile(path)
+                        and _sha(provider) == digest, 'COUNTER_SYMBOL_WRONG_IMAGE')
+                fn.argtypes, fn.restype = [ctypes.POINTER(MetadataArrayStateV1)], ctypes.c_int
+                handles.append((handle, fn))
+                addresses.add(ctypes.cast(fn, ctypes.c_void_p).value)
+                providers.add(str(provider))
+            require(len(addresses) == 1, 'DUPLICATE_LOADED_COUNTER_INSTANCE')
+            self.images.append((handles, handles[0][1], dict(name=name, path=str(path), sha256=digest,
+                symbol=symbol, mapped_paths=list(self.paths[name]), symbol_providers=sorted(providers))))
+
+
 class MetadataArraySession:
     """Fail-closed quiescence, stable identities, and positive workload activity."""
     def __init__(self, reader, build_profile):
@@ -176,7 +236,7 @@ class MetadataArraySession:
         indexed = {}
         for row in rows:
             name, state = row.get('name'), row.get('state', {})
-            require(name not in names and name in ('libopapi.so', 'libopapi_nn.so'), 'INVALID_PROXY_SET')
+            require(name not in names and name in WRITER26_SYMBOLS, 'INVALID_PROXY_SET')
             names.add(name)
             require(all(type(state.get(key)) is int and 0 <= state[key] < 2**64
                         for key in ('instance', *COUNTERS)) and state.get('version') == 1

@@ -174,7 +174,7 @@ int main() {
             const bool ok=capture(route,&tensor);if(route!=3)assert(!ok);
             clean();++scenarios;
         }
-        control={};assert(route==3 || !capture(route,nullptr));clean();++scenarios;
+        control={};const bool null_ok=capture(route,nullptr);if(route!=3)assert(!null_ok);clean();++scenarios;
     }
     // Validation and C++ accessor failures after all getter arrays exist.
     for(int route=0;route<3;++route)for(int defect=0;defect<7;++defect) {

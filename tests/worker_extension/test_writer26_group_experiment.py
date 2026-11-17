@@ -14,6 +14,7 @@ from fault_injection.deployments.writer26_group import Config, Call, Lease, Rece
 from fault_injection.deployments.writer26_experiment import Writer26Experiment, classify_candidate
 from demoncat.runtime.vllm_ascend.worker_extension.serving import complete_tensor
 from test_writer26_inventory import CpuReader, CpuWriterModel
+from metadata_fixture import metadata_report
 
 
 class CpuV2:
@@ -32,6 +33,9 @@ class CpuV2:
         self.installed = self.sealed = False
         self.passes, self.executes, self.receipts = [], [], {}
         self.skip_callback = False
+
+    def metadata_arrays(self):
+        return metadata_report(self.writer_calls, self.build_identity)
 
     def state(self):
         core = packet(State(version=2, size=C.sizeof(State), installed=int(self.installed),

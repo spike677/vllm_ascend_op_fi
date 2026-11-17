@@ -35,6 +35,9 @@ _F20_SOURCES = (
     "fault20_fast_validation/source/fault26_readonly_trace_v1",
 )
 _F26_SOURCES = (
+    "fault39/native",
+    "fault_injection/native_adapters/writer26_group_core.h",
+    "fault_injection/native_adapters/writer26_group_runtime.cpp",
     "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/fault20_buffer_api.h",
     "fault_injection/native_adapters/legacy26_fia_bridge.inc",
     "fault_injection/native_adapters/legacy26_qmm_bridge.inc",

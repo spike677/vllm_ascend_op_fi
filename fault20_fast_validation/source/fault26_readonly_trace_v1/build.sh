@@ -2,6 +2,7 @@
 set -euo pipefail
 
 source_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source_root="$(cd "$source_dir/../../.." && pwd)"
 output_dir="${FAULT26_TRACE_OUTPUT_DIR:-/fault20/runtime/fault26_readonly_trace_v1}"
 real_dir="$output_dir/real"
 toolkit="${FAULT26_ASCEND_TOOLKIT:-/usr/local/Ascend/cann-8.5.1}"
@@ -19,6 +20,8 @@ toolkit_root="$(dirname "$toolkit")"
 smoke_library_path="$output_dir:$real_dir:$toolkit/lib64:$toolkit/devlib:$toolkit_root/lib64:${LD_LIBRARY_PATH:-}"
 
 install -d -m 0755 "$output_dir" "$real_dir"
+python3 -B "$source_root/fault39/native/test_metadata_ownership.py" --writer26 \
+  --output "$output_dir/metadata-array-cpu.json"
 
 if [[ "$use_typed_qmm_proxy" != 0 && "$use_typed_qmm_proxy" != 1 ]]; then
   echo "REFUSE: FAULT26_USE_TYPED_QMM_PROXY_BUILD must be 0 or 1" >&2
@@ -245,3 +248,7 @@ fi
 echo "expected_library_fragment=$expected_fragment"
 echo "real_libopapi=$real_source"
 echo "real_custom_opapi=$real_custom_source"
+if [[ "$use_typed_qmm_proxy" == 1 ]]; then
+  python3 -B "$source_root/fault_injection/native_build/metadata26.py" \
+    --source "$source_root" --native "$output_dir"
+fi

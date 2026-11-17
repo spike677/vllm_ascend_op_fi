@@ -29,7 +29,8 @@ class Writer26Coverage(Writer26Experiment):
         self.root_hooks = 0
         self.actual_environment_sha = None
         self.implementation_sha = digest([hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-            hashlib.sha256(Path(__file__).with_name('writer26_experiment.py').read_bytes()).hexdigest(), self.runtime.build_identity])
+            hashlib.sha256(Path(__file__).with_name('writer26_experiment.py').read_bytes()).hexdigest(), self.runtime.build_identity,
+            self.metadata.implementation_sha256])
 
     def artifact(self, name, value):
         import json
@@ -294,6 +295,7 @@ class Writer26Coverage(Writer26Experiment):
             if self.evidence_kind == 'natural_worker':
                 import torch_npu
                 torch_npu.npu.synchronize()
+        self.metadata.read()
         return not self.runtime.state()['core']['pending'] and not self.runtime.state()['core']['executing']
 
     def _recover(self, lease):
@@ -308,15 +310,18 @@ class Writer26Coverage(Writer26Experiment):
         state = self.runtime.state()
         require(not any(state['core'][key] for key in ('installed', 'pending', 'executing', 'device_bytes', 'host_bytes')),
                 'NATIVE_GROUP_NOT_RELEASED')
-        proof = self.artifact('recovery-' + key, dict(lease=asdict(lease), off=off, native_state=state))
+        proof = self.artifact('recovery-' + key, dict(lease=asdict(lease), off=off, native_state=state,
+            metadata_arrays=self.metadata.read()))
         return RecoveryReport(lease, True, True, True, proof_sha256=proof, off_output_sha256=off['writer_output_sha256'])
 
     def _health(self, worker, owner, generation):
         require(self.health_sha is not None and self.health_sha == self.baseline, 'SAME_PROCESS_HEALTHY_CONTROL_PENDING')
         hooks = len(self.handles) + self.root_hooks + int(self.installed)
         state = self.runtime.state()
+        metadata = self.metadata.read(require_activity=True)
         proof = self.artifact('worker-health-' + str(time.monotonic_ns()), dict(native=state, baseline=self.baseline,
-            off=self.health_sha, owned_hooks=hooks, residual_refs=len(self.retained), output_refs=len(self.output_refs)))
+            off=self.health_sha, owned_hooks=hooks, residual_refs=len(self.retained), output_refs=len(self.output_refs),
+            metadata_arrays=metadata))
         return WorkerHealthProof(worker, owner, generation, proof, self.baseline, self.health_sha,
             state['core']['pending'], state['core']['device_bytes'], state['core']['host_bytes'], state['core']['executing'], hooks)
 

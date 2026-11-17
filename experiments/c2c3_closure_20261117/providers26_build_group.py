@@ -11,7 +11,11 @@ import platform
 import re
 import shutil
 import subprocess
+import sys
 import uuid
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from fault_injection.native_build.metadata26 import verify_parent, RECEIPT, CPU_RECEIPT, SYMBOLS
 
 
 SOURCES = (
@@ -21,6 +25,10 @@ SOURCES = (
     'fault_injection/native_adapters/test_writer26_group_runtime_control.cpp',
     'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_qmm_underflow_api.h',
     'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_inventory.h',
+    'fault39/native/metadata_array_owner.h',
+    'fault39/native/metadata_ownership_fixture.cpp',
+    'fault39/native/test_metadata_ownership.py',
+    'fault_injection/native_build/metadata26.py',
 )
 OMIT = {'libfault26_qmm_output_underflow_abi0.so', 'libfault26_fia_writer_proxy_abi0.so'}
 REQUIRED = {'libfault26_readonly_trace_abi0.so', 'libfault26_fia_opapi_proxy.so',
@@ -83,20 +91,24 @@ def main():
         path = (parent / name).resolve(strict=True)
         if not path.is_relative_to(parent) or sha(path) != expected:
             raise RuntimeError('PARENT_FILE_CHANGED:' + name)
+    ownership = verify_parent(source, parent, files)
+    required = REQUIRED | {RECEIPT, CPU_RECEIPT}
     if out.exists():
         raise RuntimeError('NEW_EMPTY_BUILD_PATH_REQUIRED')
     out.mkdir(parents=True)
-    for name in sorted(REQUIRED):
+    for name in sorted(required):
         (out / name).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(parent / name, out / name)
     # Legacy DSOs are deliberately absent from the new bundle; source is immutable.
     assert not any((out / name).exists() for name in OMIT)
     sources = {name: sha(source / name) for name in SOURCES}
+    sources.update(ownership['sources'])
     commands = r'''set -euo pipefail
 test "$(uname -m)" = aarch64
 grep -Eq '^version=8\.5\.1$' /usr/local/Ascend/cann-8.5.1/aarch64-linux/ascend_toolkit_install.info
 flags=(-std=c++17 -O2 -Wall -Wextra -Werror -D_GLIBCXX_USE_CXX11_ABI=0 -I/usr/local/Ascend/cann-8.5.1/aarch64-linux/include -I/usr/local/Ascend/cann-8.5.1/aarch64-linux/include/aclnn -I/usr/local/Ascend/cann-8.5.1/aarch64-linux/pkg_inc)
 native=/source/fault_injection/native_adapters
+python3 -B /source/fault39/native/test_metadata_ownership.py --writer26 --output /build/metadata-array-group-cpu.json
 g++ "${flags[@]}" -fPIC -shared "$native/writer26_group_runtime.cpp" -Wl,-soname,libdcat26_group_v2.so -ldl -lpthread -o /build/libdcat26_group_v2.so
 g++ "${flags[@]}" "$native/test_writer26_group_runtime_control.cpp" -ldl -lpthread -o /build/test_group_control
 /build/test_group_control > /build/sdk-control.json
@@ -110,7 +122,7 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
     name = 'dcat26-group-build-' + nonce
     receipt = dict(schema='demoncat.writer26.group_build.v2', status='FAILED_CPU_BUILD', command=None,
         actual_npu_calls=0, device_mounts=[], source_commit=args.source_commit, sources=sources,
-        parent_manifest_sha256=args.parent_manifest_sha256, parent_files={name: files[name] for name in sorted(REQUIRED)},
+        parent_manifest_sha256=args.parent_manifest_sha256, parent_files={name: files[name] for name in sorted(required)},
         omitted_legacy_writers=sorted(OMIT), requested_image=IMAGE, actual_image_id=None,
         cann='8.5.1', container_name=name, container_owner_nonce=nonce, build_returncode=None)
     launched = False
@@ -140,7 +152,7 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
         (out / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     if receipt['build_returncode'] != 0 or not receipt['cleanup']['confirmed']:
         raise RuntimeError('SDK_BUILD_OR_CLEANUP_FAILED_RECEIPT_PRESERVED')
-    for name in REQUIRED:
+    for name in required:
         if sha(out / name) != files[name]:
             raise RuntimeError('TRACE_PROXY_DEPENDENCY_CHANGED')
     exports = (out / 'exported-symbols.txt').read_text()
@@ -149,15 +161,21 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
             raise RuntimeError('NEW_GROUP_ABI_EXPORT_MISSING:' + name)
     if re.search(r'\bdcat26[qf]_(install|continue)_v1$', exports, re.M):
         raise RuntimeError('LEGACY_WRITER_ABI_MUST_NOT_BE_PRESENT')
+    if not re.search(r'\bT dcat26_group_metadata_arrays_v1$', exports, re.M):
+        raise RuntimeError('ACTUAL_GROUP_METADATA_COUNTER_EXPORT_REQUIRED')
     receipt.update(status='SDK_BUILD_AND_CPU_CONTRACT_PASS_NOT_NATIVE_ACCEPTANCE',
         sdk_control=json.loads((out / 'sdk-control.json').read_text()),
         cpu_contract=json.loads((out / 'cpu-contract.json').read_text()))
     (out / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
-    output_files = {name: sha(out / name) for name in sorted(REQUIRED | {'libdcat26_group_v2.so'})}
+    output_files = {name: sha(out / name) for name in sorted(required | {'libdcat26_group_v2.so', 'metadata-array-group-cpu.json'})}
     (out / 'build.json').write_text(json.dumps(dict(schema='demoncat.writer26.group_deployment.v2',
         files=output_files, build_receipt_sha256=sha(out / 'build-receipt.json'), sources=sources,
         actual_npu_calls=0, native_qualified_targets=0, c2=False, c3=False,
         actual_image_id=receipt['actual_image_id'],
+        metadata_array_ownership=dict(schema='demoncat.metadata_arrays.v1', state_version=1,
+            images=dict(SYMBOLS, **{'libdcat26_group_v2.so': 'dcat26_group_metadata_arrays_v1'}),
+            reset_supported=False, runtime_quiescent_readback_required=True,
+            parent_receipt_sha256=files[RECEIPT]),
         legacy_writers_absent=True, independent_trace_required=True), indent=2) + '\n')
     print(json.dumps(dict(status=receipt['status'], bundle=str(out), manifest_sha256=sha(out / 'build.json'))))
 

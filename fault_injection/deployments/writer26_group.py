@@ -95,6 +95,8 @@ class NativeWriter26Group:
         require(os.environ.get('TASK_QUEUE_ENABLE') == '0', 'SERIAL_NATIVE_WRITER_REQUIRED')
         self.lib = C.CDLL(str(root / 'libdcat26_group_v2.so'), mode=os.RTLD_LAZY | os.RTLD_NOLOAD)
         self.build, self.build_identity, self.sha256 = build, manifest_sha256, build['files']['libdcat26_group_v2.so']
+        from ..metadata_arrays import LoadedWriter26MetadataArrays
+        self._metadata_arrays = LoadedWriter26MetadataArrays(bundle=root, manifest_sha256=manifest_sha256)
         self.mechanism, self.fia = mechanism, mechanism == '26.fia_destination'
         self.owner = owner or uuid.uuid4().hex
         words = key_words(hashlib.sha256(self.owner.encode()).hexdigest())
@@ -120,6 +122,9 @@ class NativeWriter26Group:
         require(threading.get_native_id() == self.config.thread, 'FOREIGN_GROUP_NATIVE_THREAD')
         status = self.bound_functions[name](*args)
         require(status == 0, 'NATIVE_GROUP_' + name.upper() + '_FAILED:' + str(status))
+
+    def metadata_arrays(self):
+        return self._metadata_arrays.read()
 
     def state(self):
         value = RuntimeState(version=2, size=C.sizeof(RuntimeState))
