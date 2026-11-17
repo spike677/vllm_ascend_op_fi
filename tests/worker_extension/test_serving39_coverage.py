@@ -12,6 +12,7 @@ from demoncat_fault39.coverage_adapter import (MatmulCoverageBackend, digest, na
                                               native_delta, reconcile_discovery)
 from demoncat_fault39.inspector import summarize_values
 from demoncat_fault39.schema import Fault39Config
+from metadata_fixture import metadata_report
 
 
 class NativeMock:
@@ -32,6 +33,9 @@ class NativeMock:
         self.calls = 0
         self.missing_hit = False
         self.stale_epoch = False
+
+    def metadata_arrays(self):
+        return metadata_report(self.calls, 'b' * 64)
 
     def snapshot(self):
         return dict(runtime_identity='MATCHED_BUILD', runtime_loaded=True, runtime_ready=True,
@@ -197,6 +201,18 @@ class CoverageAdapterTests(unittest.TestCase):
             self.assertEqual(native.owner, '')
             self.assertEqual(report['recovery']['pending_leases'], [])
             self.assertIsNotNone(backend.proof)
+
+    def test_group_cannot_qualify_without_actual_metadata_array_activity(self):
+        native = NativeMock()
+        native.metadata_arrays = lambda: metadata_report(0, 'b' * 64)
+        with tempfile.TemporaryDirectory() as folder:
+            backend, native = self.fixture(folder, native=native)
+            for index, _ in enumerate(backend.phases):
+                self.phase(backend, native, index)
+            with self.assertRaisesRegex(RuntimeError, 'GROUP_COVERAGE_OR_RECOVERY_INCOMPLETE'):
+                backend.finalize()
+            self.assertIsNone(backend.proof)
+            self.assertFalse(backend.recovered)
 
     def test_unobserved_native_call_cannot_disappear_from_discovery(self):
         with tempfile.TemporaryDirectory() as folder:

@@ -71,6 +71,13 @@ class CtypesMatmulRuntime:
         self._request_identity = None
         self.last_error = None
 
+    def metadata_arrays(self):
+        """Additive read-only resource proof required by the group adapter."""
+        from ..metadata_arrays import LoadedMetadataArrays
+        if not hasattr(self, '_metadata_arrays'):
+            self._metadata_arrays = LoadedMetadataArrays(kind='20', build_profile=self.build_profile)
+        return self._metadata_arrays.read()
+
     def configure_request_lifecycle(self, *, owner, generation):
         """Bind a real Worker lease once; installation will begin paused."""
         if (self._callback is not None or self._pending is not None

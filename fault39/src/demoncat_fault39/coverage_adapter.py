@@ -121,6 +121,8 @@ class MatmulCoverageBackend:
         self.adapter_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
         self.observer_sha256 = self.adapter_sha256  # CPU adapters explicitly override their scope kind.
         self.build_profile = self.native.snapshot().get('build_profile_sha256')
+        from fault_injection.metadata_arrays import MetadataArraySession
+        self.metadata = MetadataArraySession(getattr(native, 'metadata_arrays', None), self.build_profile)
 
     @property
     def phase(self):
@@ -142,6 +144,7 @@ class MatmulCoverageBackend:
                 and state.get('exact_cache_api_version') == 2
                 and state.get('owner') in ('', self.owner), 'NATIVE_BUILD_OWNER_OR_MODEL_CHANGED')
         native_counts(state)
+        state['metadata_arrays'] = self.metadata.read()
         return state
 
     def prepare(self):
@@ -157,6 +160,7 @@ class MatmulCoverageBackend:
 
     def start(self):
         require(self.config is not None and not self.started, 'ONE_BOUNDED_GROUP_ATTEMPT_REQUIRED')
+        self.artifact('metadata-arrays-initial', self.metadata.read())
         self.started = True
         self.started_at = time.monotonic()
 
@@ -353,7 +357,8 @@ class MatmulCoverageBackend:
             self.baseline_output = output_sha256
         require(not healthy or output_sha256 == self.baseline_output, 'COMPLETE_MODEL_LOSSLESS_OR_OFF_CHANGED')
         self.current.update(model_output_sha256=output_sha256, model_output_finite=model_output_finite,
-                            native_denominator=sum(total.values()), independent_denominator_complete=True)
+                            native_denominator=sum(total.values()), independent_denominator_complete=True,
+                            metadata_arrays=after['metadata_arrays'])
         self._stop_native()
         self.rows.append(self.current)
         self.last_output = output_sha256
@@ -407,7 +412,8 @@ class MatmulCoverageBackend:
         self.group = QualifiedTargetSet(candidates, tuple(leases), tuple(proofs), cap,
                                        selection='all_eligible', trigger=self.trigger)
         native = self.snapshot()
-        implementation_sha256 = digest([self.adapter_sha256, self.observer_sha256, native['build_profile_sha256']])
+        implementation_sha256 = digest([self.adapter_sha256, self.observer_sha256, native['build_profile_sha256'],
+                                        self.metadata.implementation_sha256])
         scope = CoverageScope('39.matmul_range', self.workload_sha256,
                               digest([native['build_profile_sha256'], self.worker_identity]), implementation_sha256,
                               evidence_kind=self.evidence_kind)
@@ -445,6 +451,7 @@ class MatmulCoverageBackend:
         from fault_injection.coverage_session import WorkerHealthProof
         state = self.snapshot()
         require(not state['owner'], 'NATIVE_OWNER_NOT_RELEASED')
+        state['metadata_arrays'] = self.metadata.read(require_activity=True)
         proof = self.artifact('worker-health', dict(native=state, baseline=self.baseline_output, off=self.last_output,
                                                    owned_hooks=self.owned_hooks, worker=list(worker)))
         return WorkerHealthProof(worker, owner, generation, proof, self.baseline_output, self.last_output,

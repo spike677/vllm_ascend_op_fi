@@ -169,6 +169,14 @@ class CtypesProvider:
             return result
         raise RuntimeError("NATIVE_SNAPSHOT_UNSTABLE_SIZE")
 
+    def metadata_arrays(self):
+        """Read actual loaded-proxy counters; no symbol-presence qualification."""
+        from fault_injection.metadata_arrays import LoadedMetadataArrays
+        if not hasattr(self, '_metadata_arrays'):
+            self._metadata_arrays = LoadedMetadataArrays(kind='39',
+                build_profile=self.snapshot().get('build_profile_sha256'))
+        return self._metadata_arrays.read()
+
     def _stop(self, operation, owner, generation, timeout_ms):
         if type(generation) is not int or not 1 <= generation < 2**64:
             raise ValueError("Invalid generation")

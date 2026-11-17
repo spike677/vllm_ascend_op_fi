@@ -19,6 +19,7 @@ from demoncat.runtime.vllm_ascend.worker_extension.quant_group import QuantGroup
 from demoncat.runtime.vllm_ascend.worker_extension.quant_inventory import PublicQuantInventory
 from demoncat.runtime.vllm_ascend.worker_extension.serving import complete_tensor
 import test_serving20_qmm as qmm
+from metadata_fixture import metadata_report
 
 
 class TwoProjectionModel(qmm.CpuQmmModel):
@@ -42,6 +43,9 @@ class GroupRuntimeMock(qmm.CpuQmmRuntime):
         self.last_error = None
         self.skip_callback = False
         self.raw_calls = 0
+
+    def metadata_arrays(self):
+        return metadata_report(self.raw_calls, self.build_profile)
 
     def configure_group_lifecycle(self, **kwargs):
         self.configuration = kwargs
@@ -199,6 +203,15 @@ class QuantGroupTests(unittest.TestCase):
         self.assertIsNone(backend.runtime.callback)
         self.assertEqual(backend.runtime.group_state()['target_count'], 0)
         self.assertEqual(backend.baseline_output, backend.last_output)
+
+    def test_group_cannot_qualify_without_actual_metadata_array_activity(self):
+        runtime = GroupRuntimeMock(self.folder)
+        runtime.metadata_arrays = lambda: metadata_report(0, runtime.build_profile)
+        backend = self.backend(runtime=runtime)
+        with self.assertRaisesRegex(RuntimeError, 'GROUP_COVERAGE_OR_RECOVERY_INCOMPLETE'):
+            self.complete(backend)
+        self.assertIsNone(backend.proof)
+        self.assertFalse(getattr(backend, 'recovered', False))
 
     def test_every_match_requires_live_proof_and_counts_repeated_calls(self):
         first = self.backend()

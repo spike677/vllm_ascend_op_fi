@@ -58,6 +58,8 @@ class QuantGroupBackend(PublicQuantInventory):
         self.coverage = self.observer = self.group = self.proof = None
         self.adapter_sha = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
         self.observer_sha = hashlib.sha256(Path(__file__).with_name('quant_inventory.py').read_bytes()).hexdigest()
+        from fault_injection.metadata_arrays import MetadataArraySession
+        self.metadata = MetadataArraySession(getattr(runtime, 'metadata_arrays', None), runtime.build_profile)
 
     @property
     def phase(self):
@@ -82,6 +84,7 @@ class QuantGroupBackend(PublicQuantInventory):
         return value
 
     def paused(self, registered=True):
+        self.metadata.read()
         states = self.runtime.snapshot()
         for operator, row in states.items():
             owned = registered and operator == self.runtime.operator
@@ -98,6 +101,7 @@ class QuantGroupBackend(PublicQuantInventory):
         self.started = True
         self.started_at = time.monotonic()
         self.paused(False)
+        self.artifact('metadata-arrays-initial', self.metadata.latest)
         self.artifact('environment', self.environment())
         require(_LEASE.acquire(blocking=False), 'ANOTHER_NATIVE_SESSION_OWNS_PROCESS')
         self.locked = True
@@ -284,7 +288,8 @@ class QuantGroupBackend(PublicQuantInventory):
         row = self.current
         row.pop('ordinals')
         row.update(model_output_sha256=model_output_sha256, model_output_finite=model_output_finite,
-            public_end=len(self.public_calls), native_after=after, independent_native_qmm_calls=sum(total.values()))
+            public_end=len(self.public_calls), native_after=after, independent_native_qmm_calls=sum(total.values()),
+            metadata_arrays=self.metadata.latest)
         self.rows.append(row)
         self.current = None
         self.last_output = model_output_sha256
@@ -352,7 +357,8 @@ class QuantGroupBackend(PublicQuantInventory):
             group_recovery=True, recovery_scope='target_set', stop_policy='bounded_session', lossless_modes=('lossless',))
         self.group = QualifiedTargetSet(candidates, tuple(leases), tuple(proofs), capability,
                                         selection='all_eligible', trigger=self.trigger)
-        implementation = digest([self.adapter_sha, self.observer_sha, self.runtime.build_profile])
+        implementation = digest([self.adapter_sha, self.observer_sha, self.runtime.build_profile,
+                                 self.metadata.implementation_sha256])
         scope = CoverageScope('20.buffer_substitute', self.workload_sha,
             digest([self.environment_sha, self.worker_identity, self.runtime.operator]), implementation, self.evidence_kind)
         self.observer = IndependentCallObserver(source='independent_native_trace', observer_id=self.group_owner + ':native-v3',
@@ -392,16 +398,18 @@ class QuantGroupBackend(PublicQuantInventory):
         equal = bool(off and off['input_sha256_before'] == reference['input_sha256_before']
                      and off['output_sha256'] == reference['output_sha256'])
         proof = self.artifact('target-off', dict(lease=asdict(lease), reference=reference, off=off,
-                                               native=self.runtime.snapshot(), group=self.runtime.group_state()))
+            native=self.runtime.snapshot(), group=self.runtime.group_state(), metadata_arrays=self.metadata.read()))
         return RecoveryReport(lease, True, self.remove_native is None, equal,
             None if equal else 'TARGET_OFF_NOT_PROVEN', proof, off['output_sha256'] if off else None)
 
     def _health(self, worker, owner, generation):
         from fault_injection.coverage_session import WorkerHealthProof
         states = self.paused(False)
+        metadata = self.metadata.read(require_activity=True)
         hooks = self.owned_hooks + len(self.patches) + len(self.api_patches)
         proof = self.artifact('worker-health', dict(native=states, group=self.runtime.group_state(),
-            worker=worker, baseline=self.baseline_output, off=self.last_output, owned_hooks=hooks))
+            worker=worker, baseline=self.baseline_output, off=self.last_output, owned_hooks=hooks,
+            metadata_arrays=metadata))
         return WorkerHealthProof(worker, owner, generation, proof, self.baseline_output, self.last_output,
                                   0, 0, 0, 0, hooks)
 

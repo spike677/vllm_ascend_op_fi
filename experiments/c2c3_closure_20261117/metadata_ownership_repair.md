@@ -38,9 +38,14 @@ element sizes, logging truncation and a throwing log sink. Query ABI failures
 are also checked. The build profile fingerprints the shared ownership header,
 test source and counter capability; existing bundles lack this capability.
 
-The authoring Windows host has no C++ compiler. Local source generation succeeds
-and reports `NOT_RUN_COMPILER_UNAVAILABLE`; this is not a passing CPU or SDK
-build. The root owner should run, without a device or container requirement:
+The authoring Windows host has no C++ compiler. Local source generation reports
+`NOT_RUN_COMPILER_UNAVAILABLE`. The root owner subsequently ran the exact
+production-body fixture on the 124 host, without NPU calls: the first attempt
+exposed strict `%p` vararg diagnostics; the production logging arguments were
+fixed without weakening compiler warnings. The fresh `source-a38` attempt at
+`/home/17-fault-c2c3-20261117/metadata-ownership-cpu-a2/receipt.json` reports
+`CPU_CONTRACT_PASS`: 144 scenarios, 201 real `new[]`, 201 real `delete[]`, zero
+live arrays. This CPU result is not an SDK or NPU acceptance. Reproduce with:
 
 ```sh
 python3 -B "$SOURCE/fault39/native/test_metadata_ownership.py" \
@@ -49,7 +54,25 @@ python3 -B "$SOURCE/fault39/native/test_metadata_ownership.py" \
 
 Only after those CPU contracts, fresh exact-SDK proxy builds, loaded-image
 identity checks and same-Worker before/after metadata counter readbacks pass
-may the root rerun the full natural B/L/F/OFF and live C3 sequence. This commit
-does not grant either mechanism new C2/C3 status. The following Python/runtime
-integration must enforce the new counter gate; source ownership alone is not
-a complete serving acceptance result.
+may the root rerun the full natural B/L/F/OFF and live C3 sequence. No change here
+grants either mechanism new C2/C3 status.
+
+The group runtimes now enforce `fault_injection/metadata_arrays.py`. It checks
+the actual mapped inode/device, one unambiguous instance of every profiled
+proxy, the self-hashed build profile, manifest proxy bytes and exact `dladdr`
+origin of each counter export. Handles use `RTLD_NOLOAD`; no CANN image is
+loaded by this observer. Old profiles, missing counters, mixed builds and
+symbol resolution into a different DSO are rejected. Each request and the
+final Worker health artifact retain raw counter readbacks. The implementation
+digest is bound into the group coverage scope.
+
+Before/after readbacks require zero active/live arrays, equal acquired/released
+counts, zero getter/capture/ownership errors, stable independent counter
+instances and monotonic counts. Final health additionally requires positive
+metadata array activity during this actual workload; an unused split proxy
+may remain zero. Missing metadata evidence cannot be converted into literal
+zero host bytes in a Worker health proof. Counter tests include nonzero
+leaks/errors, stale identities, missing APIs, wrong symbol providers, array
+counter resets and no-activity group finalization. These Python tests are CPU
+contracts only. Existing buffer, workspace, hook and lease checks remain
+mandatory alongside these SDK-array checks.
