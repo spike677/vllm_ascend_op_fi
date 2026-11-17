@@ -81,6 +81,14 @@ cover the raw/coverage auditors and cache-site, missing-capture, and immutable
 sidecar review boundaries; they are CPU contract checks, not additional NPU
 acceptance cases.
 
+The subsequent reviewer hardening makes any unchanged Native39 target output
+an explicit failure, even when all replacement/execution counters pass. The
+unchanged a6 originals were re-audited into `agent7-native39-a6-audit-v4` with
+that stricter gate: every fault phase still has 113 changed outputs / 113
+Native targets and all checks pass. The original v3 summary above is retained.
+Nineteen focused CPU tests now pass, including rejection when only112 of113
+target effects are proved; this does not add a new NPU run.
+
 For the 17-mechanism rollup, this is one native Fault39 route, not an additional
 mechanism for every model/node. If root grants this scoped C3, the existing
 Fault18/20/39 checkpoint becomes **3/17 C2 and 3/17 C3**. The separate natural

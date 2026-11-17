@@ -45,6 +45,14 @@ def target_key(row):
     return tuple(row['site']), tuple(row['native_delta'][0]['key'])
 
 
+def fault_effect_errors(effects, native_count):
+    # A valid continuation/replacement is not itself a numerical fault effect.
+    # Every planned target needs independent output-byte evidence of change.
+    if native_count <= 0 or effects.get('changed_outputs', 0) != native_count:
+        return ['PER_TARGET_NUMERICAL_EFFECT_INCOMPLETE']
+    return []
+
+
 def review_stage(folder, driver, identity, out, artifact_index, c2=None):
     path = folder / 'runtime/serving_receipt.json'
     data = load(path)
@@ -144,6 +152,7 @@ def review_stage(folder, driver, identity, out, artifact_index, c2=None):
                 if obs['changed'] != [0, 0] or any(t['original_address'] != t['run_address'] for t in proof['tensors']):
                     errors.append(name + ':OFF_SUBSTITUTION_PRESENT')
         if is_fault:
+            errors.extend(name + ':' + reason for reason in fault_effect_errors(effects, len(native)))
             if fault_outputs is not None and current_outputs != fault_outputs:
                 errors.append(name + ':PER_TARGET_FAULT_REPEAT_CHANGED')
             fault_outputs = current_outputs

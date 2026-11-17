@@ -4,7 +4,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from experiments.c2c3_closure_20261117.review_native39_group_124 import statistics, target_key
+from experiments.c2c3_closure_20261117.review_native39_group_124 import fault_effect_errors, statistics, target_key
 
 
 class Native39RecordedReviewTests(unittest.TestCase):
@@ -16,6 +16,14 @@ class Native39RecordedReviewTests(unittest.TestCase):
     def test_ambiguous_native_call_count_refused(self):
         with self.assertRaisesRegex(ValueError, 'ONE_NATIVE_RUN'):
             target_key(dict(site=[1, 'linear', 0], native_delta=[{'key': ['s', 1, 2], 'count': 2}]))
+
+    def test_one_missing_numerical_effect_cannot_pass_all_target_review(self):
+        # Original native execution and replacement counts can still be 113.
+        # One unchanged target is sufficient to reject the whole effect gate.
+        self.assertEqual(fault_effect_errors({'changed_outputs': 112}, 113),
+                         ['PER_TARGET_NUMERICAL_EFFECT_INCOMPLETE'])
+        self.assertEqual(fault_effect_errors({'changed_outputs': 113}, 113), [])
+        self.assertTrue(fault_effect_errors({}, 0))
 
     def test_missing_capture_is_not_inherited_from_other_stage(self):
         with tempfile.TemporaryDirectory() as temporary:
