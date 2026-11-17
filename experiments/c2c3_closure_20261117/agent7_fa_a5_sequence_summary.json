@@ -1,0 +1,638 @@
+{
+  "schema": "demoncat.agent7.fa_a5_review.v1",
+  "status": "STANDALONE_FOUR_CALL_SEQUENCE_INDEPENDENTLY_REVIEWED",
+  "checks_passed": true,
+  "reviewer": {
+    "path": "/home/17-fault-c2c3-20261117/agent7_review_fa_a5_v1.py",
+    "bytes": 16448,
+    "sha256": "e760107a08607ba1313448ae13b6bd3f01bb415ab18e3aeb0c24759223f82060"
+  },
+  "controller": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/controller.json",
+    "bytes": 54323,
+    "sha256": "8302e00c12f98a5b37040163179fc196ef36c89af7a75f2442b5af8eb3a4437e"
+  },
+  "result": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/result.json",
+    "bytes": 121411,
+    "sha256": "e919244c2a615ec71413fe859fd28a4c26ecd929941a1e0a1191bb292832eea6"
+  },
+  "source_snapshots": {
+    "source-a33": {
+      "manifest": {
+        "path": "/home/17-fault-c2c3-20261117/source-a33/source_manifest.json",
+        "bytes": 114409,
+        "sha256": "5330df14ad254a2d93638417634d347b8fd53e248480ecb4fd5f57f0951124a9"
+      },
+      "commit": "498325a85bab978af1d40f89859c2f0a4e22453d",
+      "checked": 609,
+      "actual_inventory_sha256": "718f49b3516a8ed358f1f0b2fdee325fedcf1ca6581c1c08f2343808d7c0af7d",
+      "mismatches": []
+    },
+    "source-a34": {
+      "manifest": {
+        "path": "/home/17-fault-c2c3-20261117/source-a34/source_manifest.json",
+        "bytes": 116138,
+        "sha256": "5598504016cd09775055ffc741ce5d76ba7562e160b7aa86c611c08c738cb567"
+      },
+      "commit": "09cdedfb5c3e9ebbdb22126ef1e574848c81f43a",
+      "checked": 618,
+      "actual_inventory_sha256": "0ee55cf5c8dc8d0e4ff3ee6140d8cea42c853ee817986a47e11bbe6179e3a5d2",
+      "mismatches": []
+    }
+  },
+  "actual_probe_source": "source-a33",
+  "controller_source_snapshot_declared_by_root": "source-a34",
+  "controller_snapshot_path_not_unique_from_shared_script_hash": true,
+  "source_identity_limits": "Controller frozen_scripts/source_manifests arrays are empty; exact code/manifest matches were checked post-run, not upgraded to a recorded launch-time snapshot assertion.",
+  "build_completion": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/completion.json",
+    "bytes": 218371,
+    "sha256": "7189c077dad9411e53240d6a0cc9190477d00433d5b1325833c0fcb26c7cac5d"
+  },
+  "vendor_artifacts_verified": 851,
+  "actual_image_id": "sha256:9008234fbe4948ce9e0383c34972044b369e42dc7711d44d5878f52267b8614a",
+  "exact_sdk_header_files": [
+    {
+      "relative_path": "include/exe_graph/runtime/tiling_context.h",
+      "sha256": "32e4addf6b18587d3c0d6c96b3cb997eaf9672eb7464835acbc1d076c2fa3f37",
+      "bytes": 28701
+    },
+    {
+      "relative_path": "include/exe_graph/runtime/shape.h",
+      "sha256": "5e9f78065fae63e17e09e9a7f70f659610759519827f1c8f65335c2f5f3971a5",
+      "bytes": 5843
+    },
+    {
+      "relative_path": "include/ascendc/host_api/tiling/template_argument.h",
+      "sha256": "0993117c58ee7bff1e8ef972c63504e9f1a38375ed3618b63baed99927d3ac79",
+      "bytes": 14591
+    },
+    {
+      "relative_path": "aarch64-linux/tikcpp/ascendc_kernel_cmake/fwk_modules/makeself.cmake",
+      "sha256": "d9a781b1fe35a7b6db1631fa5bd67a1b3309d7973f5d19ba3a209a43f456934b",
+      "bytes": 2250
+    },
+    {
+      "relative_path": "aarch64-linux/ascendc/include/highlevel_api/kernel_tiling/kernel_tiling.h",
+      "sha256": "0f50fe7d81d4e01f80b62c19d816ad28151ac1502f708b70454efc8599ddaf44",
+      "bytes": 19847
+    }
+  ],
+  "observer_receipt": {
+    "path": "/home/17-fault-c2c3-20261117/attention-preflight-a4/cann910/attention-preflight/result.json",
+    "bytes": 82566,
+    "sha256": "428b3385a2d742b5c66746de4e85b4355bafcd96d4c367314a7679560858d74e"
+  },
+  "observer_library": {
+    "path": "/home/17-fault-c2c3-20261117/attention-preflight-a4/cann910/attention-preflight/libdcat_attention_observer.so",
+    "bytes": 68584,
+    "sha256": "ef4cfd1962fbafd41edb600e26291fcf65740c68c64500dd232a2ca1c9a84a49"
+  },
+  "runtime_log": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/runtime/runtime.jsonl",
+    "bytes": 20214,
+    "sha256": "4986f78a6734601d48b9ddb1c23ee5d4e641de48a67ec40bd54f82564595c087"
+  },
+  "registered_binary": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/runtime/registered-1-1.bin",
+    "bytes": 143008,
+    "sha256": "967265862973a761ae7de2c7b54600e246f067898cd2c97f297aa9a12e784eb0"
+  },
+  "cpu_decoder": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/fa_pod_decoder",
+    "bytes": 114864,
+    "sha256": "17adafc55a6ab899397cf95903114925d9975896012d4837d5a59f0a6dd9417a"
+  },
+  "actual_launch_count": 4,
+  "actual_successful_sync_count": 8,
+  "input_manifest": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/inputs.json",
+    "bytes": 1070,
+    "sha256": "00ab7aae9087e8c3fa8c66499b34dc6275a1922a680ee41fe60a56fe3e745407"
+  },
+  "declared_inputs_reconstructed_on_cpu": true,
+  "input_limit": "Each live post-call full device readback was checked by the pinned probe and recorded as true; separate post-call input byte files were not saved for offline rehash.",
+  "gates": {
+    "gate": {
+      "status": "NO_LIVE_OWNER_CORROBORATED",
+      "cards": [
+        5
+      ],
+      "original_blocker": {
+        "card": 5,
+        "pod_uid": "33991897-e3ed-4910-aa2c-835b9fe682a0",
+        "container": "ascend",
+        "resource": "huawei.com/Ascend910",
+        "device_id": "Ascend910-5",
+        "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED",
+        "reason": "KUBELET_DEVICE_ALLOCATION",
+        "checkpoint": "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint",
+        "checkpoint_sha256": "b570d0ea0d0280157a26d48c536a6aacff8cdf4fb55037f3b3882e85c1395414",
+        "mtime_utc": "2026-11-17T17:11:24.586580+00:00"
+      },
+      "evidence_sha256": "6f8021039717ef2dab046e31582b4edfb42f587a4983182b1f4279f20173ccb7",
+      "internal_allocation_clearance_proven": false,
+      "driver_initialization_available_proven": false,
+      "exclusive_device_reservation": false,
+      "original_api_payloads_independently_replayed": false
+    },
+    "post_cleanup_gate": {
+      "status": "NO_LIVE_OWNER_CORROBORATED",
+      "cards": [
+        5
+      ],
+      "original_blocker": {
+        "card": 5,
+        "pod_uid": "33991897-e3ed-4910-aa2c-835b9fe682a0",
+        "container": "ascend",
+        "resource": "huawei.com/Ascend910",
+        "device_id": "Ascend910-5",
+        "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED",
+        "reason": "KUBELET_DEVICE_ALLOCATION",
+        "checkpoint": "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint",
+        "checkpoint_sha256": "b570d0ea0d0280157a26d48c536a6aacff8cdf4fb55037f3b3882e85c1395414",
+        "mtime_utc": "2026-11-17T17:11:24.586580+00:00"
+      },
+      "evidence_sha256": "0b81c6b81801702e6a6e07ad5f980434ee91fcffc2248cff59eeef69dcf44de8",
+      "internal_allocation_clearance_proven": false,
+      "driver_initialization_available_proven": false,
+      "exclusive_device_reservation": false,
+      "original_api_payloads_independently_replayed": false
+    }
+  },
+  "gate_scope_limit": "source-a34 default stale review was overly broad; this historical a5 actual scope matches only the approved UID/checkpoint on card5. Future attempts require the separately reviewed explicit opt-in fix.",
+  "calls": [
+    {
+      "phase": "baseline",
+      "call_id": "750322e30b5c4538a5641ef0d0d1e5b5",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "s2_base": 128,
+      "s2_group": 1024,
+      "tiling_key": 22619644976,
+      "block_dim": 16,
+      "schedule_mode": 0,
+      "raw_sha256": "83fe04ff0781557e66f333520f2e7fad72540ffe8e7b73253c3fab66224661a1",
+      "args_sha256": "4d72588a43ed32aec17b817fdd93170873ed4fd202de336dcd9716553af1cf4a",
+      "public_pod_fields_compared": 205,
+      "registered_kernel_sha256": "967265862973a761ae7de2c7b54600e246f067898cd2c97f297aa9a12e784eb0",
+      "payload": {
+        "output-0": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/0-baseline/output-0.bin",
+          "bytes": 67108864,
+          "sha256": "3455f8e81b67b0d6dccb61af02f24c6a43e54e6b4242d9073f16edf524388ed2",
+          "shape": [
+            8,
+            16,
+            2048,
+            128
+          ],
+          "dtype": "torch.float16",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-1": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/0-baseline/output-1.bin",
+          "bytes": 8388608,
+          "sha256": "2665da32c4f3518007a949b253498ad69a26ec15da7b1d46a55d89bb57da0546",
+          "shape": [
+            8,
+            16,
+            2048,
+            8
+          ],
+          "dtype": "torch.float32",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-2": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/0-baseline/output-2.bin",
+          "bytes": 8388608,
+          "sha256": "0358b98906e696b2ce4d5f2595123d414e894fa49345eadbc062c5f13c83d5b8",
+          "shape": [
+            8,
+            16,
+            2048,
+            8
+          ],
+          "dtype": "torch.float32",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-3": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/0-baseline/output-3.bin",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ],
+          "dtype": "torch.float16",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-4": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/0-baseline/output-4.bin",
+          "bytes": 8,
+          "sha256": "6a69a6cc7473a16302890cd2a9e93e347281f6ea0e1bb784e589753bed0b3324",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-5": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/0-baseline/output-5.bin",
+          "bytes": 8,
+          "sha256": "6a69a6cc7473a16302890cd2a9e93e347281f6ea0e1bb784e589753bed0b3324",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        }
+      },
+      "complete_byte_exact_vs_baseline": true,
+      "post_device_input_check_recorded": true
+    },
+    {
+      "phase": "baseline_repeat",
+      "call_id": "ac90bd8054cf40fda8700988333e518a",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "s2_base": 128,
+      "s2_group": 1024,
+      "tiling_key": 22619644976,
+      "block_dim": 16,
+      "schedule_mode": 0,
+      "raw_sha256": "83fe04ff0781557e66f333520f2e7fad72540ffe8e7b73253c3fab66224661a1",
+      "args_sha256": "fd64a3dc2cf8f6bdec325dc38d720d2c9500d55b026101c8890fb9c11ff61161",
+      "public_pod_fields_compared": 205,
+      "registered_kernel_sha256": "967265862973a761ae7de2c7b54600e246f067898cd2c97f297aa9a12e784eb0",
+      "payload": {
+        "output-0": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/1-baseline_repeat/output-0.bin",
+          "bytes": 67108864,
+          "sha256": "3455f8e81b67b0d6dccb61af02f24c6a43e54e6b4242d9073f16edf524388ed2",
+          "shape": [
+            8,
+            16,
+            2048,
+            128
+          ],
+          "dtype": "torch.float16",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-1": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/1-baseline_repeat/output-1.bin",
+          "bytes": 8388608,
+          "sha256": "2665da32c4f3518007a949b253498ad69a26ec15da7b1d46a55d89bb57da0546",
+          "shape": [
+            8,
+            16,
+            2048,
+            8
+          ],
+          "dtype": "torch.float32",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-2": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/1-baseline_repeat/output-2.bin",
+          "bytes": 8388608,
+          "sha256": "0358b98906e696b2ce4d5f2595123d414e894fa49345eadbc062c5f13c83d5b8",
+          "shape": [
+            8,
+            16,
+            2048,
+            8
+          ],
+          "dtype": "torch.float32",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-3": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/1-baseline_repeat/output-3.bin",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ],
+          "dtype": "torch.float16",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-4": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/1-baseline_repeat/output-4.bin",
+          "bytes": 8,
+          "sha256": "6a69a6cc7473a16302890cd2a9e93e347281f6ea0e1bb784e589753bed0b3324",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-5": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/1-baseline_repeat/output-5.bin",
+          "bytes": 8,
+          "sha256": "6a69a6cc7473a16302890cd2a9e93e347281f6ea0e1bb784e589753bed0b3324",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        }
+      },
+      "complete_byte_exact_vs_baseline": true,
+      "post_device_input_check_recorded": true
+    },
+    {
+      "phase": "fault",
+      "call_id": "426b05dc941744c99acd8fcc45f770a1",
+      "actual_factors": {
+        "m": 64,
+        "n_ratio": 4
+      },
+      "s2_base": 128,
+      "s2_group": 512,
+      "tiling_key": 22619644976,
+      "block_dim": 16,
+      "schedule_mode": 0,
+      "raw_sha256": "675314806e2e1f05b0a4a8b6a6d2c5389c6992c071c70b0f22d2b813cf68a66c",
+      "args_sha256": "4469faf2708cee1ca51acf3bc60c8589f33048c2a3a92bd1f894be208c969b00",
+      "public_pod_fields_compared": 205,
+      "registered_kernel_sha256": "967265862973a761ae7de2c7b54600e246f067898cd2c97f297aa9a12e784eb0",
+      "payload": {
+        "output-0": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/2-fault/output-0.bin",
+          "bytes": 67108864,
+          "sha256": "f27c74c7e630118303c2845c4ee09fdab3bf8001c889c76b640b1e7e72219d0b",
+          "shape": [
+            8,
+            16,
+            2048,
+            128
+          ],
+          "dtype": "torch.float16",
+          "finite": true,
+          "byte_exact_vs_baseline": false,
+          "changed_bytes": 1112,
+          "changed_elements": 1112,
+          "max_absolute_difference": 7.62939453125e-06
+        },
+        "output-1": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/2-fault/output-1.bin",
+          "bytes": 8388608,
+          "sha256": "2665da32c4f3518007a949b253498ad69a26ec15da7b1d46a55d89bb57da0546",
+          "shape": [
+            8,
+            16,
+            2048,
+            8
+          ],
+          "dtype": "torch.float32",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-2": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/2-fault/output-2.bin",
+          "bytes": 8388608,
+          "sha256": "afadd44f13d716457cb9228eb0933665f21207bbddd54e7580f4ecc9f347aa17",
+          "shape": [
+            8,
+            16,
+            2048,
+            8
+          ],
+          "dtype": "torch.float32",
+          "finite": true,
+          "byte_exact_vs_baseline": false,
+          "changed_bytes": 521920,
+          "changed_elements": 519936,
+          "max_absolute_difference": 0.000244140625
+        },
+        "output-3": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/2-fault/output-3.bin",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ],
+          "dtype": "torch.float16",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-4": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/2-fault/output-4.bin",
+          "bytes": 8,
+          "sha256": "6a69a6cc7473a16302890cd2a9e93e347281f6ea0e1bb784e589753bed0b3324",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-5": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/2-fault/output-5.bin",
+          "bytes": 8,
+          "sha256": "6a69a6cc7473a16302890cd2a9e93e347281f6ea0e1bb784e589753bed0b3324",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        }
+      },
+      "complete_byte_exact_vs_baseline": false,
+      "post_device_input_check_recorded": true
+    },
+    {
+      "phase": "off",
+      "call_id": "b773adf236b746cb8400008b5efc9680",
+      "actual_factors": {
+        "m": 128,
+        "n_ratio": 8
+      },
+      "s2_base": 128,
+      "s2_group": 1024,
+      "tiling_key": 22619644976,
+      "block_dim": 16,
+      "schedule_mode": 0,
+      "raw_sha256": "83fe04ff0781557e66f333520f2e7fad72540ffe8e7b73253c3fab66224661a1",
+      "args_sha256": "f1256865141ce4eef422aff74e6acc3e53cd7253453dc3469e2a658c6fb3e74a",
+      "public_pod_fields_compared": 205,
+      "registered_kernel_sha256": "967265862973a761ae7de2c7b54600e246f067898cd2c97f297aa9a12e784eb0",
+      "payload": {
+        "output-0": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/3-off/output-0.bin",
+          "bytes": 67108864,
+          "sha256": "3455f8e81b67b0d6dccb61af02f24c6a43e54e6b4242d9073f16edf524388ed2",
+          "shape": [
+            8,
+            16,
+            2048,
+            128
+          ],
+          "dtype": "torch.float16",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-1": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/3-off/output-1.bin",
+          "bytes": 8388608,
+          "sha256": "2665da32c4f3518007a949b253498ad69a26ec15da7b1d46a55d89bb57da0546",
+          "shape": [
+            8,
+            16,
+            2048,
+            8
+          ],
+          "dtype": "torch.float32",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-2": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/3-off/output-2.bin",
+          "bytes": 8388608,
+          "sha256": "0358b98906e696b2ce4d5f2595123d414e894fa49345eadbc062c5f13c83d5b8",
+          "shape": [
+            8,
+            16,
+            2048,
+            8
+          ],
+          "dtype": "torch.float32",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-3": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/3-off/output-3.bin",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "shape": [
+            0
+          ],
+          "dtype": "torch.float16",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-4": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/3-off/output-4.bin",
+          "bytes": 8,
+          "sha256": "6a69a6cc7473a16302890cd2a9e93e347281f6ea0e1bb784e589753bed0b3324",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        },
+        "output-5": {
+          "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a5/fa-fresh-b8-joint-sequence/run/3-off/output-5.bin",
+          "bytes": 8,
+          "sha256": "6a69a6cc7473a16302890cd2a9e93e347281f6ea0e1bb784e589753bed0b3324",
+          "shape": [
+            1
+          ],
+          "dtype": "torch.int64",
+          "finite": true,
+          "byte_exact_vs_baseline": true,
+          "changed_bytes": 0,
+          "changed_elements": 0,
+          "max_absolute_difference": 0.0
+        }
+      },
+      "complete_byte_exact_vs_baseline": true,
+      "post_device_input_check_recorded": true
+    }
+  ],
+  "qualifications": {
+    "standalone_native_strategy_effect_and_off": true,
+    "stock_package_bridge": false,
+    "natural_model": false,
+    "standard_worker": false,
+    "batch_causal_chain": false,
+    "m_only_attribution": false,
+    "repeated_fault_stability": false,
+    "statistics_mix_e5": false,
+    "c2": false,
+    "c3": false
+  },
+  "no_raw_payloads_exported": true,
+  "audit_npu_calls": 0,
+  "audit_container_starts": 0
+}
