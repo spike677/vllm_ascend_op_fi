@@ -1,0 +1,65 @@
+"""Failure-sensitive contracts; CPU receipts never qualify HCCL or injection."""
+import json
+from pathlib import Path
+import tempfile
+import unittest
+
+import torch
+
+from fault_injection.collective25 import ReduceScatterSession
+from experiments.c2c3_closure_20261117.collective25_closure_probe import RankReceipts, case_specs, make_source
+from experiments.c2c3_closure_20261117.collective25_supervisor import assess
+
+
+class Collective25Closure(unittest.TestCase):
+    def test_release_requires_close_and_drops_local_group_observations(self):
+        session = ReduceScatterSession(torch.nn.Identity(), simulation=True)
+        session.observations.append(dict(group=object()))
+        with self.assertRaisesRegex(RuntimeError, 'Close'):
+            session.release_calibration()
+        session.close()
+        receipt = session.release_calibration()
+        self.assertEqual(receipt['observations_released'], 1)
+        self.assertEqual(session.observations, [])
+        self.assertFalse(receipt['group_drain_claimed'])
+
+    def test_missing_rank_times_out_and_same_checkpoint_cannot_be_reused(self):
+        with tempfile.TemporaryDirectory() as folder:
+            receipts = RankReceipts(folder, rank=0, world=2, timeout=.01)
+            with self.assertRaisesRegex(TimeoutError, 'RANK_CHECKPOINT_TIMEOUT'):
+                receipts.exchange('drain', {})
+            with self.assertRaisesRegex(RuntimeError, 'RANK_CHECKPOINT_REUSE'):
+                receipts.exchange('drain', {})
+
+    def test_inputs_are_finite_deterministic_and_original_smoke_is_preserved(self):
+        for spec in case_specs('bounded'):
+            for rank in range(2):
+                first = make_source(torch, spec, rank, 2, 'cpu')
+                self.assertTrue(torch.isfinite(first).all())
+                self.assertTrue(torch.equal(first, make_source(torch, spec, rank, 2, 'cpu')))
+        spec = case_specs('smoke')[0]
+        self.assertTrue(torch.equal(make_source(torch, spec, 1, 2, 'cpu'),
+                                    torch.arange(256) / 32 + 2 / 8))
+
+    def test_shutdown_requires_both_native_callbacks_and_real_launcher_exit(self):
+        with tempfile.TemporaryDirectory() as folder:
+            folder = Path(folder)
+            for rank in range(2):
+                (folder / f'rank{rank}.json').write_text(json.dumps(dict(
+                    pid=rank + 100, status='NO_REPLAY_SAMPLE', cases=[dict(off_exact=True)],
+                    group_drain=dict(status='CROSS_RANK_DRAIN_RETURNED'))))
+                stages = ['destroy_process_group_returned', 'main_returned',
+                          'native_shutdown_returned', 'python_atexit_tail']
+                (folder / f'rank{rank}.lifecycle.jsonl').write_text(''.join(
+                    json.dumps(dict(stage=stage)) + '\n' for stage in stages))
+            passed = assess(folder, 0, False)
+            self.assertTrue(passed['lifecycle_pass'])
+            self.assertFalse(passed['c2_pass'] or passed['c3_pass'] or passed['actual_fault_recovery_proven'])
+            self.assertFalse(assess(folder, 1, False)['lifecycle_pass'])
+            self.assertFalse(assess(folder, 0, True)['lifecycle_pass'])
+            (folder / 'rank1.lifecycle.jsonl').write_text(json.dumps(dict(stage='main_returned')) + '\n')
+            self.assertFalse(assess(folder, 0, False)['lifecycle_pass'])
+
+
+if __name__ == '__main__':
+    unittest.main()

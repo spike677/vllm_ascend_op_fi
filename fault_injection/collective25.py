@@ -227,6 +227,21 @@ class ReduceScatterSession(ScopedDispatch):
             self.wrapper=None
         super().close()
 
+    def release_calibration(self):
+        """Drop this closed observer's group references before group teardown.
+
+        Closing hooks deliberately preserves observations for measured_pair().
+        The owner must explicitly release them after calibration/replay is done;
+        this is local reference cleanup, not proof of a cross-rank drain.
+        """
+        if not self.closed:
+            raise RuntimeError('Close the collective session before releasing calibration')
+        retained = len(self.observations)
+        self.observations.clear()
+        self.pair = None
+        return dict(observations_released=retained, observations_retained=0,
+                    group_drain_claimed=False)
+
     def report(self):
         return dict(super().report(),mode=self.mode_name,hits=self.hits,
             collective_calls_added=0,collective_calls_skipped=0,

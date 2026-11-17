@@ -1,0 +1,55 @@
+[
+  {
+    "id": "collective25-851-smoke-a1",
+    "image": "quay.io/ascend/vllm-ascend:v0.18.0",
+    "mounts": [
+      [
+        "/home/17-fault-c2c3-20261117/source-collective25-a1",
+        "/source",
+        "ro"
+      ]
+    ],
+    "env": {
+      "PYTHONPATH": "/source:/source/src:/source/fault39/src",
+      "OMP_NUM_THREADS": "2",
+      "GLOO_SOCKET_IFNAME": "lo",
+      "HCCL_CONNECT_TIMEOUT": "60",
+      "HCCL_EXEC_TIMEOUT": "60",
+      "XDG_CACHE_HOME": "/evidence/cache"
+    },
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh\nexec python /source/experiments/c2c3_closure_20261117/collective25_supervisor.py --out /evidence/collective --suite smoke --repeats 2 --stage-timeout 60 --timeout 300",
+    "review": {
+      "experiment_id": "collective25-851-smoke-a1",
+      "provider": "25.reduce_scatter observation-only",
+      "model": "constructed torch.nn.Module: actual reduce_scatter_tensor SUM then add1; original FP32 send256/receive128",
+      "cann": "8.5.1",
+      "soc": "Ascend910B4 (A2); verify actual inventory before launch",
+      "physical_cards": [
+        2,
+        5
+      ],
+      "ranks": [
+        0,
+        1
+      ],
+      "worker": "isolated static torchrun two ranks in one owned queue container",
+      "build_fingerprint": {
+        "frozen_baseline": "91decf5efe48dfdf8c5494e52d258ccde788cc5d",
+        "files": {
+          "fault_injection/collective25.py": "0a21fb9d34a1367dbaf0a937af6d688f739a8f4a45de4337dd3eada8a5b5ba51",
+          "fault_injection/_scoped_dispatch.py": "c85656176621ba6ff1263a56e42a870b7ba9025edef8def85bfcd8af7016d37a",
+          "experiments/c2c3_closure_20261117/collective25_closure_probe.py": "40008bb5b6545e8cd62ef304bb9c54c315d0eb390161a6273a1f17e23f0ee8ff",
+          "experiments/c2c3_closure_20261117/collective25_supervisor.py": "c95b8b2c938a85628e95324b7d652f5e095fc915e437025548b3025e6dc24a2a"
+        },
+        "native_build": "unmodified image torch_npu/libhccl; actual loaded library SHA captured per rank"
+      },
+      "expected_hits": 0,
+      "resource_budget": {
+        "timeout_seconds": 420,
+        "memory_gib": 16,
+        "cpus": 8
+      },
+      "recovery_plan": "Close and release every observer; same-process exact OFF; health all_reduce; native barrier and synchronize; cross-rank bounded filesystem receipts; destroy_process_group; original torch_npu shutdown callback returns; supervisor must observe torchrun exit 0. Timeout terminates only supervisor-owned process group and is FAILURE, then root cleans only its labeled container. No injection qualification."
+    }
+  }
+]
