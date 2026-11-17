@@ -121,6 +121,18 @@ class NativePostwriteLibrary:
         self.validate(tensor)
         return _NativeLease(self, tensor, owner, generation)
 
+    def open_span(self, tensor, element_offset, elements, owner, generation):
+        # The span is part of the *actual* live cache tensor. No repack or clone
+        # is writable. Its allocation may include disjoint K/V views.
+        if tensor.device.type != 'npu' or tensor.dtype != torch.bfloat16:
+            raise PostwriteRefused('POSTWRITE_REQUIRES_NPU_BF16')
+        import torch_npu
+        if int(torch_npu.get_npu_format(tensor)) not in (0, 2):
+            raise PostwriteRefused('POSTWRITE_REQUIRES_BASE_FORMAT')
+        _validate_span(tensor, element_offset, elements)
+        return _NativeLease(self, tensor, owner, generation,
+                            element_offset=element_offset, elements=elements)
+
 
 def _validate_tensor(tensor):
     if (tensor.requires_grad or not tensor.is_contiguous() or tensor.storage_offset() != 0
@@ -129,20 +141,36 @@ def _validate_tensor(tensor):
         raise PostwriteRefused('POSTWRITE_REQUIRES_EXCLUSIVE_CONTIGUOUS_BOUNDED_STORAGE')
 
 
+def _validate_span(tensor, element_offset, elements):
+    if (type(element_offset) is not int or type(elements) is not int
+            or element_offset < 0 or elements <= 0 or tensor.requires_grad
+            or not tensor.is_contiguous() or tensor.element_size() != 2
+            or element_offset + elements > tensor.numel()
+            or elements * tensor.element_size() > 1024 * 1024
+            or (tensor.storage_offset() + element_offset + elements) * tensor.element_size()
+                > tensor.untyped_storage().nbytes()):
+        raise PostwriteRefused('POSTWRITE_LIVE_CONTIGUOUS_BOUNDED_SPAN_REQUIRED')
+
+
 class _NativeLease:
-    def __init__(self, library, tensor, owner, generation):
+    def __init__(self, library, tensor, owner, generation, *, element_offset=0, elements=None):
         self.library, self.tensor = library, tensor  # Strong reference until exact restoration.
         self.owner, self.generation = owner, generation
         self.storage = _storage(tensor)
+        self.geometry = tensor_geometry(tensor)
+        self.element_offset = element_offset
+        self.elements = tensor.numel() if elements is None else elements
         self.handle = ctypes.c_uint64()
-        code = library.lib.dcat_pw_open(tensor.data_ptr(), tensor.numel() * tensor.element_size(),
+        code = library.lib.dcat_pw_open(tensor.data_ptr() + element_offset * tensor.element_size(),
+            self.elements * tensor.element_size(),
             tensor.device.index, owner, generation, ctypes.byref(self.handle))
         self.closed = False
         if code:
             raise PostwriteRefused(f'POSTWRITE_OPEN_{code}')
 
     def _check(self):
-        if self.closed or _storage(self.tensor) != self.storage:
+        if (self.closed or _storage(self.tensor) != self.storage
+                or tensor_geometry(self.tensor) != self.geometry):
             raise PostwriteRefused('POSTWRITE_LIVE_STORAGE_CHANGED')
 
     def apply(self, mode, indices):
