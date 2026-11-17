@@ -11,6 +11,7 @@ import platform
 import re
 import shutil
 import subprocess
+import uuid
 
 
 SOURCES = (
@@ -31,6 +32,32 @@ TOOLKIT = '/usr/local/Ascend/cann-8.5.1/aarch64-linux'
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def inspect_image():
+    result = subprocess.run(['docker', 'image', 'inspect', IMAGE], capture_output=True, text=True, timeout=30, check=True)
+    rows = json.loads(result.stdout)
+    if len(rows) != 1 or not re.fullmatch(r'sha256:[0-9a-f]{64}', rows[0].get('Id', '')):
+        raise RuntimeError('ACTUAL_LOCAL_IMAGE_ID_REQUIRED')
+    if rows[0].get('Architecture') != 'arm64' or rows[0].get('Os') != 'linux':
+        raise RuntimeError('ACTUAL_IMAGE_PLATFORM_CHANGED')
+    return rows[0]
+
+
+def cleanup_owned(name, nonce, image_id):
+    """Inspect exact label and image before removing only this build container."""
+    result = subprocess.run(['docker', 'container', 'inspect', name], capture_output=True, text=True, timeout=30)
+    if result.returncode:
+        missing = 'No such container' in result.stderr or 'No such object' in result.stderr
+        return dict(status='ALREADY_ABSENT' if missing else 'INSPECTION_FAILED', confirmed=missing,
+                    returncode=result.returncode, stderr=result.stderr)
+    rows = json.loads(result.stdout)
+    if (len(rows) != 1 or rows[0].get('Name') != '/' + name or rows[0].get('Image') != image_id
+            or rows[0].get('Config', {}).get('Labels', {}).get('demoncat.writer26.build-owner') != nonce):
+        return dict(status='FOREIGN_CONTAINER_REFUSED', confirmed=False)
+    result = subprocess.run(['docker', 'container', 'rm', '-f', name], capture_output=True, text=True, timeout=30)
+    return dict(status='OWNED_CONTAINER_REMOVED' if result.returncode == 0 else 'REMOVAL_FAILED',
+                confirmed=result.returncode == 0, returncode=result.returncode, stdout=result.stdout, stderr=result.stderr)
 
 
 def main():
@@ -65,9 +92,6 @@ def main():
     # Legacy DSOs are deliberately absent from the new bundle; source is immutable.
     assert not any((out / name).exists() for name in OMIT)
     sources = {name: sha(source / name) for name in SOURCES}
-    root_args = ['docker', 'run', '--rm', '--network', 'none', '--runtime', 'runc', '--cpus', '4', '--memory', '4g',
-        '-e', 'ASCEND_VISIBLE_DEVICES=void', '-v', str(source) + ':/source:ro', '-v', str(out) + ':/build',
-        '--entrypoint', 'bash', IMAGE, '-lc']
     commands = r'''set -euo pipefail
 test "$(uname -m)" = aarch64
 grep -Eq '^version=8\.5\.1$' /usr/local/Ascend/cann-8.5.1/aarch64-linux/ascend_toolkit_install.info
@@ -82,17 +106,40 @@ nm -D /build/libdcat26_group_v2.so > /build/exported-symbols.txt
 readelf -d /build/libdcat26_group_v2.so > /build/elf-dynamic.txt
 sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/aclnn/opdev/common_types.h > /build/sdk-header-sha256.txt
 '''
-    command = root_args + [commands]
-    with (out / 'build.log').open('wb') as stream:
-        result = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT, timeout=300)
-    receipt = dict(schema='demoncat.writer26.group_build.v2', status='FAILED_CPU_BUILD', command=command,
+    nonce = uuid.uuid4().hex
+    name = 'dcat26-group-build-' + nonce
+    receipt = dict(schema='demoncat.writer26.group_build.v2', status='FAILED_CPU_BUILD', command=None,
         actual_npu_calls=0, device_mounts=[], source_commit=args.source_commit, sources=sources,
         parent_manifest_sha256=args.parent_manifest_sha256, parent_files={name: files[name] for name in sorted(REQUIRED)},
-        omitted_legacy_writers=sorted(OMIT), image=IMAGE, cann='8.5.1', build_returncode=result.returncode,
-        build_log_sha256=sha(out / 'build.log'))
-    (out / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
-    if result.returncode:
-        raise RuntimeError('SDK_BUILD_FAILED_LOG_PRESERVED')
+        omitted_legacy_writers=sorted(OMIT), requested_image=IMAGE, actual_image_id=None,
+        cann='8.5.1', container_name=name, container_owner_nonce=nonce, build_returncode=None)
+    launched = False
+    try:
+        actual = inspect_image()
+        (out / 'image-inspect.json').write_text(json.dumps(actual, indent=2) + '\n')
+        receipt.update(actual_image_id=actual['Id'], image_inspect_sha256=sha(out / 'image-inspect.json'))
+        command = ['docker', 'run', '--rm', '--name', name, '--label', 'demoncat.writer26.build-owner=' + nonce,
+            '--network', 'none', '--runtime', 'runc', '--cpus', '4', '--memory', '4g',
+            '-e', 'ASCEND_VISIBLE_DEVICES=void', '-v', str(source) + ':/source:ro', '-v', str(out) + ':/build',
+            '--entrypoint', 'bash', actual['Id'], '-lc', commands]
+        receipt['command'] = command
+        with (out / 'build.log').open('wb') as stream:
+            launched = True
+            result = subprocess.run(command, stdout=stream, stderr=subprocess.STDOUT, timeout=300)
+        receipt['build_returncode'] = result.returncode
+    except BaseException as error:
+        receipt.update(error_type=type(error).__name__, error=str(error), timed_out=isinstance(error, subprocess.TimeoutExpired))
+    finally:
+        try:
+            receipt['cleanup'] = (cleanup_owned(name, nonce, receipt['actual_image_id']) if launched
+                                  else dict(status='NOT_LAUNCHED', confirmed=True))
+        except BaseException as error:
+            receipt['cleanup'] = dict(status='CLEANUP_EXCEPTION', confirmed=False, error=repr(error))
+        if (out / 'build.log').exists():
+            receipt['build_log_sha256'] = sha(out / 'build.log')
+        (out / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    if receipt['build_returncode'] != 0 or not receipt['cleanup']['confirmed']:
+        raise RuntimeError('SDK_BUILD_OR_CLEANUP_FAILED_RECEIPT_PRESERVED')
     for name in REQUIRED:
         if sha(out / name) != files[name]:
             raise RuntimeError('TRACE_PROXY_DEPENDENCY_CHANGED')
@@ -110,6 +157,7 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
     (out / 'build.json').write_text(json.dumps(dict(schema='demoncat.writer26.group_deployment.v2',
         files=output_files, build_receipt_sha256=sha(out / 'build-receipt.json'), sources=sources,
         actual_npu_calls=0, native_qualified_targets=0, c2=False, c3=False,
+        actual_image_id=receipt['actual_image_id'],
         legacy_writers_absent=True, independent_trace_required=True), indent=2) + '\n')
     print(json.dumps(dict(status=receipt['status'], bundle=str(out), manifest_sha256=sha(out / 'build.json'))))
 
