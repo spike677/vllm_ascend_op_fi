@@ -1,5 +1,62 @@
 # Current execution checkpoint
 
+## Active checkpoint — integration f572c9f8 plus root review
+
+This section supersedes the older source-a15 checkpoint below. Root resumed the
+same task and preserved every earlier attempt. No new raw data is published.
+
+- Independent review `AGENT7_ACTUAL_REVIEW.md` and its hash manifest are merged.
+  Root accepts bounded standard-Worker C2 for `18.api_half` and
+  `39.matmul_range`, and bounded standard-Worker C3 for `18.api_half`.
+  With the additional Native20 review below these are **3/17 C2 and 2/17 C3**
+  mechanism IDs in their exact reviewed scope,
+  not whole-model-family, all-version or multi-Worker qualification. HF Fault18
+  is a separately reviewed scope of the same mechanism, not an additional count.
+- Standard Worker18: actual C2 113/113, C3 226/226, 9 scheduler requests,
+  exact complete hidden/logits OFF, same generated healthy token, owned hooks0.
+  Its standard-Worker E5 still needs fresh capture; HF statistics do not qualify it.
+- Native39-a5: C2 113/113, target OFF/whole logits exact. C3 discovery refused
+  persistent collector binding; strict source/code/globals-bound unwrapping is
+  integrated. Fresh `providers39-a6-cases.json` uses source-a21/packages-a5 and
+  must establish a new live C2 before C3. It is running in root session69759.
+- Fault20 `providers20-group-a1` completed exit0 and released card5.
+  Root independently reviewed C2 135/135 and C3 270/270,408/678 references
+  matching actual bytes, all135 outputs changed, exact target/group OFF recovery.
+  Independent raw C2 statistics: B self comparable; B/F first QMM output Max
+  16.25->14.0, 132 preceding null fields, no preceding incomparable fields.
+  F contains2 later NaN fields, so whole-capture E5 remains false. Sidecars are
+  `R/providers20-group-a1-statistics-{self,bf}`. Root grants only the scoped C2/C3
+  in `native20_group_summary.json`; full review sidecar is
+  `R/providers20-group-a1-independent-review-a2`. Earlier audit attempts preserve
+  their wrong directory/field-interpretation diagnostics; evidence is unchanged.
+- Fault28 legal/replay: actual final argument/launch and same-process OFF checks
+  passed. New raw pairs each have10 finite/14 null fields and no first difference.
+  No model/C2/C3 or historical0.7968% inheritance. Agent4 is preparing a separately
+  disclosed FP64 collector; no changes to original raw JSON.
+- Fault33 real FAI host/kernel build completed, six entries compiled and public
+  serializer checked. `attention33-{stock,baseline,fault}-a1-cases.json` prepared
+  with source-a21/packages-a5. Execute stock, then B and independently compare
+  complete payloads, then F only after that bridge. Stock a1 passed all complete
+  payload repeat/OFF/healthy checks. Private B a1 failed at model initialization:
+  private libopapi.so hides stock AddRmsNormBias. No F; Agent4 fixes coexistence.
+- Collective25 both8.5.1/9.1 completed6 bounded cases,4 repeats, healthy collective,
+  drain and normal exit. Every case NO_REPLAY_SAMPLE; no F/C2/C3.
+- Native26 inventory, natural39 C2,41 group and disclosed FP64 collector are merged.
+  Immutable source-a22 (511files,9d06f984) archive SHA
+  `b7029d396a416f0d6c1e48eed361d8a5d567991151d55b84ff2bcceb707cda7a`.
+  CPU-only26 QMM inventory-a1 passed after a slow global initializer compile.
+  Root stopped owned FIA CPU duplicate (exit137) after an equivalent bounded
+  byte-storage optimization passed CPU contracts. Fresh optimized builds needed.
+  No NPU mounts; use postwrite-build-a2 for natural39/41.
+- CPU integration after fixture-only b7754769:645 tests passed,2 platform skips.
+  Earlier missing test-module invocation was a command typo, corrected by22
+  targeted tests. No production identity check was relaxed.
+
+R remains `/home/17-fault-c2c3-20261117`. Root owns all NPU starts, checks the
+controller and idle gate before scheduling, and never treats cleanup as OFF.
+Current NPU task is providers39-a6, source-a21/packages-a5, card5/session69759.
+Fresh source/package snapshot needed for26/41/FP64 tools.
+
 Read this section first. The initial checkpoint below is retained as history.
 Latest checkpoint (source-a15, integration fec83416):
 

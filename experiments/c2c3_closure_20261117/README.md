@@ -4,9 +4,32 @@ Frozen source: `91decf5efe48dfdf8c5494e52d258ccde788cc5d` (implementation
 `cb5b0dc120ce6c80f1469bb8b7248da27a7bb258`). This is an execution workstream;
 the previous engineering reports and all original 124 evidence remain intact.
 
-The initial qualification count is **C2 0/17, C3 0/17**. Existing scoped C1
-receipts remain evidence only for their original source, build and workload.
-An implementation or CPU contract test does not change either count.
+The frozen starting point was **C2 0/17, C3 0/17**. Root has now reviewed
+**C2 3/17, C3 2/17** in bounded standard-Worker scopes: Fault18, Fault20 and native
+Fault39 have C2; Fault18 and Fault20 have C3. The separate HF Fault18 scope is not counted
+twice. This is an in-progress checkpoint, not a claim that17 mechanisms or whole
+model/version families are accepted. Existing scoped C1 receipts retain their
+original source, build and workload. CPU contract tests do not grant qualification.
+
+| Reviewed route | C2 | C3 | Independent statistics limitation |
+| --- | --- | --- | --- |
+|18.api_half, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|226/226 calls in two requests|Separate Worker capture pending; HF statistics cannot substitute|
+|20.buffer_substitute, standard DeepSeek-V2-Lite-W8A8 Worker, BF16 fixed3-token fresh prefill, TP1|135/135 targets|270/270 calls in two requests|First QMM output Max16.25→14.0;2 later NaN fields prevent whole-capture E5|
+|39.matmul_range, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|a5 refused before C3 injection; corrected binding awaits fresh live C2/C3|First linear output5.1875→Inf; later NaNs prevent whole-capture acceptance|
+|18.api_half, natural HF model, separately reviewed|113/113 targets|226/226 calls|First consumer linear input1.734375→0.8671875; nulls retained|
+
+The independent review is [AGENT7_ACTUAL_REVIEW.md](AGENT7_ACTUAL_REVIEW.md),
+with exact scope, actual-file hashes and the different return-hook observation
+semantics. All rows above are actual8.5.1/Ascend910B4(A2); none qualifies CANN9.x,
+A3, concurrent requests, multiple Workers or another model automatically.
+See [RESUME.md](RESUME.md) for the current running attempts; unreviewed runtime
+successes do not silently change this table.
+
+Fault20 additionally has a [root review](native20_group_summary.json):408 C2 and
+678 C3 evidence references match actual stored bytes; all targets have native
+readback, unchanged original allocations, exact lossless/OFF and complete logits
+recovery.133 later calls per fault request already receive propagated input
+changes. These are135 verified interventions, not135 isolated causal tests.
 
 C2 requires a complete independent observer denominator, lifetime-bound target
 identities, all eligible targets hit once, no non-target interventions, per-target
