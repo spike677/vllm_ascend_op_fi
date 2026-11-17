@@ -15,10 +15,10 @@ runtime admission certificate. Rejected or interrupted runs never create a proof
 |20.buffer_substitute|Standard DeepSeek-V2-Lite-W8A8 Worker BF16, fixed3-token fresh prefill, TP1; actual dynamic QMM|**135/135**|**270/270**, two requests|Whole-group OFF exact. First QMM output Max16.25→14.0;2 later NaN fields prevent whole-capture E5.133 later calls already receive propagated changes.|
 |22.wrong_row|Qwen Worker uses fused native RoPE; no ordinary index_select chain|Not established|Not established|Current legal-address wrong-row proxy does not cover this fused path and does not demonstrate uint32 overflow.|
 |25.reduce_scatter|Both8.5.1 and9.1: six bounded dtype/size cases, four actual native repeats, healthy collective and normal dual-rank exit|No sample|No sample|All cases NO_REPLAY_SAMPLE. No fabricated F; drain success cannot manufacture a numerical difference.|
-|26.residual_stomp|Prior natural DeepSeek QMM single-target chain retained; new independent Native inventory SDK build verified|Pending|Pending|New inventory attempt externally stopped before completion. Complete live writer/residual/consumer denominator, multi-target effects and restoration remain unverified.|
-|26.fia_destination|Prior natural SmolLM2/GLM fresh-prefill chain retained; new independent Native inventory SDK build verified|Pending|Pending|Whole natural inventory and every-match recovery queued. Prior single-point receipts do not qualify all requests or decode.|
-|quant.batch_shared_scale|Prior DeepSeek actual B8 first-decode single projection retained; new Native V2 prepare/execute census and row-lineage reader built|Pending|Pending|All-projection request-row lineage, per-call lease and group recovery. Shape[8,H] alone is never request attribution. New read-only queue ready.|
-|28.fa.legal_tiling|Fresh9.1 FA host/kernel/registration built;851 actual vendor artifacts independently hash-verified|Not established|Not established|Actual FA argument/POD/launch, B/F/OFF, statistics and natural Worker boundary remain pending. CPU build and historical FA/FIA results do not qualify them.|
+|26.residual_stomp|Prior natural DeepSeek QMM single-target chain retained; new v2 SDK and conditional complete-set CoverageSession executor prepared|Pending|Pending|Prior inventory externally stopped. New two-census, all-target B/L/OFF, C2 then original-live-proof C3 queue is unexecuted; unresolved, overlapping or over-budget sets refuse as a whole.|
+|26.fia_destination|Prior natural SmolLM2/GLM fresh-prefill chain retained; same v2 complete-set integration with separate FIA boundary identity|Pending|Pending|New whole-set natural inventory, actual effects and every-match recovery remain unverified. No inheritance of decode or all-request qualification from older single-point receipts.|
+|quant.batch_shared_scale|Prior DeepSeek actual B8 first-decode single projection retained; Native V2 census plus actual dispatcher/QMM row-provenance observer integrated|Pending|Pending|Unknown row-bearing operands, alias writes, Attention/MoE boundaries remain unverified. Immutable snapshots prevent row relabelling through query/report. Natural all-projection lineage, group Native leases and recovery remain unverified; CPU fixtures do not qualify135 targets.|
+|28.fa.legal_tiling|Fresh9.1 FA baseline actual launch independently verified: key22619644976, slot200,1464-byte POD,205 fields; native M128/nRatio8|Not established|Not established|Original run stopped at a now-fixed Python decoder-envelope bug after baseline. F/repeat/OFF and statistics unexecuted; subsequent card5 init busy/card2 external Worker prevented a complete sequence. No model or Worker scope.|
 |28.fia.legal_tiling|Fresh9.1 standalone B8, actual final arguments/registered ELF/launch verified; M/S2 512/512→128/128|Not established|Not established|Fresh disclosed CPU-FP64 statistics have no observable fixed-tolerance first difference. Native output-byte change is separate evidence, not E5 or model acceptance.|
 |28.fia.denominator_replay|Fresh9.1 standalone B8, distinct real kernel entry, eight-launch review includes this B/F pair|Not established|Not established|Raw fixed-tolerance first difference is FIA output Mean; Norm118.30810159723288→116.27198217667856. Natural model/Worker coverage still pending; no historical default-root-cause claim.|
 |33.paged_decode|Natural stock Qwen Worker TND/page16/KV1025 full payload repeats and OFF passed; fresh six-entry FAI build verified|Pending|Pending|Private B initialization failed from custom-library shadowing; fixed library coexistence is CPU-symbol verified. New device-backed B, independent stock bridge and F remain mandatory.|
@@ -82,3 +82,13 @@ A resource-window question is pending. Expired host Docker isolation has not
 been restored, and no unrelated task has been stopped. Offline implementation,
 source review and independent evidence checks continue. Final17/17 acceptance
 must not be inferred from this checkpoint.
+
+The later [FA short attempts](fa_short_attempts_summary.json) are distinct:
+one Docker mount failure before process start, one partial baseline launch with
+a corrected verifier-envelope defect, one card5 initialization Resource_Busy and
+one card2 NPU-process gate refusal. No repeat/F/OFF sequence completed.
+Subsequent read-only kubelet checks found retained allocations of card2/5 to Pod
+`07ddbadb-06a1-4edf-b8f8-b96cd33adc79`. The new gate observes that assignment
+through the actual device-plugin socket/checkpoint even when compute processes
+are absent. It does not clear assignments or prove the earlier driver error's
+unique cause. See [the allocation audit](coverage_device_allocation_gate_review.md).

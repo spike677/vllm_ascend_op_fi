@@ -1,5 +1,48 @@
 # Current execution checkpoint
 
+## Active checkpoint — reviewed integration, no device window
+
+- Current implementation HEAD before these documentation updates is38934eb4:
+  Native26 complete-set executor, quant actual row provenance and detached proof
+  snapshots, C3 issued-object/process authority, FA decoder-envelope fix, and
+  read-only kubelet allocation gate are integrated. Main810 tests:2 skipped,
+  no failures; separate Worker228 and queue6 passed. Suites overlap.
+- Source-a32 is051f320c07aaafeb966587ce3e9f2ec0a9ff88ed,602 files, archive
+  188cd5842c5869ad4c85a5bcdb974377c8d3c88d2eb2dc615f5b2bc29eaf3e1c.
+  packages-a12 device-free install passed; receiptSHA
+  3c564b93eaddb3d4656ab5c95784c654d97988df7c5aa22e59588b5caec6ce0e.
+  This snapshot predates the new quant observer and kubelet gate. Future launches
+  must use the updated controller; do not use source-a32's old gate as current.
+- `providers26-v2-coverage-a1-cases.json` is prepared only (2 cases, card5), SHA
+  400336ac25f24ca28831a19d2087155fd967ab727184d1bba3906668b2b62516.
+  The unchanged v2 Native bundle remains8.5.1-only build evidence; no new natural
+  C2/C3 execution. source-a32 natural queues are also prepared: RoPE census-a1,
+  vision census/group-a2, corrected MoE group-a3. Vision group requires its actual
+  census first. Their preparation is not inference acceptance.
+- FA a2 independently verified one actual baseline launch and205 exact decoded
+  fields. Its original FAILED remains. a3 stopped at aclInit Resource_Busy before
+  FA; a4 card2 gate saw external TP2 PID3513971. All four attempt hashes and
+  distinct boundaries are in `fa_short_attempts_summary.json`.
+- Agent1 then proved that the actual containerd state is/run/mindcluster-containerd
+  and kubelet owns/var/lib/kubelet/device-plugins/kubelet.sock. Its checkpoint
+  still assigns Ascend910-2/5 to Pod07ddbadb-06a1-4edf-b8f8-b96cd33adc79/container
+  ascend. New actual read-only gate returns two allocation blockers even with
+  no compute PID. No assignment was cleared; no expired Docker isolation used.
+  The long external-cleanup coordination question remains pending.
+- Public model download session28838 completed: official weight4255140312bytes,
+  SHA7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0.
+  First receipt is preserved as `vision-download-a1-receipt.json`; current-helper
+  verification of all10 files is `vision-model-files-reverified-a2.json` on124.
+  Full weight transfer is still pending: local SFTP session35322 writes only
+  `R/models/Qwen3-VL-2B-Instruct/model.safetensors.upload-a1`. Prior owned SCP20172
+  (session42967) was stopped to resume, with exact local/remote prefix1097924608
+  bytes matching SHA4ad848d9f374f577e506cb2f98dddbbcf29e1fd3e0f689b36d2fce2c18fa985a.
+  After completion, independently verify all remote bytes against the pinned
+  official metadata before renaming the temporary weight. No model NPU claim.
+- C2/C3 remain3/17 each in their original reviewed scopes; no new runtime proof
+  or E5 claim follows from this implementation checkpoint. New raw captures and
+  binaries remain124; the Git publication contains source and summary/hash files.
+
 ## Active checkpoint — source-a30 and live-proof review
 
 - Source-a30 is frozen at5fef59cea4eb408c3bab5d22576c17fbc61f976e,596 files,

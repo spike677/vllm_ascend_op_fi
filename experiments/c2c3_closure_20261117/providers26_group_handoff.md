@@ -126,10 +126,10 @@ Seven new Python CPU tests cover both writers through two actual CPU modules,
 all candidate phase transitions and zero-resource health, missing Native
 callbacks, missing live writer outputs, unsupported versus unverified residuals,
 and refusal to shrink the target set to fit the budget. Their native and
-allocator fixtures are explicitly simulated. Remaining dependent work is the
-valid natural inventory, source/lifetime review of unresolved edges, shared
-CoverageSession all-eligible admission, and a live same-Worker C2 proof before
-every-match. The candidate result reports every one of these remaining gates.
+allocator fixtures are explicitly simulated. The candidate-only stage does not
+provide all-eligible admission. The complete-set implementation below adds that
+entry; valid natural inventory, source/lifetime review of unresolved edges and
+an actual live same-Worker C2 proof remain mandatory before every-match.
 
 ## Conditional complete-set C2/C3 execution
 

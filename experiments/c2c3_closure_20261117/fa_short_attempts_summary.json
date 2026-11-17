@@ -1,0 +1,61 @@
+{
+  "schema": "demoncat.fa.short_attempts_summary.v1",
+  "remote_root": "/home/17-fault-c2c3-20261117",
+  "raw_evidence_modified": false,
+  "budget_seconds_per_case": 90,
+  "attempts": [
+    {
+      "attempt": "fa28-launch-short-a1",
+      "card": 5,
+      "source_snapshot": "source-a30",
+      "controller_sha256": "b8087b5f6282e1a365cfaf8340c0b8f0359330e908684014b69cadc8a814258a",
+      "manifest_sha256": "ed3d838d4cded031cd0e3db26a33531920d34018eead5b84e7c3e9bfb75bc020",
+      "status": "CASE_FAILED",
+      "exit_code": 125,
+      "timeout": false,
+      "cause": "Read-only parent mount prevented Docker creating /build/run; no container process or NPU call started."
+    },
+    {
+      "attempt": "fa28-launch-short-a2",
+      "card": 5,
+      "source_snapshot": "source-a31",
+      "controller_sha256": "beea0aac7d34e3394b6ea4d3145e2fefda1ad4d2fe1ac700cf0fb2368b402599",
+      "manifest_sha256": "f6b815001f27a5822654bd05589a71906fbe5f7969850f525e4308dd8d38c145",
+      "status": "CASE_FAILED",
+      "exit_code": 2,
+      "timeout": false,
+      "cause": "After one successful actual baseline API call, Python compared the complete C++ JSON envelope against its inner field map.",
+      "independent_review": "AGENT7_FA_A2_PARTIAL_REVIEW.md",
+      "repeat_fault_off_executed": false
+    },
+    {
+      "attempt": "fa28-launch-short-a3",
+      "card": 5,
+      "source_snapshot": "source-a32",
+      "controller_sha256": "9a2fe497843367535cdaae1aaf5ecc33720bed159d28e260feafa04d90ea7de3",
+      "manifest_sha256": "a96bd51c9f82b8da9480299d3a58c1b1b71025747d94f1a18541e53b69c6909b",
+      "status": "CASE_FAILED",
+      "exit_code": 2,
+      "timeout": false,
+      "cause": "aclInit 507899 Resource_Busy before any FA call, despite the then-current idle snapshot.",
+      "external_docker_stop_observed": false,
+      "root_cause": "UNPROVEN; later device-allocation findings are separate observations, not a unique driver-error attribution."
+    },
+    {
+      "attempt": "fa28-launch-short-a4",
+      "card": 2,
+      "source_snapshot": "source-a32",
+      "controller_sha256": "d3f95eb05550f19c31b4ebfb67897b67a18269c15810b9f62b4babd493f7e948",
+      "manifest_sha256": "a8595efc6ec11c7719c02e38030b6bb2287fcfb41ab8e420856560c79d339fc6",
+      "status": "DEVICE_BUSY",
+      "container_started": false,
+      "cause": "Fresh gate observed card2 VLLM Worker PID3513971; no NPU attempt started."
+    }
+  ],
+  "owned_failed_containers_removed": true,
+  "container_cleanup_is_off_recovery": false,
+  "complete_b_repeat_f_off_qualified": false,
+  "new_fa_statistics_collected": false,
+  "c2": false,
+  "c3": false
+}
