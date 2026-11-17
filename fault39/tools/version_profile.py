@@ -135,6 +135,10 @@ def generate(toolkit,real,split,out,abi_facts,source_opapi,operator='matmul',mat
         sources={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(native.iterdir())
                  if p.is_file() and p.suffix in ('.h','.cpp','.inc','.sh','.py')}
         sources['tools/version_profile.py']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        root = native.parents[1]
+        for name in ('fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp',
+                     'fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/fault20_buffer_api.h'):
+            sources[name] = hashlib.sha256((root / name).read_bytes()).hexdigest()
     profile=dict(schema='fault39.cann.build_profile.v1',adapter=adapters[operator],
         toolkit=str(toolkit),environment_script=environment_script,
         proxy_layout='main_nn_math' if math else ('main_and_nn' if split else 'main_only'),abi_facts=facts,sources=sources,

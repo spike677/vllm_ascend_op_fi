@@ -44,14 +44,14 @@ def _stamp(path):
     return (value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns)
 
 
-def _mapped_proxies():
+def _mapped_proxies(names=('libopapi.so', 'libopapi_nn.so')):
     result = {}
     for line in Path('/proc/self/maps').read_text().splitlines():
         parts = line.split(maxsplit=5)
         if len(parts) != 6:
             continue
         name = Path(parts[5].removesuffix(' (deleted)')).name
-        if name not in ('libopapi.so', 'libopapi_nn.so'):
+        if name not in names:
             continue
         require(not parts[5].endswith(' (deleted)'), 'DELETED_PROXY_MAPPING')
         path = Path(parts[5]).resolve(strict=True)
@@ -60,19 +60,34 @@ def _mapped_proxies():
         require(stat.st_ino == int(parts[4]) and device == (os.major(stat.st_dev), os.minor(stat.st_dev)),
                 'MAPPED_FILE_REPLACED')
         result.setdefault(name, set()).add(str(path))
-    require(result and all(len(paths) == 1 for paths in result.values()), 'MISSING_OR_AMBIGUOUS_PROXY')
-    return {name: next(iter(paths)) for name, paths in result.items()}
+    require(result, 'MISSING_PROXY_MAPPING')
+    return {name: tuple(sorted(paths)) for name, paths in result.items()}
 
 
 class LoadedMetadataArrays:
     """Attach read-only symbols after validating maps, manifest, and dladdr."""
-    def __init__(self, *, kind, build_profile):
+    def __init__(self, *, kind, build_profile, anchor):
         require(kind in ('20', '39') and hasattr(os, 'RTLD_NOLOAD'), 'LINUX_AND_KNOWN_ADAPTER_REQUIRED')
         self.pid, self.kind, self.build_profile = os.getpid(), kind, build_profile
-        self.paths = _mapped_proxies()
-        roots = {Path(path).parent for path in self.paths.values()}
-        require(len(roots) == 1, 'MIXED_PROXY_ROOTS')
-        root = next(iter(roots))
+        core_name = 'libdcat20_qmm.so' if kind == '20' else 'libfault39_native_v1.so'
+        self.mapping_names = ('libopapi.so', 'libopapi_nn.so', core_name)
+        self.paths = _mapped_proxies(self.mapping_names)
+        loader = ctypes.CDLL(None)
+        locate = loader.dladdr
+        locate.argtypes, locate.restype = [ctypes.c_void_p, ctypes.POINTER(_DlInfo)], ctypes.c_int
+
+        def origin(fn):
+            info = _DlInfo()
+            require(locate(ctypes.cast(fn, ctypes.c_void_p), ctypes.byref(info)) and info.dli_fname,
+                    'SYMBOL_PROVIDER_UNAVAILABLE')
+            return Path(os.fsdecode(info.dli_fname)).resolve(strict=True)
+
+        # Root is bound to the actual loaded runtime export, never inferred
+        # from the split proxy's possible SDK bind-mount pathname.
+        core_path = origin(anchor)
+        require(core_path.name == core_name and str(core_path) in self.paths.get(core_name, ()),
+                'RUNTIME_ANCHOR_NOT_MAPPED')
+        root = core_path.parent
         profile_path, manifest_path = root / 'version_profile.json', root / 'build_manifest.json'
         profile, manifest = json.loads(profile_path.read_text()), json.loads(manifest_path.read_text())
         content = dict(profile)
@@ -88,33 +103,45 @@ class LoadedMetadataArrays:
         require(spec.get('schema') == SCHEMA and spec.get('state_version') == 1
                 and spec.get('state_symbol') == symbol and spec.get('proxy_images') == expected_names
                 and spec.get('reset_supported') is False and spec.get('runtime_quiescent_readback_required') is True
-                and set(self.paths) == set(expected_names), 'COUNTER_CAPABILITY_OR_PROXY_SET_MISSING')
+                and set(self.paths) == set(expected_names + [core_name]), 'COUNTER_CAPABILITY_OR_PROXY_SET_MISSING')
         require(manifest.get('schema') == 'fault39.native.build_manifest.v1'
                 and manifest.get('profile_sha256') == build_profile
                 and manifest.get('files', {}).get('version_profile.json') == _sha(profile_path), 'BUILD_MANIFEST_MISMATCH')
+        require(manifest['files'].get(core_name) == _sha(core_path), 'RUNTIME_ANCHOR_BUILD_HASH_MISMATCH')
         self.files = {profile_path: _stamp(profile_path), manifest_path: _stamp(manifest_path)}
-        loader = ctypes.CDLL(None)
-        locate = loader.dladdr
-        locate.argtypes, locate.restype = [ctypes.c_void_p, ctypes.POINTER(_DlInfo)], ctypes.c_int
+        for alias in self.paths[core_name]:
+            require(Path(alias).samefile(core_path), 'AMBIGUOUS_RUNTIME_INSTANCE')
+            self.files[Path(alias)] = _stamp(Path(alias))
         self.images = []
         for name in expected_names:
-            path = Path(self.paths[name])
+            path = root / name
             digest = _sha(path)
             require(digest == manifest['files'].get(name), 'PROXY_BUILD_HASH_MISMATCH')
             self.files[path] = _stamp(path)
-            # RTLD_NOLOAD cannot bring a new vendor image into this process.
-            handle = ctypes.CDLL(str(path), mode=os.RTLD_NOLOAD | os.RTLD_NOW)
-            fn = getattr(handle, symbol, None)
-            require(fn is not None, 'COUNTER_SYMBOL_MISSING')
-            info = _DlInfo()
-            require(locate(ctypes.cast(fn, ctypes.c_void_p), ctypes.byref(info)) and info.dli_fname
-                    and Path(os.fsdecode(info.dli_fname)).resolve(strict=True) == path, 'COUNTER_SYMBOL_WRONG_IMAGE')
-            fn.argtypes, fn.restype = [ctypes.POINTER(MetadataArrayStateV1)], ctypes.c_int
-            self.images.append((handle, fn, dict(name=name, path=str(path), sha256=digest, symbol=symbol)))
+            handles, addresses, providers = [], set(), set()
+            for alias in self.paths[name]:
+                mapped = Path(alias)
+                require(mapped.samefile(path) and _sha(mapped) == digest, 'UNKNOWN_PROXY_ALIAS_OR_DUPLICATE')
+                self.files[mapped] = _stamp(mapped)
+                # A verified bind-mount alias may live under the SDK path.
+                handle = ctypes.CDLL(alias, mode=os.RTLD_NOLOAD | os.RTLD_NOW)
+                fn = getattr(handle, symbol, None)
+                require(fn is not None, 'COUNTER_SYMBOL_MISSING')
+                provider = origin(fn)
+                require(str(provider) in self.paths[name] and provider.samefile(path)
+                        and _sha(provider) == digest, 'COUNTER_SYMBOL_WRONG_IMAGE')
+                fn.argtypes, fn.restype = [ctypes.POINTER(MetadataArrayStateV1)], ctypes.c_int
+                handles.append((handle, fn))
+                addresses.add(ctypes.cast(fn, ctypes.c_void_p).value)
+                providers.add(str(provider))
+            require(len(addresses) == 1, 'DUPLICATE_LOADED_COUNTER_INSTANCE')
+            self.images.append((handles, handles[0][1], dict(name=name, path=str(path), sha256=digest,
+                symbol=symbol, mapped_paths=list(self.paths[name]), symbol_providers=sorted(providers))))
         self.manifest_sha = _sha(manifest_path)
 
     def read(self):
-        require(os.getpid() == self.pid and _mapped_proxies() == self.paths, 'PROCESS_OR_LOADED_IMAGES_CHANGED')
+        require(os.getpid() == self.pid and _mapped_proxies(self.mapping_names) == self.paths,
+                'PROCESS_OR_LOADED_IMAGES_CHANGED')
         require(all(_stamp(path) == stamp for path, stamp in self.files.items()), 'BUILD_FILES_CHANGED')
         rows = []
         for handle, fn, identity in self.images:

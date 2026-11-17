@@ -174,7 +174,7 @@ class CtypesProvider:
         from fault_injection.metadata_arrays import LoadedMetadataArrays
         if not hasattr(self, '_metadata_arrays'):
             self._metadata_arrays = LoadedMetadataArrays(kind='39',
-                build_profile=self.snapshot().get('build_profile_sha256'))
+                build_profile=self.snapshot().get('build_profile_sha256'), anchor=self._symbols.fault39_snapshot_v1)
         return self._metadata_arrays.read()
 
     def _stop(self, operation, owner, generation, timeout_ms):

@@ -75,7 +75,8 @@ class CtypesMatmulRuntime:
         """Additive read-only resource proof required by the group adapter."""
         from ..metadata_arrays import LoadedMetadataArrays
         if not hasattr(self, '_metadata_arrays'):
-            self._metadata_arrays = LoadedMetadataArrays(kind='20', build_profile=self.build_profile)
+            self._metadata_arrays = LoadedMetadataArrays(kind='20', build_profile=self.build_profile,
+                anchor=self._library.dcat20_qmm_profile_v1)
         return self._metadata_arrays.read()
 
     def configure_request_lifecycle(self, *, owner, generation):

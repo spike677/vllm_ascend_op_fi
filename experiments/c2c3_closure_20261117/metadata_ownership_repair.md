@@ -76,3 +76,14 @@ leaks/errors, stale identities, missing APIs, wrong symbol providers, array
 counter resets and no-activity group finalization. These Python tests are CPU
 contracts only. Existing buffer, workspace, hook and lease checks remain
 mandatory alongside these SDK-array checks.
+
+The native manifest directory is derived from the actual loaded core runtime
+export (`dladdr`), not from a split-proxy pathname. The queue bind-mounts the
+same split DSO under an SDK path. Such aliases are accepted only when mapped
+device/inode, manifest bytes, `dladdr` provider, and function address agree.
+An identical-byte copy with a different inode, a foreign symbol provider, or
+multiple loaded counter instances still rejects. The host-only real ELF test
+`tests/native/test_metadata_arrays_elf.py` exercises the loaded SDK-style alias
+and a same-byte foreign duplicate; it must be run on Linux by the root owner.
+The Fault39 build recipe and version profile also fingerprint both Fault20
+production inputs actually extracted by the shared CPU ownership fixture.
