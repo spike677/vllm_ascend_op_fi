@@ -206,7 +206,7 @@ class Paged33Audit:
                 def wrapper(*args, _name=name, _original=original, **kwargs):
                     record = None
                     if self._inside():record = self._consumer(_name, args, kwargs)
-                    result = _original(*args, **kwargs)
+                    result = self._invoke_api(_name, _original, args, kwargs, record)
                     if record is not None:record['consumer_returned'] = True
                     return result
                 setattr(self.api_module, name, wrapper)
@@ -224,6 +224,10 @@ class Paged33Audit:
         except BaseException:
             self.close()
             raise
+
+    def _invoke_api(self, name, original, args, kwargs, record):
+        """Read-only default; a separate experimental adapter owns native scope."""
+        return original(*args, **kwargs)
 
     def expect(self, expected):
         require(self.installed and self.expected is None and self.current is None, 'AUDIT_REQUEST_ALREADY_BOUND')

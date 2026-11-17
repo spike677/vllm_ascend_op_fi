@@ -27,7 +27,8 @@ def sha(path):
 def decode_raw(raw, schema):
     require(type(schema.get('size')) is int and len(raw) == schema['size'], 'LAUNCH_RAW_LENGTH_DIFFERS')
     result, used = {}, set()
-    formats = {'uint32_t': 'I', 'int32_t': 'i', 'uint64_t': 'Q', 'int64_t': 'q', 'float': 'f'}
+    formats = {'bool': '?', 'uint8_t': 'B', 'int8_t': 'b', 'uint16_t': 'H', 'int16_t': 'h',
+               'uint32_t': 'I', 'int32_t': 'i', 'uint64_t': 'Q', 'int64_t': 'q', 'float': 'f', 'double': 'd'}
     for field in schema['fields']:
         name, offset, width, count = (field[k] for k in ('name', 'offset', 'width', 'count'))
         require(name not in result and field['dtype'] in formats, 'PUBLIC_SCHEMA_FIELD_INVALID')
@@ -54,6 +55,7 @@ def verify_launch(directory, call_id, *, kernel_sha256, schema, host):
     require(re.fullmatch('[0-9a-f]{32}', call_id) and re.fullmatch('[0-9a-f]{64}', kernel_sha256),
             'INVALID_LAUNCH_IDENTITY')
     records = [json.loads(line) for line in (root / 'runtime.jsonl').read_text().splitlines()]
+    require(not any(row.get('event') == 'capture_overflow' for row in records), 'RUNTIME_OBSERVER_CAPTURE_BUDGET_EXCEEDED')
     rows = [row for row in records if row.get('call_id') == call_id]
     require(rows and all(row.get('schema') == 'demoncat.attention.runtime_observer.v1' for row in rows),
             'INDEPENDENT_RUNTIME_RECORDS_MISSING')

@@ -23,6 +23,8 @@ HERE = Path(__file__).resolve().parent
 COMMIT = 'c77c0829f1f0f0b8f882db1d9b051a758b605472'
 EXPECTED_BIN = 'FusedInferAttentionScore_8cd36e66e4ceb2d60ef96db29a147347'
 KEYS = [103000000000000000, 109000000000000000, 109000000000400000]
+TND33_KEYS = [103000000010200003, 103000000010300003,
+              104000000010200003, 104000000010300003]
 
 
 def sha(path):
@@ -116,6 +118,31 @@ def verify_policy(source, receipt):
         require(not path.is_symlink() and sha(path) == item['after_sha256'], 'PATCHED_SOURCE_CHANGED:' + str(relative))
 
 
+def sdk_interfaces(args, contract):
+    """An explicit source compile probe may describe another exact SDK.
+
+    This changes the new build inputs, never an existing artifact's admission.
+    All source/dependency pins remain; host and kernels must rebuild together.
+    """
+    expected = [row for row in contract['files'] if row['kind'] == 'sdk']
+    manifest = getattr(args, 'sdk_interface_manifest', None)
+    digest = getattr(args, 'sdk_interface_sha256', None)
+    require(bool(manifest) == bool(digest), 'SDK_PROBE_PATH_AND_SHA_REQUIRED_TOGETHER')
+    if not manifest:return expected
+    require(sha(manifest) == digest, 'SDK_SOURCE_PROBE_HASH_DIFFERS')
+    data = json.loads(Path(manifest).read_bytes())
+    require(data.get('schema') == 'demoncat.attention.sdk_source_probe.v1'
+            and data.get('source_commit') == COMMIT and data.get('fia_translation_unit_compiled') is True
+            and data.get('required_paths_complete') is True and data.get('actual_npu_calls') == 0
+            and data.get('native_launch_verified') is False, 'COMPLETE_EXACT_SDK_SOURCE_PROBE_REQUIRED')
+    rows = data['files']
+    require(len(rows) == len(expected) and {row['path'] for row in rows} == {row['path'] for row in expected},
+            'SDK_SOURCE_PROBE_INTERFACE_SET_DIFFERS')
+    require(all(type(row.get('bytes')) is int and row['bytes'] > 0
+                and re.fullmatch('[0-9a-f]{64}', row.get('sha256', '')) for row in rows), 'SDK_PROBE_FILE_IDENTITY_INVALID')
+    return [dict(row, kind='sdk') for row in rows]
+
+
 class Builder:
     def __init__(self, args):
         self.args = args
@@ -179,11 +206,16 @@ class Builder:
                 and dep_in != self.root and dep_in not in self.root.parents, 'OUTPUT_MUST_NOT_MUTATE_INPUT_TREE')
         self.receipt = json.loads(args.policy_receipt.read_bytes())
         verify_policy(source_in, self.receipt)
-        self.variant = self.receipt['mechanism'].removeprefix('28.fia.')
-        require(self.variant in ('legal_tiling', 'denominator_replay'), 'UNREVIEWED_VARIANT')
-        self.vendor_name = 'dcat_f28_replay' if self.variant == 'denominator_replay' else 'dcat_f28_legal'
+        self.variant = (self.receipt.get('variant') if self.receipt['mechanism'] == '33.paged_decode'
+                        else self.receipt['mechanism'].removeprefix('28.fia.'))
+        require(self.variant in ('legal_tiling', 'denominator_replay', 'tnd_page16_s2_256'), 'UNREVIEWED_VARIANT')
+        self.vendor_name = {'legal_tiling': 'dcat_f28_legal', 'denominator_replay': 'dcat_f28_replay',
+                            'tnd_page16_s2_256': 'dcat_f33_tnd'}[self.variant]
         self.contract = json.loads((HERE / 'build_contract.json').read_bytes())
         contract = self.contract
+        interfaces = sdk_interfaces(args, contract)
+        self.report['sdk_interface_files'] = interfaces
+        self.report['sdk_interface_manifest_sha256'] = getattr(args, 'sdk_interface_sha256', None)
         self.source, self.deps = self.root / 'source', self.root / 'dependencies'
         self.deps.mkdir()
         local_clone(source_in, self.source, COMMIT)
@@ -204,7 +236,7 @@ class Builder:
         for item in contract['reviewed_files']:
             root = self.source if item['repository'] == 'ops-transformer' else self.deps / 'cann-cmake'
             require(sha(root / item['path']) == item['sha256'], 'REVIEWED_CMAKE_SOURCE_CHANGED:' + item['path'])
-        for item in contract['files']:
+        for item in [row for row in contract['files'] if row['kind'] != 'sdk'] + interfaces:
             if item['kind'] == 'sdk':
                 require(sha(self.sdk / item['path']) == item['sha256'], 'MATCHED_SDK_INTERFACE_DIFFERS:' + item['path'])
                 continue
@@ -333,7 +365,8 @@ class Builder:
         require(dynamic.is_file(), 'NEW_PACKAGE_JIT_SOURCE_MISSING')
         opc = self.sdk / 'python/site-packages/opc_tool/opc.py'
         require(opc.is_file(), 'MATCHED_OPC_COMPILER_MISSING')
-        keys = KEYS + ([119000000000400000] if self.variant == 'denominator_replay' else [])
+        keys = (TND33_KEYS if self.variant == 'tnd_page16_s2_256' else
+                KEYS + ([119000000000400000] if self.variant == 'denominator_replay' else []))
         output = kernel / 'output';output.mkdir()
         env = dict(self.env, ASCEND_CUSTOM_OPP_PATH=str(self.vendor), OMP_NUM_THREADS='2')
         self.run('new_matching_kernel', [self.args.python, opc, dynamic,
@@ -395,6 +428,8 @@ def main():
     parser.add_argument('--dependencies', type=Path, required=True)
     parser.add_argument('--work', type=Path, required=True)
     parser.add_argument('--sdk', type=Path, default=Path('/usr/local/Ascend/cann-9.1.0'))
+    parser.add_argument('--sdk-interface-manifest', type=Path)
+    parser.add_argument('--sdk-interface-sha256')
     parser.add_argument('--python', type=Path, default=Path(sys.executable))
     parser.add_argument('--jobs', type=int, choices=range(1, 5), default=4)
     args = parser.parse_args()

@@ -67,10 +67,13 @@ def main():
         kernel = unique.pop()
         # Both SDK layouts are discovered from files, not selected by major version.
         include = {kernel.parent.parent, kernel.parent.parent.parent, sdk/'include', sdk/'aarch64-linux/include'}
-        for name in ('rt_external_kernel.h', 'ascend_hal.h', 'securec.h', 'tilingdata_base.h'):
+        for name in ('rt_external_kernel.h', 'ascend_hal.h', 'securec.h', 'tilingdata_base.h', 'prof_common.h'):
             for header in sdk.rglob(name):
                 include.add(header.parent)
                 include.add(header.parent.parent)
+        for base in (sdk/'include', sdk/'aarch64-linux/pkg_inc'):
+            if base.is_dir():
+                include.update(x for x in base.rglob('*') if x.is_dir() and len(x.parts)-len(base.parts) <= 4)
         include = sorted(x for x in include if x.is_dir())
         flags = ['-I' + str(x) for x in include]
         report['headers'] = [dict(path=str(x), sha256=sha(x)) for x in
@@ -111,6 +114,15 @@ def main():
                 *['-I'+str(x) for x in sorted(source_dirs)], target], timeout=300)
             report['fia_translation_unit_compiled'] = rc_source == 0
             report['source_compile_scope'] = 'EXACT_IMAGE_SYNTAX_AND_HEADERS_ONLY_NOT_COMPLETE_VENDOR_BUILD'
+            contract = json.loads((a.repo/'fault_injection/native_adapters/attention28/fia/build_contract.json').read_bytes())
+            sdk_files = [dict(path=x['path'], sha256=sha(sdk/x['path']), bytes=(sdk/x['path']).stat().st_size)
+                         for x in contract['files'] if x['kind'] == 'sdk' and (sdk/x['path']).is_file()]
+            manifest = dict(schema='demoncat.attention.sdk_source_probe.v1', source_commit=report['official_commit'],
+                sdk=str(sdk), files=sdk_files, fia_translation_unit_compiled=rc_source == 0,
+                actual_npu_calls=0, native_launch_verified=False, source_translation_unit_sha256=sha(target),
+                required_paths_complete=len(sdk_files) == sum(x['kind'] == 'sdk' for x in contract['files']))
+            (a.out/'sdk_interfaces.json').write_text(json.dumps(manifest, indent=2)+'\n')
+            report['sdk_interface_manifest'] = dict(path=str(a.out/'sdk_interfaces.json'), sha256=sha(a.out/'sdk_interfaces.json'))
         report['status'] = ('CPU_OBSERVER_ABI_COMPILED_NOT_NPU_QUALIFIED' if report['observer_compiled']
                             else 'CPU_OBSERVER_BUILD_FAILED')
     except BaseException as error:

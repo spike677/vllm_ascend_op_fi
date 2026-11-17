@@ -1,6 +1,7 @@
 """Fresh-build recipe safety contracts; no compiler/SDK or NPU qualification."""
 import importlib.util
 import hashlib
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -14,6 +15,26 @@ spec.loader.exec_module(build)
 
 
 class FreshBuildTests(unittest.TestCase):
+    def test_alternate_sdk_requires_complete_exact_source_probe(self):
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory() as root:
+            path=Path(root)/'probe.json'
+            contract=dict(files=[dict(kind='sdk',path='include/real.h',bytes=8,sha256='a'*64)])
+            data=dict(schema='demoncat.attention.sdk_source_probe.v1',source_commit=build.COMMIT,
+                fia_translation_unit_compiled=True,required_paths_complete=True,actual_npu_calls=0,
+                native_launch_verified=False,files=[dict(path='include/real.h',bytes=9,sha256='b'*64)])
+            path.write_text(json.dumps(data))
+            args=SimpleNamespace(sdk_interface_manifest=path,sdk_interface_sha256=build.sha(path))
+            rows=build.sdk_interfaces(args,contract)
+            self.assertEqual(rows[0]['sha256'],'b'*64)
+            for field,value in (('fia_translation_unit_compiled',False),('required_paths_complete',False),
+                                ('actual_npu_calls',1),('native_launch_verified',True),('source_commit','c'*40)):
+                changed=dict(data);changed[field]=value;path.write_text(json.dumps(changed));args.sdk_interface_sha256=build.sha(path)
+                with self.assertRaisesRegex(RuntimeError,'COMPLETE_EXACT_SDK_SOURCE_PROBE_REQUIRED'):
+                    build.sdk_interfaces(args,contract)
+            path.write_text(json.dumps(data));args.sdk_interface_sha256='0'*64
+            with self.assertRaisesRegex(RuntimeError,'SDK_SOURCE_PROBE_HASH_DIFFERS'):build.sdk_interfaces(args,contract)
+
     def fixtures(self, root):
         deps = Path(root) / 'dependencies';repo = deps / 'opbase'
         folder = repo / 'tests/mock';folder.mkdir(parents=True)

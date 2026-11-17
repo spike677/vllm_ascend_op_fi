@@ -28,6 +28,7 @@ std::mutex gate;
 std::atomic<uint64_t> serial{0};
 struct Binary { std::string file; uint64_t generation=0; };
 std::map<void*, Binary> registered;
+uint64_t captured_bytes=0,captured_count=0;
 thread_local std::string token;
 thread_local bool nested=false;
 uint64_t now() { return std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -80,6 +81,11 @@ void register_binary(const rtDevBinary_t* input, void** handle, rtError_t result
     std::vector<uint8_t> descriptor,bytes;
     if(!read_self(input,sizeof(*input),descriptor))return;
     rtDevBinary_t b{};std::memcpy(&b,descriptor.data(),sizeof(b));
+    bool overflow=false;
+    {std::lock_guard<std::mutex> lock(gate);
+        overflow=b.length>128*1024*1024 || captured_count>=128 || b.length>256*1024*1024-captured_bytes;
+        if(!overflow){captured_bytes+=b.length;++captured_count;}}
+    if(overflow){emit("\"event\":\"capture_overflow\",\"reason\":\"registered_binary_budget\"");return;}
     if(!read_self(b.data,b.length,bytes))return;
     // Raw registered bytes stay private on the experiment host. Python hashes
     // these exact bytes and compares them with the freshly built ELF manifest.
