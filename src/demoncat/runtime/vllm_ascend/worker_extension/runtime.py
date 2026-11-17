@@ -215,13 +215,32 @@ class WorkerFaultRuntime:
     def _fresh(lease):
         try:
             state = lease.provider.query(owner=lease.native_owner, generation=lease.generation)
-            if not isinstance(state, dict) or state.get('native_loaded') is not True:
+            if not isinstance(state, dict):
+                return None
+            boundary = getattr(lease.provider, 'execution_boundary', 'native')
+            if boundary == 'native':
+                # Existing Native admission is unchanged. A Python receipt is
+                # never accepted in place of an actual loaded ABI readback.
+                if (state.get('native_loaded') is not True
+                        or type(state.get('native_registered')) is not bool
+                        or state.get('execution_boundary', 'native') != 'native'):
+                    return None
+            elif boundary == 'python_hook':
+                if (state.get('execution_boundary') != boundary
+                        or state.get('state_source') != 'OWNED_PYTHON_HOOKS'
+                        or state.get('hook_state_available') is not True
+                        or type(state.get('hook_owned')) is not bool
+                        or state.get('owner') != lease.native_owner
+                        or type(state.get('generation')) is not int
+                        or state['generation'] != lease.generation
+                        or state.get('native_loaded', False) is not False
+                        or state.get('native_registered', False) is not False):
+                    return None
+            else:
                 return None
             if any(type(state.get(key)) is not bool for key in ('registered', 'enabled')):
                 return None
             if any(type(state.get(key)) is not int or state[key] < 0 for key in ('inflight', 'leases')):
-                return None
-            if type(state.get('native_registered')) is not bool:
                 return None
             pending = state.get('replay_pending', False)
             failed = state.get('replay_failed', False)
@@ -245,7 +264,23 @@ class WorkerFaultRuntime:
     @classmethod
     def _inert(cls, state):
         return (cls._quiet(state) and state['registered'] is False
-                and state['native_registered'] is False)
+                and (state['hook_owned'] is False
+                     if state.get('execution_boundary') == 'python_hook'
+                     else state['native_registered'] is False))
+
+    @staticmethod
+    def _state_reply(state):
+        # Retain the v1 native field for its callers without labeling an owned
+        # Python hook as a Native execution or build verification.
+        return {'provider_state': state,
+                'native': (None if state is not None and
+                           state.get('execution_boundary') == 'python_hook' else state)}
+
+    @staticmethod
+    def _unavailable(lease):
+        return ('PROVIDER_STATE_UNAVAILABLE'
+                if getattr(lease.provider, 'execution_boundary', 'native') != 'native'
+                else 'NATIVE_STATE_UNAVAILABLE')
 
     def _quarantined(self):
         # Providers may share streams, allocators or process-level interposers.
@@ -260,9 +295,9 @@ class WorkerFaultRuntime:
         state = self._fresh(lease)
         if not self._quiet(state):
             lease.recovery_required = True
-        return {'status': 'QUERY_OK' if state is not None else 'NATIVE_STATE_UNAVAILABLE',
+        return {'status': 'QUERY_OK' if state is not None else self._unavailable(lease),
                 'ticket': lease.ticket(), 'phase': lease.phase,
-                'recovery_required': lease.recovery_required, 'native': state,
+                'recovery_required': lease.recovery_required, **self._state_reply(state),
                 'replay_pending': lease.replay_pending,
                 'quarantined': self._quarantined()}
 
@@ -354,8 +389,8 @@ class WorkerFaultRuntime:
             verified = False
         if not verified:
             lease.recovery_required = True
-            return dict(result, status='RECOVERY_REQUIRED' if state is not None else 'NATIVE_STATE_UNAVAILABLE',
-                        native=state, phase=lease.phase, recovery_required=True, provider=reply)
+            return dict(result, status='RECOVERY_REQUIRED' if state is not None else self._unavailable(lease),
+                        **self._state_reply(state), phase=lease.phase, recovery_required=True, provider=reply)
 
         lease.phase = {'prepare': 'PREPARED', 'register': 'REGISTERED', 'check': 'CHECKED',
                        'finish': 'FINISHED',
@@ -366,7 +401,7 @@ class WorkerFaultRuntime:
             del self._leases[lease.mechanism]
         if action in _RESTORE:
             lease.recovery_required = False
-        return dict(result, status='ACTION_COMPLETED', native=state, phase=lease.phase,
+        return dict(result, status='ACTION_COMPLETED', **self._state_reply(state), phase=lease.phase,
                     recovery_required=lease.recovery_required, provider=reply)
 
     def _detach(self, context, payload):

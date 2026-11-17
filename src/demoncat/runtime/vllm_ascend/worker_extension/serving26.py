@@ -26,6 +26,8 @@ class FiaServingBinding:
 
 
 class FiaServingSession:
+    mechanism=MECHANISM
+    runtime_call_budget=None
     def __init__(self,worker,model,*,library,sha256,folder,prompt,baseline_control,collector):
         from vllm.model_executor.layers.logits_processor import LogitsProcessor
         from fault_injection.deployments.residual26 import Residual26Runtime
@@ -34,7 +36,7 @@ class FiaServingSession:
         require(model is self.runner.model and not model.training,'LOADED_EVAL_MODEL_REQUIRED')
         self.folder=Path(folder);self.folder.mkdir(parents=True,exist_ok=False)
         self.library,self.sha256=library,sha256
-        self.probe=Residual26Runtime(model,MECHANISM,library=library,sha256=sha256,
+        self.probe=Residual26Runtime(model,self.mechanism,library=library,sha256=sha256,
             evidence_dir=self.folder/'state-probe',log_path=self.folder/'writer.jsonl')
         boundary=discover_logits_boundary(model,actual_logits_processor_type=LogitsProcessor,
             actual_vocab_size=self.runner.vllm_config.model_config.hf_config.vocab_size)
@@ -77,9 +79,10 @@ class FiaServingSession:
             from fault_injection import attach
             from fault_injection.deployments.residual26 import Residual26Runtime
             arm='fault' if phase=='comparison' and not self.baseline_control else 'baseline'
-            self.native_runtime=Residual26Runtime(self.model,MECHANISM,library=self.library,sha256=self.sha256,
-                evidence_dir=self.folder/phase/'native',log_path=self.folder/'writer.jsonl')
-            self.native_session=attach(self.model,MECHANISM,arm=arm,runtime=self.native_runtime,unsupported='passthrough')
+            self.native_runtime=Residual26Runtime(self.model,self.mechanism,library=self.library,sha256=self.sha256,
+                evidence_dir=self.folder/phase/'native',log_path=self.folder/'writer.jsonl',
+                max_effect_calls=self.runtime_call_budget)
+            self.native_session=attach(self.model,self.mechanism,arm=arm,runtime=self.native_runtime,unsupported='passthrough')
             self.native_session.__enter__()
 
     def pre(self,module,args,kwargs):
@@ -132,7 +135,8 @@ class FiaServingSession:
             require(runtime.supported>0 and runtime.claims==len(runtime.completed) and not runtime.pending()
                 and not runtime.error,'NATURAL_WRITER_CONSUMER_RECOVERY_UNPROVEN')
             self.current['native']=dict(supported=runtime.supported,claims=runtime.claims,
-                completed=runtime.completed,coverage=self.native_session.report(),pending=runtime.pending())
+                completed=runtime.completed,coverage=self.native_session.report(),pending=runtime.pending(),
+                selected_target=runtime.selected_target)
             self.native_session=self.native_runtime=None
         row=self.current
         if self.rows and row['phase'] in ('lossless','off'):
@@ -167,9 +171,54 @@ class FiaServingSession:
         (self.folder/'serving.json').write_text(json.dumps(self.report(),indent=2)+'\n')
 
 
-def install_fia26_binding(worker,*,prompt,library,sha256,evidence_dir,baseline_control,collect_statistics):
+@dataclass(frozen=True)
+class ResidualServingBinding:
+    make_session: object
+
+
+class ResidualServingSession(FiaServingSession):
+    """One actually adjacent QMM writer on the unmodified serving path."""
+    mechanism='26.residual_stomp'
+    runtime_call_budget=1
+
+    def collect(self):
+        if self.current is None:return
+        # Close/drain and independently compare complete original/off tensors
+        # first. Failed qualification retains the concrete recorded row.
+        previous=len(self.rows)
+        try:
+            super().collect()
+            if len(self.rows)==previous:return
+            row=self.rows[-1]
+            if row['phase'] in ('lossless','comparison'):
+                target=row['native'].get('selected_target')
+                require(isinstance(target,dict) and target.get('operator')=='aclnnQuantMatmulWeightNz'
+                    and target.get('allocation') is not None
+                    and row['native']['supported']==1,'ONE_LIVE_ADJACENT_QMM_TARGET_REQUIRED')
+                if row['phase']=='comparison':
+                    lossless=next(r for r in self.rows if r['phase']=='lossless')['native']['selected_target']
+                    keys=('module_path','module_object_id','operator','cache','output_bytes','residual_bytes','geometry')
+                    require(all(target[k]==lossless[k] for k in keys),'QMM_TARGET_CHANGED_AFTER_LOSSLESS')
+                    require(row['native']['claims']==(0 if self.baseline_control else 1),
+                            'QMM_ACTUAL_CLAIM_MISMATCH')
+            self.save()
+        except BaseException as error:
+            self.error=repr(error);self.recovered=False;self.save();raise
+
+    def report(self):
+        result=super().report()
+        result.update(schema='demoncat.residual26.serving.v1',mechanism=self.mechanism,
+            scope='ONE_ACTUAL_ADJACENT_QMM_WRITER_PER_FRESH_PREFILL_PHASE',
+            public_all_eligible=False,public_every_match=False)
+        return result
+
+
+def _install_writer26_binding(worker,*,mechanism,prompt,library,sha256,evidence_dir,baseline_control,collect_statistics):
     from fault_injection.providers import register_runtime
-    require(not hasattr(worker,'_dcat_fia26_binding'),'DEPLOYMENT_ALREADY_BOUND')
+    require(mechanism in (MECHANISM,'26.residual_stomp'),'EXPLICIT_WRITER_MECHANISM_REQUIRED')
+    fia=mechanism==MECHANISM
+    binding_attr='_dcat_fia26_binding' if fia else '_dcat_qmm26_binding'
+    require(not hasattr(worker,binding_attr),'DEPLOYMENT_ALREADY_BOUND')
     require(type(baseline_control) is bool and type(collect_statistics) is bool,'EXPLICIT_CONTROL_REQUIRED')
     require(isinstance(prompt,list) and len(prompt)>1 and all(type(x) is int and x>=0 for x in prompt),'FROZEN_PROMPT_REQUIRED')
     require(os.environ.get('VLLM_ENABLE_V1_MULTIPROCESSING')=='0','HOST_DRIVEN_ENGINE_REQUIRED')
@@ -196,22 +245,41 @@ def install_fia26_binding(worker,*,prompt,library,sha256,evidence_dir,baseline_c
     model=worker.model_runner.model
     def make_session(w,m):
         require(w is worker and m is model and worker.model_runner.model is model,'FOREIGN_MODEL')
-        os.environ['FAULT26_FIA_WRITER_LOG_PATH']=str(folder/'runtime'/'writer.jsonl')
-        return FiaServingSession(worker,model,library=library,sha256=sha256,folder=folder/'runtime',
+        os.environ['FAULT26_FIA_WRITER_LOG_PATH' if fia else 'FAULT26_QMM_UNDERFLOW_LOG_PATH']=str(folder/'runtime'/'writer.jsonl')
+        cls=FiaServingSession if fia else ResidualServingSession
+        return cls(worker,model,library=library,sha256=sha256,folder=folder/'runtime',
             prompt=prompt,baseline_control=baseline_control,collector=collector)
     def factory(m):
         require(m is model,'FOREIGN_MODEL')
-        return FiaServingBinding(make_session)
-    register_runtime(MECHANISM,factory)
-    worker._dcat_fia26_binding=factory
+        return (FiaServingBinding if fia else ResidualServingBinding)(make_session)
+    register_runtime(mechanism,factory)
+    setattr(worker,binding_attr,factory)
     return dict(status='DEPLOYMENT_BOUND_NOT_ACCEPTED',core_methods_replaced=False,workers_created=0)
 
 
+def install_fia26_binding(worker,*,prompt,library,sha256,evidence_dir,baseline_control,collect_statistics):
+    return _install_writer26_binding(worker,mechanism=MECHANISM,prompt=prompt,library=library,
+        sha256=sha256,evidence_dir=evidence_dir,baseline_control=baseline_control,collect_statistics=collect_statistics)
+
+
+def install_residual26_binding(worker,*,prompt,library,sha256,evidence_dir,baseline_control,collect_statistics):
+    return _install_writer26_binding(worker,mechanism='26.residual_stomp',prompt=prompt,library=library,
+        sha256=sha256,evidence_dir=evidence_dir,baseline_control=baseline_control,collect_statistics=collect_statistics)
+
+
 def remove_fia26_binding(worker):
+    return _remove_writer26_binding(worker,MECHANISM,'_dcat_fia26_binding')
+
+
+def remove_residual26_binding(worker):
+    return _remove_writer26_binding(worker,'26.residual_stomp','_dcat_qmm26_binding')
+
+
+def _remove_writer26_binding(worker,mechanism,attribute):
     from fault_injection.providers import unregister_runtime
     runtime=getattr(worker,'_demoncat_worker_fault_runtime',None)
     require(runtime is not None and not runtime._leases,'COMMON_OWNER_MUST_UNREGISTER_FIRST')
-    factory=getattr(worker,'_dcat_fia26_binding',None)
+    factory=getattr(worker,attribute,None)
     require(factory is not None,'DEPLOYMENT_NOT_BOUND')
-    unregister_runtime(MECHANISM,factory);del worker._dcat_fia26_binding
+    unregister_runtime(mechanism,factory);delattr(worker,attribute)
     return dict(status='DEPLOYMENT_REMOVED')

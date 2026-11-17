@@ -5,10 +5,185 @@ import json
 import os
 import re
 import uuid
+import weakref
+import threading
 
 from .core import UnsupportedCall
 from .coverage import Candidate, CandidateSet, Eligibility, EligibilityResult, TargetIdentity
 from .environment import environment_fingerprint
+
+
+_LOCAL_MODELS = weakref.WeakKeyDictionary()
+_LOCAL_MODEL_LOCK = threading.Lock()
+_PROCESS_NONCE = uuid.uuid4().hex
+
+
+def _process_start_identity():
+    from pathlib import Path
+    try:
+        raw = Path('/proc/self/stat').read_text()
+        boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        start = raw.rsplit(') ', 1)[1].split()[19]
+        if int(raw.split(' ', 1)[0]) == os.getpid() and boot and start.isdecimal():
+            return f'proc:{boot}:{os.getpid()}:{start}'
+    except (OSError, ValueError, IndexError):
+        pass
+    return f'process_local:{os.getpid()}:{_PROCESS_NONCE}'
+
+
+def _python_execution_context(model, worker_identity):
+    """Observe a model-local replay or consume an already inspected Worker ID.
+
+    No Worker is created. A model-local nonce never becomes a serving identity.
+    Existing initialized distributed rank is read, never initialized here.
+    """
+    import torch
+    dist = torch.distributed
+    rank = dist.get_rank() if dist.is_available() and dist.is_initialized() else 0
+    actual_start = _process_start_identity()
+    if worker_identity:
+        required = ('process_start_identity', 'worker_start_identity', 'model_instance_id')
+        if (not isinstance(worker_identity, dict) or worker_identity.get('pid') != os.getpid()
+                or type(worker_identity.get('rank')) is not int or worker_identity['rank'] != rank
+                or any(not isinstance(worker_identity.get(k), str) or not worker_identity[k] for k in required)
+                or (actual_start.startswith('proc:') and worker_identity['process_start_identity'] != actual_start)):
+            raise UnsupportedCall('ACTUAL_WORKER_IDENTITY_MISMATCH')
+        return dict(process_id=os.getpid(), process_start_identity=worker_identity['process_start_identity'],
+                    worker_id=worker_identity['worker_start_identity'], rank=rank,
+                    model_instance_id=worker_identity['model_instance_id'], scope_kind='INITIALIZED_WORKER')
+    with _LOCAL_MODEL_LOCK:
+        context = _LOCAL_MODELS.get(model)
+        if context is None:
+            context = (uuid.uuid4().hex, uuid.uuid4().hex)
+            _LOCAL_MODELS[model] = context
+    return dict(process_id=os.getpid(), process_start_identity=actual_start,
+                worker_id='model_local:' + context[0], rank=rank,
+                model_instance_id=context[1], scope_kind='MODEL_LOCAL')
+
+
+def _python_event_signature(event, mechanism):
+    fields = ('path', 'ordinal', 'module_object_id', 'module_forward_identity', 'module_type', 'output_shape', 'dtype',
+              'input_shape', 'weight_shape', 'boundary')
+    row = {key: event[key] for key in fields if key in event}
+    if mechanism == '15.alias_detach':
+        row.update({key: event.get(key) for key in ('size', 'stride', 'offset', 'actual_format')})
+        row['base'] = {key: event.get('base', {}).get(key)
+                       for key in ('shape', 'stride', 'offset', 'dtype', 'device', 'actual_format')}
+    return row
+
+
+def _healthy_python_event(event, mechanism):
+    if event.get('original_execution_verified') is not True:
+        return False
+    if mechanism == '15.alias_detach':
+        return (event.get('status') == 'routed' and event.get('applied') is False
+                and event.get('initial_values_correct') is True
+                and event.get('aliases_original_base') is True
+                and bool(event.get('writes')) and bool(event.get('consumers'))
+                and not event.get('observation_errors')
+                and all(w.get('view_write_correct') is True and w.get('base_matches_expected_update') is True
+                        and w.get('non_target_unchanged') is True for w in event['writes']))
+    return event.get('status') == 'baseline'
+
+
+def observed_python_candidate_set(model, mechanism, *, reports, worker_identity=None, provider_version='1'):
+    """Convert actual 15/17/18 healthy observations to the shared target contract.
+
+    The mechanism adapter owns observation and its data checks. This helper joins
+    those observations with live module objects, callable source and model-load
+    identity. It does not authenticate arbitrary supplied reports, certify Native
+    execution, or authorize a fault. Both reports must be healthy complete runs;
+    callers still enforce complete input/output stability and lossless recovery.
+    """
+    import inspect
+    import marshal
+    import torch
+    from .coverage import BoundaryTargetIdentity, PythonHookBoundary
+    from .model_discovery import inspect_structure
+
+    operators = {'15.alias_detach': 'torch.as_strided', '17.spatial_padding': 'torch.nn.functional.conv3d',
+                 '18.api_half': 'torch.nn.RMSNorm.forward'}
+    if mechanism not in operators or not isinstance(provider_version, str) or not provider_version:
+        raise UnsupportedCall('PYTHON_BOUNDARY_ADAPTER_NOT_AVAILABLE')
+    reports = tuple(reports)
+    if len(reports) != 2 or any(not isinstance(r, dict) for r in reports):
+        raise UnsupportedCall('TWO_ACTUAL_HEALTHY_OBSERVATIONS_REQUIRED')
+    structure = inspect_structure(model)
+    modules = {path or '<root>': module for path, module in model.named_modules()}
+    roles = {row['object_identity']: tuple(sorted(row['logical_roles'])) for row in structure['modules']}
+    context = _python_execution_context(model, worker_identity)
+    proof = hashlib.sha256(json.dumps(reports, sort_keys=True, allow_nan=False).encode()).hexdigest()
+    completed = all(r.get('arm') == 'baseline' and not r.get('cleanup_errors')
+                    and not r.get('mode_cleanup_pending') and not r.get('rejected_root_calls')
+                    and len(r.get('forwards', ())) == 1 and r['forwards'][0].get('status') == 'returned'
+                    for r in reports)
+    event_maps = []
+    for report in reports:
+        events = {}
+        for event in report.get('events', ()):
+            path, ordinal = event.get('path'), event.get('ordinal')
+            if not isinstance(path, str) or type(ordinal) is not int or ordinal < 0 or (path, ordinal) in events:
+                raise UnsupportedCall('ACTUAL_PYTHON_CALL_IDENTITY_MISSING_OR_DUPLICATE')
+            events[(path, ordinal)] = event
+        event_maps.append(events)
+    keys = list(dict.fromkeys([*event_maps[0], *event_maps[1]]))
+    candidates = []
+    for path, ordinal in keys:
+        pair = [events.get((path, ordinal)) for events in event_maps]
+        module = modules.get(path)
+        status, reason, target = Eligibility.UNVERIFIED, 'REPEATED_ACTUAL_CALL_REQUIRED', None
+        if all(pair):
+            if not all(_healthy_python_event(e, mechanism) for e in pair):
+                status, reason = Eligibility.UNSUPPORTED, 'MECHANISM_HEALTHY_BOUNDARY_UNPROVEN'
+            elif module is None or any(e.get('module_object_id') != id(module) for e in pair):
+                reason = 'ACTUAL_MODULE_OBJECT_IDENTITY_CHANGED'
+            elif any(e.get('module_forward_identity') != id(getattr(module.forward, '__func__', module.forward))
+                     for e in pair):
+                reason = 'ACTUAL_MODULE_CALLABLE_IDENTITY_CHANGED'
+            elif _python_event_signature(pair[0], mechanism) != _python_event_signature(pair[1], mechanism):
+                reason = 'ACTUAL_CALL_GEOMETRY_OR_POSITION_CHANGED'
+            else:
+                try:
+                    # Identity follows the live callable, including a reviewed
+                    # collector wrapper. Mechanism-specific admissibility of
+                    # that wrapper remains with the observing Provider.
+                    function = getattr(module.forward, '__func__', module.forward)
+                    source = inspect.getsource(function).encode()
+                    code_sha256 = hashlib.sha256(marshal.dumps(function.__code__)).hexdigest()
+                    callable_id = function.__module__ + '.' + function.__qualname__
+                    if mechanism == '15.alias_detach':
+                        device = torch.device(pair[0]['base']['device'])
+                    else:
+                        devices = {tensor.device for tensor in (*module.parameters(recurse=False),
+                                                               *module.buffers(recurse=False))}
+                        if len(devices) != 1:
+                            raise ValueError('UNIQUE_LIVE_MODULE_DEVICE_REQUIRED')
+                        device, = devices
+                    if worker_identity and (device.type != 'npu' or device.index != worker_identity.get('logical_device')):
+                        raise ValueError('ACTUAL_WORKER_DEVICE_MISMATCH')
+                    signature = hashlib.sha256(json.dumps(_python_event_signature(pair[0], mechanism),
+                                                          sort_keys=True, allow_nan=False).encode()).hexdigest()
+                    target = BoundaryTargetIdentity(**context, device_type=device.type,
+                        logical_device=device.index, model_object_identity=id(model), module_object_identity=id(module),
+                        module_roles=roles.get(id(module), ()), operator_api=operators[mechanism], tensor_signature=signature,
+                        boundary=PythonHookBoundary(callable_id, hashlib.sha256(source).hexdigest(), ordinal),
+                        provider_identity=mechanism + ':' + provider_version,
+                        provider_proof=(('callable_code_sha256', code_sha256), ('healthy_observations_sha256', proof)))
+                    status, reason = Eligibility.SUPPORTED, None
+                except (OSError, TypeError, AttributeError, KeyError, ValueError) as error:
+                    reason = 'CALLABLE_OR_DEVICE_IDENTITY_UNPROVEN:' + type(error).__name__
+        candidates.append(Candidate(f'python:{path}:{ordinal}',
+            EligibilityResult(status, (reason,) if reason else ()), target))
+    # For module adapters the mechanism reports all discovered modules, including
+    # a branch not executed. Do not silently drop it from the candidate inventory.
+    if mechanism != '15.alias_detach':
+        known = {path for path, _ in keys}
+        unseen = set().union(*(set(r.get('coverage', {})) for r in reports)) - known
+        for path in sorted(unseen):
+            candidates.append(Candidate('module:' + path, EligibilityResult(
+                Eligibility.NOT_OBSERVED, ('NO_CALL_IN_HEALTHY_REPLAYS',))))
+        completed = completed and not unseen
+    return CandidateSet(tuple(candidates), bool(keys) and completed and set(event_maps[0]) == set(event_maps[1]))
 
 
 _ATEN = {

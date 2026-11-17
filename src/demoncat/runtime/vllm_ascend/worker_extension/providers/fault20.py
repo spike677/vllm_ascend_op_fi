@@ -124,14 +124,18 @@ class Fault20Provider(Scope):
             serving = resolve_runtime(MECHANISM, self.model)
             if type(serving) is Fault20ServingReplay:
                 from ..serving20 import Serving20Session
-                from fault_injection.serving_qualification import ServingQualifiedNativeSession
+                from ..serving20_qmm import Serving20QmmSession
+                from fault_injection.serving_qualification import ServingQualifiedNativeSession, ProjectionQualifiedNativeSession
                 if (serving.build_profile_sha256 != self.runtime.build_profile
                         or not callable(serving.make_session)
                         or self.runtime.worker != self._worker_facts()):
                     raise ProviderError('FAULT20_TRUSTED_BINDING_MISMATCH')
                 require_idle(self._read_native(), release_owner=True)
                 session = serving.make_session(self.worker, self.model, self.runtime, *self._ticket)
-                if type(session) is not Serving20Session or type(session.backend) is not ServingQualifiedNativeSession:
+                reviewed_pair = (type(session), type(session.backend)) in (
+                    (Serving20Session, ServingQualifiedNativeSession),
+                    (Serving20QmmSession, ProjectionQualifiedNativeSession))
+                if not reviewed_pair:
                     raise ProviderError('REVIEWED_SERVING_SESSION_REQUIRED')
                 self.serving_session, self.serving_backend = session, session.backend
                 self._registered = True

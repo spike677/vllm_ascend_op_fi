@@ -1,5 +1,5 @@
 """Evidence types for the existing adaptation pipeline. No execution authority."""
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from enum import Enum
 import re
 
@@ -86,13 +86,183 @@ class TargetIdentity:
         return self.process_id, self.worker_id, self.rank, self.logical_device
 
 
+def _text_fields(*values):
+    if any(not isinstance(value, str) or not value.strip() for value in values):
+        raise ValueError('Missing actual boundary identity')
+
+
+@dataclass(frozen=True)
+class PythonHookBoundary:
+    """A real module's callable and invocation; no synthetic Native executor."""
+    callable_identity: str
+    callable_source_sha256: str
+    call_ordinal: int
+    kind: str = field(default='python_hook', init=False)
+
+    def __post_init__(self):
+        _text_fields(self.callable_identity)
+        if not _is_sha256(self.callable_source_sha256) or type(self.call_ordinal) is not int or self.call_ordinal < 0:
+            raise ValueError('Actual callable source and occurrence required')
+
+
+@dataclass(frozen=True)
+class TensorAliasBoundary:
+    """Identity for one live base/view relation, scoped to its allocation life."""
+    base_object_identity: int
+    base_storage_identity: int
+    storage_bytes: int
+    allocation_lifecycle: str
+    storage_offset: int
+    size: tuple[int, ...]
+    stride: tuple[int, ...]
+    kind: str = field(default='tensor_alias', init=False)
+
+    def __post_init__(self):
+        _text_fields(self.allocation_lifecycle)
+        if any(type(n) is not int or n <= 0 for n in
+               (self.base_object_identity, self.base_storage_identity, self.storage_bytes)):
+            raise ValueError('Live base and storage identity required')
+        if (type(self.storage_offset) is not int or self.storage_offset < 0
+                or not isinstance(self.size, tuple) or not isinstance(self.stride, tuple)
+                or not self.size or len(self.size) != len(self.stride)
+                or any(type(n) is not int or n <= 0 for n in self.size)
+                or any(type(n) is not int or n < 0 for n in self.stride)):
+            raise ValueError('Actual alias geometry required')
+
+
+@dataclass(frozen=True)
+class OperatorApiBoundary:
+    """An actual dispatcher/API schema, implementation and observed call token."""
+    schema_sha256: str
+    implementation_sha256: str
+    call_token: str
+    implementation_kind: str
+    kind: str = field(default='operator_api', init=False)
+
+    def __post_init__(self):
+        _text_fields(self.call_token)
+        if (self.implementation_kind not in ('torch_dispatch', 'public_aclnn', 'custom_native_api')
+                or not _is_sha256(self.schema_sha256) or not _is_sha256(self.implementation_sha256)):
+            raise ValueError('Actual API schema and implementation fingerprints required')
+
+
+@dataclass(frozen=True)
+class KernelLaunchBoundary:
+    """Observed launch fields, never a desired/expected strategy profile."""
+    kernel_symbol: str
+    tiling_key: int
+    tiling_data_sha256: str
+    loaded_build_sha256: str
+    launch_identity: str
+    workspace_bytes: int
+    kind: str = field(default='kernel_launch', init=False)
+
+    def __post_init__(self):
+        _text_fields(self.kernel_symbol, self.launch_identity)
+        if (type(self.tiling_key) is not int or self.tiling_key < 0
+                or type(self.workspace_bytes) is not int or self.workspace_bytes < 0
+                or not _is_sha256(self.tiling_data_sha256) or not _is_sha256(self.loaded_build_sha256)):
+            raise ValueError('Observed launch, tiling and loaded-build identity required')
+
+
+@dataclass(frozen=True)
+class CollectiveBoundary:
+    """Exact process-group membership and sequence, not shape-derived ranks."""
+    backend: str
+    process_group_identity: str
+    members: tuple[int, ...]
+    sequence: int
+    reduction: str
+    loaded_backend_sha256: str
+    kind: str = field(default='collective', init=False)
+
+    def __post_init__(self):
+        _text_fields(self.backend, self.process_group_identity, self.reduction)
+        if (not isinstance(self.members, tuple) or not self.members
+                or len(set(self.members)) != len(self.members)
+                or any(type(n) is not int or n < 0 for n in self.members)
+                or type(self.sequence) is not int or self.sequence < 0
+                or not _is_sha256(self.loaded_backend_sha256)):
+            raise ValueError('Actual collective membership, sequence and build required')
+
+
+_BOUNDARY_TYPES = (PythonHookBoundary, TensorAliasBoundary, OperatorApiBoundary,
+                   KernelLaunchBoundary, CollectiveBoundary)
+
+
+@dataclass(frozen=True)
+class BoundaryTargetIdentity:
+    """Shared identity for non-OpCache execution boundaries.
+
+    Typed data can be serialized and reconciled by the same coverage contract.
+    It is an observation, not a qualification certificate. MODEL_LOCAL explicitly
+    denotes controlled model replays and cannot become an initialized Worker.
+    """
+    process_id: int
+    process_start_identity: str
+    worker_id: str
+    scope_kind: str
+    rank: int
+    device_type: str
+    logical_device: int | None
+    model_instance_id: str
+    model_object_identity: int
+    module_object_identity: int
+    module_roles: tuple[str, ...]
+    operator_api: str
+    tensor_signature: str
+    boundary: PythonHookBoundary | TensorAliasBoundary | OperatorApiBoundary | KernelLaunchBoundary | CollectiveBoundary
+    provider_identity: str
+    provider_proof: tuple[tuple[str, str], ...] = ()
+
+    def __post_init__(self):
+        _text_fields(self.process_start_identity, self.worker_id, self.model_instance_id,
+                     self.operator_api, self.tensor_signature, self.provider_identity)
+        if (any(type(n) is not int or n <= 0 for n in
+                (self.process_id, self.model_object_identity, self.module_object_identity))
+                or type(self.rank) is not int or self.rank < 0
+                or self.scope_kind not in ('MODEL_LOCAL', 'INITIALIZED_WORKER')
+                or self.device_type not in ('cpu', 'npu', 'cuda')
+                or (self.device_type != 'cpu' and
+                    (type(self.logical_device) is not int or self.logical_device < 0))
+                or (self.device_type == 'cpu' and self.logical_device is not None)):
+            raise ValueError('Actual process, model scope, rank and device required')
+        if not isinstance(self.boundary, _BOUNDARY_TYPES):
+            raise ValueError('Typed execution boundary required')
+        if (not isinstance(self.module_roles, tuple)
+                or any(not isinstance(role, str) or not role for role in self.module_roles)
+                or tuple(sorted(set(self.module_roles))) != self.module_roles):
+            raise ValueError('Expected distinct, sorted structural roles')
+        if (not isinstance(self.provider_proof, tuple)
+                or any(not isinstance(item, tuple) or len(item) != 2
+                       or any(not isinstance(value, str) or not value for value in item)
+                       for item in self.provider_proof)
+                or tuple(key for key, _ in self.provider_proof) != tuple(sorted({key for key, _ in self.provider_proof}))):
+            raise ValueError('Expected distinct provider evidence fields')
+        if isinstance(self.boundary, CollectiveBoundary) and self.rank not in self.boundary.members:
+            raise ValueError('Target rank is not a member of the observed collective group')
+
+    @property
+    def execution_boundary(self):
+        return self.boundary.kind
+
+    @property
+    def worker(self):
+        return self.process_id, self.process_start_identity, self.worker_id, self.rank, self.device_type, self.logical_device
+
+
+Target = TargetIdentity | BoundaryTargetIdentity
+
+
 @dataclass(frozen=True)
 class Candidate:
     candidate_id: str
     eligibility: EligibilityResult
-    identity: TargetIdentity | None = None
+    identity: Target | None = None
 
     def __post_init__(self):
+        if self.identity is not None and not isinstance(self.identity, (TargetIdentity, BoundaryTargetIdentity)):
+            raise ValueError('Typed target identity required')
         if self.eligibility.status == Eligibility.SUPPORTED and self.identity is None:
             raise ValueError('Eligible candidates require a complete target identity')
 
@@ -197,13 +367,15 @@ def coverage_phase(order, *, first_anomaly=None, off_from=None):
 
 @dataclass(frozen=True)
 class ObservedCall:
-    target: TargetIdentity
+    target: Target
     call_id: str
     forward_context: str
     request_ids: tuple[str, ...] | None
     phase: Phase
 
     def __post_init__(self):
+        if not isinstance(self.target, (TargetIdentity, BoundaryTargetIdentity)):
+            raise ValueError('Typed observed target required')
         if not self.call_id or not self.forward_context or not isinstance(self.phase, Phase):
             raise ValueError('Observed call requires a call ID, forward context and phase')
         if self.request_ids is not None and (not self.request_ids or any(not key for key in self.request_ids)
@@ -238,7 +410,7 @@ class IndependentObservation:
 
 @dataclass(frozen=True)
 class TargetLease:
-    target: TargetIdentity
+    target: Target
     owner: str
     generation: int
     lease_id: str
@@ -246,6 +418,8 @@ class TargetLease:
     host_bytes: int = 0
 
     def __post_init__(self):
+        if not isinstance(self.target, (TargetIdentity, BoundaryTargetIdentity)):
+            raise ValueError('Typed leased target required')
         if (any(not isinstance(value, str) or not value.strip() for value in (self.owner, self.lease_id))
                 or type(self.generation) is not int or self.generation <= 0
                 or any(type(n) is not int or n < 0 for n in (self.device_bytes, self.host_bytes))):

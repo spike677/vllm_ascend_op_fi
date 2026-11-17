@@ -10,14 +10,36 @@ static thread_local bool dcat26q_called=false, dcat26q_result=false;
 static thread_local const Fault26QmmUnderflowContext *dcat26q_context=nullptr;
 static thread_local aclrtStream dcat26q_stream=nullptr;
 static thread_local Fault26QmmUnderflowDecision *dcat26q_decision=nullptr;
-extern "C" int dcat26q_install_v1(Dcat26QmmCallback callback) {
+// Additive status ABI. Fields describe this QMM backend's real owned state;
+// it has one pending transaction and no executor queue of its own.
+struct Dcat26QmmState {
+    uint32_t version,size;
+    uint64_t runtime_ready,allowed,registered,owner_thread,callback_active;
+    uint64_t prepared,queued_executors,pending_consumers,active_consumer,environment_enabled;
+};
+extern "C" int dcat26q_state_v1(Dcat26QmmState *out) {
+    if(!out || out->version!=1 || out->size!=sizeof(Dcat26QmmState))return 1;
+    pthread_once(&g_once,initialize);
     std::lock_guard<std::mutex> lock(g_mutex);
-    if(!callback || dcat26q_callback || g_pending.active)return 1;
+    *out=Dcat26QmmState{1,sizeof(Dcat26QmmState),g_ready,g_allowed,
+        dcat26q_callback!=nullptr,dcat26q_callback && dcat26q_owner==std::this_thread::get_id(),
+        dcat26q_token!=0,g_pending.active && !g_pending.ready_for_consumer,0,
+        g_pending.active && g_pending.ready_for_consumer,0,
+        env_is_one("FAULT26_QMM_UNDERFLOW_ENABLED")};
+    return 0;
+}
+extern "C" int dcat26q_install_v1(Dcat26QmmCallback callback) {
+    pthread_once(&g_once,initialize);
+    std::lock_guard<std::mutex> lock(g_mutex);
+    if(!callback || !g_ready || !g_allowed || dcat26q_callback || g_pending.active ||
+       dcat26q_token || env_is_one("FAULT26_QMM_UNDERFLOW_ENABLED"))return 1;
+    g_candidates=0;g_hits=0;
     dcat26q_callback=callback;dcat26q_owner=std::this_thread::get_id();return 0;
 }
 extern "C" int dcat26q_remove_v1(Dcat26QmmCallback callback) {
     std::lock_guard<std::mutex> lock(g_mutex);
-    if(callback!=dcat26q_callback || g_pending.active)return 1;
+    if(callback!=dcat26q_callback || dcat26q_owner!=std::this_thread::get_id() ||
+       g_pending.active || dcat26q_token || env_is_one("FAULT26_QMM_UNDERFLOW_ENABLED"))return 1;
     dcat26q_callback=nullptr;return 0;
 }
 extern "C" int dcat26q_continue_v1(uint64_t token) {

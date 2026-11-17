@@ -7,6 +7,11 @@
 
 ## 当前统一接入
 
+[2026-11-17 17条工程整合与新增机制实测](experiments/engineering_20261117/README.md)：
+从 `cae9cdf4` 继续建设算子专属构建器、真实边界身份、Tensor/MoE/RoPE/通信适配、
+20自然QMM、26 residual、独立输出/缓存尾列Provider以及28新构建与33实际分页诊断。
+构造机制、标准Worker、独立统计与完整覆盖分别记账，未授予公共 C2/C3。
+
 [2026-11-17 P3 独立统计诊断与 P4 推进](experiments/p3p4_closure_20261117/README.md)：15/17/18 的原严格失败保留；26 FIA 新增真实 SmolLM2/GLM4 公共 Worker 的 writer→consumer→恢复，29/39次适用调用。真正 DeepSeek-V2-Lite 新增batch共享量化的公共Worker单点、逐请求Q/scale和OFF恢复；599项CPU测试通过。[FIA限定验收](experiments/p3p4_closure_20261117/FIA26_REPORT.md) · [量化首差与统计限制](experiments/p3p4_closure_20261117/QUANT_REPORT.md)
 
 [2026-11-17 真实 Worker 正向闭环](experiments/worker_positive_20261117/README.md) · [可信 Serving Replay 接口](docs/worker_extension/host_driven_replay.md)

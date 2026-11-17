@@ -86,7 +86,7 @@ class ServingQualifiedNativeSession:
 
     def __init__(self, model, processor, head, boundary, runtime, *, owner, generation,
                  reviewed_manifest_path, first_live_validation=False, evidence_dir,
-                 baseline_control=False):
+                 baseline_control=False, _projection_candidates=None):
         _require(getattr(model, 'training', None) is False, 'LOADED_EVAL_MODEL_REQUIRED')
         self.model, self.processor, self.head, self.runtime = model, processor, head, runtime
         self.owner, self.generation = owner, generation
@@ -101,11 +101,17 @@ class ServingQualifiedNativeSession:
         self.required_libraries = tuple(self.manifest['required_libraries'])
         self.boundary = copy.deepcopy(boundary)
         self.structure = inspect_structure(model)
-        rows = [row for row in self.structure['modules'] if row['object_identity'] == id(processor)]
-        _require(len(rows) == 1 and rows[0]['path'] == boundary['processor_path']
-                 and any(module is head for _, module in model.named_modules()),
-                 'ACTUAL_UNIQUE_PROCESSOR_MODULE_REQUIRED')
-        self.module_row = rows[0]
+        if _projection_candidates is None:
+            rows = [row for row in self.structure['modules'] if row['object_identity'] == id(processor)]
+            _require(len(rows) == 1 and rows[0]['path'] == boundary['processor_path']
+                     and any(module is head for _, module in model.named_modules()),
+                     'ACTUAL_UNIQUE_PROCESSOR_MODULE_REQUIRED')
+            self.module_row = rows[0]
+        else:
+            _require(processor is None and head is None and bool(_projection_candidates)
+                     and boundary.get('scope') == 'ACTUAL_ROOT_ACTIVE_QUANT_PROJECTION',
+                     'EXPLICIT_PROJECTION_SCOPE_REQUIRED')
+            self.module_row = None
         self.directory = Path(evidence_dir)
         self.phase_index = 0
         self.started = self.active = self.fault_started = self.recovered = False
@@ -116,6 +122,7 @@ class ServingQualifiedNativeSession:
         self.rows, self.events, self.requests, self.seen_calls = [], [], set(), set()
         self.before = self.reference = self.baseline = self.selection = self.selected_facts = self.profile = None
         self.environment_before = self.environment_after = self.environment_hash = None
+        self.environment_refusal = None
         self.current = self.scope = self.remove = None
         self.locked = False
         self.attempted = False
@@ -128,9 +135,26 @@ class ServingQualifiedNativeSession:
     def _thread(self):
         _require(threading.get_ident() == self.owner_thread, 'FOREIGN_MODEL_THREAD')
 
+    def _observer_candidates(self):
+        return ((self.module_row['path'], self.processor, ('serving_logits_processor',)),)
+
+    def _dispatch_owner(self):
+        return self.processor
+
     def _environment(self):
         actual = inspect_environment(additional_libraries=self.required_libraries)
         fingerprint = environment_fingerprint(actual, self.required_libraries)
+        if actual.get('pid') != os.getpid() or not _sha(fingerprint):
+            names = {row.get('name') for row in actual.get('loaded_libraries', ())}
+            self.environment_refusal = dict(
+                maps_status=actual.get('maps_status'), actual_pid=actual.get('pid'), expected_pid=os.getpid(),
+                missing_required_libraries=sorted(set(self.required_libraries) - names),
+                unverified_libraries=[{key: row.get(key) for key in ('name', 'path', 'status')}
+                    for row in actual.get('loaded_libraries', ()) if row.get('status') != 'MAPPED_FILE_VERIFIED'])
+            self.directory.mkdir(parents=True, exist_ok=True)
+            (self.directory / 'environment_refusal.json').write_text(json.dumps(
+                dict(diagnostic=self.environment_refusal, actual_environment=actual),
+                indent=2, allow_nan=False) + '\n')
         _require(actual.get('pid') == os.getpid() and _sha(fingerprint),
                  'LOADED_WORKER_ENVIRONMENT_UNPROVEN')
         if self.environment_hash is not None:
@@ -165,8 +189,7 @@ class ServingQualifiedNativeSession:
             self.runtime.configure_request_lifecycle(owner=self.owner, generation=self.generation)
             self.installation_unknown = True
             try:
-                self.remove = self.runtime.install_observer(self._dispatch,
-                    ((self.module_row['path'], self.processor, ('serving_logits_processor',)),), MECHANISM)
+                self.remove = self.runtime.install_observer(self._dispatch, self._observer_candidates(), MECHANISM)
             except UninstalledObserver:
                 self.installation_unknown = False
                 raise
@@ -222,10 +245,10 @@ class ServingQualifiedNativeSession:
         self._thread()
         _require(self.active and self.current is not None and self.phase != 'disabled_off'
                  and self.scope is not None and isinstance(call, NativeCall)
-                 and call.owner is self.processor and callable(original), 'ACTUAL_PROCESSOR_CALLBACK_REQUIRED')
+                 and call.owner is self._dispatch_owner() and callable(original), 'ACTUAL_SCOPED_CALLBACK_REQUIRED')
         _require(call.call_id not in self.seen_calls, 'NATIVE_CALL_TOKEN_REUSED')
         self.seen_calls.add(call.call_id)
-        event = dict(path=self.module_row['path'], object_identity=id(self.processor),
+        event = dict(path=self.module_row['path'], object_identity=id(self._dispatch_owner()),
                      aliases=self.module_row['aliases'], canonical_roles=self.module_row['canonical_roles'],
                      role_status=self.module_row['role_status'], call_id=call.call_id, operator=call.operator,
                      forward=len(self.rows), scope_ordinal=(0, 0), actual_original_calls=0,
@@ -368,8 +391,9 @@ class ServingQualifiedNativeSession:
                       active=True, cleanup_errors=[], cleanup_pending=False, rejected_root_calls=[],
                       forwards=[dict(index=i, status='returned', errors=[]) for i in range(len(self.rows))],
                       module_invocations=[dict(observed_calls=1) for _ in self.rows], unobserved_candidates=[])
-        # The report counts only real complete forwards supplied by the reviewed
-        # root hook. Processor ownership remains its real object, never the head.
+        # Count only completed real requests and the actually scoped owner.
+        # A projection transaction is closed by subsequent complete logits;
+        # the head-scope implementation owns its actual processor object.
         decision = plan_adaptation(report, self.structure, (self.profile,), self.environment_before,
                                    self.environment_after, discovery_finished=True,
                                    first_live_validation=self.first_live_validation)
@@ -484,6 +508,7 @@ class ServingQualifiedNativeSession:
                     'ATTEMPT_FAILED' if self.failure else 'WAITING_FOR_REAL_REQUEST'),
             next_phase=self.phase, recovery_verified=self.recovered, failure=self.failure,
             last_native_failure=self.last_native_failure,
+            environment_refusal=copy.deepcopy(self.environment_refusal),
             drain_status=self.drain_status, recovering=self.recovering,
             completed_phases=[row['phase'] for row in self.rows],
             model_output_changed=any(row.get('model_output_changed') for row in self.rows),
@@ -493,3 +518,137 @@ class ServingQualifiedNativeSession:
             baseline_control=self.baseline_control, fault_native_attempted=self.fault_started,
             coverage_scope='ONE_NATURAL_OUTPUT_PROJECTION_NOT_ALL_ELIGIBLE',
             transaction_scope='REAL_ROOT_FORWARD_RETURNED_THEN_REAL_PROCESSOR_SCOPE')}
+
+
+class ProjectionQualifiedNativeSession(ServingQualifiedNativeSession):
+    """The same native gates, inside an observed quantized projection.
+
+    The real root is still executing when QMM runs. Completion is certified
+    later by the real processor's complete logits; no head call is invented.
+    Selection is the first actual dynamic projection consuming the first
+    embedding-normalizer lineage, then frozen across the two healthy requests.
+    """
+
+    def __init__(self, model, candidates, runtime, **kwargs):
+        _require(runtime.operator == 'aclnnQuantMatmulWeightNz', 'QMM_PROJECTION_OPERATOR_REQUIRED')
+        self.projection_candidates = tuple(candidates)
+        self.bound_module = None
+        boundary = dict(scope='ACTUAL_ROOT_ACTIVE_QUANT_PROJECTION',
+                        selection='FIRST_ACTUAL_EMBED_NORM_DYNAMIC_PROJECTION',
+                        completion='ACTUAL_COMPLETE_GLOBAL_LOGITS',
+                        candidate_paths=[row[0] for row in candidates])
+        super().__init__(model, None, None, boundary, runtime,
+                         _projection_candidates=self.projection_candidates, **kwargs)
+        objects = {id(module): path for path, module, *_ in candidates}
+        _require(len(objects) == len(candidates)
+                 and all(any(row['object_identity'] == identity and row['path'] == path
+                             for row in self.structure['modules']) for identity, path in objects.items()),
+                 'ACTUAL_UNALIASED_PROJECTION_CANDIDATES_REQUIRED')
+
+    def _observer_candidates(self):
+        return tuple((path, module, ('actual_dynamic_quant_projection',))
+                     for path, module, *_ in self.projection_candidates)
+
+    def _dispatch_owner(self):
+        return self.bound_module
+
+    @contextmanager
+    def projection_scope(self, module):
+        self._thread()
+        _require(self.started and self.scope is None and not _STACK.get()
+                 and any(module is candidate[1] for candidate in self.projection_candidates),
+                 'REAL_QUANT_PROJECTION_SCOPE_REQUIRED')
+        if self.bound_module is None:
+            _require(self.phase == 'discovery_1', 'HEALTHY_FIRST_PROJECTION_REQUIRED')
+            self.bound_module = module
+            rows = [row for row in self.structure['modules'] if row['object_identity'] == id(module)]
+            _require(len(rows) == 1, 'PROJECTION_OBJECT_NOT_UNIQUE')
+            self.module_row = rows[0]
+        _require(module is self.bound_module, 'SELECTED_PROJECTION_CHANGED')
+        self.scope = _STACK.set(((id(self), module, len(self.rows)),))
+        try:
+            yield
+        finally:
+            token, self.scope = self.scope, None
+            if token is not None:
+                _STACK.reset(token)
+
+    def begin(self, request_id, input_sha256, *, transaction):
+        self._thread()
+        _require(self.started and not self.active and self.scope is not None
+                 and self.phase != 'complete' and (not self.failure or self.recovering),
+                 'SERVING_PHASE_NOT_AVAILABLE')
+        _require(self.model.training is False and isinstance(request_id, str)
+                 and 0 < len(request_id) <= 256 and request_id not in self.requests and _sha(input_sha256),
+                 'FRESH_ACTUAL_SCHEDULER_REQUEST_REQUIRED')
+        _require(transaction.get('root_forward_active') is True
+                 and transaction.get('projection_object_id') == id(self.bound_module)
+                 and transaction.get('quant_method_object_id') == id(self.bound_module.quant_method)
+                 and transaction.get('quant_apply_live_identity') == id(self.bound_module.quant_method.apply)
+                 and transaction.get('source') == 'ACTUAL_QUANT_APPLY_AND_PUBLIC_QMM'
+                 and transaction.get('quantization_output_storage_verified') is True
+                 and transaction.get('native_x1_equals_float_input_storage') is False
+                 and 'root_forward_returned' not in transaction and 'head_argument_object_id' not in transaction,
+                 'ACTUAL_PROJECTION_AND_QUANTIZATION_LINEAGE_REQUIRED')
+        hashes = transaction.get('input_hashes')
+        _require(isinstance(hashes, dict) and {'float_input', 'x1', 'x2', 'x1_scale', 'x2_scale'} <= set(hashes)
+                 and all(_sha(value) for value in hashes.values()), 'COMPLETE_ACTUAL_QUANT_INPUT_HASHES_REQUIRED')
+        protected = dict(hashes, input_sha256=input_sha256)
+        if self.baseline is not None:
+            _require(protected == self.baseline['protected'], 'COMPLETE_REPLAY_INPUT_CHANGED')
+        self.before = self._paused()
+        self._environment()
+        self.current = dict(phase=self.phase, request_id=request_id, protected=protected,
+                            transaction=copy.deepcopy(transaction), events_start=len(self.events))
+        self.requests.add(request_id)
+        self.active = True
+        if self.phase != 'disabled_off':
+            self.runtime.resume()
+
+    def _verify_formals(self, current, facts, transaction):
+        rows, actual = current.get('formals'), transaction.get('formals')
+        _require(isinstance(rows, list) and isinstance(actual, dict)
+                 and all(isinstance(row, dict) and isinstance(row.get('formal'), str) for row in rows)
+                 and len({row['formal'] for row in rows}) == len(rows), 'CURRENT_FORMAL_METADATA_REQUIRED')
+        formals = {row['formal']: row for row in rows}
+        slots = {row['formal']: row for row in facts['slots']}
+        _require(set(slots) == {row['formal'] for row in rows if row.get('present') is True}
+                 and set(slots) == set(actual) | {'out'}, 'CURRENT_FORMAL_SLOT_SET_CHANGED')
+        for name, slot in slots.items():
+            row = formals[name]
+            _require(row.get('run_slot') == slot['slot'] and row.get('storage_bytes') == slot['storage_bytes']
+                     and type(row.get('storage_addr')) is int and row['storage_addr'] > 0
+                     and row.get('run_address') == row['storage_addr'], 'CURRENT_FORMAL_RUN_SLOT_MISMATCH')
+            if name == 'out':
+                continue
+            tensor = actual[name]
+            _require(all(row.get(native) == tensor.get(public) for native, public in (
+                ('storage_addr', 'storage_addr'), ('storage_bytes', 'storage_bytes'),
+                ('view_offset', 'storage_offset'), ('view_shape', 'shape'), ('strides', 'stride'),
+                ('element_size', 'element_size'), ('format', 'actual_format'))),
+                'ACTUAL_QUANT_FORMAL_STORAGE_OR_GEOMETRY_MISMATCH:' + name)
+        left, right, out = formals['x1'], formals['x2'], formals['out']
+        _require(facts['layout']['dtype'] == 'INT8'
+                 and actual['x1']['dtype'] == actual['x2']['dtype'] == 'torch.int8'
+                 and left['view_shape'] == facts['layout']['shape']
+                 and left['strides'] == facts['layout']['stride']
+                 and left['view_offset'] == facts['layout']['offset']
+                 and len(left['view_shape']) == len(right['view_shape']) == 2
+                 and left['view_shape'][1] == right['view_shape'][0]
+                 and out.get('view_shape') == [left['view_shape'][0], right['view_shape'][1]],
+                 'ACTUAL_QUANT_PROJECTION_NATIVE_SHAPE_MISMATCH')
+
+    def pause_projection(self):
+        self._thread()
+        _require(self.active and self.scope is not None, 'ACTIVE_PROJECTION_SCOPE_REQUIRED')
+        self.runtime.pause()
+        self._paused()
+
+    def query(self):
+        value = super().query()
+        value['qualification'].update(
+            coverage_scope='ONE_FIRST_EMBED_NORM_QUANT_PROJECTION_NOT_ALL_ELIGIBLE',
+            transaction_scope='ACTUAL_ROOT_ACTIVE_QUANT_PROJECTION_THEN_COMPLETE_GLOBAL_LOGITS',
+            selection_policy='FIRST_ACTUAL_EMBED_NORM_DYNAMIC_PROJECTION',
+            floating_input_is_native_x1=False)
+        return value

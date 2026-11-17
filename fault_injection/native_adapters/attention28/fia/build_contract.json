@@ -1,0 +1,255 @@
+{
+  "schema": "demoncat.fia.fresh_build_contract.v1",
+  "ops_transformer_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "opbase_commit": "cd48c600c4b37146f504217eab2bf3956f7fee8b",
+  "ops_tensor_commit": "b24535e30a6f7a3909c53c8b09713a9c0d08e54b",
+  "files": [
+    {
+      "kind": "source_dependency",
+      "path": "third_party/json/single_include/nlohmann/json.hpp",
+      "bytes": 919975,
+      "sha256": "9bea4c8066ef4a1c206b2be5a36302f8926f7fdc6087af5d20b417d0cf103ea6"
+    },
+    {
+      "kind": "source_dependency",
+      "path": "third_party/protobuf/protobuf-25.1.tar.gz",
+      "bytes": 5878124,
+      "sha256": "9bd87b8280ef720d3240514f884e56a712f2218f0d693b48050c836028940a42"
+    },
+    {
+      "kind": "source_dependency",
+      "path": "third_party/pkg/abseil-cpp-20230802.1.tar.gz",
+      "bytes": 2157158,
+      "sha256": "987ce98f02eefbaf930d6e38ab16aa05737234d7afbab2d5c4ea7adbe50c28ed"
+    },
+    {
+      "kind": "sdk",
+      "path": "include/exe_graph/runtime/tiling_context.h",
+      "bytes": 28701,
+      "sha256": "32e4addf6b18587d3c0d6c96b3cb997eaf9672eb7464835acbc1d076c2fa3f37"
+    },
+    {
+      "kind": "sdk",
+      "path": "include/exe_graph/runtime/shape.h",
+      "bytes": 5843,
+      "sha256": "5e9f78065fae63e17e09e9a7f70f659610759519827f1c8f65335c2f5f3971a5"
+    },
+    {
+      "kind": "sdk",
+      "path": "include/ascendc/host_api/tiling/template_argument.h",
+      "bytes": 14591,
+      "sha256": "0993117c58ee7bff1e8ef972c63504e9f1a38375ed3618b63baed99927d3ac79"
+    },
+    {
+      "kind": "sdk",
+      "path": "aarch64-linux/tikcpp/ascendc_kernel_cmake/fwk_modules/makeself.cmake",
+      "bytes": 2250,
+      "sha256": "d9a781b1fe35a7b6db1631fa5bd67a1b3309d7973f5d19ba3a209a43f456934b"
+    },
+    {
+      "kind": "sdk",
+      "path": "aarch64-linux/ascendc/include/highlevel_api/kernel_tiling/kernel_tiling.h",
+      "bytes": 19847,
+      "sha256": "0f50fe7d81d4e01f80b62c19d816ad28151ac1502f708b70454efc8599ddaf44"
+    }
+  ],
+  "note": "SDK files are fingerprinted only; not copied to publication. JSON header has no own .git; do not mistake parent repository HEAD for dependency commit.",
+  "cann_cmake_commit": "7e5691ce110367662017d9d94114845a7d6a8d8a",
+  "reviewed_files": [
+    {
+      "repository": "ops-transformer",
+      "path": "CMakeLists.txt",
+      "sha256": "25640707697482e587c30bd5ce4e1be1ad8fcbe089599354150fc62cb09d19d1"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/fetch_cann_cmake.cmake",
+      "sha256": "38d9ec0a0d4c623866c7eda4c6df225140183456391e61a31097c93c958f1b40"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/third_party/opbase.cmake",
+      "sha256": "45d16b30c2dd75c1a6ff6383afc7a51138cf51da7315533eec278f6fcaec2c0f"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/third_party/ops-tensor.cmake",
+      "sha256": "0133e40d3a2f48df21217e73025b308849c8562da6181718ac258ae3eafe5501"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/config.cmake",
+      "sha256": "99a56684763205127b2d059c6686db25faeb4cd577efe47147586539aab60b99"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/variables.cmake",
+      "sha256": "5a18671228013a08c130c1aecc1818005ef2d591c9d0664443142737e8d9c9de"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/custom_build.cmake",
+      "sha256": "7db58faa22dde64bacea1afa7d91f8ac1b55e4da332d2705239dc69a760c5d4c"
+    },
+    {
+      "repository": "ops-transformer",
+      "path": "cmake/scripts/prepare.sh",
+      "sha256": "4ba35bf2befd32e5d06597b94d00be789be67db8b34c5dc32c39b2d947e7f9fe"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "function/prepare.cmake",
+      "sha256": "454616dfad70fc65c9c36c248de0ba9b3e5ae8d98b11c91a8de1bf19c33df34b"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/json.cmake",
+      "sha256": "46ec0720b17ba1c82dfa987433c711fa1ebf5b738218a8c30673f54ec844b0d1"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/eigen.cmake",
+      "sha256": "00999a0a8617aeda5c0408c59e61070775a46773c228f8527090454a37d50366"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/abseil-cpp.cmake",
+      "sha256": "b590d1ce3e1b6d5aaa849b866adde3d22932f06f41180805d7a737464932f26f"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/protobuf.cmake",
+      "sha256": "5e5a6518bc13952a5571328b9039b2c62c563d8ba82f818fbda94e1eebaeb848"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/makeself-fetch.cmake",
+      "sha256": "f5819286bbae1190b26d9151612e71f8881ce97f924e41d28558047874bd3656"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/protobuf_25.1_change_version.patch",
+      "sha256": "0ffc73d39a6fa31328e920c910fc0453dddff63c82fe31792d7808e8a298c884"
+    },
+    {
+      "repository": "cann-cmake",
+      "path": "third_party/protobuf-hide_absl_symbols.patch",
+      "sha256": "86574fb2bd592054fb365bf893de8b15f23900080079786361c56a873888ecf3"
+    }
+  ],
+  "derivation_sources": [
+    {
+      "path": "C:\\Users\\admin\\.codex\\worktrees\\batch-outlier-msprobe-publish\\demoncatpfi\\.publish\\fault28-causal-20261029\\experiments\\fault28_fia_graph_20261106\\source_policy\\expected_dependencies.json",
+      "sha256": "c5a542146d3d5d36d1dffcd09a80133a555dd9167398967482bc34da66510c0a"
+    },
+    {
+      "path": "C:\\Users\\admin\\.codex\\worktrees\\batch-outlier-msprobe-publish\\demoncatpfi\\.publish\\fault28-causal-20261029\\experiments\\fault28_fia_graph_20261106\\source_policy\\offline_cmake_contract.json",
+      "sha256": "3bb790e949281f87e9add08356274764fc41a2dd4c5a919adf57d4736334ac97"
+    }
+  ],
+  "disabled_test_binary_fixtures": [
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/add_n/AddN_8b4ec10fbb39c5c0a65192c606400b29_high_performance.o",
+      "git_blob": "5d01c5750798d2d74e142bf4255968c7f96c506d",
+      "bytes": 12,
+      "sha256": "26a4cfdfdcfb5e8108d5465d3960307c16216af60d004449a32fee2aa3fd78b8"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/axpy/Axpy_233851a3505389e43928a8bba133a74d_high_performance.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/axpy/Axpy_8b4ec10fbb39c5c0a65192c606400b29_high_performance.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/axpy/Axpy_ac0081dab05f1e5cef852acb8d7e866f.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/mem_set/MemSet_0729d5111e5fce2e0b34175b6c29d410_high_performance.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/mem_set/MemSet_1a6864193b99ef93ef38616f04a712ab_high_performance.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/mem_set/MemSet_e0d52ae24534213ca40deeb3ccd89c06_high_performance.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/mul/Mul_93b3f8e9594b4018902b635fff3a83c5_high_performance.o",
+      "git_blob": "d800886d9c86731ae5c4a62b0b77c437015e00d2",
+      "bytes": 3,
+      "sha256": "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/sort/Sort_90da8e603a0431c8b18a0c23fdc8d8c9_high_performance.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend910/sort/Sort_a7ccd11457f139f90156acf7d9c6d3c1_high_performance.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/built-in/op_impl/ai_core/tbe/kernel/ascend950/mem_set_v2_apt/MemSetV2_simplifiedKey_matchAll_high_performance.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/static_kernel/ai_core/static_kernel_202307261051/Conv2D/Conv2D_high_performance_0.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/static_kernel/ai_core/static_kernel_202307261051/TestStatic/TestStatic_high_performance_0.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    },
+    {
+      "repository": "opbase",
+      "path": "tests/nnopbase/mock/static_kernel/ai_core/static_kernel_202307261051/TestStaticAdd/TestStaticAdd_high_performance_0.o",
+      "git_blob": "53aa04b6b2bd6671f95ad3487ef20e3f7dfdb8d0",
+      "bytes": 12,
+      "sha256": "fbb8ab80c213390143bc237f587359f79a38e492ac7c05b74ca916f1a5607827"
+    }
+  ],
+  "disabled_test_binary_fixtures_source": {
+    "path": "C:\\Users\\admin\\.codex\\worktrees\\fault28-native-fa-publish\\demoncatpfi\\.codex-tmp\\engineering-20261117\\dependency-objects.json",
+    "sha256": "3ca2365a417f97bd5759564c2cad7aaafc0ef8e25ffb74598f67aab0b46756a2",
+    "note": "Fourteen tracked official .o-named dummy test files; excluded only from new private clones with tests disabled, never linked."
+  }
+}

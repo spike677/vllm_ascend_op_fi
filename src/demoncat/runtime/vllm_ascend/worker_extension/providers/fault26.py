@@ -3,6 +3,9 @@ from ._scope import Scope,ProviderError,reject_unknown
 
 
 class Fault26FiaProvider(Scope):
+    mechanism='26.fia_destination'
+    binding_class='FiaServingBinding'
+    session_class='FiaServingSession'
     def __init__(self,worker,model,identity):
         super().__init__(worker,model,identity)
         self.session=None;self.checked=False;self.attempted=False
@@ -11,11 +14,11 @@ class Fault26FiaProvider(Scope):
         if action=='prepare':
             self.bind(owner,generation);reject_unknown(settings)
             from fault_injection.providers import resolve_runtime
-            from ..serving26 import FiaServingBinding,FiaServingSession,MECHANISM
-            binding=resolve_runtime(MECHANISM,self.model)
-            if type(binding) is not FiaServingBinding:raise ProviderError('REVIEWED_FIA26_DEPLOYMENT_REQUIRED')
+            from .. import serving26
+            binding=resolve_runtime(self.mechanism,self.model)
+            if type(binding) is not getattr(serving26,self.binding_class):raise ProviderError('REVIEWED_WRITER26_DEPLOYMENT_REQUIRED')
             self.session=binding.make_session(self.worker,self.model)
-            if type(self.session) is not FiaServingSession:raise ProviderError('REVIEWED_FIA26_SESSION_REQUIRED')
+            if type(self.session) is not getattr(serving26,self.session_class):raise ProviderError('REVIEWED_WRITER26_SESSION_REQUIRED')
             return self.query(owner=owner,generation=generation)
         self.verify(owner,generation)
         reject_unknown(settings,('request_id',) if action=='advance' else ())
@@ -49,3 +52,9 @@ class Fault26FiaProvider(Scope):
             leases=raw['prepared']+raw['queued_executors']+raw['pending_consumers'],native=raw,
             replay_pending=s.installed,replay_failed=bool(s.error and not s.aborted),
             recovery_validation_pending=s.installed and not s.recovered,serving=s.report())
+
+
+class Fault26ResidualProvider(Fault26FiaProvider):
+    mechanism='26.residual_stomp'
+    binding_class='ResidualServingBinding'
+    session_class='ResidualServingSession'

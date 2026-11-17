@@ -34,6 +34,11 @@ class OnceFailedHandle:
     def __init__(self, handle):
         self.handle, self.first = handle, True
 
+    def __getattr__(self, name):
+        # Preserve the real RemovableHandle identity/ownership contract while
+        # simulating only a lost removal acknowledgement.
+        return getattr(self.handle, name)
+
     def remove(self):
         self.handle.remove()
         if self.first:

@@ -60,7 +60,7 @@ class AliasSession:
     _cleanup_retryable = True
 
     def __init__(self, model, arm='fault', unsupported='error', evidence_dir=None,
-                 *, _format_provider=None):
+                 *, _format_provider=None, _selected_call=None):
         if arm not in ('baseline', 'fault') or unsupported not in ('error', 'passthrough'):
             raise ValueError('Invalid arm or unsupported policy')
         if not callable(getattr(model, 'named_modules', None)):
@@ -80,6 +80,33 @@ class AliasSession:
         self._cleanup_errors = []
         self._rejected_root_calls = []
         self._forwards = []
+        self.selected_call = _selected_call
+        self._owned_callbacks = {}
+
+    def _own_hook(self, module, callback, *, pre=False, **kwargs):
+        method = module.register_forward_pre_hook if pre else module.register_forward_hook
+        handle = method(callback, **kwargs)
+        self._hooks.append(handle)
+        self._owned_callbacks[handle.id] = callback
+
+    def runtime_state(self):
+        """Inspect actual wrapper/mode ownership; no native-loaded claim."""
+        import torch
+        from torch.utils._python_dispatch import _get_current_dispatch_mode
+        owned = True
+        for handle in self._hooks:
+            ref = getattr(handle, 'hooks_dict_ref', None)
+            hooks = ref() if callable(ref) else None
+            if hooks is None or hooks.get(handle.id) is not self._owned_callbacks.get(handle.id):
+                owned = False
+        if self._wrapper is not None:
+            owned = owned and torch.as_strided is self._wrapper
+        if self._mode is not None:
+            owned = owned and threading.get_ident() == self._owner_thread and _get_current_dispatch_mode() is self._mode
+        return dict(hook_owned=bool(self._hooks or self._wrapper or self._mode), ownership_verified=owned,
+                    enabled=self._active, inflight=int(bool(getattr(self._tls, 'stack', []))),
+                    leases=int(self._locked), cleanup_confirmed=self._closed and not self._locked,
+                    owner_thread=self._owner_thread, mode_cleanup_pending=self._mode_cleanup_uncertain)
 
     @contextmanager
     def _diagnostic(self):
@@ -162,8 +189,8 @@ class AliasSession:
 
             self._owner_thread = threading.get_ident()
             for path, module in self._modules:
-                self._hooks.append(module.register_forward_pre_hook(self._pre(path, module), prepend=module is self.model))
-                self._hooks.append(module.register_forward_hook(self._post(module), always_call=True))
+                self._own_hook(module, self._pre(path, module), pre=True, prepend=module is self.model)
+                self._own_hook(module, self._post(module), always_call=True)
             self._original = torch.as_strided
 
             @functools.wraps(self._original)
@@ -195,8 +222,12 @@ class AliasSession:
             return self._original(base, size, stride, offset)
         import torch
         path = self._tls.stack[-1][0]
-        event = dict(path=path, forward=self._tls.forward_index, status='observed',
-                     size=list(size), stride=list(stride), offset=offset)
+        event = dict(path=path, ordinal=len(self._events), forward=self._tls.forward_index, status='observed',
+                     size=list(size), stride=list(stride), offset=offset,
+                     module_object_id=id(self._tls.stack[-1][1]),
+                     module_forward_identity=id(getattr(self._tls.stack[-1][1].forward,'__func__',
+                                                         self._tls.stack[-1][1].forward)),
+                     module_type=type(self._tls.stack[-1][1]).__module__+'.'+type(self._tls.stack[-1][1]).__qualname__)
         self._events.append(event)
         with self._diagnostic():
             fmt = self.provider.format(base)
@@ -216,13 +247,15 @@ class AliasSession:
                     event['status'] = 'passthrough'
                 return result
             before = self._cpu(base)
-            argument = self.provider.convert(base) if self.arm == 'fault' else base
+            selected = self.selected_call is None or self.selected_call == (path, event['ordinal'])
+            injecting = self.arm == 'fault' and selected
+            argument = self.provider.convert(base) if injecting else base
             converted_values = self._cpu(argument)
             if not torch.equal(before, converted_values):
                 raise UnsupportedCall('Format conversion changed logical base values')
-            if self.arm == 'fault' and argument.untyped_storage()._cdata == base.untyped_storage()._cdata:
+            if injecting and argument.untyped_storage()._cdata == base.untyped_storage()._cdata:
                 raise UnsupportedCall('Format conversion did not create independent storage')
-            if self.arm == 'fault' and self.provider.format(argument) not in (0, 2):
+            if injecting and self.provider.format(argument) not in (0, 2):
                 raise UnsupportedCall('Conversion did not produce a base format')
             # This is the only injected factor and the only original view call.
             view = self._original(argument, size, stride, offset)
@@ -234,6 +267,7 @@ class AliasSession:
             if not shares_argument:
                 raise UnsupportedCall('Native view does not alias its actual construction argument')
             event.update(status='routed', actual_format=fmt, initial_values_correct=True,
+                         applied=injecting, original_execution_verified=True,
                          base=_storage(base,self.provider), view=_storage(view,self.provider), temporary=_storage(argument,self.provider),
                          aliases_original_base=view.untyped_storage()._cdata == base.untyped_storage()._cdata,
                          writes=[], consumers=[], unclassified_base_uses=[], observation_errors=[])
@@ -360,6 +394,11 @@ class AliasSession:
         remaining = []
         for handle in reversed(self._hooks):
             try:
+                ref = getattr(handle, 'hooks_dict_ref', None)
+                hooks = ref() if callable(ref) else None
+                key = getattr(handle, 'id', None)
+                if hooks is not None and key in hooks and hooks[key] is not self._owned_callbacks.get(key):
+                    raise RuntimeError('Foreign module hook replaced an owned callback')
                 handle.remove()
             except BaseException as exc:
                 errors.append(exc)

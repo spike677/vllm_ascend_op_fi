@@ -8,21 +8,67 @@ from __future__ import annotations
 import threading
 import copy
 import sys
+import hashlib
+from pathlib import Path
+import types
 
 from .core import UnsupportedCall
 
 _LEASE = threading.Lock()
+
+# Reviewed actual collector on 124. Its instance wrapper does not set
+# __wrapped__; matching a class/name alone would wrongly admit custom forwards.
+_REVIEWED_MSPROBE_FORWARD_HASHES = {
+    '4876e89f7f726cd552fc1bf0e7b7745a898461deec2cb2abf33b02deba7329d7',
+}
+_MSPROBE_MODULE = 'msprobe.pytorch.dump.module_dump.module_processor'
+
+
+def _original_standard_forward(module):
+    """Follow only the reviewed collector's exact code/closure; keep it installed."""
+    actual = module.forward
+    seen = set()
+    while getattr(actual,'__func__',None) is None:
+        if id(actual) in seen or len(seen)>8:
+            return None
+        seen.add(id(actual))
+        collector = sys.modules.get(_MSPROBE_MODULE)
+        source = getattr(collector,'__file__',None)
+        installer = getattr(collector,'wrap_forward_with_hook_safety',None)
+        if (not isinstance(actual,types.FunctionType) or not isinstance(installer,types.FunctionType)
+                or not source or Path(source).suffix!='.py'):
+            return None
+        try:
+            digest = hashlib.sha256(Path(source).read_bytes()).hexdigest()
+        except OSError:
+            return None
+        if digest not in _REVIEWED_MSPROBE_FORWARD_HASHES:
+            return None
+        if Path(installer.__code__.co_filename).resolve()!=Path(source).resolve():
+            return None
+        codes = [c for c in installer.__code__.co_consts
+                 if isinstance(c,types.CodeType) and c.co_name=='wrapped_forward']
+        if len(codes)!=1 or actual.__code__ is not codes[0]:
+            return None
+        cells = dict(zip(actual.__code__.co_freevars,actual.__closure__ or ()))
+        try:
+            if cells['module'].cell_contents is not module:
+                return None
+            actual = cells['original_forward'].cell_contents
+        except (KeyError,ValueError):
+            return None
+    return actual if getattr(actual,'__self__',None) is module else None
 
 
 def discover_modules(model, fault):
     import torch
     if fault == '17.spatial_padding':
         test = lambda m: (isinstance(m, torch.nn.Conv3d)
-            and getattr(m.forward, '__func__', None) is torch.nn.Conv3d.forward
+            and getattr(_original_standard_forward(m), '__func__', None) is torch.nn.Conv3d.forward
             and getattr(m._conv_forward, '__func__', None) is torch.nn.Conv3d._conv_forward)
     elif fault == '18.api_half':
         test = lambda m: (isinstance(m, torch.nn.RMSNorm)
-            and getattr(m.forward, '__func__', None) is torch.nn.RMSNorm.forward)
+            and getattr(_original_standard_forward(m), '__func__', None) is torch.nn.RMSNorm.forward)
     else:
         raise ValueError(fault)
     return [(name or '<root>', module) for name, module in model.named_modules() if test(module)]
@@ -38,7 +84,8 @@ class ModuleFaultSession:
     """
     _cleanup_retryable = True
 
-    def __init__(self, model, fault, *, arm='fault', unsupported='error', evidence_dir=None):
+    def __init__(self, model, fault, *, arm='fault', unsupported='error', evidence_dir=None,
+                 _selected_call=None):
         if arm not in ('baseline', 'fault') or unsupported not in ('error', 'passthrough'):
             raise ValueError('Invalid arm/unsupported policy')
         self.model, self.fault, self.arm, self.unsupported = model, fault, arm, unsupported
@@ -53,6 +100,33 @@ class ModuleFaultSession:
         self.forward_index = None
         self.original = self.wrapper = None
         self.cleanup_errors = []
+        # Deployment-selected actual call, never a user-supplied layer name.
+        # The ordinary attach facade retains its documented all-call behavior.
+        self.selected_call = _selected_call
+        self.owned_callbacks = {}
+
+    def _own_hook(self, module, callback, *, pre=False, **kwargs):
+        method = module.register_forward_pre_hook if pre else module.register_forward_hook
+        handle = method(callback, **kwargs)
+        self.handles.append(handle)
+        self.owned_callbacks[handle.id] = callback
+        return handle
+
+    def runtime_state(self):
+        """Read the real hook dictionaries, without treating hooks as native code."""
+        owned = True
+        for handle in self.handles:
+            ref = getattr(handle, 'hooks_dict_ref', None)
+            hooks = ref() if callable(ref) else None
+            if hooks is None or hooks.get(handle.id) is not self.owned_callbacks.get(handle.id):
+                owned = False
+        if self.wrapper is not None:
+            import torch.nn.functional as F
+            owned = owned and F.conv3d is self.wrapper
+        return dict(hook_owned=bool(self.handles or self.wrapper), ownership_verified=owned,
+                    enabled=self.active, inflight=int(self.root_active),
+                    leases=int(self._locked), cleanup_confirmed=self.closed and not self._locked,
+                    owner_thread=self.owner)
 
     def __enter__(self):
         if self.active or self.closed:
@@ -65,11 +139,11 @@ class ModuleFaultSession:
         self._locked = True
         try:
             self.active = True
-            self.handles.append(self.model.register_forward_pre_hook(self._root_enter, with_kwargs=True, prepend=True))
+            self._own_hook(self.model, self._root_enter, pre=True, with_kwargs=True, prepend=True)
             for path, module in self.candidates:
-                self.handles.append(module.register_forward_pre_hook(self._pre(path), with_kwargs=True))
-                self.handles.append(module.register_forward_hook(self._post(path), with_kwargs=True, always_call=True))
-            self.handles.append(self.model.register_forward_hook(self._root_leave, with_kwargs=True, always_call=True))
+                self._own_hook(module, self._pre(path), pre=True, with_kwargs=True)
+                self._own_hook(module, self._post(path), with_kwargs=True, always_call=True)
+            self._own_hook(self.model, self._root_leave, with_kwargs=True, always_call=True)
             if self.fault == '17.spatial_padding':
                 import torch.nn.functional as F
                 self.original = F.conv3d
@@ -118,7 +192,9 @@ class ModuleFaultSession:
             if threading.get_ident() != self.owner:
                 raise UnsupportedCall('Concurrent model execution is unsupported')
             event = dict(path=path, ordinal=len(self.events), forward=self.forward_index,
-                         status='observed', reason=None)
+                         status='observed', reason=None, original_execution_verified=False,
+                         module_object_id=id(module), module_type=type(module).__module__+'.'+type(module).__qualname__,
+                         module_forward_identity=id(getattr(module.forward,'__func__',module.forward)))
             self.events.append(event)
             self.stack.append((module, event))
         return enter
@@ -139,10 +215,12 @@ class ModuleFaultSession:
                         raise UnsupportedCall(event['reason'])
                     event['status'] = 'passthrough'
                     return None
-                event.update(status='applied' if self.arm == 'fault' else 'baseline',
+                selected = self.selected_call is None or self.selected_call == (path, event['ordinal'])
+                injecting = self.arm == 'fault' and selected
+                event.update(status='applied' if injecting else 'baseline', original_execution_verified=True,
                              output_shape=list(output.shape), dtype=str(output.dtype),
-                             boundary='module_return_gain_proxy', gain=0.5 if self.arm == 'fault' else 1.0)
-                return output * 0.5 if self.arm == 'fault' else None
+                             boundary='module_return_gain_proxy', gain=0.5 if injecting else 1.0)
+                return output * 0.5 if injecting else None
             if event['status'] == 'observed':
                 event.update(status='unsupported', reason='No public Functional.conv3d call observed')
                 if self.unsupported == 'error':
@@ -180,14 +258,16 @@ class ModuleFaultSession:
                 raise UnsupportedCall(event['reason'])
             event['status'] = 'passthrough'
             return self.original(*args, **kwargs)
-        chosen = (0,7,7) if self.arm == 'fault' else padding
+        selected = self.selected_call is None or self.selected_call == (event['path'], event['ordinal'])
+        injecting = self.arm == 'fault' and selected
+        chosen = (0,7,7) if injecting else padding
         native_kwargs = dict(values, padding=chosen)
         output = self.original(**native_kwargs)
         expected = (x.shape[0], w.shape[0], 1, 1, 1)
         if tuple(output.shape) != expected:
             event.update(status='failed', reason='Unexpected native Conv3d shape')
             raise UnsupportedCall(event['reason'])
-        event.update(status='applied' if self.arm == 'fault' else 'baseline',
+        event.update(status='applied' if injecting else 'baseline', original_execution_verified=True,
                      input_shape=list(x.shape), weight_shape=list(w.shape), output_shape=list(output.shape),
                      native_calls=1, padding=list(chosen), boundary='Functional.conv3d.arguments')
         return output
@@ -244,6 +324,11 @@ class ModuleFaultSession:
         remaining = []
         for handle in reversed(self.handles):
             try:
+                ref = getattr(handle, 'hooks_dict_ref', None)
+                hooks = ref() if callable(ref) else None
+                key = getattr(handle, 'id', None)
+                if hooks is not None and key in hooks and hooks[key] is not self.owned_callbacks.get(key):
+                    raise RuntimeError('Foreign module hook replaced an owned callback')
                 handle.remove()
             except BaseException as exc:
                 errors.append(exc)

@@ -12,7 +12,9 @@ from .capabilities import describe_mechanism, list_mechanisms, inspect_support
 from .coverage import (CallOutcome, Candidate, CandidateSet, CoverageCapability, CoverageReport,
                        Eligibility, EligibilityResult, GroupRecoveryReport, IndependentObservation,
                        ObservedCall, Outcome, Phase, QualifiedTargetSet, RecoveryReport,
-                       TargetIdentity, TargetLease, TargetLosslessProof, coverage_phase)
+                       TargetIdentity, TargetLease, TargetLosslessProof, coverage_phase,
+                       BoundaryTargetIdentity, PythonHookBoundary, TensorAliasBoundary,
+                       OperatorApiBoundary, KernelLaunchBoundary, CollectiveBoundary)
 from .lifecycle import FaultConfig, ModelFaultBackend
 
 
@@ -104,4 +106,6 @@ __all__ = ['attach', 'inspect_model', 'list_faults', 'register_runtime', 'unregi
            'CandidateSet', 'Candidate', 'TargetIdentity', 'EligibilityResult', 'Eligibility',
            'CoverageCapability', 'CoverageReport', 'RecoveryReport', 'TargetLease',
            'ObservedCall', 'IndependentObservation', 'CallOutcome', 'Outcome', 'Phase', 'coverage_phase',
-           'QualifiedTargetSet', 'TargetLosslessProof', 'GroupRecoveryReport']
+           'QualifiedTargetSet', 'TargetLosslessProof', 'GroupRecoveryReport',
+           'BoundaryTargetIdentity', 'PythonHookBoundary', 'TensorAliasBoundary',
+           'OperatorApiBoundary', 'KernelLaunchBoundary', 'CollectiveBoundary']

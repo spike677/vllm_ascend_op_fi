@@ -50,7 +50,7 @@ def allocation_pair(snapshot,residual,output,residual_bytes,output_bytes):
 
 class Residual26Runtime:
     validation_scope='Native CANN8.5.1 typed writer binding; deferred actual AddRmsNormBias consumer/recovery'
-    def __init__(self,model,mechanism,*,library,sha256,evidence_dir,log_path):
+    def __init__(self,model,mechanism,*,library,sha256,evidence_dir,log_path,max_effect_calls=None):
         if mechanism not in ('26.residual_stomp','26.fia_destination'):raise ValueError('Unknown26 mechanism')
         self.model,self.mechanism=model,mechanism;self.fia=mechanism=='26.fia_destination'
         p=Path(library).resolve(strict=True)
@@ -67,6 +67,9 @@ class Residual26Runtime:
         self.log=Path(log_path);self.session=time.monotonic_ns();self.events=[];self.retained={};self.error=None
         self.completed=[];self.supported=0;self.claims=0;self.current=None
         self.forward_active=False;self.forward_index=-1
+        if max_effect_calls is not None and (type(max_effect_calls) is not int or max_effect_calls!=1):
+            raise ValueError('Only an explicit single-call budget is currently supported')
+        self.max_effect_calls=max_effect_calls;self.selected_target=None
 
     def begin_forward(self,module,args):
         if self.forward_active or self.pending():
@@ -76,9 +79,8 @@ class Residual26Runtime:
         self.retained.clear();self.forward_index+=1;self.forward_active=True
 
     def native_state(self):
-        """Actual additive FIA ABI; absence is not inferred idle state."""
-        if not self.fia:raise UnsupportedCall('QMM native state ABI not adapted')
-        fn=getattr(self.lib,'dcat26f_state_v1',None)
+        """Actual additive writer ABI; absence is not inferred idle state."""
+        fn=getattr(self.lib,('dcat26f' if self.fia else 'dcat26q')+'_state_v1',None)
         if fn is None:raise UnsupportedCall('Native26 common Worker state ABI missing')
         fn.argtypes=[C.POINTER(FiaState)];fn.restype=C.c_int
         packet=FiaState(version=1,size=C.sizeof(FiaState))
@@ -106,6 +108,7 @@ class Residual26Runtime:
         if mechanism!=self.mechanism:raise UnsupportedCall('Wrong native26 binding')
         self.owner_thread=threading.get_ident();self.arm=arm
         self.owners={id(m):m for _,m,_ in candidates}
+        self.owner_paths={id(m):path for path,m,_ in candidates}
         original=torch.ops._C_ascend.npu_add_rms_norm_bias
         def producer(*args,**kwargs):
             result=original(*args,**kwargs)
@@ -179,9 +182,17 @@ class Residual26Runtime:
 
     def check(self,call,mechanism,arm):
         if self.current and 'unsupported' in self.current:return Decision(False,self.current['unsupported'])
+        if self.max_effect_calls is not None and self.supported>=self.max_effect_calls:
+            return Decision(False,'Single qualified writer budget already consumed')
         return Decision(self.current is not None,'Actual retained producer and typed writer')
     def execute(self,call,invoke_once,mechanism,arm):
         p=self.current['packet']
+        if self.max_effect_calls is not None:
+            self.selected_target=dict(module_path=self.owner_paths[id(call.owner)],operator=call.operator,
+                module_object_id=id(call.owner),cache=int(p.cache) if not self.fia else None,
+                output_bytes=int(p.output_bytes),residual_bytes=int(p.residual_bytes),
+                geometry=[int(p.output_m),int(p.output_n),int(p.residual_m),int(p.residual_k)] if not self.fia else list(p.shape),
+                allocation=self.current['details'].get('allocation'))
         if self.fia:
             values=dict(FAULT26_FIA_WRITER_PROXY_ENABLED='1',FAULT26_FIA_WRITER_PROXY_SESSION=str(self.session),
                 FAULT26_FIA_WRITER_PROXY_MODE='lossless_output_substitution' if arm=='baseline' else 'wrong_destination_residual_stomp',

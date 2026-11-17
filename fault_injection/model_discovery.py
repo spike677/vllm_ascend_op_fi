@@ -224,6 +224,7 @@ def inspect_structure(model, *, attention_paths=(), runner=None):
     attention_objects = {id(modules[path]) for path in attention_paths if path in modules}
     dimensions = {owner: projection_geometry(modules[paths[0]]) for owner, paths in by_identity.items()}
     roles = {}
+    expert_roles = {}
     groups = {}
 
     def add(path, names, evidence):
@@ -261,6 +262,14 @@ def inspect_structure(model, *, attention_paths=(), runner=None):
                 add(children[router], ('MLP_GATE',), 'expert_container_and_router_width')
                 if expert_width is not None:
                     add(experts_path, ('MLP_EXPERTS',), 'packed_expert_weight_geometry')
+                # Preserve legacy canonical names used by existing Providers.
+                # The common logical vocabulary exposes router and experts as
+                # distinct roles without authorizing an unobserved native path.
+                expert_roles[id(modules[children[router]])] = ('MOE_ROUTER',)
+                expert_roles[id(experts)] = ('MOE_EXPERT',)
+                if isinstance(experts, (torch.nn.ModuleList, torch.nn.ModuleDict)):
+                    for expert in experts.children():
+                        expert_roles[id(expert)] = ('MOE_EXPERT',)
 
     norm_types = (torch.nn.LayerNorm,) + ((torch.nn.RMSNorm,) if hasattr(torch.nn, 'RMSNorm') else ())
     for children in child_paths.values():
@@ -282,12 +291,18 @@ def inspect_structure(model, *, attention_paths=(), runner=None):
         role_sets = {tuple(hypothesis['roles']) for hypothesis in hypotheses}
         weight = getattr(module, 'weight', None)
         method = getattr(module, 'quant_method', None)
+        canonical = list(next(iter(role_sets))) if len(role_sets) == 1 else []
+        logical = list(expert_roles.get(owner, ())) or [
+            {'MLP_GATE': 'MOE_ROUTER', 'MLP_EXPERTS': 'MOE_EXPERT'}.get(role, role)
+            for role in canonical]
         inventory.append(dict(
             path=paths[0] or '<root>', aliases=[path or '<root>' for path in paths],
             object_identity=owner, module_type=_class(module),
             weight_shape=_shape(weight), weight_dtype=str(weight.dtype) if isinstance(weight, torch.Tensor) else None,
             projection_dimensions=dimensions[owner], quant_method=_class(method) if method is not None else None,
-            canonical_roles=list(next(iter(role_sets))) if len(role_sets) == 1 else [],
+            canonical_roles=canonical, logical_roles=logical,
+            logical_role_status=('AMBIGUOUS' if len(role_sets) > 1 else
+                                 'STRUCTURAL_CANDIDATE' if logical else 'UNRESOLVED'),
             role_status='AMBIGUOUS' if len(role_sets) > 1 else 'STRUCTURAL_CANDIDATE' if role_sets else 'UNRESOLVED',
             role_evidence=hypotheses,
             fused_segments=None, actual_operator_observed=False,

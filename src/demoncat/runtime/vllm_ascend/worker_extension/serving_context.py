@@ -12,6 +12,7 @@ import hashlib
 import inspect
 import json
 import math
+import sys
 import textwrap
 
 
@@ -76,6 +77,95 @@ def source_identity(method):
     source = textwrap.dedent(inspect.getsource(function))
     return {"source_sha256": hashlib.sha256(source.encode()).hexdigest(),
             "file": inspect.getsourcefile(function), "first_line": inspect.getsourcelines(function)[1]}, source
+
+
+_MLA_MODULE = 'vllm_ascend.attention.mla_v1'
+_MLA_PREFILL_SOURCE_CONTRACT = {
+    ('AscendMLAMetadataBuilder', 'build'): '06b0bf758e6e384d14989a6fdb01339f65df78751576f1aeac43435c6c750c0e',
+    ('AscendMLAMetadataBuilder', 'build_prefill_metadata'): 'f208a48118015b113c34eb150273e07b583bcbbb649ffa69106422af8949fd8d',
+    ('AscendMLAImpl', '_forward_prefill'): 'ab81604ca0c88333b720c6b7cd8b98e37e52af4d17f1d7c6e9bb8d936bd81ffc',
+}
+
+
+def _reviewed_mla_prefill_contract(metadata):
+    """Read the live metadata/build/consumer implementation; never import a backend.
+
+    These method fingerprints belong to the inspected 0.18.0 implementation,
+    independently of its model name or CANN version. Other implementations
+    need review; matching fields alone does not authorize the MLA branch.
+    """
+    module = sys.modules.get(_MLA_MODULE)
+    require(module is not None and type(metadata) is getattr(module, 'AscendMLAMetadata', None),
+            'UNREVIEWED_MLA_METADATA_TYPE')
+    sources = {}
+    for (owner, name), expected in _MLA_PREFILL_SOURCE_CONTRACT.items():
+        function = field(field(module, owner), name)
+        require(getattr(function, '__globals__', None) is vars(module), 'FOREIGN_MLA_IMPLEMENTATION')
+        identity, _ = source_identity(function)
+        require(identity['source_sha256'] == expected, 'UNREVIEWED_MLA_PREFILL_IMPLEMENTATION:' + owner + '.' + name)
+        sources[owner + '.' + name] = identity
+    return dict(metadata_type=_MLA_MODULE + '.AscendMLAMetadata', sources=sources,
+                causal_contract='ACTUAL_PREFILL_IMPLEMENTATION_MASK_TYPE_TRIU',
+                mask_tensor_values_verified=False)
+
+
+def _mla_prefill_metadata(metadata, runner, table, length, name, contract):
+    """Use the actual MLA CPU mirrors and preserve derived-device limitations."""
+    module = sys.modules.get(_MLA_MODULE)
+    prefill = field(metadata, 'prefill')
+    require(module is not None and type(prefill) is getattr(module, 'AscendMLAPrefillMetadata', None),
+            'ACTUAL_MLA_PREFILL_METADATA_REQUIRED:' + name)
+    require(field(metadata, 'decode') is None and field(metadata, 'num_decode_tokens') == 0
+            and field(prefill, 'chunked_context') is None and field(prefill, 'pcp_metadata') is None,
+            'MLA_DECODE_CHUNK_OR_CP_UNADAPTED:' + name)
+    state = field(field(metadata, 'attn_state'), 'name')
+    require(state in ('PrefillNoCache', 'ChunkedPrefill'), 'MLA_FRESH_PREFILL_STATE_UNADAPTED:' + name)
+    require(type(field(metadata, 'num_input_tokens')) is int and metadata.num_input_tokens == length
+            and type(field(metadata, 'num_actual_tokens_pcp_padded')) is int
+            and metadata.num_actual_tokens_pcp_padded == length, 'MLA_PADDED_PREFILL_UNADAPTED:' + name)
+    lengths = {}
+    for key, value in (('seq_lens_cpu', field(metadata, 'seq_lens_cpu')),
+                       ('seq_lens', field(metadata, 'seq_lens')),
+                       ('query_lens', field(metadata, 'query_lens')),
+                       ('prefill.query_lens', field(prefill, 'query_lens')),
+                       ('prefill.seq_lens', field(prefill, 'seq_lens')),
+                       ('prefill.context_lens', field(prefill, 'context_lens'))):
+        observed = ints(cpu_list(value), 'MLA_CPU_LENGTHS_REQUIRED:' + key)
+        require(observed == [length], 'MLA_PREFILL_LENGTHS_MISMATCH:' + name + ':' + key)
+        lengths[key] = observed
+    require(type(field(prefill, 'max_query_len')) is int and prefill.max_query_len == length
+            and type(field(prefill, 'max_seq_lens')) is int and prefill.max_seq_lens == length,
+            'MLA_PREFILL_MAX_LENGTHS_MISMATCH:' + name)
+    query_meta = same_buffer_prefix(field(metadata, 'query_start_loc'),
+        field(field(runner, 'query_start_loc'), 'gpu'), 2, 'torch.int32')
+    position_meta = same_buffer_prefix(field(prefill, 'input_positions'),
+        field(field(runner, 'positions'), 'gpu'), length, 'torch.int64')
+    derived_query_meta = tensor_metadata(field(prefill, 'query_start_loc'))
+    require(derived_query_meta['shape'] == [2] and derived_query_meta['stride'] == [1]
+            and derived_query_meta['dtype'] == query_meta['dtype']
+            and derived_query_meta['device'] == query_meta['device'], 'MLA_DERIVED_QUERY_GEOMETRY_MISMATCH:' + name)
+    prefill_blocks = tensor_metadata(field(prefill, 'block_table'))
+    blocks = tensor_metadata(field(field(table, 'block_table'), 'gpu'))
+    require(prefill_blocks['storage_identity'] == blocks['storage_identity']
+            and prefill_blocks['storage_offset'] == blocks['storage_offset']
+            and prefill_blocks['shape'][0] == 1 and prefill_blocks['stride'] == blocks['stride']
+            and prefill_blocks['dtype'] == blocks['dtype'] and prefill_blocks['device'] == blocks['device'],
+            'MLA_PREFILL_BLOCK_BUFFER_UNALIGNED:' + name)
+    mask = tensor_metadata(field(metadata, 'attn_mask'))
+    prefill_mask = tensor_metadata(field(prefill, 'attn_mask'))
+    require(mask['storage_identity'] == prefill_mask['storage_identity']
+            and mask['storage_offset'] == prefill_mask['storage_offset']
+            and mask['shape'] == prefill_mask['shape'] == [512, 512]
+            and mask['stride'] == prefill_mask['stride'] == [512, 1]
+            and mask['dtype'] == prefill_mask['dtype']
+            and mask['dtype'] in ('torch.float16', 'torch.bfloat16')
+            and mask['device'] == prefill_mask['device'] == query_meta['device'],
+            'MLA_PREFILL_MASK_GEOMETRY_OR_ALIAS_UNPROVEN:' + name)
+    return dict(adapter='ASCEND_MLA_V1_FRESH_PREFILL', implementation=contract, attn_state=state,
+                observed_lengths=lengths, query_start_loc=query_meta, input_positions=position_meta,
+                derived_prefill_query_start_loc=derived_query_meta,
+                derived_query_values_read=False, mask=mask,
+                context_lens_field_role='BUILDER_STORES_FULL_SEQ_LENS_NOT_COMPUTED_CACHE_PREFIX')
 
 
 def require_serial_eager(runner, *, expected_max_seqs=1):
@@ -198,14 +288,23 @@ def snapshot_fresh_prefill(runner, model, hook_kwargs, context, *, expected_prom
     require(slots == expected_slots and len(set(slots)) == length, "ACTUAL_SLOT_MAPPING_MISMATCH")
     attention = field(context, "attn_metadata")
     require(isinstance(attention, dict) and bool(attention), "ATTENTION_METADATA_REQUIRED")
-    observed_layers = []
+    observed_layers, attention_evidence, mla_contracts = [], {}, {}
     for name, metadata in attention.items():
         require(field(metadata, "num_actual_tokens") == length
                 and field(metadata, "num_prefills") == 1 and field(metadata, "num_decodes") == 0,
                 "ATTENTION_NOT_SINGLE_FRESH_PREFILL:" + name)
-        require(field(metadata, "seq_lens_list") == [length]
-                and field(metadata, "actual_seq_lengths_q") == [length], "ATTENTION_LENGTHS_MISMATCH:" + name)
-        require(field(metadata, "causal") is True, "NON_CAUSAL_ATTENTION_UNADAPTED:" + name)
+        if type(metadata).__module__ == _MLA_MODULE and type(metadata).__name__ == 'AscendMLAMetadata':
+            if type(metadata) not in mla_contracts:
+                mla_contracts[type(metadata)] = _reviewed_mla_prefill_contract(metadata)
+            attention_evidence[name] = _mla_prefill_metadata(
+                metadata, runner, table, length, name, mla_contracts[type(metadata)])
+        else:
+            require(field(metadata, "seq_lens_list") == [length]
+                    and field(metadata, "actual_seq_lengths_q") == [length], "ATTENTION_LENGTHS_MISMATCH:" + name)
+            require(field(metadata, "causal") is True, "NON_CAUSAL_ATTENTION_UNADAPTED:" + name)
+            attention_evidence[name] = dict(adapter='DENSE_EXPLICIT_LENGTHS_AND_CAUSAL',
+                seq_lens_list=list(metadata.seq_lens_list), actual_seq_lengths_q=list(metadata.actual_seq_lengths_q),
+                causal=metadata.causal)
         slot_meta = tensor_metadata(field(metadata, "slot_mapping"))
         slot_buffer = tensor_metadata(field(field(table, "slot_mapping"), "gpu"))
         block_meta = tensor_metadata(field(metadata, "block_tables"))
@@ -230,6 +329,7 @@ def snapshot_fresh_prefill(runner, model, hook_kwargs, context, *, expected_prom
             "token_ids_sha256": hashlib.sha256(json.dumps(prompt, separators=(",", ":")).encode()).hexdigest(),
             "input_tensor_metadata": actual_inputs, "block_ids": blocks, "block_size": block_size,
             "slot_mapping": slots, "attention_metadata_keys": observed_layers,
+            "attention_metadata_evidence": attention_evidence,
             "tensor_values_copied_from_npu": False, "device_input_bytes_equality": "NOT_ESTABLISHED_BY_CPU_MIRROR"}
 
 

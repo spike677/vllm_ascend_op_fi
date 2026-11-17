@@ -1,0 +1,63 @@
+{
+  "schema": "nes.fa.typed_plan.v1",
+  "operator": "FlashAttentionScore",
+  "mode": "native",
+  "scope": {
+    "pid": 123,
+    "native_tid": 123,
+    "token": "synthetic_cpu_fixture",
+    "phase": "operator_execution",
+    "request_count": 1
+  },
+  "context": {
+    "query_shape": [
+      1,
+      16,
+      2048,
+      128
+    ],
+    "key_shape": [
+      1,
+      8,
+      2048,
+      128
+    ],
+    "value_shape": [
+      1,
+      8,
+      2048,
+      128
+    ],
+    "mask_shape": [
+      2048,
+      2048
+    ],
+    "dtype": "float16",
+    "mask_dtype": "bool",
+    "layout": "BNSD",
+    "scale": 0.0883883461356163,
+    "keep_prob": 1,
+    "pre_tokens": 2147483647,
+    "next_tokens": 0,
+    "heads": 16,
+    "inner_precise": 0,
+    "sparse_mode": 2,
+    "optional_inputs_absent": true
+  },
+  "version": {
+    "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+    "cann_build": "V100R001C11SPC001B243",
+    "bridge_abi": "nes.fa.cann9.1.s1s2.v1"
+  },
+  "requested": {
+    "native": null,
+    "selected": null
+  },
+  "certificate": {
+    "id": "synthetic_cpu_fixture_not_a_certificate",
+    "source_manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "build_manifest_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "validation_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "validation_state": "experimental"
+  }
+}

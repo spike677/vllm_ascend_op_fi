@@ -1,0 +1,94 @@
+{
+  "schema": "demoncat.paged33.actual_worker_summary.v1",
+  "status": "NATURAL_API_OBSERVED_INJECTION_REFUSED",
+  "original_result": {
+    "path": "/home/17-fault-engineering-20261117/paged33-a1/fault33-natural/result.json",
+    "sha256": "0511c373025f258b7fb645a3a1a231f33b2ef4766de7cce67624e77a07a779df"
+  },
+  "actual_api": [
+    "torch_npu.npu_fused_infer_attention_score"
+  ],
+  "layouts": [
+    "TND"
+  ],
+  "sources": {
+    "backend": {
+      "path": "/vllm-workspace/vllm-ascend/vllm_ascend/attention/attention_v1.py",
+      "sha256": "bbe69c3015ee15789dea0d6ec9795243458b68494294c4c023ed5a5d665c550b"
+    },
+    "layer": {
+      "path": "/vllm-workspace/vllm/vllm/model_executor/layers/attention/attention.py",
+      "sha256": "990ead07c828e26192ca46b4b8abae7a6792f67c27510705ad7b483035f3631c"
+    }
+  },
+  "actual_calls": 28,
+  "unique_modules": 28,
+  "model_module_paths": [
+    "model.layers.0.self_attn.attn",
+    "model.layers.1.self_attn.attn",
+    "model.layers.2.self_attn.attn",
+    "model.layers.3.self_attn.attn",
+    "model.layers.4.self_attn.attn",
+    "model.layers.5.self_attn.attn",
+    "model.layers.6.self_attn.attn",
+    "model.layers.7.self_attn.attn",
+    "model.layers.8.self_attn.attn",
+    "model.layers.9.self_attn.attn",
+    "model.layers.10.self_attn.attn",
+    "model.layers.11.self_attn.attn",
+    "model.layers.12.self_attn.attn",
+    "model.layers.13.self_attn.attn",
+    "model.layers.14.self_attn.attn",
+    "model.layers.15.self_attn.attn",
+    "model.layers.16.self_attn.attn",
+    "model.layers.17.self_attn.attn",
+    "model.layers.18.self_attn.attn",
+    "model.layers.19.self_attn.attn",
+    "model.layers.20.self_attn.attn",
+    "model.layers.21.self_attn.attn",
+    "model.layers.22.self_attn.attn",
+    "model.layers.23.self_attn.attn",
+    "model.layers.24.self_attn.attn",
+    "model.layers.25.self_attn.attn",
+    "model.layers.26.self_attn.attn",
+    "model.layers.27.self_attn.attn"
+  ],
+  "prefill_forwards": 1,
+  "decode_forwards": 1,
+  "request_counts": [
+    1
+  ],
+  "sequence_lengths": [
+    15
+  ],
+  "block_sizes": [
+    16
+  ],
+  "actual_slots": [
+    46
+  ],
+  "actual_writer_returned": true,
+  "actual_consumer_returned": true,
+  "live_cache_aliases_checked": true,
+  "page_slot_scheduler_mapping_checked": true,
+  "cache_contents_verified": false,
+  "logits_full_bytes_compared": false,
+  "healthy_before_tokens": [
+    576,
+    4226
+  ],
+  "observed_tokens": [
+    576,
+    4226
+  ],
+  "healthy_after_tokens": [
+    576,
+    4226
+  ],
+  "generated_text": " The answer",
+  "generation_unchanged": true,
+  "native_launch_verified": false,
+  "injection_enabled": false,
+  "public_worker_qualified": false,
+  "refusal": "OBSERVED_TND_FIA_REQUIRES_OWN_NATIVE_ADAPTER"
+}

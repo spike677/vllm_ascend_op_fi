@@ -244,10 +244,28 @@ class Serving20QualificationTests(unittest.TestCase):
         with self.assertRaisesRegex(sq.UnsupportedCall, 'LOADED_WORKER_ENVIRONMENT_UNPROVEN'):
             session.start()
         self.assertIn('LOADED_WORKER_ENVIRONMENT_UNPROVEN', session.query()['qualification']['failure'])
+        self.assertEqual(session.query()['qualification']['environment_refusal']['maps_status'], 'UNAVAILABLE')
+        self.assertEqual(json.loads((session.directory / 'environment_refusal.json').read_text())[
+            'actual_environment']['maps_status'], 'UNAVAILABLE')
         self.assertIsNone(session.runtime.callback)
         self.assertFalse(session.locked)
         with self.assertRaisesRegex(sq.UnsupportedCall, 'SINGLE_SERVING_ATTEMPT_REQUIRED'):
             session.start()
+        session.close()
+
+    def test_unverified_extra_mapping_is_not_silently_excluded_from_environment(self):
+        session = self.session(start=False)
+        self.environment['loaded_libraries'].append(dict(name='libtorch_npu.so',
+            path='/image/torch_npu/lib/libtorch_npu.so', status='MAPPED_FILE_IDENTITY_CHANGED',
+            sha256=None, elf_build_id=None))
+        with self.assertRaisesRegex(sq.UnsupportedCall, 'LOADED_WORKER_ENVIRONMENT_UNPROVEN'):
+            session.start()
+        diagnostic = session.query()['qualification']['environment_refusal']
+        self.assertEqual(diagnostic['missing_required_libraries'], [])
+        self.assertEqual(diagnostic['unverified_libraries'], [dict(name='libtorch_npu.so',
+            path='/image/torch_npu/lib/libtorch_npu.so', status='MAPPED_FILE_IDENTITY_CHANGED')])
+        self.assertIsNone(session.runtime.callback)
+        self.assertFalse(session.locked)
         session.close()
 
     def test_manifest_cannot_claim_native_validation_or_change_reviewed_bytes(self):

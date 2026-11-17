@@ -102,7 +102,7 @@ def prepare_output_projection_nz(worker):
     return record
 
 
-def setup_worker(worker, tokens, collect, baseline_control, mechanism):
+def setup_worker(worker, tokens, collect, baseline_control, mechanism, operator=None):
     from vllm.v1.worker.worker_base import WorkerBase, WorkerWrapperBase
     # Callable collective_rpc receives WorkerWrapperBase, while named Extension
     # RPCs bind to its actual Worker. Freeze the actual owner for both paths.
@@ -116,7 +116,10 @@ def setup_worker(worker, tokens, collect, baseline_control, mechanism):
         import demoncat_fault39.serving_qualification as qualification
         extra = {}
     else:
-        from demoncat.runtime.vllm_ascend.worker_extension.serving20 import install_fault20_serving_binding as install
+        if operator == 'aclnnQuantMatmulWeightNz':
+            from demoncat.runtime.vllm_ascend.worker_extension.serving20_qmm import install_fault20_qmm_serving_binding as install
+        else:
+            from demoncat.runtime.vllm_ascend.worker_extension.serving20 import install_fault20_serving_binding as install
         import fault_injection.serving_qualification as qualification
         extra = dict(reviewed_manifest_path='/native/serving_review.json', first_live_validation=True)
         from fault_injection.environment import inspect_environment
@@ -125,7 +128,7 @@ def setup_worker(worker, tokens, collect, baseline_control, mechanism):
             inspect_environment(additional_libraries=review['required_libraries']), indent=2)+'\n')
     import fault_injection
     modules=[]
-    for module in (runtime,qualification,fault_injection):
+    for module in (runtime,qualification,fault_injection,install):
         path=Path(inspect.getfile(module)).resolve()
         if not path.is_relative_to(Path('/installed')):raise RuntimeError('SOURCE_IMPORT_NOT_INSTALLED_WHEEL')
         modules.append(dict(path=str(path),sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
@@ -192,7 +195,7 @@ def main():
         prompt={'prompt_token_ids':tokens}
         baseline,=llm.generate([prompt],sampling,use_tqdm=False)
         report['healthy_before']=result_record(baseline)
-        report['setup']=one_rpc(llm,setup_worker,tokens,a.statistics,a.baseline_control,a.mechanism)
+        report['setup']=one_rpc(llm,setup_worker,tokens,a.statistics,a.baseline_control,a.mechanism,a.operator)
         identity=one_rpc(llm,'demoncat_worker_identity')
         report['identity']=identity
         attached=one_rpc(llm,'demoncat_attach',dict(tenant_id='worker-positive-20261117',worker=identity['worker']))
