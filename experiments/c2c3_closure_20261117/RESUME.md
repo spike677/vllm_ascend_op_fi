@@ -2,6 +2,17 @@
 
 ## Active checkpoint — reviewed integration, no device window
 
+- Updated source-a33 is498325a85bab978af1d40f89859c2f0a4e22453d,609 files,
+  archive0c810fe1433b6d83a6611b795dd0d7a16cc5416c101b3d5df35c6f7fffb355a5;
+  every remote file hash passed. packages-a13 CPU-only build/install exited0,
+  receiptSHA59ec93c9381ebcd7e71787f71064910f8349422a4e4ed07be5964cdedfe1a839.
+  It includes the new gate and quant row observer. New readonly quant queue
+  `providers-quant-row-inventory-a1-cases.json` SHA
+  a74016e6f9faaafaca416b8b5e4832374490af26904892be6c29363c8010800d
+  is prepared, not executed. Root's deployed read-only gate independently
+  retained both Pod allocations, with no UNKNOWN blocker; result
+  `root-source-a33-readonly-gate-a1.json` SHA
+  a742f07092f9ee8bf01df9a888ae55a0ecfcff52d5e90e6497369bc63c74beaa.
 - Current implementation HEAD before these documentation updates is38934eb4:
   Native26 complete-set executor, quant actual row provenance and detached proof
   snapshots, C3 issued-object/process authority, FA decoder-envelope fix, and

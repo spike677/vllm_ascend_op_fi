@@ -116,8 +116,8 @@ Row mappings and evidence are copied deeply at binding time. Every subsequent
 lookup checks the frozen row digest and full node digest before reusing the
 tensor proof. `query()` and `report()` return independent nested snapshots, so
 mutating the original scheduler mapping or returned rows, metadata, node hashes
-or parameter metadata cannot relabel an existing proof. Four additional
-contracts cover these API boundaries and digest corruption detection; this is
+or parameter metadata cannot relabel an existing proof. Four of these contracts
+cover these API boundaries and digest corruption detection; this is
 not a promise to sandbox arbitrary code that edits private Python internals.
 
 This increment changes only Python observation. The existing matched Native
