@@ -4,12 +4,17 @@ Frozen source: `91decf5efe48dfdf8c5494e52d258ccde788cc5d` (implementation
 `cb5b0dc120ce6c80f1469bb8b7248da27a7bb258`). This is an execution workstream;
 the previous engineering reports and all original 124 evidence remain intact.
 
-The frozen starting point was **C2 0/17, C3 0/17**. Root has now reviewed
-**C2 3/17, C3 3/17** in bounded standard-Worker scopes: Fault18, Fault20 and native
-Fault39 have C2 and C3. The separate HF Fault18 scope is not counted
-twice. This is an in-progress checkpoint, not a claim that17 mechanisms or whole
+The frozen starting point was **C2 0/17, C3 0/17**. The current strict result is
+**C2 1/17, C3 1/17**, for the bounded Fault18 standard-Worker scope. A new source
+and actual-build audit found unfreed SDK metadata arrays in the previously
+accepted Fault20 and native Fault39 builds. Their numerical, coverage and OFF
+receipts remain intact, but full-resource C2/C3 qualification is withdrawn
+pending repaired builds and fresh acceptance. The separate HF Fault18 scope is
+not counted twice. This is an in-progress checkpoint, not a claim that17 mechanisms or whole
 model/version families are accepted. Existing scoped C1 receipts retain their
 original source, build and workload. CPU contract tests do not grant qualification.
+The [actual-build ownership audit](coverage_frozen_metadata_ownership_review.md)
+binds this correction to the exact executed source and seven library hashes.
 
 The [17-mechanism and27-node matrix](C2_C3_MATRIX.md) lists the accepted scopes,
 natural-path gaps, queued experiments and version/hardware limits individually.
@@ -17,8 +22,8 @@ natural-path gaps, queued experiments and version/hardware limits individually.
 | Reviewed route | C2 | C3 | Independent statistics limitation |
 | --- | --- | --- | --- |
 |18.api_half, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|226/226 calls in two requests|Separate Worker capture pending; HF statistics cannot substitute|
-|20.buffer_substitute, standard DeepSeek-V2-Lite-W8A8 Worker, BF16 fixed3-token fresh prefill, TP1|135/135 targets|270/270 calls in two requests|First QMM output Max16.25→14.0;2 later NaN fields prevent whole-capture E5|
-|39.matmul_range, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|226/226 calls after fresh live C2|C2 first linear output5.1875→Inf with later NaNs; C3 raw capture missing|
+|20.buffer_substitute, standard DeepSeek-V2-Lite-W8A8 Worker, BF16 fixed3-token fresh prefill, TP1|Requalification required;135/135 interventions observed|Requalification required;270/270 calls observed|First QMM output Max16.25→14.0;2 later NaN fields prevent whole-capture E5; host metadata arrays were not released|
+|39.matmul_range, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|Requalification required;113/113 interventions observed|Requalification required;226/226 calls observed|C2 first linear output5.1875→Inf with later NaNs; C3 raw capture missing; host metadata arrays were not released|
 |18.api_half, natural HF model, separately reviewed|113/113 targets|226/226 calls|First consumer linear input1.734375→0.8671875; nulls retained|
 
 The independent review is [AGENT7_ACTUAL_REVIEW.md](AGENT7_ACTUAL_REVIEW.md),
@@ -34,6 +39,9 @@ request and in both every-match requests; all original allocations remain intact
 all target/group OFF and complete healthy logits restore.112 later input pairs
 already contain propagated nonfinite values, so this is not113 isolated causal
 tests. C3's missing raw triplet is an explicit E5 gap, not reconstructed data.
+The older tracked-resource counters did not cover the SDK-allocated host arrays;
+their zero values cannot establish complete resource release. This new finding
+supersedes the earlier qualification decision without modifying those receipts.
 
 Fresh standalone Fault28 B/F has [eight verified actual launches](attention28_cpu_fp64_launch_review.md).
 This does not grant model or Worker C2/C3. The disclosed CPU-FP64 collector is a
@@ -51,7 +59,10 @@ actual argument slot, complete raw POD and all205 decoded fields on124. The run
 then stopped at a Python JSON-envelope comparison bug, now corrected; its failed
 receipt remains intact. F, repeat and OFF were not reached. Later attempts met
 card5 initialization Resource_Busy and a card2 gate with another TP2 Worker.
-No full FA sequence, statistics or C2/C3 is claimed. A new read-only FIA prefill reader records the actual Worker boundary and
+A later [a5 independent review](AGENT7_FA_A5_AND_GATE_REVIEW.md) verified all four
+actual B/repeat/F/OFF launches and24 complete output files: repeat/OFF are byte
+exact, F differs. It remains standalone joint M/nRatio switching, with no stock
+bridge or C2/C3. Fresh raw B/F statistics are collected separately. A new read-only FIA prefill reader records the actual Worker boundary and
 explicitly rejects TND/page16 for the existing9.1 BNSD strategies.
 
 Natural MoE group implementation now preserves original input objects and storage
@@ -91,6 +102,18 @@ Attention/MoE outputs and alias writes invalidate or withhold row evidence. Seed
 query and report mappings are detached snapshots with bound digests; mutating a
 returned report cannot relabel a live tensor. This is read-only inventory, not
 all135 natural projections or quant C2/C3. See [the exact limits](providers_quant_handoff.md).
+The separate [quant group core](providers_quant_group_core.md) now has19 passing
+host C++ contracts. It distinguishes one public model invocation from the
+correct-domain helper and fault Native children, freezes healthy references,
+and accounts for workspace, partial publication and full-group drain. Actual
+SDK shim exports are now implemented in a separate library, with9 additional
+host mock-runtime contracts and7 builder contracts. The actual8.5.1 SDK build-a2
+passed after treating vendor includes as system headers; own-code warnings stay
+strict. Further review found failed-executor ownership, exception-stack liveness
+and getter-array cleanup gaps. They are being fixed before any Native use;
+Tensor lifetime ownership and complete natural serving integration remain
+unqualified. The optional sanitizer build failed because host ASan/UBSan
+libraries are absent; no sanitizer result or Native qualification is claimed.
 After this increment and the device-allocation gate, main discovery ran810 tests
 with2 skips and no failures; separate Worker discovery passed228 and queue
 contracts passed6. These suites overlap and are not added together.
@@ -111,24 +134,46 @@ failure. Imports still attempted runtime device discovery and logged failures;
 the old receipt's `actual_npu_calls:0` does not mean zero runtime API calls.
 Future probe output explicitly distinguishes compute invocations from possible
 runtime discovery. Original a1/a2 failures and a3 bytes remain unchanged.
-Natural model inference, target census, B/F/OFF and C2/C3 remain pending.
+Natural full-model prefill and census subsequently completed with exact repeated
+baseline. Its first group attempt saved positive C2/C3 phase records, but an
+external Docker stop/kill interrupted statistics after85 seconds (exit137,
+no OOM, no controller timeout). That interrupted whole run is not accepted.
+A fresh complete coverage/recovery run is in progress on card2, with statistics
+explicitly separated; no model-local result is called standard-Worker evidence.
 The [independent preparation audit](AGENT7_VISION_PREPARATION_REVIEW.md)
 re-read all10 final files and verified the executed source, image and processor
 identities. Its [hash summary](vision_preparation_summary.json) contains no
 model or tensor payloads;8 CPU negative/regression checks passed after integration.
 
-A fresh read-only allocation check observed that Pod`41507ceb-c235-4321-b248-511583b9e006`
-now holds card2/5, replacing the previously recorded Pod. The gate still refuses
-both devices despite no compute PID. Receipt`root-source-a33-readonly-gate-a2.json`
-SHA256 is`f40d56f182c04a95979fa05f5e629faa02ea22f67689c27f7ffce7105d888527`.
-No allocation was cleared and no external container was stopped.
-The later [resource-owner lookup](resource_window_summary.json) records another
-replacement Pod at16:47 UTC, owned by AscendJob
-`reliability-storage-test/stress-910b-train-c4-twohour-20261117-r1`.
-Only GET requests were used. The node identity could inspect its Pod and API
-discovery, but reading the AscendJob itself returned403; its full replica scope
-and pause behavior remain unverified. This does not identify the origin of the
-earlier external Docker cleanup. The device window remains unavailable.
+The earlier [resource-owner lookup](resource_window_summary.json) remains an
+unchanged pre-control snapshot. Under the user's prior authorization to stop
+card2/5 tasks, root verified the exact single-node, one-replica AscendJob scope,
+then applied a UID/resourceVersion-guarded1-to-0 replica change and normal
+termination of its one remaining Pod. Private job backups stay on124. No host
+Docker entry, daemon, checkpoint or cluster-wide policy was changed. The Job
+subsequently returned404; root did not request its deletion and does not infer
+the deletion actor or recreate the old object.
+
+The retained checkpoint still names that terminated Pod. The
+[live-owner review](coverage_stale_checkpoint_review.md) joined actual kubelet
+socket identity, node-authenticated API, current PodResources and OCI records,
+with a final full device gate. It found no live owner while retaining the
+checkpoint evidence. It does not certify internal allocation clearance, driver
+availability or exclusive reservation. A new card5 FA attempt then actually
+completed four calls: B, repeat B, F and unscoped OFF. Repeat and OFF complete
+outputs are exact; F differs. Independent launch/payload review passed,
+and this synthetic standalone sequence gives no model/Worker C2/C3 certificate.
+The first review's general default was replaced by an explicit one-attempt
+UID/checkpoint scope. Its next attempted queue correctly refused a different
+owner. Root separately verified and stopped that new single-node training Job
+under the same prior user authorization, using guarded replica change and
+normal Pod termination. No checkpoint edit or broad exemption was introduced.
+The unchanged FA B/F statistics then completed, followed by real Qwen3-VL image
+prefill census with exact repeated baseline. The earlier external Docker cleanup
+source remains unidentified.
+Raw-only fixed-tolerance comparison of the fresh FA statistics found4 exact
+changes and0 exceedances, with10 null fields retained and no first exceedance.
+This does not establish observable fault localization at the required tolerance.
 
 Fault20 additionally has a [root review](native20_group_summary.json):408 C2 and
 678 C3 evidence references match actual stored bytes; all targets have native

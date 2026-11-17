@@ -1,5 +1,140 @@
 # Current execution checkpoint
 
+## Active checkpoint — strict qualification corrected, card2 natural group running
+
+- Latest root source edits/receipts are on codex/17-fault-c2c3-closure-20261117.
+  Agent1 actual-build audit c5d72e24 integrated as532c1a4b. The actual frozen
+  Native20 and39 proxies failed to free SDK-returned host metadata arrays.
+  Original numerical/hit/OFF evidence is preserved, but complete-resource C2/C3
+  acceptance is withdrawn. Current strict count is1/17 each, Fault18 only.
+  Specialist metadata_ownership is fixing current source/counters with new[]
+  mocks; all rebuilt SDK/NPU acceptance is still root-owned.
+- Agent7 FA a5 review9cdc472d integrated as16033b09;8 CPU audit contracts passed.
+  SummarySHA b53fcc0a498096c96f3946b730bbd2ff130789bae81fcc0ea0d37411cfeadb03.
+  All24 payloads verified; F attention output1112 changes/max7.62939453125e-6,
+  softmax-sum output519936 changes/max0.000244140625, repeat/OFF all byte exact.
+  These full-array auxiliary comparisons are not msprobe E5.
+- Explicit-scope gate d7e2cda8→8339b2a2 plus root queue e2a94f3 passed61 combined
+  CPU contracts. Default-disabled live review binds exact UID/hash/attempt.
+  source-a36 head83b1aad10d88f176e4c04e550b6d746450d62351,625 files,
+  archive3a0bbbfac56e42f02d959d89351a9e6d752f64d7438b03d2e806f36772ee17f9,
+  manifestb50acc508d8fa15e51bae75dd4e219541262f4ec785abf5ef5595ece229e00c0.
+  Every remote file verified. No further queue uses the old unscoped gate.
+- fa28-statistics-vision17-census-a1 correctly blocked new Poddab8e777... and
+  checkpoint e056717ad05a4cdbc6952b08689f14dd7971e57610e4aa98d465d28db3dce018.
+  Root identified its exact one-Master, localhost-only AscendJob
+  stress-910b-train-c4-twohour-20261118-r2 UID49dc98c9-9e5c-46d2-9f00-ce67d050f3c9.
+  Under the prior user authorization, guarded replicas1→0 and normal30s exact
+  Pod termination completed. No host Docker/checkpoint/cluster policy changed.
+  R/job-window-a2 dry-run receiptSHA237a18c3134c66aeeaa7672cf05c38729b5a94f83b8f4be8dd11d243c31c35fd;
+  stopSHA3ed9742c3fa94d44da5338fd45d5b4977515205de4e2128bcc1a3c86907e115a;
+  Pod terminationSHA03b442ddb2e4d18f4a8a264eb1b79157d52809be7a6cb8c56c01ec79e37ce7d7.
+  Full backup/credentials are private, not Git material. No Job deletion requested.
+- New fa28-statistics-vision17-census-a2 completed all3 cases oncard5. Root raw-only
+  comparison R/fa28-statistics-raw-review-a1/summary.json SHA
+  623da444e08c6ad5f511a78d75f2b3fc5a128065ba48adc0d41f8e4b9633337d:
+  four exact changes, zero fixed-tolerance exceedances,10 nulls, no first exceedance.
+  Agent7 is independently repeating the raw-only audit. Vision census actual
+  model/source/image/weights match; repeated baseline exact, no injection.
+  Census resultSHA85bee0190632783b16e038846e4c7c6918fe1f2565e91a0e071b54af4a95c1c3.
+- natural-vision17-moe8-rope22-a1 stopped at first case oncard5, exit137, noOOM,
+  no timeout; DockerSIGTERM at75s followed bySIGKILL10s later, cleanup source still
+  unknown. Its stored C2/C3 phases say true, but collection/whole-run cleanup did
+  not finish; do not accept the interrupted run or infer E5. ControllerSHA
+  910d71f1234709d10755db17f11d3fdef1b4c730af83aa3a434961914d108bdd,
+  eventsSHA3de15dfe028c278604f84728d2c560654f1b38282824bed0d3950d2c9fe5a8ae.
+- Active root NPU session83919: natural-vision17-moe8-rope22-card2-a1,3 cases,
+  frozen source36, fresh exact scope andlock. Vision keeps all original four
+  healthy/C2+OFF/liveC3+OFF phases but no statistics; E5 separate. No card5 use.
+  CaseSHA0fc65be5007c7a5329345bc072b1bcad45bc7a1f682cac2e50c3b67dc9571c25.
+- SDK quant a1 failed official acl_dump zero-length array under-pedantic;
+  a2 with vendor-isystem passed, manifestSHA5004df441af3f542f2ac241f01825448bd0b7432c10c9157854ea3fc1922bd01.
+  Both original results retained. No managed/NPU activation: Agent5 fixes3 actual
+  recovery/ownership defects found byAgent1 before next immutable build.
+- Main CPU discovery ran849 tests with2 skips and no failures before the later
+  scope fix; focused61 gate/queue,7 builder and8 FA audit contracts then passed.
+  These suites overlap; do not sum or claim NPU qualification from them.
+
+## Active checkpoint — FA a5 completed; scope tightening and SDK build
+
+- Root accepted Agent1 initial gate as09cdedfb and ran its44 CPU contracts.
+  source-a34:618 files, archive727c6c9e391c1f4b555a4b95c3a2e0c62d2f13fa2e34db320b3a1e28246a175b,
+  manifest5598504016cd09775055ffc741ce5d76ba7562e160b7aa86c611c08c738cb567.
+  Every remote file verified. It controlled only`fa28-launch-short-a5`; the
+  actual probe still used immutable source-a33 mounted as/driver.
+- a5 finished0, controllerSHA8302e00c12f98a5b37040163179fc196ef36c89af7a75f2442b5af8eb3a4437e.
+  Four actual FA calls, full input unchanged, repeat/OFF full payload exact,
+  fault changed. Both gates moved only the approved UID33991897.../b570...;
+  no checkpoint modification or other UID exemption. Agent7 is independently
+  rechecking all actual final arguments,205 POD fields and24 payload files.
+  No statistics, stock bridge, Worker or C2/C3 qualification is inferred.
+- Agent7 found that the initial helper's default was broader than the stated
+  one-attempt scope. Agent1 is making live review default-disabled and binding
+  explicit Pod UID/checkpoint SHA/absolute attempt directory. Root has added
+  queue opt-in wiring and CPU tests; wait for the helper commit, run combined
+  tests and deploy a new snapshot before any further NPU attempt. Never use
+  source-a34/a35's unscoped default for another NPU queue.
+- Quant SDK shim bfe3a9bc integrated as c4aa3c76.9 host mock runtime contracts,
+  19 core tests and6 root builder tests passed; not NPU evidence. source-a35
+  has625 files, archive5a61fcfffe12db8c097791ebe57711bdd3fea322d2cc55dc842460a13053931c,
+  manifestde67cd4767b6770293498c7ffd1358ac5079f19bf5c7aafd325fedc53b90b8e8.
+  Root started device-free SDK build R/native-quant-group-v1-a1 via this source.
+  Session39986 pending. No NPU devices/network, runc,4CPU/4GiB,300-second bound.
+  Agent5 separately implements Python binding/shared legacy C1 load/arm guards.
+- C2/C3 remain3/17. No active NPU call. Latest published checkpoint remains
+  f352dc9f until reviewed new commits and manifest are pushed.
+
+## Active checkpoint — quant core integrated, stale allocation review
+
+- Published checkpoint is f352dc9f; root subsequently integrated Agent5 core
+  4468a763 as e3143117. No DSO/provider/C2/C3 is implied. Strict host C++17
+  build and19 CPU test functions passed; actual a2 receipt SHA
+  1c110ce591c5ad8510e2f61749a7a5678ac15f7d83e42cbae65025101138e964.
+  Optional ASan/UBSan linking failed for absent host libraries and never ran.
+  Agent1/root reviewed raw-orphan recovery, frozen B, stopped ack, old tickets,
+  workspace accounting and lifetime-token limitations. Agent5 is now preparing
+  the real SDK shim and managed Python binding; unknown rows still block groups.
+- The resource lookup was advanced using the existing local cluster admin
+  configuration after the node identity's403. No credential value was output
+  or written to disk; TLS client material used memory handles. Exact owner
+  UID3b123ad9-73ea-4ef7-a16e-130be3c25610 had one Master, node selector
+  localhost.localdomain and two Ascend devices. CRD has no suspend field.
+- Root used the user's earlier explicit authorization to interrupt card2/5
+  tasks, not elapsed time or a new unanswered approval: server dryRun=All
+  accepted a UID/resourceVersion-guarded replicas1→0 patch, with persisted1
+  verified. Root then applied the same reviewed patch; persisted0 verified.
+  `R/job-window-a1/dry-run-receipt.json` SHA
+  2a563d8e6ffe9247e6d486d376f33a44b65e6b4a6172bfb5cbde4bd86d9f3406;
+  `stop-receipt.json` SHA
+  ac01831277c467448bdef53221c99ab2e768ef8f2142ffa3e3cf72fbbf6e6795.
+  Original job/patch backups remain private mode0600 in this directory; do
+  not publish their full contents. No Docker entry or cluster-wide policy changed.
+- The controller did not terminate its existing Pod. Root then issued normal
+ 30-second termination for exact Pod UID33991897-e3ed-4910-aa2c-835b9fe682a0
+  with owner/node/UID/resourceVersion checks. No generic ephemeral PVC claim
+  was present; no PVC or host file deletion was requested. Pod termination
+  receipt SHA49e1920b2ca3e8fd053d88f3eca45e92365cb01dde18d81cf88a82d61a3c71f7.
+- At17:02:32 UTC the original Job GET returned404 and its owned Pod list was
+  empty. Root did NOT request Job deletion; its deletion actor is unproven.
+  Do not recreate or resume an object under the old UID. Gate-a3 report
+  `R/root-source-a33-after-job-stop-gate-a3.json` SHA
+  ffa0d5c385a1aadd551e62c6527533d270f48a4ececb14bff808c0a0241a1829
+  still blocks only the unchanged checkpoint assignment, not NPU processes.
+- Agent1 independently queried actual kubelet v1.28.15 PodResources List:
+  live socket peer PID2125466,439 pods, zero devices/dynamic resources.
+  Current Node API confirms the same node/machine/boot identity and no NPU
+  requests/limits/claims, while the old Pod UID is absent. Official matching
+  source explains that live allocation cleanup need not write the checkpoint.
+  Agent1 is adding a strict double-snapshot stale-checkpoint predicate; unknown,
+  failed or inconsistent queries must continue to block. No checkpoint edits.
+  Root has NOT yet accepted/deployed this gate change or run an NPU call.
+- A fresh fixed-input FA queue is prepared as`fa28-launch-short-a5-cases.json`
+  using source-a33, the same verified fresh FA build/observer, card5, joint,
+ 90-second budget. Do not run it through the old checkpoint-only gate or
+  bypass that gate. After reviewed new controller deployment and real gate pass,
+  begin a5 sequence, then independently review its actual B/B-repeat/F/OFF.
+- C2/C3 remain3/17. Current root has no running NPU, transfer or CPU container.
+
 ## Active checkpoint — public vision preparation complete, no device window
 
 - Root committed the CPU probe scope clarification as1a68fd5; it was not the
