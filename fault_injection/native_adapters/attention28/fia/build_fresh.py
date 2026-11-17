@@ -147,6 +147,9 @@ def sdk_interfaces(args, contract):
 
 
 class Builder:
+    operator = 'fused_infer_attention_score'
+    include_components = ('common', 'incre_flash_attention', 'prompt_flash_attention', 'fused_infer_attention_score')
+
     def __init__(self, args):
         self.args = args
         self.root = args.work.resolve()
@@ -209,12 +212,7 @@ class Builder:
                 and dep_in != self.root and dep_in not in self.root.parents, 'OUTPUT_MUST_NOT_MUTATE_INPUT_TREE')
         self.receipt = json.loads(args.policy_receipt.read_bytes())
         verify_policy(source_in, self.receipt)
-        self.variant = (self.receipt.get('variant') if self.receipt['mechanism'] == '33.paged_decode'
-                        else self.receipt['mechanism'].removeprefix('28.fia.'))
-        require(self.variant in ('legal_tiling', 'denominator_replay', 'tnd_page16_s2_256', 'tnd_page16_fai_s2_256'), 'UNREVIEWED_VARIANT')
-        self.vendor_name = {'legal_tiling': 'dcat_f28_legal', 'denominator_replay': 'dcat_f28_replay',
-                            'tnd_page16_s2_256': 'dcat_f33_tnd',
-                            'tnd_page16_fai_s2_256': 'dcat_f33_fai'}[self.variant]
+        self.configure_policy(source_in)
         self.contract = json.loads((HERE / 'build_contract.json').read_bytes())
         contract = self.contract
         interfaces = sdk_interfaces(args, contract)
@@ -300,6 +298,19 @@ class Builder:
                            dependency_manifest_sha256=sha(self.ev / 'dependency_sources.json'),
                            excluded_test_fixtures_sha256=sha(self.ev / 'excluded_test_fixtures.json'))
 
+    def configure_policy(self, source_in):
+        self.variant = (self.receipt.get('variant') if self.receipt['mechanism'] == '33.paged_decode'
+                        else self.receipt['mechanism'].removeprefix('28.fia.'))
+        require(self.variant in ('legal_tiling', 'denominator_replay', 'tnd_page16_s2_256', 'tnd_page16_fai_s2_256'), 'UNREVIEWED_VARIANT')
+        self.vendor_name = {'legal_tiling': 'dcat_f28_legal', 'denominator_replay': 'dcat_f28_replay',
+                            'tnd_page16_s2_256': 'dcat_f33_tnd',
+                            'tnd_page16_fai_s2_256': 'dcat_f33_fai'}[self.variant]
+
+    def cpu_checks(self):
+        self.run('geometry_compile', ['g++', '-std=c++17', '-I', HERE, HERE / 'geometry_check.cpp',
+                                      '-o', self.ev / 'geometry_check'], env=self.env)
+        self.run('geometry_check', [self.ev / 'geometry_check'], env=self.env)
+
     def host(self):
         args, source, deps = self.args, self.source, self.deps
         self.env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PIP_NO_INDEX='1',
@@ -310,9 +321,7 @@ class Builder:
             'o,_=create_command("wheel").parse_args([".","--no-deps"]); '
             'assert o.no_index and not o.build_isolation; '
             'print({n:m.version(n) for n in ("pip","setuptools","wheel")})'], env=self.env)
-        self.run('geometry_compile', ['g++', '-std=c++17', '-I', HERE, HERE / 'geometry_check.cpp',
-                                      '-o', self.ev / 'geometry_check'], env=self.env)
-        self.run('geometry_check', [self.ev / 'geometry_check'], env=self.env)
+        self.cpu_checks()
         build = source / 'build'
         flags = {'CANN_3RD_LIB_PATH:PATH': deps, 'CANN_3RD_PKG_PATH:PATH': deps / 'pkg',
             'FETCHCONTENT_SOURCE_DIR_CANN-CMAKE:PATH': deps / 'cann-cmake',
@@ -324,7 +333,7 @@ class Builder:
             'ENABLE_OPS_HOST': 'ON', 'ENABLE_OPS_KERNEL': 'OFF', 'ENABLE_AICPU': 'OFF',
             'ENABLE_AICPU_KERNEL': 'OFF', 'ENABLE_TEST': 'OFF', 'ENABLE_CCACHE': 'OFF',
             'BUILD_OPS_RTY_KERNEL': 'OFF', 'VENDOR_NAME': self.vendor_name,
-            'ASCEND_OP_NAME': 'fused_infer_attention_score', 'ASCEND_COMPUTE_UNIT': 'ascend910b',
+            'ASCEND_OP_NAME': self.operator, 'ASCEND_COMPUTE_UNIT': 'ascend910b',
             'CUSTOM_ASCEND_CANN_PACKAGE_PATH': self.sdk, 'Python3_EXECUTABLE': args.python,
             'HI_PYTHON': args.python, 'ASCEND_PYTHON_EXECUTABLE': args.python,
             'CMAKE_BUILD_TYPE': 'Release', 'CMAKE_INSTALL_PREFIX': source / 'build_out'}
@@ -353,7 +362,7 @@ class Builder:
         # vendor. Keep every existing byte if present and require equality.
         impl_root = self.vendor / ('op_impl/ai_core/tbe/' + self.vendor_name + '_transformer_impl')
         copied = []
-        for name in ('common', 'incre_flash_attention', 'prompt_flash_attention', 'fused_infer_attention_score'):
+        for name in self.include_components:
             origin = self.source / 'attention' / name / 'op_kernel'
             for item in source_files(origin):
                 original = origin / item['path']
