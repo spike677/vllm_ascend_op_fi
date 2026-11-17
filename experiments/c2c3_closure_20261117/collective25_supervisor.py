@@ -18,6 +18,8 @@ def assess(folder, exit_code, timed_out, cpu=False):
         receipt = json.loads(receipt_path.read_text()) if receipt_path.is_file() else {}
         events = [json.loads(line) for line in lifecycle_path.read_text().splitlines()] if lifecycle_path.is_file() else []
         stages = [event['stage'] for event in events]
+        synchronize_returns = [event['synchronize_success'] for event in events
+                               if 'synchronize_success' in event]
         cases = receipt.get('cases', [])
         ranks.append(dict(rank=rank, pid=receipt.get('pid'), status=receipt.get('status'),
             same_process_off_exact=bool(cases) and all(case['off_exact'] for case in cases),
@@ -25,6 +27,7 @@ def assess(folder, exit_code, timed_out, cpu=False):
             destroy_returned='destroy_process_group_returned' in stages,
             main_returned='main_returned' in stages,
             native_shutdown_returned=cpu or 'native_shutdown_returned' in stages,
+            native_shutdown_synchronize_succeeded=cpu or synchronize_returns == [True],
             atexit_tail='python_atexit_tail' in stages,
             last_event=events[-1] if events else None,
             receipt_sha256=hashlib.sha256(receipt_path.read_bytes()).hexdigest() if receipt_path.is_file() else None,
@@ -32,7 +35,8 @@ def assess(folder, exit_code, timed_out, cpu=False):
     normal_exit = exit_code == 0 and not timed_out
     lifecycle_ok = normal_exit and all(all(row[key] for key in (
         'same_process_off_exact', 'group_drain_returned', 'destroy_returned',
-        'main_returned', 'native_shutdown_returned', 'atexit_tail')) for row in ranks)
+        'main_returned', 'native_shutdown_returned', 'native_shutdown_synchronize_succeeded',
+        'atexit_tail')) for row in ranks)
     return dict(status='CALIBRATION_LIFECYCLE_PASSED' if lifecycle_ok else 'CALIBRATION_LIFECYCLE_FAILED',
                 torchrun_exit_code=exit_code, timed_out=timed_out, normal_exit_observed=normal_exit,
                 lifecycle_pass=lifecycle_ok, ranks=ranks, c2_pass=False, c3_pass=False,

@@ -72,7 +72,10 @@ def install_shutdown_receipt(torch_npu, mark):
         else:
             return
         if name in names:
-            mark('native_shutdown_boundary', function=name, event=event)
+            details = dict(function=name, event=event)
+            if event == 'return' and frame.f_code is original.__code__:
+                details['synchronize_success'] = frame.f_locals.get('success')
+            mark('native_shutdown_boundary', **details)
 
     def shutdown():
         mark('native_shutdown_enter')
@@ -206,12 +209,15 @@ def main():
                 raise RuntimeError('ACTUAL_NATIVE_CALIBRATION_NOT_ADMITTED')
             native_hashes = [row['event']['baseline_sha256'] for row in session.observations]
             input_hashes = [row['event']['input_sha256'] for row in session.observations]
+            numeric_repeat_exact = all(torch.equal(session.observations[0]['output'], row['output'])
+                                       for row in session.observations[1:])
             same_input = len(set(input_hashes)) == 1
             if not same_input:
                 raise RuntimeError('CALIBRATION_INPUT_CHANGED')
             with torch.inference_mode():
                 off = model(source).detach().cpu().clone()
-            row = dict(**spec, repeat_exact=len(set(native_hashes)) == 1,
+            row = dict(**spec, repeat_exact=numeric_repeat_exact,
+                       repeat_bytes_exact=len(set(native_hashes)) == 1,
                        actual_native_output_hashes=native_hashes,
                        same_input_exact=same_input, off_exact=bool(torch.equal(outputs[0], off)),
                        observation=observation, cleanup=session.runtime_state(),

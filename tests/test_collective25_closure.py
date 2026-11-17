@@ -51,12 +51,17 @@ class Collective25Closure(unittest.TestCase):
                 stages = ['destroy_process_group_returned', 'main_returned',
                           'native_shutdown_returned', 'python_atexit_tail']
                 (folder / f'rank{rank}.lifecycle.jsonl').write_text(''.join(
-                    json.dumps(dict(stage=stage)) + '\n' for stage in stages))
+                    json.dumps(dict(stage=stage)) + '\n' for stage in stages) +
+                    json.dumps(dict(stage='native_shutdown_boundary', synchronize_success=True)) + '\n')
             passed = assess(folder, 0, False)
             self.assertTrue(passed['lifecycle_pass'])
             self.assertFalse(passed['c2_pass'] or passed['c3_pass'] or passed['actual_fault_recovery_proven'])
             self.assertFalse(assess(folder, 1, False)['lifecycle_pass'])
             self.assertFalse(assess(folder, 0, True)['lifecycle_pass'])
+            lifecycle = folder / 'rank1.lifecycle.jsonl'
+            original = lifecycle.read_text()
+            lifecycle.write_text(original.replace('"synchronize_success": true', '"synchronize_success": false'))
+            self.assertFalse(assess(folder, 0, False)['lifecycle_pass'])
             (folder / 'rank1.lifecycle.jsonl').write_text(json.dumps(dict(stage='main_returned')) + '\n')
             self.assertFalse(assess(folder, 0, False)['lifecycle_pass'])
 

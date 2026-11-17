@@ -1,10 +1,10 @@
 [
   {
-    "id": "collective25-851-smoke-a1",
+    "id": "collective25-851-smoke-a2",
     "image": "quay.io/ascend/vllm-ascend:v0.18.0",
     "mounts": [
       [
-        "/home/17-fault-c2c3-20261117/source-collective25-a1",
+        "/home/17-fault-c2c3-20261117/source-collective25-a2",
         "/source",
         "ro"
       ]
@@ -13,13 +13,13 @@
       "PYTHONPATH": "/source:/source/src:/source/fault39/src",
       "OMP_NUM_THREADS": "2",
       "GLOO_SOCKET_IFNAME": "lo",
-      "HCCL_CONNECT_TIMEOUT": "60",
-      "HCCL_EXEC_TIMEOUT": "60",
+      "HCCL_CONNECT_TIMEOUT": "120",
+      "HCCL_EXEC_TIMEOUT": "120",
       "XDG_CACHE_HOME": "/evidence/cache"
     },
-    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh\nexec python /source/experiments/c2c3_closure_20261117/collective25_supervisor.py --out /evidence/collective --suite smoke --repeats 2 --stage-timeout 60 --timeout 300",
+    "command": "source /usr/local/Ascend/cann-8.5.1/set_env.sh\nexec python /source/experiments/c2c3_closure_20261117/collective25_supervisor.py --out /evidence/collective --suite smoke --repeats 2 --stage-timeout 120 --timeout 300",
     "review": {
-      "experiment_id": "collective25-851-smoke-a1",
+      "experiment_id": "collective25-851-smoke-a2",
       "provider": "25.reduce_scatter observation-only",
       "model": "constructed torch.nn.Module: actual reduce_scatter_tensor SUM then add1; original FP32 send256/receive128",
       "cann": "8.5.1",
@@ -38,8 +38,8 @@
         "files": {
           "fault_injection/collective25.py": "0a21fb9d34a1367dbaf0a937af6d688f739a8f4a45de4337dd3eada8a5b5ba51",
           "fault_injection/_scoped_dispatch.py": "c85656176621ba6ff1263a56e42a870b7ba9025edef8def85bfcd8af7016d37a",
-          "experiments/c2c3_closure_20261117/collective25_closure_probe.py": "40008bb5b6545e8cd62ef304bb9c54c315d0eb390161a6273a1f17e23f0ee8ff",
-          "experiments/c2c3_closure_20261117/collective25_supervisor.py": "c95b8b2c938a85628e95324b7d652f5e095fc915e437025548b3025e6dc24a2a"
+          "experiments/c2c3_closure_20261117/collective25_closure_probe.py": "990f49c9497df521261f1f1784bbf4146f001d46d12d04b81ee4e09d86cda6db",
+          "experiments/c2c3_closure_20261117/collective25_supervisor.py": "aae75a7494b912455105b7c4bf4e42cc682a65e4e8e14087a458e3f83a82a689"
         },
         "native_build": "unmodified image torch_npu/libhccl; actual loaded library SHA captured per rank"
       },
