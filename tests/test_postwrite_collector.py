@@ -64,6 +64,73 @@ def collector_fixture():
 
 
 class CollectorOwnershipTests(unittest.TestCase):
+    def test_second_install_keeps_pinned_collector_and_its_registry_leaf(self):
+        with collector_fixture() as (registry,template):
+            original=lambda:'actual API'
+            first=lambda:original()
+            api=NS(call=first)
+            wrapper=registry.ApiWrapper().wrap_api_func('call',first,'NPU',None,template.ApiTemplate)
+            api.call=wrapper
+            register=template.api_register
+            register.ori_api_attr={'pytorch.NPU':{'call':[([api],first)]}}
+            register.wrapped_api_attr={'pytorch.NPU':{'call':[([api],wrapper)]}}
+            cleanup.restore_owned_api_patches([(api,'call',original,first)])
+            second=lambda:wrapper()
+            patch=cleanup.owned_api_patch(api,'call',wrapper,second)
+            api.call=second
+            # Reproduce the actual old failure: retained registry leaf is not
+            # the outer collector which the second install saved as original.
+            with self.assertRaisesRegex(RuntimeError,'WRAPPER_OWNERSHIP_CHANGED'):
+                cleanup.restore_owned_api_patches([(api,'call',wrapper,second)])
+            self.assertIs(api.call,second)
+            report=cleanup.restore_owned_api_patches([patch])
+            self.assertIs(api.call,wrapper)
+            self.assertIs(register.ori_api_attr['pytorch.NPU']['call'][0][1],original)
+            self.assertEqual(api.call(),('actual API','call'))
+            self.assertTrue(any(row.get('preinstall_ancestry_nodes')==2 for row in report['observations']))
+            cleanup.restore_owned_api_patches([patch])
+
+    def test_collector_rebuild_is_preserved_but_foreign_current_wrapper_refuses_atomically(self):
+        with collector_fixture() as (registry,template):
+            original=lambda:'actual API'
+            old=registry.ApiWrapper().wrap_api_func('call',original,'NPU',None,template.ApiTemplate)
+            owned=lambda:old()
+            api=NS(call=old,other=owned)
+            patch=cleanup.owned_api_patch(api,'call',old,owned)
+            api.call=owned
+            rebuilt=registry.ApiWrapper().wrap_api_func('call',owned,'NPU',None,template.ApiTemplate)
+            api.call=rebuilt
+            foreign=lambda:rebuilt()
+            api.call=foreign
+            with self.assertRaisesRegex(RuntimeError,'WRAPPER_OWNERSHIP_CHANGED'):
+                cleanup.restore_owned_api_patches([patch,(api,'other',original,owned)])
+            self.assertIs(api.call,foreign);self.assertIs(api.other,owned)
+            api.call=rebuilt
+            cleanup.restore_owned_api_patches([patch,(api,'other',original,owned)])
+            self.assertIs(api.call,rebuilt)
+            self.assertEqual(api.call(),(('actual API','call'),'call'))
+
+    def test_changed_preinstall_ancestry_or_template_instance_refuses(self):
+        with collector_fixture() as (registry,template):
+            original,foreign=lambda:1,lambda:2
+            wrapper=registry.ApiWrapper().wrap_api_func('call',original,'NPU',None,template.ApiTemplate)
+            owned=lambda:wrapper();api=NS(call=wrapper)
+            patch=cleanup.owned_api_patch(api,'call',wrapper,owned);api.call=owned
+            cells=dict(zip(wrapper.__code__.co_freevars,wrapper.__closure__))
+            instance=cells['api_instance'].cell_contents
+            cells['api_instance'].cell_contents=template.ApiTemplate('call',original,'NPU',None)
+            with self.assertRaisesRegex(RuntimeError,'ANCESTRY_CHANGED'):
+                cleanup.restore_owned_api_patches([patch])
+            self.assertIs(api.call,owned)
+            cells['api_instance'].cell_contents=instance
+            cells['api_func'].cell_contents=foreign;instance.api_func=foreign
+            with self.assertRaisesRegex(RuntimeError,'ANCESTRY_CHANGED'):
+                cleanup.restore_owned_api_patches([patch])
+            self.assertIs(api.call,owned)
+            cells['api_func'].cell_contents=original;instance.api_func=original
+            cleanup.restore_owned_api_patches([patch])
+            self.assertIs(api.call,wrapper)
+
     def test_direct_descriptors_restore_together_and_retry_is_idempotent(self):
         original = lambda:'original'
         installed = lambda:'owned'

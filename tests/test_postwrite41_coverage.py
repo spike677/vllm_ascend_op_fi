@@ -117,6 +117,27 @@ class Harness:
 
 
 class KVGroupCoverageTests(unittest.TestCase):
+    def test_group_uninstall_failure_retains_ownership_and_retries_without_resealing(self):
+        h=Harness();h.group.prepare('once');h.request('group_lossless')
+        for _ in range(2):h.request('group_fault')
+        h.request('group_off')
+        original=h.p.close
+        with patch.object(h.p,'close',side_effect=RuntimeError('external API owner')):
+            with self.assertRaisesRegex(RuntimeError,'UNINSTALL_NOT_CONFIRMED.*external API owner'):
+                h.group.begin_recovery()
+        self.assertEqual(h.group.stage,'recovery_pending')
+        self.assertTrue(h.p.installed)
+        self.assertEqual(len(h.group.session.recovery_report()['held_leases']),2)
+        before=h.group.observer.evidence
+        report=h.group.retry_recovery()
+        self.assertFalse(report['complete']) # Independent normal request still required.
+        self.assertFalse(h.p.installed)
+        self.assertEqual(h.group.observer.evidence,before)
+        self.assertEqual(len(h.group.recovery_attempts),2)
+        self.assertIn('external API owner',str(h.group.recovery_attempts[0]['errors']))
+        h.group.health_artifact=dict(model_output_sha256=adapter._output_hash(h.p.outputs[0]))
+        self.assertTrue(h.group.finish_health()['recovery']['complete'])
+
     def test_all_layers_once_then_every_match_have_independent_denominator_and_health(self):
         h = Harness()
         report = h.run()

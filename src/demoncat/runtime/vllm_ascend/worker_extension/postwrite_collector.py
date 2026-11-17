@@ -121,6 +121,45 @@ class _Edit:
         else:self.container[self.key] = value
 
 
+@dataclass(frozen=True)
+class OwnedApiPatch:
+    container: object
+    name: str
+    original_descriptor: object
+    installed_descriptor: object
+    original_anchors: tuple
+    original_links: tuple
+    original_nodes: tuple
+
+    def __iter__(self):
+        return iter((self.container,self.name,self.original_descriptor,self.installed_descriptor))
+
+
+def owned_api_patch(obj,name,original_descriptor,installed_descriptor):
+    """Pin pre-install collector ancestry, including its exact original leaf.
+
+    A second install may wrap the collector preserved by the first uninstall.
+    Its registry still retains the leaf, not the outer callable. Only descendants
+    reached through verified collector code become anchors. Unknown pre-existing
+    callables remain opaque identities; they are never unwrapped or replaced.
+    """
+    original=original_descriptor.__func__ if isinstance(original_descriptor,staticmethod) else original_descriptor
+    anchors,links,nodes=[],[],[]
+    registry=sys.modules.get(REGISTRY_MODULE)
+    reviewed=None
+    current=original
+    while True:
+        require(len(anchors)<8 and all(current is not item for item in anchors),'POSTWRITE_COLLECTOR_WRAPPER_CYCLE')
+        anchors.append(current)
+        if not isinstance(current,FunctionType) or registry is None or current.__globals__ is not vars(registry):break
+        if reviewed is None:reviewed=_ReviewedCollector()
+        child,edges,factory=reviewed.links(current,name)
+        nodes.append((current,child,tuple(edges),factory))
+        links.extend(_Edit(kind,container,key,before,before) for kind,container,key,before in edges)
+        current=child
+    return OwnedApiPatch(obj,name,original_descriptor,installed_descriptor,tuple(anchors),tuple(links),tuple(nodes))
+
+
 def restore_owned_api_patches(patches, *, collectors=()):
     edits, seen, observations = [], {}, []
     reviewed = None
@@ -134,30 +173,43 @@ def restore_owned_api_patches(patches, *, collectors=()):
         edit = _Edit(kind, container, key, before, after)
         seen[identity] = edit
         edits.append(edit)
-    def walk(function, name, owned, original, visited=()):
+    def walk(function, name, owned, original, anchors, visited=()):
         nonlocal reviewed
         if function is owned:return original
-        if function is original:return function
+        if any(function is anchor for anchor in anchors):return function
         require(len(visited) < 8 and id(function) not in visited, 'POSTWRITE_COLLECTOR_WRAPPER_CYCLE')
         if reviewed is None:reviewed = _ReviewedCollector()
         child, links, factory = reviewed.links(function, name)
-        new_child = walk(child, name, owned, original, visited + (id(function),))
+        new_child = walk(child,name,owned,original,anchors,visited+(id(function),))
         for kind, container, key, before in links:add(kind, container, key, before, new_child)
         observations.append(dict(api=name, collector_factory=factory, collector_callable_preserved=True))
         return function
-    for obj, name, original_descriptor, installed_descriptor in reversed(patches):
+    for patch in reversed(patches):
+        obj,name,original_descriptor,installed_descriptor=patch
         current = inspect.getattr_static(obj, name)
         original = original_descriptor.__func__ if isinstance(original_descriptor, staticmethod) else original_descriptor
         installed = installed_descriptor.__func__ if isinstance(installed_descriptor, staticmethod) else installed_descriptor
+        anchors=patch.original_anchors if isinstance(patch,OwnedApiPatch) else (original,)
+        if isinstance(patch,OwnedApiPatch):
+            if patch.original_nodes and reviewed is None:reviewed=_ReviewedCollector()
+            for function,expected_child,expected_edges,expected_factory in patch.original_nodes:
+                child,edges,factory=reviewed.links(function,name)
+                require(child is expected_child and factory==expected_factory and len(edges)==len(expected_edges)
+                        and all(actual[0]==old[0] and actual[1] is old[1] and actual[2]==old[2]
+                                and actual[3] is old[3] for actual,old in zip(edges,expected_edges)),
+                        'POSTWRITE_PREINSTALL_COLLECTOR_ANCESTRY_CHANGED:'+name)
+            require(all(link.current() is link.before for link in patch.original_links),
+                    'POSTWRITE_PREINSTALL_COLLECTOR_ANCESTRY_CHANGED:'+name)
+            observations.append(dict(api=name,preinstall_ancestry_nodes=len(anchors),preinstall_ancestry_unchanged=True))
         if current is installed_descriptor:
             add('attr', obj, name, current, original_descriptor)
         elif current is not original_descriptor:
-            replacement = walk(current, name, installed, original)
+            replacement = walk(current,name,installed,original,anchors)
             require(replacement is current, 'POSTWRITE_UNEXPECTED_DIRECT_COLLECTOR_RESTORE')
         if sys.modules.get(REGISTRY_MODULE) is not None and sys.modules.get(TEMPLATE_MODULE) is not None:
             if reviewed is None:reviewed = _ReviewedCollector()
             for kind, container, key, before, function, modules in reviewed.retained(obj, name, collectors):
-                replacement = walk(function, name, installed, original)
+                replacement = walk(function,name,installed,original,anchors)
                 if replacement is not function:
                     after = (modules, replacement) if kind == 'list' else replacement
                     add(kind, container, key, before, after)

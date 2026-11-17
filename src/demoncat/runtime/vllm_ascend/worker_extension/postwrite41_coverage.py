@@ -233,6 +233,7 @@ class KVGroupCoverage:
         self.generation=max(self.generation+1,self.p.generation+1)
         self.lossless, self.off_records, self.executions, self.failures, self.completed_requests = {}, {}, [], [], []
         self.fault_requests, self.off_hash, self.health_artifact = 0, None, None
+        self.recovery_started,self.recovery_attempts=False,[]
         self.observer = IndependentCallObserver(source='independent_workload_observer', observer_id='kv-observer:' + uuid.uuid4().hex,
             implementation_sha256=self.observer_source_sha256, workload_sha256=self.scope.workload_sha256,
             max_calls=(self.requests + 2) * len(self.identities))
@@ -295,13 +296,21 @@ class KVGroupCoverage:
         return GroupRecoveryHooks(stop,drain,recover,health)
 
     def begin_recovery(self):
-        require(self.stage=='off_complete','KV_GROUP_ACTUAL_OFF_REQUIRED_BEFORE_DRAIN')
-        self.observer.seal(artifact_sha256=digest(self.completed_requests),complete=not self.failures)
+        require(self.stage in ('off_complete','recovery_pending'),'KV_GROUP_ACTUAL_OFF_REQUIRED_BEFORE_DRAIN')
+        if not self.recovery_started:
+            self.observer.seal(artifact_sha256=digest(self.completed_requests),complete=not self.failures)
+            self.recovery_started=True
         result=self.session.disable(timeout_seconds=30)
+        self.recovery_attempts.append(result)
+        self.stage='recovery_pending'
         require(not self.p.installed and not self.p.handles and not self.p.patches and self.p.lease is None,
-                'KV_GROUP_UNINSTALL_NOT_CONFIRMED')
+                'KV_GROUP_UNINSTALL_NOT_CONFIRMED:'+repr(result.get('errors',[])))
         self.stage='health_pending'
         return result
+
+    def retry_recovery(self):
+        require(self.stage=='recovery_pending','KV_GROUP_RETRY_REQUIRES_PENDING_RECOVERY')
+        return self.begin_recovery()
 
     def begin_health(self,request_id,prompt):
         require(self.stage=='health_pending' and not self.health_handles and not self.p.installed,
@@ -365,6 +374,7 @@ class KVGroupCoverage:
             all_targets_controlled_once=(len(self.executions)==len(self.identities)
                 and len({row['target_id'] for row in self.executions})==len(self.identities)),
             health=self.health_artifact,live_native_leases=int(self.p.lease is not None),
+            recovery_attempts=getattr(self,'recovery_attempts',[]),
             owned_hooks=len(self.p.handles)+len(self.health_handles),owned_api_patches=len(self.p.patches),
             public_qualification_granted=False)
         return result

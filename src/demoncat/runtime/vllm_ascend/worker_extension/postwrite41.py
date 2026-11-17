@@ -91,6 +91,7 @@ class Postwrite41WorkerProvider:
 
     def install(self):
         global _ACTIVE
+        from .postwrite_collector import owned_api_patch
         require(_ACTIVE is None and not self.installed, 'TAIL_COLUMN_OWNER_ALREADY_PRESENT')
         _ACTIVE = self
         try:
@@ -113,8 +114,9 @@ class Postwrite41WorkerProvider:
                 def wrapper(*args, _name=name, _original=original, **kwargs):
                     if self._inside():return self._consume(_name, _original, args, kwargs)
                     return _original(*args, **kwargs)
+                patch=owned_api_patch(self.api_module,name,original,wrapper)
                 setattr(self.api_module, name, wrapper)
-                self.patches.append((self.api_module, name, original, wrapper))
+                self.patches.append(patch)
             descriptor = inspect.getattr_static(self.device_operator, 'reshape_and_cache')
             original = getattr(self.device_operator, 'reshape_and_cache')
             def writer(*args, **kwargs):
@@ -122,8 +124,9 @@ class Postwrite41WorkerProvider:
                 if self._inside():self._writer(args, kwargs)
                 return result
             installed = staticmethod(writer)
+            patch=owned_api_patch(self.device_operator,'reshape_and_cache',descriptor,installed)
             setattr(self.device_operator, 'reshape_and_cache', installed)
-            self.patches.append((self.device_operator, 'reshape_and_cache', descriptor, installed))
+            self.patches.append(patch)
             self.installed = True
         except BaseException:
             self.close()
