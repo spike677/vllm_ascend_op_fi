@@ -3,6 +3,9 @@
 #include <cassert>
 #include <iostream>
 #include <thread>
+// Match the production global capacity; compilation must not unroll thousands
+// of nonzero Event default constructors into the load-time initializer.
+dcat26_inventory::Inventory<32768> production_capacity;
 int main() {
     using namespace dcat26_inventory;
     Inventory<5> inventory;
@@ -15,6 +18,12 @@ int main() {
     Event consumer{};consumer.kind=AddRmsExit;consumer.call=8;consumer.producer=8;
     inventory.append(consumer);
     Event record{};
+    assert(!production_capacity.read(0,&record));
+    production_capacity.append(writer);
+    assert(production_capacity.state().capacity==32768);
+    assert(production_capacity.read(0,&record));
+    assert(record.version==1 && record.size==sizeof(Event) && record.device==-1
+        && record.dtype==-1 && record.format==-1 && record.shape[7]==0 && record.residual_strides[7]==0);
     assert(inventory.read(0,&record) && record.call==call && record.registration==1);
     assert(inventory.read(2,&record) && record.cache==123 && record.registration==2);
     std::thread other([&] {for(int i=0;i<3;++i){inventory.run(true);inventory.append(writer);}});

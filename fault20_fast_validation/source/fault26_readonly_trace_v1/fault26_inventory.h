@@ -4,7 +4,9 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <mutex>
+#include <type_traits>
 
 namespace dcat26_inventory {
 enum Kind : uint32_t {
@@ -29,9 +31,13 @@ struct State {
     uint64_t add_rms_gws{0}, add_rms_enter{0}, add_rms_exit{0}, qmm_registration{0};
 };
 template <std::size_t Capacity> class Inventory {
+    static_assert(std::is_trivially_copyable<Event>::value, "Native event must remain a POD wire record");
     std::mutex mutex_;
     State state_{};
-    std::array<Event,Capacity> events_{};
+    // Store complete appended records as bytes. Constructing 32768 Events with
+    // nonzero default members can make GCC expand a huge global initializer.
+    // No event exists until append; read only exposes stored, complete records.
+    std::array<std::array<unsigned char,sizeof(Event)>,Capacity> events_{};
 public:
     Inventory() { state_.capacity=Capacity; }
     void run(bool qmm) {
@@ -52,7 +58,8 @@ public:
         case AddRmsExit:++state_.add_rms_exit;break;case QmmRegistration:++state_.qmm_registration;break;
         default:++state_.errors;
         }
-        if(state_.stored_events<Capacity) events_[state_.stored_events++]=event;
+        if(state_.stored_events<Capacity)
+            std::memcpy(events_[state_.stored_events++].data(),&event,sizeof(Event));
         else ++state_.overflow_events;
         return event.sequence;
     }
@@ -60,7 +67,7 @@ public:
     bool read(uint64_t index,Event* output) {
         std::lock_guard<std::mutex> lock(mutex_);
         if(!output || index>=state_.stored_events)return false;
-        *output=events_[index];return true;
+        std::memcpy(output,events_[index].data(),sizeof(Event));return true;
     }
 };
 } // namespace dcat26_inventory
