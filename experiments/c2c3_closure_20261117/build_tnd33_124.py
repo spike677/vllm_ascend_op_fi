@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import uuid
 
 
 def main():
@@ -30,11 +31,16 @@ def main():
     sdk_sha = hashlib.sha256(a.interfaces.read_bytes()).hexdigest()
     image = 'quay.io/ascend/vllm-ascend:v0.18.0'
     image_id = subprocess.check_output(['docker', 'image', 'inspect', '--format', '{{.Id}}', image], text=True).strip()
+    if image_id != 'sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0':
+        raise RuntimeError('REVIEWED_WORKER_IMAGE_CHANGED')
     mounts = [(a.source / 'fault_injection/native_adapters/attention28/fia', '/driver'),
               (official, '/input-source'), (patch / 'policy_source_manifest.json', '/policy.json'),
               (Path('/home/haoran/experiments/fault28/fault28-fia-graph-20261106/dependencies_a4'), '/input-dependencies'),
               (a.interfaces, '/sdk_interfaces.json'), (Path('/usr/bin/patch'), '/buildtools/patch')]
-    cmd = ['docker', 'run', '--rm', '--runtime=runc', '--network=none', '--cpus=4', '--memory=16g',
+    owner = uuid.uuid4().hex
+    cmd = ['docker', 'create', '--name', 'dcat-fd33-build-' + owner,
+           '--label', 'dcat.cpu-build-owner=' + owner,
+           '--runtime=runc', '--network=none', '--cpus=4', '--memory=16g',
            '-e', 'ASCEND_VISIBLE_DEVICES=void', '-e', 'PYTHONDONTWRITEBYTECODE=1']
     for src, dst in mounts:
         cmd += ['--mount', 'type=bind,src=' + str(src.resolve()) + ',dst=' + dst + ',readonly']
@@ -48,10 +54,39 @@ def main():
                    sdk_interfaces_sha256=sdk_sha, actual_npu_calls=0, status='BUILDING')
     record = a.out / 'controller.json'
     record.write_text(json.dumps(receipt, indent=2) + '\n')
-    with (a.out / 'process.log').open('xb') as log:
-        result = subprocess.run(cmd, stdout=log, stderr=subprocess.STDOUT, timeout=7200)
-    receipt.update(exit_code=result.returncode, status='BUILD_COMMAND_COMPLETED' if result.returncode == 0 else 'BUILD_FAILED')
-    record.write_text(json.dumps(receipt, indent=2) + '\n')
+    container = subprocess.check_output(cmd, text=True).strip()
+    receipt['container_id'] = container
+    def inspect_owned():
+        item, = json.loads(subprocess.check_output(['docker', 'inspect', container]))
+        if (item['Id'] != container or item['Image'] != image_id
+                or item['Config']['Labels'].get('dcat.cpu-build-owner') != owner
+                or item['HostConfig']['Runtime'] != 'runc'
+                or item['HostConfig']['NetworkMode'] != 'none'
+                or item['HostConfig']['Privileged']
+                or item['HostConfig'].get('Devices') or item['HostConfig'].get('DeviceRequests')):
+            raise RuntimeError('OWNED_DEVICE_FREE_BUILD_CONTAINER_CHANGED')
+        return item
+    try:
+        actual = inspect_owned()
+        receipt['devices'] = actual['HostConfig'].get('Devices') or []
+        record.write_text(json.dumps(receipt, indent=2) + '\n')
+        with (a.out / 'process.log').open('xb') as log:
+            result = subprocess.run(['docker', 'start', '-a', container], stdout=log,
+                                    stderr=subprocess.STDOUT, timeout=7200)
+        receipt.update(exit_code=result.returncode,
+                       status='BUILD_COMMAND_COMPLETED' if result.returncode == 0 else 'BUILD_FAILED')
+    except BaseException as error:
+        receipt.update(status='BUILD_CONTROLLER_FAILED', error=repr(error))
+        raise
+    finally:
+        actual = inspect_owned()
+        if actual['State']['Running']:
+            subprocess.run(['docker', 'stop', '--time', '10', container], check=True, timeout=30,
+                           stdout=subprocess.DEVNULL)
+        receipt['final_state'] = inspect_owned()['State']
+        subprocess.run(['docker', 'rm', container], check=True, timeout=30, stdout=subprocess.DEVNULL)
+        receipt['owned_container_removed'] = True
+        record.write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps({k: receipt[k] for k in ('status', 'exit_code', 'actual_npu_calls')}))
     return result.returncode
 
