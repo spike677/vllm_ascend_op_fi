@@ -146,7 +146,7 @@ class ReceiptTests(unittest.TestCase):
         result = self.verify(expected_inputs=self.inspection)
         self.assertFalse(result["native_qualified"])
         self.assertEqual(result["actual_npu_calls"], 0)
-        self.assertEqual(result["native_directory"], str(self.native))
+        self.assertEqual(result["native_directory"], str(self.native.resolve()))
 
     def test_mutated_artifact_is_rejected(self):
         with (self.native / self.recipe.runtime).open("ab") as stream:
