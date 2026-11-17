@@ -1,5 +1,6 @@
 """Actual CPU dispatcher contracts; no Native or scheduler qualification."""
 import gc
+import copy
 import unittest
 
 import torch
@@ -165,6 +166,75 @@ class RequestRowProvenanceTests(unittest.TestCase):
                 graph.end()
             self.assertTrue(graph.active)
         graph.end()
+
+    def seed_nested(self, graph, x):
+        proof = dict(verified=True, source='EXPLICIT_NESTED_CPU_FIXTURE', actual_rows=dict(
+            request_ids=['nested-' + str(i) for i in range(8)], logical_ids=list(range(8)),
+            prefixes=[dict(prompt=[i, 10], output=[20]) for i in range(8)]),
+            norm=dict(metadata=dict(shape=[8, 4]), source_paths=['cpu-only']))
+        graph.seed(x, proof)
+        return proof
+
+    def test_original_seed_nested_lists_cannot_relabel_bound_or_derived_rows(self):
+        x = torch.ones(8, 4)
+        graph = self.graph(x)
+        original = self.seed_nested(graph, x)
+        expected = copy.deepcopy(original)
+        original['actual_rows']['request_ids'].reverse()
+        original['actual_rows']['prefixes'][0]['prompt'][0] = 999
+        original['norm']['metadata']['shape'][0] = 999
+        original['norm']['source_paths'].append('changed')
+        self.assertEqual(graph.query(x)['actual_rows'], expected['actual_rows'])
+        derived = x.clone()
+        self.assertEqual(graph.query(derived)['actual_rows'], expected['actual_rows'])
+        self.assertEqual(graph.report()['nodes'][1]['evidence'], expected)
+
+    def test_query_nested_values_cannot_relabel_rows_or_rewrite_tensor_binding(self):
+        x = torch.ones(8, 4)
+        graph = self.graph(x)
+        self.seed_nested(graph, x)
+        returned = graph.query(x)
+        expected = copy.deepcopy(returned)
+        returned['actual_rows']['request_ids'].reverse()
+        returned['actual_rows']['prefixes'][0]['output'].append(99)
+        returned['tensor']['shape'][0] = 999
+        returned['tensor']['stride'][1] = 0
+        returned['node_id'] = -1
+        self.assertEqual(graph.query(x), expected)
+        derived = x + 1
+        self.assertEqual(graph.query(derived)['actual_rows'], expected['actual_rows'])
+
+    def test_report_nested_node_event_and_parameter_metadata_are_independent_snapshots(self):
+        x = torch.ones(8, 4)
+        graph = self.graph(x)
+        self.seed_nested(graph, x)
+        owner = torch.nn.Module()
+        owner.register_parameter('bias', torch.nn.Parameter(torch.ones(4), requires_grad=False))
+        graph.register_broadcast_parameter(owner, 'bias', owner.bias, kind='_parameters')
+        output = x + owner.bias
+        returned = graph.report()
+        expected = copy.deepcopy(returned)
+        returned['nodes'][1]['evidence']['actual_rows']['request_ids'].reverse()
+        returned['nodes'][1]['metadata']['shape'][0] = 999
+        returned['nodes'][1]['rows_sha256'] = '0' * 64
+        returned['events'][-1]['broadcast_parameters'][0]['metadata']['stride'][0] = 99
+        returned['events'][-1]['inputs'][0]['shape'][0] = 99
+        returned['errors'].append('fabricated')
+        self.assertEqual(graph.report(), expected)
+        self.assertTrue(graph.query(x)['verified'])
+        self.assertTrue(graph.query(output)['verified'])
+        self.assertTrue(graph.query(x + owner.bias)['verified'])
+
+    def test_row_and_node_digest_mismatch_refuses_further_provenance(self):
+        x = torch.ones(8, 4)
+        graph = self.graph(x)
+        # Internal corruption detection is not a Python sandbox guarantee.
+        graph.proofs[id(x)]['rows']['request_ids'].reverse()
+        self.assertFalse(graph.query(x)['verified'])
+        self.assertFalse(graph.query(x + 1)['verified'])
+        self.seed_nested(graph, x)
+        graph.proofs[id(x)]['node']['parents'].append(999)
+        self.assertFalse(graph.query(x)['verified'])
 
 
 if __name__ == '__main__':

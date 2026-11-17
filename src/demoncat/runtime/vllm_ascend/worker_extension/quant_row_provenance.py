@@ -29,6 +29,11 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
 
 
+def snapshot(value):
+    """Detach every nested JSON value at the observation/public API boundary."""
+    return json.loads(json.dumps(value, allow_nan=False))
+
+
 def metadata(tensor):
     storage = tensor.untyped_storage()
     try:
@@ -89,20 +94,22 @@ class RequestRowProvenance(TorchDispatchMode):
         if record is None or record['tensor']() is not tensor:
             return None
         actual = metadata(tensor)
-        if actual != record['metadata'] or self.epochs.get(self.storage_key(actual), 0) != record['write_epoch']:
+        if (digest(record['rows']) != record['node']['rows_sha256'] or digest(record['node']) != record['node_sha256']
+                or actual != record['metadata'] or self.epochs.get(self.storage_key(actual), 0) != record['write_epoch']):
             self.proofs.pop(id(tensor), None)
             return None
         return record
 
     def _bind(self, tensor, *, rows, parents, operator, evidence):
+        rows, evidence = snapshot(rows), snapshot(evidence)
         meta = metadata(tensor)
         require(tensor.ndim >= 2 and tensor.shape[0] == len(rows['request_ids']), 'ACTUAL_ROW_BOUNDARY_GEOMETRY_CHANGED')
         node = dict(node_id=len(self.nodes) + 1, operator=operator, metadata=meta, parents=list(parents),
             rows_sha256=digest(rows), evidence=evidence, write_epoch=self.epochs.get(self.storage_key(meta), 0))
         self.nodes.append(node)
         self.proofs[id(tensor)] = dict(tensor=weakref.ref(tensor), metadata=meta, rows=rows, node=node,
-            write_epoch=node['write_epoch'])
-        return node
+            node_sha256=digest(node), write_epoch=node['write_epoch'])
+        return snapshot(node)
 
     def seed(self, tensor, proof):
         require(self.active and not self.errors and not self.overflow and proof.get('verified') is True,
@@ -135,9 +142,9 @@ class RequestRowProvenance(TorchDispatchMode):
         if record is None:
             return dict(verified=False, reason='NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN',
                 shape_is_not_request_row_proof=True, tensor=metadata(tensor))
-        return dict(verified=True, source='ACTUAL_DISPATCHER_ROW_PRESERVING_CHAIN', forward_id=self.forward_id,
+        return snapshot(dict(verified=True, source='ACTUAL_DISPATCHER_ROW_PRESERVING_CHAIN', forward_id=self.forward_id,
             node_id=record['node']['node_id'], actual_rows=record['rows'], tensor=record['metadata'],
-            observed_write_epoch=record['write_epoch'], native_qualified=False)
+            observed_write_epoch=record['write_epoch'], native_qualified=False))
 
     def projection(self, tensor, output, *, evidence):
         """Only called after exact Native-DQ and public owned-QMM chain checks."""
@@ -280,9 +287,9 @@ class RequestRowProvenance(TorchDispatchMode):
         return self.report()
 
     def report(self):
-        return dict(schema='demoncat.quant.actual_row_provenance.v1', forward_id=self.forward_id,
+        return snapshot(dict(schema='demoncat.quant.actual_row_provenance.v1', forward_id=self.forward_id,
             scope='ACTUAL_DECODE_THREAD_INCLUDING_READONLY_OBSERVER_READBACKS',
             actual_calls=self.total, retained_calls=len(self.events), missing_calls=self.overflow, errors=self.errors,
             complete=not self.errors and not self.overflow and all(e['original_calls'] == 1 and e['status'] == 'OBSERVED' for e in self.events),
             events=self.events, nodes=self.nodes, active=self.active, native_qualified=False,
-            unknown_edges=[e['sequence'] for e in self.events if not e['row_preserving']])
+            unknown_edges=[e['sequence'] for e in self.events if not e['row_preserving']]))

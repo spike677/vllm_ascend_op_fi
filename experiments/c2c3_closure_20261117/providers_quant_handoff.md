@@ -103,7 +103,7 @@ The row operator trace includes the observer's read-only tensor readback/copy
 operations on that thread; its total is not relabelled as a model-op count.
 The separate Native/public census remains the projection denominator.
 
-Twenty-eight focused CPU contracts passed, including actual CPU model forwards
+Thirty-two focused CPU contracts passed, including actual CPU model forwards
 with explicit Native/scheduler fixtures. Two successive projections now have
 four observed row mappings across two CPU decodes. Inserting an actual
 same-shape, same-value row permutation preserves all four Native calls while
@@ -112,6 +112,13 @@ they do not prove any natural additional target. Other contracts cover unknown
 binary row data, conflicting request order, parameter mutation, aliases with
 different Storage objects, missing inference version counters, stale versions,
 object reuse, capacity loss and refusal to pop another dispatcher owner.
+Row mappings and evidence are copied deeply at binding time. Every subsequent
+lookup checks the frozen row digest and full node digest before reusing the
+tensor proof. `query()` and `report()` return independent nested snapshots, so
+mutating the original scheduler mapping or returned rows, metadata, node hashes
+or parameter metadata cannot relabel an existing proof. Four additional
+contracts cover these API boundaries and digest corruption detection; this is
+not a promise to sandbox arbitrary code that edits private Python internals.
 
 This increment changes only Python observation. The existing matched Native
 bundle is `/home/17-fault-c2c3-20261117/build-quant-inventory-a1/quant-v2`, with
