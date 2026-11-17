@@ -1,0 +1,99 @@
+{
+  "schema": "demoncat.independent_fa_a2_partial_review.v1",
+  "original_status": "FAILED_WITH_EVIDENCE",
+  "original_result": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a2/fa-fresh-b8-joint-sequence/run/result.json",
+    "bytes": 1987,
+    "sha256": "714b2efef19687b6ce74da6d72b1c5c30b11485ed7c5c6d051fbbf9ae8075b06"
+  },
+  "source_manifest": {
+    "path": "/home/17-fault-c2c3-20261117/source-a31/source_manifest.json",
+    "bytes": 112431,
+    "sha256": "50b4dea58f04b1f999b80704ff4ed10a609f0cc683fee5952bee64477b2d1d05"
+  },
+  "validator_source": {
+    "path": "/home/17-fault-c2c3-20261117/source-a31/fault_injection/native_adapters/attention28/fa/launch.py",
+    "bytes": 15613,
+    "sha256": "0bbd8f99d61570136a76ab40f1995eaa6eedc253a377e57aba75552f4b043953"
+  },
+  "completion": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/completion.json",
+    "bytes": 218371,
+    "sha256": "7189c077dad9411e53240d6a0cc9190477d00433d5b1325833c0fcb26c7cac5d"
+  },
+  "schema_file": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/fa_public_schema.json",
+    "bytes": 29208,
+    "sha256": "ed9a39c5fe780f5cbcd8ce3f0f66a09f1cee896c7b583aa1e318dca49c16b364"
+  },
+  "decoder": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-fresh-build-a1/build/run/evidence/fa_pod_decoder",
+    "bytes": 114864,
+    "sha256": "17adafc55a6ab899397cf95903114925d9975896012d4837d5a59f0a6dd9417a"
+  },
+  "runtime_log": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a2/fa-fresh-b8-joint-sequence/runtime/runtime.jsonl",
+    "bytes": 5508,
+    "sha256": "f9e7d2e01eee58d6ea05aa5b414fdda6976cdc99caccaa47f0c444e11fe7abab"
+  },
+  "host_log": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a2/fa-fresh-b8-joint-sequence/run/0-baseline/host.jsonl",
+    "bytes": 10784,
+    "sha256": "a06ad53f607e2fd8757dec32fa61261c126d2f40826f5cb8baba301cde11f51a"
+  },
+  "raw_tiling": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a2/fa-fresh-b8-joint-sequence/run/0-baseline/final-tiling.bin",
+    "bytes": 1464,
+    "sha256": "83fe04ff0781557e66f333520f2e7fad72540ffe8e7b73253c3fab66224661a1"
+  },
+  "registered_binary": {
+    "path": "/home/17-fault-c2c3-20261117/fa28-launch-short-a2/fa-fresh-b8-joint-sequence/runtime/registered-1-1.bin",
+    "bytes": 143008,
+    "sha256": "967265862973a761ae7de2c7b54600e246f067898cd2c97f297aa9a12e784eb0"
+  },
+  "baseline_launch": {
+    "call_id": "94aa924068c549809bf23f4452e1deb3",
+    "pid": 1,
+    "tid": 1,
+    "generation": 1,
+    "registered_key": "22619644976",
+    "block_dim": 16,
+    "schedule_mode": 0,
+    "args_size": 1720,
+    "public_tiling_pointer_offset": 200,
+    "tiling_data_offset": 216,
+    "post_launch_sync_events": 2,
+    "all_runtime_returns_zero": true,
+    "registered_elf_matches_fresh_build": true,
+    "host_bytes_equal_actual_final_argument_bytes": true,
+    "native_passthrough": true
+  },
+  "public_decode": {
+    "field_count": 205,
+    "raw_size": 1464,
+    "opaque_bytes": 192,
+    "cpp_document_keys": [
+      "fields",
+      "raw_size",
+      "schema"
+    ],
+    "cpp_fields_equal_independent_struct_decode": true,
+    "whole_envelope_equals_flat_field_map": false,
+    "decoder_stdout_sha256": "c5bf00645b0596a3733628bac4b254aef0aaf95b8f3699fc9da63fa485dd8d1e"
+  },
+  "actual_baseline_strategy": {
+    "M": 128,
+    "S2": 128,
+    "nRatio": 8,
+    "batch": 8
+  },
+  "diagnosis": "PYTHON_COMPARED_CPP_ENVELOPE_TO_FLAT_FIELD_MAP_AFTER_SUCCESSFUL_BASELINE_LAUNCH",
+  "actual_npu_calls_by_this_audit": 0,
+  "private_output_tensors_read": false,
+  "complete_bf_off_verified": false,
+  "model_or_worker_qualified": false,
+  "c2": false,
+  "c3": false,
+  "first_statistics_difference": "NOT_EVALUATED_NO_BF_PAIR",
+  "qualification_granted": false
+}
