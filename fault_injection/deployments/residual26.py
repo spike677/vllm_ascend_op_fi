@@ -26,6 +26,11 @@ class FiaContext(C.Structure):
 QCALL=C.CFUNCTYPE(C.c_int,C.POINTER(QmmContext),C.c_uint64)
 FCALL=C.CFUNCTYPE(C.c_int,C.POINTER(FiaContext))
 
+class FiaState(C.Structure):
+    _fields_=[('version',C.c_uint32),('size',C.c_uint32)]+[(name,C.c_uint64) for name in
+        ('runtime_ready','allowed','registered','owner_thread','callback_active','prepared',
+         'queued_executors','pending_consumers','active_consumer','environment_enabled')]
+
 def allocation_pair(snapshot,residual,output,residual_bytes,output_bytes):
     """Require two distinct active blocks in one actual allocator segment."""
     for segment in snapshot:
@@ -69,6 +74,22 @@ class Residual26Runtime:
         # A retained tensor from the preceding prefill is not a producer for
         # the next decode. Never extend its eligibility across root calls.
         self.retained.clear();self.forward_index+=1;self.forward_active=True
+
+    def native_state(self):
+        """Actual additive FIA ABI; absence is not inferred idle state."""
+        if not self.fia:raise UnsupportedCall('QMM native state ABI not adapted')
+        fn=getattr(self.lib,'dcat26f_state_v1',None)
+        if fn is None:raise UnsupportedCall('Native26 common Worker state ABI missing')
+        fn.argtypes=[C.POINTER(FiaState)];fn.restype=C.c_int
+        packet=FiaState(version=1,size=C.sizeof(FiaState))
+        if fn(C.byref(packet)) or packet.version!=1 or packet.size!=C.sizeof(FiaState):
+            raise UnsupportedCall('Native26 state ABI differs')
+        result={name:int(getattr(packet,name)) for name,_ in packet._fields_}
+        if not result['runtime_ready'] or not result['allowed']:
+            raise UnsupportedCall('Native26 deployment is not ready/allowed')
+        if result['registered'] and not result['owner_thread']:
+            raise UnsupportedCall('Foreign native26 owner thread')
+        return result
 
     def finish_forward(self,module,args,result):
         pending=bool(self.pending())

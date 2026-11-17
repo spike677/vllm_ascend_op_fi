@@ -3,6 +3,13 @@
 def provider_capabilities():
     return [
         {
+            'mechanism': '26.fia_destination',
+            'implementation_version': '1',
+            'operators': ['aclnnFusedInferAttentionScoreV3'],
+            'attachment': 'reviewed_process_preload',
+            'execution': 'trusted_serial_fresh_prefill_deployment_required',
+        },
+        {
             'mechanism': '20.buffer_substitute',
             'implementation_version': '1',
             'operators': ['aclnnMatmulWeightNz', 'aclnnQuantMatmulWeightNz'],
@@ -24,13 +31,16 @@ def resolve_provider(mechanism, implementation_version, worker, model, identity)
 
     resolve(mechanism)
     if implementation_version != '1' or mechanism not in (
-        '20.buffer_substitute', '39.matmul_range'
+        '20.buffer_substitute', '39.matmul_range', '26.fia_destination'
     ):
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
     if mechanism == '20.buffer_substitute':
         from .fault20 import Fault20Provider
 
         return Fault20Provider(worker, model, identity)
+    if mechanism == '26.fia_destination':
+        from .fault26 import Fault26FiaProvider
+        return Fault26FiaProvider(worker, model, identity)
     from .fault39 import Fault39Provider
 
     return Fault39Provider(worker, model, identity)

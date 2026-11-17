@@ -7,13 +7,13 @@
 
 ## 当前统一接入
 
-[2026-11-17 P3 独立统计诊断与 P4 推进](experiments/p3p4_closure_20261117/README.md)：15/17/18 的原严格失败保留；新增调用身份、参数变化和观察边界诊断，571项CPU测试通过。
+[2026-11-17 P3 独立统计诊断与 P4 推进](experiments/p3p4_closure_20261117/README.md)：15/17/18 的原严格失败保留；26 FIA 新增真实 SmolLM2/GLM4 公共 Worker 的 writer→consumer→恢复，29/39次适用调用，581项CPU测试通过。[FIA限定验收与统计限制](experiments/p3p4_closure_20261117/FIA26_REPORT.md)
 
 [2026-11-17 真实 Worker 正向闭环](experiments/worker_positive_20261117/README.md) · [可信 Serving Replay 接口](docs/worker_extension/host_driven_replay.md)
 
 从 `dcbef7a0` 继续，Fault20 WeightNz 和 Fault39 MatMul 已在标准 vLLM 创建的临时 Worker、安装后的 wheel、完整 Qwen3-0.6B 上取得限定单点的真实注入和 OFF 恢复证据。Host 使用真实 enqueue/scheduler ID 逐阶段推进，Extension 不创建 Worker、不替换核心执行方法。Fault20 使用明确披露的 NZ 部署和 controlled PTA 路径；不能把它称为默认部署已通过。
 
-Fault39 的独立 B/F 原始 statistics/mix 在固定容差下，首个可观测差异为 `Functional.linear.112.forward/output/0` 的 Max：17.625→+Inf；之前的不可观测项保留。GLM-4-9B-0414 和真正 DeepSeek-V2-Lite 预训练模型已取得正常 NPU 推理证据，尚未授予它们故障注入资格。新采集原件留在124，GitHub仅发布实现、总结及哈希。
+Fault39 的独立 B/F 原始 statistics/mix 在固定容差下，首个可观测差异为 `Functional.linear.112.forward/output/0` 的 Max：17.625→+Inf；之前的不可观测项保留。GLM-4-9B-0414 新增26 FIA限定故障证据；真正 DeepSeek-V2-Lite 当前为正常 NPU 推理和只读观察。新采集原件留在124，GitHub仅发布实现、总结及哈希。
 
 [2026-11-16 的17条审计报告](docs/fault_closure_report.md) · [当时逐项矩阵](experiments/overnight_20261116/fault_matrix.json) · [当时源码与证据校验](experiments/overnight_20261116/checksums.json)
 

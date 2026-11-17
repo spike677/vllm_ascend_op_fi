@@ -1,0 +1,129 @@
+{
+  "status": "PASS_NEW_RUN_OBSERVATION",
+  "fault_enabled": false,
+  "scope": "NEW_RUN_ALLOCATION_PROVENANCE_NOT_HISTORICAL_POINTER_PROOF",
+  "before": {
+    "tokens": [
+      2
+    ],
+    "text": "",
+    "logprobs": [
+      {
+        "2": -0.4538502097129822,
+        "198": -1.828850269317627,
+        "378": -3.328850269317627,
+        "669": -4.328850269317627,
+        "3717": -4.453850269317627
+      }
+    ]
+  },
+  "setup": {
+    "actual_model": "vllm.model_executor.models.llama.LlamaForCausalLM",
+    "sources": [
+      {
+        "kind": "allocation",
+        "path": "/vllm-workspace/vllm/vllm/model_executor/layers/attention/attention.py",
+        "sha256": "990ead07c828e26192ca46b4b8abae7a6792f67c27510705ad7b483035f3631c",
+        "statements": {
+          "419": "output = torch.empty(output_shape, dtype=output_dtype, device=query.device)"
+        }
+      },
+      {
+        "kind": "copy",
+        "path": "/vllm-workspace/vllm-ascend/vllm_ascend/attention/attention_v1.py",
+        "sha256": "bbe69c3015ee15789dea0d6ec9795243458b68494294c4c023ed5a5d665c550b",
+        "statements": {
+          "758": "output[:batch_size] = attn_output[:batch_size]"
+        }
+      },
+      {
+        "kind": "copy",
+        "path": "/vllm-workspace/vllm-ascend/vllm_ascend/attention/attention_v1.py",
+        "sha256": "bbe69c3015ee15789dea0d6ec9795243458b68494294c4c023ed5a5d665c550b",
+        "statements": {
+          "980": "output[:num_tokens] = attn_output[:num_tokens]",
+          "974": "output[:num_tokens] = attn_output[:num_tokens]"
+        }
+      },
+      {
+        "kind": "copy",
+        "path": "/vllm-workspace/vllm-ascend/vllm_ascend/attention/attention_v1.py",
+        "sha256": "bbe69c3015ee15789dea0d6ec9795243458b68494294c4c023ed5a5d665c550b",
+        "statements": {
+          "839": "output[:num_tokens] = attn_output[:num_tokens]",
+          "774": "output[:num_tokens] = attn_output[:num_tokens]"
+        }
+      }
+    ],
+    "fault_enabled": false
+  },
+  "observed": [
+    {
+      "tokens": [
+        2
+      ],
+      "text": "",
+      "logprobs": [
+        {
+          "2": -0.4538502097129822,
+          "198": -1.828850269317627,
+          "378": -3.328850269317627,
+          "669": -4.328850269317627,
+          "3717": -4.453850269317627
+        }
+      ]
+    },
+    {
+      "tokens": [
+        2
+      ],
+      "text": "",
+      "logprobs": [
+        {
+          "2": -0.4538502097129822,
+          "198": -1.828850269317627,
+          "378": -3.328850269317627,
+          "669": -4.328850269317627,
+          "3717": -4.453850269317627
+        }
+      ]
+    }
+  ],
+  "trace": {
+    "allocations": 60,
+    "copies": 120,
+    "error": null,
+    "linked": 120,
+    "initially_nan": 0,
+    "prewrite_nan": 0,
+    "all_full_finite_copies": true
+  },
+  "after": {
+    "tokens": [
+      2
+    ],
+    "text": "",
+    "logprobs": [
+      {
+        "2": -0.4538502097129822,
+        "198": -1.828850269317627,
+        "378": -3.328850269317627,
+        "669": -4.328850269317627,
+        "3717": -4.453850269317627
+      }
+    ]
+  },
+  "inference_unchanged": true,
+  "raw_hashes": {
+    "result.json": "d430f20b1b3e062ba9734a90c85288af3567e74b08adf2229f69cc7d43d9485f",
+    "allocation.json": "450b1173e0136f5bc053f5e78631b9d2c526c3c08ea3edeb25325cd88194e1fc"
+  },
+  "private_report": "/home/p3p4-closure-20261117/allocation-smollm-a2/allocation-smollm/allocation.json",
+  "raw_data_published": false,
+  "copy_observations": {
+    "total_assignments": 120,
+    "allocation_unchanged_before_assignment": 60,
+    "same_storage": 120,
+    "full_overwrite": 120
+  }
+}

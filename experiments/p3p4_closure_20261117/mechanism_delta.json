@@ -2,16 +2,17 @@
   "schema": "demoncat.p3p4.mechanism_delta.v1",
   "baseline": "d1c8a20c8d3f832b911011628e0901766be36cea",
   "previous_matrix_sha256": "6413779ec7027e59b18bd3ffc83c486b2b69064a28efde38cfa48022b74280cd",
-  "new_common_worker_positive_mechanisms": 2,
+  "new_common_worker_positive_mechanisms": 3,
   "all_eligible_qualified_mechanisms": 0,
   "new_raw_statistics_published": false,
   "models": {
     "glm": {
-      "status": "PASS_PRETRAINED_NPU_INFERENCE_NOT_FAULT_ACCEPTANCE",
+      "status": "PASS_SCOPED_FIA26_WRITER_CONSUMER_RECOVERY_STATISTICS_LIMITS_RETAINED",
       "actual_model_class": "vllm.model_executor.models.glm4.Glm4ForCausalLM",
       "actual_model_type": "glm4",
-      "native_fault_qualified": false,
-      "evidence": "summaries/glm-admission.json"
+      "native_fault_qualified": true,
+      "evidence": "summaries/fia26-glm-fault.json",
+      "scope": "TP1 BF16 eager one fresh prefill per phase; no public all_eligible"
     },
     "deepseek": {
       "status": "PASS_PRETRAINED_NPU_INFERENCE_NOT_FAULT_ACCEPTANCE",
@@ -141,27 +142,43 @@
       "mechanism": "26.residual_stomp",
       "previous_current_level": "CPU_VERIFIED",
       "previous_result": "保留历史推理闭环；NaN 位于写前目标统计，来源分配尚未证明，严格首差仍阻塞。",
-      "change": "UNCHANGED_FROM_D1C8A20",
+      "change": "NEW_RUN_ALLOCATION_TRACE_ADDED_HISTORICAL_NAN_UNRESOLVED",
       "common_worker_all_eligible": false,
       "new_common_worker_fault_verified": false,
       "remaining": [
         "RANK1_FIRST_DIFF_NAN_BLOCKED",
         "COMMON_WORKER_ADAPTER_PENDING"
       ],
-      "next_action": "进一步观察写前destination的实际allocation/初始化生命周期；如需全新采集应保持原始记录并独立复核，不靠删除写前NaN通过。"
+      "next_action": "进一步观察写前destination的实际allocation/初始化生命周期；如需全新采集应保持原始记录并独立复核，不靠删除写前NaN通过。",
+      "evidence": [
+        "summaries/allocation-smollm.json",
+        "summaries/allocation-glm.json"
+      ]
     },
     {
       "mechanism": "26.fia_destination",
       "previous_current_level": "CPU_VERIFIED",
       "previous_result": "保留历史真实推理 writer/consumer 证据；共享 Worker 宿主适配待接入。",
-      "change": "UNCHANGED_FROM_D1C8A20",
+      "change": "COMMON_WORKER_REAL_PRETRAINED_FIA_BFOFF",
       "common_worker_all_eligible": false,
-      "new_common_worker_fault_verified": false,
+      "new_common_worker_fault_verified": true,
       "remaining": [
-        "COMMON_WORKER_ADAPTER_PENDING",
-        "OTHER_LAYOUTS_UNVERIFIED"
+        "OTHER_LAYOUTS_UNVERIFIED",
+        "CONTINUOUS_GENERATION_UNVERIFIED",
+        "PUBLIC_ALL_ELIGIBLE_UNQUALIFIED",
+        "GLM_SELF_NONFINITE_UNCOMPARABLE",
+        "WHOLE_CACHE_POOL_NOT_RESTORED"
       ],
-      "next_action": "为共用Extension增加部署factory与trusted replay，保留真实consumer完成/恢复门禁。"
+      "next_action": "Preserve raw NaN and OFF pool statistics; qualify any new scheduling/layout independently.",
+      "scope": [
+        "SmolLM2-135M / actual Llama",
+        "GLM-4-9B-0414 / actual Glm4",
+        "CANN8.5.1 TP1 BF16 eager short single-request prefill"
+      ],
+      "evidence": [
+        "summaries/fia26-smollm-fault.json",
+        "summaries/fia26-glm-fault.json"
+      ]
     },
     {
       "mechanism": "quant.batch_shared_scale",
@@ -289,7 +306,12 @@
   "retained_failures": [
     "15/17/18 strict ALIGNMENT_MISMATCH",
     "26 residual rank1 pre-write NaN and allocation initialization unproven",
-    "Earlier same-Worker different-phase KV-slot statistics first difference"
+    "Earlier same-Worker different-phase KV-slot statistics first difference",
+    "26 FIA early observer cleanup ownership failure",
+    "26 FIA early SmolLM B/F KV capacity shape mismatch",
+    "26 FIA GLM lossless and baseline self NaN uncomparable",
+    "26 FIA OFF whole-cache/token-pool statistical differences",
+    "Allocation observer first attempt found no copy calls"
   ],
   "source_of_truth": "Actual scoped receipts; family names and historical qualification are not inherited",
   "phase": "P3_COMPLETE_P4_IN_PROGRESS"

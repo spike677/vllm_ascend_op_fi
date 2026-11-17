@@ -45,6 +45,8 @@
 3. batch_shared_scale：真实请求到 row 的映射，以及逐行 scale/Q 证据。
 4. 33：分页/KV 对应、连续生成、实际命中和 OFF 恢复，独立报告首差。
 
-当前仍在准备 P4；历史 Provider 的通过结果不自动升级为本次公共 Worker 验收。
-GLM-4-9B-0414 和真实 DeepSeek-V2-Lite 的正常预训练 NPU 推理已在上一阶段通过；尚无本阶段故障验收。
+26 FIA 已完成真实 SmolLM2/GLM4 的公共 Worker writer→consumer→恢复限定验收，详见 [报告](FIA26_REPORT.md)。
+实际适用调用分别29/39次，OFF完整 hidden/logits 精确恢复；统计 NaN、不可观测项和整个缓存池未恢复均单列，不能称为所有统计通过。
+GLM 已有本机制的预训练模型证据；真正 DeepSeek-V2-Lite 当前仍只有正常推理和只读观察，未获得故障资格。
+26 residual 的[分配调查](ALLOCATION_REPORT.md)已在两个真实模型证明新运行的分配→赋值链，但没有复现写前NaN，旧rank1缺口保留。batch逐行量化与33连续生成仍在推进。历史 Provider 结果不自动升级为本次公共 Worker 验收。
 全部17条仍未取得公共 `all_eligible` 资格。使用一张空闲卡、共享锁及每 case 门禁，不停止外部任务。

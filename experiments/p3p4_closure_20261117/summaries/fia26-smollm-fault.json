@@ -1,0 +1,565 @@
+{
+  "schema": "demoncat.p4.fia26.summary.v1",
+  "status": "PASS_COMMON_FIA26_BFOFF",
+  "case": "/home/p3p4-closure-20261117/fia26-formal-and-allocation-a1/common26-smollm-fault",
+  "actual_model_class": "vllm.model_executor.models.llama.LlamaForCausalLM",
+  "model_type": "llama",
+  "baseline_control": false,
+  "deployment": {
+    "num_gpu_blocks_override": 64,
+    "reason": "Fixed B/F cache capacity; not inferred from fluctuating free memory"
+  },
+  "common_worker": true,
+  "installed_source_sha256": "305b197863e8c9baae5f8a2b15a93f69f159d06bbe9d5ee99294bb19efac40b7",
+  "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+  "raw_data_published": false,
+  "common_worker_all_eligible": false,
+  "core_methods_replaced": false,
+  "workers_created_by_extension": 0,
+  "recovered": true,
+  "phases": [
+    {
+      "phase": "reference",
+      "hidden_finite": true,
+      "logits_finite": true,
+      "hidden_changed": false,
+      "logits_changed": false,
+      "input_sha256": "d6f7ca0c2d9dc3168bd87c27be533c087a1eb80aca65ed291ba602a1951899db",
+      "hidden_sha256": "60fb884bc3088054a9989f3ac3da239fe5cb066c148e52d23bd5d3d26a28606b",
+      "logits_sha256": "69400257a6148c7fec562f4789a25bf08b0cf155369393d31ffeb294781e634b",
+      "top1": [
+        2
+      ],
+      "generated_tokens": [
+        2
+      ],
+      "generated_text": "",
+      "actual_scheduler_driver_mapping": true,
+      "actual_request_id_sha256": "c34f8568ff541c4a90d51db5ae7b5c1918be1df71d0a51e6c972db239c667ad3"
+    },
+    {
+      "phase": "lossless",
+      "hidden_finite": true,
+      "logits_finite": true,
+      "hidden_changed": false,
+      "logits_changed": false,
+      "input_sha256": "d6f7ca0c2d9dc3168bd87c27be533c087a1eb80aca65ed291ba602a1951899db",
+      "hidden_sha256": "60fb884bc3088054a9989f3ac3da239fe5cb066c148e52d23bd5d3d26a28606b",
+      "logits_sha256": "69400257a6148c7fec562f4789a25bf08b0cf155369393d31ffeb294781e634b",
+      "top1": [
+        2
+      ],
+      "generated_tokens": [
+        2
+      ],
+      "generated_text": "",
+      "actual_scheduler_driver_mapping": true,
+      "actual_request_id_sha256": "d4484dd0dae3918abe405242485e42c05e88404f7550ba75504c302536b5ed9a",
+      "native_claims": 29,
+      "completed": 29,
+      "all_native_pass": true,
+      "coverage": {
+        "candidates": {
+          "model.layers.0.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 0
+          },
+          "model.layers.1.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.2.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.3.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.4.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.5.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.6.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.7.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.8.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.9.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.10.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.11.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.12.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.13.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.14.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.15.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.16.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.17.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.18.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.19.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.20.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.21.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.22.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.23.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.24.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.25.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.26.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.27.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.28.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.29.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          }
+        },
+        "all_observed_supported_calls_routed": false,
+        "all_discovered_candidates_covered": false,
+        "cleanup_completed": true
+      },
+      "pending": 0
+    },
+    {
+      "phase": "comparison",
+      "hidden_finite": true,
+      "logits_finite": true,
+      "hidden_changed": true,
+      "logits_changed": true,
+      "input_sha256": "d6f7ca0c2d9dc3168bd87c27be533c087a1eb80aca65ed291ba602a1951899db",
+      "hidden_sha256": "b2866fd36318376aafe3af7a36f1be883673e3067aff8451345a9b7be86f93f7",
+      "logits_sha256": "0fd1714e6b2142b713cf7e24b635d6d38c0f01d1cb1c0953063b78ad4a1fd069",
+      "top1": [
+        14423
+      ],
+      "generated_tokens": [
+        14423
+      ],
+      "generated_text": " affili",
+      "actual_scheduler_driver_mapping": true,
+      "actual_request_id_sha256": "4082b4c1785ad711be0d0f0127bbeb156a3c0772778486e3b0545db9a564f95b",
+      "native_claims": 29,
+      "completed": 29,
+      "all_native_pass": true,
+      "coverage": {
+        "candidates": {
+          "model.layers.0.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 0
+          },
+          "model.layers.1.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.2.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.3.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.4.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.5.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.6.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.7.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.8.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.9.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.10.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.11.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.12.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.13.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.14.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.15.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.16.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.17.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.18.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.19.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.20.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.21.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.22.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.23.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.24.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.25.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.26.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.27.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.28.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          },
+          "model.layers.29.self_attn.attn": {
+            "candidate_kinds": [
+              "native_attention_candidate"
+            ],
+            "observed_calls": 1,
+            "routed_calls": 1
+          }
+        },
+        "all_observed_supported_calls_routed": false,
+        "all_discovered_candidates_covered": false,
+        "cleanup_completed": true
+      },
+      "pending": 0,
+      "writer_consumer_recovery": {
+        "all_real_kernel_writes": true,
+        "all_consumers_matched": true,
+        "all_original_fia_outputs_copied": true,
+        "all_residuals_changed": true,
+        "all_residuals_restored": true
+      }
+    },
+    {
+      "phase": "off",
+      "hidden_finite": true,
+      "logits_finite": true,
+      "hidden_changed": false,
+      "logits_changed": false,
+      "input_sha256": "d6f7ca0c2d9dc3168bd87c27be533c087a1eb80aca65ed291ba602a1951899db",
+      "hidden_sha256": "60fb884bc3088054a9989f3ac3da239fe5cb066c148e52d23bd5d3d26a28606b",
+      "logits_sha256": "69400257a6148c7fec562f4789a25bf08b0cf155369393d31ffeb294781e634b",
+      "top1": [
+        2
+      ],
+      "generated_tokens": [
+        2
+      ],
+      "generated_text": "",
+      "actual_scheduler_driver_mapping": true,
+      "actual_request_id_sha256": "33ba2147b00f044248147c5cef0ddfb45d23329cdc6aa9c795fb206e1b7a5fc9"
+    }
+  ],
+  "hashes": {
+    "result.json": "b0d3951c47dbe9742c957f3adc066cf4018966de5f8b470834d9854c720eb7fa",
+    "serving/runtime/serving.json": "07a2453fc264a527f0717abd736496d94b226920006de9838eb41b96d8f7fd4b"
+  },
+  "collector_hashes": {
+    "config.json": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "collector_identity.json": "c982264d8995fcc7daab67d6a71fed5c04d67ceb8e1e802daaca0fb83cfb5f89"
+  },
+  "cleanup": {
+    "unregister": "ACTION_COMPLETED",
+    "detach": "DETACHED",
+    "unset": "DEPLOYMENT_REMOVED"
+  },
+  "limits": [
+    "TP1, eager, single fresh prefill request per phase, CANN8.5.1 deployment only",
+    "Native runtime proof is separate from the independent raw statistics comparison",
+    "No arbitrary simultaneous owners, continuous generation or public all_eligible qualification"
+  ]
+}

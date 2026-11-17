@@ -1,0 +1,81 @@
+{
+  "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+  "baseline": "/home/p3p4-closure-20261117/fia26-formal-and-allocation-a1/common26-smollm-baseline/serving/capture/observation/step3/rank0",
+  "fault": "/home/p3p4-closure-20261117/fia26-formal-and-allocation-a1/common26-smollm-fault/serving/capture/observation/step3/rank0",
+  "independent_full_sha256": "f6aa2f3495c40fb954129ecbf6cdb8c27d5df14a360a6557642456b1af0848bb",
+  "baseline_self": {
+    "baseline": {
+      "dump.json": "738a7c5b73eb2e0690b39a558301ca959ef6a2c13f4234e78b7ae2b1ccb9b7a5",
+      "stack.json": "b381c78ed4472ec296d48b240c84af2800714d3a64d7180ab2df8780f2445060",
+      "construct.json": "547d445b5784c599b32e85ff59f316b4fa7030e048c2197ed1a2fe62d356c689"
+    },
+    "fault": {
+      "dump.json": "738a7c5b73eb2e0690b39a558301ca959ef6a2c13f4234e78b7ae2b1ccb9b7a5",
+      "stack.json": "b381c78ed4472ec296d48b240c84af2800714d3a64d7180ab2df8780f2445060",
+      "construct.json": "547d445b5784c599b32e85ff59f316b4fa7030e048c2197ed1a2fe62d356c689"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "fault_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "baseline_collector_sha256": "c982264d8995fcc7daab67d6a71fed5c04d67ceb8e1e802daaca0fb83cfb5f89",
+    "fault_collector_sha256": "c982264d8995fcc7daab67d6a71fed5c04d67ceb8e1e802daaca0fb83cfb5f89",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "records_compared": 2826,
+      "unobservable_fields_count_before_first_or_all": 5722,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  },
+  "comparison": {
+    "baseline": {
+      "dump.json": "738a7c5b73eb2e0690b39a558301ca959ef6a2c13f4234e78b7ae2b1ccb9b7a5",
+      "stack.json": "b381c78ed4472ec296d48b240c84af2800714d3a64d7180ab2df8780f2445060",
+      "construct.json": "547d445b5784c599b32e85ff59f316b4fa7030e048c2197ed1a2fe62d356c689"
+    },
+    "fault": {
+      "dump.json": "11f407603f6f2864a064213e01675a67081c2f10e702ce700b43389fe318ae13",
+      "stack.json": "b381c78ed4472ec296d48b240c84af2800714d3a64d7180ab2df8780f2445060",
+      "construct.json": "547d445b5784c599b32e85ff59f316b4fa7030e048c2197ed1a2fe62d356c689"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "fault_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "baseline_collector_sha256": "c982264d8995fcc7daab67d6a71fed5c04d67ceb8e1e802daaca0fb83cfb5f89",
+    "fault_collector_sha256": "c982264d8995fcc7daab67d6a71fed5c04d67ceb8e1e802daaca0fb83cfb5f89",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 254,
+      "identity": "NPU._npu_reshape_and_cache.2.forward/input_kwargs/key_cache",
+      "difference": {
+        "field": "/Min",
+        "reason": "STATISTIC_DIFFERS",
+        "baseline": -16.0,
+        "fault": -16.375
+      },
+      "unobservable_fields_count_before_first_or_all": 523,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  }
+}
