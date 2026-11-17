@@ -14,13 +14,22 @@ from .serving import ServingReplaySession, complete_tensor
 from .serving_context import require, tensor_metadata
 
 
-def public_pair(operator, args, kwargs):
+def public_pair(operator, args, kwargs, *, function=None, gemm_binding=None, expected_weight=None):
     """Only reviewed two-dimensional native MatMul input lowering is eligible."""
     import torch
     import torch_npu
     if operator in ('aten.mm.default', 'aten.matmul.default'):
         a = args[0] if args else kwargs.get('self')
         b = args[1] if len(args) > 1 else kwargs.get('mat2', kwargs.get('other'))
+    elif operator == 'vllm.unquantized_gemm.default':
+        require(gemm_binding is not None, 'REVIEWED_PUBLIC_GEMM_BINDING_REQUIRED')
+        pair = gemm_binding.arguments(function, args, kwargs, expected_weight)
+        if pair is None:
+            return None
+        a, weight = pair
+        if weight.ndim != 2:
+            return None
+        b = weight.t()
     elif operator == 'aten.linear.default':
         a = args[0] if args else kwargs.get('input')
         weight = args[1] if len(args) > 1 else kwargs.get('weight')
@@ -46,10 +55,12 @@ def public_pair(operator, args, kwargs):
 class Serving39CoverageSession(ServingReplaySession):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        from . import collector_dispatch
+        from . import collector_dispatch, gemm_lineage
         self.packet_attributes = collector_dispatch.CollectorPacketAttributes()
+        self.gemm_binding = gemm_lineage.ReviewedGemmBinding()
         self.backend.observer_sha256 = hashlib.sha256(
-            Path(__file__).read_bytes() + Path(collector_dispatch.__file__).read_bytes()).hexdigest()
+            Path(__file__).read_bytes() + Path(collector_dispatch.__file__).read_bytes()
+            + Path(gemm_lineage.__file__).read_bytes()).hexdigest()
         self.mode = None
         self.module_stack = []
         self.ordinals = Counter()
@@ -120,15 +131,22 @@ class Serving39CoverageSession(ServingReplaySession):
         ordinal = self.ordinals[(id(module), operator)]
         self.ordinals[(id(module), operator)] += 1
         site = (id(module), operator, ordinal)
-        pair = public_pair(operator, args, kwargs)
+        owner = self.head if module is self.processor else module
+        pair = public_pair(operator, args, kwargs, function=function,
+                           gemm_binding=self.gemm_binding, expected_weight=getattr(owner, 'weight', None))
         row = dict(module_object_identity=id(module), module_path=path, operator=operator,
+                   public_schema=str(getattr(function, '_schema', 'unavailable')),
                    ordinal=ordinal, native_non_target_reason='NO_ELIGIBLE_NATIVE_MATMUL_RUN_OBSERVED')
+        if operator == 'vllm.unquantized_gemm.default':
+            row['public_lowering'] = self.gemm_binding.last_proof
+            row['public_binding_rejection'] = (None if pair is not None else
+                'CUSTOM_GEMM_REQUIRES_OWNED_WEIGHT_NO_BIAS_BF16_2D_ND')
         values = None
         if pair is not None:
             a, b, values = pair
             geometry = [(str(t.dtype), list(t.shape), list(t.stride()), t.storage_offset(),
                          t.untyped_storage().nbytes()) for t in (a, b)]
-            row.update(tensor_signature=digest(geometry), tensor_geometry=geometry,
+            row.update(tensor_signature=digest([geometry, row.get('public_lowering')]), tensor_geometry=geometry,
                        input_storage_bytes=[values[1], values[3]], output_bytes=int(a.shape[0] * b.shape[1] * 2))
         self.dispatches += 1
         return self.backend.dispatch(site, row, values, lambda: function(*args, **kwargs))
