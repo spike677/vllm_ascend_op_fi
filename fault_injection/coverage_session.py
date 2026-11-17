@@ -44,13 +44,21 @@ class CoverageScope:
     environment_sha256: str
     implementation_sha256: str
     evidence_kind: str = 'natural_worker'
+    model_weights_sha256: str | None = None
+    model_source_sha256: str | None = None
 
     def __post_init__(self):
         if (not isinstance(self.mechanism, str) or not self.mechanism.strip()
-                or self.evidence_kind not in ('natural_worker', 'constructed_npu', 'cpu_contract')
+                or self.evidence_kind not in ('natural_worker', 'natural_pretrained_model',
+                                             'constructed_npu', 'cpu_contract')
                 or not all(_is_sha256(value) for value in (self.workload_sha256,
                     self.environment_sha256, self.implementation_sha256))):
             raise ValueError('Exact workload, environment, implementation and evidence scope required')
+        model_hashes = (self.model_weights_sha256, self.model_source_sha256)
+        if any(value is not None and not _is_sha256(value) for value in model_hashes):
+            raise ValueError('Model weights/source identities must be SHA256 references')
+        if self.evidence_kind == 'natural_pretrained_model' and not all(map(_is_sha256, model_hashes)):
+            raise ValueError('Natural pretrained model requires actual weights and model source SHA256')
 
 
 @dataclass(frozen=True)
@@ -280,6 +288,10 @@ class CoverageSession:
         _require(workers == set(discovery['expected_workers']), 'GROUP_WORKER_SCOPE_MISMATCH')
         for target in targets:
             _require(bool(target.process_start_identity), 'PROCESS_LIFETIME_IDENTITY_REQUIRED')
+            if scope.evidence_kind == 'natural_pretrained_model':
+                _require(isinstance(target, BoundaryTargetIdentity)
+                         and target.scope_kind == 'MODEL_LOCAL' and target.device_type == 'npu',
+                         'NATURAL_PRETRAINED_NPU_MODEL_REQUIRED')
             if scope.evidence_kind == 'natural_worker' and isinstance(target, BoundaryTargetIdentity):
                 _require(target.scope_kind == 'INITIALIZED_WORKER' and target.device_type == 'npu',
                          'NATURAL_NPU_WORKER_REQUIRED')
@@ -536,6 +548,7 @@ class CoverageSession:
                     for t in calls], recovery=self.recovery_report(),
                 contract_satisfied=not reasons, rejection_reasons=sorted(set(reasons)),
                 real_worker_evidence=self.scope.evidence_kind == 'natural_worker',
+                real_pretrained_model_evidence=self.scope.evidence_kind == 'natural_pretrained_model',
                 public_qualification_granted=False)
 
     def c2_proof(self):

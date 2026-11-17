@@ -71,6 +71,16 @@ serialized JSON. CPU/constructed scope cannot open a natural Worker C3 run.
 Providers may serialize separate native generations within the logical group,
 recording exact native generation/cache epoch in each execution artifact.
 
+Natural pretrained inference outside a standard Worker (for example a VAE) uses
+`evidence_kind='natural_pretrained_model'`, with `model_weights_sha256` and
+`model_source_sha256` referencing the actual weight manifest and model source.
+Only NPU `BoundaryTargetIdentity(scope_kind='MODEL_LOCAL', ...)` targets are
+accepted in this scope. Its report sets `real_pretrained_model_evidence=True`
+and `real_worker_evidence=False`. These scope fields also bind the live C2 proof;
+changing weights, model source or scope cannot reuse it to open C3. Hashes remain
+references to artifacts for independent review, not authentication of their
+contents or automatic public qualification.
+
 New post-anomaly targets use `phase=POST_FIRST_ANOMALY, propagation_added=True`.
 They have their own report section and pass through pending new discovery. An
 existing discovered target cannot evade every-match accounting by this flag.
