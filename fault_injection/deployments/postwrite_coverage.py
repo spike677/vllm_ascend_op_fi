@@ -150,8 +150,9 @@ class ProjectionCoverage:
                 artifact.update(consumers=list(candidate.consumers), consumer_observations=candidate.consumer_observations,
                     original_calls=1, native_recovered=self.provider._lease is None,
                     full_model_output_sha256=_cpu_digest(output))
-                self.session.finish(decision, Outcome.HIT, execution_sha256=digest(artifact),
-                    effect_sha256=artifact['mutated_output_sha256'], native_applied=True, original_calls=1)
+                self.session.finish(decision, Outcome.PASSTHROUGH if self.baseline_control else Outcome.HIT,
+                    execution_sha256=digest(artifact), effect_sha256=artifact['mutated_output_sha256'],
+                    native_applied=not self.baseline_control, original_calls=1)
                 self.execution_artifacts.append(artifact)
                 self.active = None
             if mode == 'lossless':
@@ -214,6 +215,8 @@ class ProjectionCoverage:
                                 else Outcome.PASSTHROUGH, original_calls=1)
             if self.mode == 'off' and eligible and candidate is not None:
                 self.off_outputs[row.key] = tensor_digest(p.transport, candidate.tensor)
+            if eligible and self.mode != 'off' and decision.reason in ('SESSION_BUDGET_EXHAUSTED', 'SESSION_STOPPED'):
+                raise PostwriteRefused('POSTWRITE_BOUNDED_SESSION_STOP:' + decision.reason)
             if self.group.trigger == 'every_match' and eligible and self.mode != 'off':
                 raise PostwriteRefused('POSTWRITE_EVERY_MATCH_REFUSED:' + decision.reason)
             return
@@ -225,10 +228,12 @@ class ProjectionCoverage:
             raise PostwriteRefused('POSTWRITE_DISCOVERED_TARGET_GEOMETRY_CHANGED')
         artifact['original_output_sha256'] = tensor_digest(p.transport, candidate.tensor)
         p._lease = p.transport.open(candidate.tensor, p.owner, p.generation)
-        changed = p._lease.apply(p.mutation_mode, candidate.indices)
-        artifact.update(native_applied=True, changed_elements=changed, selected_elements=len(candidate.indices),
+        changed = p._lease.apply(0 if self.baseline_control else p.mutation_mode, candidate.indices)
+        artifact.update(native_applied=not self.baseline_control, baseline_control=self.baseline_control,
+                        changed_elements=changed, selected_elements=len(candidate.indices),
                         mutated_output_sha256=tensor_digest(p.transport, candidate.tensor), readback_exact=True)
-        if changed != len(candidate.indices):raise PostwriteRefused('POSTWRITE_GROUP_EFFECT_COUNT_MISMATCH')
+        if changed != (0 if self.baseline_control else len(candidate.indices)):
+            raise PostwriteRefused('POSTWRITE_GROUP_EFFECT_COUNT_MISMATCH')
 
     def forward_returned(self, observation, output):
         order = tuple(row.key for row in observation.inventory.calls)
@@ -260,10 +265,13 @@ class ProjectionCoverage:
                                      self.off_hash, 0 if zero else 1, 0, 0, 0, owned_hooks=0 if zero else 1)
         return GroupRecoveryHooks(stop, drain, recover, health)
 
-    def run(self, trigger, *args, fault_repeats=2, model_observation=None, **kwargs):
+    def run(self, trigger, *args, fault_repeats=2, model_observation=None, baseline_control=False, **kwargs):
         if trigger not in ('once', 'every_match'):raise ValueError('once or every_match required')
         if type(fault_repeats) is not int or not 1 <= fault_repeats <= 3:
             raise PostwriteRefused('POSTWRITE_BOUNDED_C3_REPEATS_REQUIRED')
+        if type(baseline_control) is not bool or (baseline_control and trigger != 'once'):
+            raise PostwriteRefused('POSTWRITE_BASELINE_CONTROL_REQUIRES_ONCE')
+        self.baseline_control = baseline_control
         if trigger == 'every_match' and self.c2_live_proof is None:
             raise PostwriteRefused('POSTWRITE_LIVE_C2_PROOF_REQUIRED')
         self._check_request(args, kwargs)
@@ -309,7 +317,10 @@ class ProjectionCoverage:
                       per_target_lossless=[dict(key=key, **value) for key,value in self.lossless.items()],
                       execution_artifacts=self.execution_artifacts, forward_artifacts=self.forward_artifacts,
                       independent_discovery=self.discovery_reports, recovery=recovery,
-                      isolated_target_replays=trigger == 'once')
+                      isolated_target_replays=trigger == 'once', baseline_control=baseline_control,
+                      all_targets_controlled_once=(len(self.execution_artifacts) == len(self.eligible)
+                        and len({row['target_id'] for row in self.execution_artifacts}) == len(self.eligible)),
+                      baseline_controls_grant_qualification=False)
         if trigger == 'once':
             self.c2 = report
             if report['contract_satisfied']:self.c2_live_proof = self.session.c2_proof()

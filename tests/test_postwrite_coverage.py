@@ -1,5 +1,7 @@
 """Real CPU operator coverage contracts, distinct from NPU/model qualification."""
 import unittest
+from unittest.mock import patch
+from itertools import count
 import uuid
 
 import torch
@@ -60,6 +62,28 @@ class ProjectionCoverageTests(unittest.TestCase):
         self.assertEqual(report['planned_targets'], 2)
         self.assertIn('CONCURRENCY_BUDGET_EXHAUSTED', report['provider_failure'])
         self.assertIn('EVERY_MATCH_NOT_PROVEN', report['rejection_reasons'])
+        self.assertTrue(report['recovery']['complete'])
+        self.assertEqual(p.query()['leases'], 0)
+
+    def test_all_target_baseline_control_has_zero_hits_and_cannot_issue_c2_proof(self):
+        p, x, scope = prepared(); group = ProjectionCoverage(p, scope)
+        report = group.run('once', x, baseline_control=True)
+        self.assertTrue(report['all_targets_controlled_once'])
+        self.assertEqual(report['hits'], 0)
+        self.assertEqual(report['observed_eligible_calls'], 4)
+        self.assertFalse(report['contract_satisfied'])
+        self.assertIsNone(group.c2_live_proof)
+        self.assertTrue(report['recovery']['complete'])
+        self.assertTrue(all(item['changed_elements'] == 0 for item in report['execution_artifacts']))
+
+    def test_time_budget_stops_forward_sequence_but_real_off_recovers(self):
+        p, x, scope = prepared(); group = ProjectionCoverage(p, scope, max_seconds=1e-9)
+        ticks = count()
+        with patch('fault_injection.coverage_session.time.monotonic', side_effect=lambda:next(ticks) * .01):
+            report = group.run('once', x)
+        self.assertEqual(report['completed_fault_forwards'], 0)
+        self.assertIn('SESSION_BUDGET_EXHAUSTED', report['provider_failure'])
+        self.assertFalse(report['contract_satisfied'])
         self.assertTrue(report['recovery']['complete'])
         self.assertEqual(p.query()['leases'], 0)
 
