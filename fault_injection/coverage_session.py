@@ -9,6 +9,7 @@ from dataclasses import asdict, dataclass, field
 import hashlib
 import json
 import math
+import os
 import threading
 import time
 import uuid
@@ -264,7 +265,7 @@ class C2Proof:
     _issuer: object = field(default=None, repr=False, compare=False)
 
     def report(self):
-        return {key: value for key, value in asdict(self).items() if key != '_issuer'}
+        return _c2_proof_fields(self)
 
 
 def _register_c2_proof(proof):
@@ -284,7 +285,7 @@ def _register_c2_proof(proof):
 
     reference = weakref.ref(proof, forget)
     with _PROOF_LOCK:
-        _ISSUED_C2_PROOFS[key] = (reference, digest)
+        _ISSUED_C2_PROOFS[key] = (reference, digest, os.getpid())
     return proof
 
 
@@ -293,7 +294,7 @@ def _issued_c2_proof(proof):
         return False
     with _PROOF_LOCK:
         entry = _ISSUED_C2_PROOFS.get(id(proof))
-        if entry is None or entry[0]() is not proof:
+        if entry is None or entry[0]() is not proof or entry[2] != os.getpid():
             return False
         expected = entry[1]
     try:

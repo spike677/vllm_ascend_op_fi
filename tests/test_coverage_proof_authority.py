@@ -5,6 +5,7 @@ import gc
 import json
 import pickle
 import unittest
+from unittest.mock import patch
 import weakref
 
 from fault_injection.core import UnsupportedCall
@@ -121,6 +122,18 @@ class C2ProofAuthorityTests(unittest.TestCase):
         del proof
         gc.collect()
         self.assertIsNone(reference())
+
+    def test_fork_inherited_registry_and_object_identity_cannot_cross_process(self):
+        import os
+        fixture = Fixture(1)
+        proof = fixture.complete_c2()
+        # Windows contract: a fork would preserve addresses and weak references
+        # but the child has a different actual process ID.
+        with patch('fault_injection.coverage_session.os.getpid', return_value=os.getpid() + 1000):
+            self.assert_unissued(fixture, proof)
+        session = fixture.session(2, 'every_match', proof)
+        fixture.call(session)
+        self.assertTrue(fixture.close(session)['contract_satisfied'])
 
 
 if __name__ == '__main__':
