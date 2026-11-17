@@ -68,3 +68,65 @@ decode boundary, and keep every unsupported/unverified row. Target scope cannot
 be inferred from a structural module list or from pointers/shape alone. The
 serial implementation cannot qualify a workload that naturally overlaps writers
 before the first consumer; it must report that unresolved complete scope.
+
+## Actual SDK result and runnable candidate entrance
+
+Root built the new ABI successfully from source-a29 on 124. The frozen bundle is
+`/home/17-fault-c2c3-20261117/native26-group-v2-a1`, with `build.json` SHA256
+`5a6adbf86bd0fdbb5a18ab16953714db6a292ff315bdc0dce28c1a59654b7653`.
+Its SDK/control and memory contracts passed; actual NPU calls remain zero. The
+build now inspects the local image and runs its immutable image ID. A unique
+container name, owner label and actual image are verified before any cleanup;
+timeouts/exceptions retain the build receipt and log.
+
+The Python v2 binding and standard Worker entry now expose three separate
+candidate stages. `inventory` makes two complete healthy observations.
+`lossless` then executes reference, actual temporary output lossless and OFF for
+each completely resolved candidate. `effects` additionally executes F/OFF for
+each of those independently qualified candidates. Every fresh request still
+records the full independent native denominator, including all unselected,
+unsupported and unverified calls. A budget that cannot contain the resolved set
+blocks that whole plan; it never chooses a first target. Discovery binds the
+actual module callable/source/code, native registration, complete geometry,
+retained public residual, actual public writer-output storage and next real
+consumer. Full allocator records distinguish a proven nonadjacent pair from an
+unknown allocation. Any live-pointer uncertainty refuses dependent writes.
+
+These one-current-target candidate windows deliberately keep C2/C3 false. They
+are an entrance for actual qualification data, not an all-eligible certificate.
+After Native stop/drain/release, another full-vocabulary healthy request runs in
+the same Worker, and then all owned hooks and references are removed. If a
+failure leaves a lease, retry OFF is permitted only while the actual public
+writer output and residual objects are still strongly retained at the exact
+addresses. Missing pointer liveness leaves the lease/backup pending and requires
+quarantine; it never fabricates restoration through a fresh process.
+
+Root can prepare two read-only cases first, using newly installed Python source:
+
+```sh
+python3 "$SOURCE/experiments/c2c3_closure_20261117/providers26_prepare_group_cases.py" \
+  --installed "$INSTALLED" \
+  --native /home/17-fault-c2c3-20261117/native26-group-v2-a1 \
+  --probe "$SOURCE/experiments/c2c3_closure_20261117/providers26_group_probe.py" \
+  --source-commit "$COMMIT" --card 2 --stages inventory \
+  --out /home/17-fault-c2c3-20261117/providers26-v2-inventory-a1-cases.json
+```
+
+The same command with `--stages lossless effects --statistics` prepares four
+separate bounded candidate cases after review of the complete natural census.
+The default target budget is eight and can be explicitly set with
+`--max-targets`. Native event capacity is checked against the entire planned
+healthy call count before qualification starts. The generator pins the exact
+image ID from the Native build and preloads only the new writer DSO plus the
+verified trace/proxies. Model mounts are DeepSeek W8A8 for QMM and SmolLM2-135m
+for FIA. Every source/model/library mount is read-only. Root alone owns the
+resource queue and any actual NPU/container start.
+
+Seven new Python CPU tests cover both writers through two actual CPU modules,
+all candidate phase transitions and zero-resource health, missing Native
+callbacks, missing live writer outputs, unsupported versus unverified residuals,
+and refusal to shrink the target set to fit the budget. Their native and
+allocator fixtures are explicitly simulated. Remaining dependent work is the
+valid natural inventory, source/lifetime review of unresolved edges, shared
+CoverageSession all-eligible admission, and a live same-Worker C2 proof before
+every-match. The candidate result reports every one of these remaining gates.
