@@ -276,8 +276,17 @@ def runtime_device_inventory(cards, devices, *, proc_root=Path('/proc'),
     return report
 
 
-def idle_gate(cards, *, review_stale=True):
+def idle_gate(cards, *, review_stale=False, stale_allocation_scope=None, attempt_scope=None):
     report = {'time': datetime.now(timezone.utc).isoformat(), 'cards': cards, 'blockers': [], 'device_access_grants': []}
+    scope = None
+    if review_stale:
+        try:
+            from kubelet_allocations import validate_stale_allocation_scope
+            scope = validate_stale_allocation_scope(stale_allocation_scope, attempt_scope)
+            report['stale_allocation_scope'] = scope
+        except Exception as error:
+            report['blockers'].append(dict(reason='STALE_ALLOCATION_SCOPE_INVALID', status='UNKNOWN',
+                error=type(error).__name__ + ':' + str(error)[:512]))
     report['npu_smi'] = command(['npu-smi', 'info'])
     rows = report['npu_smi'].splitlines()
     if 'Process id' not in report['npu_smi'] or 'Health' not in report['npu_smi']:
@@ -319,14 +328,17 @@ def idle_gate(cards, *, review_stale=True):
     report['blockers'].extend(runtime.pop('blockers'))
     report['device_access_grants'].extend(runtime.pop('device_access_grants'))
     report.update(runtime)
-    if (review_stale and report['blockers']
+    if not review_stale and any(row['reason'] == 'KUBELET_DEVICE_ALLOCATION' for row in report['blockers']):
+        report['stale_checkpoint_review'] = dict(status='DISABLED', reason='EXPLICIT_APPROVED_ATTEMPT_SCOPE_REQUIRED')
+    if (review_stale and scope is not None and report['blockers']
             and all(row['reason'] == 'KUBELET_DEVICE_ALLOCATION' for row in report['blockers'])):
         try:
             from kubelet_allocations import digest, review_stale_allocations
-            proof = review_stale_allocations(report['blockers'], report['kubelet_checkpoint_sources'], report['oci_tasks'])
+            proof = review_stale_allocations(report['blockers'], report['kubelet_checkpoint_sources'], report['oci_tasks'],
+                stale_allocation_scope=scope, attempt_scope=attempt_scope)
             # Recheck actual compute/FDs, runtime tasks, permissions and retained
             # checkpoints after the live API window. Never recurse into review.
-            post = idle_gate(cards, review_stale=False)
+            post = idle_gate(cards, review_stale=False, stale_allocation_scope=scope, attempt_scope=attempt_scope)
             fields = ('blockers', 'device_access_grants', 'oci_tasks', 'containerd_states',
                       'kubelet_checkpoint_sources', 'kubelet_allocation_checks')
             report['stale_checkpoint_post_gate'] = dict(time=post['time'], blockers=post['blockers'],

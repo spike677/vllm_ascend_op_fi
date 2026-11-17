@@ -32,6 +32,13 @@ def field(number, value):
 
 
 HEADERS = b'HTTP/2 200\r\ncontent-type: application/grpc\r\ngrpc-status: 0\r\n'
+OLD_POD = '11111111-2222-3333-4444-555555555555'
+ATTEMPT = '/approved/exact-attempt'
+
+
+def approved_scope(checkpoint_sha256='a' * 64):
+    return dict(schema='demoncat.stale_allocation_scope.v1', attempt_scope=ATTEMPT,
+                pod_uid=OLD_POD, checkpoint_sha256=checkpoint_sha256)
 
 
 def reply(extra=b''):
@@ -185,13 +192,40 @@ class LiveIdentityTests(unittest.TestCase):
             network.assert_not_called()
 
 
+class ApprovalScopeTests(unittest.TestCase):
+    def test_explicit_valid_scope_is_copied_and_bound_to_attempt(self):
+        scope = approved_scope()
+        result = live.validate_stale_allocation_scope(scope, ATTEMPT)
+        self.assertEqual(result, scope)
+        self.assertIsNot(result, scope)
+
+    def test_absent_extra_fields_and_unknown_schema_refuse(self):
+        for scope in (None, {}, dict(approved_scope(), extra='unreviewed'),
+                      dict(approved_scope(), schema='another.schema')):
+            with self.subTest(scope=scope), self.assertRaises(ValueError):
+                live.validate_stale_allocation_scope(scope, ATTEMPT)
+
+    def test_malformed_uid_sha_or_attempt_refuses(self):
+        for key, value in (('pod_uid', 'another-pod'), ('checkpoint_sha256', 'A' * 64),
+                           ('checkpoint_sha256', 'a' * 63), ('attempt_scope', '/'),
+                           ('attempt_scope', 'relative'), ('attempt_scope', '/some/../attempt'),
+                           ('attempt_scope', '/some//attempt'), ('attempt_scope', '/some/attempt/'),
+                           ('attempt_scope', '/some/attempt\n')):
+            scope = dict(approved_scope(), **{key: value})
+            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                live.validate_stale_allocation_scope(scope, scope['attempt_scope'])
+        with self.assertRaisesRegex(ValueError, 'ATTEMPT_SCOPE_MISMATCH'):
+            live.validate_stale_allocation_scope(approved_scope(), '/approved/another-attempt')
+
+
 class JointReviewTests(unittest.TestCase):
     def setUp(self):
         self.temp = Path(self.enterContext(tempfile.TemporaryDirectory()))
         self.checkpoint = self.temp / 'checkpoint'; self.checkpoint.write_bytes(b'preserved checkpoint')
         self.config = self.temp / 'client.conf'; self.config.write_bytes(b'fixture, no credentials')
-        self.blockers = [dict(reason='KUBELET_DEVICE_ALLOCATION', card=5, pod_uid='old-pod',
+        self.blockers = [dict(reason='KUBELET_DEVICE_ALLOCATION', card=5, pod_uid=OLD_POD,
             checkpoint=str(self.checkpoint), checkpoint_sha256=hashlib.sha256(self.checkpoint.read_bytes()).hexdigest())]
+        self.scope = approved_scope(self.blockers[0]['checkpoint_sha256'])
         self.sources = [dict(pid=100, root_dir='/observed/root', checkpoint=str(self.checkpoint), kubeconfig=str(self.config))]
         self.oci = [dict(task='infra', pod_uid='another-pod')]
         self.rows = [dict(uid='current', name='pod', namespace='ns', containers=[dict(kind='containers', name='worker')])]
@@ -207,7 +241,8 @@ class JointReviewTests(unittest.TestCase):
             [dict(name='pod', namespace='ns', containers=[dict(name='worker', devices=[])])], dict(grpc_status=0))))
 
     def review(self):
-        return live.review_stale_allocations(self.blockers, self.sources, self.oci)
+        return live.review_stale_allocations(self.blockers, self.sources, self.oci,
+            stale_allocation_scope=self.scope, attempt_scope=ATTEMPT)
 
     def test_no_live_owner_requires_joint_evidence_and_keeps_checkpoint_unchanged(self):
         raw = self.checkpoint.read_bytes()
@@ -216,7 +251,9 @@ class JointReviewTests(unittest.TestCase):
         self.assertFalse(proof['internal_allocation_clearance_proven'])
         self.assertFalse(proof['driver_initialization_available_proven'])
         self.assertFalse(proof['exclusive_device_reservation'])
-        self.assertEqual(proof['checkpoint_pod_uids'], ['old-pod'])
+        self.assertEqual(proof['checkpoint_pod_uids'], [OLD_POD])
+        self.assertEqual(proof['stale_allocation_scope'], self.scope)
+        self.assertEqual(proof['stale_allocation_scope_sha256'], live.digest(self.scope))
         self.assertEqual(self.checkpoint.read_bytes(), raw)
         self.assertEqual(self.snapshot.call_count, 2)
 
@@ -232,10 +269,10 @@ class JointReviewTests(unittest.TestCase):
                 self.review()
 
     def test_checkpoint_pod_in_api_or_oci_cannot_be_exempted(self):
-        self.rows[0]['uid'] = 'old-pod'
+        self.rows[0]['uid'] = OLD_POD
         with self.assertRaisesRegex(ValueError, 'STILL_IN_NODE_API'):
             self.review()
-        self.rows[0]['uid'] = 'current'; self.oci[0]['pod_uid'] = 'old-pod'
+        self.rows[0]['uid'] = 'current'; self.oci[0]['pod_uid'] = OLD_POD
         with self.assertRaisesRegex(ValueError, 'OCI_PRESENT'):
             self.review()
 
@@ -268,12 +305,31 @@ class JointReviewTests(unittest.TestCase):
         self.blockers.append(dict(reason='NPU_PROCESS', card=5))
         with self.assertRaisesRegex(ValueError, 'OTHER_GATE_BLOCKERS'): self.review()
 
+    def test_missing_or_mismatched_approval_never_queries_live_or_alters_blockers(self):
+        original = copy.deepcopy(self.blockers)
+        for scope in (None, dict(self.scope, pod_uid='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'),
+                      dict(self.scope, checkpoint_sha256='f' * 64),
+                      dict(self.scope, attempt_scope='/approved/another-attempt')):
+            self.scope = scope
+            with self.subTest(scope=scope), self.assertRaises(ValueError):
+                self.review()
+            self.assertEqual(self.blockers, original)
+        self.query.assert_not_called()
+
+    def test_an_additional_unapproved_checkpoint_owner_refuses_whole_review(self):
+        self.blockers.append(dict(self.blockers[0], pod_uid='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'))
+        with self.assertRaisesRegex(ValueError, 'CHECKPOINT_SCOPE_MISMATCH'):
+            self.review()
+        self.query.assert_not_called()
+
 
 class RunnerIntegrationTests(unittest.TestCase):
-    def run_gate(self, *, extra_blocker=False, query_error=False, post_busy=False):
+    def run_gate(self, *, extra_blocker=False, query_error=False, post_busy=False,
+                 opt_in=True, supplied_scope=True, attempt=ATTEMPT, scope_overrides=None, real_review=False):
         from test_device_allocation_gate import gate
         original = gate.idle_gate
-        blocker = dict(reason='KUBELET_DEVICE_ALLOCATION', card=5, pod_uid='old-pod')
+        blocker = dict(reason='KUBELET_DEVICE_ALLOCATION', card=5, pod_uid=OLD_POD, checkpoint_sha256='a' * 64)
+        scope = dict(approved_scope(), **(scope_overrides or {})) if supplied_scope else None
         runtime = dict(blockers=[blocker], device_access_grants=[], oci_tasks=[], containerd_states=[],
                        kubelet_checkpoint_sources=[], kubelet_allocation_checks=[])
         if extra_blocker:
@@ -282,15 +338,19 @@ class RunnerIntegrationTests(unittest.TestCase):
         post = dict(copy.deepcopy(runtime), time='post', npu_smi=smi)
         if post_busy:
             post['blockers'].append(dict(reason='NPU_PROCESS', card=5, pid=77))
+        review_effect = live.review_stale_allocations if real_review else TimeoutError('timeout') if query_error else None
         with patch.dict(sys.modules, {'kubelet_allocations': live}), \
-             patch.object(live, 'review_stale_allocations', side_effect=TimeoutError('timeout') if query_error else None,
+             patch.object(live, 'review_stale_allocations', side_effect=review_effect,
                           return_value=dict(status='NO_LIVE_OWNER_CORROBORATED', evidence_sha256='a' * 64)) as review, \
              patch.object(gate, 'runtime_device_inventory', return_value=runtime), \
              patch.object(gate, 'command', side_effect=lambda args: smi if args[0] == 'npu-smi' else ''), \
              patch.object(gate.Path, 'stat', return_value=SimpleNamespace(st_rdev=99)), \
              patch.object(gate.Path, 'iterdir', return_value=iter(())), \
-             patch.object(gate, 'idle_gate', return_value=post):
-            result = original([5])
+             patch.object(gate, 'idle_gate', return_value=post) as recheck:
+            result = original([5], review_stale=True, stale_allocation_scope=scope, attempt_scope=attempt) if opt_in else original([5])
+            if recheck.called:
+                self.assertEqual(recheck.call_args.kwargs,
+                    dict(review_stale=False, stale_allocation_scope=scope, attempt_scope=attempt))
         return result, blocker, review.call_count
 
     def test_verified_stale_preserves_original_blocker_and_release_proof(self):
@@ -318,6 +378,28 @@ class RunnerIntegrationTests(unittest.TestCase):
         report, _, calls = self.run_gate(extra_blocker=True)
         self.assertFalse(report['idle'])
         self.assertEqual(calls, 0)
+
+    def test_default_preserves_checkpoint_without_live_query(self):
+        report, blocker, calls = self.run_gate(opt_in=False)
+        self.assertFalse(report['idle'])
+        self.assertIn(blocker, report['blockers'])
+        self.assertEqual(report['stale_checkpoint_review']['status'], 'DISABLED')
+        self.assertEqual(calls, 0)
+
+    def test_boolean_opt_in_requires_scope_and_matching_actual_attempt(self):
+        for kwargs in (dict(supplied_scope=False), dict(attempt='/approved/another-attempt')):
+            report, blocker, calls = self.run_gate(**kwargs)
+            self.assertFalse(report['idle'])
+            self.assertIn(blocker, report['blockers'])
+            self.assertEqual(report['blockers'][0]['reason'], 'STALE_ALLOCATION_SCOPE_INVALID')
+            self.assertEqual(calls, 0)
+
+    def test_different_uid_or_checkpoint_sha_preserves_original_blocker(self):
+        for overrides in (dict(pod_uid='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'), dict(checkpoint_sha256='f' * 64)):
+            report, blocker, _ = self.run_gate(scope_overrides=overrides, real_review=True)
+            self.assertFalse(report['idle'])
+            self.assertIn(blocker, report['blockers'])
+            self.assertIn('CHECKPOINT_SCOPE_MISMATCH', report['stale_checkpoint_review']['reason'])
 
 
 if __name__ == '__main__':

@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import socket
 import ssl
@@ -24,6 +24,7 @@ PROTO_URL = ('https://github.com/kubernetes/kubernetes/blob/v1.28.15/'
              'staging/src/k8s.io/kubelet/pkg/apis/podresources/v1/api.proto')
 RPC = '/v1.PodResourcesLister/List'
 MAX_REPLY = 1024 * 1024
+SCOPE_SCHEMA = 'demoncat.stale_allocation_scope.v1'
 
 
 def require(condition, reason):
@@ -34,6 +35,30 @@ def require(condition, reason):
 def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'),
                                      allow_nan=False).encode()).hexdigest()
+
+
+def validate_stale_allocation_scope(scope, attempt_scope):
+    """Validate explicit approval for one Pod/checkpoint and one attempt path.
+
+    This does not infer approval from a missing Pod or an apparently idle card.
+    The caller owns the approved scope file and a fresh, exclusive attempt dir.
+    """
+    require(isinstance(scope, dict) and set(scope) == {
+        'schema', 'attempt_scope', 'pod_uid', 'checkpoint_sha256'}, 'STALE_ALLOCATION_SCOPE_REQUIRED')
+    require(scope['schema'] == SCOPE_SCHEMA, 'STALE_ALLOCATION_SCOPE_SCHEMA_UNKNOWN')
+    path = scope['attempt_scope']
+    require(isinstance(path, str) and 1 < len(path) <= 512 and path.startswith('/')
+            and all(ord(char) >= 32 and ord(char) != 127 for char in path)
+            and str(PurePosixPath(path)) == path and '..' not in path.split('/')
+            and not path.startswith('//'), 'STALE_ALLOCATION_ATTEMPT_PATH_INVALID')
+    require(isinstance(attempt_scope, str) and attempt_scope == path,
+            'STALE_ALLOCATION_ATTEMPT_SCOPE_MISMATCH')
+    require(isinstance(scope['pod_uid'], str) and re.fullmatch(
+        r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', scope['pod_uid']),
+        'STALE_ALLOCATION_POD_UID_INVALID')
+    require(isinstance(scope['checkpoint_sha256'], str)
+            and re.fullmatch(r'[0-9a-f]{64}', scope['checkpoint_sha256']), 'STALE_ALLOCATION_CHECKPOINT_SHA_INVALID')
+    return dict(scope)
 
 
 def _text(value):
@@ -273,10 +298,14 @@ def node_snapshot(get, identity, machine_id, boot_id):
         pod_scope_sha256=digest(rows), machine_id_matches=True, boot_id_matches=True, ready=True, kubelet_version=VERSION)
 
 
-def review_stale_allocations(blockers, sources, oci_tasks):
+def review_stale_allocations(blockers, sources, oci_tasks, *, stale_allocation_scope=None, attempt_scope=None):
     started = time.monotonic()
+    scope = validate_stale_allocation_scope(stale_allocation_scope, attempt_scope)
     require(blockers and all(row.get('reason') == 'KUBELET_DEVICE_ALLOCATION' for row in blockers),
             'OTHER_GATE_BLOCKERS_PRESENT')
+    require(all(row.get('pod_uid') == scope['pod_uid']
+                and row.get('checkpoint_sha256') == scope['checkpoint_sha256'] for row in blockers),
+            'STALE_ALLOCATION_CHECKPOINT_SCOPE_MISMATCH')
     paths = {row['checkpoint']: row['checkpoint_sha256'] for row in blockers}
     matches = [row for row in sources if row['checkpoint'] in paths]
     require({row['checkpoint'] for row in matches} == set(paths)
@@ -319,6 +348,7 @@ def review_stale_allocations(blockers, sources, oci_tasks):
     checkpoints_unchanged()
     require(time.monotonic() - started <= 30, 'ALLOCATION_REVIEW_WINDOW_EXCEEDED')
     proof = dict(schema='demoncat.kubelet_stale_checkpoint_review.v1', status='NO_LIVE_OWNER_CORROBORATED',
+        stale_allocation_scope=scope, stale_allocation_scope_sha256=digest(scope),
         time=datetime.now(timezone.utc).isoformat(), kubelet=lifetime, client=identity, before=before_proof,
         podresources=live_proof, after=after_proof, checkpoint_sha256=paths,
         checkpoint_pod_uids=sorted(target_uids), oci_tasks_sha256=digest(oci_tasks),
