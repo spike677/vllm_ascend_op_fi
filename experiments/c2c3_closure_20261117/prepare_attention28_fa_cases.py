@@ -54,8 +54,12 @@ def main():
                 '--mode', mode, '--batch', str(batch), '--selection-target', a.selection_target,
                 '--out', '/evidence/run', '--experimental-qualification']
             if statistics:argv += ['--statistics', '--statistics-backend', a.statistics_backend]
-            cases.append(dict(id=label, image=controller['image_id'], timeout=900,
-                mounts=[[str(a.source), '/driver', 'ro'], [str(a.observer), '/build', 'ro'],
+            cases.append(dict(id=label, image=controller['image_id'], timeout=90,
+                # Sibling read-only leaves preserve the immutable absolute paths.
+                # Mounting their parent /build read-only prevents Docker from
+                # creating /build/run when it is absent in the observer tree.
+                mounts=[[str(a.source), '/driver', 'ro'],
+                        [str(a.observer / 'attention-preflight'), '/build/attention-preflight', 'ro'],
                         [str(a.build_root), '/build/run', 'ro']],
                 env=dict(PYTHONPATH='/driver:/driver/src:/msprobe_packages', OMP_NUM_THREADS='4',
                          ACLNN_CACHE_LIMIT='0', TASK_QUEUE_ENABLE='0', PYTHONDONTWRITEBYTECODE='1'),
@@ -64,7 +68,7 @@ def main():
                     cann='9.1.0', soc='Ascend910B4/A2', physical_cards=[a.card], ranks=1,
                     worker='standalone synchronous torch_npu.npu_fusion_attention_v3', build_fingerprint=sha(completion),
                     expected_hits=4 if mode == 'sequence' else 3,
-                    resource_budget=dict(timeout_seconds=900, memory_gib=32, cpus=8),
+                    resource_budget=dict(timeout_seconds=90, memory_gib=32, cpus=8),
                     recovery_plan='Exact owned typed-plan cleanup each call; real unscoped OFF in sequence; synchronous completion.',
                     qualification='Actual registered ELF/function/FA-ABI/POD only; no old certificate or public C2/C3',
                     statistics_backend=a.statistics_backend if statistics else None,

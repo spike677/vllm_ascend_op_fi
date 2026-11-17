@@ -1,0 +1,62 @@
+{
+  "schema": "demoncat.attention.shared_observer_regression.v1",
+  "status": "NEW_SHARED_OBSERVER_PASSED_EIGHT_PRIOR_REAL_FIA_LAUNCHES_CPU_ONLY",
+  "verifier_sha256": "3580203f7d5cf922c018b8073771c2cbc39327b63a0bd92429386ddf24b55127",
+  "execution": "Read-only standard-library Python via SSH stdin; new verifier held only in memory",
+  "original_evidence_modified": false,
+  "remote_files_written": 0,
+  "containers_started": 0,
+  "actual_npu_calls": 0,
+  "root": "/home/17-fault-c2c3-20261117/reviewed-next8-a2",
+  "reference_review": "attention28_cpu_fp64_launch_review.json",
+  "artifact_inventory_rehashed": true,
+  "schema_sha256": "20dd6a361142aa9acd73f0787673e24660daef46846e5b362eb9306b15fe035c",
+  "comparison_fields": [
+    "raw_sha256", "runtime_log_sha256", "tiling_key", "block_dim", "schedule_mode",
+    "verified_public_serializer_padding"
+  ],
+  "additional_assertions": {
+    "tiling_pointer_offset": 280,
+    "raw_size": 1576,
+    "unique_calls_per_case": 2,
+    "raw_runtime_sha_unchanged_after_verification": true
+  },
+  "cases": [
+    {
+      "case_id": "fia-legal-cpu-fp64-baseline",
+      "runtime_log_sha256": "3cbcc6fcddaabb350fbd0d89d98dd0afbc6698a06199565053c6d0303de474fa",
+      "call_ids": ["ec31987f23ca459397389ce36a0864b1", "0560bc1a16ea4a5c8d814068e0b254fe"],
+      "key": 109000000000000000,
+      "raw_sha256": "cbf18b848769d006e9e4108499036a044c46624e12a0f768349e4520cc6eae72",
+      "independently_excluded_launch_counts": [0, 2]
+    },
+    {
+      "case_id": "fia-legal-cpu-fp64-fault",
+      "runtime_log_sha256": "e994fff6c761b86cfdca41e05c617d03371ded8f495877546e6e0828177f3ce3",
+      "call_ids": ["9fe186613b7c4c43a5ec788df5c40b1f", "0f618f3af89a40169e4baa2654f21af4"],
+      "key": 109000000000400000,
+      "raw_sha256": "f48d30c9fa49863adc7cb2aa5de9fe2a734c43853fc0130eb12130b58d539ba6",
+      "independently_excluded_launch_counts": [0, 2]
+    },
+    {
+      "case_id": "fia-replay-cpu-fp64-baseline",
+      "runtime_log_sha256": "577cd6d34bf560368382d4e86552aa20626206c504762afe0371dba069924619",
+      "call_ids": ["58c6ddc8c6cc467b9a7972e540a42c31", "953d906a25714f609c6d927625f68f92"],
+      "key": 109000000000400000,
+      "raw_sha256": "f48d30c9fa49863adc7cb2aa5de9fe2a734c43853fc0130eb12130b58d539ba6",
+      "independently_excluded_launch_counts": [0, 2]
+    },
+    {
+      "case_id": "fia-replay-cpu-fp64-fault",
+      "runtime_log_sha256": "6079a0e8232396dfcbf36b91e51422714edff4965db9912c61638d1dcd987b4e",
+      "call_ids": ["299f139677064cbb9ba41f883e0b6341", "cb7df212506244a895f2f6416411b613"],
+      "key": 119000000000400000,
+      "raw_sha256": "f48d30c9fa49863adc7cb2aa5de9fe2a734c43853fc0130eb12130b58d539ba6",
+      "independently_excluded_launch_counts": [0, 2]
+    }
+  ],
+  "new_fa_launch_qualification": false,
+  "statistics_read": false,
+  "c2": false,
+  "c3": false
+}

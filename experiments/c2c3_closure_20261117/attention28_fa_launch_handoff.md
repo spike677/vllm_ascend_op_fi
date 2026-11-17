@@ -85,13 +85,20 @@ complete output bytes and final semantic POD/key/block/schedule. OFF has no
 Failures preserve the current call ID, requested plan, runtime/host evidence
 and original exception. Cleanup never overwrites another environment owner.
 
-The manifest mounts the observer directory at `/build` and the new FA build
-at the nested `/build/run`, both read-only. The source snapshot is `/driver`,
+The manifest mounts only the observer result subtree at
+`/build/attention-preflight` and the new FA build at `/build/run`, both read-only
+sibling mounts. Their `/build` parent stays in the image filesystem so Docker
+can create both mountpoints without writing into either immutable artifact
+tree. The source snapshot is `/driver`,
 which also preserves the decoder's original header paths. At runtime, all five
 SDK interface hashes, all 217 decoder compile inputs and the exact observer
 headers are checked before NPU work. The image is pinned to the fresh build ID.
 `ACLNN_CACHE_LIMIT=0` and `TASK_QUEUE_ENABLE=0` are mandatory. The per-case
-budget is 900 seconds, 8 CPUs, 32 GiB; only root schedules devices/locks.
+budget is 90 seconds, 8 CPUs, 32 GiB; only root schedules devices/locks.
+The initial `fa28-launch-short-a1` stopped with Docker exit 125 before process
+initialization because the earlier whole-directory `/build` read-only mount
+did not contain `run`. Keep that attempt as evidence; this layout needs a new
+attempt directory and does not change any build receipt or source artifact.
 
 ## Optional subsequent raw B/F collection
 
@@ -122,3 +129,13 @@ remote build and checked its 851 artifacts plus source-derived ABI, with zero
 remote writes, containers or NPU calls. The targeted FA/FIA/TND CPU suite ran
 48 tests successfully (one environment-dependent skip). Source hashes and
 the exact test command are retained in the build review JSON.
+
+Mount regression follow-up: 49 related CPU tests pass (one environment skip),
+including a real generated manifest whose observer tree has no `run` directory.
+The test resolves every required `/build/attention-preflight`, `/build/run`
+and `/driver` path, rejects a read-only ancestor mount and verifies that all
+input bytes remain unchanged. The shared observer refactor was also executed
+read-only against all eight original FIA CPU-FP64 runtime captures; final POD,
+key, block, schedule and serializer-padding comparisons all match the earlier
+review. This creates no new device or mechanism qualification. The separate
+regression receipt is `attention28_fia_observer_regression.json`.
