@@ -54,7 +54,7 @@ sdk=/usr/local/Ascend/cann-8.5.1/aarch64-linux
 grep -Eq '^version=8\.5\.1$' "$sdk/ascend_toolkit_install.info"
 test "$(uname -m)" = aarch64
 native=/source/fault_injection/native_adapters
-flags=(-std=c++17 -O2 -Wall -Wextra -Werror -pedantic -D_GLIBCXX_USE_CXX11_ABI=0 -I"$sdk/include" -I"$sdk/include/aclnn" -I"$sdk/pkg_inc")
+flags=(-std=c++17 -O2 -Wall -Wextra -Werror -pedantic -D_GLIBCXX_USE_CXX11_ABI=0 -isystem "$sdk/include" -isystem "$sdk/include/aclnn" -isystem "$sdk/pkg_inc")
 mkdir -p /build/runtime/vendor/op_api/lib
 g++ "${flags[@]}" -fPIC -shared "$native/batch_scale_group_runtime.cpp" -ldl -lpthread -Wl,-z,defs -Wl,-soname,libdcat_dq_group_v1.so -o /build/runtime/vendor/op_api/lib/libcust_opapi.so
 g++ "${flags[@]}" "$native/test_batch_scale_group_runtime.cpp" -ldl -lpthread -o /build/test_group_runtime

@@ -69,6 +69,15 @@ The production DSO contains no API for injecting those mocks. Raw receipts
 remain under `/home/17-fault-c2c3-20261117/`; no NPU or container was started by
 the provider agent.
 
+Root's actual SDK attempt `native-quant-group-v1-a1` failed in the vendor
+`acl_dump.h` zero-length `dataBuf[0]` declaration under `-pedantic`. Its receipt
+SHA256 is `43f422d3758258ecad211e7421087ba29d6fdc004c53ed28412d75bd9680b61d`;
+the log SHA256 is `d6bb01d9169919e13e4d6ef31ddb7c6df92b024243480f1e56192d7a44a7e026`.
+That failed attempt is preserved. The builder now marks only the actual vendor
+SDK include directories as `-isystem`; all four strict warning flags remain
+enabled for our source. Official headers are unchanged. Retry uses a new
+output directory rather than rewriting attempt a1.
+
 Root should run the following only after reviewing the commit and creating a
 fresh immutable source snapshot. This builds in the actual reviewed CANN 8.5.1
 image with its real headers, no device/driver mount, `runc`, no network, 4 CPUs,

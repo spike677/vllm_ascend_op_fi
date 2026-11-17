@@ -18,6 +18,15 @@ IMAGE_ID = 'sha256:' + 'b' * 64
 
 
 class QuantGroupBuildTests(unittest.TestCase):
+    def test_vendor_headers_are_system_headers_and_our_warnings_stay_strict(self):
+        flags = next(line for line in builder.COMMANDS.splitlines() if line.startswith('flags=('))
+        for option in ('-Wall', '-Wextra', '-Werror', '-pedantic'):
+            self.assertIn(option, flags)
+        for path in ('include', 'include/aclnn', 'pkg_inc'):
+            self.assertIn('-isystem "$sdk/' + path + '"', flags)
+        self.assertNotIn('-I"$sdk/', flags)
+        self.assertNotIn('-Wno-', flags)
+
     def test_tag_is_resolved_and_matched_to_approved_immutable_id(self):
         value = dict(Id=IMAGE_ID, Architecture='arm64', Os='linux')
         with patch.object(builder.subprocess, 'run', return_value=SimpleNamespace(stdout=json.dumps([value]))) as run:
