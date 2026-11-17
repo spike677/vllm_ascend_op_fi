@@ -41,27 +41,41 @@ still uses the original private-package policy, with exact stock/private payload
 comparison required by the independent bridge. Library resolution alone does
 not establish an actual Torch NPU FIA dispatch or any native qualification.
 
-Root first runs the exact-image CPU preflight using a new integrated source
-snapshot. The controller uses `runc`, no devices/driver/network, the same fresh
-native build read-only, and imports the real vLLM extension without invoking
-any operator or building a model. It records actual dlsym/dladdr ownership before
-and after platform/extension loading.
+The first full no-device preflights preserved a native abort during the explicit
+vLLM C++ extension import. `attention33-loading-cpu-a2` proves that actual symbol
+ownership, Torch/vLLM platform import and the official vendor initializer had
+already passed. The independent `attention33-loading-stock-control-a1`, with no
+private preload and only the stock vendor environment, reproduces the same
+`basic_string::_S_construct null not valid` abort in extension `create_module`.
+This establishes that the abort is not specific to the private package; it does
+not establish the lower-level C++ cause or a successful complete CPU import.
+All failed attempts remain unchanged.
+
+The minimal exact-image CPU preflight now verifies actual dlsym/dladdr ownership
+before and after the unchanged official platform initializer. It explicitly
+reports full extension import and native Worker initialization as unverified.
+The controller uses `runc`, no devices/driver/network, and the same fresh build
+read-only. Optional `--include-extension-import` and `--stock-extension-control`
+retain the complete import diagnostics. No operator or model is run in CPU scope.
 
 ```sh
 R=/home/17-fault-c2c3-20261117
 S=$R/source-NEW
 python3 "$S/experiments/c2c3_closure_20261117/run_attention33_loading_preflight_124.py" \
   --source "$S" --native "$R/tnd33-fai-build-a1/build/run" \
-  --out "$R/attention33-loading-cpu-a1"
+  --out "$R/attention33-loading-cpu-a3"
 ```
 
-After `CPU_STOCK_PRIVATE_API_COEXISTENCE_VERIFIED`, root builds fresh installed
+After `CPU_API_BINDINGS_AND_PLATFORM_ENV_VERIFIED`, root builds fresh installed
 wheels including `paged33_loading.py`, then queues a new private baseline with
 the same actual build/schema/observer hashes and ordinary Worker arguments.
 The source mount and installed wheel must both include this change. Keep stock
 a1 and failed baseline a1 unchanged. Do not run F until the new full baseline,
 actual FIA launches and exact independent stock/private bridge pass. Existing
 launch proof rejects any accidental stock FIA dispatch or wrong private entry.
+The real device-backed Worker performs its complete ordinary initialization,
+including the original C++ extension, Norm and profile run, before the probe
+requires a new actual Norm/FIA binding recheck. No such initialization is skipped.
 
 Local CPU contracts: 14 loading/TND/payload tests pass. Exact-image CPU loading
 and new Worker execution remain pending root execution; no C1/C2/C3 grant.

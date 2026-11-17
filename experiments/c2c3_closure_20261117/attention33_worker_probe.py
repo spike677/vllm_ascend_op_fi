@@ -126,6 +126,8 @@ def run(args, bundle):
             async_scheduling=False, gpu_memory_utilization=args.memory, seed=42,
             worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension',
             disable_log_stats=True)
+        if coexistence is not None:
+            report['library_coexistence_after_standard_worker_initialization'] = coexistence.verify();save()
         require_host_driven_core(llm)
         tokens = llm.get_tokenizer().encode(PROMPT*128, add_special_tokens=True)[:1024]
         require(len(tokens) == 1024, 'BOUNDED_LEGITIMATE_1024_TOKEN_PREFILL_REQUIRED')

@@ -16,6 +16,8 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--stock-extension-control',action='store_true',
                         help='Same no-device extension import with no private library loaded or vendor environment')
+    parser.add_argument('--include-extension-import',action='store_true',
+                        help='Optional diagnostic; the unchanged extension also aborts in the stock no-device control')
     parser.add_argument('--child',action='store_true',help=argparse.SUPPRESS)
     args = parser.parse_args()
     faulthandler.enable()
@@ -34,7 +36,9 @@ def main():
                   actual_npu_tensor_operations=0,model_initialized=False,
                   completion_sha256=args.completion_sha256,failures=[],
                   stock_extension_control=args.stock_extension_control,
-                  private_api_preloaded=False)
+                  private_api_preloaded=False,full_extension_import_verified=False,
+                  native_worker_initialization_verified=False,
+                  scope='ACTUAL_API_SYMBOL_BINDINGS_AND_OFFICIAL_PLATFORM_ENVIRONMENT_ONLY')
     def checkpoint(stage):
         report['stage']=stage
         (args.out/'result.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
@@ -54,18 +58,21 @@ def main():
         else:
             current_platform.import_kernels()
             report['stock_vendor_environment'] = os.environ.get('ASCEND_CUSTOM_OPP_PATH')
-        # Load the unchanged extension so that its real dependencies coexist too.
-        # This imports/registers operators; no operator is called and no model is built.
-        checkpoint('BEFORE_ACTUAL_EXTENSION_IMPORT')
-        import vllm_ascend.vllm_ascend_C
-        if coexistence is not None:
-            report['after_actual_extension_import'] = coexistence.verify()
+        if args.stock_extension_control or args.include_extension_import:
+            checkpoint('BEFORE_ACTUAL_EXTENSION_IMPORT')
+            import vllm_ascend.vllm_ascend_C
+            report['full_extension_import_verified']=True
+            if coexistence is not None:
+                report['after_actual_extension_import'] = coexistence.verify()
+        else:
+            report['remaining_gate']='Device-backed ordinary Worker initialization and post-initialization binding recheck'
+            report['stock_and_private_device_free_extension_import']='ABORTED_IN_SEPARATE_PRESERVED_CONTROLS'
         report['status'] = ('CPU_STOCK_EXTENSION_IMPORT_VERIFIED' if args.stock_extension_control else
-                            'CPU_STOCK_PRIVATE_API_COEXISTENCE_VERIFIED')
+                            'CPU_API_BINDINGS_AND_PLATFORM_ENV_VERIFIED')
     except BaseException as error:
         report.update(status='CPU_LOADING_PREFLIGHT_FAILED')
         report['failures'].append(dict(error=repr(error),traceback=traceback.format_exc()))
-    success=report['status'] in ('CPU_STOCK_EXTENSION_IMPORT_VERIFIED','CPU_STOCK_PRIVATE_API_COEXISTENCE_VERIFIED')
+    success=report['status'] in ('CPU_STOCK_EXTENSION_IMPORT_VERIFIED','CPU_API_BINDINGS_AND_PLATFORM_ENV_VERIFIED')
     checkpoint('COMPLETE' if success else 'FAILED')
     print(json.dumps({key:report[key] for key in ('status','actual_npu_tensor_operations','failures')}))
     return 0 if success else 2

@@ -12,6 +12,7 @@ def main():
     for name in ('source','native','out'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--stock-extension-control',action='store_true')
+    parser.add_argument('--include-extension-import',action='store_true')
     args=parser.parse_args()
     root=Path('/home/17-fault-c2c3-20261117').resolve(strict=True)
     source,native=args.source.resolve(strict=True),args.native.resolve(strict=True)
@@ -36,6 +37,8 @@ def main():
         ' --vendor /native/stage/vendors/dcat_f33_fai_transformer --out /build/probe']
     if args.stock_extension_control:
         command[-1]+=' --stock-extension-control'
+    if args.include_extension_import:
+        command[-1]+=' --include-extension-import'
     report=dict(schema='demoncat.paged33.loading_cpu_controller.v1',image=image,command=command,
                 devices=[],actual_npu_tensor_operations=0,stock_extension_control=args.stock_extension_control)
     with (output/'controller.json').open('x') as stream:json.dump(report,stream,indent=2)
