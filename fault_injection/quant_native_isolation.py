@@ -29,12 +29,39 @@ def _unescape_path(value):
     return re.sub(r'\\([0-7]{3})', lambda match: chr(int(match.group(1), 8)), value)
 
 
+def _marker_owner(info, address, rows):
+    matches = [row for row in rows if row['start'] <= address < row['end']]
+    if len(matches) != 1:
+        raise UnsupportedCall('QUANT_SYMBOL_NOT_IN_VERIFIED_EXECUTABLE_MAPPING')
+    row = matches[0]
+    if row['deleted']:
+        raise UnsupportedCall('QUANT_EXECUTABLE_MAPPING_DELETED_IDENTITY_UNKNOWN')
+    actual = Path(os.fsdecode(info.name)).resolve(strict=True)
+    if actual != Path(row['path']).resolve(strict=True):
+        raise UnsupportedCall('QUANT_SYMBOL_AND_MAPPING_FILE_OWNER_DIFFER')
+    def matched(status):
+        return (status.st_ino == row['inode'] and os.major(status.st_dev) == row['major']
+                and os.minor(status.st_dev) == row['minor'])
+    with actual.open('rb') as stream:
+        status = os.fstat(stream.fileno())
+        if not matched(status):
+            raise UnsupportedCall('QUANT_MAPPED_FILE_IDENTITY_CHANGED')
+        content = stream.read()
+        if not content.startswith(b'\x7fELF') or not matched(os.fstat(stream.fileno())) or not matched(actual.stat()):
+            raise UnsupportedCall('QUANT_MAPPED_FILE_IDENTITY_CHANGED')
+    return dict(path=str(actual), base=int(info.base), inode=status.st_ino, device=status.st_dev,
+                sha256=hashlib.sha256(content).hexdigest())
+
+
 def mapped_native_modes():
     """Inspect existing mappings without loading any new library.
 
     Basenames and environment toggles are not authority. RTLD_NOLOAD locates an
     existing handle; dladdr identifies the actual owner of each exported marker,
     whose address/range/device/inode/file hash must match /proc/self/maps.
+    Unrelated system mappings may expose an overlayfs stat device different
+    from their mapped backing device. They are not quant ownership evidence:
+    inspect actual marker owners first, then apply the strict identity checks.
     """
     if sys.platform != 'linux' or not hasattr(os, 'RTLD_NOLOAD'):
         raise UnsupportedCall('QUANT_NATIVE_ISOLATION_REQUIRES_LINUX_LOADED_MAPS')
@@ -43,18 +70,12 @@ def mapped_native_modes():
         parts = line.split(None, 5)
         if len(parts) != 6 or 'x' not in parts[1] or not parts[5].startswith('/'):
             continue
-        if parts[5].endswith(' (deleted)'):
-            raise UnsupportedCall('QUANT_EXECUTABLE_MAPPING_DELETED_IDENTITY_UNKNOWN')
-        path = Path(_unescape_path(parts[5])).resolve(strict=True)
-        status = path.stat()
+        deleted = parts[5].endswith(' (deleted)')
+        path = _unescape_path(parts[5][:-10] if deleted else parts[5])
         major, minor = (int(value, 16) for value in parts[3].split(':'))
-        if (status.st_ino != int(parts[4]) or os.major(status.st_dev) != major or os.minor(status.st_dev) != minor):
-            raise UnsupportedCall('QUANT_MAPPED_FILE_IDENTITY_CHANGED')
-        with path.open('rb') as stream:
-            if stream.read(4) != b'\x7fELF':
-                continue
         start, end = (int(value, 16) for value in parts[0].split('-'))
-        rows.append(dict(path=path, inode=status.st_ino, device=status.st_dev, start=start, end=end))
+        rows.append(dict(path=path, inode=int(parts[4]), major=major, minor=minor,
+                         deleted=deleted, start=start, end=end))
     runtime = C.CDLL(None)
     runtime.dlopen.argtypes = [C.c_char_p, C.c_int]
     runtime.dlopen.restype = C.c_void_p
@@ -78,15 +99,9 @@ def mapped_native_modes():
                     info = _DlInfo()
                     if not runtime.dladdr(address, C.byref(info)) or not info.name or not info.base:
                         raise UnsupportedCall('QUANT_SYMBOL_OWNER_UNAVAILABLE')
-                    actual = Path(os.fsdecode(info.name)).resolve(strict=True)
-                    matches = [row for row in rows if row['path'] == actual and row['start'] <= address < row['end']]
-                    if len(matches) != 1:
-                        raise UnsupportedCall('QUANT_SYMBOL_NOT_IN_VERIFIED_EXECUTABLE_MAPPING')
-                    identity = matches[0]
+                    identity = _marker_owner(info, address, rows)
                     key = (mode, int(info.base))
-                    record = found.setdefault(key, dict(mode=mode, path=str(actual), base=int(info.base),
-                        inode=identity['inode'], device=identity['device'],
-                        sha256=hashlib.sha256(actual.read_bytes()).hexdigest(), symbols={}))
+                    record = found.setdefault(key, dict(mode=mode, **identity, symbols={}))
                     record['symbols'][symbol] = int(address)
         finally:
             if runtime.dlclose(handle):
