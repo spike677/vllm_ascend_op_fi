@@ -5,12 +5,13 @@ Serving hooks, authorize a CoverageSession, qualify a natural projection, or
 enable an NPU run. Unknown Attention/MoE row lineage continues to block the
 complete candidate set. `native_qualified_targets=0`, `c2=false`, `c3=false`.
 
-The reviewed Native source is unchanged from `072561ef`. Root compiled it
+The initial binding matched Native source `072561ef`. Root compiled it
 against actual CANN 8.5.1 in `native-quant-group-v1-a3`, with manifest SHA256
 `9c243c468fe42c12cc2af091dfb8642f4c9249f6b842ee2810e3306916654f0e`.
 The bundle is `/home/17-fault-c2c3-20261117/native-quant-group-v1-a3`.
 This is SDK compilation and CPU contract evidence, not numerical or NPU
-acceptance. No additional Native build is required for this Python increment.
+acceptance. The later empty-owner cancellation increment requires a fresh
+bundle; see [its root build handoff](providers_quant_group_cancel.md).
 
 ## Verified loading
 
@@ -60,10 +61,10 @@ and requires Worker disposal; it cannot claim same-Worker healthy OFF.
 
 Only a later provider may construct target/row identities and connect the
 original live C2 proof to CoverageSession. These low-level control methods
-provide no independent C2/C3 authority. The current empty installed group has
-no target-specific stop handle: passive discovery should use the uninstalled
-raw observer, and a future admission adapter must add/test safe empty-owner
-cancellation before using install for a potentially zero-target discovery.
+provide no independent C2/C3 authority. The explicit empty-owner cancellation
+API stops and drains only an owner that admitted no target. It cannot replace
+the whole-group recovery barrier for an admitted group. Passive discovery can
+also use the uninstalled raw observer.
 
 ## CPU validation and root handoff
 
@@ -84,8 +85,9 @@ is under `/home/17-fault-c2c3-20261117/providers-quant-guard-cpu-a1/receipt.json
 Those libraries are test marker fixtures, not CANN or the production group DSO;
 no device, container, model or quantization operation was started.
 
-After review, root can run the following in the same immutable image used for
-SDK a3, with source and bundle mounted read-only at `/source` and `/bundle`,
+After review and the fresh cancellation SDK build, root can run the following
+in the same immutable image used for SDK a3, with current source and matching
+bundle mounted read-only at `/source` and `/bundle`,
 only `/result` writable, `runc`, no device/driver mounts and no network. The
 runner must record the actual image ID and preserve its owned-container
 cleanup receipt. The script itself starts no container. It loads the reviewed
@@ -98,7 +100,7 @@ export VLLM_SERVER_DEV_MODE=1 DCAT_DQ_GROUP_V1_ALLOWED=1 DCAT_DQ_V2_ENABLE=0
 export DCAT_REAL_OPAPI=/usr/local/Ascend/cann-8.5.1/opp/built-in/op_impl/ai_core/tbe/op_api/lib/linux/aarch64/libopapi.so
 python3 /source/experiments/c2c3_closure_20261117/providers_quant_group_load_probe.py \
   --bundle /bundle \
-  --approved-build-sha256 9c243c468fe42c12cc2af091dfb8642f4c9249f6b842ee2810e3306916654f0e \
+  --approved-build-sha256 "$APPROVED_GROUP_BUILD_SHA256" \
   --out /result/load-probe
 ```
 

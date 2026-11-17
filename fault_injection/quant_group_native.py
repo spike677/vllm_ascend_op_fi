@@ -216,7 +216,8 @@ class QuantGroupNative:
             public_end=[pointer(Config), U64, pointer(View), pointer(View), C.c_int, pointer(Completion)],
             **{'pass': [pointer(Config), pointer(Call)], 'continue': [pointer(Lease)]},
             seal=[pointer(Config), pointer(Key), U64, U64, pointer(Key)], stop=[pointer(Config), pointer(Key)],
-            drain=[pointer(Config), pointer(Key)], recover=[pointer(Config)], remove=[pointer(Config), Admission, Completed])
+            drain=[pointer(Config), pointer(Key)], cancel_empty=[pointer(Config)],
+            recover=[pointer(Config)], remove=[pointer(Config), Admission, Completed])
         for name, argtypes in arguments.items():
             function = getattr(self.lib, 'dcat_dqg_' + name + '_v1')
             function.argtypes, function.restype = argtypes, C.c_int
@@ -408,6 +409,14 @@ class QuantGroupNative:
             self._verify_mapped()
             self._checked('recover', C.byref(self.config))
             return snapshot(self._state())
+
+    def cancel_empty(self):
+        with isolation.managed('group', session_runtime=self):
+            self._verify_mapped()
+            status = self.lib.dcat_dqg_cancel_empty_v1(C.byref(self.config))
+            if status not in (0, -10):
+                raise UnsupportedCall('QUANT_GROUP_EMPTY_CANCEL_IDENTITY_OR_STATE_FAILURE:' + str(status))
+            return status == 0
 
     def remove(self):
         with isolation.managed('group', session_runtime=self):

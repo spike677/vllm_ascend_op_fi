@@ -254,6 +254,35 @@ void sdk_metadata_arrays_release_on_all_view_exits() {
     try{(void)view(input);}catch(const std::bad_alloc&){caught=true;}
     assert(caught && array_accounting::count()==alive);throw_getter_at=0;
 }
+void empty_owner_cancel_drains_and_removes_exact_callbacks() {
+    install();selected_mode=0;Invocation call;call.success(71);
+    assert(!engine.state().targets && !journal.state().pending && admission==observe);
+    fail_sync_stream=71;
+    assert(dcat_dqg_cancel_empty_v1(&configured)==Pending && engine.state().installed && engine.state().stopped);
+    assert(dcat_dqg_remove_v1(&configured,observe,finish)==Pending && admission==observe);
+    PublicInput input{};input.thread=tid();input.device=0;input.input=view(reinterpret_cast<const aclTensor*>(&call.xx));uint64_t token=0;
+    assert(dcat_dqg_public_begin_v1(&configured,&input,&token)==Identity);
+    fail_sync_stream=0;
+    assert(dcat_dqg_cancel_empty_v1(&configured)==Ok && !engine.state().installed);
+    assert(dcat_dqg_remove_v1(&configured,nullptr,finish)==Pending && admission==observe);
+    assert(dcat_dqg_remove_v1(&configured,observe,finish)==Ok && !admission && !completed);
+    assert(real_prepares==1 && real_executes==1 && allocations_made==0);
+}
+void empty_cancel_refuses_live_scope_pending_executor_and_nonempty_group() {
+    install();selected_mode=0;Invocation call;call.begin();
+    assert(dcat_dqg_cancel_empty_v1(&configured)==Identity && engine.state().installed);
+    assert(!call.prepare() && journal.state().pending==1);
+    assert(call.end(1)==Liveness);public_storage_live=false;
+    assert(dcat_dqg_cancel_empty_v1(&configured)==Pending && engine.state().installed && admission==observe);
+    assert(dcat_dqg_remove_v1(&configured,observe,finish)==Pending && !late_copies);
+}
+void empty_cancel_does_not_release_an_admitted_target() {
+    install();selected_mode=Reference;Invocation call;call.success();
+    const auto host=engine.state().host_bytes;
+    assert(host && dcat_dqg_cancel_empty_v1(&configured)==Identity);
+    assert(engine.state().installed && engine.state().host_bytes==host && admission==observe);
+    stop_drain_recover();assert(dcat_dqg_remove_v1(&configured,observe,finish)==Ok);
+}
 void run(const char* name,void(*test)()) {
     const pid_t pid=fork();assert(pid>=0);
     if(!pid){test();std::cout<<"PASS "<<name<<"\n"<<std::flush;_exit(0);}
@@ -278,5 +307,8 @@ int main() {
     run("exception at completion revokes stack",throw_during_completion);
     run("C control ABI catches exceptions",control_abi_catches_exceptions);
     run("SDK metadata ownership on all exits",sdk_metadata_arrays_release_on_all_view_exits);
-    std::cout<<"PASS 14 typed-shim CPU memory contracts; actual NPU calls=0; mocked Native functions; SDK status depends on build headers\n";
+    run("empty owner actual raw stream drain and exact callback removal",empty_owner_cancel_drains_and_removes_exact_callbacks);
+    run("empty cancel retains live scope and pending executor",empty_cancel_refuses_live_scope_pending_executor_and_nonempty_group);
+    run("empty cancel cannot release admitted target",empty_cancel_does_not_release_an_admitted_target);
+    std::cout<<"PASS 17 typed-shim CPU memory contracts; actual NPU calls=0; mocked Native functions; SDK status depends on build headers\n";
 }

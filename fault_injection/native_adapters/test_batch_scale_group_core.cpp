@@ -402,6 +402,30 @@ void stale_execute_ticket_is_not_a_reused_executor_lease() {
     assert(f.engine.stop(f.config,f.a)==Ok);f.ops.actions.clear();
     assert(!f.engine.drain(f.config,f.a) && f.engine.recover(f.config)==Pending && !has_release(f.ops));
 }
+void empty_owner_cancellation_drains_raw_streams_and_retains_failed_owner() {
+    Fixture f;const auto p=f.observe();
+    auto raw=f.journal.prepare(p.input,p.quant,p.scale,f.config.thread,0);
+    f.journal.prepared(raw,777,0,1);
+    assert(f.engine.cancel_empty(f.config)==Pending && f.engine.state().installed && f.engine.state().stopped);
+    assert(f.admit(Reference,f.a)==Busy);
+    auto execute=f.journal.execute(777,f.config.thread,0,71);f.journal.executed(execute,0,1);
+    assert(!f.journal.state().pending);f.ops.sync_failure=71;f.ops.actions.clear();
+    assert(f.engine.cancel_empty(f.config)==Pending && f.engine.state().installed && !has_release(f.ops));
+    assert(f.ops.actions==std::vector<std::string>{"sync:71"});
+    f.ops.sync_failure=0;assert(f.engine.cancel_empty(f.config)==Ok && !f.engine.state().installed);
+    assert(f.journal.state().native_executes==1 && f.journal.state().unclassified_prepares==1);
+    assert(f.engine.open(f.config)==Identity);++f.config.generation;
+    assert(f.engine.open(f.config)==Ok);f.ops.actions.clear();
+    assert(f.engine.cancel_empty(f.config)==Ok && f.ops.actions.empty());
+}
+void empty_cancel_cannot_erase_targets_errors_or_foreign_owner() {
+    Fixture f;auto wrong=f.config;++wrong.generation;
+    assert(f.engine.cancel_empty(wrong)==Identity && !f.engine.state().stopped);
+    f.finish(Reference,f.a);const auto host=f.engine.state().host_bytes;
+    assert(f.engine.cancel_empty(f.config)==Identity && f.engine.state().installed && f.engine.state().host_bytes==host);
+    Fixture g;g.journal.mark_error();
+    assert(g.engine.cancel_empty(g.config)==Pending && g.engine.state().installed && g.engine.state().stopped);
+}
 }
 int main(){
     complete_two_targets_actual_reference_effect();missing_helper_wrong_identity_and_no_early_publish();
@@ -414,5 +438,6 @@ int main(){
     alias_allocation_and_descriptor_are_quarantined();address_reuse_without_lifetime_proof_cannot_restore();
     execute_failure_keeps_unproven_executor_ownership();observer_capacity_duplicate_helper_and_wrong_thread_refuse();
     stale_execute_ticket_is_not_a_reused_executor_lease();
+    empty_owner_cancellation_drains_raw_streams_and_retains_failed_owner();empty_cancel_cannot_erase_targets_errors_or_foreign_owner();
     std::cout<<"PASS explicit CPU group-core contracts; actual NPU calls=0; no numerical oracle\n";
 }

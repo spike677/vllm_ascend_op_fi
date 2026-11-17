@@ -261,7 +261,7 @@ struct Transaction {
 };
 class Engine {
     Ops& ops_;Journal& journal_;Config config_{};bool installed_{},stopped_{},sealed_{};
-    int error_{};uint64_t admitted_{},child_prepares_{},child_executes_{},last_parent_{};
+    int error_{};uint64_t admitted_{},child_prepares_{},child_executes_{},last_parent_{},opened_sequence_{};
     std::map<Key,Target> targets_;std::map<std::pair<uint64_t,uint64_t>,uint64_t> generations_;
     Transaction tx_{};Receipt last_{};
     bool owner(const Config& c) const {
@@ -377,7 +377,7 @@ public:
            || !c.max_host_bytes || c.max_host_bytes>512*1024*1024
            || c.generation<=generations_[owner_key])return Identity;
         config_=c;installed_=true;stopped_=sealed_=false;error_=0;admitted_=child_prepares_=child_executes_=last_parent_=0;
-        targets_.clear();generations_[owner_key]=c.generation;return Ok;
+        targets_.clear();generations_[owner_key]=c.generation;opened_sequence_=journal_.last_sequence();return Ok;
     }
     int admit(uint64_t parent_ticket,const Lease& lease) {
         const auto* call=journal_.parent_record(parent_ticket);const auto js=journal_.state();
@@ -566,6 +566,23 @@ public:
     int stop(const Config& c,const Key& target) {
         if(!owner(c) || !targets_.count(target))return Identity;
         stopped_=true;targets_.at(target).stopped=true;return Ok;
+    }
+    int cancel_empty(const Config& c) {
+        if(!owner(c) || !targets_.empty() || tx_.active || admitted_ || sealed_)return Identity;
+        stopped_=true; // Retry cannot admit a target while a raw call is unresolved.
+        if(!raw_quiescent())return Pending;
+        std::set<uint64_t> streams;
+        for(uint64_t sequence=opened_sequence_+1;sequence<=journal_.last_sequence();++sequence) {
+            const auto* event=journal_.event(sequence);
+            if(!event || event->kind!=ExecuteExit)continue;
+            if(event->status || event->original_calls!=1 || !event->stream
+               || event->thread!=config_.thread || event->device!=config_.device)return Pending;
+            streams.insert(event->stream);
+        }
+        // Raw pairing is not device drain. Every actual passthrough stream
+        // seen under this owner must complete before its callbacks can go away.
+        for(const auto stream:streams)if(!ops_.sync(stream))return Pending;
+        installed_=false;return Ok;
     }
     bool drain(const Config& c,const Key& key) {
         if(!owner(c) || !targets_.count(key) || !raw_quiescent()

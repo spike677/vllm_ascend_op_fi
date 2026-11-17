@@ -120,11 +120,12 @@ class FakeLibrary:
     def __init__(self):
         self._handle = id(self)
         self.state = group.RuntimeState()
-        self.remove_status = self.end_status = 0
+        self.remove_status = self.end_status = self.cancel_status = 0
         self.recover_calls = self.end_calls = 0
         operations = dict(abi=self.abi, state=self.query, install=self.install,
-                          public_begin=self.begin, public_end=self.end, remove=self.remove, recover=self.recover)
-        for name in ('abi', 'state', 'raw', 'install', 'public_begin', 'public_end', 'pass', 'continue', 'seal', 'stop', 'drain', 'recover', 'remove'):
+                          public_begin=self.begin, public_end=self.end, remove=self.remove, recover=self.recover,
+                          cancel_empty=lambda *args: self.cancel_status)
+        for name in ('abi', 'state', 'raw', 'install', 'public_begin', 'public_end', 'pass', 'continue', 'seal', 'stop', 'drain', 'cancel_empty', 'recover', 'remove'):
             setattr(self, 'dcat_dqg_' + name + '_v1', Function(operations.get(name, lambda *args: 0)))
     def abi(self, output):
         output = C.cast(output, C.POINTER(group.AbiSizes)).contents
@@ -261,6 +262,21 @@ class QuantGroupBindingTests(unittest.TestCase):
         with self.assertRaisesRegex(UnsupportedCall, 'remove:-10'):
             self.runtime.remove()
         self.assertIs(self.runtime._admission, admission)
+        self.assertIs(group._LIVE_OWNERS[self.runtime._registry_key], self.runtime)
+    def test_empty_cancel_keeps_callbacks_until_separate_successful_remove(self):
+        admission = self.runtime._admission
+        self.lib.cancel_status = -10
+        self.assertFalse(self.runtime.cancel_empty())
+        self.assertIs(group._LIVE_OWNERS[self.runtime._registry_key], self.runtime)
+        self.lib.cancel_status = 0
+        self.assertTrue(self.runtime.cancel_empty())
+        self.assertIs(self.runtime._admission, admission)
+        self.runtime.remove()
+        self.assertNotIn(self.runtime._registry_key, group._LIVE_OWNERS)
+    def test_nonempty_or_wrong_owner_cancellation_is_an_error(self):
+        self.lib.cancel_status = -1
+        with self.assertRaisesRegex(UnsupportedCall, 'EMPTY_CANCEL_IDENTITY'):
+            self.runtime.cancel_empty()
         self.assertIs(group._LIVE_OWNERS[self.runtime._registry_key], self.runtime)
     def test_cpu_input_has_no_native_fallback(self):
         import torch

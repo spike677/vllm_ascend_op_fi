@@ -46,6 +46,7 @@ int dcat_dqg_continue_v1(const dcat_dq_group::Lease*);
 int dcat_dqg_seal_v1(const dcat_dq_group::Config*,const dcat_dq_group::Key*,uint64_t,uint64_t,const dcat_dq_group::Key*);
 int dcat_dqg_stop_v1(const dcat_dq_group::Config*,const dcat_dq_group::Key*);
 int dcat_dqg_drain_v1(const dcat_dq_group::Config*,const dcat_dq_group::Key*);
+int dcat_dqg_cancel_empty_v1(const dcat_dq_group::Config*);
 int dcat_dqg_recover_v1(const dcat_dq_group::Config*);
 int dcat_dqg_remove_v1(const dcat_dq_group::Config*,dcat_dq_group::Admission,dcat_dq_group::Completed);
 }

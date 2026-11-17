@@ -19,7 +19,7 @@ SOURCES = tuple('fault_injection/native_adapters/' + name for name in (
     'batch_scale_group_core.h', 'batch_scale_group_runtime.h', 'batch_scale_group_runtime.cpp',
     'test_batch_scale_group_core.cpp', 'test_batch_scale_group_runtime.cpp'))
 EXPORTS = ('abi', 'state', 'raw', 'install', 'public_begin', 'public_end', 'pass', 'continue',
-           'seal', 'stop', 'drain', 'recover', 'remove')
+           'seal', 'stop', 'drain', 'cancel_empty', 'recover', 'remove')
 
 
 def sha(path):

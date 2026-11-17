@@ -264,7 +264,8 @@ extern "C" int dcat_dqg_public_begin_v1(const Config* c,const PublicInput* input
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(c) || !input || input->version!=1 || input->size!=sizeof(PublicInput) || input->reserved
        || input->thread!=tid() || input->device!=device() || !token || !admission || envelope.active || runtime.quarantined || abi_exceptions.load()
-       || engine.state().pending_parent || entrants.load() || legacy_present() || !span(input->input.address,input->input.bytes))return Identity;
+       || !engine.state().installed || engine.state().stopped || engine.state().pending_parent
+       || entrants.load() || legacy_present() || !span(input->input.address,input->input.bytes))return Identity;
     const auto census=journal.state();if(census.preparing || census.pending || census.executing || census.errors || census.overflow)return Observer;
     envelope=Envelope{};envelope.active=true;envelope.input=*input;envelope.token=++next_lifetime;*token=envelope.token;return Ok;
 } catch(...) {return abi_failure();}
@@ -322,6 +323,13 @@ extern "C" int dcat_dqg_recover_v1(const Config* c) try {
     if(!code && !orphan_count() && !abi_exceptions.load())runtime.quarantined=0;
     return code;
 } catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_cancel_empty_v1(const Config* c) try {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(!same_owner(c) || !admission || !completed || envelope.active || entrants.load()
+       || runtime.native_stack_active || runtime.callback_active || runtime.completion_active)return Identity;
+    if(runtime.quarantined || orphan_count() || abi_exceptions.load() || !passed.empty())return Pending;
+    return engine.cancel_empty(*c);
+} catch(...) {return abi_failure();}
 extern "C" int dcat_dqg_remove_v1(const Config* c,Admission observed,Completed finished) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     const auto state=engine.state();const auto census=journal.state();
@@ -349,7 +357,8 @@ extern "C" aclnnStatus aclnnDynamicQuantV2GetWorkspaceSize(const aclTensor* x,co
     }
     call=journal.parent(call); // Independent actual public entry, before admission.
     if(!ready || !workspace || !executor || !call.token || entry.overlap || runtime.quarantined || abi_exceptions.load() || legacy_present()
-       || (admission && (tid()!=owner.thread || device()!=owner.device)) || engine.state().pending_parent) {
+       || (admission && (tid()!=owner.thread || device()!=owner.device || !engine.state().installed || engine.state().stopped))
+       || engine.state().pending_parent) {
         reject(Identity);runtime.quarantined=runtime.quarantined || engine.state().pending_parent!=0;return invalid;
     }
     *workspace=0;*executor=nullptr;callback_call=call;decided=accepted=false;
