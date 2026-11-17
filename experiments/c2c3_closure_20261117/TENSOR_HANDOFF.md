@@ -358,3 +358,74 @@ callable/queue checks. The opaque-call fixture proves paired remapping through
 two dependent MoE modules, C2/C3 tickets and exact OFF. Refusal cases cover
 duplicate indices, replacement P producer and an unobserved structural module.
 No NPU was started here; no new natural Fault8 acceptance is claimed.
+
+## Remaining natural paths: 17 image prefill, 15 negative inventory
+
+A bounded `/home` model-config inventory (depth <=5, no symlink traversal;
+environment/cache/dependency/output directories excluded) found no downloaded
+Qwen-VL checkpoint. Existing visual models do not match original Fault17:
+HunyuanVideo VAE uses its native small kernels; Wan2.2-TI2V-5B uses
+`patch_size=(1,2,2)` in `/home/jw/Wan2.2/wan/modules/model.py` (SHA256
+`1d0355f1349c461344cb3a94c5cc88318110bd15f94ffe96ed03ebd6c0ba7538`);
+Z-Image-Turbo's transformer config has spatial patch2 / temporal1. None is
+converted, cropped, repadded or relabeled as the historical patch16 mechanism.
+
+The proposed new public checkpoint is
+[Qwen/Qwen3-VL-2B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct/tree/89644892e4d85e24eaac8bacfd4f463576704203),
+revision `89644892e4d85e24eaac8bacfd4f463576704203`. Its
+[official config](https://huggingface.co/Qwen/Qwen3-VL-2B-Instruct/blob/89644892e4d85e24eaac8bacfd4f463576704203/config.json)
+sets temporal patch2 / spatial patch16, in_channels3 and vision hidden1024.
+The full safetensors checkpoint is 4,255,140,312 bytes, SHA256
+`7de1838c87a5349b016c26a1c3f7d2bc400a3d485f95ef39a7059ffd734977a0`,
+verified against the public model metadata; root owns download and transport.
+The destination is `/home/17-fault-c2c3-20261117/models/Qwen3-VL-2B-Instruct`.
+
+Read-only inspection of the existing stopped 8.5.1 reference container confirms
+Transformers4.57.6, with `modeling_qwen3_vl.py` SHA256
+`dd63ed3b124232735b3dca1bfa28f9d6b0d3f7182afcb75dde8f3e724b2b22da`.
+Its actual patch embed uses stock nn.Conv3d and views the processor's real
+pixels to `[L,3,2,16,16]`, with kernel=stride `(2,16,16)`, padding0. Changing
+only padding to `(0,7,7)` keeps the native output `[L,1024,1,1,1]`. The
+[versioned upstream implementation](https://github.com/huggingface/transformers/blob/v4.57.1/src/transformers/models/qwen3_vl/modeling_qwen3_vl.py)
+also documents this path; the actual installed source hash above is the gate.
+
+`natural_vision_input.py` loads the complete pretrained model and unmodified
+official processor using an existing image,
+`/home/jw/Wan2.2/examples/i2v_input.JPG` (250628 bytes; SHA256
+`077e3d965090c9028c69c00931675f42e1acc815c6eb450ab291b3b72d211a8e`).
+The image is read in place and is not published/uploaded. No synthetic image
+patches or extra convolution are inserted. Complete model logits, real input
+identities and weight/source/image hashes are retained. Scope is strictly
+MODEL_LOCAL natural pretrained image-prefill, not standard Worker evidence.
+
+Root can prepare `--task vision17-census` first, followed only on a successful
+actual census by `--task vision17-group`, using
+`prepare_tensor_natural_cases.py --source <new-frozen-source> --card 2 --out
+<new-cases.json>`. The group case includes C2/OFF, two-forward C3/OFF and full
+API/module raw B/B-repeat/F/OFF statistics through the existing reviewed
+diagnostics-pause collector. Raw construct/stack, null statistics and fixed
+rtol1e-5/atol1e-8 remain unchanged.
+
+`PatchConv3dSession` intercepts the real observed aten.conv3d/convolution
+argument, calls its dispatcher once and returns the unmodified native result.
+Admission requires original stock forward + `_conv_forward`, original p0,
+patch16, stride=kernel, dilation1/groups1 and the exact native output geometry.
+Full input/weight/bias bytes must equal the healthy call before a fault effect
+comparison; cases with different propagated inputs refuse. Real downstream
+view/copy lineage must reach a data-consuming operator. Structural candidates
+are automatically inventoried; an inactive/custom/unsupported Conv3d cannot
+silently reduce the denominator. Four healthy complete forwards must be exact,
+and OFF compares the complete model result. CPU fixtures validate these rules;
+they do not establish natural or NPU qualification.
+
+The installed standard Worker source also supports actual AscendConv3d through
+`forward_oot -> _forward_conv -> F.conv3d` (`vllm_ascend/ops/conv.py` SHA256
+`cc288c542410ea50bf9f112d25db2493f54a2c522f27bdba3f9afc137740e295`).
+However, the shared serving snapshot currently refuses actual `mm_features`
+with `CACHED_MULTIMODAL_OR_EMBEDDING_INPUT_UNADAPTED`. This is explicitly
+unadapted, and no text-only scheduler proof is borrowed for vision.
+
+Fault15 remains unmatched in observed natural workloads: VAE format30 is
+NCDHW, not private NZ format29. Its actual select/slice inventory does not
+prove the required private view -> natural copy_ -> same-original-base read
+chain. No model writes or private-layout conversions are added to create one.

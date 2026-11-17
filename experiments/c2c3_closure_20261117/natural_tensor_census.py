@@ -46,6 +46,9 @@ def output_identity(value):
 
 def load_local(args):
     import torch
+    if args.kind == 'hf-vision':
+        from experiments.c2c3_closure_20261117.natural_vision_input import load_vision
+        return load_vision(args)
     if args.kind == 'hf':
         from transformers import AutoModelForCausalLM, AutoTokenizer
         tokenizer = AutoTokenizer.from_pretrained(args.model, local_files_only=True, trust_remote_code=False)
@@ -230,11 +233,12 @@ def run_worker(args, report):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--kind', choices=('hf', 'vae', 'worker'), required=True)
+    parser.add_argument('--kind', choices=('hf', 'hf-vision', 'vae', 'worker'), required=True)
     parser.add_argument('--model', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--vae-source', type=Path)
     parser.add_argument('--latent', type=Path)
+    parser.add_argument('--image', type=Path)
     parser.add_argument('--memory', type=float, default=.35)
     parser.add_argument('--moe-trace', action='store_true',
         help='Read exact reviewed MoE producer/combine frames; only for the actual DeepSeek W8A8 Worker')

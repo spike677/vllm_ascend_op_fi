@@ -17,6 +17,9 @@ def cases(source, task, card=2, image='quay.io/ascend/vllm-ascend:v0.18.0'):
         phases = [('natural-worker18-stats-b', 'baseline'), ('natural-worker18-stats-repeat', 'baseline'),
                   ('natural-worker18-stats-f', 'fault')]
         model = '/home/gyl/models/Qwen3-0.6B'
+    elif task in ('vision17-census','vision17-group'):
+        phases = [('natural-'+task, None)]
+        model = '/home/17-fault-c2c3-20261117/models/Qwen3-VL-2B-Instruct'
     else:
         raise ValueError('EXPLICIT_TENSOR_TASK_REQUIRED')
     result = []
@@ -45,13 +48,30 @@ def cases(source, task, card=2, image='quay.io/ascend/vllm-ascend:v0.18.0'):
             result[-1]['review'].update(provider='Source-bound actual MoE paired I/P input remap',
                 expected_hits='Runtime-qualified all MoE targets once, then two every-match forwards; prior26 is expectation only',
                 recovery_plan='Four actual healthy qualifications; C2+OFF then C3 two requests+OFF; exact full hidden/logits and post-cleanup healthy generation; owned source-bound profile/modes removed; no layer/router changes.')
+        if task in ('vision17-census','vision17-group'):
+            result[-1]['command'] = ('source /usr/local/Ascend/cann-8.5.1/set_env.sh\nexec '
+                'python3 /source/experiments/c2c3_closure_20261117/natural_tensor_census.py '
+                '--kind hf-vision --model /model --image /natural-input.JPG --out /evidence/probe')
+            result[-1]['mounts'].append(['/home/jw/Wan2.2/examples/i2v_input.JPG','/natural-input.JPG','ro'])
+            result[-1]['review'].update(provider='NaturalTensorObserver full pretrained image prefill census',
+                worker='MODEL_LOCAL full pretrained Qwen3VL; not standard Worker evidence',
+                expected_hits=0, recovery_plan='No injection; full exact B/B-repeat; original image processor and native Conv3d geometry; remove owned observer.')
+            if task == 'vision17-group':
+                result[-1]['command'] = ('source /usr/local/Ascend/cann-8.5.1/set_env.sh\nexec '
+                    'python3 /source/experiments/c2c3_closure_20261117/natural_tensor_group_probe.py '
+                    '--kind hf-vision --mechanism 17.spatial_padding --model /model '
+                    '--image /natural-input.JPG --out /evidence/probe --statistics')
+                result[-1]['review'].update(provider='Actual stock patch Conv3d padding argument group',
+                    expected_hits='All actual qualified patch Conv3d calls once, then two every-match image forwards',
+                    recovery_plan='Four exact healthy image forwards; C2+OFF then C3+OFF; full raw B/B-repeat/F+OFF statistics; immutable original weights/image/geometry, complete logits and owned cleanup.')
     return result
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', required=True)
-    parser.add_argument('--task', choices=('moe8-census', 'moe8-group', 'worker18-statistics'), required=True)
+    parser.add_argument('--task', choices=('moe8-census', 'moe8-group', 'worker18-statistics',
+                                         'vision17-census','vision17-group'), required=True)
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--image', default='quay.io/ascend/vllm-ascend:v0.18.0')
     parser.add_argument('--out', type=Path, required=True)

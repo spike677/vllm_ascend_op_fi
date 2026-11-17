@@ -165,6 +165,14 @@ class NaturalTensorObserver:
         if row is not None:
             row['output'] = [metadata(x) for x in tensors(result)]
             row['original_returned'] = True
+            if name in ('aten::convolution', 'aten::conv3d'):
+                values = {item.name: item.default_value for item in schema.arguments}
+                values.update(zip((item.name for item in schema.arguments), args)); values.update(kwargs)
+                row['conv_geometry'] = {key: values[key] for key in
+                    ('stride','padding','dilation','groups','transposed','output_padding') if key in values}
+                owners = [(path,module) for path,module,_ in self.stack
+                    if getattr(module,'weight',None) is values.get('weight')]
+                row['weight_owner_paths'] = [path for path,_ in owners]
             if 'rms_norm' in name:
                 owners = [(path, module) for path, module, _ in self.stack
                     if any(getattr(module, 'weight', None) is item for item in inputs)]
@@ -208,6 +216,9 @@ class NaturalTensorObserver:
             identity = callable_identity(module)
             source = identity.get('source', '')
             role = ('conv3d' if isinstance(module, torch.nn.Conv3d) else
+                    'conv3d_structural_candidate' if getattr(getattr(module,'weight',None),'ndim',None) == 5
+                    and isinstance(getattr(module,'kernel_size',None),(tuple,list))
+                    and len(module.kernel_size) == 3 else
                     'rmsnorm_source_candidate' if isinstance(module, torch.nn.RMSNorm)
                     or ('rsqrt' in source and 'mean' in source) or 'rms_norm' in source else
                     'rope_table_owner' if hasattr(module, 'cos_sin_cache') else None)

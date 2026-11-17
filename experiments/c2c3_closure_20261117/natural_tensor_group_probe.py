@@ -23,12 +23,13 @@ def digest(value):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--kind', choices=('hf', 'vae'), default='hf')
-    parser.add_argument('--mechanism', choices=('18.api_half', '22.wrong_row'), required=True)
+    parser.add_argument('--kind', choices=('hf', 'hf-vision', 'vae'), default='hf')
+    parser.add_argument('--mechanism', choices=('17.spatial_padding', '18.api_half', '22.wrong_row'), required=True)
     parser.add_argument('--model', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--vae-source', type=Path)
     parser.add_argument('--latent', type=Path)
+    parser.add_argument('--image', type=Path)
     parser.add_argument('--c3-forwards', type=int, default=2)
     parser.add_argument('--statistics', action='store_true')
     args = parser.parse_args()

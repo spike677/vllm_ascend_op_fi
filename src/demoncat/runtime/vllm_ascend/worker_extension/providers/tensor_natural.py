@@ -24,8 +24,10 @@ class NaturalTensorGroupProvider:
     def __init__(self, model, mechanism, *, replay, synchronize, workload_sha256,
                  environment_sha256, model_weights_sha256, model_source_sha256,
                  simulation=False, model_observation=None, worker_identity=None):
-        if mechanism not in ('8.restore_offset', '18.api_half', '22.wrong_row'):
-            raise ValueError('Only reviewed natural RMSNorm, RoPE-lookup and MoE-restore groups are enabled')
+        if mechanism not in ('8.restore_offset', '17.spatial_padding', '18.api_half', '22.wrong_row'):
+            raise ValueError('Only reviewed natural patch Conv3d, RMSNorm, RoPE-lookup and MoE-restore groups are enabled')
+        if mechanism == '17.spatial_padding' and worker_identity is not None:
+            raise ValueError('Natural patch Conv3d currently requires MODEL_LOCAL image-prefill scope')
         if not callable(replay) or not callable(synchronize) or model.training or type(simulation) is not bool:
             raise ValueError('An actual inference model replay and synchronizer are required')
         from fault_injection.coverage_session import CoverageScope
@@ -45,11 +47,12 @@ class NaturalTensorGroupProvider:
         import fault_injection.route8 as moe
         import fault_injection.moe_census as moe_observer
         import fault_injection.moe_restore as moe_restore
+        import fault_injection.conv3d_natural as conv
         host = Path(__file__).resolve().parents[1]
         self.source_sha = _sha({str(Path(p).name): hashlib.sha256(Path(p).read_bytes()).hexdigest()
             for p in (__file__, rms.__file__, rope.__file__, observer.__file__,
                       callable_proof.__file__, scoped.__file__, module_faults.__file__,
-                      moe.__file__, moe_observer.__file__, moe_restore.__file__,
+                      moe.__file__, moe_observer.__file__, moe_restore.__file__, conv.__file__,
                       host/'serving_tensor.py', host/'serving_moe.py')})
         self.scope = CoverageScope(mechanism, workload_sha256, environment_sha256, self.source_sha,
             evidence_kind='cpu_contract' if simulation else
@@ -69,6 +72,7 @@ class NaturalTensorGroupProvider:
         self._running = False
         self._statistics_arm = None
         self.current_request_ids = None
+        self.conv_references = None
         self.owned_host_hooks = lambda: 0
 
     def _event(self, path, operator, metadata):
@@ -100,7 +104,16 @@ class NaturalTensorGroupProvider:
         schema = getattr(func, '_schema', None)
         name = getattr(schema, 'name', '')
         inputs = tuple(tensors((args, kwargs)))
-        if self.mechanism == '18.api_half':
+        if self.mechanism == '17.spatial_padding':
+            from fault_injection.conv3d_natural import conv_arguments
+            values = conv_arguments(func,args,kwargs)
+            if values is not None:
+                owners = [(path,module) for path,module,_ in stack
+                          if getattr(module,'weight',None) is values['weight']]
+                if len(owners) != 1:
+                    raise ProviderError('CONV3D_NATIVE_WEIGHT_OWNER_AMBIGUOUS')
+                self._event(owners[0][0],str(func),[metadata(t) for t in inputs])
+        elif self.mechanism == '18.api_half':
             if (name.split('::', 1)[0] not in ('npu', '_C_ascend') or name.rsplit('::', 1)[-1]
                 not in ('npu_rms_norm', 'npu_add_rms_norm', 'npu_add_rms_norm_bias')):
                 return
@@ -134,7 +147,12 @@ class NaturalTensorGroupProvider:
         return self.enabled and decision.admitted
 
     def _adapter(self, arm):
-        if self.mechanism == '18.api_half':
+        if self.mechanism == '17.spatial_padding':
+            from fault_injection.conv3d_natural import PatchConv3dSession
+            return PatchConv3dSession(self.model,arm=arm,simulation=self.simulation,
+                admission=self._admission,references=self.conv_references,
+                diagnostics_context=getattr(self.model_observation,'diagnostics',None))
+        elif self.mechanism == '18.api_half':
             from fault_injection.rmsnorm_return import RMSNormReturnSession
             factory = RMSNormReturnSession
         else:
@@ -180,6 +198,8 @@ class NaturalTensorGroupProvider:
                 raise ProviderError('ONE_ACTUAL_ROOT_FORWARD_REQUIRED')
             output = _capture(output)
             report = adapter.report() if adapter else None
+            if self.mechanism == '17.spatial_padding' and adapter and arm == 'baseline' and self.conv_references is None:
+                self.conv_references = dict(adapter.healthy_calls)
             census = observer.report()
             if not census['complete']:
                 raise ProviderError('INDEPENDENT_CENSUS_INCOMPLETE')
@@ -271,7 +291,8 @@ class NaturalTensorGroupProvider:
             module = modules[key[0]]
             from fault_injection.tensor_callable import TensorCallableGuard
             guard = TensorCallableGuard(module,
-                extra_methods=('forward_impl',) if self.mechanism == '8.restore_offset' else (),
+                extra_methods=('forward_impl',) if self.mechanism == '8.restore_offset' else
+                    ('_conv_forward',) if self.mechanism == '17.spatial_padding' else (),
                 # AscendFusedMoE overrides forward and uses runner/forward_impl;
                 # its inherited, unused CustomOp dispatch field is not this
                 # boundary. A direct _forward_method access always stays bound.
@@ -287,6 +308,7 @@ class NaturalTensorGroupProvider:
                 model_instance_id=self.context['model_instance_id'], model_object_identity=id(self.model),
                 module_object_identity=id(module), module_roles={
                     '18.api_half': ('RMSNORM_RETURN',), '22.wrong_row': ('ROPE_ROW_READER',),
+                    '17.spatial_padding': ('CONV3D_SPATIAL_PADDING_ARGUMENT',),
                     '8.restore_offset': ('MOE_RESTORE_INPUTS',)}[self.mechanism],
                 operator_api=event.get('operator', event['boundary']),
                 tensor_signature=json.dumps(_signature(event, self.mechanism), sort_keys=True),
@@ -296,7 +318,12 @@ class NaturalTensorGroupProvider:
             self.selected[key] = target
             rows.append(Candidate(key[0] + ':' + str(key[1]), EligibilityResult(Eligibility.SUPPORTED), target))
         observed_paths = {event['path'] for event in events}
-        if self.mechanism == '18.api_half':
+        if self.mechanism == '17.spatial_padding':
+            expected = {item['path'] for item in first['independent']['module_inventory']
+                        if item['role'] in ('conv3d','conv3d_structural_candidate')}
+            if expected != observed_paths or len(events) != len(expected):
+                raise ProviderError('NATURAL_CONV3D_STRUCTURAL_DENOMINATOR_INCOMPLETE')
+        elif self.mechanism == '18.api_half':
             required = {path for path, contract in self.eager_paths.items() if contract is not None}
             if not required.issubset(observed_paths):
                 raise ProviderError('STRUCTURAL_RMSNORM_NOT_OBSERVED', str(sorted(required-observed_paths)))
@@ -398,6 +425,7 @@ class NaturalTensorGroupProvider:
         report.update(execution_boundary='python_hook', native_loaded=False,
             mechanism_semantics={
                 '18.api_half': 'RMSNorm output half proxy',
+                '17.spatial_padding': 'Actual native patch Conv3d padding (0,0,0) to (0,7,7); unchanged geometry',
                 '22.wrong_row': 'Legal-address RoPE wrong-row lookup output proxy; not uint32 overflow',
                 '8.restore_offset': 'Actual MoE unpermute paired token-group index/probability remap'}[self.mechanism],
             recovery=recovery, independent_statistics='SEPARATE_RAW_COMPARISON_REQUIRED',
