@@ -18,6 +18,9 @@ binds this correction to the exact executed source and seven library hashes.
 
 The [17-mechanism and27-node matrix](C2_C3_MATRIX.md) lists the accepted scopes,
 natural-path gaps, queued experiments and version/hardware limits individually.
+The [latest repaired-build checkpoint](REQUALIFICATION_20261118.md) retains
+the actual Native39/Fault26/Fault41 failures, new independent raw comparisons
+and subsequent CPU/SDK repairs. None silently increases the strict count.
 
 | Reviewed route | C2 | C3 | Independent statistics limitation |
 | --- | --- | --- | --- |

@@ -1,5 +1,34 @@
 # Current execution checkpoint
 
+## Current checkpoint — new failures diagnosed; source42 and repaired SDKs
+
+- See REQUALIFICATION_20261118.md for actual result hashes and strict2/17 count.
+  The older checkpoints below are chronological; their active sessions ended.
+- Integrated97f7900/e35844ef/68687c5/000721a as913c3ca5/2bb3ef36/a7aef1ff/de7e9d5d.
+  Root CPU suite955 tests,951 pass/4 skips. Build-controller ownership cleanup
+  d147290 follows. source42 has713 files; archive2bf5448df83eb43d15028a851bdc61682ad54ccd9ef9751ea99e227fedbb2140,
+  manifest2ba5ffaab59008257643ee15cea3162c13db6cd66f5de68775fbbb7ce885b245.
+- packages-a16 built;controller e418275a636f009925d7f6fbaa5eb19bd7a62e1502fa6e3f7968904f521662af.
+  Native39-a2 freshly built at native-repair-builds-a2/native39/cache/
+  bbf67abea7e0839468b0debb57b008dfecd03c84742aebdf6864ce3b35473deb/
+  attempt-e4a491cca942436c8e4a301319cb8ba7/native.
+  Manifest8ff299b35ba6637a86adfad24203e87eb227e188a05e3fc78a0c0719cafb05e3,
+  profile7c73c38ada62cb57030b5ae60482902c2653bc9869b5f800b407e0bfcc9238d2.
+  Run new39/20 --metadata-preflight first, before full statistics/C3.
+- Quant group a4 SDK/CPU and actual-image no-device loader passed. New empty-owner
+  cancel ABI is built; no Serving/NPU admission yet. Nativeprovider agent owns
+  natural request-row integration; metadata agent owns26 explicit dependency
+  loading/diagnostics. Do not merely weaken four-loaded-counter evidence.
+- Source42 active NPU session19392:rope22-runtime-census-card2-a2,zero injection,
+  caseec53c79c16d22a12cbc7ff1b4064321f1b3a7e533afa8b2dda24990e2787f4c9,
+  scope6b541ad571c1ad3b6a85bb0cb7953aa31b2e4b25b6e41a73569b157225e46e76.
+  Only root owns card2; no concurrent NPU. Active CPU session2416:
+  tnd33-fai-fd-build-a1,owned no-device image,8 keys; check completion.
+- Fault41 collector repair77fcc22 integrated as c5c309d8 after source42;
+  root focused19pass/1skip. Needs a new source/install snapshot for NPU use.
+  Postwrite specialist continues39 independent discovery and41 raw range review.
+  No failed original evidence has been edited. New raw files remain124.
+
 ## Active checkpoint — MoE8 accepted; Worker18 raw first difference; repaired Native retry
 
 - Latest published GitHub checkpoint4e913d98 was verified through the connector.
