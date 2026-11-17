@@ -1,0 +1,342 @@
+{
+  "schema": "demoncat.coverage.proof_authority_review.v1",
+  "review_kind": "FROZEN_SOURCE_ROUTE_AND_CPU_CONTRACTS_NOT_NEW_NPU",
+  "source_identity_basis": "Root-provided actual source snapshots/driver hashes; exact committed driver bytes independently checked",
+  "code_fixes": [
+    "9499d57",
+    "13955ef"
+  ],
+  "findings": {
+    "old_gate_weakness": "dataclasses.replace or shallow copy retained issuer marker without recorded issuance",
+    "new_gate": "Exact issued object, sealed immutable dataclass fields, actual issuing process, plus existing scope/owner/generation/target checks",
+    "old_run_source_routes_exploit_weakness": false,
+    "replay_or_requalification_performed": false,
+    "previous_acceptances_stay_bound_to_original_scope_and_source": true,
+    "public_qualifications_granted": false
+  },
+  "runs": [
+    {
+      "mechanism": "18.api_half",
+      "actual_snapshot": "source-a20",
+      "source_commit": "8967dffc825600ebc12e4b38617f3ac7ca08ca6f",
+      "actual_driver_sha256": "da53c7e119854c70a0ae4647b00f3e367897174d4d9385f417a83d75cbf5d349",
+      "exact_driver_bytes_match": true,
+      "reviewed_source_route_uses_original_live_proof": true,
+      "source_route_depends_on_clone_or_relabel_weakness": false,
+      "files": [
+        {
+          "path": "experiments/c2c3_closure_20261117/natural_rms_worker_probe.py",
+          "bytes": 7856,
+          "sha256": "da53c7e119854c70a0ae4647b00f3e367897174d4d9385f417a83d75cbf5d349",
+          "source_commit": "8967dffc825600ebc12e4b38617f3ac7ca08ca6f",
+          "proof_flow_lines": [
+            {
+              "line": 52,
+              "text": "proof = session.provider.group.c2_proof() if trigger == 'every_match' else None"
+            },
+            {
+              "line": 53,
+              "text": "group = session.provider.open_group(trigger, forwards=forwards, c2_proof=proof)"
+            }
+          ],
+          "proof_reconstruction_calls": []
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving_tensor.py",
+          "bytes": 13088,
+          "sha256": "ad921335d9469c6c97101160cd6b040bb98b5056503ec1911aa60bed04bff061",
+          "source_commit": "8967dffc825600ebc12e4b38617f3ac7ca08ca6f",
+          "proof_flow_lines": [],
+          "proof_reconstruction_calls": []
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/providers/tensor_natural.py",
+          "bytes": 25750,
+          "sha256": "e78257baefd56360f77b94f419766214da235de7354274b76bfc444f013e2a60",
+          "source_commit": "8967dffc825600ebc12e4b38617f3ac7ca08ca6f",
+          "proof_flow_lines": [
+            {
+              "line": 328,
+              "text": "def open_group(self, trigger='once', *, forwards=1, c2_proof=None):"
+            },
+            {
+              "line": 364,
+              "text": "recovery=GroupRecoveryHooks(stop, drain, self._recover, self._health), c2_proof=c2_proof)"
+            },
+            {
+              "line": 383,
+              "text": "def run(self, trigger='once', *, forwards=1, c2_proof=None):"
+            },
+            {
+              "line": 384,
+              "text": "self.open_group(trigger, forwards=forwards, c2_proof=c2_proof)"
+            }
+          ],
+          "proof_reconstruction_calls": []
+        }
+      ]
+    },
+    {
+      "mechanism": "20.buffer_substitute",
+      "actual_snapshot": "source-a21",
+      "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+      "actual_driver_sha256": "d28659e537d350bb9da49612fd1a530b2ea33de80765f4a566c882f0ece455ec",
+      "exact_driver_bytes_match": true,
+      "reviewed_source_route_uses_original_live_proof": true,
+      "source_route_depends_on_clone_or_relabel_weakness": false,
+      "files": [
+        {
+          "path": "experiments/c2c3_closure_20261117/providers20_worker_probe.py",
+          "bytes": 10106,
+          "sha256": "d28659e537d350bb9da49612fd1a530b2ea33de80765f4a566c882f0ece455ec",
+          "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+          "proof_flow_lines": [],
+          "proof_reconstruction_calls": []
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving20_coverage.py",
+          "bytes": 10537,
+          "sha256": "655ce7aef3b17330f504df6c617286d7a888be42d145a9fc741bcd74d3fb9425",
+          "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+          "proof_flow_lines": [
+            {
+              "line": 101,
+              "text": "self.worker._demoncat20_live_c2_proof = self.backend.proof"
+            },
+            {
+              "line": 156,
+              "text": "c2_proof = getattr(worker, '_demoncat20_live_c2_proof', None) if trigger == 'every_match' else None"
+            },
+            {
+              "line": 157,
+              "text": "require(trigger != 'every_match' or c2_proof is not None, 'SAME_WORKER_REAL_C2_PROOF_REQUIRED')"
+            },
+            {
+              "line": 168,
+              "text": "trigger=trigger, c2_proof=c2_proof)"
+            }
+          ],
+          "proof_reconstruction_calls": []
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/quant_group.py",
+          "bytes": 27651,
+          "sha256": "0c2dda857c775dfbf54bcbaf8fbf70d2a05f6f686fd9b6c130bde1902bde2db1",
+          "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+          "proof_flow_lines": [
+            {
+              "line": 40,
+              "text": "folder, required_libraries, trigger='once', c2_proof=None, evidence_kind='natural_worker'):"
+            },
+            {
+              "line": 42,
+              "text": "require(trigger in ('once', 'every_match') and (trigger == 'once' or c2_proof is not None),"
+            },
+            {
+              "line": 47,
+              "text": "self.trigger, self.c2_proof, self.evidence_kind = trigger, c2_proof, evidence_kind"
+            },
+            {
+              "line": 48,
+              "text": "self.group_owner = c2_proof.owner if c2_proof is not None else owner"
+            },
+            {
+              "line": 49,
+              "text": "self.logical_generation = c2_proof.generation + 1 if c2_proof is not None else 1"
+            },
+            {
+              "line": 58,
+              "text": "self.coverage = self.observer = self.group = self.proof = None"
+            },
+            {
+              "line": 343,
+              "text": "lease = TargetLease(row['identity'], self.group_owner, self.logical_generation,"
+            },
+            {
+              "line": 344,
+              "text": "digest([self.group_owner, row['key']]), row['device_bytes'], row['host_bytes'])"
+            },
+            {
+              "line": 358,
+              "text": "self.observer = IndependentCallObserver(source='independent_native_trace', observer_id=self.group_owner + ':native-v3',"
+            },
+            {
+              "line": 366,
+              "text": "recovery=GroupRecoveryHooks(self._stop, self._drain, self._recover_target, self._health), c2_proof=self.c2_proof)"
+            },
+            {
+              "line": 415,
+              "text": "self.proof = self.coverage.c2_proof() if self.trigger == 'once' else None"
+            }
+          ],
+          "proof_reconstruction_calls": []
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault20.py",
+          "bytes": 14031,
+          "sha256": "d34bd242aa73be0651a557c50f5a0991d6c270ca83f78008585fe3b99d69e152",
+          "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+          "proof_flow_lines": [],
+          "proof_reconstruction_calls": []
+        }
+      ]
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "actual_snapshot": "source-a21",
+      "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+      "actual_driver_sha256": "c682b7fc179ccb583dfbef4f0d78b90d4e7da7b8b930de6647741c99a84f63d6",
+      "exact_driver_bytes_match": true,
+      "reviewed_source_route_uses_original_live_proof": true,
+      "source_route_depends_on_clone_or_relabel_weakness": false,
+      "files": [
+        {
+          "path": "experiments/c2c3_closure_20261117/providers39_worker_probe.py",
+          "bytes": 9970,
+          "sha256": "c682b7fc179ccb583dfbef4f0d78b90d4e7da7b8b930de6647741c99a84f63d6",
+          "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+          "proof_flow_lines": [],
+          "proof_reconstruction_calls": []
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+          "bytes": 15625,
+          "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825",
+          "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+          "proof_flow_lines": [
+            {
+              "line": 248,
+              "text": "self.worker._demoncat39_live_c2_proof = self.backend.proof"
+            },
+            {
+              "line": 283,
+              "text": "c2_proof = getattr(worker, '_demoncat39_live_c2_proof', None) if trigger == 'every_match' else None"
+            },
+            {
+              "line": 284,
+              "text": "require(trigger == 'once' or c2_proof is not None, 'SAME_WORKER_REAL_C2_PROOF_REQUIRED')"
+            },
+            {
+              "line": 309,
+              "text": "return Fault39CoverageReplay(state['build_profile_sha256'], make_session, folder / 'native', trigger, c2_proof)"
+            }
+          ],
+          "proof_reconstruction_calls": []
+        },
+        {
+          "path": "fault39/src/demoncat_fault39/coverage_adapter.py",
+          "bytes": 29075,
+          "sha256": "49a0a2777915100f979e1bfafdbd816287e0d7fbf06d03de3df8ef724128fbb4",
+          "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+          "proof_flow_lines": [
+            {
+              "line": 91,
+              "text": "identity, trigger='once', c2_proof=None, max_dispatch_calls=20000,"
+            },
+            {
+              "line": 94,
+              "text": "require(trigger != 'every_match' or c2_proof is not None, 'REAL_C2_PROOF_REQUIRED')"
+            },
+            {
+              "line": 98,
+              "text": "self.trigger, self.c2_proof = trigger, c2_proof"
+            },
+            {
+              "line": 102,
+              "text": "self.group_owner = c2_proof.owner if c2_proof is not None else owner"
+            },
+            {
+              "line": 115,
+              "text": "self.coverage = self.observer = self.group = self.proof = None"
+            },
+            {
+              "line": 120,
+              "text": "self.logical_generation = c2_proof.generation + 1 if c2_proof is not None else 1"
+            },
+            {
+              "line": 395,
+              "text": "lease = TargetLease(row['identity'], self.group_owner, self.logical_generation, digest([self.group_owner, site]),"
+            },
+            {
+              "line": 414,
+              "text": "self.observer = IndependentCallObserver(source='independent_native_trace', observer_id=self.group_owner + ':native-observer',"
+            },
+            {
+              "line": 423,
+              "text": "budget=SessionBudget(self.max_dispatch_calls, self.max_seconds, 1), recovery=hooks, c2_proof=self.c2_proof)"
+            },
+            {
+              "line": 460,
+              "text": "self.proof = self.coverage.c2_proof() if self.trigger == 'once' else None"
+            }
+          ],
+          "proof_reconstruction_calls": []
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39.py",
+          "bytes": 11173,
+          "sha256": "93c23cdb7a60a1e4b5378ae0365146bddf5908f6ebe394423fc29397c51c3c95",
+          "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+          "proof_flow_lines": [
+            {
+              "line": 44,
+              "text": "c2_proof: object = None"
+            },
+            {
+              "line": 134,
+              "text": "identity=self._model_identity, trigger=binding.trigger, c2_proof=binding.c2_proof)"
+            }
+          ],
+          "proof_reconstruction_calls": []
+        }
+      ]
+    }
+  ],
+  "cpu_validation": [
+    {
+      "scope": "Merged 18/20/39 shared and provider driver overlay",
+      "tests": 88,
+      "failed": 0,
+      "skipped": 0,
+      "code_fix": "9499d57",
+      "modules": [
+        "test_coverage_proof_authority",
+        "test_coverage_session",
+        "test_evidence_scope",
+        "test_coverage_audit",
+        "test_natural_tensor_group",
+        "test_serving_tensor_group",
+        "test_quant_group",
+        "test_serving39_coverage",
+        "test_serving20_qmm",
+        "test_serving20_qualification"
+      ]
+    },
+    {
+      "scope": "Uncommitted Native26 complete group and candidate CPU fixtures reviewed read-only",
+      "tests": 12,
+      "failed": 0,
+      "skipped": 0,
+      "code_fix": "9499d57",
+      "modules": [
+        "test_writer26_coverage",
+        "test_writer26_group_experiment"
+      ]
+    },
+    {
+      "scope": "Final authority and fork-process contract",
+      "tests": 9,
+      "failed": 0,
+      "skipped": 0,
+      "code_fix": "13955ef",
+      "modules": [
+        "test_coverage_proof_authority"
+      ]
+    }
+  ],
+  "limits": [
+    "Source route review does not recover historical Python object IDs or issue a new live proof",
+    "No container, NPU, raw-statistics modification, or new mechanism acceptance",
+    "The authority registry is an internal API guard, not a sandbox against arbitrary trusted Python code modifying module internals"
+  ]
+}

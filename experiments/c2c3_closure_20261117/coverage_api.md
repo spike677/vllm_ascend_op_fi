@@ -67,7 +67,11 @@ For C3, obtain `proof = c2_session.c2_proof()` only after the complete C2 run an
 confirmed recovery. Construct a new group generation with `trigger='every_match'`
 and pass `c2_proof=proof`; workload, implementation, environment, candidate set,
 target lifetimes and owner must match. The live receipt cannot be recreated from
-serialized JSON. CPU/constructed scope cannot open a natural Worker C3 run.
+serialized JSON. Admission requires the original internally issued object, its
+unchanged field digest and the actual issuing process ID. `copy`, `deepcopy`,
+`dataclasses.replace`, reconstruction and fork-inherited objects do not preserve
+authority. Keep the original object on the owning Worker; do not rewrite its
+owner/scope to fit a later run. CPU/constructed scope cannot open a natural Worker C3 run.
 Providers may serialize separate native generations within the logical group,
 recording exact native generation/cache epoch in each execution artifact.
 
@@ -103,3 +107,8 @@ The suite covers C1 regression, same-shape distinct lifetimes, incomplete/ambigu
 denominators, missing outcomes, every-match omissions, budgets, exact once original
 execution, non-target writes, effect proof, in-flight disable, retained ownership,
 retry, zero-resource health, and propagation additions.
+
+The subsequent live-proof fix and frozen 18/20/39 driver review are recorded in
+[coverage_proof_authority_review.md](coverage_proof_authority_review.md). These CPU
+checks and source review do not replace any historical NPU evidence or extend it
+to the new coverage implementation.
