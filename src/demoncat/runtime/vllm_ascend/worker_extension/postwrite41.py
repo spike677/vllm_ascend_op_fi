@@ -56,7 +56,9 @@ class Postwrite41WorkerProvider:
             actual = hashlib.sha256(source.read_bytes()).hexdigest()
             require(actual == expected, 'TAIL_COLUMN_SOURCE_ADAPTER_REQUIRED:' + label)
             self.source[label] = dict(path=str(source), sha256=actual)
-        self.candidates = [(path, module) for path, module in self.model.named_modules()
+        self.structural_candidates = [(path, module) for path, module in self.model.named_modules()
+                                      if isinstance(module, Attention)]
+        self.candidates = [(path, module) for path, module in self.structural_candidates
                           if type(module) is Attention
                           and type(getattr(module, 'impl', None)) is attention_v1.AscendAttentionBackendImpl]
         require(bool(self.candidates), 'NO_REVIEWED_ATTENTION_IMPL_IN_LOADED_MODEL')
@@ -72,6 +74,9 @@ class Postwrite41WorkerProvider:
         self.outputs, self.forward_serial, self.pending_run = [], 0, None
         self.independent_calls = []
         self.collectors, self.cleanup_receipts = [], []
+        from fault_injection.deployments.postwrite_kv_inventory import KVWorkloadInventory
+        self.workload = KVWorkloadInventory()
+        self.coverage = None
         self.process_start = Path('/proc/self/stat').read_text().rsplit(')', 1)[1].split()[19]
         self.model_identity = self._identity()
 
@@ -93,7 +98,9 @@ class Postwrite41WorkerProvider:
             self.handles.append(self.model.register_forward_hook(self._root_post, with_kwargs=True, always_call=True))
             for path, module in self.candidates:
                 def pre(m, args, kwargs, path=path):
-                    if self._inside():self.stack.append((path, m))
+                    if self._inside():
+                        self.stack.append((path, m))
+                        self.workload.module_entered(m)
                 def post(m, args, kwargs, output):
                     if self._inside():
                         require(self.stack and self.stack[-1][1] is m, 'TAIL_COLUMN_ATTENTION_STACK_MISMATCH')
@@ -126,7 +133,10 @@ class Postwrite41WorkerProvider:
         require(self.installed and self.expected is None and self.current is None and self.lease is None,
                 'TAIL_COLUMN_REQUEST_OR_RECOVERY_ACTIVE')
         require(self._identity() == self.model_identity, 'TAIL_COLUMN_MODEL_BINDING_CHANGED')
-        require(phase in ('observe', 'lossless', 'baseline', 'fault', 'off'), 'TAIL_COLUMN_INVALID_PHASE')
+        ordinary = phase in ('observe', 'lossless', 'baseline', 'fault', 'off')
+        grouped = (self.coverage is not None and phase in ('group_observe', 'group_lossless', 'group_fault', 'group_off'))
+        require(ordinary or grouped, 'TAIL_COLUMN_INVALID_PHASE')
+        if grouped:self.coverage.authorize_phase(phase)
         if phase != 'observe':require(self.qualified, 'TAIL_COLUMN_HEALTHY_QUALIFICATION_REQUIRED')
         if phase == 'fault':
             require(self.lossless and not self.fault_attempted, 'TAIL_COLUMN_LOSSLESS_ONCE_GATE')
@@ -151,6 +161,7 @@ class Postwrite41WorkerProvider:
         require(self.pending_run is None, 'TAIL_COLUMN_ONLY_FIRST_DECODE_PER_REQUEST')
         self.forward_serial += 1
         self.writers = {}
+        self.workload.begin(self.forward_serial, self.current)
         self.pending_run = dict(phase=self.phase, forward_id=str(self.forward_serial),
             request_ids=list(self.current['request_ids']), actual_scheduler=self.current,
             model_instance=id(self.model), pid=os.getpid(), process_start=self.process_start,
@@ -176,7 +187,9 @@ class Postwrite41WorkerProvider:
             self.pending_run['model_output_sha256'] = _output_hash(copied)
             self.pending_run['model_output_snapshot'] = 'FULL_ROOT_OUTPUT_AFTER_CAPTURE_STOP'
             self.pending_run['native_live_leases'] = int(self.lease is not None)
+            self.pending_run['independent_inventory'] = self.workload.finish(self.pending_run['model_output_sha256'])
         finally:
+            self.workload.abort('ACTUAL_MODEL_FORWARD_DID_NOT_COMPLETE')
             self.current = None
 
     def _writer(self, args, kwargs):
@@ -185,6 +198,7 @@ class Postwrite41WorkerProvider:
         self.writers[id(module)] = dict(returned=True, module_path=path,
             key_cache=_meta(kwargs['key_cache']), value_cache=_meta(kwargs['value_cache']),
             slot_mapping=_meta(kwargs['slot_mapping']), slots=_indices(kwargs['slot_mapping'], 'writer_slots'))
+        self.workload.writer_returned(module, self.writers[id(module)])
 
     def _consume(self, name, original, args, kwargs):
         require(bool(self.stack), 'TAIL_COLUMN_CONSUMER_OUTSIDE_BOUND_ATTENTION')
@@ -217,7 +231,18 @@ class Postwrite41WorkerProvider:
             # Observation still executes the genuine call. An armed run fails
             # closed instead of shrinking the healthy eligible denominator.
             if self.phase != 'observe':raise
-            result = original(*args, **kwargs)
+            trace = self.workload.consumer_entered(module=module, path=path, operator=name,
+                target_key=row['target_key'], eligible=False, rejection=repr(error))
+            result = self.workload.call_original(trace, original, args, kwargs)
+            row['consumer_returned'] = True
+            return result
+        trace = self.workload.consumer_entered(module=module, path=path, operator=name,
+            target_key=row['target_key'], eligible=True)
+        original_api = original
+        def original(*actual_args, **actual_kwargs):
+            return self.workload.call_original(trace, original_api, actual_args, actual_kwargs)
+        if self.coverage is not None and self.phase.startswith('group_'):
+            result = self.coverage.consume(trace, row, plan, actual, original, args, kwargs)
             row['consumer_returned'] = True
             return result
         # Separate append-only workload inventory is made BEFORE admission,
@@ -255,7 +280,9 @@ class Postwrite41WorkerProvider:
         require({row['module_object_id'] for row in self.rows} == {id(module) for _, module in self.candidates},
                 'TAIL_COLUMN_STRUCTURAL_DENOMINATOR_INCOMPLETE')
         require(all(row['consumer_returned'] for row in self.rows), 'TAIL_COLUMN_INCOMPLETE_ACTUAL_CONSUMER')
-        if self.phase == 'observe':
+        if self.phase.startswith('group_'):
+            self.coverage.request_finished(run, self.outputs[-1])
+        elif self.phase == 'observe':
             healthy = [item for item in self.history if item['phase'] == 'observe']
             require(len(healthy) < 2, 'TAIL_COLUMN_OBSERVATION_ALREADY_QUALIFIED')
             if healthy:
@@ -301,5 +328,6 @@ class Postwrite41WorkerProvider:
             target=self.target, native_live_leases=int(self.lease is not None), installed=self.installed,
             owned_hooks=len(self.handles), owned_api_patches=len(self.patches), cleanup_receipts=self.cleanup_receipts,
             history=self.history, pending=self.pending_run, independent_calls=self.independent_calls,
+            independent_kv_inventory=self.workload.frames,
             public_worker_qualified=False, all_eligible_qualified=False, every_match_qualified=False,
             scope='natural first pure decode, BF16, TP1/PP1/DP1, serial eager, one actual request')

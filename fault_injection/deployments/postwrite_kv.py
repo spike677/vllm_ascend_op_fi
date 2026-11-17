@@ -31,6 +31,8 @@ def live_value_tail_plan(*, operator, actual, impl, metadata, scheduler, writer,
     proof = audit_paged_call(operator, actual, impl=impl, metadata=metadata,
                             scheduler=scheduler, writer=writer, allow_cpu_test=allow_cpu_test)
     cache = impl.value_cache
+    if _storage(actual['query'])[:2] == _storage(cache)[:2]:
+        raise PostwriteRefused('TAIL_COLUMN_QUERY_ALIASES_MUTATED_CACHE')
     if cache.dtype != torch.bfloat16 or len(proof['slots']) != 1:
         raise PostwriteRefused('TAIL_COLUMN_BF16_SINGLE_ACTUAL_SLOT_REQUIRED')
     blocks, page, heads, columns = map(int, cache.shape)
@@ -82,15 +84,23 @@ class LiveKVSlotLease:
             raise PostwriteRefused('TAIL_COLUMN_CONSUMER_ONCE_OWNER_REQUIRED')
         self.consumer_calls += 1
         self.report['original_calls'] = 1
+        failure = None
         try:
             result = original(*args, **kwargs)
             self.report['consumer_returned'] = True
             return result
+        except BaseException as error:
+            failure = error
+            self.report['consumer_error'] = repr(error)
+            raise
         finally:
             self.stopped = True
             # Native restore synchronizes the actual device before checking or
             # restoring bytes. The consumer has already been called exactly once.
-            self.recover()
+            try:self.recover()
+            except BaseException as error:
+                self.report['recovery_error'] = repr(error)
+                if failure is None:raise
 
     def recover(self):
         self.stopped = True

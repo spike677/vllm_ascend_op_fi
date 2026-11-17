@@ -88,6 +88,18 @@ class NaturalKVSlotTests(unittest.TestCase):
         self.assertTrue(lease.live)
         self.assertFalse(lease.report['released'])
 
+    def test_consumer_failure_is_preserved_when_recovery_also_fails(self):
+        f=fixture();plan=live_value_tail_plan(**f)
+        lease=LiveKVSlotLease(CpuSpanTransport(),plan,12,1);lease.arm(fault=True)
+        def failing_consumer():
+            plan.cache.view(-1)[plan.element_offset]+=1
+            raise ValueError('primary actual consumer failure')
+        with self.assertRaisesRegex(ValueError,'primary actual consumer'):
+            lease.consume(failing_consumer,(),{})
+        self.assertTrue(lease.live)
+        self.assertIn('EXTERNAL_WRITE',lease.report['recovery_error'])
+        self.assertIn('primary actual consumer',lease.report['consumer_error'])
+
     def test_unwritten_or_repacked_cache_and_wrong_slot_refused(self):
         for change, reason in (('writer', 'ACTUAL_CACHE_WRITER'), ('copy', 'LIVE_CACHE_ALIAS'),
                                ('slot', 'CURRENT_TOKEN_SLOT')):
@@ -105,6 +117,12 @@ class NaturalKVSlotTests(unittest.TestCase):
                 _validate_span(cache, offset, count)
         with self.assertRaisesRegex(PostwriteRefused, 'OUTSIDE_ACTUAL_HEAD'):
             live_value_tail_plan(**f, tail_elements=5)
+
+    def test_query_aliasing_mutated_cache_is_refused(self):
+        f=fixture()
+        f['actual']['query']=f['impl'].value_cache.view(-1)[:16].view(1,4,4)
+        with self.assertRaisesRegex(PostwriteRefused,'QUERY_ALIASES_MUTATED_CACHE'):
+            live_value_tail_plan(**f)
 
 
 if __name__ == '__main__':unittest.main()

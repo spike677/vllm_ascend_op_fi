@@ -9,6 +9,7 @@ import torch
 
 from demoncat.runtime.vllm_ascend.worker_extension import postwrite41 as worker_adapter
 from fault_injection.deployments.postwrite_kv import live_value_tail_plan
+from fault_injection.deployments.postwrite_kv_inventory import KVWorkloadInventory
 from tests.test_postwrite_natural_kv import fixture, CpuSpanTransport
 
 
@@ -25,6 +26,8 @@ def bound_provider():
     p.target = worker_adapter._target_key('actual.attention', module, context)
     p.phase, p.owner, p.generation = 'fault', 34, 1
     p.lease, p.transport, p.pending_run = None, CpuSpanTransport(), dict(new_fault_hits=0)
+    p.coverage, p.workload = None, KVWorkloadInventory()
+    p.workload.begin('1', f['scheduler'])
     fake_module = NS(get_forward_context=lambda:context)
     return p, f, module, fake_module
 
@@ -89,6 +92,7 @@ class WorkerAdapterOrchestrationTests(unittest.TestCase):
         p.model_identity = p._identity()
         p.installed, p.qualified, p.lossless, p.fault_attempted = True, True, False, False
         p.expected = p.current = p.lease = None
+        p.coverage = None
         with self.assertRaisesRegex(RuntimeError, 'LOSSLESS_ONCE'):p.expect('fault', 'req', [1])
         p.lossless, p.generation = True, 1
         p.expect('fault', 'req', [1])
