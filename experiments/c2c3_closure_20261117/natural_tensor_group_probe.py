@@ -30,6 +30,7 @@ def main():
     parser.add_argument('--vae-source', type=Path)
     parser.add_argument('--latent', type=Path)
     parser.add_argument('--c3-forwards', type=int, default=2)
+    parser.add_argument('--statistics', action='store_true')
     args = parser.parse_args()
     if not 1 <= args.c3_forwards <= 4:
         parser.error('C3 is a bounded 1..4 real-forward session')
@@ -83,6 +84,25 @@ def main():
             raise RuntimeError('C3_CONTRACT_NOT_COMPLETE')
         report.update(status='NATURAL_PRETRAINED_MODEL_GROUP_CONTRACT_COMPLETE',
             statistics_status='NOT_COLLECTED_SEPARATE_E5_REQUIRED')
+        if args.statistics:
+            from experiments.c2c3_closure_20261117.tensor_statistics_capture import TensorStatisticsCapture
+            capture = TensorStatisticsCapture(args.out / 'statistics', torch.npu.synchronize)
+            report['statistics_runtime'] = provider.collect_statistics_pair(capture)
+            # The comparator sees only raw collector triplets/config/identity;
+            # it receives no target IDs, hits, complete tensors, or proxy log.
+            from fault39.tools.compare_msprobe import compare
+            from demoncat_fault39.msprobe import ComparisonPolicy
+            statistics = args.out / 'statistics'
+            metadata = dict(baseline_config=statistics/'config.json', fault_config=statistics/'config.json',
+                baseline_collector=statistics/'collector_identity.json',
+                fault_collector=statistics/'collector_identity.json')
+            report['statistics_comparisons'] = {}
+            for name, step in (('independent_baseline_repeat', 1), ('baseline_fault', 2)):
+                result = compare(statistics/'observation/step0/rank0',
+                    statistics/f'observation/step{step}/rank0', ComparisonPolicy(1e-8, 1e-5), **metadata)
+                (statistics / (name + '.json')).write_text(json.dumps(result, indent=2, allow_nan=False)+'\n')
+                report['statistics_comparisons'][name] = result
+            report['statistics_status'] = 'RAW_COMPARISON_RECORDED_SEE_EXPLICIT_RESULT'
     except BaseException as exc:
         report.update(status='REFUSED_OR_FAILED', error=repr(exc), traceback=traceback.format_exc())
     finally:

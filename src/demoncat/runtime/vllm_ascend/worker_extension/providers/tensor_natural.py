@@ -55,6 +55,7 @@ class NaturalTensorGroupProvider:
         self.generation = 0
         self.error = None
         self._running = False
+        self._statistics_arm = None
 
     def _event(self, path, operator, metadata):
         key = (path, len(self.calls))
@@ -112,7 +113,7 @@ class NaturalTensorGroupProvider:
         if len(self.calls) <= key[1] or tuple(self.calls[key[1]]['key']) != key:
             raise ProviderError('INDEPENDENT_OBSERVER_MUST_PRECEDE_INJECTION')
         if self.group is None:
-            return False
+            return self._statistics_arm == 'fault' and key in self.selected
         decision = self.calls[key[1]].get('decision')
         if decision is None:
             raise ProviderError('INDEPENDENT_ADMISSION_MISSING')
@@ -125,7 +126,8 @@ class NaturalTensorGroupProvider:
         else:
             from fault_injection.index22 import WrongRowSession
             factory = WrongRowSession
-        return factory(self.model, arm=arm, simulation=self.simulation, admission=self._admission)
+        return factory(self.model, arm=arm, simulation=self.simulation, admission=self._admission,
+            diagnostics_context=getattr(self.model_observation, 'diagnostics', None))
 
     def _phase(self, name, *, arm=None):
         from fault_injection.tensor_observer import NaturalTensorObserver
@@ -143,7 +145,9 @@ class NaturalTensorGroupProvider:
         self.current_invocation = 'model-local-forward:' + uuid.uuid4().hex
         inputs = []
         def capture(module, args, kwargs):
-            inputs.append(_capture((args, kwargs)))
+            diagnostics = getattr(self.model_observation, 'diagnostics', None)
+            with diagnostics() if diagnostics else nullcontext():
+                inputs.append(_capture((args, kwargs)))
         handle = self.model.register_forward_pre_hook(capture, with_kwargs=True, prepend=True)
         adapter = self._adapter(arm) if arm else None
         observer = NaturalTensorObserver(self.model, on_module_enter=self._module_enter,
@@ -152,7 +156,7 @@ class NaturalTensorGroupProvider:
         try:
             self.active_adapter = adapter
             with (adapter or nullcontext()), observer, torch.inference_mode():
-                with (self.model_observation(self.model) if self.model_observation else nullcontext()):
+                with (self.model_observation(self.model, name) if self.model_observation else nullcontext()):
                     output = self.replay(self.model, name)
                     self.synchronize()
                     completed = True
@@ -352,10 +356,43 @@ class NaturalTensorGroupProvider:
             invocation_scope='Actual model-local root forwards; not synthetic serving request IDs')
         return report
 
+    def collect_statistics_pair(self, capture):
+        """Actual B/F at one common callsite after group recovery, then full OFF.
+
+        This adds independent statistics evidence; it grants no extra coverage.
+        The collector is instantiated by the caller after source qualification.
+        """
+        if self.group is None or not self.group.report()['contract_satisfied']:
+            raise ProviderError('RECOVERED_COVERAGE_GROUP_REQUIRED_BEFORE_STATISTICS')
+        saved_group, saved_observation = self.group, self.model_observation
+        self.group = None; self.model_observation = capture
+        first_row = len(self.rows)
+        try:
+            for name, arm in (('statistics_baseline', 'baseline'),
+                              ('statistics_baseline_repeat', 'baseline'),
+                              ('statistics_fault', 'fault'), ('statistics_off', None)):
+                self._statistics_arm = arm
+                input_, output, row = self._phase(name, arm=arm)
+                if not _same(input_, self.reference_input):
+                    raise ProviderError('STATISTICS_MODEL_INPUT_CHANGED')
+                if arm != 'fault' and not _same(output, self.reference_output):
+                    raise ProviderError('STATISTICS_BASELINE_OR_OFF_NOT_EXACT')
+                if arm == 'fault':
+                    hits = [event for event in row['mechanism']['events'] if event.get('applied')]
+                    if len(hits) != len(self.selected) or not all(event.get('consumers') and
+                        event.get('output_changed') for event in hits):
+                        raise ProviderError('STATISTICS_ACTUAL_EFFECT_OR_CONSUMER_UNPROVEN')
+            return dict(phases=self.rows[first_row:], baseline_exact=True, off_exact=True,
+                        first_difference='INDEPENDENT_RAW_COMPARATOR_REQUIRED')
+        finally:
+            self.group, self.model_observation = saved_group, saved_observation
+            self._statistics_arm = None
+
 
 def inspect_source(module):
-    from fault_injection.tensor_observer import callable_identity
-    identity = callable_identity(module)
-    if 'source_sha256' not in identity:
+    import inspect
+    from fault_injection.module_faults import _original_standard_forward
+    original = _original_standard_forward(module)
+    if original is None:
         raise ProviderError('ACTUAL_MODULE_SOURCE_IDENTITY_REQUIRED')
-    return identity['source_sha256']
+    return hashlib.sha256(inspect.getsource(original).encode()).hexdigest()

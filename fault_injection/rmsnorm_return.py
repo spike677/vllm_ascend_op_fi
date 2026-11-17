@@ -98,7 +98,8 @@ class RMSNormReturnSession(ScopedDispatch):
                 if event['forward'] == len(self.forwards)-1
                 and int(tensor.untyped_storage()._cdata) in input_storages
                 and name in ('aten::add', 'aten::mul', 'aten::linear', 'aten::matmul', 'aten::mm',
-                    'npu::npu_dynamic_quant', 'npu::npu_quant_matmul', 'npu::npu_add_rms_norm')]
+                    'npu::npu_dynamic_quant', 'npu::npu_quant_matmul', 'npu::npu_add_rms_norm',
+                    'vllm::unquantized_gemm', 'vllm::npu_rotary_embedding')]
             result = func(*args, **kwargs)
             for tensor, event in readers:
                 event['consumers'].append(dict(operator=str(func), path=self.stack[-1][0],
@@ -165,8 +166,8 @@ class RMSNormReturnSession(ScopedDispatch):
         # collector see the real return boundary in both arms. Healthy *1 is
         # checked against an entirely unhooked baseline by the replay provider.
         gain = 0.5 if injecting else 1.0
-        changed = values[0] * gain
         with self.diagnostics():
+            changed = values[0] * gain
             before, after = self.cpu(values[0]), self.cpu(changed)
             if not bool(torch.isfinite(before).all()) or not torch.equal(after, before * gain):
                 raise UnsupportedCall('RMSNORM_COMPLETE_RETURN_GAIN_READBACK_FAILED')

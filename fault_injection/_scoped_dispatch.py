@@ -1,5 +1,5 @@
 """Owned eager-dispatch scope shared by the rebuilt 8 and 22 adapters."""
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import copy
 import sys
 import threading
@@ -10,7 +10,8 @@ _LEASE = threading.Lock()
 
 
 class ScopedDispatch:
-    def __init__(self, model, *, arm='fault', simulation=False, selected_call=None):
+    def __init__(self, model, *, arm='fault', simulation=False, selected_call=None,
+                 diagnostics_context=None):
         if arm not in ('baseline', 'fault') or type(simulation) is not bool:
             raise ValueError('Explicit arm and simulation flag required')
         self.model, self.arm, self.simulation = model, arm, simulation
@@ -27,12 +28,15 @@ class ScopedDispatch:
         self.temps = []
         self.devices = set()
         self.errors = []
+        self.diagnostics_context = diagnostics_context
 
     @contextmanager
     def diagnostics(self):
         before = self.diagnostic
         self.diagnostic = True
-        try: yield
+        try:
+            with self.diagnostics_context() if self.diagnostics_context else nullcontext():
+                yield
         finally: self.diagnostic = before
 
     def synchronize(self):
