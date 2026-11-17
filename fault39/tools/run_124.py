@@ -43,6 +43,233 @@ def dedicated_atk_reservations(container, cards):
             for path in sorted(mapped.intersection(selected))]
 
 
+def _runtime_option(arguments, names):
+    values = []
+    for index, argument in enumerate(arguments):
+        if argument in names:
+            if index + 1 == len(arguments) or arguments[index + 1].startswith('-'):
+                raise ValueError('MISSING_RUNTIME_PATH_OPTION')
+            values.append(arguments[index + 1])
+        elif '=' in argument and argument.split('=', 1)[0] in names:
+            values.append(argument.split('=', 1)[1])
+    if len(set(values)) > 1:
+        raise ValueError('CONFLICTING_RUNTIME_PATH_OPTIONS')
+    return values[0] if values else None
+
+
+def _absolute_runtime_path(value):
+    if not isinstance(value, str) or not value or '\x00' in value or not Path(value).is_absolute():
+        raise ValueError('ABSOLUTE_RUNTIME_PATH_REQUIRED')
+    return Path(value)
+
+
+def containerd_state_path(arguments):
+    """Read the running daemon's path options; never dump its configuration."""
+    explicit = _runtime_option(arguments, ('--state',))
+    if explicit is not None:
+        return _absolute_runtime_path(explicit), {'basis': 'containerd_argv_state'}
+    configured = _runtime_option(arguments, ('--config', '-c'))
+    path = _absolute_runtime_path(configured or '/etc/containerd/config.toml')
+    try:
+        raw = path.read_bytes()
+    except FileNotFoundError:
+        if configured is not None:
+            raise
+        return Path('/run/containerd'), {'basis': 'containerd_default_state_no_default_config'}
+    try:
+        import tomllib
+    except ImportError as error:
+        raise ValueError('TOML_READER_UNAVAILABLE') from error
+    config = tomllib.loads(raw.decode('utf-8'))
+    if config.get('imports'):
+        # An imported state override needs its own exact reader; do not guess.
+        raise ValueError('CONTAINERD_IMPORTED_STATE_UNRESOLVED')
+    return _absolute_runtime_path(config.get('state', '/run/containerd')), dict(
+        basis='containerd_config_state', config=str(path), config_sha256=hashlib.sha256(raw).hexdigest())
+
+
+def checkpoint_allocations(document, cards):
+    """Only per-Pod Ascend allocations reserve cards; registration is inventory."""
+    if not isinstance(document, dict):
+        raise ValueError('CHECKPOINT_OBJECT_REQUIRED')
+    data = document.get('Data')
+    if isinstance(data, str):
+        data = json.loads(data)
+    if (not isinstance(data, dict) or not isinstance(data.get('PodDeviceEntries'), list)
+            or not isinstance(data.get('RegisteredDevices'), dict)):
+        raise ValueError('CHECKPOINT_ALLOCATION_SCHEMA_UNRECOGNIZED')
+    blockers, allocations = [], []
+    for entry in data['PodDeviceEntries']:
+        if not isinstance(entry, dict) or not isinstance(entry.get('ResourceName'), str):
+            raise ValueError('CHECKPOINT_RESOURCE_IDENTITY_UNRECOGNIZED')
+        resource = entry['ResourceName']
+        if not any(token in resource.lower() for token in ('ascend', 'npu')):
+            continue
+        if resource != 'huawei.com/Ascend910':
+            raise ValueError('CHECKPOINT_ACCELERATOR_RESOURCE_UNRECOGNIZED')
+        if any(not isinstance(entry.get(key), str) or not entry[key].strip()
+               for key in ('PodUID', 'ContainerName')):
+            raise ValueError('CHECKPOINT_POD_CONTAINER_IDENTITY_MISSING')
+        ids = entry.get('DeviceIDs')
+        if isinstance(ids, dict):
+            if any(not isinstance(key, str) or not re.fullmatch(r'-?\d+', key)
+                   or not isinstance(value, list) for key, value in ids.items()):
+                raise ValueError('CHECKPOINT_NUMA_DEVICE_SCHEMA_UNRECOGNIZED')
+            ids = [value for group in ids.values() for value in group]
+        if not isinstance(ids, list) or not ids:
+            raise ValueError('CHECKPOINT_ALLOCATED_DEVICE_IDS_MISSING')
+        for device_id in ids:
+            match = re.fullmatch(r'Ascend910-(0|[1-9]\d*)', device_id) if isinstance(device_id, str) else None
+            if match is None:
+                raise ValueError('CHECKPOINT_ALLOCATED_DEVICE_ID_UNRECOGNIZED')
+            row = dict(card=int(match[1]), pod_uid=entry['PodUID'], container=entry['ContainerName'],
+                resource=resource, device_id=device_id, status='ALLOCATION_RECORDED_RELEASE_UNVERIFIED')
+            allocations.append(row)
+            if row['card'] in cards:
+                blockers.append(dict(row, reason='KUBELET_DEVICE_ALLOCATION'))
+    return blockers, allocations
+
+
+def oci_device_grants(item, devices, *, task, config):
+    """Character devices and bind mounts are access grants, not reservations."""
+    grants = []
+    for dev in item.get('linux', {}).get('devices', []):
+        if dev.get('type') == 'c':
+            number = os.makedev(dev.get('major', 0), dev.get('minor', 0))
+            if number in devices:
+                grants.append(dict(task=task, config=config, device=dev.get('path'), card=devices[number],
+                                   kind='OCI_DEVICE_PERMISSION'))
+    for mount in item.get('mounts', []):
+        source = mount.get('source')
+        if not isinstance(source, str) or not source.startswith('/'):
+            continue
+        if source.rstrip('/') == '/dev':
+            grants.extend(dict(task=task, config=config, source=source, device=mount.get('destination'), card=card,
+                               kind='OCI_DEVICE_DIRECTORY_PERMISSION') for card in devices.values())
+        else:
+            try:
+                value = Path(source).stat()
+            except FileNotFoundError:
+                # Non-device mounts may legitimately be absent outside the
+                # task mount namespace. Declared device sources must be known.
+                if source.startswith(('/dev/davinci', '/dev/devmm', '/dev/hisi')):
+                    raise
+                continue
+            if stat.S_ISCHR(value.st_mode) and value.st_rdev in devices:
+                grants.append(dict(task=task, config=config, source=source, device=mount.get('destination'),
+                    card=devices[value.st_rdev], kind='OCI_DEVICE_MOUNT_PERMISSION'))
+    return grants
+
+
+def kubelet_checkpoint_paths(proc, root):
+    """An owned device-plugin socket overrides unrelated kubelet data roots.
+
+    Kubelet can use --root-dir for Pod data while its device plugin manager
+    still binds /var/lib/kubelet/device-plugins/kubelet.sock. Check actual socket
+    ownership, not merely a socket file left by another process.
+    """
+    sockets = {}
+    for line in (proc / 'net/unix').read_text().splitlines()[1:]:
+        row = line.split()
+        if len(row) >= 8:
+            path = Path(row[7])
+            if path.name == 'kubelet.sock' and path.parent.name == 'device-plugins':
+                sockets[row[6]] = _absolute_runtime_path(str(path))
+    checkpoints = {}
+    for fd in (proc / 'fd').iterdir():
+        try:
+            link = os.readlink(fd)
+        except FileNotFoundError:
+            continue
+        match = re.fullmatch(r'socket:\[(\d+)\]', link)
+        if match and match[1] in sockets:
+            socket = sockets[match[1]]
+            checkpoint = socket.parent / 'kubelet_internal_checkpoint'
+            checkpoints[str(checkpoint)] = (checkpoint, dict(basis='owned_device_plugin_socket',
+                socket=str(socket), socket_inode=match[1], fd=fd.name))
+    if checkpoints:
+        return list(checkpoints.values())
+    return [(root / 'device-plugins/kubelet_internal_checkpoint', dict(basis='kubelet_root_dir_fallback'))]
+
+
+def runtime_device_inventory(cards, devices, *, proc_root=Path('/proc'),
+                             default_checkpoint=Path('/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint')):
+    """Read actual daemon roots and retained kubelet allocations, never clear them."""
+    report = dict(blockers=[], device_access_grants=[], containerd_states=[],
+                  kubelet_checkpoint_sources=[], kubelet_allocation_checks=[])
+    states, checkpoints = {}, {}
+
+    def unknown(reason, **where):
+        report['blockers'].append(dict(reason=reason, cards=list(cards), status='UNKNOWN', **where))
+
+    for proc in proc_root.iterdir():
+        if not proc.name.isdigit():
+            continue
+        try:
+            name = (proc / 'comm').read_text().strip()
+            if name not in ('containerd', 'kubelet'):
+                continue
+            arguments = [value for value in (proc / 'cmdline').read_bytes().decode('utf-8').split('\x00') if value]
+            if name == 'containerd':
+                state, basis = containerd_state_path(arguments)
+                states[str(state.resolve())] = state
+                report['containerd_states'].append(dict(pid=int(proc.name), state=str(state), **basis))
+            else:
+                root = _absolute_runtime_path(_runtime_option(arguments, ('--root-dir',)) or '/var/lib/kubelet')
+                for checkpoint, basis in kubelet_checkpoint_paths(proc, root):
+                    checkpoints[str(checkpoint)] = checkpoint
+                    report['kubelet_checkpoint_sources'].append(dict(pid=int(proc.name), root_dir=str(root),
+                        checkpoint=str(checkpoint), **basis))
+        except FileNotFoundError:
+            if proc.exists():
+                unknown('RUNTIME_ALLOCATION_SOURCE_MISSING', pid=int(proc.name))
+        except (OSError, ValueError, TypeError) as error:
+            unknown('RUNTIME_ALLOCATION_SOURCE_UNKNOWN', pid=int(proc.name), error=type(error).__name__ + ':' + str(error))
+
+    # A retained allocation still matters after kubelet/workload processes exit.
+    if default_checkpoint.exists():
+        checkpoints[str(default_checkpoint)] = default_checkpoint
+    observed_kubernetes = False
+    for state in states.values():
+        try:
+            if not state.is_dir():
+                raise ValueError('RUNNING_CONTAINERD_STATE_DIRECTORY_MISSING')
+            for runtime in ('io.containerd.runtime.v1.linux', 'io.containerd.runtime.v2.task'):
+                directory = state / runtime
+                if not directory.exists():
+                    continue
+                for namespace in directory.iterdir():
+                    if not namespace.is_dir():
+                        continue
+                    observed_kubernetes |= namespace.name == 'k8s.io'
+                    for task in namespace.iterdir():
+                        if not task.is_dir():
+                            continue
+                        config = task / 'config.json'
+                        try:
+                            item = json.loads(config.read_text())
+                            report['device_access_grants'].extend(oci_device_grants(
+                                item, devices, task=task.name, config=str(config)))
+                        except (OSError, ValueError, TypeError, AttributeError) as error:
+                            unknown('OCI_DEVICE_INVENTORY_UNKNOWN', config=str(config), error=type(error).__name__)
+        except (OSError, ValueError) as error:
+            unknown('CONTAINERD_STATE_INVENTORY_UNKNOWN', state=str(state), error=type(error).__name__)
+    if observed_kubernetes and not checkpoints:
+        # A CRI task without an observed kubelet path cannot prove no allocation.
+        checkpoints[str(default_checkpoint)] = default_checkpoint
+    for checkpoint in checkpoints.values():
+        try:
+            raw = checkpoint.read_bytes()
+            blocks, allocations = checkpoint_allocations(json.loads(raw), cards)
+            metadata = dict(checkpoint=str(checkpoint), checkpoint_sha256=hashlib.sha256(raw).hexdigest(),
+                mtime_utc=datetime.fromtimestamp(checkpoint.stat().st_mtime, timezone.utc).isoformat())
+            report['kubelet_allocation_checks'].append(dict(metadata, status='READ', allocations=allocations))
+            report['blockers'].extend(dict(row, **metadata) for row in blocks)
+        except (OSError, ValueError, TypeError) as error:
+            unknown('KUBELET_ALLOCATION_UNKNOWN', checkpoint=str(checkpoint), error=type(error).__name__ + ':' + str(error))
+    return report
+
+
 def idle_gate(cards):
     report = {'time': datetime.now(timezone.utc).isoformat(), 'cards': cards, 'blockers': [], 'device_access_grants': []}
     report['npu_smi'] = command(['npu-smi', 'info'])
@@ -79,13 +306,13 @@ def idle_gate(cards):
             path = dev.get('PathOnHost', '')
             if path in ['/dev/davinci' + str(c) for c in cards]:
                 report['device_access_grants'].append({'container': item['Name'], 'device': path, 'kind': 'DOCKER_DEVICE_PERMISSION'})
-    # OCI device permissions are inventory, not proof of an active reservation.
-    # Actual NPU processes and open char-device handles above block execution.
-    for config in Path('/run/containerd/io.containerd.runtime.v2.task').glob('*/*/config.json'):
-        item = json.loads(config.read_text())
-        for dev in item.get('linux', {}).get('devices', []):
-            if dev.get('type') == 'c' and os.makedev(dev.get('major', 0), dev.get('minor', 0)) in devices:
-                report['device_access_grants'].append({'task': config.parent.name, 'device': dev.get('path'), 'kind': 'OCI_DEVICE_PERMISSION'})
+    # Runtime permission inventory alone is not an allocation. Kubelet's
+    # retained per-Pod device assignments independently block an apparently idle
+    # device until release can be established; processes may not yet exist.
+    runtime = runtime_device_inventory(cards, devices)
+    report['blockers'].extend(runtime.pop('blockers'))
+    report['device_access_grants'].extend(runtime.pop('device_access_grants'))
+    report.update(runtime)
     report['idle'] = not report['blockers']
     return report
 

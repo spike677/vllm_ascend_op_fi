@@ -1,0 +1,153 @@
+{
+  "schema": "demoncat.device_allocation_gate.readonly.v1",
+  "observed_utc": "2026-11-17T16:00:04.613373+00:00",
+  "python": "3.12.4",
+  "gate_source_sha256": "d3b041423544fee4f26c060716a95fde2af3b50f507fddb0a56eb5cfc7fb9b89",
+  "gate": {
+    "time": "2026-11-17T16:00:03.596536+00:00",
+    "cards": [
+      2,
+      5
+    ],
+    "blockers": [
+      {
+        "reason": "KUBELET_ALLOCATION_UNKNOWN",
+        "cards": [
+          2,
+          5
+        ],
+        "status": "UNKNOWN",
+        "checkpoint": "/home/mindcluster/kubelet/device-plugins/kubelet_internal_checkpoint",
+        "error": "FileNotFoundError:[Errno 2] No such file or directory: '/home/mindcluster/kubelet/device-plugins/kubelet_internal_checkpoint'"
+      },
+      {
+        "card": 2,
+        "pod_uid": "07ddbadb-06a1-4edf-b8f8-b96cd33adc79",
+        "container": "ascend",
+        "resource": "huawei.com/Ascend910",
+        "device_id": "Ascend910-2",
+        "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED",
+        "reason": "KUBELET_DEVICE_ALLOCATION",
+        "checkpoint": "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint",
+        "checkpoint_sha256": "9735aca82c5cca8adfa3aa2b0af1317876df5e55f4841aa00682dc3f2638b331",
+        "mtime_utc": "2026-11-17T15:47:16.801035+00:00"
+      },
+      {
+        "card": 5,
+        "pod_uid": "07ddbadb-06a1-4edf-b8f8-b96cd33adc79",
+        "container": "ascend",
+        "resource": "huawei.com/Ascend910",
+        "device_id": "Ascend910-5",
+        "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED",
+        "reason": "KUBELET_DEVICE_ALLOCATION",
+        "checkpoint": "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint",
+        "checkpoint_sha256": "9735aca82c5cca8adfa3aa2b0af1317876df5e55f4841aa00682dc3f2638b331",
+        "mtime_utc": "2026-11-17T15:47:16.801035+00:00"
+      }
+    ],
+    "device_access_grants": [
+      {
+        "task": "222b744e8006a161fcdd36322f112e6c1053486eb2f7d6d69addaae082b9f86c",
+        "config": "/run/mindcluster-containerd/io.containerd.runtime.v1.linux/k8s.io/222b744e8006a161fcdd36322f112e6c1053486eb2f7d6d69addaae082b9f86c/config.json",
+        "device": "/dev/davinci2",
+        "card": 2,
+        "kind": "OCI_DEVICE_PERMISSION"
+      },
+      {
+        "task": "222b744e8006a161fcdd36322f112e6c1053486eb2f7d6d69addaae082b9f86c",
+        "config": "/run/mindcluster-containerd/io.containerd.runtime.v1.linux/k8s.io/222b744e8006a161fcdd36322f112e6c1053486eb2f7d6d69addaae082b9f86c/config.json",
+        "device": "/dev/davinci5",
+        "card": 5,
+        "kind": "OCI_DEVICE_PERMISSION"
+      },
+      {
+        "task": "222b744e8006a161fcdd36322f112e6c1053486eb2f7d6d69addaae082b9f86c",
+        "config": "/run/mindcluster-containerd/io.containerd.runtime.v1.linux/k8s.io/222b744e8006a161fcdd36322f112e6c1053486eb2f7d6d69addaae082b9f86c/config.json",
+        "source": "/dev",
+        "device": "/dev",
+        "card": 2,
+        "kind": "OCI_DEVICE_DIRECTORY_PERMISSION"
+      },
+      {
+        "task": "222b744e8006a161fcdd36322f112e6c1053486eb2f7d6d69addaae082b9f86c",
+        "config": "/run/mindcluster-containerd/io.containerd.runtime.v1.linux/k8s.io/222b744e8006a161fcdd36322f112e6c1053486eb2f7d6d69addaae082b9f86c/config.json",
+        "source": "/dev",
+        "device": "/dev",
+        "card": 5,
+        "kind": "OCI_DEVICE_DIRECTORY_PERMISSION"
+      },
+      {
+        "task": "47fbf5a22accb190a7f93491da200d8452252ca22e3116853da69623aaeae711",
+        "config": "/run/mindcluster-containerd/io.containerd.runtime.v1.linux/k8s.io/47fbf5a22accb190a7f93491da200d8452252ca22e3116853da69623aaeae711/config.json",
+        "device": "/dev/davinci2",
+        "card": 2,
+        "kind": "OCI_DEVICE_PERMISSION"
+      },
+      {
+        "task": "47fbf5a22accb190a7f93491da200d8452252ca22e3116853da69623aaeae711",
+        "config": "/run/mindcluster-containerd/io.containerd.runtime.v1.linux/k8s.io/47fbf5a22accb190a7f93491da200d8452252ca22e3116853da69623aaeae711/config.json",
+        "device": "/dev/davinci5",
+        "card": 5,
+        "kind": "OCI_DEVICE_PERMISSION"
+      },
+      {
+        "task": "7e940dad2ff9bcd43a68a94776fb52a5feb38beb9070030f52cfe559f1f04951",
+        "config": "/run/mindcluster-containerd/io.containerd.runtime.v1.linux/k8s.io/7e940dad2ff9bcd43a68a94776fb52a5feb38beb9070030f52cfe559f1f04951/config.json",
+        "device": "/dev/davinci2",
+        "card": 2,
+        "kind": "OCI_DEVICE_PERMISSION"
+      },
+      {
+        "task": "7e940dad2ff9bcd43a68a94776fb52a5feb38beb9070030f52cfe559f1f04951",
+        "config": "/run/mindcluster-containerd/io.containerd.runtime.v1.linux/k8s.io/7e940dad2ff9bcd43a68a94776fb52a5feb38beb9070030f52cfe559f1f04951/config.json",
+        "device": "/dev/davinci5",
+        "card": 5,
+        "kind": "OCI_DEVICE_PERMISSION"
+      }
+    ],
+    "npu_smi": "+------------------------------------------------------------------------------------------------+\n| npu-smi 25.5.0.b060              Version: 25.5.0.b060                                          |\n+---------------------------+---------------+----------------------------------------------------+\n| NPU   Name                | Health        | Power(W)    Temp(C)           Hugepages-Usage(page)|\n| Chip                      | Bus-Id        | AICore(%)   Memory-Usage(MB)  HBM-Usage(MB)        |\n+===========================+===============+====================================================+\n| 2     910B4               | OK            | 86.2        57                0    / 0             |\n| 0                         | 0000:01:00.0  | 0           0    / 0          2899 / 32768         |\n+===========================+===============+====================================================+\n| 5     910B4               | OK            | 84.5        54                0    / 0             |\n| 0                         | 0000:81:00.0  | 0           0    / 0          2897 / 32768         |\n+===========================+===============+====================================================+\n+---------------------------+---------------+----------------------------------------------------+\n| NPU     Chip              | Process id    | Process name             | Process memory(MB)      |\n+===========================+===============+====================================================+\n| No running processes found in NPU 2                                                            |\n+===========================+===============+====================================================+\n| No running processes found in NPU 5                                                            |\n+===========================+===============+====================================================+\n",
+    "containerd_states": [
+      {
+        "pid": 3088,
+        "state": "/var/run/docker/containerd/daemon",
+        "basis": "containerd_config_state",
+        "config": "/var/run/docker/containerd/containerd.toml",
+        "config_sha256": "ffd1c52a62364cbc62a1c2a89d81ec13b34cb68e30753e833ae152517e1f4d45"
+      },
+      {
+        "pid": 311972,
+        "state": "/run/mindcluster-containerd",
+        "basis": "containerd_config_state",
+        "config": "/home/mindcluster/containerd/config.toml",
+        "config_sha256": "86b6df8dc91a2ed09775c7ae0585dd3320e7434090747446c3806ce8a89d8338"
+      }
+    ],
+    "kubelet_allocation_checks": [
+      {
+        "checkpoint": "/var/lib/kubelet/device-plugins/kubelet_internal_checkpoint",
+        "checkpoint_sha256": "9735aca82c5cca8adfa3aa2b0af1317876df5e55f4841aa00682dc3f2638b331",
+        "mtime_utc": "2026-11-17T15:47:16.801035+00:00",
+        "status": "READ",
+        "allocations": [
+          {
+            "card": 2,
+            "pod_uid": "07ddbadb-06a1-4edf-b8f8-b96cd33adc79",
+            "container": "ascend",
+            "resource": "huawei.com/Ascend910",
+            "device_id": "Ascend910-2",
+            "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED"
+          },
+          {
+            "card": 5,
+            "pod_uid": "07ddbadb-06a1-4edf-b8f8-b96cd33adc79",
+            "container": "ascend",
+            "resource": "huawei.com/Ascend910",
+            "device_id": "Ascend910-5",
+            "status": "ALLOCATION_RECORDED_RELEASE_UNVERIFIED"
+          }
+        ]
+      }
+    ],
+    "idle": false
+  }
+}
