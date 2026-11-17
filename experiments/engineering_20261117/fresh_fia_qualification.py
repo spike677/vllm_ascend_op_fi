@@ -133,7 +133,7 @@ def mapped_vendor(verified,stock=False):
             'NEW_HOST_TILING_NOT_MAPPED')
     return rows
 
-def collector(out):
+def collector(out,backend_identity=None):
     import msprobe
     from msprobe.pytorch import PrecisionDebugger
     config=dict(task='statistics',level='mix',precision='high',rank=[],step=[0],
@@ -141,9 +141,12 @@ def collector(out):
         statistics=dict(scope=[],list=[],data_mode=['all'],summary_mode='statistics',tensor_list=[]))
     save(out/'config.json',config)
     package=Path(msprobe.__file__).resolve().parent
-    save(out/'collector_identity.json',dict(package=str(package),edited_by_experiment=False,
+    identity=dict(package=str(package),edited_by_experiment=False,
         files={p.relative_to(package).as_posix():sha(p) for p in package.rglob('*') if p.is_file() and p.suffix in ('.py','.json','.yaml')},
-        step_meaning={'0':'second identical standalone FIA call; not decode or complete model'}))
+        step_meaning={'0':'second identical standalone FIA call; not decode or complete model'})
+    if backend_identity is not None:
+        identity.update(runtime_statistics_method_replaced=True,statistics_backend=backend_identity)
+    save(out/'collector_identity.json',identity)
     return PrecisionDebugger(config_path=str(out/'config.json'))
 
 def run_child(args,verified):
@@ -203,7 +206,7 @@ def run_child(args,verified):
             env=dict(FAULT28_FIA_GRAPH_MODE=mode,FAULT28_FIA_GRAPH_TOKEN=token,FAULT28_FIA_GRAPH_PID=str(os.getpid()),
                 FAULT28_FIA_GRAPH_OWNER_START=owner_start,FAULT28_FIA_GRAPH_LOG=str(log))
             if phase!='stock':os.environ.update(env)
-            if args.statistics and index==1:debugger=collector(out)
+            if args.statistics and index==1:debugger=collector(out,getattr(args,'collector_backend_identity',None))
             try:
                 scope=statistics_model_call(debugger,model,torch.npu.synchronize) if debugger else nullcontext()
                 with scope,torch.inference_mode():output=model(*inputs)
@@ -248,6 +251,12 @@ def run_child(args,verified):
             require(len(fia)==1,'ONE_NATIVE_FIA_STATISTICS_RECORD_REQUIRED')
             result['statistics']=dict(step=0,files=files,fia_records=fia,original_nulls_preserved=True,
                 complete_model_accepted=False,independent_first_difference_pending=True)
+            if getattr(args,'collector_backend_identity',None) is not None:
+                result['statistics']['backend']=args.collector_backend_identity['backend']
+                result['statistics']['historical_collector_equivalence_claimed']=False
+                result['statistics'].pop('original_nulls_preserved')
+                result['statistics']['new_capture_nulls_preserved']=True
+                result['statistics']['original_collector_null_pattern_preserved']=False
         result.update(status='EXPERIMENTAL_EXECUTION_COMPLETED_NOT_LAUNCH_QUALIFIED',
             actual_npu_fia_calls=len(phases),
             repeated_complete_output_stable=True if args.phase!='off_recovery' else None)

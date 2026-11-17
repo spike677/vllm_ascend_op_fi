@@ -35,9 +35,12 @@ def main():
     p.add_argument('--batch', choices=(1, 8), type=int, default=8)
     p.add_argument('--out', type=Path, default=Path('/evidence/run'))
     p.add_argument('--statistics', action='store_true')
+    p.add_argument('--statistics-backend', choices=('original', 'cpu-fp64-v1'), default='original')
     p.add_argument('--experimental-qualification', action='store_true')
     p.add_argument('--child', action='store_true', help=argparse.SUPPRESS)
     a = p.parse_args()
+    require(a.statistics_backend == 'original' or (a.statistics and a.phase in ('baseline', 'fault')),
+            'NEW_CPU_STATISTICS_ONLY_FOR_FRESH_BF_CAPTURE')
     verified = fresh.verify_build(a.completion, a.completion_sha256, a.vendor)
     require(a.experimental_qualification and sha(a.public_schema) == a.schema_sha256,
             'EXPLICIT_EXPERIMENT_AND_NEW_SCHEMA_REQUIRED')
@@ -88,12 +91,27 @@ def main():
     # Enter the scope at the actual module call site. This preserves whatever
     # exact wrapper msprobe currently owns, instead of overwriting its API.
     a.independent_launch_call = observed
-    code, execution_error = 2, None
+    code, execution_error, statistics_backend = 2, None, None
     try:
+        if a.statistics_backend == 'cpu-fp64-v1':
+            from attention_cpu_statistics import CpuFp64Statistics
+            statistics_backend = CpuFp64Statistics()
+            statistics_backend.install()
+            a.collector_backend_identity = statistics_backend.identity()
         code = fresh.run_child(a, verified)
     except BaseException as error:
         execution_error = dict(error=repr(error), traceback=traceback.format_exc())
         failures.append(dict(stage='experiment_execution', **execution_error))
+    finally:
+        if statistics_backend is not None and statistics_backend.installed:
+            try:
+                statistics_backend.close()
+            except BaseException as error:
+                failures.append(dict(stage='statistics_backend_cleanup', error=repr(error),
+                                     traceback=traceback.format_exc()))
+    backend_report = statistics_backend.report() if statistics_backend is not None else None
+    if backend_report is not None and backend_report['status'] != 'NEW_COLLECTION_COMPLETE':
+        failures.append(dict(stage='statistics_backend', error='NEW_CPU_STATISTICS_COLLECTION_INCOMPLETE'))
     expected = 4 if a.phase == 'off_recovery' else 2
     qualified = code == 0 and len(launches) == expected and not failures
     report = dict(schema='demoncat.attention28.new_launch_probe.v1',
@@ -102,8 +120,12 @@ def main():
         observer_receipt_sha256=a.observer_receipt_sha256, launches=launches, failures=failures,
         runtime_result_sha256=sha(a.out/'result.json') if (a.out/'result.json').is_file() else None,
         execution_error=execution_error, api_wrapper_installed=False, native_launch_verified=qualified,
+        statistics_backend=a.statistics_backend,
         public_worker_qualified=False, c2=False, c3=False, statistics='SEPARATE_RAW_COMPARATOR_REQUIRED')
     a.out.mkdir(parents=True, exist_ok=True)
+    if backend_report is not None:
+        fresh.save(a.out/'statistics_backend.json',backend_report)
+        report['statistics_backend_receipt_sha256'] = sha(a.out/'statistics_backend.json')
     with (a.out/'independent_launch.json').open('x') as output:
         json.dump(report, output, indent=2, allow_nan=False);output.write('\n')
     print(json.dumps({key: report[key] for key in ('status', 'phase', 'variant', 'native_launch_verified')}))
