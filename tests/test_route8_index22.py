@@ -97,6 +97,29 @@ class RouteAndIndexTests(unittest.TestCase):
             self.assertTrue(torch.equal(model(x,i),x[i]))
             self.assertFalse(session.events)
 
+    def test_actual_advanced_rope_lookup_and_materialized_consumer_lineage(self):
+        class AdvancedRope(RopeWorkload):
+            def forward(self, x, positions):
+                lookup = self.cos_sin_cache[positions]
+                cos, sin = lookup.chunk(2, dim=-1)
+                # Real implementations can materialize views before a fused
+                # consumer; same data_ptr alone is not a lineage proof.
+                cos, sin = cos.contiguous(), sin.contiguous()
+                rotated = torch.cat((-x[:, 2:], x[:, :2]), dim=-1)
+                return x * cos + rotated * sin
+        model = AdvancedRope().eval(); x = torch.arange(16.).reshape(4, 4)
+        positions = torch.arange(4); original = model(x, positions)
+        with WrongRowSession(model, simulation=True) as session:
+            changed = model(x, positions)
+        row, = session.report()['events']
+        self.assertEqual(row['operator'], 'aten.index.Tensor')
+        self.assertTrue(row['replacement_readback_exact'])
+        self.assertTrue(all(r['actual_lookup_lineage'] for r in row['consumers']))
+        self.assertIn('aten.clone.default', row['lineage_operators'])
+        self.assertTrue(torch.equal(original[:-1], changed[:-1]))
+        self.assertFalse(torch.equal(original[-1], changed[-1]))
+        self.assertTrue(torch.equal(model(x, positions), original))
+
     def test_public_provider_c1_replays_for_both_mechanisms(self):
         for mechanism,model,inputs in (
             ('8.restore_offset',MoeWorkload(),self.moe_inputs()),

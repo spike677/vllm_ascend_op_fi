@@ -10,9 +10,14 @@ from .core import UnsupportedCall
 class RestoreOffsetSession(ScopedDispatch):
     mechanism = '8.restore_offset'
 
-    def __init__(self, model, **kwargs):
+    def __init__(self, model, *, selected_calls=None, **kwargs):
         super().__init__(model, **kwargs)
         self.private_observations = {}
+        self.selected_calls = None if selected_calls is None else frozenset(selected_calls)
+
+    def is_selected(self, event):
+        return ((event['path'], event['ordinal']) in self.selected_calls
+                if self.selected_calls is not None else super().is_selected(event))
 
     def dispatch(self, func, args, kwargs):
         import torch

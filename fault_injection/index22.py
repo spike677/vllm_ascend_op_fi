@@ -5,38 +5,67 @@ extension. This cannot reproduce or diagnose uint32 address overflow.
 """
 from ._scoped_dispatch import ScopedDispatch
 from .core import UnsupportedCall
+from .tensor_observer import tensors
 
 
 class WrongRowSession(ScopedDispatch):
     mechanism = '22.wrong_row'
 
-    def __init__(self, model, **kwargs):
+    def __init__(self, model, *, selected_calls=None, admission=None, **kwargs):
         super().__init__(model, **kwargs)
         self.records = []
+        self.selected_calls = None if selected_calls is None else frozenset(selected_calls)
+        self.admission = admission
+
+    def is_selected(self, event):
+        if self.admission is not None:
+            return bool(self.admission(event))
+        return ((event['path'], event['ordinal']) in self.selected_calls
+                if self.selected_calls is not None else super().is_selected(event))
 
     def dispatch(self, func, args, kwargs):
         import torch
         schema = getattr(func, '_schema', None)
         name = getattr(schema, 'name', '')
-        if name != 'aten::index_select' or getattr(schema, 'overload_name', ''):
+        is_lookup = ((name == 'aten::index_select' and not getattr(schema, 'overload_name', ''))
+                     or (name == 'aten::index' and getattr(schema, 'overload_name', '') == 'Tensor'))
+        if not is_lookup:
             # Track aliases produced by split/view without guessing equality
             # from a data_ptr that may include a different storage offset.
-            inputs = [x for x in args if isinstance(x, torch.Tensor)]
+            inputs = list(tensors((args, kwargs)))
             readers = []
-            if name in ('aten::mul','aten::add','npu::npu_apply_rotary_pos_emb'):
-                for record in self.records:
-                    if record['forward'] != len(self.forwards)-1: continue
-                    if any(x.untyped_storage()._cdata == record['result'].untyped_storage()._cdata
-                           for x in inputs):
-                        readers.append(record)
+            linked = []
+            for record in self.records:
+                if record['forward'] != len(self.forwards)-1: continue
+                source_ids = {x.untyped_storage()._cdata for x in record['lineage']}
+                if any(x.untyped_storage()._cdata in source_ids for x in inputs):
+                    linked.append(record)
+            if name in ('aten::mul','aten::add','npu::npu_apply_rotary_pos_emb',
+                        'npu::npu_rotary_mul', '_C_ascend::rotary_embedding'):
+                readers = linked
             output = func(*args, **kwargs)
             for record in readers:
                 record['event']['consumers'].append(dict(operator=str(func),
-                    returned=True, same_lookup_storage=True, module_path=self.stack[-1][0]))
+                    returned=True, same_lookup_storage=any(x.untyped_storage()._cdata ==
+                        record['result'].untyped_storage()._cdata for x in inputs),
+                    actual_lookup_lineage=True, module_path=self.stack[-1][0]))
+            if name in ('aten::view', 'aten::reshape', 'aten::_unsafe_view', 'aten::slice',
+                        'aten::select', 'aten::split', 'aten::split_with_sizes', 'aten::expand',
+                        'aten::unsqueeze', 'aten::squeeze', 'aten::clone', 'aten::_to_copy',
+                        'aten::repeat', 'aten::cat', 'aten::transpose', 'aten::permute'):
+                for record in linked:
+                    record['lineage'].extend(tensors(output))
+                    record['event']['lineage_operators'].append(str(func))
             return output
-        values = dict(zip(('input','dim','index'), args))
-        values.update(kwargs)
-        source, dim, index = (values.get(k) for k in ('input','dim','index'))
+        if name == 'aten::index_select':
+            values = dict(zip(('input','dim','index'), args)); values.update(kwargs)
+            source, dim, index = (values.get(k) for k in ('input','dim','index'))
+        else:
+            values = dict(zip(('self', 'indices'), args)); values.update(kwargs)
+            source, indices = values.get('self'), values.get('indices')
+            if not isinstance(indices, (tuple, list)) or len(indices) != 1:
+                return func(*args, **kwargs)
+            index, dim = indices[0], 0
         owners = [(path, module) for path, module in self.stack
                   if getattr(module, 'cos_sin_cache', None) is source]
         if len(owners) != 1:
@@ -82,8 +111,12 @@ class WrongRowSession(ScopedDispatch):
                 source_unchanged=True, index_unchanged=True, non_target_rows_unchanged=True,
                 replacement_readback_exact=True, output_changed=not torch.equal(native,after),
                 cache_object_id=id(source), lookup_storage_id=int(result.untyped_storage()._cdata),
-                consumers=[], boundary='aten.index_select.return',
+                consumers=[], lineage_operators=[], boundary=str(func)+'.return',
                 semantics='WRONG_ROW_OUTPUT_PROXY_NOT_UINT32_OVERFLOW')
             self.records.append(dict(result=result, source=source, event=event,
-                                     forward=len(self.forwards)-1))
+                                     lineage=[result], forward=len(self.forwards)-1))
         return result
+
+    def close(self):
+        super().close()
+        self.records.clear()

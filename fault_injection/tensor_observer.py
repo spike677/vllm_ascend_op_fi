@@ -50,7 +50,7 @@ def callable_identity(module):
 
 class NaturalTensorObserver:
     """Bounded full eager census; does not depend on any injection implementation."""
-    def __init__(self, model, *, max_events=100000):
+    def __init__(self, model, *, max_events=100000, on_module_enter=None, on_operator_enter=None):
         if type(max_events) is not int or max_events < 1:
             raise ValueError('A finite event budget is required')
         self.model, self.max_events = model, max_events
@@ -62,6 +62,8 @@ class NaturalTensorObserver:
         self.thread = None
         self.closed = False
         self.dropped = 0
+        self.on_module_enter = on_module_enter
+        self.on_operator_enter = on_operator_enter
 
     def _emit(self, row):
         if len(self.events) >= self.max_events:
@@ -89,6 +91,8 @@ class NaturalTensorObserver:
                 if threading.get_ident() != self.thread:
                     raise RuntimeError('OBSERVER_THREAD_CHANGED')
                 self.stack.append((path, actual, role))
+                if self.on_module_enter is not None:
+                    self.on_module_enter(path, actual, args, kwargs)
         return enter
 
     def _post(self, module):
@@ -124,6 +128,8 @@ class NaturalTensorObserver:
         name = getattr(schema, 'name', str(func))
         self.counts[str(func)] += 1
         inputs = tuple(tensors((args, kwargs)))
+        if self.on_operator_enter is not None:
+            self.on_operator_enter(func, args, kwargs, tuple(self.stack))
         input_storages = {int(t.untyped_storage()._cdata) for t in inputs}
         data_reader = name in ('aten::mul', 'aten::add', 'aten::linear', 'aten::mm', 'aten::matmul',
             'aten::bmm', 'aten::cat', 'aten::convolution', 'aten::conv3d', 'npu::npu_apply_rotary_pos_emb',
@@ -144,6 +150,12 @@ class NaturalTensorObserver:
         if row is not None:
             row['output'] = [metadata(x) for x in tensors(result)]
             row['original_returned'] = True
+            if 'rms_norm' in name:
+                owners = [(path, module) for path, module, _ in self.stack
+                    if any(getattr(module, 'weight', None) is item for item in inputs)]
+                row['weight_owner_paths'] = [path for path, _ in owners]
+                row['weight_owner_sources'] = [dict(path=path, **callable_identity(module))
+                                                for path, module in owners]
             if name in ('aten::index_select', 'aten::index'):
                 owners = [(path, key) for path, module, _ in self.stack
                     for key, buffer in module.named_buffers(recurse=False)
@@ -158,14 +170,16 @@ class NaturalTensorObserver:
             linked['consumers'].append(dict(operator=str(func), path=self.stack[-1][0], returned=True))
         if name in ('aten::as_strided', 'aten::select', 'aten::slice') and inputs:
             views = tuple(tensors(result))
-            if len(views) == 1 and views[0].untyped_storage()._cdata == inputs[0].untyped_storage()._cdata:
+            if len(views) == 1:
                 base, view = inputs[0], views[0]
                 meta = metadata(base)
-                # Retain real private-format views as well as public as_strided
-                # observations. Do not turn arbitrary ND model views into fault15.
+                # Retain real non-ND layouts (including base NCDHW=30) as well
+                # as public as_strided observations. A layout code other than
+                # 0/2 is an inventory condition, not private-format eligibility.
                 if meta.get('actual_format') not in (None, 0, 2) or name == 'aten::as_strided':
-                    linked = self._emit(dict(kind='view', operator=str(func), base=meta,
-                        view=metadata(view), aliases_base=True, writes=[], consumers=[]))
+                    linked = self._emit(dict(kind='view', operator=str(func), schema=str(schema), base=meta,
+                        view=metadata(view), aliases_base=view.untyped_storage()._cdata ==
+                        base.untyped_storage()._cdata, writes=[], consumers=[]))
                     self.views.append((weakref.ref(view), weakref.ref(base), linked))
         return result
 
