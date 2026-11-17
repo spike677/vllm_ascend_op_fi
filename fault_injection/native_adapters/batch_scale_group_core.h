@@ -59,6 +59,8 @@ struct NativeEvent {
     int32_t device{-1},status{};
     uint64_t original_calls{};
     uint64_t workspace_required{},workspace{},workspace_capacity{};
+    uint64_t smooth_tensor{},group_index_tensor{},offset_tensor{};
+    int64_t destination_dtype{2};
     View input{},quant{},scale{};
 };
 struct ChildBinding {
@@ -134,8 +136,10 @@ public:
     const NativeEvent* event(uint64_t ticket) const {
         auto p=events_.find(ticket);return p==events_.end()?nullptr:&p->second;
     }
-    uint64_t prepare(const View& x,const View& q,const View& s,uint64_t thread,int device) {
+    uint64_t prepare(const View& x,const View& q,const View& s,uint64_t thread,int device,
+        uint64_t smooth=0,uint64_t group_index=0,uint64_t offset=0,int64_t destination_dtype=2) {
         NativeEvent e{};e.kind=PrepareEnter;e.input=x;e.quant=q;e.scale=s;e.thread=thread;e.device=device;
+        e.smooth_tensor=smooth;e.group_index_tensor=group_index;e.offset_tensor=offset;e.destination_dtype=destination_dtype;
         e.registration=sequence_+1;++state_.native_prepares;
         const auto ticket=append(e);if(ticket)preparing_.insert(ticket);return ticket;
     }
@@ -197,6 +201,10 @@ public:
         for(const auto& b:bindings_)(b.second.role==CorrectReference?s.helper_prepares:s.model_prepares)++;
         s.unclassified_prepares=s.native_prepares-s.helper_prepares-s.model_prepares;return s;
     }
+    const ChildBinding* binding(uint64_t registration) const {
+        const auto found=bindings_.find(registration);return found==bindings_.end()?nullptr:&found->second;
+    }
+    uint64_t last_sequence() const {return sequence_;}
 };
 
 struct ChildPlan {
@@ -353,6 +361,10 @@ class Engine {
     }
 public:
     Engine(Ops& ops,Journal& journal):ops_(ops),journal_(journal){}
+    int reject(int code) {return fail(code);}
+    std::vector<Key> target_keys() const {
+        std::vector<Key> result;for(const auto& target:targets_)result.push_back(target.first);return result;
+    }
     int open(const Config& c) {
         const auto owner_key=std::make_pair(c.owner_hi,c.owner_lo);
         if(installed_ || tx_.active || c.version!=1 || c.size!=sizeof(Config) || c.reserved
@@ -424,6 +436,7 @@ public:
         if(!tx_.active || !c || c->prepare_enter || !e || e->kind!=PrepareEnter || !e->registration
            || e->thread!=config_.thread || e->device!=config_.device
            || raw_ticket<=tx_.call.token || e->registration!=raw_ticket
+           || e->smooth_tensor || e->group_index_tensor || e->offset_tensor || e->destination_dtype!=2
            || !same_view(e->input,c->plan.input) || !same_view(e->quant,c->plan.quant) || !same_view(e->scale,c->plan.scale)
            || !c->plan.input.descriptor || !c->plan.quant.descriptor || !c->plan.scale.descriptor)return fail(Identity);
         ChildBinding binding{};binding.parent_token=tx_.call.token;binding.child_lease=c->plan.child_lease;
