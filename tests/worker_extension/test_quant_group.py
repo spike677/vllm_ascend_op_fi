@@ -208,10 +208,20 @@ class QuantGroupTests(unittest.TestCase):
         runtime = GroupRuntimeMock(self.folder)
         runtime.metadata_arrays = lambda: metadata_report(0, runtime.build_profile)
         backend = self.backend(runtime=runtime)
-        with self.assertRaisesRegex(RuntimeError, 'GROUP_COVERAGE_OR_RECOVERY_INCOMPLETE'):
+        with self.assertRaisesRegex(RuntimeError, 'NO_ACTUAL_WORKLOAD_ARRAY_ACTIVITY'):
             self.complete(backend)
         self.assertIsNone(backend.proof)
         self.assertFalse(getattr(backend, 'recovered', False))
+
+    def test_two_discovery_preflight_releases_without_fault_or_group_proof(self):
+        backend = self.backend()
+        for _ in range(2):
+            self.phase(backend)
+        backend.close()
+        self.assertIsNone(backend.runtime.callback)
+        self.assertFalse(backend.fault_started)
+        self.assertIsNone(backend.proof)
+        self.assertGreater(backend.metadata.activity_evidence()['group_observed_delta']['acquired_arrays'], 0)
 
     def test_every_match_requires_live_proof_and_counts_repeated_calls(self):
         first = self.backend()

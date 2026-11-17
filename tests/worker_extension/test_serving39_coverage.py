@@ -12,7 +12,7 @@ from demoncat_fault39.coverage_adapter import (MatmulCoverageBackend, digest, na
                                               native_delta, reconcile_discovery)
 from demoncat_fault39.inspector import summarize_values
 from demoncat_fault39.schema import Fault39Config
-from metadata_fixture import metadata_report
+from metadata_fixture import metadata_report, metadata_witness
 
 
 class NativeMock:
@@ -33,9 +33,11 @@ class NativeMock:
         self.calls = 0
         self.missing_hit = False
         self.stale_epoch = False
+        self.metadata_captures = 0
+        self.metadata_witnesses = {}
 
     def metadata_arrays(self):
-        return metadata_report(self.calls, 'b' * 64)
+        return metadata_report(self.metadata_captures, 'b' * 64)
 
     def snapshot(self):
         return dict(runtime_identity='MATCHED_BUILD', runtime_loaded=True, runtime_ready=True,
@@ -48,7 +50,8 @@ class NativeMock:
             independent_eligible_runs=sum(self.counts.values()),
             independent_candidates=[dict(signature=key[0], rank=0, device=0,
                 cache_identities=[dict(address=key[1], epoch=key[2], observations=count,
-                                       registration_live=True)]) for key, count in self.counts.items()],
+                                       registration_live=True, metadata_arrays=self.metadata_witnesses.get(key))])
+                                    for key, count in self.counts.items()],
             last_observation=copy.deepcopy(self.observation))
 
     @contextmanager
@@ -105,6 +108,9 @@ class NativeMock:
         return self._stop(owner, generation, True)
 
     def execute(self, key):
+        if key not in self.metadata_witnesses:
+            self.metadata_witnesses[key] = metadata_witness(key, self.metadata_captures)['metadata_arrays']
+            self.metadata_captures += 3
         self.calls += 1
         self.counts[key] = self.counts.get(key, 0) + 1
         output = torch.mm(torch.ones(2, 4), torch.ones(4, 2))
@@ -207,12 +213,38 @@ class CoverageAdapterTests(unittest.TestCase):
         native.metadata_arrays = lambda: metadata_report(0, 'b' * 64)
         with tempfile.TemporaryDirectory() as folder:
             backend, native = self.fixture(folder, native=native)
-            for index, _ in enumerate(backend.phases):
-                self.phase(backend, native, index)
-            with self.assertRaisesRegex(RuntimeError, 'GROUP_COVERAGE_OR_RECOVERY_INCOMPLETE'):
-                backend.finalize()
+            with self.assertRaisesRegex(RuntimeError, 'CACHE_WITNESS_AFTER_CURRENT_OR_RESET'):
+                for index, _ in enumerate(backend.phases):
+                    self.phase(backend, native, index)
             self.assertIsNone(backend.proof)
             self.assertFalse(backend.recovered)
+
+    def test_real_warmup_cache_then_zero_group_getters_still_has_bound_release_witness(self):
+        native = NativeMock()
+        native.execute(('same-shape', 100, 1))
+        native.execute(('same-shape', 200, 1))
+        with tempfile.TemporaryDirectory() as folder:
+            backend, native = self.fixture(folder, native=native)
+            initial = native.metadata_arrays()
+            for index, _ in enumerate(backend.phases):
+                self.phase(backend, native, index)
+            backend.finalize()
+            self.assertEqual(native.metadata_arrays(), initial)
+            self.assertTrue(backend.coverage.report()['contract_satisfied'])
+            self.assertEqual(len(backend.metadata.activity_evidence()['cached_registration_witnesses']), 2)
+            self.assertEqual(backend.metadata.activity_evidence()['group_observed_delta']['acquired_arrays'], 0)
+
+    def test_two_discovery_preflight_can_release_without_issuing_group_proof(self):
+        with tempfile.TemporaryDirectory() as folder:
+            backend, native = self.fixture(folder)
+            for index in range(2):
+                self.phase(backend, native, index)
+            backend.disable()
+            backend.unregister()
+            self.assertEqual(native.owner, '')
+            self.assertFalse(backend.fault_started or backend.recovered)
+            self.assertIsNone(backend.proof)
+            self.assertEqual(len(backend.metadata.activity_evidence()['cached_registration_witnesses']), 2)
 
     def test_unobserved_native_call_cannot_disappear_from_discovery(self):
         with tempfile.TemporaryDirectory() as folder:

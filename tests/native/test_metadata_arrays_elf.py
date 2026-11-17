@@ -51,6 +51,7 @@ int fault39_snapshot_v1(void) {return 0;}
         profile = dict(schema='fault39.cann.build_profile.v1', adapter='matmul-cache-abi0-v1',
             proxy_layout='main_and_nn', metadata_array_ownership=dict(schema=SCHEMA, state_version=1,
                 state_symbol='fault39_metadata_arrays_v1', proxy_images=['libopapi.so', 'libopapi_nn.so'],
+                cached_registration_witness='fault39_gws_commit_arrays_v1',
                 reset_supported=False, runtime_quiescent_readback_required=True))
         profile['profile_sha256'] = hashlib.sha256(json.dumps(profile, sort_keys=True,
                                                     separators=(',', ':')).encode()).hexdigest()

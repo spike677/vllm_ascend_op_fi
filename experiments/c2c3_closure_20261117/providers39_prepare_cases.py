@@ -13,14 +13,18 @@ def main():
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--c3', action='store_true')
+    parser.add_argument('--metadata-preflight', action='store_true')
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
+    if args.metadata_preflight and (args.c3 or args.statistics):
+        parser.error('Metadata preflight has no fault/statistics/C3 phase')
     for value in (args.installed, args.native, args.probe, args.model):
         if not value.startswith('/') or any(c in value for c in ('\n', '\r', '\0', ',')):
             parser.error('Absolute immutable remote input paths required')
     if not re.fullmatch('[0-9a-f]{64}', args.build_sha) or not re.fullmatch('[0-9a-f]{7,40}', args.source_commit):
         parser.error('Actual native build SHA and source commit required')
-    name = 'providers39-qwen-c2c3' if args.c3 else 'providers39-qwen-c2'
+    name = ('providers39-qwen-metadata-preflight' if args.metadata_preflight else
+            'providers39-qwen-c2c3' if args.c3 else 'providers39-qwen-c2')
     native = PurePosixPath(args.native)
     case = dict(id=name, timeout=1800, image='quay.io/ascend/vllm-ascend:v0.18.0',
         mounts=[[args.installed, '/installed', 'ro'], [args.native, '/native', 'ro'],
@@ -34,7 +38,8 @@ def main():
             'export LD_PRELOAD=/native/libfault39_native_v1.so:/native/libopapi.so\n'
             'export LD_LIBRARY_PATH=/native:$LD_LIBRARY_PATH\n'
             'export PYTHONPATH=/installed:/msprobe_packages:$PYTHONPATH\n'
-            'exec python3 /probe.py' + (' --statistics' if args.statistics else '') + (' --c3' if args.c3 else ''),
+            'exec python3 /probe.py' + (' --statistics' if args.statistics else '') + (' --c3' if args.c3 else '')
+            + (' --metadata-preflight' if args.metadata_preflight else ''),
         review=dict(experiment_id=name, provider='39.matmul_range / exact-cache-v2', model=args.model,
             cann='8.5.1', soc='Ascend910B4/A2; recheck actual Worker', physical_cards=[args.card], ranks=[0],
             worker='new standard vLLM 0.18.0 TP1 eager; full root plus actual LogitsProcessor',
@@ -48,6 +53,12 @@ def main():
                 'in same process; remove every owned hook; group stop-all/drain-all barrier then native clean; per-target '
                 'output hashes and same-Worker complete logits restore required. On failure retain failed/quarantined evidence; '
                 'root controller stops/removes only this owned temporary container. No NPU reuse marked healthy without recovery.'))
+    if args.metadata_preflight:
+        case['review'].update(metadata_preflight_only=True, c2=False, c3=False,
+            expected_hits='Zero fault hits. Two natural discovery requests must bind every actual target cache to its '
+                'same-loaded-instance metadata release witness. No C2/C3 proof is issued.',
+            recovery_plan='No fault is armed. After two discovery requests, unregister all owned observers and native '
+                'owner, remove the binding, and compare healthy output in the same Worker. Retain any failure.')
     with args.out.open('x') as stream:
         json.dump([case], stream, indent=2)
 

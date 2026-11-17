@@ -285,11 +285,16 @@ class QuantGroupBackend(PublicQuantInventory):
         require(not healthy or (model_output_finite and model_output_sha256 == self.baseline_output),
                 'COMPLETE_MODEL_HEALTHY_LOSSLESS_OR_OFF_CHANGED')
         require(not self.overflow_calls and not self.failure, 'PUBLIC_OR_NATIVE_OBSERVER_FAILED')
+        # Typed-GWS admission requires a current descriptor on every eligible
+        # QMM Run. Fail at the first discovery, before lossless/F work, if the
+        # loaded metadata path did not execute its real allocating getters.
+        if self.phase.startswith('discovery_'):
+            self.metadata.read(require_activity=True)
         row = self.current
         row.pop('ordinals')
         row.update(model_output_sha256=model_output_sha256, model_output_finite=model_output_finite,
             public_end=len(self.public_calls), native_after=after, independent_native_qmm_calls=sum(total.values()),
-            metadata_arrays=self.metadata.latest)
+            metadata_arrays=self.metadata.latest, metadata_array_activity=self.metadata.activity_evidence())
         self.rows.append(row)
         self.current = None
         self.last_output = model_output_sha256
@@ -446,6 +451,7 @@ class QuantGroupBackend(PublicQuantInventory):
         return {'qualification': dict(status='C2_C3_EVIDENCE_READY_FOR_REVIEW' if self.recovered else
             'ATTEMPT_FAILED' if self.failure else 'WAITING_FOR_REAL_REQUEST', failure=self.failure,
             next_phase=self.phase, recovery_verified=self.recovered, trigger=self.trigger, targets=len(self.targets),
+            metadata_array_activity=self.metadata.activity_evidence(),
             coverage_scope='ALL_ACTUAL_NATIVE_ELIGIBLE_QMM_IN_FIXED_FRESH_PREFILL',
             structural_candidates=len(self.candidates), unobserved_structural_candidates_are_not_qualified=True,
             completed_phases=[row['phase'] for row in self.rows],

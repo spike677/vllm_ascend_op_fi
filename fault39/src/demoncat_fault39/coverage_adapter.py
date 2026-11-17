@@ -145,6 +145,7 @@ class MatmulCoverageBackend:
                 and state.get('owner') in ('', self.owner), 'NATIVE_BUILD_OWNER_OR_MODEL_CHANGED')
         native_counts(state)
         state['metadata_arrays'] = self.metadata.read()
+        state['metadata_array_activity'] = self.metadata.activity_evidence()
         return state
 
     def prepare(self):
@@ -372,7 +373,14 @@ class MatmulCoverageBackend:
     def _freeze_targets(self, sites):
         from fault_injection.coverage import TargetIdentity
         from fault_injection.runtime_discovery import _process_start_identity
-        build = self.snapshot()['build_profile_sha256']
+        native = self.snapshot()
+        build = native['build_profile_sha256']
+        required_keys = {tuple(row['native_delta'][0]['key']) for row in sites.values()}
+        witnesses = [dict(cache_key=[candidate['signature'], cache['address'], cache['epoch']],
+                          registration_live=cache.get('registration_live'), metadata_arrays=cache.get('metadata_arrays'))
+                     for candidate in native['independent_candidates'] for cache in candidate['cache_identities']
+                     if (candidate['signature'], cache['address'], cache['epoch']) in required_keys]
+        self.artifact('metadata-cached-registration-witnesses', self.metadata.bind_cached_registrations(witnesses, required_keys))
         for site, row in sites.items():
             key = tuple(row['native_delta'][0]['key'])
             identity = TargetIdentity(process_id=os.getpid(), worker_id=self.worker_identity['worker_start_identity'],
@@ -452,6 +460,7 @@ class MatmulCoverageBackend:
         state = self.snapshot()
         require(not state['owner'], 'NATIVE_OWNER_NOT_RELEASED')
         state['metadata_arrays'] = self.metadata.read(require_activity=True)
+        state['metadata_array_activity'] = self.metadata.activity_evidence()
         proof = self.artifact('worker-health', dict(native=state, baseline=self.baseline_output, off=self.last_output,
                                                    owned_hooks=self.owned_hooks, worker=list(worker)))
         return WorkerHealthProof(worker, owner, generation, proof, self.baseline_output, self.last_output,
@@ -489,5 +498,6 @@ class MatmulCoverageBackend:
                 next_phase=self.phase, failure=self.failure, recovery_verified=self.recovered,
                 completed_phases=[row['phase'] for row in self.rows],
                 actual_request_ids=[row['request_id'] for row in self.rows], targets=len(self.targets),
+                metadata_array_activity=self.metadata.activity_evidence(),
                 trigger=self.trigger, native_matching='EXACT_CACHE_V2',
                 coverage=self.coverage.report() if self.coverage is not None else None)}

@@ -60,15 +60,18 @@ def main():
     parser.add_argument('--model', default='/model')
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--c3', action='store_true')
+    parser.add_argument('--metadata-preflight', action='store_true', help='Only two natural discovery requests; never fault or C2/C3')
     parser.add_argument('--memory', type=float, default=.55)
     parser.add_argument('--out', type=Path, default=Path('/evidence/result.json'))
     args = parser.parse_args()
+    if args.metadata_preflight and (args.c3 or args.statistics):
+        parser.error('Metadata preflight has no fault/statistics/C3 phase')
     from vllm import LLM, SamplingParams
     from demoncat.runtime.vllm_ascend.worker_extension.quant_group import PHASES
     from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require_host_driven_core, read_enqueued_identity
     report = dict(status='STARTING', scope='NATURAL_TP1_FIXED_SHORT_FRESH_PREFILL_ALL_NATIVE_ELIGIBLE_QMM',
                   mechanisms=['20.buffer_substitute'], c2=False, c3=False, attempts=[], statistics=args.statistics,
-                  e5='UNVERIFIED_RAW_BF_COMPARISON_REQUIRED')
+                  e5='UNVERIFIED_RAW_BF_COMPARISON_REQUIRED', metadata_preflight_only=args.metadata_preflight)
     def save():
         args.out.write_text(json.dumps(report, indent=2, ensure_ascii=False, allow_nan=False) + '\n')
     llm = None
@@ -111,7 +114,7 @@ def main():
                 save()
                 if reply['status'] != 'ACTION_COMPLETED':
                     raise RuntimeError(str(reply))
-            phases = list(PHASES)
+            phases = list(PHASES[:2] if args.metadata_preflight else PHASES)
             if trigger == 'every_match':
                 phases.insert(phases.index('off_observed'), 'fault_repeat')
             for phase in phases:
@@ -138,6 +141,21 @@ def main():
                 save()
                 if row['query'].get('quarantined'):
                     raise RuntimeError('GROUP_ATTEMPT_FAILED')
+            if args.metadata_preflight:
+                qualification = row['query']['provider_state']['qualification']
+                if qualification.get('targets', 0) <= 0 or not qualification.get('metadata_array_activity'):
+                    raise RuntimeError('METADATA_DISCOVERY_PREFLIGHT_INCOMPLETE')
+                attempt['metadata_activity'] = qualification['metadata_array_activity']
+                attempt['unregister'] = rpc(llm, 'demoncat_fault_rpc', 'unregister', ticket)
+                if attempt['unregister']['status'] != 'ACTION_COMPLETED':
+                    raise RuntimeError('PREFLIGHT_OWNER_NOT_RELEASED')
+                ticket = None
+                attempt['unbind'] = rpc(llm, remove)
+                healthy, = llm.generate([prompt], sampling, use_tqdm=False)
+                attempt['healthy_after'] = response(healthy)
+                if attempt['healthy_after']['outputs'] != report['healthy_before']['outputs']:
+                    raise RuntimeError('PREFLIGHT_HEALTHY_CONTROL_CHANGED')
+                break
             attempt['finish'] = rpc(llm, 'demoncat_fault_rpc', 'finish', ticket)
             if attempt['finish']['status'] != 'ACTION_COMPLETED':
                 raise RuntimeError('GROUP_FINISH_NOT_CONFIRMED')
@@ -159,7 +177,8 @@ def main():
             save()
         report['detach'] = rpc(llm, 'demoncat_detach', tenant)
         tenant = None
-        report['status'] = 'C2_C3_NATIVE_EVIDENCE_READY_FOR_REVIEW' if args.c3 else 'C2_NATIVE_EVIDENCE_READY_FOR_REVIEW'
+        report['status'] = ('METADATA_PREFLIGHT_EVIDENCE_READY_FOR_REVIEW' if args.metadata_preflight else
+                            'C2_C3_NATIVE_EVIDENCE_READY_FOR_REVIEW' if args.c3 else 'C2_NATIVE_EVIDENCE_READY_FOR_REVIEW')
     except BaseException as error:
         report.update(status='FAILED_WITH_EVIDENCE', error=repr(error), traceback=traceback.format_exc())
         if llm is not None and seen:

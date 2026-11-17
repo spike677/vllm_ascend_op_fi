@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 from fault_injection.metadata_arrays import (LoadedMetadataArrays, MetadataArraySession,
     LoadedWriter26MetadataArrays, MetadataArrayStateV1, _DlInfo, SCHEMA)
-from metadata_fixture import metadata_report
+from metadata_fixture import metadata_report, metadata_witness
 
 
 class CounterContractTests(unittest.TestCase):
@@ -80,6 +80,46 @@ class CounterContractTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'ABI_MISMATCH'):
             self.session.read()
 
+    def test_cache_warmup_witness_not_lifetime_nonzero_can_supply_activity(self):
+        self.value = metadata_report(3, 'b' * 64)
+        self.session.read()
+        with self.assertRaisesRegex(RuntimeError, 'NO_ACTUAL_WORKLOAD'):
+            self.session.read(require_activity=True)
+        key = ('real-signature', 1234, 7)
+        self.session.bind_cached_registrations([metadata_witness(key)], {key})
+        self.session.read(require_activity=True)
+        self.assertEqual(self.session.activity_evidence()['group_observed_delta']['acquired_arrays'], 0)
+
+    def test_each_cached_witness_rejection_and_foreign_or_reset_readback(self):
+        key = ('real-signature', 1234, 7)
+        for defect in ('foreign', 'inactive', 'leak', 'error', 'dead_cache', 'missing_target', 'future'):
+            with self.subTest(defect=defect):
+                self.setUp()
+                self.value = metadata_report(3, 'b' * 64)
+                self.session.read()
+                witness = metadata_witness(key)
+                state = witness['metadata_arrays']['after']
+                if defect == 'foreign':
+                    state['instance'] = 99
+                elif defect == 'inactive':
+                    witness['metadata_arrays']['after'] = copy.deepcopy(witness['metadata_arrays']['before'])
+                elif defect == 'leak':
+                    state['live_arrays'] = 1
+                elif defect == 'error':
+                    state['getter_failures'] = 1
+                elif defect == 'dead_cache':
+                    witness['registration_live'] = False
+                elif defect == 'future':
+                    witness = metadata_witness(key, 3)
+                with self.assertRaisesRegex(RuntimeError, 'METADATA_ARRAYS_'):
+                    self.session.bind_cached_registrations([witness], {key, ('missing', 99, 8)} if defect == 'missing_target' else {key})
+        self.setUp()
+        self.value = metadata_report(3, 'b' * 64)
+        self.session.bind_cached_registrations([metadata_witness(key)], {key})
+        self.value = metadata_report(0, 'b' * 64)
+        with self.assertRaisesRegex(RuntimeError, 'COUNTER_RESET'):
+            self.session.read(require_activity=True)
+
 
 class LoadedImageTests(unittest.TestCase):
     def setUp(self):
@@ -91,6 +131,7 @@ class LoadedImageTests(unittest.TestCase):
         self.profile = dict(schema='fault39.cann.build_profile.v1', adapter='matmul-cache-abi0-v1',
             proxy_layout='main_only', metadata_array_ownership=dict(schema=SCHEMA, state_version=1,
                 state_symbol='fault39_metadata_arrays_v1', proxy_images=['libopapi.so'],
+                cached_registration_witness='fault39_gws_commit_arrays_v1',
                 reset_supported=False, runtime_quiescent_readback_required=True))
         self.profile['profile_sha256'] = hashlib.sha256(json.dumps(self.profile, sort_keys=True,
                                                                  separators=(',', ':')).encode()).hexdigest()

@@ -4,6 +4,7 @@ This complements, and does not replace, native device/workspace/lease accounting
 No reset API, operator call, allocation control, or late vendor dlopen is exposed.
 """
 import ctypes
+import copy
 import hashlib
 import json
 import os
@@ -107,6 +108,8 @@ class LoadedMetadataArrays:
                 and spec.get('state_symbol') == symbol and spec.get('proxy_images') == expected_names
                 and spec.get('reset_supported') is False and spec.get('runtime_quiescent_readback_required') is True
                 and set(self.paths) == set(expected_names + [core_name]), 'COUNTER_CAPABILITY_OR_PROXY_SET_MISSING')
+        require(kind != '39' or spec.get('cached_registration_witness') == 'fault39_gws_commit_arrays_v1',
+                'CACHED_REGISTRATION_WITNESS_BUILD_REQUIRED')
         require(manifest.get('schema') == 'fault39.native.build_manifest.v1'
                 and manifest.get('profile_sha256') == build_profile
                 and manifest.get('files', {}).get('version_profile.json') == _sha(profile_path), 'BUILD_MANIFEST_MISMATCH')
@@ -221,6 +224,67 @@ class MetadataArraySession:
         self.reader, self.build_profile = reader, build_profile
         self.implementation_sha256 = _sha(Path(__file__))
         self.first = self.previous = self.latest = None
+        self.cached_registrations = None
+
+    def _cached_activity(self, current):
+        if self.cached_registrations is None:
+            return False
+        by_instance = {row['state']['instance']: row for row in current['rows'].values()}
+        for row in self.cached_registrations:
+            witness = row['metadata_arrays']
+            require(isinstance(witness, dict) and witness.get('source') == 'actual_typed_gws_capture',
+                    'ACTUAL_CACHE_CAPTURE_WITNESS_REQUIRED')
+            b, a = witness.get('before', {}), witness.get('after', {})
+            for state in (b, a):
+                require(all(type(state.get(key)) is int and 0 <= state[key] < 2**64
+                            for key in ('instance', *COUNTERS)) and state.get('version') == 1
+                        and state.get('size') == ctypes.sizeof(MetadataArrayStateV1), 'CACHE_WITNESS_ABI_MISMATCH')
+                require(all(state[key] == 0 for key in ZERO)
+                        and state['acquired_arrays'] == state['released_arrays'], 'CACHE_WITNESS_UNRELEASED_OR_ERROR')
+            require(b['instance'] == a['instance'] and a['instance'] in by_instance, 'CACHE_WITNESS_FOREIGN_INSTANCE')
+            require(all(a[key] >= b[key] for key in MONOTONIC) and a['revision'] > b['revision']
+                    and all(a[key] - b[key] == count for key, count in
+                            (('capture_calls', 3), ('getter_calls', 9), ('acquired_arrays', 9), ('released_arrays', 9))),
+                    'CACHE_WITNESS_POSITIVE_EXACT_CAPTURE_REQUIRED')
+            loaded = by_instance[a['instance']]['state']
+            require(all(loaded[key] >= a[key] for key in MONOTONIC), 'CACHE_WITNESS_AFTER_CURRENT_OR_RESET')
+        return bool(self.cached_registrations)
+
+    def bind_cached_registrations(self, rows, required_keys):
+        """Bind only independent live native registrations used by this group.
+
+        This widens the observation interval to the actual registration-time
+        capture. A nonzero process lifetime total alone never grants activity.
+        """
+        require(self.cached_registrations is None and isinstance(rows, list) and rows,
+                'ONE_COMPLETE_CACHE_WITNESS_SET_REQUIRED')
+        self.read()
+        keys = []
+        for row in rows:
+            key = row.get('cache_key')
+            require(isinstance(key, (list, tuple)) and len(key) == 3 and isinstance(key[0], str) and key[0]
+                    and all(type(n) is int and n > 0 for n in key[1:]) and row.get('registration_live') is True,
+                    'LIVE_CACHE_REGISTRATION_IDENTITY_REQUIRED')
+            keys.append(tuple(key))
+        require(len(set(keys)) == len(keys) and set(keys) == set(required_keys), 'CACHE_WITNESS_COVERAGE_INCOMPLETE')
+        self.cached_registrations = copy.deepcopy(rows)
+        try:
+            self._cached_activity(self.previous)
+        except BaseException:
+            self.cached_registrations = None
+            raise
+        return self.activity_evidence()
+
+    def activity_evidence(self):
+        if self.first is None or self.previous is None:
+            return None
+        delta = {key: sum(row['state'][key] - self.first['rows'][name]['state'][key]
+                         for name, row in self.previous['rows'].items())
+                 for key in ('capture_calls', 'getter_calls', 'acquired_arrays', 'released_arrays')}
+        return dict(schema='demoncat.metadata_array_activity.v1', pid=self.previous['identity'][0],
+                    build_profile_sha256=self.build_profile, group_observed_delta=delta,
+                    cached_registration_witnesses=copy.deepcopy(self.cached_registrations),
+                    process_lifetime_nonzero_alone_accepted=False)
 
     def read(self, *, require_activity=False):
         value = self.reader()
@@ -260,9 +324,11 @@ class MetadataArraySession:
                         for key in MONOTONIC), 'INSTANCE_CHANGED_OR_COUNTER_RESET')
         if self.first is None:
             self.first = current
+        cached = self._cached_activity(current)
         if require_activity:
-            require(all(sum(row['state'][key] - self.first['rows'][name]['state'][key] for name, row in indexed.items()) > 0
-                        for key in ('capture_calls', 'getter_calls', 'acquired_arrays', 'released_arrays')),
-                    'NO_ACTUAL_WORKLOAD_ARRAY_ACTIVITY')
+            direct = all(sum(row['state'][key] - self.first['rows'][name]['state'][key]
+                             for name, row in indexed.items()) > 0
+                         for key in ('capture_calls', 'getter_calls', 'acquired_arrays', 'released_arrays'))
+            require(direct or cached, 'NO_ACTUAL_WORKLOAD_ARRAY_ACTIVITY')
         self.previous, self.latest = current, value
         return value

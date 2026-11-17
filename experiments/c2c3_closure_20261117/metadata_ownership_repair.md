@@ -68,9 +68,12 @@ digest is bound into the group coverage scope.
 
 Before/after readbacks require zero active/live arrays, equal acquired/released
 counts, zero getter/capture/ownership errors, stable independent counter
-instances and monotonic counts. Final health additionally requires positive
-metadata array activity during this actual workload; an unused split proxy
-may remain zero. Missing metadata evidence cannot be converted into literal
+instances and monotonic counts. Final health additionally requires actual
+metadata array activity: either a positive observed workload delta, or a
+complete native39 registration-time release witness bound to every actual
+target cache and the same loaded counter instance. A process-lifetime nonzero
+total alone cannot satisfy this check; an unused split proxy may remain zero.
+Missing metadata evidence cannot be converted into literal
 zero host bytes in a Worker health proof. Counter tests include nonzero
 leaks/errors, stale identities, missing APIs, wrong symbol providers, array
 counter resets and no-activity group finalization. These Python tests are CPU
@@ -87,3 +90,10 @@ multiple loaded counter instances still rejects. The host-only real ELF test
 and a same-byte foreign duplicate; it must be run on Linux by the root owner.
 The Fault39 build recipe and version profile also fingerprint both Fault20
 production inputs actually extracted by the shared CPU ownership fixture.
+
+The first repaired native39 full attempt reached all nine phases but failed
+the original group-window activity gate because all allocating getters had
+already run before that window. Its failure remains unchanged. The subsequent
+registration witness and short real discovery preflight are documented in
+[the timing review](metadata_activity_timing_review.md). Neither the correction
+nor its CPU contracts supply new NPU C2/C3 qualification.

@@ -18,3 +18,10 @@ def metadata_report(count, build_profile):
     return dict(schema=SCHEMA, source='EXPLICIT_CPU_NATIVE_MOCK_NOT_NPU', pid=os.getpid(),
                 build_profile_sha256=build_profile, build_manifest_sha256='f' * 64,
                 images=rows, scope='SDK_GETTER_ARRAYS_ONLY', reset_supported=False)
+
+
+def metadata_witness(cache_key, before_captures=0):
+    return dict(cache_key=list(cache_key), registration_live=True,
+        metadata_arrays=dict(source='actual_typed_gws_capture',
+            before=metadata_report(before_captures, 'b' * 64)['images'][0]['state'],
+            after=metadata_report(before_captures + 3, 'b' * 64)['images'][0]['state']))
