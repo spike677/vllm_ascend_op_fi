@@ -12,6 +12,7 @@ import math
 import threading
 import time
 import uuid
+import weakref
 
 from .core import UnsupportedCall
 from .coverage import (BoundaryTargetIdentity, CandidateSet, Eligibility, ObservedCall,
@@ -240,6 +241,8 @@ class DispatchReceipt:
 
 
 _PROOF_ISSUER = object()
+_PROOF_LOCK = threading.Lock()
+_ISSUED_C2_PROOFS = {}
 _RESERVATION_LOCK = threading.Lock()
 _RESERVED_TARGETS = {}
 _GENERATIONS = {}
@@ -247,7 +250,7 @@ _GENERATIONS = {}
 
 @dataclass(frozen=True)
 class C2Proof:
-    """Live-process gate receipt. Serialized reports cannot recreate authority."""
+    """Live-process gate receipt. Only the exact unmodified issued object gates C3."""
     scope: CoverageScope
     candidates_sha256: str
     target_ids: tuple[str, ...]
@@ -262,6 +265,46 @@ class C2Proof:
 
     def report(self):
         return {key: value for key, value in asdict(self).items() if key != '_issuer'}
+
+
+def _register_c2_proof(proof):
+    """Seal issued identity and fields; the dataclass issuer marker is not authority.
+
+    Keep a weak reference so completed sessions do not leak proof objects. The
+    cleanup identity check also prevents an old callback from removing a newer
+    object if Python reuses an object ID.
+    """
+    key, digest = id(proof), _sha(_c2_proof_fields(proof))
+
+    def forget(reference):
+        with _PROOF_LOCK:
+            entry = _ISSUED_C2_PROOFS.get(key)
+            if entry is not None and entry[0] is reference:
+                del _ISSUED_C2_PROOFS[key]
+
+    reference = weakref.ref(proof, forget)
+    with _PROOF_LOCK:
+        _ISSUED_C2_PROOFS[key] = (reference, digest)
+    return proof
+
+
+def _issued_c2_proof(proof):
+    if type(proof) is not C2Proof or proof._issuer is not _PROOF_ISSUER:
+        return False
+    with _PROOF_LOCK:
+        entry = _ISSUED_C2_PROOFS.get(id(proof))
+        if entry is None or entry[0]() is not proof:
+            return False
+        expected = entry[1]
+    try:
+        return _sha(_c2_proof_fields(proof)) == expected
+    except (TypeError, ValueError):
+        return False
+
+
+def _c2_proof_fields(proof):
+    # Do not trust a replaced/subclassed reporting method as the field seal.
+    return {key: value for key, value in asdict(proof).items() if key != '_issuer'}
 
 
 class CoverageSession:
@@ -297,7 +340,7 @@ class CoverageSession:
                          'NATURAL_NPU_WORKER_REQUIRED')
         owner, generation = group.leases[0].owner, group.leases[0].generation
         if group.trigger == 'every_match':
-            _require(isinstance(c2_proof, C2Proof) and c2_proof._issuer is _PROOF_ISSUER,
+            _require(_issued_c2_proof(c2_proof),
                      'MATCHING_C2_PROOF_REQUIRED')
             _require(c2_proof.scope == scope and c2_proof.owner == owner and c2_proof.generation < generation
                      and c2_proof.candidates_sha256 == discovery['candidates_sha256']
@@ -554,7 +597,7 @@ class CoverageSession:
     def c2_proof(self):
         report = self.report()
         _require(self.group.trigger == 'once' and report['contract_satisfied'], 'C2_CONTRACT_NOT_COMPLETE')
-        return C2Proof(self.scope, self.observer.discovery['candidates_sha256'],
+        return _register_c2_proof(C2Proof(self.scope, self.observer.discovery['candidates_sha256'],
             tuple(sorted(map(target_id, self._leases))), self.owner, self.generation, self.session_id,
             _sha(report), self.observer.discovery['artifact_sha256'],
-            self.observer.evidence['artifact_sha256'], _sha(report['recovery']), _PROOF_ISSUER)
+            self.observer.evidence['artifact_sha256'], _sha(report['recovery']), _PROOF_ISSUER))
