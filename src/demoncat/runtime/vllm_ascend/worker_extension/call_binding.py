@@ -38,6 +38,8 @@ No arbitrary wrapper or __wrapped__ attribute grants access to an original.
         if len(codes) != 1 or actual.__code__ is not codes[0]:
             require(not reviewed, 'PERSISTENT_FORWARD_ORIGINAL_BOUND_METHOD_REQUIRED')
             return actual
+        require(factory.__globals__ is vars(collector) and actual.__globals__ is vars(collector),
+                'PERSISTENT_FORWARD_COLLECTOR_GLOBALS_CHANGED')
         if not reviewed:
             source = Path(getattr(collector, '__file__', ''))
             require(source.is_file() and Path(factory.__code__.co_filename).resolve() == source.resolve(),

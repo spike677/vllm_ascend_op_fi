@@ -4,7 +4,7 @@ import inspect
 from pathlib import Path
 import sys
 import tempfile
-from types import ModuleType
+from types import FunctionType, ModuleType
 import unittest
 from unittest.mock import patch
 
@@ -86,6 +86,23 @@ class PersistentBindingTests(unittest.TestCase):
         self.collector.wrap_forward_with_hook_safety(self.module)
         with self.assertRaisesRegex(RuntimeError, 'PERSISTENT_FORWARD_ORIGINAL_BOUND_METHOD_REQUIRED'):
             binding.ForwardBinding(self.module)
+
+    def test_copied_factory_or_wrapper_code_cannot_use_foreign_globals(self):
+        factory = self.collector.wrap_forward_with_hook_safety
+        for copied in ('factory', 'wrapper'):
+            with self.subTest(copied=copied):
+                module = CpuForward()
+                factory(module)
+                if copied == 'factory':
+                    self.collector.wrap_forward_with_hook_safety = FunctionType(factory.__code__, dict(factory.__globals__))
+                else:
+                    wrapper = module.forward
+                    module.forward = FunctionType(wrapper.__code__, dict(wrapper.__globals__), closure=wrapper.__closure__)
+                try:
+                    with self.assertRaisesRegex(RuntimeError, 'PERSISTENT_FORWARD_COLLECTOR_GLOBALS_CHANGED'):
+                        binding.ForwardBinding(module)
+                finally:
+                    self.collector.wrap_forward_with_hook_safety = factory
 
 
 if __name__ == '__main__':
