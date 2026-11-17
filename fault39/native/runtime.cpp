@@ -161,7 +161,7 @@ struct State {
  std::vector<Lease> retained; fault39::Counts counts{};
  fault39::Counts original[2]{},temporary[2]{};
  uint64_t changed[2]{},unchanged[2]{};
- bool self_verified=false,columns_verified=false,serving_live_inputs_verified=false;
+ bool self_verified=false,columns_verified=false,serving_live_inputs_verified=false,input_device_readback_verified=false;
  std::string proof_json="{}";
  std::string storage_before[2],storage_after[2],output_sha256;
  uint64_t observation_generation=0,observation_hit=0;std::string observation_owner,observation_ids="[]";
@@ -272,10 +272,15 @@ aclnnStatus run_selected(Cache* cache,void* workspace,aclrtStream stream,const s
    if(cfg.mode==F39_INJECT && !checked)return recovery();
    if(substitute) {
     if(record(&State::copy_status,copy(lease.device[i],ts[i]->storage_bytes,lease.host[i],ts[i]->storage_bytes,ACL_MEMCPY_HOST_TO_DEVICE))!=ACL_SUCCESS)return recovery();
+    if(s.selected_cache) {
+     const auto expected=f39identity::digest(lease.host[i],ts[i]->storage_bytes);
+     if(record(&State::copy_status,copy(lease.host[i],ts[i]->storage_bytes,lease.device[i],ts[i]->storage_bytes,ACL_MEMCPY_DEVICE_TO_HOST))!=ACL_SUCCESS)return recovery();
+     if(f39identity::digest(lease.host[i],ts[i]->storage_bytes)!=expected)return recovery();
+    }
     replaced[i]=lease.device[i];
    }
   }
-  if(cfg.mode!=F39_OBSERVE){std::lock_guard<std::mutex> lock(s.mutex);++s.substituted;}
+  if(cfg.mode!=F39_OBSERVE){std::lock_guard<std::mutex> lock(s.mutex);++s.substituted;s.input_device_readback_verified=s.selected_cache!=nullptr;}
  }
  {
   std::ostringstream p;p<<"{\"api\":\"aclnnMatmul\",\"generation\":"<<generation<<",\"hit\":"<<s.observation_hit<<",\"formal_order_proven\":true,\"slots\":[0,1,2],\"input_mask\":"<<cfg.input_mask<<",\"tensors\":[";
@@ -361,7 +366,7 @@ aclnnStatus run(Cache* cache,void* workspace,aclrtStream stream,const std::vecto
        // A new hit must never inherit successful evidence from an older Run.
        s.counts={};s.original[0]={};s.original[1]={};s.temporary[0]={};s.temporary[1]={};
        s.changed[0]=s.changed[1]=s.unchanged[0]=s.unchanged[1]=0;
-       s.self_verified=s.columns_verified=false;s.proof_json="{}";
+       s.self_verified=s.columns_verified=s.input_device_readback_verified=false;s.proof_json="{}";
        s.serving_live_inputs_verified=context.serving.requested && context.serving.valid && serving_match;
        s.storage_before[0].clear();s.storage_before[1].clear();s.storage_after[0].clear();s.storage_after[1].clear();s.output_sha256.clear();
        s.pre_sync=s.run_status=s.post_sync=s.free_status=s.copy_status=-2147483647;
@@ -490,7 +495,7 @@ int configure_cache(const Fault39ConfigV1* cfg,uint64_t* generation,uint64_t cac
  s.observation_cache=s.observation_epoch=0;
  for(int i=0;i<2;++i){s.original[i]={};s.temporary[i]={};s.changed[i]=s.unchanged[i]=0;}
  s.proof_json="{}";s.actual_ids="[]";s.observation_ids="[]";s.observation_generation=0;s.observation_hit=0;s.observation_owner.clear();
- s.self_verified=s.columns_verified=false;
+ s.self_verified=s.columns_verified=s.input_device_readback_verified=false;
  s.serving_live_inputs_verified=false;
  s.storage_before[0].clear();s.storage_before[1].clear();s.storage_after[0].clear();s.storage_after[1].clear();s.output_sha256.clear();
  s.pre_sync=s.copy_status=s.run_status=s.post_sync=s.free_status=-2147483647;return 0;
@@ -549,7 +554,7 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
        s.temporary[1].positive+s.temporary[1].negative==s.temporary[1].total &&
        s.temporary[0].minimum==s.temporary[0].maximum && s.temporary[0].maximum==s.temporary[1].maximum &&
        s.temporary[1].minimum==-s.temporary[1].maximum)?"true":"false")
-   <<",\"actual_request_ids_json\":"<<quote(s.observation_ids)<<",\"temporary_source\":\"host_constructed\",\"output_source\":\"post_run_device_readback\",\"input_device_readback_verified\":false"
+   <<",\"actual_request_ids_json\":"<<quote(s.observation_ids)<<",\"temporary_source\":\"host_constructed\",\"output_source\":\"post_run_device_readback\",\"input_device_readback_verified\":"<<(s.input_device_readback_verified?"true":"false")
    <<",\"original_self\":"<<counts_json(s.original[0])<<",\"original_mat2\":"<<counts_json(s.original[1])
    <<",\"temporary_self\":"<<counts_json(s.temporary[0])<<",\"temporary_mat2\":"<<counts_json(s.temporary[1])<<",\"output\":"<<counts_json(s.counts)
    <<",\"original_storage_sha256_before\":["<<quote(s.storage_before[0])<<','<<quote(s.storage_before[1])<<"]"
