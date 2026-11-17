@@ -4,14 +4,21 @@ Natural C1 implementation commits are 69e1a18c and db36372f. Collector ownership
 repair is 3fea52d. Root owns actual NPU runs and qualification review.
 
 Actual a1 feedback: HF Qwen39 B/F returned/recovered, with a real aten.matmul
-return and mul consumer; C2/C3 were not attempted. The 41 baseline completed two
-healthy observations, lossless, baseline and OFF with 28 layers and zero leases,
-then failed during API-wrapper cleanup. The original a1 evidence is unchanged.
-Root is retrying 41 B/F in a2 using the precise cleanup fix.
+return and mul consumer; C2/C3 were not attempted. Root's raw audit v2 found the
+first observed Max 536 -> Inf, 228 preceding nulls and no incomparable preceding
+fields, but 7492 later NaNs keep whole E5 false. Nulls are not equality evidence.
 
-The additive Native `dcat_pw_read_span` needs a fresh source-matching CANN build
-before coverage. It reads a bounded span without adding diagnostic Tensor ops
-inside the collector window. Existing C1 operations do not require that export.
+41 a1 failed during collector-wrapper cleanup after successful baseline phases.
+The original failure remains evidence. Root's a2 retry completed B/F, exact OFF,
+separate same-worker health and zero leases. Its independent raw audit aligned:
+first observed downstream Functional.linear.1.forward/output/0.Max 3.0625 ->
+2.96875, 138 preceding nulls, no preceding incomparable fields, 6072 total nulls
+preserved. This locates a downstream visible linear output, not a KV root cause.
+
+The additive Native `dcat_pw_read_span` was built by root without a device in
+postwrite-build-a2 from source-a16. It reads a bounded span without diagnostic
+Tensor ops inside the collector. No Native bytes changed in the group commits.
+Its exact identity and root-only run preparation are in ROOT_GROUP_HANDOFF.md.
 
 The current ProjectionCoverage implementation is a CPU-verified checkpoint:
 
@@ -28,24 +35,37 @@ The current ProjectionCoverage implementation is a CPU-verified checkpoint:
   the one-lease concurrency boundary cannot satisfy every-match. No NaN or skipped
   call is silently reclassified to reduce the healthy denominator.
 
-Six CPU coverage tests pass, including distinct same-shaped layers, every target
-once, unchanged denominators, C3 refusal/recovery, incomplete modules, stale
-inputs/weights and mandatory live C1/C2 gates. This is not NPU C2 qualification.
+The root-queued natural39_coverage_probe.py is complete in 06abdf7. It binds actual
+safetensors/config/model source SHA and natural_pretrained_model MODEL_LOCAL
+scope, repeats C1 in-process, and runs identical bounded B/F C2 workloads.
 
-Required next work on this branch:
+The 41 common group implementation is 5a3bd60:
 
-1. Add the root-queued HF coverage probe with actual safetensors/config/model
-   source SHA, native source/build identity and the natural_pretrained_model
-   scope. It must perform fresh C1 in the same process before C2.
-2. Validate the full group on natural Qwen, including exact per-target OFF,
-   bounded forward/time budgets, 140-target discovery if it remains stable,
-   raw B/F statistics and retained incomplete/nonfinite classifications.
-3. Wire the same common group contracts to Postwrite41WorkerProvider after the
-   real a2 result. Use actual Worker/request identities and sequential per-call
-   live-slot leases. All-target lossless and repeated first-decode requests need
-   genuine evidence before granting C2 or trying C3.
-4. Review any group/observer drift against actual runtime evidence. Do not
-   convert this checkpoint, CPU receipts or Native build success into acceptance.
+- Two new healthy requests record an independent module/writer/consumer universe
+  after same-process C1. Unknown Attention implementations refuse completeness.
+- All-target lossless checks actual slot and query bytes, actual consumer output,
+  original-call count, exact whole-model output and Native restore/release.
+- C2 uses two first-decode requests: each target is injected once on the first;
+  the second remains in the denominator and passes through. B uses identity
+  controls, records zero group hits and cannot issue a C2 proof.
+- C3 consumes the live C2 proof, repeats all-target lossless and injects every
+  actual eligible call over two new requests. Every slot lease drains before the
+  next consumer, so one concurrent Native lease is sufficient for this boundary.
+- Nonfinite query/slot input is retained as a failed eligible call; it is never
+  silently removed. An external writer keeps the Native lease. A consumer error
+  remains primary when recovery also fails.
+- Exact per-target and whole-model OFF precede the common whole-group barrier.
+  Owned APIs/hooks are removed before a separate normal-request health readout;
+  only its exact full-model output permits common reservations to be released.
+- Actual weights, loaded model Python source, source bundle, schema, worker,
+  process, model/module/storage lifecycle, enqueued request and forward IDs are
+  bound separately. All public qualification flags remain false.
+
+60 related CPU tests pass, including real CPU model/operator execution, two-layer
+C2/C3, identity controls, nonfinite and budget refusal/recovery, incomplete
+universes, changed healthy input, primary-error preservation and health failure.
+These are CPU contracts, not natural NPU C2/C3 acceptance. Root still needs the
+fresh 39 and 41 group B/F runs, raw statistics comparison and qualification review.
 
 Shared natural-model scope commit 28a3ca7 is locally cherry-picked as 56cd68ab;
 root already has it, so do not replay that dependency.

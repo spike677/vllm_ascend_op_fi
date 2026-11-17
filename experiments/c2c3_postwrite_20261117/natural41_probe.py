@@ -153,6 +153,7 @@ def main():
             except BaseException as error:record_cleanup_failure(report, error)
         sources = ('fault_injection/deployments/postwrite.py', 'fault_injection/deployments/postwrite_boundaries.py',
                    'fault_injection/deployments/postwrite_kv.py',
+                   'fault_injection/deployments/postwrite_kv_inventory.py',
                    'fault_injection/native_adapters/postwrite/postwrite.cpp',
                    'fault_injection/native_adapters/postwrite/postwrite.h',
                    'src/demoncat/runtime/vllm_ascend/worker_extension/postwrite41.py',
