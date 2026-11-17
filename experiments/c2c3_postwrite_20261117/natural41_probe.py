@@ -61,6 +61,14 @@ def finish(worker):
     return result
 
 
+def record_cleanup_failure(report, error):
+    # Keep the primary failure and traceback intact, including close failures.
+    report['cleanup_status'] = 'FAILED'
+    report['cleanup_error'] = repr(error)
+    if 'error' not in report:
+        report.update(status='RECOVERY_FAILED', error=repr(error))
+
+
 def output(row):
     return dict(request_id=row.request_id, tokens=list(row.outputs[0].token_ids), text=row.outputs[0].text)
 
@@ -142,12 +150,13 @@ def main():
     finally:
         if installed:
             try:report['cleanup'] = rpc(llm, finish)
-            except BaseException as error:report.update(status='RECOVERY_FAILED', cleanup_error=repr(error))
+            except BaseException as error:record_cleanup_failure(report, error)
         sources = ('fault_injection/deployments/postwrite.py', 'fault_injection/deployments/postwrite_boundaries.py',
                    'fault_injection/deployments/postwrite_kv.py',
                    'fault_injection/native_adapters/postwrite/postwrite.cpp',
                    'fault_injection/native_adapters/postwrite/postwrite.h',
                    'src/demoncat/runtime/vllm_ascend/worker_extension/postwrite41.py',
+                   'src/demoncat/runtime/vllm_ascend/worker_extension/postwrite_collector.py',
                    'src/demoncat/runtime/vllm_ascend/worker_extension/paged33_audit.py',
                    'experiments/c2c3_postwrite_20261117/natural41_probe.py')
         report['source_sha256'] = {path: hashlib.sha256((ROOT / path).read_bytes()).hexdigest() for path in sources}

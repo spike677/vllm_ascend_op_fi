@@ -71,6 +71,7 @@ class Postwrite41WorkerProvider:
         self.rows, self.errors, self.history, self.writers = [], [], [], {}
         self.outputs, self.forward_serial, self.pending_run = [], 0, None
         self.independent_calls = []
+        self.collectors, self.cleanup_receipts = [], []
         self.process_start = Path('/proc/self/stat').read_text().rsplit(')', 1)[1].split()[19]
         self.model_identity = self._identity()
 
@@ -133,6 +134,8 @@ class Postwrite41WorkerProvider:
         self.phase = phase
         self.expected = {request_id: dict(logical_id=0, prompt=list(prompt))}
         self.collector = collector
+        if collector is not None and all(item is not collector for item in self.collectors):
+            self.collectors.append(collector)
         self.rows, self.errors, self.pending_run = [], [], None
         self.generation += 1
 
@@ -281,9 +284,9 @@ class Postwrite41WorkerProvider:
         global _ACTIVE
         require(threading.get_ident() == self.thread and self.current is None, 'TAIL_COLUMN_ACTIVE_OR_FOREIGN_CLOSE')
         self.recover()
-        for obj, name, original, installed in reversed(self.patches):
-            require(inspect.getattr_static(obj, name) is installed, 'TAIL_COLUMN_WRAPPER_OWNERSHIP_CHANGED:' + name)
-            setattr(obj, name, original)
+        from .postwrite_collector import restore_owned_api_patches
+        receipt = restore_owned_api_patches(self.patches, collectors=self.collectors)
+        self.cleanup_receipts.append(receipt)
         self.patches.clear()
         for handle in reversed(self.handles):handle.remove()
         self.handles.clear()
@@ -296,6 +299,7 @@ class Postwrite41WorkerProvider:
             native_out_of_bounds_claim=False, source=self.source, owner=self.owner, generation=self.generation,
             candidate_count=len(self.candidates), qualified=self.qualified, lossless=self.lossless,
             target=self.target, native_live_leases=int(self.lease is not None), installed=self.installed,
+            owned_hooks=len(self.handles), owned_api_patches=len(self.patches), cleanup_receipts=self.cleanup_receipts,
             history=self.history, pending=self.pending_run, independent_calls=self.independent_calls,
             public_worker_qualified=False, all_eligible_qualified=False, every_match_qualified=False,
             scope='natural first pure decode, BF16, TP1/PP1/DP1, serial eager, one actual request')
