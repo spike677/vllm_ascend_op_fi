@@ -35,7 +35,10 @@ At actual Worker attachment, the runtime verifies its immutable group manifest
 and all four already-loaded images: v2 shim, tracer, main opapi and split
 opapi. Every counter function must originate from that exact manifest image;
 SDK aliases additionally require identical mapped inode/device and bytes.
-No late vendor loading or counter reset occurs. Initial, per-request,
+The observer never loads a missing library or resets a counter. The explicit
+deployment startup initializes the reviewed split dependency before importing
+Torch/vLLM, with `RTLD_NOW|RTLD_LOCAL`, and preserves that handle. Its before/after
+maps and exact four-image readbacks are saved separately. Initial, per-request,
 recovery and Worker health reports preserve raw counters. All must be
 quiescent, have equal acquisitions/releases, zero getter/capture/ownership
 errors, stable independent instances and monotonic counts. Final C2/C3 health
@@ -51,7 +54,10 @@ Root validation order:
    parent bundle. Historical build outputs are not edited.
 3. Run `providers26_build_group.py` with that fresh parent and its exact
    manifest hash. The old source-a21 parent cannot pass the new gate.
-4. Use the existing root-owned queue and one-device resource gate for a fresh
+4. Run the no-device [startup loader preflight](writer26_loader_review.md)
+   against the exact SDK image/bundle. Missing mapped dependencies must be
+   resolved before loading the model; a bind mount alone is not a loaded DSO.
+5. Use the existing root-owned queue and one-device resource gate for a fresh
    natural inference census, lossless/B/F/OFF, C2 then bounded live C3. Verify
    all four loaded readbacks and all existing buffers/descriptors/workspace,
    hooks, leases, native denominator and exact OFF checks together.

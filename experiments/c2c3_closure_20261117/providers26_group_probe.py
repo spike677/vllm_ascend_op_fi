@@ -72,8 +72,6 @@ def main():
     args = parser.parse_args()
     if not 1 <= args.max_targets <= 128 or not 0 < args.memory < 1:
         parser.error('Explicit bounded target and memory budgets required')
-    from vllm import LLM, SamplingParams
-    from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require_host_driven_core, read_enqueued_identity
     report = dict(status='STARTING', scope=('ALL_ELIGIBLE_NATIVE_WRITERS_FIXED_SINGLE_REQUEST_FRESH_PREFILL_NOT_DECODE'
         if args.stage == 'coverage' else 'SINGLE_FRESH_PREFILL_CANDIDATE_WINDOWS_NOT_ALL_ELIGIBLE_C2'),
         mechanism=args.mechanism, stage=args.stage, native_qualified_targets=0, c1=False, c2=False, c3=False,
@@ -83,6 +81,12 @@ def main():
     llm, installed, seen = None, False, []
     try:
         save()
+        from fault_injection.deployments.writer26_loader import StartupDependencies
+        startup = StartupDependencies(bundle='/native', manifest_sha256=args.manifest_sha256)
+        report['metadata_startup'] = startup.evidence
+        save()
+        from vllm import LLM, SamplingParams
+        from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require_host_driven_core, read_enqueued_identity
         llm = LLM(model='/model', dtype='bfloat16', tensor_parallel_size=1, enforce_eager=True,
             max_model_len=128, max_num_seqs=1, max_num_batched_tokens=128, num_gpu_blocks_override=64,
             enable_prefix_caching=False, enable_chunked_prefill=False, async_scheduling=False,
@@ -150,6 +154,8 @@ def main():
             report['status'] = 'NATIVE_CANDIDATE_EXPERIMENT_RECORDED_NOT_C2' if not state['blockers'] else 'NATURAL_INVENTORY_RECORDED_DEPENDENT_PHASE_BLOCKED'
     except BaseException as error:
         report.update(status='FAILED_WITH_EVIDENCE', error=repr(error), traceback=traceback.format_exc())
+        if isinstance(getattr(error, 'evidence', None), dict):
+            report['metadata_startup_failure'] = error.evidence
     finally:
         if installed and llm is not None:
             try:

@@ -68,6 +68,14 @@ def _mapped_proxies(names=('libopapi.so', 'libopapi_nn.so')):
     return {name: tuple(sorted(paths)) for name, paths in result.items()}
 
 
+def writer26_mapping_diagnostic(paths):
+    """Keep a missing-image error independently diagnosable after process exit."""
+    return dict(expected_images=sorted(WRITER26_SYMBOLS),
+                missing_images=sorted(set(WRITER26_SYMBOLS) - set(paths)),
+                unexpected_images=sorted(set(paths) - set(WRITER26_SYMBOLS)),
+                mapped_paths={name: list(aliases) for name, aliases in sorted(paths.items())})
+
+
 class LoadedMetadataArrays:
     """Attach read-only symbols after validating maps, manifest, and dladdr."""
     def __init__(self, *, kind, build_profile, anchor):
@@ -180,7 +188,8 @@ class LoadedWriter26MetadataArrays(LoadedMetadataArrays):
         self.manifest_sha = manifest_sha256
         self.mapping_names = tuple(WRITER26_SYMBOLS)
         self.paths = _mapped_proxies(self.mapping_names)
-        require(set(self.paths) == set(WRITER26_SYMBOLS), 'INCOMPLETE_WRITER_PROXY_MAPPING')
+        require(set(self.paths) == set(WRITER26_SYMBOLS), 'INCOMPLETE_WRITER_PROXY_MAPPING:' +
+                json.dumps(writer26_mapping_diagnostic(self.paths), sort_keys=True, separators=(',', ':')))
         self.files = {manifest_path: _stamp(manifest_path)}
         parent_proof = root / 'metadata-array-ownership.json'
         require(_sha(parent_proof) == spec['parent_receipt_sha256'], 'WRITER_PARENT_PROOF_CHANGED')

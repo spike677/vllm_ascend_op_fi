@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 from fault_injection.metadata_arrays import (LoadedMetadataArrays, LoadedWriter26MetadataArrays,
                                              WRITER26_SYMBOLS, SCHEMA)
+from fault_injection.deployments.writer26_loader import StartupDependencies
 
 
 def sha(path):
@@ -24,7 +25,8 @@ def main():
         raise RuntimeError('LINUX_HOST_C_COMPILER_REQUIRED_NO_NPU_NEEDED')
     with tempfile.TemporaryDirectory(prefix='metadata-elf-') as directory:
         root = Path(directory)
-        writer26 = '--writer26' in sys.argv
+        startup_mode = '--writer26-startup' in sys.argv
+        writer26 = '--writer26' in sys.argv or startup_mode
         core_name = 'libdcat26_group_v2.so' if writer26 else 'libfault39_native_v1.so'
         symbols = WRITER26_SYMBOLS if writer26 else {
             name: 'fault39_metadata_arrays_v1' for name in (core_name, 'libopapi.so', 'libopapi_nn.so')}
@@ -41,7 +43,8 @@ int fault39_metadata_arrays_v1(struct State *out) {
 int fault39_snapshot_v1(void) {return 0;}
 '''
         for name, symbol in symbols.items():
-            source.write_text(code.replace('fault39_metadata_arrays_v1', symbol))
+            source.write_text(code.replace('fault39_metadata_arrays_v1', symbol) +
+                ('\nint split_local_visibility_probe(void) { return 1; }\n' if name == 'libopapi_nn.so' else ''))
             subprocess.run(['cc', '-shared', '-fPIC', '-Wall', '-Wextra', '-Werror',
                 str(source), '-Wl,-soname,' + name, '-o', str(root / name)], check=True)
         sdk = root / 'sdk'
@@ -65,20 +68,43 @@ int fault39_snapshot_v1(void) {return 0;}
             manifest_path = root / 'build.json'
             proof_sha = sha(root / 'metadata-array-ownership.json')
             manifest_path.write_text(json.dumps(dict(schema='demoncat.writer26.group_deployment.v2',
+                actual_npu_calls=0, legacy_writers_absent=True,
                 files=dict({name: sha(root / name) for name in symbols}, **{'metadata-array-ownership.json': proof_sha}),
                 metadata_array_ownership=dict(schema=SCHEMA, state_version=1, images=WRITER26_SYMBOLS,
                     reset_supported=False, runtime_quiescent_readback_required=True, parent_receipt_sha256=proof_sha))))
         core = ctypes.CDLL(str(root / core_name), mode=os.RTLD_NOW | os.RTLD_LOCAL)
         main_proxy = ctypes.CDLL(str(root / 'libopapi.so'), mode=os.RTLD_NOW | os.RTLD_LOCAL)
-        split_proxy = ctypes.CDLL(str(alias), mode=os.RTLD_NOW | os.RTLD_LOCAL)
         trace = ctypes.CDLL(str(root / 'libfault26_readonly_trace_abi0.so'), mode=os.RTLD_NOW | os.RTLD_LOCAL) if writer26 else None
         def attach():
             return (LoadedWriter26MetadataArrays(bundle=root, manifest_sha256=sha(root / 'build.json')) if writer26 else
                     LoadedMetadataArrays(kind='39', build_profile=profile['profile_sha256'], anchor=core.fault39_snapshot_v1))
+        if startup_mode:
+            try:
+                attach()
+            except RuntimeError as error:
+                assert 'INCOMPLETE_WRITER_PROXY_MAPPING:' in str(error), str(error)
+                detail = json.loads(str(error).split('INCOMPLETE_WRITER_PROXY_MAPPING:', 1)[1])
+                assert detail['missing_images'] == ['libopapi_nn.so'], detail
+            else:
+                raise AssertionError('missing split accepted or silently loaded')
+            startup = StartupDependencies(bundle=root, manifest_sha256=sha(root / 'build.json'))
+            assert startup.evidence['before']['missing_images'] == ['libopapi_nn.so']
+            assert startup.evidence['after']['missing_images'] == []
+            assert startup.evidence['images_loaded'][0]['mode'] == 'RTLD_NOW|RTLD_LOCAL'
+            split_proxy, = startup.handles
+            try:
+                getattr(ctypes.CDLL(None), 'split_local_visibility_probe')
+            except AttributeError:
+                pass
+            else:
+                raise AssertionError('explicit split dependency was promoted to global scope')
+        else:
+            split_proxy = ctypes.CDLL(str(alias), mode=os.RTLD_NOW | os.RTLD_LOCAL)
         reader = attach()
         value = reader.read()
         assert len({row['state']['instance'] for row in value['images']}) == (4 if writer26 else 2)
-        assert next(row for row in value['images'] if row['name'] == alias.name)['mapped_paths'] == [str(alias)]
+        assert next(row for row in value['images'] if row['name'] == alias.name)['mapped_paths'] == [
+            str(root / alias.name) if startup_mode else str(alias)]
         # Identical bytes in a foreign inode are not an approved alias.
         foreign = root / 'foreign'
         foreign.mkdir()
@@ -93,8 +119,10 @@ int fault39_snapshot_v1(void) {return 0;}
         assert all(item._handle for item in (main_proxy, split_proxy, duplicate))
         assert not writer26 or trace._handle
         print(json.dumps(dict(status='CPU_LOADED_ALIAS_AND_DUPLICATE_CONTRACT_PASS', actual_npu_calls=0,
-            actual_cann_loaded=False, same_inode_alias_accepted=True, foreign_same_bytes_inode_rejected=True,
-            counter_instances_independent=True, counter_instances=4 if writer26 else 2, includes_writer26=writer26)))
+            actual_cann_loaded=False, same_inode_alias_accepted=not startup_mode, foreign_same_bytes_inode_rejected=True,
+            counter_instances_independent=True, counter_instances=4 if writer26 else 2, includes_writer26=writer26,
+            missing_split_diagnosed=startup_mode, explicit_local_startup_validated=startup_mode,
+            native_acceptance=False)))
 
 
 if __name__ == '__main__':

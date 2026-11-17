@@ -66,6 +66,9 @@ def main():
                     model=model, cann='8.5.1', soc='Ascend910B4/A2; verify actual Worker', physical_cards=[args.card], ranks=[0],
                     worker='standard TP1 eager BF16; single fresh prefill/request; fixed64 KV blocks; no decode claim',
                     build_fingerprint=sha, source_commit=args.source_commit,
+                    metadata_startup='Before importing Torch/vLLM, verify the immutable bundle and explicitly load '
+                        'its missing split opapi with RTLD_NOW|RTLD_LOCAL; retain its handle. Then require all four '
+                        'already-loaded counters with independent instances and exact mapped/dladdr identities.',
                     expected_hits=('C2: one per complete frozen eligible target; C3: every existing-target call in two fresh requests; '
                         'no subset, only after actual live C2' if coverage else 0 if stage != 'effects'
                         else 'one per completely observed and independently lossless-qualified candidate; never C2'),
