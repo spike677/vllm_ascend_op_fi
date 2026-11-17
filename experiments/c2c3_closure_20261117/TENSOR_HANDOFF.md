@@ -139,3 +139,86 @@ kept, not reclassified as a pass. A separate standard Worker statistics span is
 still required; HF E5 does not certify Worker capture. The original WIP commit
 `a33a874` plus the subsequent tested hardening form this handoff, and do not
 replace any immutable source snapshot already executed by root.
+
+## Fault8 genuine DeepSeek no-injection census handoff
+
+The existing `/home/haoran/models/DeepSeek-V2-Lite-W8A8` has four actual dynamic
+W8A8 safetensor shards totaling 17,214,938,536 bytes (about 16.03 GiB). Config
+SHA256 is `229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75`:
+27 layers, first dense layer 1, MoE frequency 1, top-k 6, 64 routed experts and
+two shared experts. Config implies 26 routed MoE modules; this is an expected
+structural count, not an observed eligible denominator. The probe hashes all
+four shards and the quantization description before starting the Worker.
+
+Root may queue one no-injection case:
+
+```
+python experiments/c2c3_closure_20261117/natural_tensor_census.py \
+  --kind worker --model /model --out /evidence/probe --memory .55 --moe-trace
+```
+
+Use the already validated vLLM-Ascend 0.18.0/CANN8.5.1 image, actual model mount
+read-only, TP1, max sequences 1, max prompt/model length 128, 64 KV blocks and
+the existing host-driven Worker environment. Memory .55 matches the earlier
+DeepSeek QMM queue preparation default. It is a resource bound; no routing,
+expert count, top-k, layer count, geometry or implementation is changed. Root
+controls the shared lock/card selection and may budget 1800 seconds and 64 GiB
+host memory for loading/hashing the actual 16 GiB weights. This workflow never
+starts a container or takes an NPU lock.
+
+Read-only inspection of the existing stopped `provider-build-851-20261116`
+container identified the real source path:
+
+1. `experts_selector.select_experts` returns actual top-k weights and IDs.
+2. `MoECommMethod.fused_experts` passes them through routing preparation,
+   calls `TokenDispatcherWithAllGather.token_dispatch`, then the real quantized
+   MLP, then `token_combine` with its unchanged combine metadata.
+3. `token_dispatch` calls `DeviceOperator.npu_moe_init_routing` to produce
+   `expanded_row_idx` and expert token groups.
+4. `token_combine` computes `abs(expanded_row_idx)` and calls the real
+   `npu_moe_token_unpermute` with MLP output, those indices and the same
+   `topk_weights`. Its output is the routed result, before shared-expert merge.
+
+Exact reviewed source-file hashes:
+
+| Source beneath `vllm_ascend/ops/fused_moe` | SHA256 |
+| --- | --- |
+| `experts_selector.py` | `92bebd721ecc86a7033065e37e73fe57facabc01cbd754939c014be8ebb810a8` |
+| `moe_comm_method.py` | `a23d681549fa24d69c597f6c1c7d22df84da62efea808f2415a260c4267a8c4f` |
+| `token_dispatcher.py` | `21fd94e3d5eacc578cc3feb794bc5c135c148c2d495c611f224f22c8b96ac0cc` |
+
+`NaturalMoETrace` validates these exact installed sources and loaded functions,
+then observes their actual Python frames using an owned `sys.setprofile`
+callback. The outer `vllm.moe_forward` can be opaque to ordinary model-level
+dispatch observation, so a read-only nested dispatch mode is entered only
+during the genuine `token_combine` frame. It records each actual native API
+call once, real H/I/P metadata, the `abs` producer edge, module path and real
+enqueued request ID. No model function or op registration is replaced, no
+model input/output is reconstructed, and no operator is replayed. The census
+reports actual per-request native counts and source/producer/consumer records.
+It does not claim that the index values form a complete permutation; a later
+actual-value/lossless acceptance is still required for Fault8 injection.
+
+Two CPU contracts verify actual opaque-call nesting, exact one-call native
+execution, preserved probability object and index-producer identity, healthy
+model output, profiler cleanup and refusal to overwrite a foreign profiler.
+They do not grant NPU or Worker qualification.
+
+## Fault22 actual Worker input boundary, pending adaptation
+
+The observed Qwen Worker uses `vllm.npu_rotary_embedding`, not the existing
+ordinary lookup adapter. Inspected installed `ops/rotary_embedding.py` SHA256
+`74653da7274de182e8497f7d6b07ea7c6deeeef21e710e34eed5a349b0f671e7` defines
+`rope_forward_oot` at line 153. Its real inputs are positions, query, key,
+cos_sin_cache, head_size, rotary_dim and style. It forwards positions/cache to
+the Triton reader or `torch_npu._npu_rotary_embedding`; offsets are rejected.
+`AscendRotaryEmbedding.forward_oot` passes the actual module cache into this op.
+
+Thus a possible separately reviewed legal-row adapter is a private positions
+argument for this exact reader, with only its final position changed to the
+first legal position. It must retain the original scheduler positions/cache,
+leave all other rows untouched, call the actual rotary op once, preserve its
+Q/K aliasing contract, and prove actual returned Q/K propagation plus OFF.
+Changing or copying an arbitrary Q/K output row is not an equivalent mechanism.
+The existing ordinary-row output proxy does not cover this boundary, and no
+new Fault22 qualification or uint32-overflow claim is made by this handoff.

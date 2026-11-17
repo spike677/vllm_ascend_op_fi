@@ -108,7 +108,7 @@ def _worker(worker):
     return worker.worker if isinstance(worker, WorkerWrapperBase) else worker
 
 
-def worker_install(worker, prompt):
+def worker_install(worker, prompt, moe_trace=False):
     worker = _worker(worker)
     from fault_injection.tensor_observer import NaturalTensorObserver
     from demoncat.runtime.vllm_ascend.worker_extension.serving_context import snapshot_fresh_prefill
@@ -117,6 +117,10 @@ def worker_install(worker, prompt):
     if hasattr(worker, '_tensor_census'):
         raise RuntimeError('FOREIGN_CENSUS_BINDING')
     state = dict(expected=None, seen=[], rows=[], handles=[], prompt=prompt)
+    if moe_trace:
+        from fault_injection.moe_census import NaturalMoETrace
+        # Source refusal precedes any owned observer/hook installation.
+        state['moe_trace'] = NaturalMoETrace.from_runtime(model)
     signature = inspect.signature(model.forward)
     def pre(module, args, kwargs):
         if state['expected'] is None:
@@ -131,10 +135,15 @@ def worker_install(worker, prompt):
     def post(module, args, kwargs, output):
         state['rows'][-1]['complete_output'] = output_identity(output)
         state['seen'].append(state['expected']); state['expected'] = None
+        if 'moe_trace' in state:
+            state['moe_trace'].request_id = None
     state['handles'].append(model.register_forward_hook(post, with_kwargs=True))
+    if moe_trace:
+        state['moe_trace'].__enter__()
     worker._tensor_census = state
     return dict(model_class=type(model).__module__+'.'+type(model).__name__,
-                scope='NATURAL_STANDARD_VLLM_WORKER', observer_installed=True)
+                scope='NATURAL_STANDARD_VLLM_WORKER', observer_installed=True,
+                moe_trace_sources=state['moe_trace'].sources if moe_trace else None)
 
 
 def worker_advance(worker, request_id):
@@ -142,16 +151,22 @@ def worker_advance(worker, request_id):
     if state['expected'] is not None or request_id in state['seen']:
         raise RuntimeError('CENSUS_REQUEST_LIFETIME_COLLISION')
     state['expected'] = request_id
+    if 'moe_trace' in state:
+        state['moe_trace'].request_id = request_id
     return dict(request_id=request_id)
 
 
 def worker_close(worker):
     worker = _worker(worker); state = worker._tensor_census
+    if 'moe_trace' in state:
+        state['moe_trace'].close()
     state['observer'].close()
     for handle in reversed(state['handles']):
         handle.remove()
     report = dict(census=state['observer'].report(), phases=state['rows'],
                   root_context_hooks=0, pending_request=state['expected'])
+    if 'moe_trace' in state:
+        report['moe_trace'] = state['moe_trace'].report()
     del worker._tensor_census
     return report
 
@@ -159,10 +174,27 @@ def worker_close(worker):
 def run_worker(args, report):
     from vllm import LLM, SamplingParams
     from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require_host_driven_core, read_enqueued_identity
+    if args.moe_trace:
+        config_path = args.model / 'config.json'
+        if sha_file(config_path) != '229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75':
+            raise RuntimeError('REVIEWED_DEEPSEEK_W8A8_MODEL_CONFIG_REQUIRED')
+        config = json.loads(config_path.read_text())
+        weights = sorted(args.model.glob('quant_model_weight_w8a8_dynamic-*.safetensors'))
+        if len(weights) != 4 or not (args.model/'quant_model_description.json').is_file():
+            raise RuntimeError('ACTUAL_FOUR_SHARD_DYNAMIC_W8A8_MODEL_REQUIRED')
+        report['pretrained_identity'] = dict(config=config, config_sha256=sha_file(config_path),
+            quantization_sha256=sha_file(args.model/'quant_model_description.json'),
+            weights={path.name: dict(sha256=sha_file(path), bytes=path.stat().st_size) for path in weights},
+            configured_moe_layers=(config['num_hidden_layers']-config['first_k_dense_replace'])
+                // config['moe_layer_freq'], configured_topk=config['num_experts_per_tok'],
+            configured_experts=config['n_routed_experts'], route_configuration_modified=False)
+    report['worker_config'] = dict(memory_fraction=args.memory, tensor_parallel_size=1,
+        max_num_seqs=1, max_num_batched_tokens=128, num_gpu_blocks_override=64,
+        enforce_eager=True, route_configuration_modified=False)
     llm = LLM(model=str(args.model), dtype='bfloat16', tensor_parallel_size=1, enforce_eager=True,
         max_model_len=128, max_num_seqs=1, max_num_batched_tokens=128, num_gpu_blocks_override=64,
         enable_prefix_caching=False, enable_chunked_prefill=False, async_scheduling=False,
-        gpu_memory_utilization=args.memory, seed=42, disable_log_stats=True)
+        gpu_memory_utilization=args.memory, seed=42, disable_log_stats=True, trust_remote_code=False)
     require_host_driven_core(llm)
     def rpc(function, *values):
         rows = llm.collective_rpc(function, args=values, timeout=300)
@@ -172,8 +204,9 @@ def run_worker(args, report):
     tokens = llm.get_tokenizer().encode(PROMPT, add_special_tokens=True)
     prompt = dict(prompt_token_ids=tokens)
     params = SamplingParams(temperature=0, max_tokens=1, ignore_eos=True)
-    llm.generate([prompt], params, use_tqdm=False)
-    report['setup'] = rpc(worker_install, tokens)
+    healthy, = llm.generate([prompt], params, use_tqdm=False)
+    report['healthy_before'] = list(healthy.outputs[0].token_ids)
+    report['setup'] = rpc(worker_install, tokens, args.moe_trace)
     report['requests'] = []; seen = []
     try:
         for phase in ('baseline', 'baseline_repeat'):
@@ -183,10 +216,16 @@ def run_worker(args, report):
             mapping = read_enqueued_identity(llm, ids, seen_internal_request_ids=seen)
             rpc(worker_advance, ids[0]); seen += ids
             responses = llm.wait_for_completion(use_tqdm=False)
+            if len(responses) != 1 or responses[0].request_id != mapping['external_request_id']:
+                raise RuntimeError('ACTUAL_CENSUS_REQUEST_MAPPING_CHANGED')
             report['requests'].append(dict(phase=phase, mapping=mapping,
                 output_tokens=list(responses[0].outputs[0].token_ids)))
     finally:
         report.update(rpc(worker_close))
+    healthy, = llm.generate([prompt], params, use_tqdm=False)
+    report['healthy_after'] = list(healthy.outputs[0].token_ids)
+    if report['healthy_before'] != report['healthy_after']:
+        raise RuntimeError('CENSUS_SAME_WORKER_HEALTH_NOT_EXACT')
 
 
 def main():
@@ -197,7 +236,11 @@ def main():
     parser.add_argument('--vae-source', type=Path)
     parser.add_argument('--latent', type=Path)
     parser.add_argument('--memory', type=float, default=.35)
+    parser.add_argument('--moe-trace', action='store_true',
+        help='Read exact reviewed MoE producer/combine frames; only for the actual DeepSeek W8A8 Worker')
     args = parser.parse_args()
+    if not .1 <= args.memory <= .8 or args.moe_trace and args.kind != 'worker':
+        parser.error('Bounded memory .1..8 and a real Worker are required for MoE tracing')
     args.out.mkdir(parents=True, exist_ok=False)
     report = dict(status='STARTED', model=str(args.model), kind=args.kind,
         fault_injections=0, qualification_granted=False, c2=False, c3=False)
@@ -224,6 +267,7 @@ def main():
         report['outputs'] = outputs
         report['baseline_repeat_exact'] = len(outputs) == 2 and outputs[0] == outputs[1]
         report['status'] = ('NATURAL_CENSUS_COMPLETE' if report['census']['complete']
+            and report.get('moe_trace', {'complete': True})['complete']
             and report['baseline_repeat_exact'] else 'CENSUS_INCOMPLETE_OR_NONDETERMINISTIC')
     except BaseException as exc:
         report.update(status='FAILED', error=repr(exc), traceback=traceback.format_exc())
