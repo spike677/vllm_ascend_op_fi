@@ -18,6 +18,7 @@ import threading
 from typing import Any
 
 from .core import UnsupportedCall
+from . import quant_native_isolation as _native_isolation
 
 _LEASE = threading.Lock()
 _VERIFIED_LOAD = object()
@@ -145,6 +146,7 @@ class PinnedQuantRuntime:
         self.admitted_tp_sizes = (2,)
 
     @classmethod
+    @_native_isolation.managed_loader('legacy')
     def from_portable_v2_backend(cls, source_root, *, context_provider, approved_build_sha256):
         """Explicit TP1 V2 deployment; old TP2 loaders and receipts are unchanged.
 
@@ -182,6 +184,7 @@ class PinnedQuantRuntime:
         return obj
 
     @classmethod
+    @_native_isolation.managed_loader('legacy')
     def from_scoped_backend(cls, source_root, *, context_provider, approved_build_sha256):
         """Same arithmetic, verified TLS ownership; original process-only loader remains."""
         import ctypes
@@ -206,6 +209,7 @@ class PinnedQuantRuntime:
         return obj
 
     @classmethod
+    @_native_isolation.managed_loader('legacy')
     def from_existing_backend(cls, source_root, *, context_provider, approved_build_sha256):
         root = Path(source_root).resolve(strict=True)
         control, source, build = root/'backend_control.py', root/'native_backend.cpp', root/'runtime/build.json'
@@ -253,7 +257,8 @@ class PinnedQuantRuntime:
     def arm(self, call, fault):
         self._last_verified_receipt = None
         try:
-            self.backend.arm_validated(call.input, fault=fault)
+            with _native_isolation.managed('legacy', session_runtime=self):
+                self.backend.arm_validated(call.input, fault=fault)
         except BaseException:
             # The session will attempt finish even if arm raised after native
             # state changed. No subsequent call may reuse this uncertain state.
@@ -327,6 +332,9 @@ class QuantizationSession:
             raise RuntimeError('Another quantization session owns the process scope')
         self._locked, self._owner = True, threading.get_ident()
         try:
+            if type(self.runtime) is PinnedQuantRuntime:
+                self.runtime._managed_session_thread = self._owner
+                _native_isolation.require_mode('legacy')
             by_module = {id(m):(p,m,method) for p,m,method,_ in self.candidates}
             groups = {id(method):method for _,_,method,_ in self.candidates}
             for method in groups.values():
@@ -541,6 +549,8 @@ class QuantizationSession:
             raise RuntimeError('; '.join(errors))
         self._closed = True
         if self._locked:
+            if type(self.runtime) is PinnedQuantRuntime:
+                self.runtime._managed_session_thread = None
             _LEASE.release(); self._locked = False
 
     def __exit__(self, exc_type, exc_value, traceback):

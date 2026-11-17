@@ -105,8 +105,12 @@ output directory rather than rewriting attempt a1.
 Root's actual SDK attempt `native-quant-group-v1-a2` passed for the earlier
 source revision. Its manifest SHA256 is
 `5004df441af3f542f2ac241f01825448bd0b7432c10c9157854ea3fc1922bd01`.
-It does not validate the subsequent three ownership fixes. A fresh a3 bundle
-with a new source/build fingerprint is required before managed use.
+It does not validate the subsequent three ownership fixes. Root subsequently
+built the corrected source in `native-quant-group-v1-a3`; its manifest SHA256
+is `9c243c468fe42c12cc2af091dfb8642f4c9249f6b842ee2810e3306916654f0e`.
+That actual SDK build and CPU contracts passed with no NPU execution. See
+[the managed binding handoff](providers_quant_group_managed.md) for the
+separate loader/isolation increment and its remaining runtime gates.
 
 Root should run the following only after reviewing the commit and creating a
 fresh immutable source snapshot. This builds in the actual reviewed CANN 8.5.1
