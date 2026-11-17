@@ -142,7 +142,8 @@ class TNDNativeAdapter:
         require(os.environ.get('ASCEND_CUSTOM_OPP_PATH') == self.build['vendor']
                 and os.environ.get('ACLNN_CACHE_LIMIT') == '0' and os.environ.get('TASK_QUEUE_ENABLE') == '0',
                 'TND33_PREIMPORT_PRIVATE_VENDOR_UNCACHED_SYNC_REQUIRED')
-        require(sha(schema) == schema_sha256, 'TND33_PUBLIC_SCHEMA_HASH_DIFFERS')
+        require(sha(schema) == schema_sha256 == self.build['completion'].get('fai_public_schema_sha256'),
+                'TND33_PUBLIC_SCHEMA_HASH_DIFFERS')
         self.schema = json.loads(Path(schema).read_bytes())
         require(self.schema.get('schema') == 'demoncat.paged33.fai_public_serializer.v1'
                 and self.schema.get('type') == 'FAInferTilingData', 'TND33_ACTUAL_FAI_PUBLIC_SCHEMA_REQUIRED')
