@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT))
 
 SOURCES = ('fault_injection/deployments/postwrite.py', 'fault_injection/deployments/postwrite_boundaries.py',
     'fault_injection/deployments/postwrite_inventory.py', 'fault_injection/deployments/postwrite_evidence.py',
+    'fault_injection/deployments/postwrite_structure.py',
     'fault_injection/deployments/postwrite_coverage.py', 'fault_injection/coverage.py',
     'fault_injection/coverage_session.py', 'fault_injection/runtime_discovery.py',
     'fault_injection/native_adapters/postwrite/postwrite.cpp', 'fault_injection/native_adapters/postwrite/postwrite.h',
@@ -119,6 +120,7 @@ def main():
         group = ProjectionCoverage(provider, scope, max_seconds=args.max_seconds,
                                    max_live_leases=args.max_live_leases)
         report['discovery'] = dict(eligible_targets=len(group.eligible), projection_calls=len(group.call_order),
+            structural_modules=len(group.module_universe),structural_noncall_inventory=group.structural_inventory,
             max_fault_forwards=group.max_forwards, requested_max_live_leases=group.max_live_leases, scope=scope.__dict__)
         save()
         window = collector_window(args.out/'capture', group.max_forwards) if args.statistics else None
@@ -159,6 +161,8 @@ def main():
             report['live_leases'] = provider.query()['leases']
         if group is not None and group.session is not None and 'c2' not in report:
             report['incomplete_group'] = group.session.report()
+        if group is not None and group.discovery_diagnostics is not None:
+            report['independent_discovery']=group.discovery_diagnostics
         save()
     print(json.dumps({key:report[key] for key in ('status','arm','error','live_leases') if key in report}))
     return 0 if report['status'].startswith('NATURAL_C2_') and not report.get('recovery_error') else 2

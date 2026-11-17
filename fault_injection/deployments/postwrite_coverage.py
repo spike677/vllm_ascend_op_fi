@@ -23,6 +23,7 @@ from fault_injection.coverage_session import (CoverageScope, CoverageSession, Gr
 from fault_injection.runtime_discovery import RuntimeCandidateInventory
 from .postwrite import MAX_POSTWRITE_LEASES, MAX_POSTWRITE_SPAN_BYTES, PostwriteRefused, _hash_inputs, _equal
 from .postwrite_evidence import digest, process_start, tensor_digest, output_digest
+from .postwrite_structure import structural_module_inventory
 
 
 class _CpuEvidence:
@@ -69,7 +70,13 @@ class ProjectionCoverage:
         self.signatures = {row.key:_geometry(row) for row in first.inventory.calls}
         self.call_order = tuple(row.key for row in first.inventory.calls)
         self.module_universe = {id(module) for module in provider.model.modules()}
-        self.discovery_sha = digest(self.discovery_reports)
+        self.actual_module_calls=dict(first.inventory.module_calls)
+        structural=[structural_module_inventory(provider.model,observation.inventory.module_calls)
+                    for observation in (first,second)]
+        if structural[0]!=structural[1]:raise PostwriteRefused('POSTWRITE_STRUCTURAL_CLASSIFICATION_DRIFT')
+        self.structural_inventory=structural[0]
+        self.discovery_sha=digest(dict(forwards=self.discovery_reports,structural_noncall_inventory=structural))
+        self.discovery_diagnostics=None
         self.discovery_rows = []
         for forward, observation in enumerate((first, second)):
             records = []
@@ -84,6 +91,10 @@ class ProjectionCoverage:
                 if module not in seen:
                     records.append((Candidate('module:' + str(module), EligibilityResult(Eligibility.UNSUPPORTED,
                         ('COMPLETE_ACTUAL_MODULE_CALL_HAS_NO_ADAPTED_PROJECTION',))), module))
+            for row in self.structural_inventory:
+                if row['structural_noncall']:
+                    records.append((Candidate('structural-noncall:'+str(row['object_identity']),
+                        EligibilityResult(Eligibility.UNSUPPORTED,(row['reason'],))),row['object_identity']))
             self.discovery_rows.append(records)
         if (first.inventory.operator_counts != second.inventory.operator_counts
                 or first.inventory.module_calls != second.inventory.module_calls
@@ -127,6 +138,10 @@ class ProjectionCoverage:
             for candidate, module in rows:inventory.observe(candidate, forward_id=forward, module_object_identity=module)
             inventory.finish_forward(forward, healthy=True)
         candidates = inventory.seal(observer, artifact_sha256=self.discovery_sha)
+        self.discovery_diagnostics=dict(candidates=candidates.report(),structural_modules=len(self.module_universe),
+            actual_module_calls=[dict(path=path,object_identity=identity,calls=count)
+                                 for (path,identity),count in self.actual_module_calls.items()],
+            structural_noncall_inventory=self.structural_inventory,independent_forwards=self.discovery_reports)
         if not candidates.discovery_complete:raise PostwriteRefused('POSTWRITE_INDEPENDENT_DISCOVERY_INCOMPLETE')
         return observer, candidates
 
@@ -134,6 +149,8 @@ class ProjectionCoverage:
         p = self.provider
         if p._identity() != p._model_identity or _hash_inputs(args, kwargs) != p._input_hash:
             raise PostwriteRefused('POSTWRITE_FIXED_WORKLOAD_OR_MODEL_IDENTITY_CHANGED')
+        if structural_module_inventory(p.model,self.actual_module_calls)!=self.structural_inventory:
+            raise PostwriteRefused('POSTWRITE_STRUCTURAL_BINDING_CHANGED')
 
     def _check_owner(self):
         if threading.get_ident() != self.provider._thread or self.provider._lock.locked():
@@ -254,7 +271,7 @@ class ProjectionCoverage:
         order = tuple(row.key for row in observation.inventory.calls)
         if order != self.call_order:
             raise PostwriteRefused('POSTWRITE_ACTUAL_PROJECTION_DENOMINATOR_CHANGED')
-        if {module for (_, module) in observation.inventory.module_calls} != self.module_universe:
+        if observation.inventory.module_calls!=self.actual_module_calls:
             raise PostwriteRefused('POSTWRITE_ACTUAL_MODULE_DENOMINATOR_CHANGED')
         self.last_output, self.last_observation = output, observation.inventory.report()
         self.forward_artifacts.append(dict(forward_id=self.forward_id, request_id=self.request_id,

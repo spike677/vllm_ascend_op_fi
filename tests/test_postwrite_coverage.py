@@ -21,6 +21,14 @@ class TwoLayers(torch.nn.Module):
     def forward(self, x):return self.second(self.first(x))
 
 
+class ListedLayers(torch.nn.Module):
+    def __init__(self,container=torch.nn.ModuleList,used=2):
+        super().__init__();self.layers=container([Projection(),Projection()]);self.used=used
+    def forward(self,x):
+        for layer in self.layers[:self.used]:x=layer(x)
+        return x
+
+
 def prepared():
     p = PostwriteProvider(TwoLayers(), CpuTransport(), '39.output_proxy')
     x = torch.ones(1, 4, dtype=torch.bfloat16)
@@ -33,6 +41,46 @@ def prepared():
 
 
 class ProjectionCoverageTests(unittest.TestCase):
+    def listed(self,model):
+        p=PostwriteProvider(model,CpuTransport(),'39.output_proxy')
+        x=torch.ones(1,4,dtype=torch.bfloat16)
+        p.qualify(x)
+        for phase in ('baseline','fault','off'):p.run(phase,x)
+        return p,x,ProjectionCoverage(p,CoverageScope(p.mechanism,'a'*64,'b'*64,'c'*64,'cpu_contract'))
+
+    def test_modulelist_stays_in_structural_universe_without_fabricated_forward(self):
+        p,x,g=self.listed(ListedLayers())
+        self.assertEqual(len(g.module_universe),4)
+        self.assertEqual(len(g.actual_module_calls),3)
+        self.assertEqual(len(g.eligible),2)
+        item,=g.structural_inventory
+        self.assertTrue(item['structural_noncall']);self.assertEqual(item['actual_forward_calls'],0)
+        self.assertEqual(set(item['direct_children']),{id(child) for child in p.model.layers})
+        report=g.run('once',x)
+        self.assertTrue(report['contract_satisfied'],report['rejection_reasons'])
+        self.assertEqual((report['planned_targets'],report['hits'],report['observed_eligible_calls']),(2,2,4))
+        structural=[row for row in g.discovery_diagnostics['candidates']['candidates']
+                    if row['candidate_id'].startswith('structural-noncall:')]
+        self.assertEqual(len(structural),1)
+        self.assertIn('UNIMPLEMENTED_FORWARD',str(structural))
+
+    def test_unused_child_or_modulelist_subclass_keeps_discovery_incomplete(self):
+        class UnknownList(torch.nn.ModuleList):pass
+        for model in (ListedLayers(used=1),ListedLayers(container=UnknownList)):
+            with self.subTest(type=type(model.layers),used=model.used):
+                p,x,g=self.listed(model)
+                with self.assertRaisesRegex(PostwriteRefused,'INDEPENDENT_DISCOVERY_INCOMPLETE'):
+                    g.run('once',x)
+                self.assertFalse(g.discovery_diagnostics['candidates']['discovery_complete'])
+                self.assertTrue(any(not row['structural_noncall'] for row in g.structural_inventory))
+                self.assertEqual(p.live_lease_count,0)
+
+    def test_modulelist_forward_changed_after_discovery_refuses_before_mutation(self):
+        p,x,g=self.listed(ListedLayers())
+        p.model.layers.forward=lambda value:value
+        with self.assertRaisesRegex(PostwriteRefused,'STRUCTURAL_BINDING_CHANGED'):g.run('once',x)
+        self.assertEqual(p.live_lease_count,0)
+
     def test_same_shape_different_modules_all_targets_once_independent_denominator_and_off(self):
         p, x, scope = prepared()
         group = ProjectionCoverage(p, scope)
