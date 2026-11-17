@@ -40,7 +40,7 @@ def main():
             'exec python3 /driver/build_fresh.py --source /input-source --policy-receipt /policy.json '
             '--dependencies /input-dependencies --work /build/run --jobs 4 '
             '--sdk /usr/local/Ascend/cann-8.5.1 --sdk-interface-manifest /sdk_interfaces.json '
-            '--sdk-interface-sha256 ' + sdk_sha]
+            '--sdk-interface-sha256 ' + sdk_sha + ' --opdef-compat ascend910b-cann851']
     receipt = dict(command=cmd, image_id=image_id, source_commit=head,
                    sdk_interfaces_sha256=sdk_sha, actual_npu_calls=0, status='BUILDING')
     record = a.out / 'controller.json'

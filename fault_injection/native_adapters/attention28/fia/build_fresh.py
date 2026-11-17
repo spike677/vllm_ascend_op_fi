@@ -246,6 +246,14 @@ class Builder:
                     and original.stat().st_size == item['bytes'], 'OFFLINE_SOURCE_PIN_DIFFERS:' + str(original))
             target = self.deps / relative
             target.parent.mkdir(parents=True, exist_ok=True);shutil.copyfile(original, target)
+        compatibility = None
+        if getattr(args, 'opdef_compat', None):
+            require(self.sdk.name == 'cann-8.5.1' and args.sdk_interface_manifest
+                    and self.variant == 'tnd_page16_s2_256', 'EXACT_TND33_CANN851_BUILD_REQUIRED')
+            from opdef_compat import adapt
+            compatibility = adapt(self.source)
+            save(self.ev / 'opdef_compat.json', compatibility)
+            self.report['opdef_compat_sha256'] = sha(self.ev / 'opdef_compat.json')
         (self.deps / 'abseil-cpp').mkdir()
         shutil.copyfile(self.deps / 'pkg/abseil-cpp-20230802.1.tar.gz',
                         self.deps / 'abseil-cpp/abseil-cpp-20230802.1.tar.gz')
@@ -277,6 +285,9 @@ class Builder:
             f'  set(JSON_INCLUDE_DIR "{json_root}/single_include")\n'
             f'  set(JSON_SOURCE_PATH "{json_root}")\nendif()\n')
         self.frozen = {str(self.source / row['path']): row['after_sha256'] for row in self.receipt['files']}
+        if compatibility:
+            self.frozen.update({str(self.source / row['path']): row['after_sha256']
+                                for row in compatibility['files']})
         deps_inventory = {name: source_files(self.deps / name) for name in
                           ('cann-cmake', 'opbase', 'ops-tensor', 'eigen', 'json', 'pkg', 'protobuf', 'abseil-cpp')}
         save(self.ev / 'dependency_sources.json', deps_inventory)
@@ -430,6 +441,7 @@ def main():
     parser.add_argument('--sdk', type=Path, default=Path('/usr/local/Ascend/cann-9.1.0'))
     parser.add_argument('--sdk-interface-manifest', type=Path)
     parser.add_argument('--sdk-interface-sha256')
+    parser.add_argument('--opdef-compat', choices=['ascend910b-cann851'])
     parser.add_argument('--python', type=Path, default=Path(sys.executable))
     parser.add_argument('--jobs', type=int, choices=range(1, 5), default=4)
     args = parser.parse_args()
