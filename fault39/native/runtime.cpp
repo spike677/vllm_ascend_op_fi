@@ -406,7 +406,7 @@ int stop(const char* owner,uint64_t generation,uint32_t timeout,bool clean) {
   for(int i=0;i<2;++i){s.original[i]={};s.temporary[i]={};s.changed[i]=s.unchanged[i]=0;}
   s.proof_json="{}";s.observation_ids="[]";s.observation_generation=0;s.observation_hit=0;s.observation_owner.clear();
   s.self_verified=s.columns_verified=false;
-  s.serving_live_inputs_verified=false;
+  s.serving_live_inputs_verified=s.input_device_readback_verified=false;
   s.storage_before[0].clear();s.storage_before[1].clear();s.storage_after[0].clear();s.storage_after[1].clear();s.output_sha256.clear();
   s.pre_sync=s.copy_status=s.run_status=s.post_sync=s.free_status=-2147483647;
  }
