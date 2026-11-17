@@ -34,6 +34,16 @@ class Fault39ServingReplay:
     baseline_control: bool = False
 
 
+@dataclass(frozen=True)
+class Fault39CoverageReplay:
+    """Trusted bounded whole-request observer; never supplied through user RPC."""
+    build_profile_sha256: str
+    make_session: object
+    evidence_dir: object
+    trigger: str = 'once'
+    c2_proof: object = None
+
+
 class Fault39Provider(Scope):
     def __init__(self, worker, model, identity):
         super().__init__(worker, model, identity)
@@ -102,8 +112,9 @@ class Fault39Provider(Scope):
         from demoncat_fault39.schema import Fault39Config
 
         binding = resolve_runtime(MECHANISM, self.model)
-        serving = isinstance(binding, Fault39ServingReplay)
-        if (not isinstance(binding, (Fault39WorkerReplay, Fault39ServingReplay))
+        serving = isinstance(binding, (Fault39ServingReplay, Fault39CoverageReplay))
+        coverage = type(binding) is Fault39CoverageReplay
+        if (not isinstance(binding, (Fault39WorkerReplay, Fault39ServingReplay, Fault39CoverageReplay))
                 or not is_sha256(binding.build_profile_sha256)
                 or (serving and not callable(binding.make_session))
                 or (not serving and (not callable(binding.reserve_worker) or not callable(binding.replay)))):
@@ -115,7 +126,16 @@ class Fault39Provider(Scope):
         rank, device = self.identity['rank'], self.identity['logical_device']
         config = Fault39Config(ranks=(rank,), devices=(device,), **settings)
         self.native.bind_worker_rank(rank)
-        if serving:
+        if coverage:
+            from demoncat_fault39.coverage_adapter import MatmulCoverageBackend
+            from ..serving39_coverage import Serving39CoverageSession
+            self.backend = MatmulCoverageBackend(self.native, owner=owner,
+                worker_identity=self.identity, model=self.model, folder=binding.evidence_dir,
+                identity=self._model_identity, trigger=binding.trigger, c2_proof=binding.c2_proof)
+            self.serving_session = binding.make_session(self.worker, self.model, self.backend, self.native, owner)
+            if type(self.serving_session) is not Serving39CoverageSession:
+                raise ProviderError('REVIEWED_COVERAGE_SESSION_REQUIRED')
+        elif serving:
             from demoncat_fault39.serving_qualification import ServingQualification
             from ..serving import ServingReplaySession
             self.backend = ServingQualification({rank: WorkerEndpoint(rank, device, self.native)},
@@ -153,7 +173,9 @@ class Fault39Provider(Scope):
     def _stop(self, action, owner, generation):
         release_owner = action in ('clean', 'unregister')
         if self.serving_session is not None:
-            if action == 'finish' and not self.backend.recovered:
+            from demoncat_fault39.coverage_adapter import MatmulCoverageBackend
+            completed_group = type(self.backend) is MatmulCoverageBackend and self.backend.phase == 'complete'
+            if action == 'finish' and not self.backend.recovered and not completed_group:
                 raise ProviderError('SERVING_QUALIFICATION_NOT_FINISHED')
             self.serving_session.close()
         if self.backend is not None:
