@@ -34,6 +34,7 @@ class TwoProjectionModel(qmm.CpuQmmModel):
 class GroupRuntimeMock(qmm.CpuQmmRuntime):
     def __init__(self, folder):
         super().__init__(folder)
+        self.worker.update(worker_id='CPU-worker-' + str(folder), model_instance_id='CPU-model-' + str(folder))
         self.native_inventory = {}
         self.group_targets = {}
         self.sealed = False
@@ -142,7 +143,8 @@ class QuantGroupTests(unittest.TestCase):
         folder = self.folder / str(len(self.backends))
         folder.mkdir()
         runtime = runtime or GroupRuntimeMock(folder)
-        identity = dict(worker_start_identity='CPU-worker-lifetime', model_instance_id='CPU-model', rank=0, logical_device=0)
+        identity = dict(worker_start_identity=runtime.worker['worker_id'],
+                        model_instance_id=runtime.worker['model_instance_id'], rank=0, logical_device=0)
         backend = QuantGroupBackend(model, _discover(model, (1,))[0], runtime=runtime, worker_identity=identity,
             owner='CPU-group-owner', generation=1 + len(self.backends), folder=folder / 'group',
             required_libraries=_REQUIRED_BUNDLE, trigger='every_match' if proof else 'once', c2_proof=proof,
