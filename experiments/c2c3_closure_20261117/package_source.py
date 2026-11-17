@@ -8,7 +8,7 @@ import subprocess
 import tarfile
 
 
-PREFIXES = ('engineering_closure/', 'fault_injection/', 'src/demoncat/', 'fault39/native/', 'fault39/tools/',
+PREFIXES = ('fault_registry/', 'demoncat/', 'engineering_closure/', 'fault_injection/', 'src/demoncat/', 'fault39/native/', 'fault39/tools/',
             'fault39/src/', 'native_execution_strategy/',
             'experiments/c2c3_closure_20261117/', 'experiments/c2c3_postwrite_20261117/',
             'experiments/engineering_20261117/',
@@ -37,7 +37,7 @@ def main():
         path = root / name
         if not name or (name not in SINGLES and not name.startswith(PREFIXES)):
             continue
-        extensions = EXTENSIONS | {'.md', '.csv'} if name.startswith('engineering_closure/') else EXTENSIONS
+        extensions = EXTENSIONS | {'.md', '.csv', '.yaml'} if name.startswith(('engineering_closure/', 'fault_registry/')) else EXTENSIONS
         if not path.is_file() or path.suffix not in extensions or '__pycache__' in path.parts:
             continue
         if path.is_symlink() or path.stat().st_size > 1024 * 1024:

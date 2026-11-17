@@ -85,7 +85,7 @@ class ModuleFaultSession:
     _cleanup_retryable = True
 
     def __init__(self, model, fault, *, arm='fault', unsupported='error', evidence_dir=None,
-                 _selected_call=None):
+                 _selected_call=None, _admit_call=None):
         if arm not in ('baseline', 'fault') or unsupported not in ('error', 'passthrough'):
             raise ValueError('Invalid arm/unsupported policy')
         self.model, self.fault, self.arm, self.unsupported = model, fault, arm, unsupported
@@ -103,6 +103,7 @@ class ModuleFaultSession:
         # Deployment-selected actual call, never a user-supplied layer name.
         # The ordinary attach facade retains its documented all-call behavior.
         self.selected_call = _selected_call
+        self.admit_call = _admit_call
         self.owned_callbacks = {}
 
     def _own_hook(self, module, callback, *, pre=False, **kwargs):
@@ -216,6 +217,8 @@ class ModuleFaultSession:
                     event['status'] = 'passthrough'
                     return None
                 selected = self.selected_call is None or self.selected_call == (path, event['ordinal'])
+                if selected and self.arm == 'fault' and self.admit_call is not None:
+                    selected = self.admit_call(dict(event))
                 injecting = self.arm == 'fault' and selected
                 event.update(status='applied' if injecting else 'baseline', original_execution_verified=True,
                              output_shape=list(output.shape), dtype=str(output.dtype),
@@ -259,6 +262,8 @@ class ModuleFaultSession:
             event['status'] = 'passthrough'
             return self.original(*args, **kwargs)
         selected = self.selected_call is None or self.selected_call == (event['path'], event['ordinal'])
+        if selected and self.arm == 'fault' and self.admit_call is not None:
+            selected = self.admit_call(dict(event))
         injecting = self.arm == 'fault' and selected
         chosen = (0,7,7) if injecting else padding
         native_kwargs = dict(values, padding=chosen)
