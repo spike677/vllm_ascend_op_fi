@@ -23,7 +23,7 @@ def _sha(value):
 class NaturalTensorGroupProvider:
     def __init__(self, model, mechanism, *, replay, synchronize, workload_sha256,
                  environment_sha256, model_weights_sha256, model_source_sha256,
-                 simulation=False, model_observation=None):
+                 simulation=False, model_observation=None, worker_identity=None):
         if mechanism not in ('18.api_half', '22.wrong_row'):
             raise ValueError('Only reviewed natural RMSNorm-return and RoPE-lookup groups are enabled')
         if not callable(replay) or not callable(synchronize) or model.training or type(simulation) is not bool:
@@ -35,14 +35,15 @@ class NaturalTensorGroupProvider:
         self.replay, self.synchronize, self.simulation = replay, synchronize, simulation
         self.model_observation = model_observation
         self.owner = 'natural-tensor-' + uuid.uuid4().hex
-        self.context = _python_execution_context(model, None)
+        self.context = _python_execution_context(model, worker_identity)
         import fault_injection.rmsnorm_return as rms
         import fault_injection.index22 as rope
         import fault_injection.tensor_observer as observer
         self.source_sha = _sha({str(Path(p).name): hashlib.sha256(Path(p).read_bytes()).hexdigest()
             for p in (__file__, rms.__file__, rope.__file__, observer.__file__)})
         self.scope = CoverageScope(mechanism, workload_sha256, environment_sha256, self.source_sha,
-            evidence_kind='cpu_contract' if simulation else 'natural_pretrained_model',
+            evidence_kind='cpu_contract' if simulation else
+                'natural_worker' if worker_identity else 'natural_pretrained_model',
             model_weights_sha256=model_weights_sha256, model_source_sha256=model_source_sha256)
         self.eager_paths = {path or '<root>': eager_rms_contract(module)
             for path, module in model.named_modules()}
@@ -56,6 +57,8 @@ class NaturalTensorGroupProvider:
         self.error = None
         self._running = False
         self._statistics_arm = None
+        self.current_request_ids = None
+        self.owned_host_hooks = lambda: 0
 
     def _event(self, path, operator, metadata):
         key = (path, len(self.calls))
@@ -71,8 +74,8 @@ class NaturalTensorGroupProvider:
             phase = Phase.OFF_RECOVERY if not self.enabled else (
                 Phase.PRE_FAULT_PROPAGATION if len(self.calls) == 1 else Phase.POST_FIRST_ANOMALY)
             invocation = self.current_invocation
-            call = ObservedCall(target, invocation + ':' + str(key[1]), invocation,
-                                (invocation,), phase)
+            requests = self.current_request_ids if self.context['scope_kind'] == 'INITIALIZED_WORKER' else (invocation,)
+            call = ObservedCall(target, invocation + ':' + str(key[1]), invocation, requests, phase)
             ticket = self.group.observer.observe(call, eligible=True)
             row['decision'] = self.group.begin(ticket)
 
@@ -226,6 +229,14 @@ class NaturalTensorGroupProvider:
         for name, arm in (('native_baseline', None), ('baseline', 'baseline'),
                           ('baseline_repeat', 'baseline'), ('lossless', 'baseline')):
             phases.append(self._phase(name, arm=arm))
+        return self.qualify_observations(phases)
+
+    def qualify_observations(self, phases):
+        """Trusted synchronous/serving host joins real completed healthy phases."""
+        from fault_injection.coverage import (BoundaryTargetIdentity, Candidate, CandidateSet,
+            Eligibility, EligibilityResult, PythonHookBoundary)
+        if self.candidates is not None or len(phases) != 4:
+            raise ProviderError('FOUR_FRESH_ACTUAL_HEALTHY_PHASES_REQUIRED')
         self.reference_input, self.reference_output, bare = phases[0]
         if not all(_same(self.reference_input, input_) and _same(self.reference_output, output)
                    for input_, output, row in phases[1:]):
@@ -251,7 +262,7 @@ class NaturalTensorGroupProvider:
             device = next(iter(first['independent']['forwards'][0]['output']))['device'].split(':')
             target = BoundaryTargetIdentity(process_id=self.context['process_id'],
                 process_start_identity=self.context['process_start_identity'], worker_id=self.context['worker_id'],
-                scope_kind='MODEL_LOCAL', rank=self.context['rank'], device_type=device[0],
+                scope_kind=self.context['scope_kind'], rank=self.context['rank'], device_type=device[0],
                 logical_device=None if device[0] == 'cpu' else int(device[1]) if len(device) > 1 else 0,
                 model_instance_id=self.context['model_instance_id'], model_object_identity=id(self.model),
                 module_object_identity=id(module), module_roles=('RMSNORM_RETURN',) if self.mechanism == '18.api_half'
@@ -299,12 +310,12 @@ class NaturalTensorGroupProvider:
 
     def _health(self, worker, owner, generation):
         from fault_injection.coverage_session import WorkerHealthProof
-        if self._running or self.active_adapter is not None or self.off_row is None:
+        if self._running or self.active_adapter is not None or self.off_row is None or self.owned_host_hooks():
             raise ProviderError('GROUP_HEALTH_STILL_INFLIGHT')
         return WorkerHealthProof(worker, owner, generation, _sha(self.off_row), self.baseline_sha,
             _sha(self.off_row['output']), 0, 0, 0, 0, 0)
 
-    def run(self, trigger='once', *, forwards=1, c2_proof=None):
+    def open_group(self, trigger='once', *, forwards=1, c2_proof=None):
         from fault_injection.coverage import (CoverageCapability, QualifiedTargetSet,
             TargetLease, TargetLosslessProof)
         from fault_injection.coverage_session import (CoverageSession, GroupRecoveryHooks,
@@ -341,20 +352,31 @@ class NaturalTensorGroupProvider:
         self.group = CoverageSession(group=group, scope=self.scope, observer=observer,
             budget=SessionBudget(count*forwards, 600, max_concurrency=count),
             recovery=GroupRecoveryHooks(stop, drain, self._recover, self._health), c2_proof=c2_proof)
-        first_row = len(self.rows)
-        try:
-            for index in range(forwards):
-                self._phase(trigger + ':' + str(index), arm='fault')
-        finally:
-            recovery = self.group.disable(timeout_seconds=300)
-        observer.seal(artifact_sha256=_sha(self.rows[first_row:]), complete=True)
+        self.group_first_row = len(self.rows)
+        return self.group
+
+    def close_group(self):
+        if self.group is None:
+            raise ProviderError('NATURAL_GROUP_NOT_OPEN')
+        recovery = self.group.disable(timeout_seconds=300)
+        self.group.observer.seal(artifact_sha256=_sha(self.rows[self.group_first_row:]), complete=True)
         report = self.group.report()
         report.update(execution_boundary='python_hook', native_loaded=False,
             mechanism_semantics='RMSNorm output half proxy' if self.mechanism == '18.api_half'
                 else 'Legal-address RoPE wrong-row lookup output proxy; not uint32 overflow',
             recovery=recovery, independent_statistics='SEPARATE_RAW_COMPARISON_REQUIRED',
-            phase_rows=self.rows[first_row:], scheduler_requests_claimed=False,
-            invocation_scope='Actual model-local root forwards; not synthetic serving request IDs')
+            phase_rows=self.rows[self.group_first_row:],
+            scheduler_requests_claimed=self.context['scope_kind'] == 'INITIALIZED_WORKER',
+            invocation_scope=self.context['scope_kind'])
+        return report
+
+    def run(self, trigger='once', *, forwards=1, c2_proof=None):
+        self.open_group(trigger, forwards=forwards, c2_proof=c2_proof)
+        try:
+            for index in range(forwards):
+                self._phase(trigger + ':' + str(index), arm='fault')
+        finally:
+            report = self.close_group()
         return report
 
     def collect_statistics_pair(self, capture):

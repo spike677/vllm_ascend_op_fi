@@ -51,6 +51,28 @@ class Network(torch.nn.Module):
 
 
 class NaturalRMSNormTests(unittest.TestCase):
+    def test_serving_span_tracks_actual_last_token_gemm_without_post_root_injection(self):
+        class Hidden(torch.nn.Module):
+            def __init__(self):
+                super().__init__(); self.norm = CanonicalNorm(8)
+            def forward(self, x):
+                return self.norm(x)
+        model = Hidden().eval(); x = torch.arange(24.).reshape(3, 8)
+        baseline = model(x)
+        with RMSNormReturnSession(model, arm='fault', simulation=True,
+                                  observe_post_root_consumers=True) as session:
+            hidden = model(x)
+            last = hidden[torch.tensor([2])]
+            logits = torch.mm(last, torch.eye(8))
+            # An unrelated normalizer outside the actual root is untouched.
+            outside = model.norm(x)
+        event, = session.report()['events']
+        self.assertTrue(torch.equal(outside, baseline))
+        self.assertTrue(torch.equal(logits, baseline[-1:] * .5))
+        self.assertTrue(any(row['post_root'] and row['operator'] == 'aten.mm.default'
+                            for row in event['consumers']))
+        self.assertIn('aten.index.Tensor', event['lineage_operators'])
+
     def test_fused_return_lineage_halves_only_normalized_output(self):
         class Model(torch.nn.Module):
             def __init__(self):

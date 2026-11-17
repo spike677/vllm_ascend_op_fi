@@ -89,8 +89,10 @@ class ScopedDispatch:
             parent = self
             class Observe(TorchDispatchMode):
                 def __torch_dispatch__(self, func, types, args=(), kwargs=None):
-                    if not parent.active or not parent.stack or parent.diagnostic:
+                    if not parent.active or parent.diagnostic:
                         return func(*args, **(kwargs or {}))
+                    if not parent.stack:
+                        return parent.dispatch_outside_root(func, args, kwargs or {})
                     return parent.dispatch(func, args, kwargs or {})
             for path, module in self.model.named_modules():
                 pre = self._before(path or '<root>', module)
@@ -110,6 +112,10 @@ class ScopedDispatch:
                      forward=len(self.forwards)-1, status='observed')
         self.events.append(event)
         return event
+
+    def dispatch_outside_root(self, func, args, kwargs):
+        # Default scopes never inspect or inject unrelated post-root work.
+        return func(*args, **kwargs)
 
     def is_selected(self, event):
         return self.selected_call is None or self.selected_call == (event['path'], event['ordinal'])

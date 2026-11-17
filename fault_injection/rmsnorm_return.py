@@ -71,13 +71,15 @@ def _same_view(left, right):
 class RMSNormReturnSession(ScopedDispatch):
     mechanism = '18.api_half'
 
-    def __init__(self, model, *, selected_calls=None, admission=None, **kwargs):
+    def __init__(self, model, *, selected_calls=None, admission=None,
+                 observe_post_root_consumers=False, **kwargs):
         super().__init__(model, **kwargs)
         self.selected_calls = None if selected_calls is None else frozenset(selected_calls)
         self.eager = {id(module): eager_rms_contract(module) for module in model.modules()}
         self.pending = {}
         self.returns = []
         self.admission = admission
+        self.observe_post_root_consumers = observe_post_root_consumers
 
     def is_selected(self, event):
         if self.admission is not None:
@@ -93,18 +95,7 @@ class RMSNormReturnSession(ScopedDispatch):
         native_rms = (name.split('::', 1)[0] in ('npu', '_C_ascend') and
             name.rsplit('::', 1)[-1] in ('npu_rms_norm', 'npu_add_rms_norm', 'npu_add_rms_norm_bias'))
         if not native_rms:
-            input_storages = {int(t.untyped_storage()._cdata) for t in tensors((args, kwargs))}
-            readers = [(tensor, event) for tensor, event in self.returns
-                if event['forward'] == len(self.forwards)-1
-                and int(tensor.untyped_storage()._cdata) in input_storages
-                and name in ('aten::add', 'aten::mul', 'aten::linear', 'aten::matmul', 'aten::mm',
-                    'npu::npu_dynamic_quant', 'npu::npu_quant_matmul', 'npu::npu_add_rms_norm',
-                    'vllm::unquantized_gemm', 'vllm::npu_rotary_embedding')]
-            result = func(*args, **kwargs)
-            for tensor, event in readers:
-                event['consumers'].append(dict(operator=str(func), path=self.stack[-1][0],
-                    returned=True, same_return_storage=True))
-            return result
+            return self._read_call(func, args, kwargs)
         actual_tensors = tuple(tensors((args, kwargs)))
         owners = [(path, module) for path, module in self.stack
             if isinstance(getattr(module, 'weight', None), torch.Tensor)
@@ -126,6 +117,38 @@ class RMSNormReturnSession(ScopedDispatch):
             source_contract='ACTUAL_NATIVE_RMS_WEIGHT_AND_MODULE_RETURN_LINEAGE')
         self.pending[id(module)] = (event, outputs[0], tuple(outputs[1:]))
         return result
+
+    def _read_call(self, func, args, kwargs):
+        name = getattr(getattr(func, '_schema', None), 'name', '')
+        input_storages = {int(t.untyped_storage()._cdata) for t in tensors((args, kwargs))}
+        linked = [(tensor, event) for tensor, event in self.returns
+            if event['forward'] == len(self.forwards)-1
+            and int(tensor.untyped_storage()._cdata) in input_storages]
+        unique = {id(event): event for tensor, event in linked}
+        readers = list(unique.values()) if name in ('aten::add', 'aten::mul', 'aten::linear', 'aten::matmul', 'aten::mm',
+                'npu::npu_dynamic_quant', 'npu::npu_quant_matmul', 'npu::npu_add_rms_norm',
+                'vllm::unquantized_gemm', 'vllm::npu_rotary_embedding') else []
+        result = func(*args, **kwargs)
+        for event in readers:
+            event['consumers'].append(dict(operator=str(func),
+                path=self.stack[-1][0] if self.stack else '<post_root_consumer>',
+                returned=True, actual_return_lineage=True, post_root=not bool(self.stack)))
+        if name in ('aten::view', 'aten::reshape', 'aten::_unsafe_view', 'aten::slice', 'aten::select',
+                    'aten::index', 'aten::index_select', 'aten::clone', 'aten::_to_copy',
+                    'aten::squeeze', 'aten::unsqueeze', 'aten::flatten', 'aten::transpose', 'aten::permute'):
+            for event in unique.values():
+                self.returns.extend((value, event) for value in tensors(result))
+                event.setdefault('lineage_operators', []).append(str(func))
+        return result
+
+    def dispatch_outside_root(self, func, args, kwargs):
+        # A serving adapter may keep the owned mode until the actual logits
+        # processor returns. Only already-returned storage is observed here;
+        # no new RMSNorm target can be discovered or changed outside the root.
+        if (self.observe_post_root_consumers and self.forwards
+                and self.forwards[-1]['status'] == 'returned'):
+            return self._read_call(func, args, kwargs)
+        return func(*args, **kwargs)
 
     def _after(self, module):
         original = super()._after(module)
