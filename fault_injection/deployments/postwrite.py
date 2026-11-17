@@ -20,6 +20,9 @@ import torch
 from torch.utils._python_dispatch import TorchDispatchMode
 from torch.utils._pytree import tree_flatten, tree_map
 
+from .postwrite_boundaries import (PROJECTION_OPERATORS, VALUE_CONSUMERS,
+    projection_return, reads_selected_elements, tensor_geometry)
+
 
 class PostwriteRefused(RuntimeError):
     pass
@@ -177,12 +180,13 @@ class _Candidate:
     module_path: str
     storage: tuple
     consumers: list
+    producer_proof: dict
+    consumer_observations: list
 
 
 class _ObserveDispatch(TorchDispatchMode):
     # Views and alias-only dispatches do not prove a value was consumed.
-    VALUE_CONSUMERS = frozenset({'aten.add.Tensor', 'aten.mul.Tensor', 'aten.mm.default',
-                                'aten.bmm.default', 'aten.addmm.default', 'aten.sum.dim_IntList'})
+    VALUE_CONSUMERS = VALUE_CONSUMERS
     def __init__(self, provider, phase):
         super().__init__()
         self.provider, self.phase = provider, phase
@@ -220,7 +224,7 @@ class _ObserveDispatch(TorchDispatchMode):
                          'aten.matmul.default', 'npu.npu_linear.default') and len(self.projection_observations) < 32:
             outputs = _tensors(result)
             self.projection_observations.append(dict(operator=operation, module_path=p._stack[-1][0],
-                admitted_producer_operator=operation == 'aten.mm.default',
+                admitted_producer_operator=operation in PROJECTION_OPERATORS,
                 inputs=[dict(shape=list(t.shape), dtype=str(t.dtype)) for t in operands],
                 outputs=[dict(shape=list(t.shape), dtype=str(t.dtype), contiguous=t.is_contiguous(),
                     offset=t.storage_offset(), storage_bytes=t.untyped_storage().nbytes(),
@@ -229,16 +233,20 @@ class _ObserveDispatch(TorchDispatchMode):
         for candidate in previous:
             if (operation in self.VALUE_CONSUMERS
                     and not self._writes(func, args, kwargs, candidate.storage)):
-                candidate.consumers.append(operation)
-        tensor, indices = None, ()
-        if p.mechanism == '39.output_proxy' and operation == 'aten.mm.default':
-            if (len(args) >= 2 and all(isinstance(t, torch.Tensor) and t.ndim == 2
-                    and t.dtype == torch.bfloat16 for t in args[:2])
-                    and isinstance(result, torch.Tensor) and result.dtype == torch.bfloat16
-                    and result.ndim == 2 and result.numel() >= p.prefix_elements
-                    and _storage(result) not in read_storages):
-                tensor = result
-                indices = tuple(range(p.prefix_elements))
+                reads = [t for t in operands if reads_selected_elements(t, candidate.indices, candidate.tensor)]
+                if reads:
+                    candidate.consumers.append(operation)
+                    candidate.consumer_observations.append(dict(operator=operation,
+                        module_path=p._stack[-1][0], original_returned=True,
+                        selected_elements_read=list(candidate.indices),
+                        operand_views=[tensor_geometry(t) for t in reads]))
+        tensor, indices, producer_proof = None, (), {}
+        if p.mechanism == '39.output_proxy' and operation in PROJECTION_OPERATORS:
+            proof, reason = projection_return(func, args, kwargs, result)
+            if proof is not None and result.numel() >= p.prefix_elements:
+                tensor, indices, producer_proof = result, tuple(range(p.prefix_elements)), proof
+            elif reason is not None:
+                self.rejections.append(dict(reason=reason, operator=operation, module_path=p._stack[-1][0]))
         elif p.mechanism == '41.tail_column' and operation == 'aten.index_copy_.default':
             if len(args) >= 4:
                 cache, dim, rows, source = args[:4]
@@ -267,7 +275,7 @@ class _ObserveDispatch(TorchDispatchMode):
         occurrence = self.counts.get(signature, 0)
         self.counts[signature] = occurrence + 1
         candidate = _Candidate(signature + (occurrence,), tensor, indices, operation,
-                               module_path, _storage(tensor), [])
+                               module_path, _storage(tensor), [], producer_proof, [])
         self.candidates.append(candidate)
         if self.phase in ('baseline', 'fault') and candidate.key == p._target:
             if p._lease is not None:
@@ -375,7 +383,8 @@ class PostwriteProvider:
                     module_path=chosen.module_path, storage_identity=chosen.storage,
                     shape=list(chosen.tensor.shape), stride=list(chosen.tensor.stride()),
                     storage_offset=chosen.tensor.storage_offset(), dtype=str(chosen.tensor.dtype),
-                    logical_indices=list(chosen.indices), consumer_calls=list(chosen.consumers))
+                    logical_indices=list(chosen.indices), consumer_calls=list(chosen.consumers),
+                    producer_proof=chosen.producer_proof, consumer_observations=chosen.consumer_observations)
             return copied, candidates, report
         finally:
             for hook in reversed(hooks):
@@ -415,7 +424,8 @@ class PostwriteProvider:
         return dict(status='ACTUAL_CALL_CANDIDATE_SELECTED', count=len(first),
                     selection='first eligible in stable actual execution order',
                     operator=first[0].operator, module_path=first[0].module_path,
-                    consumers=first[0].consumers, input_sha256=input_hash,
+                    consumers=first[0].consumers, producer_proof=first[0].producer_proof,
+                    consumer_observations=first[0].consumer_observations, input_sha256=input_hash,
                     requires_lossless=True)
 
     def run(self, phase, *args, model_observation=None, **kwargs):
@@ -460,7 +470,7 @@ class PostwriteProvider:
 
 
 class Fault39OutputProxyProvider(PostwriteProvider):
-    """Finite actual BF16 MM output -> selected nonfinite prefix -> real consumer."""
+    """Actual BF16 linear/matmul/MM return storage -> prefix -> real value consumer."""
     def __init__(self, model, transport, *, prefix_elements=1, proxy='pos_inf'):
         super().__init__(model, transport, '39.output_proxy',
                          prefix_elements=prefix_elements, proxy=proxy)

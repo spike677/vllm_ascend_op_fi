@@ -123,6 +123,7 @@ def main():
                 report.update(status='RECOVERY_FAILED', recovery_error=repr(exc))
             report['provider_diagnostics'] = provider.query()
     sources = ['fault_injection/deployments/postwrite.py',
+               'fault_injection/deployments/postwrite_boundaries.py',
                'fault_injection/native_adapters/postwrite/postwrite.cpp',
                'fault_injection/native_adapters/postwrite/postwrite.h',
                'experiments/engineering_20261117/model_capture.py',
