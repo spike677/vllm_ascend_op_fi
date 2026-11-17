@@ -2,6 +2,7 @@
 #include "fault26_qmm_underflow_api.h"
 #include "fault26_inventory.h"
 #include "../l4_buffer_substitute_allhit_v1/fault20_buffer_api.h"
+#include "../../../fault39/native/metadata_array_owner.h"
 
 #include <acl/acl.h>
 #include <aclnn/acl_meta.h>
@@ -458,7 +459,8 @@ bool is_contiguous(const int64_t *shape, uint32_t shape_count,
     return true;
 }
 
-TensorMetadata capture_tensor(const aclTensor *tensor) {
+TensorMetadata capture_tensor(const aclTensor *tensor) try {
+    dcat_metadata::CaptureScope capture_scope;
     TensorMetadata metadata{};
     metadata.tensor_ptr = reinterpret_cast<uintptr_t>(tensor);
     if (tensor == nullptr) {
@@ -468,9 +470,7 @@ TensorMetadata capture_tensor(const aclTensor *tensor) {
     aclDataType dtype = ACL_DT_UNDEFINED;
     aclFormat format = ACL_FORMAT_UNDEFINED;
     int64_t view_offset = 0;
-    int64_t *view_dims = nullptr;
-    int64_t *storage_dims = nullptr;
-    int64_t *strides = nullptr;
+    dcat_metadata::OwnedArray view_dims, storage_dims, strides;
     uint64_t view_count = 0;
     uint64_t storage_count = 0;
     uint64_t stride_count = 0;
@@ -482,13 +482,13 @@ TensorMetadata capture_tensor(const aclTensor *tensor) {
         g_get_data_type(tensor, &dtype) != ACL_SUCCESS ||
         g_get_format(tensor, &format) != ACL_SUCCESS ||
         g_get_view_offset(tensor, &view_offset) != ACL_SUCCESS ||
-        g_get_view_shape(tensor, &view_dims, &view_count) != ACL_SUCCESS ||
-        g_get_storage_shape(tensor, &storage_dims, &storage_count) != ACL_SUCCESS ||
-        g_get_view_strides(tensor, &strides, &stride_count) != ACL_SUCCESS ||
+        view_dims.read(g_get_view_shape, tensor, &view_count) != ACL_SUCCESS ||
+        storage_dims.read(g_get_storage_shape, tensor, &storage_count) != ACL_SUCCESS ||
+        strides.read(g_get_view_strides, tensor, &stride_count) != ACL_SUCCESS ||
         g_get_raw_tensor_addr(tensor, &raw_addr) != ACL_SUCCESS ||
         view_count == 0 || view_count > kMaxDims || storage_count == 0 ||
         storage_count > kMaxDims || stride_count == 0 ||
-        stride_count > kMaxDims) {
+        stride_count > kMaxDims || !view_dims || !storage_dims || !strides) {
         return metadata;
     }
     metadata.dtype = static_cast<int32_t>(dtype);
@@ -530,6 +530,9 @@ TensorMetadata capture_tensor(const aclTensor *tensor) {
     metadata.data_addr = reinterpret_cast<uintptr_t>(raw_addr);
     metadata.metadata_ok = metadata.element_size != 0 ? 1U : 0U;
     return metadata;
+} catch (...) {
+    dcat_metadata::capture_exception();
+    return TensorMetadata{};
 }
 
 void log_typed_gws_summary(const char *api, double epsilon,
@@ -2255,6 +2258,10 @@ bool add_cache(op::internal::OpExecCache *cache) {
 }
 
 }  // namespace
+
+extern "C" int dcat26_trace_metadata_arrays_v1(DcatMetadataArrayStateV1* output) {
+    return dcat_metadata::snapshot(output);
+}
 
 extern "C" int dcat26_inventory_state_v1(dcat26_inventory::State *out) {
     if(!out || out->version!=1 || out->size!=sizeof(dcat26_inventory::State))return 1;

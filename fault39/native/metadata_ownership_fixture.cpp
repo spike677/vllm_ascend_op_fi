@@ -14,6 +14,9 @@
 #include <new>
 #include <stdexcept>
 #include <string>
+#ifdef DCAT_TEST_WRITER26
+#include "writer26_group_core.h"
+#endif
 
 static bool track_arrays=false;
 static void* tracked_arrays[8192]{};
@@ -109,6 +112,34 @@ namespace f20 {
 namespace f39 {
 // @F39_CAPTURE@
 }
+#ifdef DCAT_TEST_WRITER26
+namespace trace26 {
+constexpr size_t kMaxDims=8;
+auto g_get_data_type=&aclGetDataType;
+auto g_get_format=&aclGetFormat;
+auto g_get_view_offset=&aclGetViewOffset;
+auto g_get_view_shape=&aclGetViewShape;
+auto g_get_storage_shape=&aclGetStorageShape;
+auto g_get_view_strides=&aclGetViewStrides;
+auto g_get_raw_tensor_addr=&aclGetRawTensorAddr;
+auto g_data_type_size=&aclDataTypeSize;
+// @F26_TRACE_TYPES@
+// @F26_TRACE_CAPTURE@
+}
+namespace group26 {
+using Call=dcat26_group::Call;
+struct Api {
+    decltype(&aclGetDataType) type{&aclGetDataType};
+    decltype(&aclGetFormat) format{&aclGetFormat};
+    decltype(&aclGetViewOffset) offset{&aclGetViewOffset};
+    decltype(&aclGetRawTensorAddr) address{&aclGetRawTensorAddr};
+    decltype(&aclGetViewShape) shape{&aclGetViewShape},storage{&aclGetStorageShape},strides{&aclGetViewStrides};
+} api;
+bool same_device(int device){return device==0;}
+// @F26_GROUP_CONTIGUOUS@
+// @F26_GROUP_CAPTURE@
+}
+#endif
 
 static void clean() {
     DcatMetadataArrayStateV1 state;
@@ -122,7 +153,15 @@ static bool capture(int route,const aclTensor* tensor,const char* api="api") {
     if(route==0){Fault20X1Metadata m{};return f20::capture_x1_metadata(tensor,tensor,false,false,0,&m);}
     if(route==1){Fault20TensorMetadata m{};return f20::capture_tensor_metadata(tensor,&m);}
     if(route==2){Fault39TensorMetadata m{};return f39::capture_tensor_metadata(tensor,&m);}
-    f20::log_tensor(api,"input",1,nullptr,tensor);return true;
+    if(route==3){f20::log_tensor(api,"input",1,nullptr,tensor);return true;}
+#ifdef DCAT_TEST_WRITER26
+    if(route==4)return trace26::capture_tensor(tensor).metadata_ok;
+    group26::Call call{};call.dimensions=2;call.device=0;call.dtype=1;call.format=2;
+    call.shape[0]=2;call.shape[1]=3;call.output=0x2000;call.output_bytes=12;
+    return group26::descriptor_matches(tensor,call);
+#else
+    return false;
+#endif
 }
 int main() {
     track_arrays=true;aclTensor tensor;uint64_t scenarios=0;
@@ -155,6 +194,26 @@ int main() {
     control={};std::string long_api(5000,'a');capture(3,&tensor,long_api.c_str());clean();++scenarios;
     control={};control.throw_log=true;capture(3,&tensor);clean();++scenarios;
     control={};control.null_array=true;capture(3,&tensor);clean();++scenarios;
+#ifdef DCAT_TEST_WRITER26
+    for(int route=4;route<6;++route) {
+        control={};assert(capture(route,&tensor));clean();++scenarios;
+        for(int stage=1;stage<=7;++stage)for(auto mode:{Failure::BeforeReturn,Failure::AfterReturn,
+                                                      Failure::BeforeThrow,Failure::AfterThrow}) {
+            control={};control.fail_at=stage;control.failure=mode;
+            assert(!capture(route,&tensor));clean();++scenarios;
+        }
+        control={};assert(!capture(route,nullptr));clean();++scenarios;
+        for(int defect=0;defect<5;++defect) {
+            control={};
+            if(defect==0)control.rank=0;
+            if(defect==1)control.rank=17;
+            if(defect==2)control.negative=true;
+            if(defect==3)control.overflow=true;
+            if(defect==4)control.null_array=true;
+            assert(!capture(route,&tensor));clean();++scenarios;
+        }
+    }
+#endif
     // Additive query rejects ABI mistakes; no reset or pointer release export.
     DcatMetadataArrayStateV1 state;
     assert(dcat_metadata::snapshot(nullptr)==1);state.size=0;assert(dcat_metadata::snapshot(&state)==1);

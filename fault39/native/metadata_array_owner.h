@@ -98,6 +98,7 @@ public:
     }
 
     operator const int64_t*() const noexcept { return value_; }
+    const int64_t* get() const noexcept { return value_; }
     const int64_t& operator[](uint64_t index) const noexcept { return value_[index]; }
 };
 

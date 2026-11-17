@@ -1,6 +1,7 @@
 // Independent v2 DSO. Never link/preload either legacy v1 writer beside this file.
 // All writer/consumer identity comes from the independent trace, before admission.
 #include "writer26_group_core.h"
+#include "../../fault39/native/metadata_array_owner.h"
 #include "../../fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_qmm_underflow_api.h"
 #include "../../fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_inventory.h"
 #include <cstdlib>
@@ -145,17 +146,22 @@ Call make_call(const Event& event,uint32_t mechanism) {
     std::copy(event.shape,event.shape+4,call.shape);return call;
 }
 bool same_device(int device) {int32_t actual=-1;return api.device && api.device(&actual)==ACL_SUCCESS && actual==device;}
-bool descriptor_matches(const aclTensor* tensor,const Call& call) {
+bool descriptor_matches(const aclTensor* tensor,const Call& call) try {
+    dcat_metadata::CaptureScope capture_scope;
     if(!tensor || call.dimensions>4 || !same_device(call.device))return false;
     aclDataType type{};aclFormat format{};int64_t offset=-1;void* address=nullptr;
-    int64_t *shape=nullptr,*storage=nullptr,*strides=nullptr;uint64_t rank=0,storage_rank=0,stride_rank=0;
+    dcat_metadata::OwnedArray shape,storage,strides;
+    uint64_t rank=0,storage_rank=0,stride_rank=0;
     if(api.type(tensor,&type) || api.format(tensor,&format) || api.offset(tensor,&offset)
-        || api.address(tensor,&address) || api.shape(tensor,&shape,&rank)
-        || api.storage(tensor,&storage,&storage_rank) || api.strides(tensor,&strides,&stride_rank))return false;
+        || api.address(tensor,&address) || shape.read(api.shape,tensor,&rank)
+        || storage.read(api.storage,tensor,&storage_rank) || strides.read(api.strides,tensor,&stride_rank))return false;
     return rank==call.dimensions && storage_rank==rank && stride_rank==rank && shape && storage && strides
         && !offset && type==call.dtype && format==call.format && reinterpret_cast<uint64_t>(address)==call.output
-        && std::equal(shape,shape+rank,call.shape) && std::equal(storage,storage+rank,call.shape)
+        && std::equal(shape.get(),shape.get()+rank,call.shape) && std::equal(storage.get(),storage.get()+rank,call.shape)
         && contiguous(static_cast<uint32_t>(rank),shape,strides,call.output_bytes);
+} catch (...) {
+    dcat_metadata::capture_exception();
+    return false;
 }
 bool destroy_descriptor() {
     if(!fia.owned)return true;
@@ -182,6 +188,9 @@ void notify_completion() {
 }
 }
 
+extern "C" int dcat26_group_metadata_arrays_v1(DcatMetadataArrayStateV1* output) {
+    return dcat_metadata::snapshot(output);
+}
 extern "C" int dcat26_group_state_v2(RuntimeState* output) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!output || output->version!=2 || output->size!=sizeof(RuntimeState))return Identity;
