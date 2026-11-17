@@ -74,3 +74,19 @@ only raw B/F collector/config/stack/construct evidence, fixed rtol=1e-5 and
 atol=1e-8. Native hits and full-tensor hashes do not select its first difference;
 null, NaN, stack/alignment failures remain failures. No A3, multi-rank, decode,
 other model or other CANN qualification is inferred from this probe.
+
+The first actual run, `providers39-a1/providers39-qwen-c2c3`, stopped during
+`discovery_1` before injection: msprobe's reviewed custom-op wrapper is a plain
+function, while an active PyTorch dispatch mode resolves its `.default`
+overload. The original exception was `AttributeError` at
+`_C_ascend.npu_add_rms_norm_bias`; the attempt remains failed and grants no C2.
+Native owner and all 748 owned hooks were released. The retry adds only the
+original packet's overload attributes to that exact collector function during
+each request. It verifies the pinned registry source SHA, compiled factory code,
+nested wrapper code identity, original closure packet and namespace ownership;
+it retains both original calls and refuses changed or foreign attributes.
+Owned attributes are removed before collector stop and group health. Source
+bytes and raw collector data are unchanged. A real CPU custom-op test reproduces
+the failure and checks one collector call, one original operator call, correct
+dispatch observation and exact attribute cleanup. This changes Python only;
+the final native `build39-a3` DSO remains the required native artifact.

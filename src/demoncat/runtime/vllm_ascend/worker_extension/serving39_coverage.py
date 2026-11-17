@@ -8,6 +8,7 @@ from collections import Counter
 import hashlib
 import json
 from pathlib import Path
+import sys
 
 from .serving import ServingReplaySession, complete_tensor
 from .serving_context import require, tensor_metadata
@@ -45,12 +46,28 @@ def public_pair(operator, args, kwargs):
 class Serving39CoverageSession(ServingReplaySession):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.backend.observer_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        from . import collector_dispatch
+        self.packet_attributes = collector_dispatch.CollectorPacketAttributes()
+        self.backend.observer_sha256 = hashlib.sha256(
+            Path(__file__).read_bytes() + Path(collector_dispatch.__file__).read_bytes()).hexdigest()
         self.mode = None
         self.module_stack = []
         self.ordinals = Counter()
         self.modules = {id(module): (path or '<root>', module) for path, module in self.model.named_modules()}
         self.dispatches = 0
+
+    def expect(self, request_id):
+        super().expect(request_id)
+        try:
+            self.packet_attributes.install()
+        except BaseException as error:
+            self._failure(error)
+            raise
+
+    def collect(self, *, force=False):
+        if self.needs_collect or force:
+            self.packet_attributes.restore()
+        super().collect(force=force)
 
     def install(self):
         super().install()
@@ -131,6 +148,9 @@ class Serving39CoverageSession(ServingReplaySession):
         self._stop_mode()
         if self.current is None:
             return
+        if output is None and sys.exc_info()[1] is not None:
+            self._failure(sys.exc_info()[1])
+            return  # Preserve the actual original exception, not a cleanup error.
         try:
             require(output is not None and output.ndim == 2 and output.shape[0] == len(self.prompt),
                     'COMPLETE_PREFILL_HIDDEN_STATES_REQUIRED')
@@ -164,6 +184,9 @@ class Serving39CoverageSession(ServingReplaySession):
     def _logits_post(self, module, args, kwargs, output):
         self._stop_mode()
         if not self.logits_active:
+            return
+        if output is None and sys.exc_info()[1] is not None:
+            self._failure(sys.exc_info()[1])
             return
         try:
             require(output is not None and list(output.shape) == self.boundary_report['output_contract'],
@@ -200,11 +223,17 @@ class Serving39CoverageSession(ServingReplaySession):
         self.expected = self.current = None
         self.module_stack.clear()
         self.backend.owned_hooks = 0
+        require(not self.packet_attributes.owned, 'COLLECTOR_PACKET_ATTRIBUTES_STILL_OWNED')
         if self.backend.phase == 'complete' and not self.backend.recovered:
             self.backend.finalize()
             if self.backend.trigger == 'once':
                 self.worker._demoncat39_live_c2_proof = self.backend.proof
         self._save()
+
+    def _save(self):
+        super()._save()
+        (self.folder / 'collector_dispatch.json').write_text(
+            json.dumps(self.packet_attributes.report(), indent=2) + '\n')
 
     def report(self):
         self.collect()
@@ -212,6 +241,7 @@ class Serving39CoverageSession(ServingReplaySession):
                     actual_request_ids=[row['actual_internal_request_id'] for row in self.rows],
                     independent_public_dispatches=self.dispatches, owned_hooks=len(self.handles),
                     native_denominator='ALWAYS_ON_NATIVE_MATMUL_OBSERVER',
+                    collector_dispatch=self.packet_attributes.report(),
                     expected_request_id=self.expected, receipt=str(self.folder / 'serving_receipt.json'))
 
 

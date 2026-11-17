@@ -335,10 +335,25 @@ class WholeRequestHookTests(unittest.TestCase):
         session = self.session()
         session.model.raise_forward = True
         session.expect(self.actual_request_id)
-        with self.assertRaises(RuntimeError):
+        with self.assertRaisesRegex(RuntimeError, 'CPU_ROOT_FORWARD_FAILED'):
             life.ServingSessionLifecycleTests.root(self, session)
         self.assertIsNone(session.mode)
         self.assertFalse(session.backend.active)
+        self.assertIn('CPU_ROOT_FORWARD_FAILED', session.backend.failure)
+        self.assertNotIn('COMPLETE_PREFILL_HIDDEN_STATES_REQUIRED', session.backend.failure)
+        session.close()
+
+    def test_real_cpu_logits_exception_preserves_original_failure(self):
+        session = self.session()
+        session.processor.raise_forward = True
+        session.expect(self.actual_request_id)
+        hidden = life.ServingSessionLifecycleTests.root(self, session)
+        with self.assertRaisesRegex(RuntimeError, 'CPU_PROCESSOR_FORWARD_FAILED'):
+            session.processor(session.head, hidden[-1:].contiguous())
+        self.assertIsNone(session.mode)
+        self.assertFalse(session.backend.active)
+        self.assertIn('CPU_PROCESSOR_FORWARD_FAILED', session.backend.failure)
+        self.assertNotIn('COMPLETE_GLOBAL_VOCAB_OUTPUT_REQUIRED', session.backend.failure)
         session.close()
 
 
