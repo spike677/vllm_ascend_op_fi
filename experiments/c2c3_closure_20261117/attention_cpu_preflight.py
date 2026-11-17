@@ -94,6 +94,17 @@ def main():
             report['observer_library'] = dict(path=str(library), sha256=sha(library), bytes=library.stat().st_size)
             run('observer_symbols', ['nm', '-D', '--defined-only', library])
             run('observer_elf', ['readelf', '-h', library])
+            # Exercise the exact observer's bounded read under this container's
+            # actual seccomp/procfs policy before allocating an NPU case.
+            import ctypes
+            observer = ctypes.CDLL(str(library))
+            observer.dcat_attention_observer_memory_selftest_v1.restype = ctypes.c_int
+            observer.dcat_attention_observer_memory_status_v1.restype = ctypes.c_char_p
+            memory_rc = observer.dcat_attention_observer_memory_selftest_v1()
+            report['observer_memory_selftest'] = dict(exit_code=memory_rc,
+                **json.loads(observer.dcat_attention_observer_memory_status_v1().decode()))
+            if memory_rc != 0:
+                raise RuntimeError('OBSERVER_BOUNDED_SELF_MEMORY_READ_FAILED')
         probe = a.out/'abi.cpp'
         probe.write_text('#include <runtime/kernel.h>\n#include <cstddef>\n#include <iostream>\n'
             'int main(){std::cout << "{\\"rtArgsEx_size\\":" << sizeof(rtArgsEx_t)'
@@ -135,7 +146,7 @@ def main():
         report.update(status='CPU_PREFLIGHT_FAILED', error=repr(error), traceback=traceback.format_exc())
     (a.out/'result.json').write_text(json.dumps(report, indent=2, allow_nan=False)+'\n')
     print(json.dumps({k: report.get(k) for k in ('status', 'observer_compiled', 'fia_translation_unit_compiled', 'error')}))
-    return 0 if report.get('observer_compiled') else 2
+    return 0 if report.get('status') == 'CPU_OBSERVER_ABI_COMPILED_NOT_NPU_QUALIFIED' else 2
 
 
 if __name__ == '__main__':

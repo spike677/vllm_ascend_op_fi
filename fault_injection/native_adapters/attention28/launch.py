@@ -93,8 +93,44 @@ def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_met
     begins = [row for row in rows if row['event'] == 'begin']
     ends = [row for row in rows if row['event'] == 'end']
     launches = [row for row in rows if row['event'] == 'launch']
-    require(len(begins) == len(ends) == len(launches) == 1, 'AMBIGUOUS_OR_MISSING_RUNTIME_LAUNCH')
-    begin, end, launch = begins[0], ends[0], launches[0]
+    require(len(begins) == len(ends) == 1 and launches, 'AMBIGUOUS_OR_MISSING_RUNTIME_LAUNCH')
+    candidates, excluded, hashes = [], [], {}
+    for candidate in launches:
+        # msprobe may launch its own statistics operators inside the real API
+        # wrapper. Classify only from independently observed binary/function
+        # bindings, never from expected block count, key, host bytes or order.
+        registrations = [r for r in records if r['event'] == 'register'
+            and r['pid'] == candidate['pid'] and r['handle'] == candidate['handle']
+            and r['generation'] == candidate['generation']]
+        require(len(registrations) == 1 and registrations[0]['result'] == 0
+                and registrations[0]['monotonic_ns'] <= candidate['launch_begin_ns'],
+                'REGISTERED_BINARY_BINDING_MISSING')
+        registered = registrations[0]
+        name = candidate['binary_file']
+        require(registered['binary_file'] == name and re.fullmatch(r'registered-\d+-\d+\.bin', name),
+                'REGISTERED_BINARY_PATH_INVALID')
+        binary = root/name
+        require(not binary.is_symlink() and binary.resolve(strict=True).parent == root
+                and binary.stat().st_size == registered['binary_bytes'],
+                'ACTUAL_REGISTERED_BINARY_DIFFERS_FROM_NEW_BUILD')
+        if name not in hashes:
+            hashes[name] = sha(binary)
+        if candidate.get('argument_layout') == 'aclrt_host_placeholders':
+            bindings = [r for r in records if r['event'] == 'function_bind'
+                and r['pid'] == candidate['pid'] and r['function_handle'] == candidate['function_handle']
+                and r['handle'] == candidate['handle'] and r['generation'] == candidate['generation']
+                and r['monotonic_ns'] <= candidate['launch_begin_ns']]
+            require(bindings and all(r['result'] == 0 and int(r['tiling_key']) == int(candidate['tiling_key'])
+                                     for r in bindings), 'ACL_ACTUAL_FUNCTION_BINDING_DIFFERS')
+        if hashes[name] == kernel_sha256:
+            candidates.append(candidate)
+        else:
+            require(candidate['result'] == 0, 'AUXILIARY_RUNTIME_LAUNCH_FAILED')
+            excluded.append(dict(api=candidate['api'], kernel_sha256=hashes[name],
+                function_handle=candidate.get('function_handle'), tiling_key=candidate['tiling_key'],
+                reason='INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA'))
+    require(len(candidates) == 1, 'AMBIGUOUS_OR_MISSING_RUNTIME_LAUNCH')
+    begin, end, launch = begins[0], ends[0], candidates[0]
     owner = (begin['pid'], begin['tid'])
     require(all((row['pid'], row['tid']) == owner for row in rows), 'LAUNCH_SCOPE_OWNER_DIFFERS')
     require(owner == (host['pid'], host['tid']), 'HOST_RUNTIME_OWNER_DIFFERS')
@@ -170,6 +206,7 @@ def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_met
                 raw_sha256=hashlib.sha256(raw).hexdigest(), runtime_log_sha256=sha(root / 'runtime.jsonl'),
                 tiling_key=int(launch['tiling_key']), block_dim=launch['block_dim'],
                 schedule_mode=launch['schedule_mode'], typed=typed,
+                excluded_independently_bound_launches=excluded,
                 kernel_argument_raw_observed=True, native_launch_verified=True,
                 device_completion_observed=True, production_loading_allowed=False,
                 public_worker_qualified=False, c2=False, c3=False, statistics='NOT_READ')
@@ -189,6 +226,9 @@ class LaunchObserver:
         self.lib.dcat_attention_observer_end_v1.restype = ctypes.c_int
         self.lib.dcat_attention_observer_synchronize_v1.argtypes = []
         self.lib.dcat_attention_observer_synchronize_v1.restype = ctypes.c_int
+        self.lib.dcat_attention_observer_memory_selftest_v1.restype = ctypes.c_int
+        require(self.lib.dcat_attention_observer_memory_selftest_v1() == 0,
+                'OBSERVER_BOUNDED_SELF_MEMORY_READ_FAILED')
         self.owner, self.active = threading.get_ident(), False
 
     @contextmanager

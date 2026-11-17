@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <cerrno>
 
 namespace {
 std::mutex gate;
@@ -34,6 +35,8 @@ std::map<void*, Function> functions;
 uint64_t captured_bytes=0,captured_count=0;
 thread_local std::string token;
 thread_local bool nested=false;
+thread_local int memory_vm_errno=0,memory_proc_errno=0;
+thread_local const char* memory_method="none";
 uint64_t now() { return std::chrono::duration_cast<std::chrono::nanoseconds>(
     std::chrono::steady_clock::now().time_since_epoch()).count(); }
 bool safe(const std::string& value) {
@@ -57,8 +60,21 @@ std::string hex(const void* ptr, size_t size) {
 bool read_self(const void* p, size_t n, std::vector<uint8_t>& bytes) {
     if(!p || !n || n>128*1024*1024)return false;
     bytes.resize(n);iovec local{bytes.data(),n},remote{const_cast<void*>(p),n};
-    if(process_vm_readv(getpid(),&local,1,&remote,1,0)!=static_cast<ssize_t>(n)){bytes.clear();return false;}
-    return true;
+    memory_vm_errno=0;memory_proc_errno=0;memory_method="none";
+    if(process_vm_readv(getpid(),&local,1,&remote,1,0)==static_cast<ssize_t>(n)){
+        memory_method="process_vm_readv_self";return true;
+    }
+    memory_vm_errno=errno;
+    // Docker's default seccomp may deny process_vm_readv even for self.
+    // A bounded read-only pread from this process's own memory retains kernel
+    // pointer validation; never dereference an unchecked pointer or read a peer.
+    int fd=open("/proc/self/mem",O_RDONLY|O_CLOEXEC);
+    if(fd>=0){
+        const auto got=pread(fd,bytes.data(),n,static_cast<off_t>(reinterpret_cast<uintptr_t>(p)));
+        memory_proc_errno=got==static_cast<ssize_t>(n)?0:errno;close(fd);
+        if(got==static_cast<ssize_t>(n)){memory_method="proc_self_mem_pread";return true;}
+    }else memory_proc_errno=errno;
+    bytes.clear();return false;
 }
 bool write_file(const std::string& path, const void* data, size_t n, bool append=false) {
     int fd=open(path.c_str(),O_WRONLY|O_CREAT|O_CLOEXEC|O_NOFOLLOW|(append?O_APPEND:O_EXCL),0600);
@@ -98,7 +114,8 @@ void register_binary(const rtDevBinary_t* input, void** handle, rtError_t result
     {std::lock_guard<std::mutex> lock(gate);registered[*handle]={name,id};}
     std::ostringstream row;row<<"\"event\":\"register\",\"handle\":"<<reinterpret_cast<uintptr_t>(*handle)
         <<",\"generation\":"<<id<<",\"binary_file\":\""<<name<<"\",\"binary_bytes\":"<<bytes.size()
-        <<",\"result\":"<<result;emit(row.str());
+        <<",\"result\":"<<result<<",\"memory_read_method\":\""<<memory_method
+        <<"\",\"process_vm_readv_errno\":"<<memory_vm_errno;emit(row.str());
 }
 struct Snapshot {
     bool valid=false;rtArgsEx_t args{};std::vector<uint8_t> bytes,host;
@@ -145,6 +162,19 @@ extern "C" int dcat_attention_observer_begin_v1(const char* id) {
 }
 extern "C" int dcat_attention_observer_end_v1() {
     if(token.empty())return -1;bool ok=emit("\"event\":\"end\"");token.clear();return ok?0:-2;
+}
+extern "C" int dcat_attention_observer_memory_selftest_v1() {
+    uint64_t expected[3]={0x4712a8ffdeadbeefULL,0,0x8a1f447766221199ULL};std::vector<uint8_t> bytes;
+    if(!read_self(expected,sizeof(expected),bytes)||std::memcmp(bytes.data(),expected,sizeof(expected)))return -1;
+    // Confirm inaccessible addresses are refused without a signal/crash.
+    if(read_self(reinterpret_cast<void*>(1),16,bytes))return -2;
+    return read_self(expected,sizeof(expected),bytes)&&!std::memcmp(bytes.data(),expected,sizeof(expected))?0:-3;
+}
+extern "C" const char* dcat_attention_observer_memory_status_v1() {
+    static thread_local std::string value;
+    value="{\"method\":\""+std::string(memory_method)+"\",\"process_vm_readv_errno\":"+
+        std::to_string(memory_vm_errno)+",\"proc_self_mem_errno\":"+std::to_string(memory_proc_errno)+"}";
+    return value.c_str();
 }
 extern "C" rtError_t rtRegisterAllKernel(const rtDevBinary_t* bin,void** handle) {
     const auto rc=original<decltype(&rtRegisterAllKernel)>("rtRegisterAllKernel")(bin,handle);
@@ -197,7 +227,11 @@ void acl_binary_bytes(const void* data,size_t length,aclrtBinHandle* handle,aclE
 void function_binding(aclrtBinHandle binary,aclrtFuncHandle* function,uint64_t entry,const char* name,aclError result) {
     if(result!=0 || !function || !*function)return;
     Binary b;{std::lock_guard<std::mutex> lock(gate);auto i=registered.find(binary);
-        if(i==registered.end())return;b=i->second;
+        if(i!=registered.end())b=i->second;}
+    if(b.generation==0){std::ostringstream row;row<<"\"event\":\"unbound_function\",\"handle\":"
+        <<reinterpret_cast<uintptr_t>(binary)<<",\"function_handle\":"<<reinterpret_cast<uintptr_t>(*function)
+        <<",\"tiling_key\":\""<<entry<<"\",\"result\":"<<result;emit(row.str());return;}
+    {std::lock_guard<std::mutex> lock(gate);
         functions[*function]={binary,b.generation,entry,name?name:""};}
     // The runtime's returned function handle is the actual launch binding.
     std::ostringstream row;row<<"\"event\":\"function_bind\",\"handle\":"<<reinterpret_cast<uintptr_t>(binary)
@@ -207,8 +241,8 @@ void function_binding(aclrtBinHandle binary,aclrtFuncHandle* function,uint64_t e
 }
 Snapshot acl_snapshot(void* args,size_t size,aclrtPlaceHolderInfo* placeholders,size_t count,const aclrtLaunchKernelCfg* config) {
     Snapshot s;s.aclHostArgs=true;
+    s.args.argsSize=size<=UINT32_MAX?static_cast<uint32_t>(size):0;
     if(size>1024*1024 || count>1024 || !read_self(args,size,s.bytes))return s;
-    s.args.argsSize=static_cast<uint32_t>(size);
     if(count && !read_self(placeholders,count*sizeof(*placeholders),s.placeholders))return s;
     if(!config)return s;
     std::vector<uint8_t> desc,attrs;

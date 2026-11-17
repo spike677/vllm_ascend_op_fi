@@ -87,6 +87,22 @@ class RuntimeLaunchTests(unittest.TestCase):
                 if case=='tiling_pointer':launch['tiling_addr_offset']=20
                 with self.assertRaises(RuntimeError):self.verify(root,f)
 
+    def test_collector_launch_is_excluded_only_by_observed_binary_binding(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);f=fixture(root);rows=f[4]
+            other=b'independent collector kernel'
+            (root/'registered-41-2.bin').write_bytes(other)
+            registration=dict(rows[0],handle=8,generation=2,binary_file='registered-41-2.bin',binary_bytes=len(other))
+            extra=dict(rows[2],api='rtKernelLaunchWithHandleV2',handle=8,generation=2,binary_file='registered-41-2.bin')
+            # Same host key, blocks and argument bytes cannot make another
+            # binary look like FIA, or hide a second FIA launch.
+            rows.insert(0,registration);rows.insert(4,extra)
+            result=self.verify(root,f)
+            self.assertEqual(len(result['excluded_independently_bound_launches']),1)
+            extra['handle']=999
+            with self.assertRaisesRegex(RuntimeError,'REGISTERED_BINARY_BINDING_MISSING'):
+                self.verify(root,f)
+
     def test_old_or_changed_registered_kernel_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);f=fixture(root)
