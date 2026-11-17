@@ -90,3 +90,25 @@ bytes and raw collector data are unchanged. A real CPU custom-op test reproduces
 the failure and checks one collector call, one original operator call, correct
 dispatch observation and exact attribute cleanup. This changes Python only;
 the final native `build39-a3` DSO remains the required native artifact.
+
+For 20/shared quant, `providers20_inventory_probe.py` now drives two complete
+healthy natural DeepSeek fresh-prefill requests through a read-only public
+observer. Every discovered method is observed, including shared method objects;
+every actual dynamic quant and QMM call is recorded before lineage verification.
+The exact quantized tensor and per-token-scale storage must reach QMM together
+with the actual module's weight and scale. Cloned inputs, unowned public calls,
+unexecuted candidates and rejected lineages remain separate rows. A bounded
+overflow keeps the total count and original execution, marks the observer
+incomplete, and refuses completeness. No native callback, fault or qualification
+is installed; native-qualified targets and C1/C2/C3 stay zero. Token rows are
+explicit fresh-prefill rows and are never represented as a decode request batch.
+All observer methods/APIs/hooks are removed before the same-process control.
+
+Root can prepare this no-injection case with
+`providers20_prepare_inventory_case.py --installed INSTALLED --probe
+SOURCE/experiments/c2c3_closure_20261117/providers20_inventory_probe.py
+--packages-sha ACTUAL_PACKAGES_SHA --source-commit MERGED_COMMIT --out NEW_CASES`.
+It requires no Native bundle and makes no E5 claim. The current C1 QMM bridge
+still filters typed Run validation by callback ownership and retains a single
+qualification target; both must be extended with a separately tested bounded
+group ABI before this public inventory can become an all-target C2 provider.
