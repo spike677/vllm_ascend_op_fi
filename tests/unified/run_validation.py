@@ -34,7 +34,8 @@ def run():
     for relative in ('fault_registry','demoncat','fault_injection','tests','engineering_closure'):
         for path in sorted((ROOT/relative).rglob('*')):
             if (path.is_file() and path.suffix in ('.py','.json','.yaml')
-                    and '__pycache__' not in path.parts and 'validation' not in path.parts):
+                    and '__pycache__' not in path.parts and 'validation' not in path.parts
+                    and (relative not in ('tests','engineering_closure') or path.suffix=='.py')):
                 sources[path.relative_to(ROOT).as_posix()]=hashlib.sha256(path.read_bytes()).hexdigest()
     for relative in ('pyproject.toml','experiments/c2c3_closure_20261117/package_source.py'):
         sources[relative]=hashlib.sha256((ROOT/relative).read_bytes()).hexdigest()
