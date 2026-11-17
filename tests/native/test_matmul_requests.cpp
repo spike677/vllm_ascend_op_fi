@@ -59,6 +59,112 @@ int stage(uint32_t next, uint64_t token, uint64_t incarnation = 1,
 }
 }
 
+namespace group_contract {
+const char* owner = "cpu-group-owner";
+uint64_t epoch = 100;
+uint32_t selected_arm = original;
+std::string key(64, 'a'), receipt;
+const std::string other_key(64, 'b');
+uint32_t callback(uint64_t token, const char*) {
+    // Neither a wrong thread nor the legacy unkeyed ABI can use a v3 lease.
+    assert(bridge.invoke(token, selected_arm) != 0);
+    std::thread foreign([&] {
+        assert(bridge.invoke_group(token, selected_arm, key.c_str()) != 0);
+        const auto state = bridge.group_state(callback, owner, epoch);
+        assert(state.find("\"inflight\":true") != std::string::npos);
+        assert(state.find("\"owned\":false") != std::string::npos);
+        assert(state.find("\"entries\"") == std::string::npos);
+    });
+    foreign.join();
+    const auto status = bridge.invoke_group(token, selected_arm, key.c_str());
+    const char* raw = bridge.receipt(token);
+    receipt = raw ? raw : "";
+    return status;
+}
+int stage(uint32_t arm, const std::string& target, int8_t input = 37, uint64_t lifetime = 1, int* calls = nullptr) {
+    selected_arm = arm;
+    key = target;
+    assert(bridge.resume(callback, owner, epoch) == 0);
+    const auto output = fixture_qmm_run_for_generation(lifetime, input, calls, 10000 + epoch);
+    assert(bridge.pause(callback, owner, epoch) == 0);
+    return output;
+}
+std::string group_hash(const std::vector<std::string>& targets) {
+    std::string keys;
+    for (const auto& target : targets) keys += target + '\n';
+    return f39identity::digest(keys.data(), keys.size());
+}
+void prepare(uint32_t fault_limit = 1) {
+    ++epoch;
+    assert(bridge.install_group_request(callback, owner, epoch, 2, fault_limit, 100) == 0);
+    const std::string first_key(64, 'a');
+    for (auto arm : {reference, lossless, reference}) {
+        assert(stage(arm, first_key) == -80);
+        assert(stage(arm, other_key) == -80);
+    }
+    const auto hash = group_hash({first_key, other_key});
+    assert(bridge.seal_group(callback, owner, epoch + 1, 2, hash.c_str()) != 0);
+    assert(bridge.seal_group(callback, owner, epoch, 1, hash.c_str()) != 0);
+    assert(bridge.seal_group(callback, owner, epoch, 2, hash.c_str()) == 0);
+    assert(bridge.seal_group(callback, owner, epoch, 2, hash.c_str()) != 0);
+}
+void run() {
+    const std::string first_key(64, 'a'), added_key(64, 'c');
+    assert(bridge.install_group_request(callback, owner, epoch, 0, 1, 100) != 0);
+    assert(bridge.install_group_request(callback, owner, epoch, 2, 0, 100) != 0);
+    assert(bridge.install_group_request(callback, owner, epoch, 2, 1, 1) != 0);
+    prepare();
+    int calls = 0;
+    assert(stage(fault, first_key, 37, 1, &calls) != -80 && calls == 1);
+    // A downstream target's actual propagated input is independently audited;
+    // this does not change the original C1 input-equality contract above.
+    const auto propagated = stage(fault, other_key, 49, 1, &calls);
+    assert(propagated != 9999 && propagated != -68 && calls == 2);
+    assert(receipt.find("\"input_equal_healthy_reference\":false") != std::string::npos);
+    assert(stage(reference, first_key) == -80);
+    assert(stage(reference, other_key) == -80);
+    assert(stage(fault, first_key, 37, 1, &calls) == 9999 && calls == 2);
+    assert(bridge.group_state(callback, owner, epoch).find("\"failed\":true") != std::string::npos);
+    assert(bridge.remove_request(callback, owner, epoch) == 0);
+    assert(bridge.group_state(callback, owner, epoch).find("\"targets\":0") != std::string::npos);
+
+    prepare(2);
+    for (int request = 0; request < 2; ++request) {
+        assert(stage(fault, first_key) != 9999);
+        assert(stage(fault, other_key) != 9999);
+    }
+    assert(stage(reference, first_key) == -80 && stage(reference, other_key) == -80);
+    assert(stage(fault, first_key) == 9999); // immutable bounded every-match budget
+    assert(bridge.remove_request(callback, owner, epoch) == 0);
+
+    prepare();
+    calls = 0;
+    assert(stage(fault, first_key, 37, 2, &calls) == 9999 && calls == 0); // registration reuse
+    assert(stage(fault, other_key, 37, 1, &calls) == 9999 && calls == 0); // group refuses further faults
+    assert(stage(reference, first_key) == -80 && stage(reference, other_key) == -80); // OFF still available
+    assert(bridge.remove_request(callback, owner, epoch) == 0);
+
+    prepare();
+    assert(stage(reference, added_key) == 9999); // no expansion of sealed targets
+    assert(bridge.remove_request(callback, owner, epoch) == 0);
+
+    RunInventory observer(1);
+    observer.begin_run(); observer.non_target();
+    observer.begin_run(); observer.reject(1, "CURRENT_SLOT_UNPROVEN");
+    observer.begin_run(); observer.eligible("{\"cache_lifecycle\":1}", 10);
+    observer.begin_run(); observer.eligible("{\"cache_lifecycle\":1}", 11);
+    auto observed = observer.snapshot();
+    assert(observed.find("\"complete\":true") != std::string::npos);
+    assert(observed.find("\"observations\":2") != std::string::npos);
+    observer.begin_run(); observer.eligible("{\"cache_lifecycle\":2}", 12);
+    observed = observer.snapshot();
+    assert(observed.find("\"total_run_calls\":5") != std::string::npos);
+    assert(observed.find("\"eligible_run_calls\":3") != std::string::npos);
+    assert(observed.find("\"overflow_calls\":1") != std::string::npos);
+    assert(observed.find("\"complete\":false") != std::string::npos);
+}
+}
+
 int main() {
     assert(bridge.install_request(callback, "", 1) != 0);
     assert(bridge.install_request(callback, lease, 0) != 0);
@@ -151,5 +257,6 @@ int main() {
     assert(pending.dispatch("quarantined", [](uint32_t, Audit&, const auto*) {
         assert(false); return 1;
     }) != 0);
-    std::cout << "PASS CPU request owner/generation, paused non-execution, qualification retention, stable/current separation, one-fault, identity drift and OFF\n";
+    group_contract::run();
+    std::cout << "PASS CPU request owner/generation, C1 unchanged, bounded v3 target groups, independent inventory overflow, propagated inputs, sealed targets and OFF\n";
 }

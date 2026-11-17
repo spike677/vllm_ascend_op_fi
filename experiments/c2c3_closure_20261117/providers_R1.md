@@ -124,3 +124,34 @@ It requires no Native bundle and makes no E5 claim. The current C1 QMM bridge
 still filters typed Run validation by callback ownership and retains a single
 qualification target; both must be extended with a separately tested bounded
 group ABI before this public inventory can become an all-target C2 provider.
+
+The new 20 native group implementation adds `install_group_v3`,
+`invoke_group_v3`, `seal_group_v3` and `group_state_v3` for the distinct QMM and
+WeightNz bridges. Each full logical target key has its own exact native
+descriptor/cache-lifetime binding and reference→D2D lossless→reference gate.
+The complete key set must be SHA-sealed before fault execution. Target, total
+call and per-target fault budgets are immutable; changed registrations, new
+sealed-set members, wrong owners/generations/threads and spent leases refuse.
+The v1/v2 C1 gate keeps its original healthy-input byte equality rule. V3 permits
+propagation-altered current inputs only in the fault phase, with current typed
+GWS/Execute/Run formals, exact transformation, device readback and unchanged
+original input storage. Healthy/OFF phases still require each original target's
+complete qualified input and output hashes. Failed target effects remain failed.
+
+`dcat20_independent_run_inventory_v1` now counts all intercepted Runs before
+callback ownership/admission, retaining separate eligible native descriptors,
+rejected candidates, transparent non-targets and overflow totals. It cannot
+clear with callback pause/removal. `CtypesMatmulGroupRuntime` consumes this
+independent snapshot separately from every actual native callback, including
+calls without a selected public module. C1 factories still require the original
+runtime class. The new group ABI is implementation/CPU evidence only until its
+whole-request provider passes a fresh root-queued natural Worker run.
+
+Host-only tests and real ctypes fixture checks are kept under
+`providers20-cpu-a3/contract/receipt.json` on 124. Reproduce with
+`providers20_cpu_contract.py --source SOURCE --out NEW_CPU_DIRECTORY`.
+The actual CANN bundle must be rebuilt from final merged source with
+`engineering_20261117/build_manager_124.py --source SOURCE --out NEW_BUILD
+--mechanism 20.buffer_substitute --operator aclnnQuantMatmulWeightNz`.
+All edited native/Python ABI files already participate in that recipe's source
+fingerprints. The old Native bundle is not a certificate for this new v3 ABI.

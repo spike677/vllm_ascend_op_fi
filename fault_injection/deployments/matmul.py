@@ -309,6 +309,157 @@ class CtypesMatmulRuntime:
         return status, receipt
 
 
+class CtypesMatmulGroupRuntime(CtypesMatmulRuntime):
+    """v3 exact target groups; never accepted by the existing C1 adapter.
+
+    The native inventory is queried separately from the callback. Every eligible
+    callback reaches this observer, even when no public module currently owns it.
+    The trusted whole-request adapter must reconcile both denominators.
+    """
+    def configure_group_lifecycle(self, *, owner, generation, max_targets, max_faults, max_calls):
+        self.configure_request_lifecycle(owner=owner, generation=generation)
+        if (type(max_targets) is not int or not 0 < max_targets <= 4096
+                or type(max_faults) is not int or not 0 < max_faults <= 8
+                or type(max_calls) is not int or not 3 * max_targets <= max_calls <= 65536):
+            raise UnsupportedCall('Bounded immutable native group budgets required')
+        prefix = _SYMBOLS[self.operator]
+        try:
+            install = getattr(self._library, prefix + 'install_group_v3')
+            self._seal_group = getattr(self._library, prefix + 'seal_group_v3')
+            self._invoke_group = getattr(self._library, prefix + 'invoke_group_v3')
+            self._group_state = getattr(self._library, prefix + 'group_state_v3')
+            self._inventory = self._library.dcat20_independent_run_inventory_v1
+        except AttributeError as error:
+            raise UnsupportedCall('Native group v3 and pre-owner Run inventory are required') from error
+        install.argtypes, install.restype = [_CALLBACK, ctypes.c_int32, ctypes.c_char_p, ctypes.c_uint64,
+            ctypes.c_uint32, ctypes.c_uint32, ctypes.c_uint64], ctypes.c_int
+        self._seal_group.argtypes, self._seal_group.restype = [_CALLBACK, ctypes.c_char_p, ctypes.c_uint64,
+            ctypes.c_uint32, ctypes.c_char_p], ctypes.c_int
+        self._invoke_group.argtypes, self._invoke_group.restype = [ctypes.c_uint64, ctypes.c_uint32, ctypes.c_char_p], ctypes.c_uint32
+        self._group_state.argtypes, self._group_state.restype = [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_uint64], ctypes.c_char_p
+        self._inventory.argtypes, self._inventory.restype = [], ctypes.c_char_p
+        self.group_limits = dict(max_targets=max_targets, max_faults=max_faults, max_calls=max_calls)
+        self._request_methods['install'] = lambda callback, rank, native_owner, native_generation: install(
+            callback, rank, native_owner, native_generation, max_targets, max_faults, max_calls)
+
+    def independent_inventory(self):
+        raw = self._inventory()
+        if not raw or len(raw) > 16 * 1024 * 1024:
+            raise UnsupportedCall('Independent native inventory unavailable or over bounded capacity')
+        row = json.loads(raw)
+        if (row.get('schema') != 'dcat20.independent_run_inventory.v1'
+                or row.get('complete') is not True or row.get('overflow_calls') != 0
+                or row.get('total_run_calls') != sum(row.get(name, -1) for name in
+                    ('eligible_run_calls', 'rejected_candidate_calls', 'non_target_run_calls'))
+                or row.get('eligible_run_calls') != sum(target.get('observations', -1) for target in row.get('targets', []))):
+            raise UnsupportedCall('Independent native denominator incomplete; no dropped call may be qualified')
+        return row
+
+    def group_state(self):
+        if self._request_identity is None:
+            raise UnsupportedCall('Group owner lifecycle not configured')
+        requester = ctypes.cast(self._callback, ctypes.c_void_p) if self._callback else None
+        raw = self._group_state(requester, *self._request_identity)
+        if not raw or len(raw) > 4 * 1024 * 1024:
+            raise UnsupportedCall('Native group state unavailable')
+        state = json.loads(raw)
+        if state.get('version') != 3:
+            raise UnsupportedCall('Native group state ABI changed')
+        return state
+
+    def seal_group(self, target_keys):
+        keys = tuple(sorted(target_keys))
+        if (not keys or len(set(keys)) != len(keys)
+                or any(not isinstance(key, str) or len(key) != 64
+                       or any(c not in '0123456789abcdef' for c in key) for key in keys)):
+            raise UnsupportedCall('Distinct full target SHA identities required')
+        identity = hashlib.sha256(''.join(key + '\n' for key in keys).encode()).hexdigest()
+        if self._pending is not None or self._callback is None or self._seal_group(
+                self._callback, *self._request_identity, len(keys), identity.encode()):
+            raise UnsupportedCall('Native group target set is not completely lossless-qualified and paused')
+        state = self.group_state()
+        if (not state.get('owned') or not state.get('sealed') or state.get('failed')
+                or state.get('group_sha256') != identity or state.get('targets') != len(keys)
+                or tuple(sorted(row['key'] for row in state.get('entries', []))) != keys
+                or any(not row.get('ready') or row.get('fault_attempts') for row in state['entries'])):
+            raise UnsupportedCall('Native group seal readback mismatch')
+        return state
+
+    def install_group_observer(self, callback, owner_reader):
+        if (self._request_identity is None or not hasattr(self, 'group_limits')
+                or self._callback is not None or not callable(callback) or not callable(owner_reader)):
+            raise UninstalledObserver('Configured v3 owner and complete trusted observer required')
+        owner_thread = threading.get_ident()
+        session = uuid.uuid4().hex
+        directory = self.evidence_dir / session
+        try:
+            directory.mkdir(parents=True, exist_ok=False)
+        except OSError as error:
+            raise UninstalledObserver('Cannot create group callback evidence directory') from error
+
+        def dispatch(token, raw):
+            pending = None
+            try:
+                if threading.get_ident() != owner_thread or self._pending is not None or not raw or len(raw) > 32768:
+                    raise UnsupportedCall('Invalid group native callback context or payload')
+                packet = json.loads(raw)
+                if (packet.get('version') != 1 or packet.get('operator') != self.operator
+                        or packet.get('device') != self.worker['logical_device']
+                        or packet.get('runtime_identity') != 'MATCHED_BUILD'
+                        or not packet.get('cache_lifecycle') or not packet.get('current_typed_call')
+                        or packet.get('build_profile_sha256') != self.build_profile):
+                    raise UnsupportedCall('Current typed group callback identity changed')
+                owner = owner_reader()
+                call_id = f'{session}-{token}'
+                call = NativeCall(owner, call_id, self.operator,
+                    proofs=self._proofs(call_id, owner, packet, directory))
+                pending = dict(call=call, token=token, mode=0, target_key=None)
+                self._pending = pending
+
+                def original():
+                    if 'status' in pending:
+                        raise UnsupportedCall('Group native continuation already consumed')
+                    key = pending['target_key']
+                    pending['status'] = self._invoke_group(token, pending['mode'], key.encode() if key else None)
+                    return pending['status']
+
+                callback(call, original, packet)
+                return 0 if pending.get('status') == 0 else 1
+            except BaseException as error:
+                self.last_error = str(error)
+                return 1
+            finally:
+                if pending is not None and self._pending is pending:
+                    self._pending = None
+
+        native_callback = _CALLBACK(dispatch)
+        identity = self._request_identity
+        if self._request_methods['install'](native_callback, self.worker['rank'], *identity):
+            raise UninstalledObserver('Native group install refused owner/generation/budgets/runtime')
+        self._callback = native_callback
+
+        def remove():
+            if self._pending is not None or self._request_methods['remove'](native_callback, *identity):
+                raise RuntimeError('Native group cannot release active, foreign or uncertain resources')
+            self._callback = None
+        return remove
+
+    def execute_group(self, call, invoke_once, mode, target_key):
+        pending = self._pending
+        if (pending is None or pending['call'] is not call or pending['mode'] != 0 or mode not in (1, 2, 3)
+                or not isinstance(target_key, str) or len(target_key) != 64
+                or any(c not in '0123456789abcdef' for c in target_key)):
+            raise UnsupportedCall('Exact live group continuation and target key required')
+        pending.update(mode=mode, target_key=target_key)
+        status = invoke_once()
+        raw = self._receipt(pending['token'])
+        receipt = json.loads(raw) if raw else {}
+        if (status or receipt.get('group_v3', {}).get('target_key') != target_key
+                or receipt.get('original_calls') != 1 or receipt.get('resources_released') is not True):
+            raise UnsupportedCall('Native group execution/effect failed: ' + json.dumps(receipt, sort_keys=True))
+        return status, receipt
+
+
 def register_worker_matmul(mechanism, *, worker_identity, replay, profiles, evidence_dir,
                            first_live_validation=False, reserve_worker=None):
     """Deployment wiring. Worker RPC and replay are supplied by the actual runner."""

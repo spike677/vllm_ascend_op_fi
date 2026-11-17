@@ -23,6 +23,7 @@ Memory host_memory(unsigned* releases = nullptr, bool* fail_sync = nullptr) {
 const char* profile = "1234567812345678123456781234567812345678123456781234567812345678";
 Bridge bridge;
 Bridge weight_nz_bridge;
+RunInventory fixture_inventory;
 
 extern "C" const char* dcat20_qmm_profile_v1() { return profile; }
 extern "C" int dcat20_qmm_install_v1(Callback callback, int32_t) { return bridge.install(callback); }
@@ -62,6 +63,27 @@ FIXTURE_REQUEST_ABI(dcat20_qmm_, bridge)
 FIXTURE_REQUEST_ABI(dcat20_weight_nz_, weight_nz_bridge)
 #undef FIXTURE_REQUEST_ABI
 
+#define FIXTURE_GROUP_ABI(prefix, instance) \
+extern "C" int prefix##install_group_v3(Callback cb, int32_t, const char* owner, uint64_t generation, \
+                                       uint32_t targets, uint32_t faults, uint64_t calls) { \
+    return instance.install_group_request(cb, owner, generation, targets, faults, calls); \
+} \
+extern "C" int prefix##seal_group_v3(Callback cb, const char* owner, uint64_t generation, uint32_t targets, const char* sha) { \
+    return instance.seal_group(cb, owner, generation, targets, sha); \
+} \
+extern "C" uint32_t prefix##invoke_group_v3(uint64_t token, uint32_t arm, const char* target) { \
+    return instance.invoke_group(token, arm, target); \
+} \
+extern "C" const char* prefix##group_state_v3(Callback cb, const char* owner, uint64_t generation) { \
+    static std::string result; result = instance.group_state(cb, owner, generation); return result.c_str(); \
+}
+FIXTURE_GROUP_ABI(dcat20_qmm_, bridge)
+FIXTURE_GROUP_ABI(dcat20_weight_nz_, weight_nz_bridge)
+#undef FIXTURE_GROUP_ABI
+extern "C" const char* dcat20_independent_run_inventory_v1() {
+    static std::string result; result = fixture_inventory.snapshot(); return result.c_str();
+}
+
 int fixture_qmm_run_for_generation(uint64_t generation, int8_t first = 37, int* run_calls = nullptr,
                                     uint64_t current_token = 0) {
     int8_t x[]{first, -39};
@@ -76,6 +98,8 @@ int fixture_qmm_run_for_generation(uint64_t generation, int8_t first = 37, int* 
                                     "INT8", shape, stride, 0, slots, generation);
     const auto packet = current_token ? details.substr(0, details.size() - 1)
         + ",\"current_typed_call\":{\"gws_token\":" + std::to_string(current_token) + "}}" : details;
+    fixture_inventory.begin_run();
+    fixture_inventory.eligible(details, current_token);
     auto run = [&](const auto& set) {
         if (run_calls) ++*run_calls;
         const auto* input = static_cast<const int8_t*>(set[0]);
@@ -108,6 +132,8 @@ extern "C" int fixture_weight_nz_run() {
     const int64_t shape[]{1, 2}, stride[]{2, 1};
     const auto details = descriptor("aclnnMatmulWeightNz", "fixture:weight_nz", &weight_nz_bridge, 0,
                                     profile, "BF16", shape, stride, 0, slots, 1);
+    fixture_inventory.begin_run();
+    fixture_inventory.eligible(details, 0);
     const auto run = [&](const auto& set) {
         assert(set[1] == weight && set[2] == &out);
         const auto* x = static_cast<const uint16_t*>(set[0]);

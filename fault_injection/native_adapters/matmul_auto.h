@@ -209,7 +209,28 @@ class Bridge {
     std::string target_;
     std::vector<std::string> reference_inputs_;
     std::string reference_output_;
+    // v3 is a distinct, bounded multi-target contract. The original single
+    // target state and all v1/v2 qualification rules remain unchanged.
+    struct GroupTarget {
+        Gate gate = Gate::empty;
+        std::string descriptor;
+        std::vector<std::string> inputs;
+        std::string output;
+        uint32_t faults = 0;
+    };
+    std::map<std::string, GroupTarget> group_targets_;
+    bool group_mode_ = false, group_sealed_ = false, group_failed_ = false;
+    uint32_t group_target_limit_ = 0, group_fault_limit_ = 0;
+    uint64_t group_call_limit_ = 0, group_calls_ = 0;
+    std::string group_identity_;
     static inline thread_local Bridge* active_ = nullptr;
+
+    static bool sha256_key(const char* key) {
+        if (!key || std::strlen(key) != 64) return false;
+        for (const char* p = key; *p; ++p)
+            if (!((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'f'))) return false;
+        return true;
+    }
 
     bool request_owner_matches(Callback callback, const char* owner, uint64_t generation) const {
         return callback && callback == callback_ && owner && !request_owner_.empty()
@@ -228,6 +249,11 @@ class Bridge {
         target_.clear();
         reference_inputs_.clear();
         reference_output_.clear();
+        group_targets_.clear();
+        group_mode_ = group_sealed_ = group_failed_ = false;
+        group_target_limit_ = group_fault_limit_ = 0;
+        group_call_limit_ = group_calls_ = 0;
+        group_identity_.clear();
     }
 
     bool finish_gate(uint32_t arm, const std::string& details, const Audit& audit) {
@@ -296,6 +322,65 @@ public:
             return 1;
         paused_ = true; // idempotent cleanup; does not reset qualification/spent
         return 0;
+    }
+
+    int install_group_request(Callback callback, const char* owner, uint64_t generation,
+                              uint32_t max_targets, uint32_t max_faults, uint64_t max_calls) {
+        if (!max_targets || max_targets > 4096 || !max_faults || max_faults > 8
+            || max_calls < 3ULL * max_targets || max_calls > 65536) return 1;
+        // Only the installing thread may resume a request owner. No callback
+        // can enter between the paused installation and this configuration.
+        if (install_request(callback, owner, generation)) return 1;
+        std::lock_guard<std::mutex> guard(control_);
+        group_mode_ = true;
+        group_target_limit_ = max_targets;
+        group_fault_limit_ = max_faults;
+        group_call_limit_ = max_calls;
+        return 0;
+    }
+
+    int seal_group(Callback callback, const char* owner, uint64_t generation,
+                   uint32_t expected_targets, const char* identity) {
+        std::lock_guard<std::mutex> guard(control_);
+        if (!request_owner_matches(callback, owner, generation) || !paused_ || flight_ || active_
+            || quarantined_ || !group_mode_ || group_sealed_ || group_failed_
+            || !expected_targets || expected_targets != group_targets_.size() || !sha256_key(identity)) return 1;
+        std::string keys;
+        for (const auto& row : group_targets_) {
+            if (row.second.gate != Gate::ready || row.second.faults) return 1;
+            keys += row.first + '\n';
+        }
+        if (f39identity::digest(keys.data(), keys.size()) != identity) return 1;
+        group_identity_ = identity;
+        group_sealed_ = true;
+        return 0;
+    }
+
+    std::string group_state(Callback callback, const char* owner, uint64_t generation) {
+        std::lock_guard<std::mutex> guard(control_);
+        const bool owned = request_owner_matches(callback, owner, generation);
+        if (flight_) {
+            // Target audits are mutated by the synchronous owner while Run is
+            // active. A foreign query must not race that state or imply an
+            // idle recovery point.
+            return std::string("{\"version\":3,\"inflight\":true,\"owned\":") + (owned ? "true}" : "false}");
+        }
+        std::ostringstream out;
+        out << "{\"version\":3,\"owned\":" << std::boolalpha << owned
+            << ",\"group_mode\":" << group_mode_ << ",\"sealed\":" << group_sealed_
+            << ",\"failed\":" << group_failed_ << ",\"targets\":" << group_targets_.size()
+            << ",\"calls\":" << group_calls_ << ",\"max_calls\":" << group_call_limit_
+            << ",\"max_targets\":" << group_target_limit_ << ",\"max_faults\":" << group_fault_limit_
+            << ",\"group_sha256\":\"" << group_identity_ << "\",\"entries\":[";
+        bool first = true;
+        if (owned) for (const auto& row : group_targets_) {
+            if (!first) out << ',';
+            first = false;
+            out << "{\"key\":\"" << row.first << "\",\"ready\":" << (row.second.gate == Gate::ready)
+                << ",\"fault_attempts\":" << row.second.faults << '}';
+        }
+        out << "]}";
+        return out.str();
     }
 
     int resume(Callback callback, const char* owner, uint64_t generation) {
@@ -377,6 +462,7 @@ public:
         {
             std::lock_guard<std::mutex> guard(control_);
             flight_ = nullptr;
+            if (group_mode_ && (rc || !flight.entered || flight.invalid || flight.status)) group_failed_ = true;
         }
         if (rc || !flight.entered || flight.invalid || flight.status) {
             gate_ = Gate::empty;
@@ -386,7 +472,7 @@ public:
     }
 
     uint32_t invoke(uint64_t token, uint32_t arm) {
-        if (active_ != this || !flight_ || paused_) return 1;
+        if (active_ != this || !flight_ || paused_ || group_mode_) return 1;
         auto& flight = *flight_;
         if (flight.token != token || flight.entered || arm > fault) {
             flight.invalid = true;
@@ -418,9 +504,154 @@ public:
         return flight.status;
     }
 
+    uint32_t invoke_group(uint64_t token, uint32_t arm, const char* target_key) {
+        if (active_ != this || !flight_ || paused_ || !group_mode_) return 1;
+        auto& flight = *flight_;
+        if (flight.token != token || flight.entered || arm > fault) {
+            flight.invalid = true;
+            group_failed_ = true;
+            return 1;
+        }
+        flight.entered = true;
+        const auto refuse = [&]() -> uint32_t { group_failed_ = true; return flight.status = 1; };
+        if (++group_calls_ > group_call_limit_) return refuse();
+        GroupTarget* target = nullptr;
+        if (arm != original) {
+            if (!sha256_key(target_key)) return refuse();
+            auto found = group_targets_.find(target_key);
+            if (found == group_targets_.end()) {
+                if (arm != reference || group_sealed_ || group_failed_
+                    || group_targets_.size() >= group_target_limit_) return refuse();
+                GroupTarget initial;
+                initial.descriptor = flight.descriptor;
+                found = group_targets_.emplace(target_key, std::move(initial)).first;
+            }
+            target = &found->second;
+            if (target->descriptor != flight.descriptor) return refuse();
+            if (arm == lossless && (group_sealed_ || target->gate != Gate::observed)) return refuse();
+            if (arm == fault) {
+                if (!group_sealed_ || group_failed_ || target->gate != Gate::ready
+                    || target->faults >= group_fault_limit_) return refuse();
+                ++target->faults; // A failed attempt cannot replenish its lease.
+            }
+        }
+        Audit audit;
+        try {
+            // Fresh propagated values are permitted only by this v3 group
+            // contract. Typed current-call storage and exact transformation
+            // are still audited. Healthy phases and OFF retain byte equality.
+            const auto* expected = target && arm != fault && target->gate != Gate::empty ? &target->inputs : nullptr;
+            flight.status = flight.execute(arm, audit, expected);
+            if (arm != original) {
+                const bool invariant = audit.original_calls == 1 && !audit.native_status && audit.resources_released
+                    && !audit.inputs_before.empty() && audit.inputs_before == audit.inputs_after && !audit.output_hash.empty();
+                bool accepted = invariant;
+                if (arm == reference && target->gate == Gate::empty) {
+                    accepted = accepted && !audit.replacements;
+                    if (accepted) {
+                        target->inputs = audit.inputs_before;
+                        target->output = audit.output_hash;
+                        target->gate = Gate::observed;
+                    }
+                } else if (arm == reference) {
+                    accepted = accepted && !audit.replacements && audit.inputs_before == target->inputs
+                        && audit.output_hash == target->output
+                        && (target->gate == Gate::copied || target->gate == Gate::ready);
+                    if (accepted) target->gate = Gate::ready;
+                } else if (arm == lossless) {
+                    accepted = accepted && audit.replacements == 1 && audit.temporary_readback_verified
+                        && audit.device_copy && !audit.changed_slots && audit.inputs_before == target->inputs
+                        && audit.output_hash == target->output;
+                    if (accepted) target->gate = Gate::copied;
+                } else if (arm == fault) {
+                    accepted = accepted && audit.replacements == 1 && audit.changed_slots == 1
+                        && audit.temporary_readback_verified && !audit.device_copy;
+                }
+                const std::string raw = audit.json();
+                std::ostringstream receipt;
+                receipt << raw.substr(0, raw.size() - 1) << ",\"group_v3\":{\"target_key\":\"" << target_key
+                    << "\",\"group_sha256\":\"" << group_identity_ << "\",\"call_index\":" << group_calls_
+                    << ",\"fault_attempts\":" << target->faults << ",\"input_equal_healthy_reference\":"
+                    << std::boolalpha << (audit.inputs_before == target->inputs) << "}}";
+                flight.receipt = receipt.str();
+                if (!accepted && !flight.status) flight.status = 1;
+            }
+        } catch (...) { flight.status = 1; }
+        if (flight.status) group_failed_ = true;
+        if (!audit.resources_released) {
+            std::lock_guard<std::mutex> guard(control_);
+            quarantined_ = true;
+        }
+        return flight.status;
+    }
+
     const char* receipt(uint64_t token) const {
         if (active_ != this || !flight_ || flight_->token != token || flight_->receipt.empty()) return nullptr;
         return flight_->receipt.c_str();
+    }
+};
+
+// This denominator has no callback, owner, arm, gate, or hit-state inputs.
+// Capacity loss is explicit and totals keep counting. Registry lifetime and
+// actual current typed Run identity are encoded in each native descriptor.
+class RunInventory {
+    struct Row { std::string descriptor; uint64_t count = 0, last_gws_token = 0; };
+    std::mutex mutex_;
+    size_t capacity_;
+    uint64_t total_ = 0, eligible_ = 0, rejected_ = 0, other_ = 0, overflow_ = 0;
+    std::map<std::string, Row> rows_;
+    std::map<std::string, uint64_t> reasons_;
+public:
+    explicit RunInventory(size_t capacity = 4096) : capacity_(capacity) {}
+    void begin_run() { std::lock_guard<std::mutex> lock(mutex_); ++total_; }
+    void non_target() { std::lock_guard<std::mutex> lock(mutex_); ++other_; }
+    void reject(uint32_t kind, const char* reason) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        ++rejected_;
+        const auto key = std::to_string(kind) + ':' + reason;
+        auto found = reasons_.find(key);
+        if (found != reasons_.end()) ++found->second;
+        else if (reasons_.size() < 128) reasons_.emplace(key, 1);
+        else ++overflow_;
+    }
+    void eligible(const std::string& descriptor, uint64_t current_token) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        ++eligible_;
+        const auto key = f39identity::digest(descriptor.data(), descriptor.size());
+        auto found = rows_.find(key);
+        if (found == rows_.end()) {
+            if (rows_.size() >= capacity_ || descriptor.empty() || descriptor.size() > 32768) { ++overflow_; return; }
+            found = rows_.emplace(key, Row{descriptor, 0, 0}).first;
+        }
+        if (found->second.descriptor != descriptor) { ++overflow_; return; }
+        ++found->second.count;
+        found->second.last_gws_token = current_token;
+    }
+    std::string snapshot() {
+        std::lock_guard<std::mutex> lock(mutex_);
+        std::ostringstream out;
+        out << "{\"schema\":\"dcat20.independent_run_inventory.v1\",\"total_run_calls\":" << total_
+            << ",\"eligible_run_calls\":" << eligible_ << ",\"rejected_candidate_calls\":" << rejected_
+            << ",\"non_target_run_calls\":" << other_ << ",\"overflow_calls\":" << overflow_
+            << ",\"capacity\":" << capacity_ << ",\"complete\":" << std::boolalpha
+            << (!overflow_ && total_ == eligible_ + rejected_ + other_) << ",\"targets\":[";
+        bool first = true;
+        for (const auto& row : rows_) {
+            if (!first) out << ',';
+            first = false;
+            out << "{\"identity_sha256\":\"" << row.first << "\",\"observations\":" << row.second.count
+                << ",\"last_gws_token\":" << row.second.last_gws_token
+                << ",\"native\":" << row.second.descriptor << '}';
+        }
+        out << "],\"rejections\":[";
+        first = true;
+        for (const auto& reason : reasons_) {
+            if (!first) out << ',';
+            first = false;
+            out << "{\"reason\":\"" << reason.first << "\",\"calls\":" << reason.second << '}';
+        }
+        out << "]}";
+        return out.str();
     }
 };
 

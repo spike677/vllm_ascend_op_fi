@@ -84,7 +84,11 @@ for prefix in dcat20_qmm dcat20_weight_nz; do
     for action in install pause resume remove state; do
         nm -D "$output/libdcat20_qmm.so" | grep -E "[[:space:]]${prefix}_${action}_v2$"
     done
+    for action in install_group seal_group invoke_group group_state; do
+        nm -D "$output/libdcat20_qmm.so" | grep -E "[[:space:]]${prefix}_${action}_v3$"
+    done
 done
+nm -D "$output/libdcat20_qmm.so" | grep -E '[[:space:]]dcat20_independent_run_inventory_v1$'
 for symbol in gws_begin gws_commit gws_abort execute_begin execute_end diagnostics; do
     nm -D "$output/libdcat20_qmm.so" | grep -E "[[:space:]]dcat20_auto_${symbol}_v1$"
 done

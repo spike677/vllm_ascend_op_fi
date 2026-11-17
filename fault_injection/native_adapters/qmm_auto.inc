@@ -4,6 +4,7 @@ namespace {
 dcat_matmul::Bridge qmm_auto;
 dcat_matmul::Bridge weight_nz_auto;
 std::mutex auto_install_mutex;
+dcat_matmul::RunInventory independent_run_inventory;
 
 struct AutoAcl {
     GetDeviceFn device = nullptr;
@@ -78,8 +79,12 @@ bool live_storage_slot(const Fault20TensorMetadata& tensor, int32_t slot,
 aclnnStatus run_auto_qmm(op::internal::OpExecCache* cache, aclrtStream stream,
                         const std::vector<void*>& addresses, const dcat_matmul::Run& original) {
     const auto* call = current_call(dcat_current::qmm, cache);
-    if (!call) return original(addresses);
+    if (!call) {
+        independent_run_inventory.reject(dcat_current::qmm, "NO_CURRENT_TYPED_EXECUTE_FOR_CACHE");
+        return original(addresses);
+    }
     const auto pass = [&](const char* reason) {
+        independent_run_inventory.reject(dcat_current::qmm, reason);
         return auto_passthrough(dcat_current::qmm, *call, cache, reason, addresses, original);
     };
     RegisteredMetadata registered{};
@@ -128,6 +133,8 @@ aclnnStatus run_auto_qmm(op::internal::OpExecCache* cache, aclrtStream stream,
         device, f39profile::id, "INT8", x1.view_shape, x1.strides, x1.view_offset, slots,
         registered.cache_lifecycle);
     const auto details = with_current_call(stable_target, *call, slots, addresses);
+    independent_run_inventory.eligible(stable_target, call->token);
+    if (!qmm_auto.on_owner()) return original(addresses);
     const auto transform = [](size_t i, void* host, size_t bytes) {
         if (i != 0) return false;
         auto* values = static_cast<int8_t*>(host);
@@ -144,8 +151,12 @@ aclnnStatus run_auto_qmm(op::internal::OpExecCache* cache, aclrtStream stream,
 aclnnStatus run_auto_weight_nz(op::internal::OpExecCache* cache, aclrtStream stream,
                               const std::vector<void*>& addresses, const dcat_matmul::Run& original) {
     const auto* call = current_call(dcat_current::weight_nz, cache);
-    if (!call) return original(addresses);
+    if (!call) {
+        independent_run_inventory.reject(dcat_current::weight_nz, "NO_CURRENT_TYPED_EXECUTE_FOR_CACHE");
+        return original(addresses);
+    }
     const auto pass = [&](const char* reason) {
+        independent_run_inventory.reject(dcat_current::weight_nz, reason);
         return auto_passthrough(dcat_current::weight_nz, *call, cache, reason, addresses, original);
     };
     RegisteredMatmulMetadata registered{};
@@ -196,6 +207,8 @@ aclnnStatus run_auto_weight_nz(op::internal::OpExecCache* cache, aclrtStream str
         f39profile::id, bf16 ? "BF16" : "FP16", self.view_shape, self.strides, self.view_offset, slots,
         registered.cache_lifecycle);
     const auto details = with_current_call(stable_target, *call, slots, addresses);
+    independent_run_inventory.eligible(stable_target, call->token);
+    if (!weight_nz_auto.on_owner()) return original(addresses);
     const auto transform = [bf16](size_t slot, void* host, size_t bytes) {
         if (slot != 0) return false;
         auto* values = static_cast<uint16_t*>(host);
@@ -216,12 +229,21 @@ aclnnStatus run_auto_weight_nz(op::internal::OpExecCache* cache, aclrtStream str
 aclnnStatus run_auto_fault20(op::internal::OpExecCache* cache, void* workspace, aclrtStream stream,
                             const std::vector<void*>& addresses) {
     pthread_once(&g_resolve_once, resolve_real);
+    independent_run_inventory.begin_run();
     if (!g_real_run) return 1;
     const auto original = [&](const auto& selected) { return g_real_run(cache, workspace, stream, selected); };
-    if (qmm_auto.on_owner() && starts_with(g_get_log_api_info(), "aclnnQuantMatmulWeightNz_"))
+    const std::string api = g_get_log_api_info ? g_get_log_api_info() : std::string{};
+    const uint32_t kind = starts_with(api, "aclnnQuantMatmulWeightNz_") ? dcat_current::qmm
+        : starts_with(api, "aclnnMatmulWeightNz_") ? dcat_current::weight_nz : 0;
+    if (kind && !auto_acl.device && !resolve_auto_acl()) {
+        independent_run_inventory.reject(kind, "MATCHED_RUNTIME_OBSERVER_UNAVAILABLE");
+        return original(addresses);
+    }
+    if (kind == dcat_current::qmm)
         return run_auto_qmm(cache, stream, addresses, original);
-    if (weight_nz_auto.on_owner() && starts_with(g_get_log_api_info(), "aclnnMatmulWeightNz_"))
+    if (kind == dcat_current::weight_nz)
         return run_auto_weight_nz(cache, stream, addresses, original);
+    independent_run_inventory.non_target();
     if (qmm_auto.owned() || weight_nz_auto.owned()) {
         const bool owned_thread = qmm_auto.on_owner() || weight_nz_auto.on_owner();
         ++auto_run_refused;
@@ -246,6 +268,16 @@ int install_auto_request_bridge(dcat_matmul::Bridge& bridge, dcat_matmul::Callba
     if (rank < 0 || !task_queue || std::strcmp(task_queue, "0")
         || qmm_auto.owned() || weight_nz_auto.owned() || !resolve_auto_acl()) return 1;
     return bridge.install_request(callback, owner, generation);
+}
+
+int install_auto_group_bridge(dcat_matmul::Bridge& bridge, dcat_matmul::Callback callback,
+                             int32_t rank, const char* owner, uint64_t generation,
+                             uint32_t max_targets, uint32_t max_faults, uint64_t max_calls) {
+    std::lock_guard<std::mutex> guard(auto_install_mutex);
+    const char* task_queue = std::getenv("TASK_QUEUE_ENABLE");
+    if (rank < 0 || !task_queue || std::strcmp(task_queue, "0")
+        || qmm_auto.owned() || weight_nz_auto.owned() || !resolve_auto_acl()) return 1;
+    return bridge.install_group_request(callback, owner, generation, max_targets, max_faults, max_calls);
 }
 
 uint32_t auto_bridge_state(dcat_matmul::Bridge& bridge, dcat_matmul::Callback requester) {
@@ -307,3 +339,28 @@ extern "C" uint32_t prefix##state_v2(dcat_matmul::Callback callback, const char*
 DCAT20_REQUEST_ABI(dcat20_qmm_, qmm_auto)
 DCAT20_REQUEST_ABI(dcat20_weight_nz_, weight_nz_auto)
 #undef DCAT20_REQUEST_ABI
+
+extern "C" const char* dcat20_independent_run_inventory_v1() {
+    thread_local std::string result;
+    result = independent_run_inventory.snapshot();
+    return result.c_str();
+}
+
+#define DCAT20_GROUP_ABI(prefix, bridge) \
+extern "C" int prefix##install_group_v3(dcat_matmul::Callback callback, int32_t rank, \
+    const char* owner, uint64_t generation, uint32_t max_targets, uint32_t max_faults, uint64_t max_calls) { \
+    return install_auto_group_bridge(bridge, callback, rank, owner, generation, max_targets, max_faults, max_calls); \
+} \
+extern "C" int prefix##seal_group_v3(dcat_matmul::Callback callback, const char* owner, uint64_t generation, \
+                                    uint32_t expected_targets, const char* identity) { \
+    return bridge.seal_group(callback, owner, generation, expected_targets, identity); \
+} \
+extern "C" uint32_t prefix##invoke_group_v3(uint64_t token, uint32_t arm, const char* target_key) { \
+    return bridge.invoke_group(token, arm, target_key); \
+} \
+extern "C" const char* prefix##group_state_v3(dcat_matmul::Callback callback, const char* owner, uint64_t generation) { \
+    thread_local std::string result; result = bridge.group_state(callback, owner, generation); return result.c_str(); \
+}
+DCAT20_GROUP_ABI(dcat20_qmm_, qmm_auto)
+DCAT20_GROUP_ABI(dcat20_weight_nz_, weight_nz_auto)
+#undef DCAT20_GROUP_ABI
