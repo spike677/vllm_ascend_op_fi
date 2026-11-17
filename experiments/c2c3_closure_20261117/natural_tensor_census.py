@@ -111,7 +111,7 @@ def _worker(worker):
     return worker.worker if isinstance(worker, WorkerWrapperBase) else worker
 
 
-def worker_install(worker, prompt, moe_trace=False):
+def worker_install(worker, prompt, moe_trace=False, rope_trace=False):
     worker = _worker(worker)
     from fault_injection.tensor_observer import NaturalTensorObserver
     from demoncat.runtime.vllm_ascend.worker_extension.serving_context import snapshot_fresh_prefill
@@ -124,6 +124,10 @@ def worker_install(worker, prompt, moe_trace=False):
         from fault_injection.moe_census import NaturalMoETrace
         # Source refusal precedes any owned observer/hook installation.
         state['moe_trace'] = NaturalMoETrace.from_runtime(model)
+    if rope_trace:
+        if moe_trace:raise RuntimeError('ONE_OWNED_PYTHON_PROFILE_CENSUS_REQUIRED')
+        from fault_injection.rope_census import NaturalRoPETrace
+        state['rope_trace'] = NaturalRoPETrace.from_runtime(model)
     signature = inspect.signature(model.forward)
     def pre(module, args, kwargs):
         if state['expected'] is None:
@@ -133,6 +137,9 @@ def worker_install(worker, prompt, moe_trace=False):
             get_forward_context(), expected_prompt_token_ids=prompt,
             expected_internal_request_id=state['expected'], seen_internal_request_ids=state['seen'])
         state['rows'].append(dict(request_id=state['expected'], scheduler=scheduler))
+        if 'rope_trace' in state:
+            state['rope_trace'].set_request(state['expected'],bound.arguments['positions'],
+                scheduler['positions'],scheduler)
     state['handles'].append(model.register_forward_pre_hook(pre, with_kwargs=True))
     state['observer'] = NaturalTensorObserver(model).__enter__()
     def post(module, args, kwargs, output):
@@ -140,13 +147,18 @@ def worker_install(worker, prompt, moe_trace=False):
         state['seen'].append(state['expected']); state['expected'] = None
         if 'moe_trace' in state:
             state['moe_trace'].request_id = None
+        if 'rope_trace' in state:
+            state['rope_trace'].end_request()
     state['handles'].append(model.register_forward_hook(post, with_kwargs=True))
     if moe_trace:
         state['moe_trace'].__enter__()
+    if rope_trace:
+        state['rope_trace'].__enter__()
     worker._tensor_census = state
     return dict(model_class=type(model).__module__+'.'+type(model).__name__,
                 scope='NATURAL_STANDARD_VLLM_WORKER', observer_installed=True,
-                moe_trace_sources=state['moe_trace'].sources if moe_trace else None)
+                moe_trace_sources=state['moe_trace'].sources if moe_trace else None,
+                rope_trace_sources=state['rope_trace'].sources if rope_trace else None)
 
 
 def worker_advance(worker, request_id):
@@ -163,6 +175,8 @@ def worker_close(worker):
     worker = _worker(worker); state = worker._tensor_census
     if 'moe_trace' in state:
         state['moe_trace'].close()
+    if 'rope_trace' in state:
+        state['rope_trace'].close()
     state['observer'].close()
     for handle in reversed(state['handles']):
         handle.remove()
@@ -170,6 +184,8 @@ def worker_close(worker):
                   root_context_hooks=0, pending_request=state['expected'])
     if 'moe_trace' in state:
         report['moe_trace'] = state['moe_trace'].report()
+    if 'rope_trace' in state:
+        report['rope_trace'] = state['rope_trace'].report()
     del worker._tensor_census
     return report
 
@@ -177,6 +193,12 @@ def worker_close(worker):
 def run_worker(args, report):
     from vllm import LLM, SamplingParams
     from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require_host_driven_core, read_enqueued_identity
+    if args.rope_trace:
+        weights=sorted(args.model.glob('*.safetensors'))
+        if not weights:raise RuntimeError('ACTUAL_PRETRAINED_ROPE_WORKER_WEIGHTS_REQUIRED')
+        report['pretrained_identity']=dict(config_sha256=sha_file(args.model/'config.json'),
+            weights={path.name:dict(sha256=sha_file(path),bytes=path.stat().st_size) for path in weights},
+            route_configuration_modified=False)
     if args.moe_trace:
         config_path = args.model / 'config.json'
         if sha_file(config_path) != '229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75':
@@ -209,7 +231,7 @@ def run_worker(args, report):
     params = SamplingParams(temperature=0, max_tokens=1, ignore_eos=True)
     healthy, = llm.generate([prompt], params, use_tqdm=False)
     report['healthy_before'] = list(healthy.outputs[0].token_ids)
-    report['setup'] = rpc(worker_install, tokens, args.moe_trace)
+    report['setup'] = rpc(worker_install, tokens, args.moe_trace, args.rope_trace)
     report['requests'] = []; seen = []
     try:
         for phase in ('baseline', 'baseline_repeat'):
@@ -242,9 +264,12 @@ def main():
     parser.add_argument('--memory', type=float, default=.35)
     parser.add_argument('--moe-trace', action='store_true',
         help='Read exact reviewed MoE producer/combine frames; only for the actual DeepSeek W8A8 Worker')
+    parser.add_argument('--rope-trace', action='store_true',
+        help='Zero-injection actual fused reader/positions/cache/native/consumer census')
     args = parser.parse_args()
-    if not .1 <= args.memory <= .8 or args.moe_trace and args.kind != 'worker':
-        parser.error('Bounded memory .1..8 and a real Worker are required for MoE tracing')
+    if (not .1 <= args.memory <= .8 or (args.moe_trace or args.rope_trace) and args.kind != 'worker'
+            or args.moe_trace and args.rope_trace):
+        parser.error('Bounded memory .1..8 and one owned real Worker trace are required')
     args.out.mkdir(parents=True, exist_ok=False)
     report = dict(status='STARTED', model=str(args.model), kind=args.kind,
         fault_injections=0, qualification_granted=False, c2=False, c3=False)
@@ -272,6 +297,7 @@ def main():
         report['baseline_repeat_exact'] = len(outputs) == 2 and outputs[0] == outputs[1]
         report['status'] = ('NATURAL_CENSUS_COMPLETE' if report['census']['complete']
             and report.get('moe_trace', {'complete': True})['complete']
+            and report.get('rope_trace', {'complete': True})['complete']
             and report['baseline_repeat_exact'] else 'CENSUS_INCOMPLETE_OR_NONDETERMINISTIC')
     except BaseException as exc:
         report.update(status='FAILED', error=repr(exc), traceback=traceback.format_exc())

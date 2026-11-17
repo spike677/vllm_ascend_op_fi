@@ -20,6 +20,9 @@ def cases(source, task, card=2, image='quay.io/ascend/vllm-ascend:v0.18.0'):
     elif task in ('vision17-census','vision17-group'):
         phases = [('natural-'+task, None)]
         model = '/home/17-fault-c2c3-20261117/models/Qwen3-VL-2B-Instruct'
+    elif task == 'rope22-census':
+        phases = [('natural-rope22-census',None)]
+        model = '/home/gyl/models/Qwen3-0.6B'
     else:
         raise ValueError('EXPLICIT_TENSOR_TASK_REQUIRED')
     result = []
@@ -64,6 +67,12 @@ def cases(source, task, card=2, image='quay.io/ascend/vllm-ascend:v0.18.0'):
                 result[-1]['review'].update(provider='Actual stock patch Conv3d padding argument group',
                     expected_hits='All actual qualified patch Conv3d calls once, then two every-match image forwards',
                     recovery_plan='Four exact healthy image forwards; C2+OFF then C3+OFF; full raw B/B-repeat/F+OFF statistics; immutable original weights/image/geometry, complete logits and owned cleanup.')
+        if task == 'rope22-census':
+            result[-1]['command'] = ('source /usr/local/Ascend/cann-8.5.1/set_env.sh\nexec '
+                'python3 /source/experiments/c2c3_closure_20261117/natural_tensor_census.py '
+                '--kind worker --model /model --out /evidence/probe --memory .35 --rope-trace')
+            result[-1]['review'].update(provider='Source-bound real fused RoPE positions/cache/native/consumer census',
+                expected_hits=0,recovery_plan='No injection or model-method replacement; original scheduler positions and cache unchanged, full exact B/B-repeat and post-cleanup healthy request; owned nested modes/profile/hooks removed.')
     return result
 
 
@@ -71,7 +80,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', required=True)
     parser.add_argument('--task', choices=('moe8-census', 'moe8-group', 'worker18-statistics',
-                                         'vision17-census','vision17-group'), required=True)
+                                         'vision17-census','vision17-group','rope22-census'), required=True)
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--image', default='quay.io/ascend/vllm-ascend:v0.18.0')
     parser.add_argument('--out', type=Path, required=True)
