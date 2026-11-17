@@ -1,0 +1,88 @@
+{
+  "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+  "baseline": "/home/p3p4-closure-20261117/quant-deepseek-decode-a1/quant-deepseek-baseline/serving/capture/observation/step2/rank0",
+  "fault": "/home/p3p4-closure-20261117/quant-deepseek-decode-a1/quant-deepseek-fault/serving/capture/observation/step2/rank0",
+  "independent_full_sha256": "e1dc6f2f4aa5bf28daf6627badeb1166a6ad26184229cbfd6e107a33761ec320",
+  "baseline_self": {
+    "baseline": {
+      "dump.json": "92cc9fe964180aacf964b6c09456f9a4f9141b225a83a07d5ecb51a00c7d0dbc",
+      "stack.json": "33f24a4179d3666bd8ad6310a832ecec512df19539f2f09dd98fc4a63271e6e6",
+      "construct.json": "470f2ba7d09f636079b4e9bbbcf974015b0e03696d0cea0d9168f24dbee86d4c"
+    },
+    "fault": {
+      "dump.json": "92cc9fe964180aacf964b6c09456f9a4f9141b225a83a07d5ecb51a00c7d0dbc",
+      "stack.json": "33f24a4179d3666bd8ad6310a832ecec512df19539f2f09dd98fc4a63271e6e6",
+      "construct.json": "470f2ba7d09f636079b4e9bbbcf974015b0e03696d0cea0d9168f24dbee86d4c"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "fault_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "baseline_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "fault_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 456,
+      "identity": "Tensor.__setitem__.7.forward/input_args/0",
+      "difference": {
+        "field": "/Max",
+        "reason": "NONFINITE_UNCOMPARABLE",
+        "baseline": "NaN",
+        "fault": "NaN"
+      },
+      "unobservable_fields_count_before_first_or_all": 958,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  },
+  "comparison": {
+    "baseline": {
+      "dump.json": "92cc9fe964180aacf964b6c09456f9a4f9141b225a83a07d5ecb51a00c7d0dbc",
+      "stack.json": "33f24a4179d3666bd8ad6310a832ecec512df19539f2f09dd98fc4a63271e6e6",
+      "construct.json": "470f2ba7d09f636079b4e9bbbcf974015b0e03696d0cea0d9168f24dbee86d4c"
+    },
+    "fault": {
+      "dump.json": "61dcaf381c95431ff52ad804fa5683a34b61df8519176641a7c3b9c5349f7c2b",
+      "stack.json": "33f24a4179d3666bd8ad6310a832ecec512df19539f2f09dd98fc4a63271e6e6",
+      "construct.json": "470f2ba7d09f636079b4e9bbbcf974015b0e03696d0cea0d9168f24dbee86d4c"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "fault_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "baseline_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "fault_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 76,
+      "identity": "NPU.npu_dynamic_quant.0.forward/output/1",
+      "difference": {
+        "field": "/Min",
+        "reason": "STATISTIC_DIFFERS",
+        "baseline": 0.13877953588962555,
+        "fault": 0.14271654188632965
+      },
+      "unobservable_fields_count_before_first_or_all": 163,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  }
+}

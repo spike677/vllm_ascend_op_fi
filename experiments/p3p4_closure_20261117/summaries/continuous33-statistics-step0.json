@@ -1,0 +1,81 @@
+{
+  "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+  "baseline": "/home/p3p4-closure-20261117/continuous33-a3/continuous33-baseline/serving/capture/observation/step0/rank0",
+  "fault": "/home/p3p4-closure-20261117/continuous33-a3/continuous33-fault/serving/capture/observation/step0/rank0",
+  "independent_full_sha256": "2cf50fc1b0e0b7c0ed80ea16d3c342203a6c0190921e6bef0f596afdfeb01632",
+  "baseline_self": {
+    "baseline": {
+      "dump.json": "086327c5684a6bfc376e003c71a830feb7569325e9f766d3f74cea4cb005a1d0",
+      "stack.json": "02a5f1579a7a5d9a1c2439ed72c9f853b8af8e70534712e0aa60e7c263bed1c3",
+      "construct.json": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe"
+    },
+    "fault": {
+      "dump.json": "086327c5684a6bfc376e003c71a830feb7569325e9f766d3f74cea4cb005a1d0",
+      "stack.json": "02a5f1579a7a5d9a1c2439ed72c9f853b8af8e70534712e0aa60e7c263bed1c3",
+      "construct.json": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "fault_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "baseline_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "fault_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "records_compared": 5368,
+      "unobservable_fields_count_before_first_or_all": 10736,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  },
+  "comparison": {
+    "baseline": {
+      "dump.json": "086327c5684a6bfc376e003c71a830feb7569325e9f766d3f74cea4cb005a1d0",
+      "stack.json": "02a5f1579a7a5d9a1c2439ed72c9f853b8af8e70534712e0aa60e7c263bed1c3",
+      "construct.json": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe"
+    },
+    "fault": {
+      "dump.json": "8e665619fce9ec761df9e715cda264018862538d6f263c3be11eccba52acf352",
+      "stack.json": "02a5f1579a7a5d9a1c2439ed72c9f853b8af8e70534712e0aa60e7c263bed1c3",
+      "construct.json": "f5348d2492c74250c090ee883742c0194bbe47b72935008a73ee0d1002f253fe"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "fault_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "baseline_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "fault_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 164,
+      "identity": "Tensor.mean.3.forward/output/0",
+      "difference": {
+        "field": "/Max",
+        "reason": "STATISTIC_DIFFERS",
+        "baseline": 0.053691256791353226,
+        "fault": 0.05369321256875992
+      },
+      "unobservable_fields_count_before_first_or_all": 328,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  }
+}

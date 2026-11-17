@@ -1,0 +1,26 @@
+{
+  "actual_npu_calls": 0,
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--runtime=runc",
+    "--network=none",
+    "--cpus=4",
+    "--memory=8g",
+    "-e",
+    "ASCEND_VISIBLE_DEVICES=void",
+    "-e",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "--mount",
+    "type=bind,src=/home/p3p4-closure-20261117/source-p4-final-a1,dst=/source,readonly",
+    "--mount",
+    "type=bind,src=/home/p3p4-closure-20261117/packages-p4-final-a1,dst=/output",
+    "--entrypoint",
+    "/bin/bash",
+    "quay.io/ascend/vllm-ascend:v0.18.0",
+    "-c",
+    "set -e\ncp -a /source /tmp/build-source\npython3 -m pip wheel --no-deps --no-build-isolation --no-index /tmp/build-source /tmp/build-source/src /tmp/build-source/fault39 -w /output/wheels\npython3 -m pip install --no-deps --no-index --target /output/installed /output/wheels/*.whl\n"
+  ],
+  "exit_code": 0
+}

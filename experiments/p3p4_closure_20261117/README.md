@@ -47,6 +47,18 @@
 
 26 FIA 已完成真实 SmolLM2/GLM4 的公共 Worker writer→consumer→恢复限定验收，详见 [报告](FIA26_REPORT.md)。
 实际适用调用分别29/39次，OFF完整 hidden/logits 精确恢复；统计 NaN、不可观测项和整个缓存池未恢复均单列，不能称为所有统计通过。
-GLM 已有本机制的预训练模型证据；真正 DeepSeek-V2-Lite 当前仍只有正常推理和只读观察，未获得故障资格。
-26 residual 的[分配调查](ALLOCATION_REPORT.md)已在两个真实模型证明新运行的分配→赋值链，但没有复现写前NaN，旧rank1缺口保留。batch逐行量化与33连续生成仍在推进。历史 Provider 结果不自动升级为本次公共 Worker 验收。
+GLM 已有本机制的预训练模型证据；真正 DeepSeek-V2-Lite 已新增下述限定量化故障资格。
+26 residual 的[分配调查](ALLOCATION_REPORT.md)已在两个真实模型证明新运行的分配→赋值链，但没有复现写前NaN，旧rank1缺口保留。历史 Provider 结果不自动升级为本次公共 Worker 验收。
+
+batch共享量化已在安装wheel的真实DeepSeek公共Worker完成B8首decode自动选点和实际V2调用。request2的scale由0.13877953588962555变为0.14271654188632965，Q有71/2048个元素改变；其他7行未变。完整hidden/logits变化，8请求生成token/text不变，无损/OFF精确恢复。公开范围仍为一个自然投影，不能扩展为135个结构候选全部验收。
+
+独立原始statistics/mix比较保留两种采集范围：整段prefill＋decode因写前NaN失败；新增完整首decode的comparison step2首个可观测差异为`NPU.npu_dynamic_quant.0.forward/output/1` Min，与机制一致。之前163项null保留，B自比后续仍有NaN，**完整严格统计没有通过**。详见[量化报告](QUANT_REPORT.md)。比较器与容差均未改。
+
+全部599项CPU测试通过、无跳过，见[本阶段回执](summaries/cpu_p4_final.json)。当前公共Worker限定正向机制共4条（20、39、26 FIA、batch共享量化）；33独立HF路径不计为公共Worker通过。运行实现源码与实际冻结包字节一致；112项冻结文件中109项与Git字节一致，3份历史元数据JSON仅有CRLF→LF行尾差异，JSON内容一致，仓库原件未修改。见[冻结清单](summaries/p4_final_source_manifest.json)和[逐项审查](summaries/package_source_review.json)。新原始statistics没有行尾或数值改写。
+
+33已完成真实Qwen3的连续4步decode，KV逐步增长，B/F各336个实际IFA launch审计通过。F首次decode的28层实际SInner为1024（B及OFF为8192）；后续正常策略仍可传播此前影响。4步完整logits均变化、生成token/text未变，OFF逐步精确恢复。固定容差统计首差依次在下游mean/mean/mul/linear，**未唯一定位到IFA输出**；不可观测项完整保留。见[33连续生成与独立定位报告](FAULT33_REPORT.md)。
+
+本轮P3/P4实验及发布范围已完成，未闭合项仍明确保留：26 residual旧rank1 NaN来源、33公共Worker接线、各机制多目标资格、其他模型/版本/几何，以及黄区现役框架正式接线。当前结果不等于17条全部完成模型故障闭环。
+
+旧`SHA256SUMS`对应P3提交`0c6ec2ed`，`SHA256SUMS_FIA26`对应FIA阶段提交`231e219c`，保留当时字节；当前文件以本阶段`SHA256SUMS_P4`为准。原统计原件、失败和运行日志都未改写。
 全部17条仍未取得公共 `all_eligible` 资格。使用一张空闲卡、共享锁及每 case 门禁，不停止外部任务。

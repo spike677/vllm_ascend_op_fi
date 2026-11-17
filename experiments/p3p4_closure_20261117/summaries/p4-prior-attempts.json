@@ -1,0 +1,80 @@
+{
+  "attempts": [
+    {
+      "attempt": "quant-deepseek-a1",
+      "case": "quant-deepseek-baseline",
+      "status": "FAILED_WITH_EVIDENCE",
+      "sha256": "fb598a8b14b53c073b7ff7071dd6470cedf2d8baaf391607c9e42091e978fb5f",
+      "path": "/home/p3p4-closure-20261117/quant-deepseek-a1/quant-deepseek-baseline/result.json",
+      "phases": 0,
+      "error_sha256": "32089642efba95bcbb2cb2ab6c67e344f41d0e6f772dc5a6617506c65690e276",
+      "error_excerpt": "RuntimeError('aclnnAddRmsNormBias or aclnnAddRmsNormBiasGetWorkspaceSize not in libopapi.so, or libopapi.sonot found.')",
+      "interpretation": "Private same-name library shadowed the original vLLM custom opapi; keep original DSO preloaded in this process."
+    },
+    {
+      "attempt": "quant-deepseek-a2",
+      "case": "quant-deepseek-baseline",
+      "status": "FAILED_WITH_EVIDENCE",
+      "sha256": "b0601b0470dbaade64b7d7c0c27fe3254131136820d5082215d292b5d4ab2ea2",
+      "path": "/home/p3p4-closure-20261117/quant-deepseek-a2/quant-deepseek-baseline/result.json",
+      "phases": 0,
+      "error_sha256": "1a2e8df2d84ee1e45c16d7bc507ad12ce2fccb74169d41e8e27c00b3436aba4d",
+      "error_excerpt": "TypeError('Runtime factory must be callable')",
+      "interpretation": "Runtime registry requires a callable factory; bind actual Worker/model."
+    },
+    {
+      "attempt": "quant-deepseek-a3",
+      "case": "quant-deepseek-baseline",
+      "status": "FAILED_WITH_EVIDENCE",
+      "sha256": "eb204aa53236b71429247710843bc41ed41ae57925d9a5ff7e7ca6f11a2e27f8",
+      "path": "/home/p3p4-closure-20261117/quant-deepseek-a3/quant-deepseek-baseline/result.json",
+      "phases": 0,
+      "error_sha256": "e34258e39b2d078cf67f17a7a6214bd7aa678f7dc06979ca80204aa77d4be4be",
+      "error_excerpt": "Common Worker RPC rejected; full private result retained and hashed. See interpretation for the reviewed cause.",
+      "interpretation": "Installed wheel lacked reviewed native adapter source files; package-data fixed."
+    },
+    {
+      "attempt": "quant-deepseek-a5",
+      "case": "quant-deepseek-baseline",
+      "status": "FAILED_WITH_EVIDENCE",
+      "sha256": "a70bf95cb1e60c55fb783ab57f82a60a32e1d44fe9ea924968c4be84a942c512",
+      "path": "/home/p3p4-closure-20261117/quant-deepseek-a5/quant-deepseek-baseline/result.json",
+      "phases": 0,
+      "error_sha256": "e7029606cd9acacd9b1ef0b3b980661f4c20283ec05590f1a6e84c27c73c813f",
+      "error_excerpt": "Common Worker RPC rejected; full private result retained and hashed. See interpretation for the reviewed cause.",
+      "interpretation": "Common actual-state contract required native_registered; query now reads actual native ownership."
+    },
+    {
+      "attempt": "quant-deepseek-a6",
+      "case": "quant-deepseek-baseline",
+      "status": "PASS_COMMON_B8_QUANT_BFOFF",
+      "sha256": "ba7b4933c75143088d2e3dbd309ee04ef91467658ee8c40c7a71be23790e09fb",
+      "path": "/home/p3p4-closure-20261117/quant-deepseek-a6/quant-deepseek-baseline/result.json",
+      "phases": 4,
+      "interpretation": "Runtime B/F/OFF passed; independent statistics is separate."
+    },
+    {
+      "attempt": "quant-deepseek-a6",
+      "case": "quant-deepseek-fault",
+      "status": "PASS_COMMON_B8_QUANT_BFOFF",
+      "sha256": "b58eb43945a6f0235f282d6aa6afb95d379a5f97031f5e174b70f7700fa25550",
+      "path": "/home/p3p4-closure-20261117/quant-deepseek-a6/quant-deepseek-fault/result.json",
+      "phases": 4,
+      "interpretation": "Runtime B/F/OFF passed; independent statistics is separate."
+    },
+    {
+      "attempt": "continuous33-a1",
+      "case": "continuous33-baseline",
+      "status": "FAILED_WITH_EVIDENCE",
+      "path": "/home/p3p4-closure-20261117/continuous33-a1/continuous33-baseline/result.json",
+      "sha256": "f5e60c4415cca0e8892c4c7272104e94b4d400b5c9ec7be4279438440ff14abf",
+      "successful_reference_decode_steps": 4,
+      "fault_case_executed": false,
+      "error_sha256": "c811dc56faca3a87f67e097bb67311872ec9154cbfe8c2f1929c2359670976de",
+      "error_excerpt": "UnsupportedCall('Native coverage incomplete; see unobserved/unsupported/failed calls')",
+      "interpretation": "Native coverage correctly rejected following normal forwards with no fault callback; split the first eligible fault lifetime and following normal route."
+    }
+  ],
+  "quant_a4_executed": false,
+  "raw_data_published": false
+}

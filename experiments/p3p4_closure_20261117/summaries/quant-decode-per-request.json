@@ -1,0 +1,828 @@
+{
+  "schema": "demoncat.quant.per_request_summary.v1",
+  "models": {
+    "baseline": {
+      "actual_model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+      "model_type": "deepseek_v2",
+      "automatic_selected_module": "model.layers.0.self_attn.kv_a_proj_with_mqa",
+      "candidates": 135,
+      "scope": "ONE_EMBED_NORM_PROJECTION_FIRST_B8_DECODE_NOT_ALL_ELIGIBLE",
+      "capture_scope": "first_decode",
+      "native_build": {
+        "build_sha256": "20cb3da44ab8b0e648b0ccaea458245c0f563741984eaa51b77ef75cd9fe8fc5",
+        "library_sha256": "f05f3b689bac4d3a9d9fa3b9611893d9c44561c0639f31e7ee34afe0f1e3d5ed",
+        "source_sha256": "94d479155e7b1af9a1aa1154840e924a1f1a546463b290fd730a95c38404c682",
+        "real_opapi_sha256": "b3890625d3e0cc11ef32460083698ecaa8f702b5edd0169ea617e2e6bb76270c",
+        "control_sha256": "95d6060f79ce9e519d84f621a5f5a5871a5e294ec1a3be0117650bd0cd559345",
+        "resolver_strategy": "ACTUAL_TYPED_ENTRY_COUNTS_REQUIRED",
+        "resolver_identity": {
+          "torch_npu_version": "2.9.0.post1+gitee7ba04",
+          "library_sha256": "dd07e4afb4e31a5123d0b97a4a319acaa96158705a22d704bfc0a91f662a6041",
+          "exported_global_resolver": false
+        },
+        "api": "aclnnDynamicQuantV2",
+        "thread_scope": 1,
+        "tp1_live_admission_not_acceptance": true
+      },
+      "core_methods_replaced": false,
+      "recovered": true,
+      "case": "/home/p3p4-closure-20261117/quant-deepseek-decode-a1/quant-deepseek-baseline",
+      "phases": [
+        {
+          "phase": "reference",
+          "top1": [
+            549,
+            40619,
+            15,
+            185,
+            185,
+            2054,
+            56916,
+            40
+          ],
+          "native_calls": 0,
+          "native_receipts": [],
+          "actual_native_execution_proven": null,
+          "actual_native_fault_hits": 0,
+          "hidden_sha256": "d22456512b11f69af197267f6a1a62f56c2402d7e800b0d9e4b5c8004c14fcfd",
+          "logits_sha256": "15fef570d0a8a4e0670a608d3c864cec023348e9ca8dc480dd16f45eb9a5011f",
+          "prefill_logits_sha256": "388e0047aa08a2fcea57a59d5fd88c2bff701af2e70a2071e204bca79b3f0dc5",
+          "actual_request_mapping": true,
+          "generated": [
+            {
+              "tokens": [
+                185,
+                549
+              ],
+              "text": "\nThe"
+            },
+            {
+              "tokens": [
+                185,
+                40619
+              ],
+              "text": "\nParis"
+            },
+            {
+              "tokens": [
+                207,
+                15
+              ],
+              "text": " 0"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                2054
+              ],
+              "text": "\nYou"
+            },
+            {
+              "tokens": [
+                185,
+                56916
+              ],
+              "text": "\nTranslate"
+            },
+            {
+              "tokens": [
+                185,
+                40
+              ],
+              "text": "\nI"
+            }
+          ]
+        },
+        {
+          "phase": "lossless",
+          "top1": [
+            549,
+            40619,
+            15,
+            185,
+            185,
+            2054,
+            56916,
+            40
+          ],
+          "native_calls": 1,
+          "native_receipts": [
+            {
+              "prepare_hits": 1,
+              "execute_hits": 1,
+              "fault_executions": 0,
+              "api_version": 2,
+              "prepare_errors": 0,
+              "execution_errors": 0
+            }
+          ],
+          "actual_native_execution_proven": true,
+          "actual_native_fault_hits": 0,
+          "hidden_sha256": "d22456512b11f69af197267f6a1a62f56c2402d7e800b0d9e4b5c8004c14fcfd",
+          "logits_sha256": "15fef570d0a8a4e0670a608d3c864cec023348e9ca8dc480dd16f45eb9a5011f",
+          "prefill_logits_sha256": "388e0047aa08a2fcea57a59d5fd88c2bff701af2e70a2071e204bca79b3f0dc5",
+          "actual_request_mapping": true,
+          "generated": [
+            {
+              "tokens": [
+                185,
+                549
+              ],
+              "text": "\nThe"
+            },
+            {
+              "tokens": [
+                185,
+                40619
+              ],
+              "text": "\nParis"
+            },
+            {
+              "tokens": [
+                207,
+                15
+              ],
+              "text": " 0"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                2054
+              ],
+              "text": "\nYou"
+            },
+            {
+              "tokens": [
+                185,
+                56916
+              ],
+              "text": "\nTranslate"
+            },
+            {
+              "tokens": [
+                185,
+                40
+              ],
+              "text": "\nI"
+            }
+          ]
+        },
+        {
+          "phase": "comparison",
+          "top1": [
+            549,
+            40619,
+            15,
+            185,
+            185,
+            2054,
+            56916,
+            40
+          ],
+          "native_calls": 1,
+          "native_receipts": [
+            {
+              "prepare_hits": 1,
+              "execute_hits": 1,
+              "fault_executions": 0,
+              "api_version": 2,
+              "prepare_errors": 0,
+              "execution_errors": 0
+            }
+          ],
+          "actual_native_execution_proven": true,
+          "actual_native_fault_hits": 0,
+          "hidden_sha256": "d22456512b11f69af197267f6a1a62f56c2402d7e800b0d9e4b5c8004c14fcfd",
+          "logits_sha256": "15fef570d0a8a4e0670a608d3c864cec023348e9ca8dc480dd16f45eb9a5011f",
+          "prefill_logits_sha256": "388e0047aa08a2fcea57a59d5fd88c2bff701af2e70a2071e204bca79b3f0dc5",
+          "actual_request_mapping": true,
+          "generated": [
+            {
+              "tokens": [
+                185,
+                549
+              ],
+              "text": "\nThe"
+            },
+            {
+              "tokens": [
+                185,
+                40619
+              ],
+              "text": "\nParis"
+            },
+            {
+              "tokens": [
+                207,
+                15
+              ],
+              "text": " 0"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                2054
+              ],
+              "text": "\nYou"
+            },
+            {
+              "tokens": [
+                185,
+                56916
+              ],
+              "text": "\nTranslate"
+            },
+            {
+              "tokens": [
+                185,
+                40
+              ],
+              "text": "\nI"
+            }
+          ]
+        },
+        {
+          "phase": "off",
+          "top1": [
+            549,
+            40619,
+            15,
+            185,
+            185,
+            2054,
+            56916,
+            40
+          ],
+          "native_calls": 0,
+          "native_receipts": [],
+          "actual_native_execution_proven": null,
+          "actual_native_fault_hits": 0,
+          "hidden_sha256": "d22456512b11f69af197267f6a1a62f56c2402d7e800b0d9e4b5c8004c14fcfd",
+          "logits_sha256": "15fef570d0a8a4e0670a608d3c864cec023348e9ca8dc480dd16f45eb9a5011f",
+          "prefill_logits_sha256": "388e0047aa08a2fcea57a59d5fd88c2bff701af2e70a2071e204bca79b3f0dc5",
+          "actual_request_mapping": true,
+          "generated": [
+            {
+              "tokens": [
+                185,
+                549
+              ],
+              "text": "\nThe"
+            },
+            {
+              "tokens": [
+                185,
+                40619
+              ],
+              "text": "\nParis"
+            },
+            {
+              "tokens": [
+                207,
+                15
+              ],
+              "text": " 0"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                2054
+              ],
+              "text": "\nYou"
+            },
+            {
+              "tokens": [
+                185,
+                56916
+              ],
+              "text": "\nTranslate"
+            },
+            {
+              "tokens": [
+                185,
+                40
+              ],
+              "text": "\nI"
+            }
+          ]
+        }
+      ],
+      "hashes": {
+        "result.json": "2b2f57a2b647ffdd1318957cfecfc32e8a908a6fe0af6aea8fa83e41d4a00d0e",
+        "serving/runtime/serving.json": "ae561ea9ac583aadab6aca7f7ae0bb07fd5f421c4da41bba7ac062656ff104d5"
+      }
+    },
+    "fault": {
+      "actual_model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+      "model_type": "deepseek_v2",
+      "automatic_selected_module": "model.layers.0.self_attn.kv_a_proj_with_mqa",
+      "candidates": 135,
+      "scope": "ONE_EMBED_NORM_PROJECTION_FIRST_B8_DECODE_NOT_ALL_ELIGIBLE",
+      "capture_scope": "first_decode",
+      "native_build": {
+        "build_sha256": "20cb3da44ab8b0e648b0ccaea458245c0f563741984eaa51b77ef75cd9fe8fc5",
+        "library_sha256": "f05f3b689bac4d3a9d9fa3b9611893d9c44561c0639f31e7ee34afe0f1e3d5ed",
+        "source_sha256": "94d479155e7b1af9a1aa1154840e924a1f1a546463b290fd730a95c38404c682",
+        "real_opapi_sha256": "b3890625d3e0cc11ef32460083698ecaa8f702b5edd0169ea617e2e6bb76270c",
+        "control_sha256": "95d6060f79ce9e519d84f621a5f5a5871a5e294ec1a3be0117650bd0cd559345",
+        "resolver_strategy": "ACTUAL_TYPED_ENTRY_COUNTS_REQUIRED",
+        "resolver_identity": {
+          "torch_npu_version": "2.9.0.post1+gitee7ba04",
+          "library_sha256": "dd07e4afb4e31a5123d0b97a4a319acaa96158705a22d704bfc0a91f662a6041",
+          "exported_global_resolver": false
+        },
+        "api": "aclnnDynamicQuantV2",
+        "thread_scope": 1,
+        "tp1_live_admission_not_acceptance": true
+      },
+      "core_methods_replaced": false,
+      "recovered": true,
+      "case": "/home/p3p4-closure-20261117/quant-deepseek-decode-a1/quant-deepseek-fault",
+      "phases": [
+        {
+          "phase": "reference",
+          "top1": [
+            549,
+            40619,
+            15,
+            185,
+            185,
+            2054,
+            56916,
+            40
+          ],
+          "native_calls": 0,
+          "native_receipts": [],
+          "actual_native_execution_proven": null,
+          "actual_native_fault_hits": 0,
+          "hidden_sha256": "d22456512b11f69af197267f6a1a62f56c2402d7e800b0d9e4b5c8004c14fcfd",
+          "logits_sha256": "15fef570d0a8a4e0670a608d3c864cec023348e9ca8dc480dd16f45eb9a5011f",
+          "prefill_logits_sha256": "388e0047aa08a2fcea57a59d5fd88c2bff701af2e70a2071e204bca79b3f0dc5",
+          "actual_request_mapping": true,
+          "generated": [
+            {
+              "tokens": [
+                185,
+                549
+              ],
+              "text": "\nThe"
+            },
+            {
+              "tokens": [
+                185,
+                40619
+              ],
+              "text": "\nParis"
+            },
+            {
+              "tokens": [
+                207,
+                15
+              ],
+              "text": " 0"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                2054
+              ],
+              "text": "\nYou"
+            },
+            {
+              "tokens": [
+                185,
+                56916
+              ],
+              "text": "\nTranslate"
+            },
+            {
+              "tokens": [
+                185,
+                40
+              ],
+              "text": "\nI"
+            }
+          ]
+        },
+        {
+          "phase": "lossless",
+          "top1": [
+            549,
+            40619,
+            15,
+            185,
+            185,
+            2054,
+            56916,
+            40
+          ],
+          "native_calls": 1,
+          "native_receipts": [
+            {
+              "prepare_hits": 1,
+              "execute_hits": 1,
+              "fault_executions": 0,
+              "api_version": 2,
+              "prepare_errors": 0,
+              "execution_errors": 0
+            }
+          ],
+          "actual_native_execution_proven": true,
+          "actual_native_fault_hits": 0,
+          "hidden_sha256": "d22456512b11f69af197267f6a1a62f56c2402d7e800b0d9e4b5c8004c14fcfd",
+          "logits_sha256": "15fef570d0a8a4e0670a608d3c864cec023348e9ca8dc480dd16f45eb9a5011f",
+          "prefill_logits_sha256": "388e0047aa08a2fcea57a59d5fd88c2bff701af2e70a2071e204bca79b3f0dc5",
+          "actual_request_mapping": true,
+          "generated": [
+            {
+              "tokens": [
+                185,
+                549
+              ],
+              "text": "\nThe"
+            },
+            {
+              "tokens": [
+                185,
+                40619
+              ],
+              "text": "\nParis"
+            },
+            {
+              "tokens": [
+                207,
+                15
+              ],
+              "text": " 0"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                2054
+              ],
+              "text": "\nYou"
+            },
+            {
+              "tokens": [
+                185,
+                56916
+              ],
+              "text": "\nTranslate"
+            },
+            {
+              "tokens": [
+                185,
+                40
+              ],
+              "text": "\nI"
+            }
+          ]
+        },
+        {
+          "phase": "comparison",
+          "top1": [
+            549,
+            40619,
+            15,
+            185,
+            185,
+            2054,
+            56916,
+            40
+          ],
+          "native_calls": 1,
+          "native_receipts": [
+            {
+              "prepare_hits": 1,
+              "execute_hits": 1,
+              "fault_executions": 1,
+              "api_version": 2,
+              "prepare_errors": 0,
+              "execution_errors": 0
+            }
+          ],
+          "actual_native_execution_proven": true,
+          "actual_native_fault_hits": 1,
+          "hidden_sha256": "80a3ffbca384ca5ad607e0d461c588530f024745052c481be959f39b64ca6d54",
+          "logits_sha256": "308413bfca2fd969f639fb819d9bdecc56d439b46a20ad91906ce6f3c8d8fa4d",
+          "prefill_logits_sha256": "388e0047aa08a2fcea57a59d5fd88c2bff701af2e70a2071e204bca79b3f0dc5",
+          "actual_request_mapping": true,
+          "generated": [
+            {
+              "tokens": [
+                185,
+                549
+              ],
+              "text": "\nThe"
+            },
+            {
+              "tokens": [
+                185,
+                40619
+              ],
+              "text": "\nParis"
+            },
+            {
+              "tokens": [
+                207,
+                15
+              ],
+              "text": " 0"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                2054
+              ],
+              "text": "\nYou"
+            },
+            {
+              "tokens": [
+                185,
+                56916
+              ],
+              "text": "\nTranslate"
+            },
+            {
+              "tokens": [
+                185,
+                40
+              ],
+              "text": "\nI"
+            }
+          ]
+        },
+        {
+          "phase": "off",
+          "top1": [
+            549,
+            40619,
+            15,
+            185,
+            185,
+            2054,
+            56916,
+            40
+          ],
+          "native_calls": 0,
+          "native_receipts": [],
+          "actual_native_execution_proven": null,
+          "actual_native_fault_hits": 0,
+          "hidden_sha256": "d22456512b11f69af197267f6a1a62f56c2402d7e800b0d9e4b5c8004c14fcfd",
+          "logits_sha256": "15fef570d0a8a4e0670a608d3c864cec023348e9ca8dc480dd16f45eb9a5011f",
+          "prefill_logits_sha256": "388e0047aa08a2fcea57a59d5fd88c2bff701af2e70a2071e204bca79b3f0dc5",
+          "actual_request_mapping": true,
+          "generated": [
+            {
+              "tokens": [
+                185,
+                549
+              ],
+              "text": "\nThe"
+            },
+            {
+              "tokens": [
+                185,
+                40619
+              ],
+              "text": "\nParis"
+            },
+            {
+              "tokens": [
+                207,
+                15
+              ],
+              "text": " 0"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                185
+              ],
+              "text": "\n\n"
+            },
+            {
+              "tokens": [
+                185,
+                2054
+              ],
+              "text": "\nYou"
+            },
+            {
+              "tokens": [
+                185,
+                56916
+              ],
+              "text": "\nTranslate"
+            },
+            {
+              "tokens": [
+                185,
+                40
+              ],
+              "text": "\nI"
+            }
+          ]
+        }
+      ],
+      "hashes": {
+        "result.json": "c6766b8fe62dd404a615f898e2c0c9ef965c6d6a15671e20f3478f2e40e22dd0",
+        "serving/runtime/serving.json": "367dc4aee97f1c2296e684b71e687815d5ee06ce2cb239a00b8db7aa8bbc1a97"
+      }
+    }
+  },
+  "row_evidence": [
+    {
+      "logical_request": 0,
+      "actual_tensor_row": 0,
+      "token_position": 8,
+      "baseline_scale": 0.14271654188632965,
+      "fault_scale": 0.14271654188632965,
+      "q_changed_elements": 0,
+      "q_elements": 2048,
+      "q_max_abs_integer_change": 0
+    },
+    {
+      "logical_request": 1,
+      "actual_tensor_row": 1,
+      "token_position": 8,
+      "baseline_scale": 0.14271654188632965,
+      "fault_scale": 0.14271654188632965,
+      "q_changed_elements": 0,
+      "q_elements": 2048,
+      "q_max_abs_integer_change": 0
+    },
+    {
+      "logical_request": 2,
+      "actual_tensor_row": 2,
+      "token_position": 8,
+      "baseline_scale": 0.13877953588962555,
+      "fault_scale": 0.14271654188632965,
+      "q_changed_elements": 71,
+      "q_elements": 2048,
+      "q_max_abs_integer_change": 4
+    },
+    {
+      "logical_request": 3,
+      "actual_tensor_row": 3,
+      "token_position": 10,
+      "baseline_scale": 0.14271654188632965,
+      "fault_scale": 0.14271654188632965,
+      "q_changed_elements": 0,
+      "q_elements": 2048,
+      "q_max_abs_integer_change": 0
+    },
+    {
+      "logical_request": 4,
+      "actual_tensor_row": 4,
+      "token_position": 11,
+      "baseline_scale": 0.14271654188632965,
+      "fault_scale": 0.14271654188632965,
+      "q_changed_elements": 0,
+      "q_elements": 2048,
+      "q_max_abs_integer_change": 0
+    },
+    {
+      "logical_request": 5,
+      "actual_tensor_row": 5,
+      "token_position": 7,
+      "baseline_scale": 0.14271654188632965,
+      "fault_scale": 0.14271654188632965,
+      "q_changed_elements": 0,
+      "q_elements": 2048,
+      "q_max_abs_integer_change": 0
+    },
+    {
+      "logical_request": 6,
+      "actual_tensor_row": 6,
+      "token_position": 7,
+      "baseline_scale": 0.14271654188632965,
+      "fault_scale": 0.14271654188632965,
+      "q_changed_elements": 0,
+      "q_elements": 2048,
+      "q_max_abs_integer_change": 0
+    },
+    {
+      "logical_request": 7,
+      "actual_tensor_row": 7,
+      "token_position": 8,
+      "baseline_scale": 0.14271654188632965,
+      "fault_scale": 0.14271654188632965,
+      "q_changed_elements": 0,
+      "q_elements": 2048,
+      "q_max_abs_integer_change": 0
+    }
+  ],
+  "input_sha256": "1a02b87b4d2d7016c548a1fbf950d8d49094c1f8e69846fbbe019393cb40b3fe",
+  "fault_scales_all_equal": true,
+  "fault_scale_equals_baseline_largest": true,
+  "complete_q_changed": true,
+  "source": "AUXILIARY_REAL_Q_SCALE_AND_RUNTIME_MAPPING_NOT_INDEPENDENT_FIRST_DIFFERENCE",
+  "common_worker_all_eligible": false,
+  "raw_data_published": false
+}

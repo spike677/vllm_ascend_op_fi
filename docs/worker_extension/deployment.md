@@ -9,6 +9,8 @@ python -c 'from demoncat.runtime.vllm_ascend.controller import DemoncatWorkerExt
 
 机制动作需要相应的 Python Provider。Fault20 随仓库根包部署，Fault39 还需其独立包。已有同名内源 `demoncat` 包的环境以其现有 Controller/扩展的组合方式为准。蓝区试验使用独立环境核对包的实际导入路径和 serving 镜像。
 
+11月17日公共 Provider 已接入20、39、26 FIA和batch共享量化四条机制，均须绑定各自审查过的部署及实际模型调用；仅在 capabilities 中列出不代表可直接注入。26 FIA 已有真实 SmolLM/GLM 的限定推理证据，量化已有真正 DeepSeek-V2-Lite 的首个B8 decode证据。统计NaN、模型/形状边界和公共 `all_eligible=false` 均保留，见 [P4结果](../../experiments/p3p4_closure_20261117/README.md)。33连续生成属于独立HF适配，不能冒充公共Worker验收。
+
 ```bash
 python -m pip install .          # 机制 catalog、运行时绑定与 Fault20
 python -m pip install ./fault39  # 需要 Fault39 时

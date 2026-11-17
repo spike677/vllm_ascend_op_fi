@@ -241,3 +241,5 @@ Fault20 记录中的 `Buffer20Runtime`、probe20 使用 `provider-source-a3`，L
 ## 17条隔夜执行结果覆盖层
 
 本轮从 bfdd6abc 继续，历史能力表不自动升级为新 Worker 验收。17项逐条的实际结果、G0–G9、模型/环境范围、B/F/OFF和缺口见[最终报告](fault_closure_report.md)、[机器矩阵](../experiments/overnight_20261116/fault_matrix.json)与[能力卡](overnight_fault_cards/)。新增15/17/18仅通过构造NPU模块机制级；共享Worker实际故障闭环仍待可信回放。
+
+上述是11月16日状态。11月17日已补20/39公共Worker正向闭环、26 FIA真实SmolLM/GLM推理，以及batch共享量化真实DeepSeek首decode。15/17/18严格调用结构失败未改，26 residual旧rank1 NaN来源仍未证明，公共全量覆盖资格仍为0。当前逐项增量、统计限制及33连续生成状态以[P3/P4报告](../experiments/p3p4_closure_20261117/README.md)和[机器增量矩阵](../experiments/p3p4_closure_20261117/mechanism_delta.json)为准。

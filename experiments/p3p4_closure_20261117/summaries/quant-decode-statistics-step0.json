@@ -1,0 +1,88 @@
+{
+  "comparator_sha256": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+  "baseline": "/home/p3p4-closure-20261117/quant-deepseek-decode-a1/quant-deepseek-baseline/serving/capture/observation/step0/rank0",
+  "fault": "/home/p3p4-closure-20261117/quant-deepseek-decode-a1/quant-deepseek-fault/serving/capture/observation/step0/rank0",
+  "independent_full_sha256": "03e84c15e1d1c79c49b6f69f0e959a716647561415c9bd54c47668a6a89328b2",
+  "baseline_self": {
+    "baseline": {
+      "dump.json": "bb856019d9ee7ce5ef1a93b6f587e7e579a2daba19977c65df8a7baacef206c4",
+      "stack.json": "5604c86997cc17900fa21390973a4a392f350b2b51b50b632671fc15a5d69273",
+      "construct.json": "291b4ef18ab844c6da36d77ca670fd3ac7715b9ad361849b1a34b90725429725"
+    },
+    "fault": {
+      "dump.json": "bb856019d9ee7ce5ef1a93b6f587e7e579a2daba19977c65df8a7baacef206c4",
+      "stack.json": "5604c86997cc17900fa21390973a4a392f350b2b51b50b632671fc15a5d69273",
+      "construct.json": "291b4ef18ab844c6da36d77ca670fd3ac7715b9ad361849b1a34b90725429725"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "fault_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "baseline_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "fault_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 112,
+      "identity": "NPU.npu_kv_rmsnorm_rope_cache.0.forward/output/2",
+      "difference": {
+        "field": "/Max",
+        "reason": "NONFINITE_UNCOMPARABLE",
+        "baseline": "NaN",
+        "fault": "NaN"
+      },
+      "unobservable_fields_count_before_first_or_all": 242,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  },
+  "comparison": {
+    "baseline": {
+      "dump.json": "bb856019d9ee7ce5ef1a93b6f587e7e579a2daba19977c65df8a7baacef206c4",
+      "stack.json": "5604c86997cc17900fa21390973a4a392f350b2b51b50b632671fc15a5d69273",
+      "construct.json": "291b4ef18ab844c6da36d77ca670fd3ac7715b9ad361849b1a34b90725429725"
+    },
+    "fault": {
+      "dump.json": "bb856019d9ee7ce5ef1a93b6f587e7e579a2daba19977c65df8a7baacef206c4",
+      "stack.json": "5604c86997cc17900fa21390973a4a392f350b2b51b50b632671fc15a5d69273",
+      "construct.json": "291b4ef18ab844c6da36d77ca670fd3ac7715b9ad361849b1a34b90725429725"
+    },
+    "source": "RAW_MSPROBE_STATISTICS_MIX",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "baseline_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "fault_config_sha256": "04bcbba2b1859d7c5032b41e0d5a354fbd3546bd5b05ed4189ab7aa9d935e3c9",
+    "baseline_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "fault_collector_sha256": "dd2cd0bb7d8bfca9fdd25bb86be3ee1c015842a77421cffcc714ccde0c1e9fd7",
+    "comparison": {
+      "schema_version": 1,
+      "source": "MSPROBE_STATISTICS_ONLY",
+      "request_mapping": "UNPROVEN_REQUEST_MAPPING",
+      "tensor_payloads": false,
+      "comparison_policy": {
+        "absolute_tolerance": 1e-08,
+        "relative_tolerance": 1e-05,
+        "rule": "abs(F-B) > atol + rtol*abs(B)"
+      },
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "index": 112,
+      "identity": "NPU.npu_kv_rmsnorm_rope_cache.0.forward/output/2",
+      "difference": {
+        "field": "/Max",
+        "reason": "NONFINITE_UNCOMPARABLE",
+        "baseline": "NaN",
+        "fault": "NaN"
+      },
+      "unobservable_fields_count_before_first_or_all": 242,
+      "unobservable_fields_preserved_in_private_full_report": true
+    }
+  }
+}

@@ -46,7 +46,7 @@ class Fault39Fixture:
 class ProviderTests(unittest.TestCase):
     def test_resolver_has_no_native_side_effect_and_refuses_unknown_version(self):
         self.assertEqual({row['mechanism'] for row in provider_capabilities()},
-                         {'20.buffer_substitute','39.matmul_range','26.fia_destination'})
+                         {'20.buffer_substitute','39.matmul_range','26.fia_destination','quant.batch_shared_scale'})
         with patch.object(fault20.ctypes, 'CDLL', side_effect=AssertionError('loaded')):
             resolve_provider(fault20.MECHANISM, '1', object(), object(), IDENTITY)
             with self.assertRaisesRegex(RuntimeError, 'NOT_ADAPTED'):

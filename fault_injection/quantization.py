@@ -41,7 +41,9 @@ def _chain(module):
     return None, names
 
 
-def _discover(model):
+def _discover(model, parallel_sizes=(2,)):
+    if type(parallel_sizes) is not tuple or not parallel_sizes or any(type(x) is not int or x not in (1,2) for x in parallel_sizes):
+        raise ValueError('Explicit reviewed TP1/TP2 deployment required')
     if not callable(getattr(model, 'named_modules', None)):
         raise TypeError('model must expose named_modules()')
     candidates, rejected = [], []
@@ -58,8 +60,8 @@ def _discover(model):
             reason = 'Dynamic W8A8 candidate requires actual INT8 weight'
         elif type(getattr(module, 'tp_size', None)) is not int or type(getattr(module, 'tp_rank', None)) is not int:
             reason = 'Tensor-parallel size/rank metadata unavailable'
-        elif module.tp_size != 2 or module.tp_rank not in (0, 1):
-            reason = 'Old native contract is TP2; other parallel layouts remain unvalidated'
+        elif module.tp_size not in parallel_sizes or not 0 <= module.tp_rank < module.tp_size:
+            reason = 'Parallel layout outside this explicit deployment contract'
         if reason:
             rejected.append(dict(path=path or '<root>', method_chain=chain, reason=reason))
         else:
@@ -85,13 +87,14 @@ class QuantizationCall:
     forward_index: int
 
 
-def _validate_rows(call, context):
+def _validate_rows(call, context, parallel_sizes=(2,)):
     """Check actual mapping supplied by the runner, not inferred batch labels."""
     x = call.input
     if not isinstance(context, dict) or context.get('model') is not call.model:
         raise UnsupportedCall('Runner context must bind the actual model object')
     if (type(context.get('rank')) is not int or type(context.get('world_size')) is not int
-            or context['rank'] != call.module.tp_rank or context['world_size'] != 2):
+            or context['rank'] != call.module.tp_rank or context['world_size'] != call.module.tp_size
+            or context['world_size'] not in parallel_sizes or not 0 <= context['rank'] < context['world_size']):
         raise UnsupportedCall('Runner TP/rank disagrees with the actual module')
     ids, counts = context.get('request_ids'), context.get('counts')
     rows, positions = context.get('row_request_indices'), context.get('row_token_positions')
@@ -124,10 +127,13 @@ class PinnedQuantRuntime:
     native = True
     test_only = False
 
-    def __init__(self, backend, context_provider, build_identity, *, _load_token=None):
+    def __init__(self, backend, context_provider, build_identity, *, _load_token=None, _invocation_binding_pending=False):
         if _load_token is not _VERIFIED_LOAD:
             raise UnsupportedCall('Construct PinnedQuantRuntime through the verified native loader')
-        if not callable(context_provider) or not all(getattr(backend, 'resolver_checks', {}).values()):
+        checks=getattr(backend,'resolver_checks',{})
+        pending=(_invocation_binding_pending is True and checks and all(v is None for v in checks.values())
+            and getattr(backend,'resolver_strategy',None)=='ACTUAL_TYPED_ENTRY_COUNTS_REQUIRED')
+        if not callable(context_provider) or (not pending and not all(checks.values())):
             raise UnsupportedCall('Verified backend and live runner context provider required')
         if set(getattr(backend, 'resolver_checks', {})) != {
                 'aclnnDynamicQuantV2GetWorkspaceSize','aclnnDynamicQuantV2','CanUsePTACache'}:
@@ -136,6 +142,39 @@ class PinnedQuantRuntime:
         self.build_identity, self.poisoned = build_identity, False
         self._last_verified_receipt = None
         self.thread_scoped = False
+        self.admitted_tp_sizes = (2,)
+
+    @classmethod
+    def from_portable_v2_backend(cls, source_root, *, context_provider, approved_build_sha256):
+        """Explicit TP1 V2 deployment; old TP2 loaders and receipts are unchanged.
+
+        Admission permits the bounded live validation. It is not itself NPU
+        acceptance or permission to reinterpret token/expert rows as requests.
+        """
+        import ctypes
+        root=Path(source_root).resolve(strict=True)
+        control,source,build=root/'backend_control.py',root/'native_backend.cpp',root/'runtime/build.json'
+        expected=Path(__file__).parent/'native_adapters/batch_scale_v2_only.cpp'
+        expected_control=Path(__file__).parent/'native_adapters/batch_scale_control_v2.py'
+        if _sha(control)!=_sha(expected_control) or _sha(source)!=_sha(expected) or _sha(build)!=approved_build_sha256:
+            raise UnsupportedCall('Portable V2 source/build differs')
+        data=json.loads(build.read_bytes());library=root/'runtime/vendor/op_api/lib/libcust_opapi.so'
+        real=Path(os.environ.get('DCAT_REAL_OPAPI',''))
+        if (data.get('schema')!='demoncat.quant.v2_portable.v1' or data.get('source_sha256')!=_sha(source)
+                or data.get('library_sha256')!=_sha(library) or not real.is_absolute() or not real.is_file()
+                or data.get('real_opapi_sha256')!=_sha(real) or os.environ.get('DCAT_DQ_V2_ENABLE')!='1'):
+            raise UnsupportedCall('Portable V2 deployment identity incomplete')
+        spec=importlib.util.spec_from_file_location('_demoncat_portable_v2_control',control)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        backend=module.BackendControl();backend.lib.dcat_dq_thread_scope_v1.restype=ctypes.c_uint32
+        if backend.lib.dcat_dq_thread_scope_v1()!=1:raise UnsupportedCall('Native TLS capability missing')
+        obj=cls(backend,context_provider,dict(build_sha256=approved_build_sha256,
+            library_sha256=_sha(library),source_sha256=_sha(source),real_opapi_sha256=_sha(real),
+            control_sha256=_sha(control),resolver_strategy=backend.resolver_strategy,resolver_identity=backend.resolver_identity,
+            api='aclnnDynamicQuantV2',thread_scope=1,tp1_live_admission_not_acceptance=True),
+            _load_token=_VERIFIED_LOAD,_invocation_binding_pending=True)
+        obj.thread_scoped=True;obj.admitted_tp_sizes=(1,)
+        return obj
 
     @classmethod
     def from_scoped_backend(cls, source_root, *, context_provider, approved_build_sha256):
@@ -189,6 +228,18 @@ class PinnedQuantRuntime:
         self.backend.validate_input(call.input)
         return self.context_provider(call)
 
+    def native_state(self):
+        """Read the portable deployment's actual state; no inferred idle flag."""
+        import ctypes
+        fn=getattr(self.backend.lib,'dcat_dq_state_v1',None)
+        if fn is None:raise UnsupportedCall('Actual native state ABI unavailable')
+        fn.argtypes=[ctypes.POINTER(ctypes.c_uint64),ctypes.c_size_t];fn.restype=ctypes.c_int
+        values=(ctypes.c_uint64*7)()
+        if fn(values,7) or values[0]!=1:raise UnsupportedCall('Native state ABI differs')
+        state=dict(zip(('version','armed','pending','executing','owner_thread','owned','errors'),values))
+        if state['owned'] and not state['owner_thread']:raise UnsupportedCall('Foreign native owner')
+        return state
+
     @staticmethod
     def input_sha256(x):
         import torch
@@ -236,7 +287,8 @@ class QuantizationSession:
         self.model, self.arm, self.unsupported = model, arm, unsupported
         # Runner/deployment installs the provider. No model path configuration.
         self.runtime = runtime if runtime is not None else getattr(model, '_demoncat_quant_runtime', None)
-        self.candidates, self.rejected = _discover(model)
+        self.parallel_sizes=(self.runtime.admitted_tp_sizes if type(self.runtime) is PinnedQuantRuntime else (2,))
+        self.candidates, self.rejected = _discover(model,self.parallel_sizes)
         self.events, self._patches, self._hooks = [], [], []
         self._local, self._active, self._locked, self._closed = threading.local(), False, False, False
         self._forward_index = -1
@@ -339,7 +391,7 @@ class QuantizationSession:
                 raise RuntimeError('Quantization session poisoned by a previous arm/execution failure; create a fresh process')
             import torch
             if (str(getattr(getattr(call.module,'weight',None),'dtype',None)) != 'torch.int8'
-                    or call.module.tp_size != 2 or call.module.tp_rank not in (0,1)):
+                    or call.module.tp_size not in self.parallel_sizes or not 0 <= call.module.tp_rank < call.module.tp_size):
                 raise UnsupportedCall('Actual quantization weight or parallel contract changed')
             if not isinstance(x,torch.Tensor) or x.ndim != 2 or not x.is_contiguous() or x.storage_offset() != 0:
                 raise UnsupportedCall('Expected actual contiguous zero-offset [T,H] tensor')
@@ -348,7 +400,7 @@ class QuantizationSession:
                 raise UnsupportedCall('Input exceeds old native dtype/shape contract')
             if not bool(torch.isfinite(x).all()) or not bool((x.float().abs().amax(dim=-1)>0).all()):
                 raise UnsupportedCall('Nonfinite input or zero rows are unsupported')
-            rows = _validate_rows(call, self.runtime.context(call))
+            rows = _validate_rows(call, self.runtime.context(call),self.parallel_sizes)
             before = self.runtime.input_sha256(x)
             if before != rows['baseline_input_sha256']:
                 raise UnsupportedCall('Current input differs from independently certified healthy input')

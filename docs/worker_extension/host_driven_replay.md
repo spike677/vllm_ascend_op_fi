@@ -75,6 +75,8 @@ stride；cache 指针还结合 incarnation，避免地址复用混淆。三种�
 
 ## 当前支持边界
 
+本节描述20/39的单请求入口。新增26 FIA和batch共享量化使用独立宿主绑定与准入条件；量化显式要求B8首decode，不能放宽本节默认单请求检查后复用20/39资格。[真实26 FIA](../../experiments/p3p4_closure_20261117/FIA26_REPORT.md) · [DeepSeek量化及逐请求映射](../../experiments/p3p4_closure_20261117/QUANT_REPORT.md)
+
 - 实测为910B4/A2、CANN 8.5.1、明确记录的 vLLM/torch-npu 镜像；其他组合另行验收。
 - TP1、PP1/DP1、eager、单请求、fresh prefill、同步调度；关闭 prefix/chunked prefill，
   不支持 speculative、multimodal 或异步调度等未经验证的路径。

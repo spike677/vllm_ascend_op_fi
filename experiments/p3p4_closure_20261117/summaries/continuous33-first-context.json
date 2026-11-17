@@ -1,0 +1,72 @@
+{
+  "source": "RAW_STACK_CONSTRUCT_ONLY",
+  "native_logs_read": false,
+  "private_tensors_read": false,
+  "selects_first_difference": false,
+  "rows": [
+    {
+      "report": "/home/p3p4-closure-20261117/continuous33-independent-step0-a3/summary.json",
+      "report_sha256": "50eee5f868eb781ca86735844ed0abb6dc2ae14b48fd6b68c7afb8009217e42c",
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "identity": "Tensor.mean.3.forward/output/0",
+      "construct_parent": "Module.model.layers.0.post_attention_layernorm.Qwen3RMSNorm.forward.0",
+      "unique_stack_entry": true,
+      "top_frame": "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 62, in forward, \n variance = hidden_states.pow(2).mean(-1, keepdim=True)",
+      "model_frames": [
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 62, in forward, \n variance = hidden_states.pow(2).mean(-1, keepdim=True)",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 331, in forward, \n hidden_states = self.post_attention_layernorm(hidden_states)",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model("
+      ],
+      "entire_stack_sha256": "a1f3c7bda751588e9a834321ea5697620d9d9a0172ce24fc6c9a70cbb1f2e2ac"
+    },
+    {
+      "report": "/home/p3p4-closure-20261117/continuous33-independent-step1-a3/summary.json",
+      "report_sha256": "04c60d999fb2bbf5cc13a451f7e1db90616c93baa8e6ac09f7a7c552966e55c6",
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "identity": "Tensor.mean.7.forward/output/0",
+      "construct_parent": "Module.model.layers.1.post_attention_layernorm.Qwen3RMSNorm.forward.0",
+      "unique_stack_entry": true,
+      "top_frame": "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 62, in forward, \n variance = hidden_states.pow(2).mean(-1, keepdim=True)",
+      "model_frames": [
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 62, in forward, \n variance = hidden_states.pow(2).mean(-1, keepdim=True)",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 331, in forward, \n hidden_states = self.post_attention_layernorm(hidden_states)",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model("
+      ],
+      "entire_stack_sha256": "a1f3c7bda751588e9a834321ea5697620d9d9a0172ce24fc6c9a70cbb1f2e2ac"
+    },
+    {
+      "report": "/home/p3p4-closure-20261117/continuous33-independent-step2-a3/summary.json",
+      "report_sha256": "ba2e8a514d7e96891ffc5fad439524947fac69c281001e33da44b546571a08cc",
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "identity": "Tensor.__mul__.26.forward/output/0",
+      "construct_parent": "Module.model.layers.1.post_attention_layernorm.Qwen3RMSNorm.forward.0",
+      "unique_stack_entry": true,
+      "top_frame": "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 64, in forward, \n return self.weight * hidden_states.to(input_dtype)",
+      "model_frames": [
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 64, in forward, \n return self.weight * hidden_states.to(input_dtype)",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 331, in forward, \n hidden_states = self.post_attention_layernorm(hidden_states)",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model("
+      ],
+      "entire_stack_sha256": "53881bdf0392347dfaa03d5683986d17b0b868b204c84e5f8e5cde4a9b7351ee"
+    },
+    {
+      "report": "/home/p3p4-closure-20261117/continuous33-independent-step3-a3/summary.json",
+      "report_sha256": "2c082710aa4b8a29fb6ac5876e7f9076c7b8d11212bf58b83324119a096de987",
+      "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+      "identity": "Functional.linear.10.forward/output/0",
+      "construct_parent": "Module.model.layers.1.self_attn.o_proj.Linear.forward.0",
+      "unique_stack_entry": true,
+      "top_frame": "File /work/venv/lib/python3.11/site-packages/torch/nn/modules/linear.py, line 134, in forward, \n return F.linear(input, self.weight, self.bias)",
+      "model_frames": [
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 290, in forward, \n attn_output = self.o_proj(attn_output)",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 318, in forward, \n hidden_states, _ = self.self_attn(",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 424, in forward, \n hidden_states = decoder_layer(",
+        "File /work/venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py, line 492, in forward, \n outputs: BaseModelOutputWithPast = self.model("
+      ],
+      "entire_stack_sha256": "183d5ecb59fe45c21147477738489990daf622186b3bd25363b22fcebcb0728c"
+    }
+  ]
+}

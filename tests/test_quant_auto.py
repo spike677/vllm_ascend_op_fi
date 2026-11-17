@@ -187,6 +187,25 @@ class QuantAutoTests(unittest.TestCase):
         with self.assertRaisesRegex(UnsupportedCall,'verified native loader'):
             PinnedQuantRuntime(object(),lambda call:{}, {})
 
+    def test_tp1_requires_explicit_deployment_admission(self):
+        from fault_injection.quantization import _discover
+        model=self.Model()
+        for m in model.unusual.values():m.tp_size=1;m.tp_rank=0
+        self.assertEqual(_discover(model)[0],[])
+        self.assertEqual(len(_discover(model,(1,))[0]),2)
+        with self.assertRaises(UnsupportedCall),QuantizationSession(model,runtime=CPUProvider(model)):pass
+
+    def test_tp1_row_mapping_does_not_inherit_tp2_or_foreign_rank(self):
+        from fault_injection.quantization import QuantizationCall,_validate_rows
+        model=self.Model();module=model.unusual['projection_alpha'];module.tp_size=1
+        call=QuantizationCall('automatic',module,self.x(),model,0)
+        context=CPUProvider(model).context(call);context['world_size']=1
+        with self.assertRaises(UnsupportedCall):_validate_rows(call,context)
+        self.assertEqual(_validate_rows(call,context,(1,))['rank'],0)
+        for size,rank in ((2,0),(1,1),(1,True)):
+            with self.subTest(size=size,rank=rank),self.assertRaises(UnsupportedCall):
+                _validate_rows(call,dict(context,world_size=size,rank=rank),(1,))
+
     def test_partial_arm_failure_cleans_up_and_poison_prevents_rearm(self):
         model=self.Model();runtime=CPUProvider(model)
         original_arm=runtime.arm

@@ -78,7 +78,8 @@ def source_identity(method):
             "file": inspect.getsourcefile(function), "first_line": inspect.getsourcelines(function)[1]}, source
 
 
-def require_serial_eager(runner):
+def require_serial_eager(runner, *, expected_max_seqs=1):
+    require(type(expected_max_seqs) is int and expected_max_seqs in (1,8), 'UNREVIEWED_SEQUENCE_CAPACITY')
     config = field(runner, "vllm_config")
     parallel = field(config, "parallel_config")
     for name in ("tensor_parallel_size", "pipeline_parallel_size", "data_parallel_size"):
@@ -90,7 +91,8 @@ def require_serial_eager(runner):
     require(field(runner, "speculative_config") is None, "SPECULATIVE_DECODING_UNSUPPORTED")
     require(field(runner, "use_async_scheduling") is False, "ASYNC_SCHEDULING_UNSUPPORTED")
     scheduler = field(config, "scheduler_config")
-    require(field(scheduler, "max_num_seqs") == 1, "MAX_NUM_SEQS_MUST_BE_ONE")
+    require(field(scheduler, "max_num_seqs") == expected_max_seqs,
+            "MAX_NUM_SEQS_MUST_BE_ONE" if expected_max_seqs==1 else "MAX_NUM_SEQS_CONTRACT_MISMATCH")
     require(field(scheduler, "enable_chunked_prefill") is False, "CHUNKED_PREFILL_UNSUPPORTED")
     cache = field(config, "cache_config")
     require(field(cache, "enable_prefix_caching") is False, "PREFIX_CACHE_MUST_BE_DISABLED")

@@ -2,7 +2,7 @@
   "schema": "demoncat.p3p4.mechanism_delta.v1",
   "baseline": "d1c8a20c8d3f832b911011628e0901766be36cea",
   "previous_matrix_sha256": "6413779ec7027e59b18bd3ffc83c486b2b69064a28efde38cfa48022b74280cd",
-  "new_common_worker_positive_mechanisms": 3,
+  "new_common_worker_positive_mechanisms": 4,
   "all_eligible_qualified_mechanisms": 0,
   "new_raw_statistics_published": false,
   "models": {
@@ -15,11 +15,12 @@
       "scope": "TP1 BF16 eager one fresh prefill per phase; no public all_eligible"
     },
     "deepseek": {
-      "status": "PASS_PRETRAINED_NPU_INFERENCE_NOT_FAULT_ACCEPTANCE",
+      "status": "PASS_SCOPED_REAL_B8_QUANT_RECOVERY_STATISTICS_LIMITS_RETAINED",
       "actual_model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
       "actual_model_type": "deepseek_v2",
-      "native_fault_qualified": false,
-      "evidence": "summaries/deepseek-admission.json"
+      "native_fault_qualified": true,
+      "evidence": "summaries/quant-decode-per-request.json",
+      "scope": "TP1 BF16 eager actual first B8 decode, one embedding/norm projection; not all_eligible"
     }
   },
   "mechanisms": [
@@ -184,15 +185,22 @@
       "mechanism": "quant.batch_shared_scale",
       "previous_current_level": "CPU_VERIFIED",
       "previous_result": "保留历史 TP2 decode；全张量统计不证明每请求 scale/Q 改变，逐行影响证据不足。",
-      "change": "UNCHANGED_FROM_D1C8A20",
+      "change": "REAL_DEEPSEEK_COMMON_WORKER_Q_SCALE_ROWS_AND_RECOVERY_VERIFIED",
       "common_worker_all_eligible": false,
-      "new_common_worker_fault_verified": false,
+      "new_common_worker_fault_verified": true,
       "remaining": [
         "ALL_ELIGIBLE_MAPPING_UNVERIFIED",
-        "PER_REQUEST_SCALE_Q_IMPACT_UNPROVEN",
-        "COMMON_WORKER_ADAPTER_PENDING"
+        "OTHER_API_VERSION_AND_PARALLEL_DEPLOYMENTS_UNQUALIFIED",
+        "FULL_BASELINE_STATISTICS_SELF_CHECK_NAN_BLOCKED"
       ],
-      "next_action": "核对已保存scheduler row映射、scale/Q逐行辅助证据；缺少则限定为全张量统计与请求输入映射已证。"
+      "next_action": "Retain whole-generation NaN failure and first-decode finite scale first-difference; qualify other API/version/row contracts separately.",
+      "evidence": [
+        "summaries/quant-decode-per-request.json",
+        "summaries/quant-decode-statistics-step2.json"
+      ],
+      "strict_global_first_difference_passed": false,
+      "first_observable_finite_statistics_difference": "NPU.npu_dynamic_quant.0.forward/output/1 Min; index76; earlier163 null",
+      "first_observable_difference_matches_mechanism": true
     },
     {
       "mechanism": "28.fa.legal_tiling",
@@ -238,15 +246,27 @@
       "mechanism": "33.paged_decode",
       "previous_current_level": "CPU_VERIFIED",
       "previous_result": "保留历史分页 decode；严格首差在后续统计，不能声称唯一定位 IFA，连续生成仍待测。",
-      "change": "UNCHANGED_FROM_D1C8A20",
+      "change": "REAL_HF_AUTOREGRESSIVE_KV_GROWTH_NATIVE_LAUNCH_AND_RECOVERY_VERIFIED",
       "common_worker_all_eligible": false,
       "new_common_worker_fault_verified": false,
       "remaining": [
         "UNIQUE_FIRST_DIFF_AT_IFA_UNPROVEN",
         "COMMON_WORKER_ADAPTER_PENDING",
-        "CONTINUOUS_GENERATION_UNVERIFIED"
+        "OTHER_GENERATION_LENGTHS_AND_GEOMETRIES_UNQUALIFIED"
       ],
-      "next_action": "先确认整张量统计为何FIA不可见或低阈值，再扩更多decode长度；持续生成需独立验收。"
+      "next_action": "Keep finite downstream statistics first differences and null fields; qualify a common Worker page/cache contract separately.",
+      "evidence": [
+        "summaries/continuous33-generation.json",
+        "summaries/continuous33-baseline-native.json",
+        "summaries/continuous33-fault-native.json",
+        "summaries/continuous33-statistics-step0.json"
+      ],
+      "bounded_hf_generation_recovery_verified": true,
+      "strict_statistics_comparison_valid": true,
+      "first_observable_difference_at_ifa_output": false,
+      "unique_fault_localization_from_statistics": false,
+      "actual_launches_per_arm": 336,
+      "actual_fault_policy_calls": 28
     },
     {
       "mechanism": "39.matmul_range",
@@ -314,5 +334,5 @@
     "Allocation observer first attempt found no copy calls"
   ],
   "source_of_truth": "Actual scoped receipts; family names and historical qualification are not inherited",
-  "phase": "P3_COMPLETE_P4_IN_PROGRESS"
+  "phase": "P3_P4_BOUNDED_EXPERIMENTS_COMPLETE_LIMITS_RETAINED"
 }
