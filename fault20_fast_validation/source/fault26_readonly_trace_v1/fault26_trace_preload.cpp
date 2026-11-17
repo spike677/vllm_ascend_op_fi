@@ -1,5 +1,6 @@
 #include "fault26_trace_shared.h"
 #include "fault26_qmm_underflow_api.h"
+#include "fault26_inventory.h"
 #include "../l4_buffer_substitute_allhit_v1/fault20_buffer_api.h"
 
 #include <acl/acl.h>
@@ -129,6 +130,7 @@ struct RegisteredQmmOperation {
     Fault20QmmMetadata metadata{};
     int32_t device{-1};
     uint64_t run_count{0};
+    uint64_t registration_epoch{0};
     uint32_t tensor_param_count{0};
     uintptr_t tensor_params[16]{};
 };
@@ -154,6 +156,7 @@ struct WriterTopologyRecord {
     uint64_t workspace_size{0};
     int32_t device{-1};
     uint64_t registration_sequence{0};
+    uint64_t inventory_call{0};
 };
 
 struct WriterResidualState {
@@ -187,6 +190,7 @@ struct ExecuteFrame {
     aclOpExecutor *executor{nullptr};
     aclrtStream stream{nullptr};
     uint64_t begin_ns{0};
+    uint64_t inventory_call{0};
 };
 
 struct ExecuteStack {
@@ -196,6 +200,9 @@ struct ExecuteStack {
 };
 
 pthread_once_t g_resolve_once = PTHREAD_ONCE_INIT;
+dcat26_inventory::Inventory<32768> g_independent_inventory;
+std::atomic<uint64_t> g_inventory_registration_epoch{0};
+thread_local uint64_t g_inventory_fia_call=0;
 RunFn g_real_run = nullptr;
 AddFn g_real_add = nullptr;
 AddParamConstTensorFn g_real_add_param_const_tensor = nullptr;
@@ -1456,6 +1463,44 @@ bool build_qmm_underflow_context(
     return context->original_output != nullptr;
 }
 
+dcat26_inventory::Event inventory_event(uint32_t kind) {
+    dcat26_inventory::Event event{};event.kind=kind;
+    event.thread=static_cast<uint64_t>(syscall(SYS_gettid));
+    return event;
+}
+
+void inventory_output(dcat26_inventory::Event &event,const TensorMetadata &tensor) {
+    if(!tensor.metadata_ok)return;
+    event.flags|=1;event.output=tensor.storage_addr;event.output_bytes=tensor.storage_bytes;
+    event.rows=tensor.view_shape[0];event.columns=tensor.view_shape[1];
+    event.dtype=tensor.dtype;event.format=tensor.format;event.dimensions=tensor.view_rank;
+    std::copy(std::begin(tensor.view_shape),std::end(tensor.view_shape),std::begin(event.shape));
+    std::copy(std::begin(tensor.strides),std::end(tensor.strides),std::begin(event.strides));
+}
+
+void inventory_residual(dcat26_inventory::Event &event,const TensorMetadata &tensor,uint64_t producer) {
+    if(!tensor.metadata_ok)return;
+    event.flags|=2;event.residual=tensor.storage_addr;event.residual_bytes=tensor.storage_bytes;
+    event.producer=producer;event.residual_rows=tensor.view_shape[0];event.residual_columns=tensor.view_shape[1];
+    event.residual_dimensions=tensor.view_rank;
+    std::copy(std::begin(tensor.view_shape),std::end(tensor.view_shape),std::begin(event.residual_shape));
+    std::copy(std::begin(tensor.strides),std::end(tensor.strides),std::begin(event.residual_strides));
+}
+
+void inventory_current_residual(dcat26_inventory::Event &event) {
+    std::lock_guard<std::mutex> lock(registry_mutex());
+    const auto found=current_residual_records().find(event.device);
+    if(found!=current_residual_records().end())inventory_residual(event,found->second.x_out,found->second.sequence);
+}
+
+void inventory_add_rms(uint32_t kind,const AddRmsAddressRecord &record,aclnnStatus status) {
+    auto event=inventory_event(kind);event.device=record.device;event.status=status;
+    event.call=record.sequence;event.registration=record.sequence;
+    event.executor=reinterpret_cast<uint64_t>(record.executor);
+    inventory_output(event,record.x_out);inventory_residual(event,record.x2,record.sequence);
+    g_independent_inventory.append(event);
+}
+
 struct IntervalRelation {
     const char *name{"unknown"};
     int64_t signed_gap_bytes{0};
@@ -1528,14 +1573,26 @@ bool pop_writer_topology_record(aclOpExecutor *executor, const char *api,
     return true;
 }
 
-void log_writer_topology_interval(const ExecuteFrame &frame) {
+void log_writer_topology_interval(ExecuteFrame &frame) {
     if (!g_writer_topology_enabled || frame.executor == nullptr ||
         frame.api == nullptr) {
+        if(frame.kind==FAULT26_EXECUTE_FIA_V3) {
+            auto event=inventory_event(dcat26_inventory::FiaEnter);
+            event.executor=reinterpret_cast<uint64_t>(frame.executor);g_independent_inventory.append(event);
+        }
         return;
     }
     WriterTopologyRecord record{};
     const bool registration_match =
         pop_writer_topology_record(frame.executor, frame.api, &record);
+    if(frame.kind==FAULT26_EXECUTE_FIA_V3) {
+        auto event=inventory_event(dcat26_inventory::FiaEnter);
+        event.call=record.inventory_call;frame.inventory_call=event.call;
+        event.registration=record.registration_sequence;event.device=record.device;
+        event.executor=reinterpret_cast<uint64_t>(frame.executor);
+        if(registration_match)inventory_output(event,record.writable);
+        inventory_current_residual(event);g_independent_inventory.append(event);
+    }
     if (!registration_match) {
         return;
     }
@@ -1940,16 +1997,28 @@ aclnnStatus trace_run(op::internal::OpExecCache *cache, void *workspace,
 
     g_in_hook = true;
     const std::string api = current_api_info();
+    const bool inventory_qmm=qmm_api_matches(api);
+    g_independent_inventory.run(inventory_qmm);
     const ExecuteFrame *frame = current_execute_frame();
     const std::string execute_api =
         frame == nullptr || frame->api == nullptr ? "" : frame->api;
     const bool selected =
         g_trace_enabled && (frame != nullptr || api_matches_filter(api));
     if (!selected) {
+        auto inventory=inventory_event(dcat26_inventory::QmmEnter);
+        uint64_t inventory_call=0;
+        if(inventory_qmm) {
+            inventory.cache=reinterpret_cast<uint64_t>(cache);
+            inventory_call=g_independent_inventory.append(inventory);
+        }
         g_in_hook = false;
         const aclnnStatus status =
             g_real_run(cache, workspace, stream, addresses);
         g_in_hook = true;
+        if(inventory_qmm) {
+            inventory.kind=dcat26_inventory::QmmExit;inventory.call=inventory_call;inventory.status=status;
+            g_independent_inventory.append(inventory);
+        }
         notify_qmm_after_run(api, cache, stream, status);
         g_in_hook = false;
         return status;
@@ -2020,6 +2089,27 @@ aclnnStatus trace_run(op::internal::OpExecCache *cache, void *workspace,
     }
     Fault26QmmUnderflowContext underflow_context{};
     Fault26QmmUnderflowDecision underflow_decision{};
+    auto inventory=inventory_event(dcat26_inventory::QmmEnter);
+    uint64_t inventory_call=0;
+    if(inventory_qmm) {
+        inventory.cache=reinterpret_cast<uint64_t>(cache);
+        inventory.registration=qmm_operation.registration_epoch;inventory.device=qmm_operation.device;
+        if(qmm_registered) {
+            const auto proof=prove_qmm_storage_order(qmm_operation,addresses);
+            const auto &out=qmm_operation.metadata.out;
+            inventory.dtype=out.dtype;inventory.format=out.format;inventory.dimensions=out.view_rank;
+            std::copy(std::begin(out.view_shape),std::end(out.view_shape),std::begin(inventory.shape));
+            std::copy(std::begin(out.strides),std::end(out.strides),std::begin(inventory.strides));
+            inventory.rows=out.view_shape[0];inventory.columns=out.view_shape[1];
+            if(proof.output_slot_proven && proof.slots[9]>=0 && static_cast<size_t>(proof.slots[9])<addresses.size()) {
+                inventory.flags|=5;inventory.output=reinterpret_cast<uint64_t>(addresses[proof.slots[9]]);
+                inventory.output_bytes=out.storage_bytes;
+            }
+            inventory_current_residual(inventory);
+        }
+        // Always before the optional writer callback or its owner/admission.
+        inventory_call=g_independent_inventory.append(inventory);
+    }
     std::vector<void *> underflow_addresses;
     const std::vector<void *> *run_addresses = &addresses;
     if (qmm_registered && g_qmm_underflow_prepare != nullptr &&
@@ -2057,6 +2147,10 @@ aclnnStatus trace_run(op::internal::OpExecCache *cache, void *workspace,
     const aclnnStatus status =
         g_real_run(cache, workspace, stream, *run_addresses);
     g_in_hook = true;
+    if(inventory_qmm) {
+        inventory.kind=dcat26_inventory::QmmExit;inventory.call=inventory_call;inventory.status=status;
+        g_independent_inventory.append(inventory);
+    }
     if (underflow_decision.claimed != 0 &&
         g_qmm_underflow_complete != nullptr) {
         try {
@@ -2162,6 +2256,32 @@ bool add_cache(op::internal::OpExecCache *cache) {
 
 }  // namespace
 
+extern "C" int dcat26_inventory_state_v1(dcat26_inventory::State *out) {
+    if(!out || out->version!=1 || out->size!=sizeof(dcat26_inventory::State))return 1;
+    pthread_once(&g_resolve_once,resolve_real);
+    *out=g_independent_inventory.state();
+    out->flags=(g_trace_enabled?1U:0U)|(g_abi_ok?2U:0U)|(g_writer_topology_enabled?4U:0U)
+        |(g_execute_stack.overflow?8U:0U);
+    return 0;
+}
+
+extern "C" int dcat26_inventory_read_v1(uint64_t index,dcat26_inventory::Event *out) {
+    if(!out || out->version!=1 || out->size!=sizeof(dcat26_inventory::Event))return 1;
+    return g_independent_inventory.read(index,out)?0:2;
+}
+
+extern "C" void dcat26_inventory_fia_before_v1(const aclTensor *output) {
+    pthread_once(&g_resolve_once,resolve_real);
+    auto event=inventory_event(dcat26_inventory::FiaBefore);
+    if(g_inventory_fia_call)g_independent_inventory.error();
+    if(g_trace_enabled && g_capture_tensors) {
+        if(g_get_device)(void)g_get_device(&event.device);
+        inventory_output(event,capture_tensor(output));inventory_current_residual(event);
+    }
+    // This is before the native writer's prepare callback and before arm.
+    g_inventory_fia_call=g_independent_inventory.append(event);
+}
+
 extern "C" void fault20_qmm_gws_begin() {
     g_qmm_capture = QmmCaptureState{};
     g_qmm_capture.active = true;
@@ -2183,11 +2303,16 @@ extern "C" bool fault20_qmm_gws_commit(
         RegisteredQmmOperation registered{};
         registered.metadata = *metadata;
         registered.device = device;
+        registered.registration_epoch=g_inventory_registration_epoch.fetch_add(1,std::memory_order_relaxed)+1;
         registered.tensor_param_count = snapshot.tensor_param_count;
         std::memcpy(registered.tensor_params, snapshot.tensor_params,
                     sizeof(registered.tensor_params));
         std::lock_guard<std::mutex> lock(registry_mutex());
         qmm_registry()[snapshot.cache] = registered;
+        auto event=inventory_event(dcat26_inventory::QmmRegistration);
+        event.device=device;event.cache=reinterpret_cast<uint64_t>(snapshot.cache);
+        event.registration=registered.registration_epoch;event.flags=1;
+        g_independent_inventory.append(event);
     }
     char line[2048];
     const int written = std::snprintf(
@@ -2220,6 +2345,18 @@ extern "C" void fault26_trace_writer_gws(
     const char *api, const char *role, const aclTensor *writable,
     uint64_t workspace_size, aclOpExecutor *executor, aclnnStatus status) {
     pthread_once(&g_resolve_once, resolve_real);
+    uint64_t inventory_call=0;
+    if(api && std::strcmp(api,"aclnnFusedInferAttentionScoreV3")==0) {
+        inventory_call=g_inventory_fia_call;g_inventory_fia_call=0;
+        auto event=inventory_event(dcat26_inventory::FiaGws);
+        event.call=inventory_call;event.executor=reinterpret_cast<uint64_t>(executor);event.status=status;
+        if(g_trace_enabled && g_capture_tensors) {
+            if(g_get_device)(void)g_get_device(&event.device);
+            inventory_output(event,capture_tensor(writable));
+        }
+        if(!inventory_call)g_independent_inventory.error();
+        g_independent_inventory.append(event);
+    }
     if (!g_writer_topology_enabled || api == nullptr || role == nullptr ||
         writable == nullptr || executor == nullptr || status != ACL_SUCCESS) {
         return;
@@ -2227,6 +2364,7 @@ extern "C" void fault26_trace_writer_gws(
     const bool previous_hook = g_in_hook;
     g_in_hook = true;
     WriterTopologyRecord record{};
+    record.inventory_call=inventory_call;
     record.api = api;
     record.role = role;
     record.executor = executor;
@@ -2286,6 +2424,7 @@ extern "C" void fault26_trace_execute_begin(
     }
     if (g_execute_stack.depth >= kMaxExecuteDepth) {
         g_execute_stack.overflow = true;
+        g_independent_inventory.error();
         return;
     }
     ExecuteFrame &frame = g_execute_stack.frames[g_execute_stack.depth++];
@@ -2296,6 +2435,7 @@ extern "C" void fault26_trace_execute_begin(
     frame.executor = executor;
     frame.stream = stream;
     frame.begin_ns = monotonic_ns();
+    frame.inventory_call=0;
     log_writer_topology_interval(frame);
     if (kind == FAULT26_EXECUTE_ADD_RMS_NORM_BIAS) {
         g_active_add_rms = ActiveAddRmsAddress{};
@@ -2312,9 +2452,13 @@ extern "C" void fault26_trace_execute_begin(
             }
         }
         if (g_active_add_rms.valid) {
+            inventory_add_rms(dcat26_inventory::AddRmsEnter,g_active_add_rms.record,0);
             writer_add_rms_checkpoint(
                 "P3", g_active_add_rms.record, stream,
                 static_cast<aclnnStatus>(ACL_SUCCESS));
+        } else {
+            auto event=inventory_event(dcat26_inventory::AddRmsEnter);
+            event.executor=reinterpret_cast<uint64_t>(executor);g_independent_inventory.append(event);
         }
     }
     log_execute_event("fault26_execute_enter", frame,
@@ -2331,6 +2475,20 @@ extern "C" void fault26_trace_execute_end(uint32_t kind, const char *api,
     if (frame.kind != kind || frame.api == nullptr || api == nullptr ||
         std::strcmp(frame.api, api) != 0) {
         g_execute_stack.overflow = true;
+        g_independent_inventory.error();
+    }
+    if(kind==FAULT26_EXECUTE_FIA_V3) {
+        auto event=inventory_event(dcat26_inventory::FiaExit);event.call=frame.inventory_call;
+        event.executor=reinterpret_cast<uint64_t>(frame.executor);event.status=status;
+        g_independent_inventory.append(event);
+    }
+    if(kind==FAULT26_EXECUTE_ADD_RMS_NORM_BIAS) {
+        if(g_active_add_rms.valid)inventory_add_rms(dcat26_inventory::AddRmsExit,g_active_add_rms.record,status);
+        else {
+            auto event=inventory_event(dcat26_inventory::AddRmsExit);
+            event.executor=reinterpret_cast<uint64_t>(frame.executor);event.status=status;
+            g_independent_inventory.append(event);
+        }
     }
     log_execute_event("fault26_execute_exit", frame, status);
     if (kind == FAULT26_EXECUTE_ADD_RMS_NORM_BIAS &&
@@ -2393,6 +2551,7 @@ extern "C" void fault26_trace_add_rms_norm_bias_gws(
     }
     const char *api = "aclnnAddRmsNormBias";
     log_typed_gws_summary(api, epsilon, workspace_size, executor, status);
+    bool inventory_registered=false;
     if (status == ACL_SUCCESS && executor != nullptr) {
         const bool previous_hook = g_in_hook;
         g_in_hook = true;
@@ -2405,11 +2564,18 @@ extern "C" void fault26_trace_add_rms_norm_bias_gws(
         }
         record.sequence =
             g_add_rms_sequence.fetch_add(1, std::memory_order_relaxed) + 1;
+        inventory_add_rms(dcat26_inventory::AddRmsGws,record,status);
+        inventory_registered=true;
         g_in_hook = previous_hook;
         if (record.x2.metadata_ok != 0 && record.x_out.metadata_ok != 0) {
             std::lock_guard<std::mutex> lock(registry_mutex());
             add_rms_queues()[executor].push_back(record);
         }
+    }
+    if(!inventory_registered) {
+        auto event=inventory_event(dcat26_inventory::AddRmsGws);
+        event.executor=reinterpret_cast<uint64_t>(executor);event.status=status;
+        g_independent_inventory.append(event);
     }
     if (!g_capture_tensors) {
         return;

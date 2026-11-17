@@ -21,6 +21,7 @@ using TraceWriterGwsFn = void (*)(const char *, const char *,
                                   const aclTensor *, uint64_t,
                                   aclOpExecutor *, aclnnStatus);
 using TraceAddRmsConsumeFn = void (*)(aclrtStream);
+using InventoryFiaBeforeFn = void (*)(const aclTensor *);
 using AddRmsNormBiasGwsFn = aclnnStatus (*)(
     const aclTensor *, const aclTensor *, const aclTensor *, const aclTensor *,
     double, const aclTensor *, const aclTensor *, const aclTensor *, uint64_t *,
@@ -57,6 +58,7 @@ AddRmsNormBiasGwsFn g_real_add_rms_norm_bias_gws = nullptr;
 TraceBeginFn g_trace_begin = nullptr;
 TraceEndFn g_trace_end = nullptr;
 TraceWriterGwsFn g_trace_writer_gws = nullptr;
+InventoryFiaBeforeFn g_inventory_fia_before = nullptr;
 TraceAddRmsConsumeFn g_trace_add_rms_consume = nullptr;
 TraceAddRmsNormBiasGwsFn g_trace_add_rms_norm_bias_gws = nullptr;
 WriteGateAddRmsNormBiasGwsFn g_write_gate_add_rms_norm_bias_gws = nullptr;
@@ -87,6 +89,8 @@ void resolve_symbols() {
         dlsym(RTLD_DEFAULT, "fault26_trace_execute_end"));
     g_trace_writer_gws = reinterpret_cast<TraceWriterGwsFn>(
         dlsym(RTLD_DEFAULT, "fault26_trace_writer_gws"));
+    g_inventory_fia_before = reinterpret_cast<InventoryFiaBeforeFn>(
+        dlsym(RTLD_DEFAULT, "dcat26_inventory_fia_before_v1"));
     g_trace_add_rms_consume = reinterpret_cast<TraceAddRmsConsumeFn>(
         dlsym(RTLD_DEFAULT, "fault26_trace_add_rms_consume"));
     g_trace_add_rms_norm_bias_gws =
@@ -200,6 +204,7 @@ extern "C" aclnnStatus aclnnFusedInferAttentionScoreV3GetWorkspaceSize(
         return static_cast<aclnnStatus>(1);
     }
     const bool outermost = g_fia_gws_depth++ == 0;
+    if(outermost && g_inventory_fia_before != nullptr)g_inventory_fia_before(attention_out);
     const aclTensor *effective_attention_out = attention_out;
     if (outermost && g_fia_writer_prepare != nullptr) {
         const aclTensor *candidate = g_fia_writer_prepare(attention_out);
