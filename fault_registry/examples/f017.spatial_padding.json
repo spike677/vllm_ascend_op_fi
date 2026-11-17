@@ -1,0 +1,55 @@
+{
+  "schema": "demoncat.fault_config.v1",
+  "mechanism": {
+    "id": "17.spatial_padding",
+    "version": "1"
+  },
+  "execution": {
+    "backend": "framework",
+    "operator": "Conv3d",
+    "model": "observed",
+    "cann": "cpu"
+  },
+  "target": {
+    "layer": null,
+    "operator_call": null,
+    "rank": [
+      0
+    ],
+    "device": [
+      0
+    ],
+    "request_scope": "all",
+    "request_ids": []
+  },
+  "trigger": {
+    "mode": "first",
+    "scope": "request",
+    "max_hits": 1
+  },
+  "fault": {
+    "type": "CONV3D_PADDING_ARGUMENT",
+    "parameters": {
+      "padding": [
+        0,
+        7,
+        7
+      ],
+      "kernel_spatial": [
+        16,
+        16
+      ]
+    }
+  },
+  "lifecycle": {
+    "recovery": "restore_original",
+    "require_drain": true,
+    "require_healthy_replay": true
+  },
+  "evidence": {
+    "independent_observer": true,
+    "capture_baseline": true,
+    "capture_fault": true,
+    "capture_off": true
+  }
+}

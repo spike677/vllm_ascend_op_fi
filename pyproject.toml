@@ -7,14 +7,16 @@ name = "demoncatpfi"
 version = "0.2.0"
 description = "Owner-scoped model fault lifecycle with structural routing and explicit native integration contracts"
 requires-python = ">=3.10"
+dependencies = ["jsonschema>=4.23,<5"]
 
 [project.optional-dependencies]
 transformers = ["transformers==5.5.4"]
 
 [tool.setuptools.packages.find]
-include = ["fault_injection*", "native_execution_strategy*"]
+include = ["fault_registry*", "fault_injection*", "native_execution_strategy*"]
 exclude = ["native_execution_strategy.tests*"]
 
 [tool.setuptools.package-data]
+fault_registry = ["registry.yaml", "schemas/*.json", "schemas/mechanisms/*.json", "generated/*.json", "generated/*.csv", "generated/*.md", "generated/cards/*.md", "docs/*.md", "examples/*.json"]
 fault_injection = ["native_adapters/*.cpp", "native_adapters/*.inc", "native_adapters/*.h", "native_adapters/*.py", "native_adapters/**/*.cpp", "native_adapters/**/*.h", "native_adapters/**/*.json", "native_build/*.sh", "native_build/*.cpp", "native_build/*.md"]
 native_execution_strategy = ["README.md", "*.json", "adapters/*.json", "data/*.json", "data/**/*.json", "notes/*.json", "examples/*.json", "native/*.cpp", "native/*.h", "native/*.md"]

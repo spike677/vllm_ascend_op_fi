@@ -12,7 +12,8 @@ def main(argv=None):
     if args.command == 'catalog':
         from .capabilities import list_mechanisms
         data = {'schema': 'demoncat.remaining_mechanisms.catalog.v1',
-                'mechanisms': list_mechanisms(), 'fault39': 'separate demoncat_fault39 package'}
+                'mechanisms': list_mechanisms(), 'fault39': 'registered in common catalog; separate demoncat_fault39 execution package',
+                'registry': 'fault_registry/registry.yaml', 'mechanism_count': 17}
     else:
         from .integration import integration_manifest
         data = integration_manifest()
