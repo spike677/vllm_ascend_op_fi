@@ -1,0 +1,1820 @@
+{
+  "schema": "demoncat.independent_native39_group_review.v1",
+  "attempt": {
+    "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/result.json",
+    "bytes": 223958040,
+    "sha256": "aa77add1286acd563b9a080399820aa3d088c35422c87f1c24f9066c5f1f58d0"
+  },
+  "identity": {
+    "status": "WORKER_IDENTIFIED",
+    "worker": {
+      "pid": 1,
+      "rank": 0,
+      "logical_device": 0,
+      "configured_logical_device": 0,
+      "observed_logical_device": 0,
+      "visible_devices": null,
+      "visible_devices_source": null,
+      "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:1:57423244",
+      "worker_start_identity": "91d483e419a92cc14058ad79b7b42f1e",
+      "model_instance_id": "4f5de30b4fce82b79e3786e12cb3eada",
+      "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+      "vllm_version": "0.18.0+empty",
+      "vllm_ascend_version": "0.18.0",
+      "extension_version": "1"
+    },
+    "quarantined": false
+  },
+  "stages": {
+    "c2": {
+      "receipt": {
+        "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/runtime/serving_receipt.json",
+        "bytes": 23265194,
+        "sha256": "0d489036d28b6f234fe209a861a57016c8a5a20cde05a85d256dc9458b6b1b95"
+      },
+      "scope": {
+        "mechanism": "39.matmul_range",
+        "workload_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+        "environment_sha256": "e053267962727769b539324f139ec1ad1787bae9fdbf7c24c86f4c788aff149a",
+        "implementation_sha256": "32381a1e1652a8c029ffc1420b5fe9385a453ea97594fce5f1172110280f835b",
+        "evidence_kind": "natural_worker",
+        "model_weights_sha256": null,
+        "model_source_sha256": null
+      },
+      "counts": {
+        "targets": 113,
+        "calls": 339,
+        "eligible_calls": 113,
+        "hits": 113
+      },
+      "coverage_audit": {
+        "path": "/home/17-fault-c2c3-20261117/agent7-native39-a6-audit-v3/c2/coverage-audit.json",
+        "bytes": 9420,
+        "sha256": "470e99c2f1b7c31f7b0e5401dd188882d115f11c03850003efba76e886ffdda8"
+      },
+      "reference_count": 342,
+      "missing_artifacts": [],
+      "phases": [
+        {
+          "phase": "discovery_1",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "1-98fbd38f",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "discovery_2",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "2-914f46a3",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "reference",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "3-9f94d084",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "lossless_self",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "4-9cd1da75",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "lossless_mat2",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "5-a3134232",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "lossless_dual",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "6-b4a8d6d4",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "fault",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "7-b93a0c2d",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {
+            "changed_outputs": 113,
+            "original_input_nonfinite_from_propagation": 112,
+            "nonfinite_outputs": 113
+          },
+          "model_output_sha256": "6c4d903b028cf8ce575eaed1e7aec84f17c3f7c8ec5228c8fdd6d3928bbaa718",
+          "model_output_finite": false
+        },
+        {
+          "phase": "off_observed",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "8-aece68b9",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "off",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "9-b8695f4c",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        }
+      ],
+      "checks_passed": true,
+      "errors": [],
+      "qualifications_granted": false
+    },
+    "c3": {
+      "receipt": {
+        "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/runtime/serving_receipt.json",
+        "bytes": 27238574,
+        "sha256": "b67767357a6db13c793ae0ed016102632a1ba4a63e7b80ab7d3dd8a8c06dfc73"
+      },
+      "scope": {
+        "mechanism": "39.matmul_range",
+        "workload_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+        "environment_sha256": "e053267962727769b539324f139ec1ad1787bae9fdbf7c24c86f4c788aff149a",
+        "implementation_sha256": "32381a1e1652a8c029ffc1420b5fe9385a453ea97594fce5f1172110280f835b",
+        "evidence_kind": "natural_worker",
+        "model_weights_sha256": null,
+        "model_source_sha256": null
+      },
+      "counts": {
+        "targets": 113,
+        "calls": 452,
+        "eligible_calls": 226,
+        "hits": 226
+      },
+      "coverage_audit": {
+        "path": "/home/17-fault-c2c3-20261117/agent7-native39-a6-audit-v3/c3/coverage-audit.json",
+        "bytes": 9420,
+        "sha256": "9df4c1ec442ee7e708a556185a27d4abf50c81692da6e8e94fa1d6a66f75f4b8"
+      },
+      "reference_count": 568,
+      "missing_artifacts": [],
+      "phases": [
+        {
+          "phase": "discovery_1",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "11-a7c670ff",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "discovery_2",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "12-b539da8c",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "reference",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "13-b57b7618",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "lossless_self",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "14-8a9252bc",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "lossless_mat2",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "15-8e41c129",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "lossless_dual",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "16-ad5f5ac7",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "fault",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "17-ade3c704",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {
+            "changed_outputs": 113,
+            "original_input_nonfinite_from_propagation": 112,
+            "nonfinite_outputs": 113
+          },
+          "model_output_sha256": "6c4d903b028cf8ce575eaed1e7aec84f17c3f7c8ec5228c8fdd6d3928bbaa718",
+          "model_output_finite": false
+        },
+        {
+          "phase": "fault_repeat",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "18-ab327cac",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {
+            "changed_outputs": 113,
+            "original_input_nonfinite_from_propagation": 112,
+            "nonfinite_outputs": 113
+          },
+          "model_output_sha256": "6c4d903b028cf8ce575eaed1e7aec84f17c3f7c8ec5228c8fdd6d3928bbaa718",
+          "model_output_finite": false
+        },
+        {
+          "phase": "off_observed",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "19-81aaa678",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        },
+        {
+          "phase": "off",
+          "public_calls": 678,
+          "native_eligible_calls": 113,
+          "non_target_public_calls": 565,
+          "distinct_cache_keys": 5,
+          "actual_request_id": "20-8c72fd13",
+          "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+          "effects": {},
+          "model_output_sha256": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be",
+          "model_output_finite": true
+        }
+      ],
+      "checks_passed": true,
+      "errors": [],
+      "qualifications_granted": false
+    }
+  },
+  "healthy_generation_restored": true,
+  "statistics": {
+    "c2": {
+      "baseline_self": {
+        "schema": "demoncat.raw_statistics_audit.v1",
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "rtol": "0.00001",
+        "atol": "0.00000001",
+        "reference": "baseline",
+        "comparison_rule": "abs(F-B) > atol + rtol*abs(B)",
+        "numerical_encoding": "decimal_text",
+        "native_logs_read": false,
+        "private_tensors_read": false,
+        "expected_location_read": false,
+        "files": {
+          "baseline": {
+            "dump.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step2/rank0/dump.json",
+              "bytes": 948385,
+              "sha256": "bec0aac2007fc5c668a7e7936eee9d5e1189af1ad89a3cd47fcac907716117ab"
+            },
+            "stack.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step2/rank0/stack.json",
+              "bytes": 301960,
+              "sha256": "9588f1fa8775d9e8ba007a9a62e37c631e14bd20a39ecf1cd58286deb3106e1c"
+            },
+            "construct.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step2/rank0/construct.json",
+              "bytes": 167859,
+              "sha256": "375e97308eaea917f4a823ea0924e4a0413db566ab0146197b729adeb0fbed99"
+            },
+            "config": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/config.json",
+              "bytes": 339,
+              "sha256": "bb47c29bab27a1961bcbfb3294fedb855e7ec3a5b208b3ce0c1c1b4b627a902f"
+            },
+            "collector": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/collector_identity.json",
+              "bytes": 57197,
+              "sha256": "c3975b5f699941caedb40ed13d8d9543fedd1afd7bbf1f7109a706c5f386b529"
+            }
+          },
+          "fault": {
+            "dump.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step2/rank0/dump.json",
+              "bytes": 948385,
+              "sha256": "bec0aac2007fc5c668a7e7936eee9d5e1189af1ad89a3cd47fcac907716117ab"
+            },
+            "stack.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step2/rank0/stack.json",
+              "bytes": 301960,
+              "sha256": "9588f1fa8775d9e8ba007a9a62e37c631e14bd20a39ecf1cd58286deb3106e1c"
+            },
+            "construct.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step2/rank0/construct.json",
+              "bytes": 167859,
+              "sha256": "375e97308eaea917f4a823ea0924e4a0413db566ab0146197b729adeb0fbed99"
+            },
+            "config": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/config.json",
+              "bytes": 339,
+              "sha256": "bb47c29bab27a1961bcbfb3294fedb855e7ec3a5b208b3ce0c1c1b4b627a902f"
+            },
+            "collector": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/collector_identity.json",
+              "bytes": 57197,
+              "sha256": "c3975b5f699941caedb40ed13d8d9543fedd1afd7bbf1f7109a706c5f386b529"
+            }
+          }
+        },
+        "full_dump_inventory": {
+          "baseline": {
+            "counts": {
+              "finite": 6470,
+              "null": 6602,
+              "nan": 0,
+              "positive_inf": 0,
+              "negative_inf": 0,
+              "unsupported": 0
+            },
+            "exceptional_fields_count": 6602
+          },
+          "fault": {
+            "counts": {
+              "finite": 6470,
+              "null": 6602,
+              "nan": 0,
+              "positive_inf": 0,
+              "negative_inf": 0,
+              "unsupported": 0
+            },
+            "exceptional_fields_count": 6602
+          }
+        },
+        "boolean_extrema": {
+          "baseline": [
+            {
+              "identity": "Tensor.__gt__.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.__gt__.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.1.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.1.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.2.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.2.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.3.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.3.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.4.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.4.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            }
+          ],
+          "fault": [
+            {
+              "identity": "Tensor.__gt__.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.__gt__.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.1.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.1.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.2.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.2.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.3.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.3.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.4.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.4.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            }
+          ]
+        },
+        "comparator_sha256": "d5633600f8bde98590c4eaf367eb16d76d4e6c9ad5b0cb2f82d434ae6a377ca2",
+        "public_qualification_granted": false,
+        "root_cause_identified": false,
+        "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+        "aligned": true,
+        "records_compared": 3268,
+        "fields_compared": 6470,
+        "exact_change_count": 0,
+        "exceedance_count": 0,
+        "first_exact_change": null,
+        "first_exceedance": null,
+        "baseline_self_comparable": true,
+        "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+        "whole_dump_comparable": true,
+        "e5_statistics_comparable": true,
+        "entire_tensor_values_compared": false,
+        "first_location_is_observable_only": false,
+        "unobservable_fields_count": 6602,
+        "incomparable_fields_count": 0,
+        "exceptional_field_details_retained_in_full_report": true,
+        "full_report": {
+          "path": "/home/17-fault-c2c3-20261117/agent7-native39-a6-audit-v3/statistics/c2/baseline_self/full.json",
+          "bytes": 3936487,
+          "sha256": "d70915cad657477e1a328ba6ae02257299ef669cbf273d795a05457a0e994aab"
+        }
+      },
+      "baseline_fault": {
+        "schema": "demoncat.raw_statistics_audit.v1",
+        "task": "statistics",
+        "level": "mix",
+        "summary_mode": "statistics",
+        "rtol": "0.00001",
+        "atol": "0.00000001",
+        "reference": "baseline",
+        "comparison_rule": "abs(F-B) > atol + rtol*abs(B)",
+        "numerical_encoding": "decimal_text",
+        "native_logs_read": false,
+        "private_tensors_read": false,
+        "expected_location_read": false,
+        "files": {
+          "baseline": {
+            "dump.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step2/rank0/dump.json",
+              "bytes": 948385,
+              "sha256": "bec0aac2007fc5c668a7e7936eee9d5e1189af1ad89a3cd47fcac907716117ab"
+            },
+            "stack.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step2/rank0/stack.json",
+              "bytes": 301960,
+              "sha256": "9588f1fa8775d9e8ba007a9a62e37c631e14bd20a39ecf1cd58286deb3106e1c"
+            },
+            "construct.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step2/rank0/construct.json",
+              "bytes": 167859,
+              "sha256": "375e97308eaea917f4a823ea0924e4a0413db566ab0146197b729adeb0fbed99"
+            },
+            "config": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/config.json",
+              "bytes": 339,
+              "sha256": "bb47c29bab27a1961bcbfb3294fedb855e7ec3a5b208b3ce0c1c1b4b627a902f"
+            },
+            "collector": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/collector_identity.json",
+              "bytes": 57197,
+              "sha256": "c3975b5f699941caedb40ed13d8d9543fedd1afd7bbf1f7109a706c5f386b529"
+            }
+          },
+          "fault": {
+            "dump.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step6/rank0/dump.json",
+              "bytes": 943001,
+              "sha256": "18a5bcad61a71ea657af5ae778c743a96179223c9d840d34009d39c660ea031a"
+            },
+            "stack.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step6/rank0/stack.json",
+              "bytes": 301960,
+              "sha256": "9588f1fa8775d9e8ba007a9a62e37c631e14bd20a39ecf1cd58286deb3106e1c"
+            },
+            "construct.json": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/observation/step6/rank0/construct.json",
+              "bytes": 167859,
+              "sha256": "375e97308eaea917f4a823ea0924e4a0413db566ab0146197b729adeb0fbed99"
+            },
+            "config": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/config.json",
+              "bytes": 339,
+              "sha256": "bb47c29bab27a1961bcbfb3294fedb855e7ec3a5b208b3ce0c1c1b4b627a902f"
+            },
+            "collector": {
+              "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c2/statistics/collector_identity.json",
+              "bytes": 57197,
+              "sha256": "c3975b5f699941caedb40ed13d8d9543fedd1afd7bbf1f7109a706c5f386b529"
+            }
+          }
+        },
+        "full_dump_inventory": {
+          "baseline": {
+            "counts": {
+              "finite": 6470,
+              "null": 6602,
+              "nan": 0,
+              "positive_inf": 0,
+              "negative_inf": 0,
+              "unsupported": 0
+            },
+            "exceptional_fields_count": 6602
+          },
+          "fault": {
+            "counts": {
+              "finite": 2330,
+              "null": 6602,
+              "nan": 1906,
+              "positive_inf": 2234,
+              "negative_inf": 0,
+              "unsupported": 0
+            },
+            "exceptional_fields_count": 10742
+          }
+        },
+        "boolean_extrema": {
+          "baseline": [
+            {
+              "identity": "Tensor.__gt__.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.__gt__.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.1.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.1.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.2.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.2.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.2.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.3.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.3.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.3.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.4.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.4.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.4.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            }
+          ],
+          "fault": [
+            {
+              "identity": "Tensor.__gt__.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.__gt__.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.any.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.0.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.1.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.1.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/output/0",
+              "field": "Max",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Tensor.all.1.forward/output/0",
+              "field": "Min",
+              "raw_json_value": true,
+              "numeric_value": "1"
+            },
+            {
+              "identity": "Torch.isfinite.2.forward/output/0",
+              "field": "Max",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Torch.isfinite.2.forward/output/0",
+              "field": "Min",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.2.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.2.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.2.forward/output/0",
+              "field": "Max",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.2.forward/output/0",
+              "field": "Min",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Torch.isfinite.3.forward/output/0",
+              "field": "Max",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Torch.isfinite.3.forward/output/0",
+              "field": "Min",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.3.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.3.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.3.forward/output/0",
+              "field": "Max",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.3.forward/output/0",
+              "field": "Min",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Torch.isfinite.4.forward/output/0",
+              "field": "Max",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Torch.isfinite.4.forward/output/0",
+              "field": "Min",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.4.forward/input_args/0",
+              "field": "Max",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.4.forward/input_args/0",
+              "field": "Min",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.4.forward/output/0",
+              "field": "Max",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            },
+            {
+              "identity": "Tensor.all.4.forward/output/0",
+              "field": "Min",
+              "raw_json_value": false,
+              "numeric_value": "0"
+            }
+          ]
+        },
+        "comparator_sha256": "d5633600f8bde98590c4eaf367eb16d76d4e6c9ad5b0cb2f82d434ae6a377ca2",
+        "public_qualification_granted": false,
+        "root_cause_identified": false,
+        "status": "INCOMPARABLE_STATISTICS",
+        "aligned": true,
+        "records_compared": 3268,
+        "fields_compared": 4564,
+        "exact_change_count": 2541,
+        "exceedance_count": 2541,
+        "first_exact_change": {
+          "index": 58,
+          "identity": "Functional.linear.0.forward/output/0",
+          "field": "Max",
+          "baseline": "5.1875",
+          "fault": "+inf",
+          "absolute_difference": null,
+          "tolerance": null,
+          "relative_change": null,
+          "reason": "NONFINITE_TRANSITION"
+        },
+        "first_exceedance": {
+          "index": 58,
+          "identity": "Functional.linear.0.forward/output/0",
+          "field": "Max",
+          "baseline": "5.1875",
+          "fault": "+inf",
+          "absolute_difference": null,
+          "tolerance": null,
+          "relative_change": null,
+          "reason": "NONFINITE_TRANSITION",
+          "preceding_unobservable_fields": 126,
+          "preceding_incomparable_fields": 0
+        },
+        "baseline_self_comparable": true,
+        "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+        "whole_dump_comparable": false,
+        "e5_statistics_comparable": false,
+        "entire_tensor_values_compared": false,
+        "first_location_is_observable_only": true,
+        "unobservable_fields_count": 6602,
+        "incomparable_fields_count": 1906,
+        "exceptional_field_details_retained_in_full_report": true,
+        "full_report": {
+          "path": "/home/17-fault-c2c3-20261117/agent7-native39-a6-audit-v3/statistics/c2/baseline_fault/full.json",
+          "bytes": 5276187,
+          "sha256": "3aa62aca0d9e6631d0e9956d7bd92505edacd77559c0a2780f65587facea9cff"
+        }
+      }
+    },
+    "c3": {
+      "baseline_self": {
+        "status": "MISSING_RAW_CAPTURE",
+        "missing_files": [
+          "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/statistics/observation/step2/rank0/construct.json",
+          "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/statistics/observation/step2/rank0/dump.json",
+          "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/statistics/observation/step2/rank0/stack.json"
+        ],
+        "e5_statistics_comparable": false,
+        "first_exceedance": null,
+        "qualifications_granted": false
+      },
+      "baseline_fault": {
+        "status": "MISSING_RAW_CAPTURE",
+        "missing_files": [
+          "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/statistics/observation/step2/rank0/construct.json",
+          "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/statistics/observation/step2/rank0/dump.json",
+          "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/statistics/observation/step2/rank0/stack.json",
+          "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/statistics/observation/step6/rank0/construct.json",
+          "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/statistics/observation/step6/rank0/dump.json",
+          "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/c3/statistics/observation/step6/rank0/stack.json"
+        ],
+        "e5_statistics_comparable": false,
+        "first_exceedance": null,
+        "qualifications_granted": false
+      }
+    }
+  },
+  "source_imports": [
+    [
+      {
+        "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+        "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+      },
+      {
+        "path": "/installed/demoncat_fault39/coverage_adapter.py",
+        "sha256": "49a0a2777915100f979e1bfafdbd816287e0d7fbf06d03de3df8ef724128fbb4"
+      },
+      {
+        "path": "/installed/fault_injection/coverage_session.py",
+        "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+      }
+    ],
+    [
+      {
+        "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+        "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+      },
+      {
+        "path": "/installed/demoncat_fault39/coverage_adapter.py",
+        "sha256": "49a0a2777915100f979e1bfafdbd816287e0d7fbf06d03de3df8ef724128fbb4"
+      },
+      {
+        "path": "/installed/fault_injection/coverage_session.py",
+        "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+      }
+    ]
+  ],
+  "identities": {
+    "controller": {
+      "path": "/home/17-fault-c2c3-20261117/providers39-a6/controller.json",
+      "bytes": 12215,
+      "sha256": "1088fc1d18d45ea2f5a5f0c9e984b4229851164feb0fbf8271159e3e475350d2"
+    },
+    "case_manifest": {
+      "path": "/home/17-fault-c2c3-20261117/providers39-a6-cases.json",
+      "bytes": 3418,
+      "sha256": "69100bb3e4cc8811bcc93cf363aa804b76339f64c73880d996a4110247303244"
+    },
+    "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+    "source_root": "/home/17-fault-c2c3-20261117/source-a21",
+    "installed_root": "/home/17-fault-c2c3-20261117/packages-a5/installed",
+    "imported_sources": [
+      {
+        "recorded": {
+          "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+          "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+        },
+        "source": {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/src/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+          "bytes": 15625,
+          "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+        },
+        "installed": {
+          "path": "/home/17-fault-c2c3-20261117/packages-a5/installed/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+          "bytes": 15625,
+          "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+        },
+        "exact": true
+      },
+      {
+        "recorded": {
+          "path": "/installed/demoncat_fault39/coverage_adapter.py",
+          "sha256": "49a0a2777915100f979e1bfafdbd816287e0d7fbf06d03de3df8ef724128fbb4"
+        },
+        "source": {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/fault39/src/demoncat_fault39/coverage_adapter.py",
+          "bytes": 29075,
+          "sha256": "49a0a2777915100f979e1bfafdbd816287e0d7fbf06d03de3df8ef724128fbb4"
+        },
+        "installed": {
+          "path": "/home/17-fault-c2c3-20261117/packages-a5/installed/demoncat_fault39/coverage_adapter.py",
+          "bytes": 29075,
+          "sha256": "49a0a2777915100f979e1bfafdbd816287e0d7fbf06d03de3df8ef724128fbb4"
+        },
+        "exact": true
+      },
+      {
+        "recorded": {
+          "path": "/installed/fault_injection/coverage_session.py",
+          "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+        },
+        "source": {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/fault_injection/coverage_session.py",
+          "bytes": 30554,
+          "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+        },
+        "installed": {
+          "path": "/home/17-fault-c2c3-20261117/packages-a5/installed/fault_injection/coverage_session.py",
+          "bytes": 30554,
+          "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+        },
+        "exact": true
+      },
+      {
+        "recorded": {
+          "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+          "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+        },
+        "source": {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/src/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+          "bytes": 15625,
+          "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+        },
+        "installed": {
+          "path": "/home/17-fault-c2c3-20261117/packages-a5/installed/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+          "bytes": 15625,
+          "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+        },
+        "exact": true
+      },
+      {
+        "recorded": {
+          "path": "/installed/demoncat_fault39/coverage_adapter.py",
+          "sha256": "49a0a2777915100f979e1bfafdbd816287e0d7fbf06d03de3df8ef724128fbb4"
+        },
+        "source": {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/fault39/src/demoncat_fault39/coverage_adapter.py",
+          "bytes": 29075,
+          "sha256": "49a0a2777915100f979e1bfafdbd816287e0d7fbf06d03de3df8ef724128fbb4"
+        },
+        "installed": {
+          "path": "/home/17-fault-c2c3-20261117/packages-a5/installed/demoncat_fault39/coverage_adapter.py",
+          "bytes": 29075,
+          "sha256": "49a0a2777915100f979e1bfafdbd816287e0d7fbf06d03de3df8ef724128fbb4"
+        },
+        "exact": true
+      },
+      {
+        "recorded": {
+          "path": "/installed/fault_injection/coverage_session.py",
+          "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+        },
+        "source": {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/fault_injection/coverage_session.py",
+          "bytes": 30554,
+          "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+        },
+        "installed": {
+          "path": "/home/17-fault-c2c3-20261117/packages-a5/installed/fault_injection/coverage_session.py",
+          "bytes": 30554,
+          "sha256": "0e3ee343340d9d27bd1ccaaae52c3225497ffb9d37f7aea9218d26c794b221c1"
+        },
+        "exact": true
+      }
+    ],
+    "observer_bindings": [
+      {
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/packages-a5/installed/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+          "bytes": 15625,
+          "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+        },
+        "source": {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/src/demoncat/runtime/vllm_ascend/worker_extension/serving39_coverage.py",
+          "bytes": 15625,
+          "sha256": "cb46912daac3259ef841bf0d269c4855c5d3caf51ca6209c9e28711776f6a825"
+        },
+        "exact": true
+      },
+      {
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/packages-a5/installed/demoncat/runtime/vllm_ascend/worker_extension/collector_dispatch.py",
+          "bytes": 5051,
+          "sha256": "1b08a98d6f53b5ecb9bb18038a06100244b004e4eb77e092d46a76510d36e67e"
+        },
+        "source": {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/src/demoncat/runtime/vllm_ascend/worker_extension/collector_dispatch.py",
+          "bytes": 5051,
+          "sha256": "1b08a98d6f53b5ecb9bb18038a06100244b004e4eb77e092d46a76510d36e67e"
+        },
+        "exact": true
+      },
+      {
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/packages-a5/installed/demoncat/runtime/vllm_ascend/worker_extension/gemm_lineage.py",
+          "bytes": 5083,
+          "sha256": "4b38e1fc3c4297d8e6f9c0b0f8396a572bade50e68ce087fa2a544f071d6ceb7"
+        },
+        "source": {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/src/demoncat/runtime/vllm_ascend/worker_extension/gemm_lineage.py",
+          "bytes": 5083,
+          "sha256": "4b38e1fc3c4297d8e6f9c0b0f8396a572bade50e68ce087fa2a544f071d6ceb7"
+        },
+        "exact": true
+      }
+    ],
+    "observer_sha256": "a104592e1ff4e3956da0d28648e19b4322a35b676295886b3e05c1e8461f2009",
+    "frozen_scripts": [
+      {
+        "recorded": {
+          "original": "/home/17-fault-c2c3-20261117/source-a21/experiments/c2c3_closure_20261117/providers39_worker_probe.py",
+          "destination": "/probe.py",
+          "sha256": "c682b7fc179ccb583dfbef4f0d78b90d4e7da7b8b930de6647741c99a84f63d6",
+          "frozen": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/inputs/c682b7fc179ccb583dfbef4f0d78b90d4e7da7b8b930de6647741c99a84f63d6-providers39_worker_probe.py"
+        },
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/providers39-a6/providers39-qwen-c2c3/inputs/c682b7fc179ccb583dfbef4f0d78b90d4e7da7b8b930de6647741c99a84f63d6-providers39_worker_probe.py",
+          "bytes": 9970,
+          "sha256": "c682b7fc179ccb583dfbef4f0d78b90d4e7da7b8b930de6647741c99a84f63d6"
+        }
+      }
+    ],
+    "native_build_receipt": {
+      "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/receipt.json",
+      "bytes": 3672,
+      "sha256": "aef9d4a0b84b32e6df11012678cab5d13efcc5f9d493ceae807c5bb4a264416a"
+    },
+    "native_build_artifacts": {
+      "native/abi_facts.json": {
+        "expected": "9e0434cddcc4904842985a5d0cc41b15d4b88db5bbd94f8d68ed9ac14081cd21",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/abi_facts.json",
+          "bytes": 166,
+          "sha256": "9e0434cddcc4904842985a5d0cc41b15d4b88db5bbd94f8d68ed9ac14081cd21"
+        }
+      },
+      "native/abi_probe": {
+        "expected": "e8ef0bcc0c177609fcc4e47781a87f3d9f7be0e925d23b7138f70299a40a9ed5",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/abi_probe",
+          "bytes": 21696,
+          "sha256": "e8ef0bcc0c177609fcc4e47781a87f3d9f7be0e925d23b7138f70299a40a9ed5"
+        }
+      },
+      "native/build_manifest.json": {
+        "expected": "4016161bff94bf54be7292cbfeb0ea7f7adb3a32ba13c739010cff2257d86974",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/build_manifest.json",
+          "bytes": 969,
+          "sha256": "4016161bff94bf54be7292cbfeb0ea7f7adb3a32ba13c739010cff2257d86974"
+        }
+      },
+      "native/fault39_build_profile.h": {
+        "expected": "21bc76d5921adb0a775bfe857189e036d9598afa5fc8cdceb5d46ebd23c3374b",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/fault39_build_profile.h",
+          "bytes": 1297,
+          "sha256": "21bc76d5921adb0a775bfe857189e036d9598afa5fc8cdceb5d46ebd23c3374b"
+        }
+      },
+      "native/identity_tests.json": {
+        "expected": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/identity_tests.json",
+          "bytes": 319,
+          "sha256": "bd23f8e8c7721566d17c40b356efb44179fdb0c8637c930a4724c9fa61c439c7"
+        }
+      },
+      "native/libfault39_native_v1.so": {
+        "expected": "04f834ef2e479f2578ec2c33a7e895097a2eb2a5c0e619dea33a497c5bfbc07c",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/libfault39_native_v1.so",
+          "bytes": 121944,
+          "sha256": "04f834ef2e479f2578ec2c33a7e895097a2eb2a5c0e619dea33a497c5bfbc07c"
+        }
+      },
+      "native/libopapi.so": {
+        "expected": "f346583372d3c8f09a17b19ff1eca9ecb646f41a79cb68862373d5a25c9be160",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/libopapi.so",
+          "bytes": 47672,
+          "sha256": "f346583372d3c8f09a17b19ff1eca9ecb646f41a79cb68862373d5a25c9be160"
+        }
+      },
+      "native/libopapi_nn.so": {
+        "expected": "7c964184b4e5c3310bb982a4dee4c165cb952a49dd350fcf3856fb03dedc8c02",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/libopapi_nn.so",
+          "bytes": 47672,
+          "sha256": "7c964184b4e5c3310bb982a4dee4c165cb952a49dd350fcf3856fb03dedc8c02"
+        }
+      },
+      "native/real/libopapi_nn_real.so": {
+        "expected": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/real/libopapi_nn_real.so",
+          "bytes": 15874424,
+          "sha256": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0"
+        }
+      },
+      "native/real/libopapi_real.so": {
+        "expected": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/real/libopapi_real.so",
+          "bytes": 38454680,
+          "sha256": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996"
+        }
+      },
+      "native/test_core": {
+        "expected": "2d4b85698b49a47d68e7cd308dad4bc5a8a79f194541289b0a9de3c578bb49a8",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/test_core",
+          "bytes": 18792,
+          "sha256": "2d4b85698b49a47d68e7cd308dad4bc5a8a79f194541289b0a9de3c578bb49a8"
+        }
+      },
+      "native/version_profile.json": {
+        "expected": "f33b055c8b493e2a7523f98e15a7828946a7a9792859a3827945a10412d996f8",
+        "actual": {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/version_profile.json",
+          "bytes": 262304,
+          "sha256": "f33b055c8b493e2a7523f98e15a7828946a7a9792859a3827945a10412d996f8"
+        }
+      }
+    },
+    "build_profile_sha256": "e31eefa42824b1960e7f2e1e58f3130dd4b07a054b6d3b15bfb2787885e75032",
+    "checks_passed": true,
+    "errors": []
+  },
+  "checks_passed": true,
+  "qualifications_granted": false
+}
