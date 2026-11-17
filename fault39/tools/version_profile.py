@@ -112,6 +112,7 @@ def generate(toolkit,real,split,out,abi_facts,source_opapi,operator='matmul',mat
         source_paths = [
             native / 'runtime_identity.h', native / 'test_identity.py',
             native / 'metadata_array_owner.h', native / 'test_metadata_ownership.py',
+            native / 'metadata_array_state.h', native / 'metadata_array_witness.h',
             native / 'metadata_ownership_fixture.cpp',
             Path(__file__).resolve(), Path(__file__).resolve().with_name('deployment_profile.py'),
             *(adapter_dir / name for name in ('build_qmm.sh', 'fault20_abi_probe.cpp',
@@ -151,6 +152,8 @@ def generate(toolkit,real,split,out,abi_facts,source_opapi,operator='matmul',mat
         state_version=1, counter_scope='SDK_GETTER_ARRAYS_PER_LOADED_PROXY',
         reset_supported=False, runtime_quiescent_readback_required=True,
         numerical_or_resource_qualification=False)
+    if not isolated_fault20:
+        profile['metadata_array_ownership']['cached_registration_witness'] = 'fault39_gws_commit_arrays_v1'
     if isolated_fault20:
         distribution = importlib.metadata.distribution('torch-npu')
         torch_npu_library = Path(distribution.locate_file('torch_npu/lib/libtorch_npu.so'))

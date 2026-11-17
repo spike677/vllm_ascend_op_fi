@@ -2,6 +2,7 @@
 // from l4_buffer_substitute_allhit_v1, validated historically with CANN 8.5.1.
 // There are no other fault routes in this library.
 #include "fault39_core.h"
+#include "metadata_array_witness.h"
 #include "fault39_build_profile.h"
 #include <acl/acl.h>
 #include <aclnn/opdev/op_cache.h>
@@ -140,7 +141,8 @@ bool serving_inputs_match(const Context& ctx,const Fault39MatmulMetadata& m,
  return std::equal(actual,actual+kServingInputCount,ctx.serving.values);
 }
 // END CPU_TESTABLE_SERVING_INPUT_GUARD
-struct Registered { Fault39MatmulMetadata metadata{}; int device=-1,rank=-1; uint64_t tensors[3]{},cache_epoch=0; };
+struct Registered { Fault39MatmulMetadata metadata{}; int device=-1,rank=-1; uint64_t tensors[3]{},cache_epoch=0;
+ dcat_metadata_witness::MatmulCapture metadata_arrays{}; };
 struct Candidate { Fault39MatmulMetadata metadata{}; int rank=-1,device=-1; std::set<std::pair<Cache*,uint64_t>> caches; std::map<std::pair<Cache*,uint64_t>,uint64_t> cache_observations; uint64_t observations=0; };
 struct Lease {
  void* device[2]{}; void* host[3]{}; aclrtStream stream=nullptr; uint64_t generation=0;
@@ -583,7 +585,8 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
     const auto current=s.cache_epochs.find(identity.first);const auto registered=s.registry.find(identity.first);
     const bool live=current!=s.cache_epochs.end() && current->second==identity.second && registered!=s.registry.end() && registered->second.cache_epoch==identity.second;
     j<<"{\"address\":"<<reinterpret_cast<uintptr_t>(identity.first)<<",\"epoch\":"<<identity.second
-     <<",\"observations\":"<<c.cache_observations.at(identity)<<",\"registration_live\":"<<(live?"true":"false")<<'}';}
+     <<",\"observations\":"<<c.cache_observations.at(identity)<<",\"registration_live\":"<<(live?"true":"false")
+     <<",\"metadata_arrays\":"<<(live?dcat_metadata_witness::json(registered->second.metadata_arrays):"null")<<'}';}
    j<<"]}";}
   j<<"]}";const auto text=j.str();if(text.size()>=INT32_MAX)return F39_BUSY;
   const size_t need=text.size()+1;if(out && capacity>=need)std::memcpy(out,text.c_str(),need);return int(need);
@@ -591,7 +594,8 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
 }
 extern "C" void fault39_gws_begin_v1(){capture={};capture.active=true;}
 extern "C" void fault39_gws_abort_v1(){capture={};}
-extern "C" int fault39_gws_commit_v1(const Fault39MetadataEnvelopeV1* envelope) {
+static int commit_metadata(const Fault39MetadataEnvelopeV1* envelope,
+ const DcatMetadataArrayStateV1* before,const DcatMetadataArrayStateV1* after) {
  const Capture c=capture;capture={};State& s=state();std::lock_guard<std::mutex> lock(s.mutex);++s.metadata_calls;
  if(!envelope || envelope->magic!=FAULT39_METADATA_MAGIC || envelope->version!=1 || envelope->size!=sizeof(*envelope) ||
   envelope->payload_size!=sizeof(Fault39MatmulMetadata) || !envelope->payload)return F39_ABI_MISMATCH;
@@ -601,7 +605,20 @@ extern "C" int fault39_gws_commit_v1(const Fault39MetadataEnvelopeV1* envelope) 
  int device=-1;if(!get_device || get_device(&device)!=ACL_SUCCESS)return F39_UNSUPPORTED_RUNTIME;
  Registered r{};r.metadata=m;r.device=device;r.rank=actual_rank();r.cache_epoch=s.cache_epochs[c.cache];
  if(!r.cache_epoch)return F39_INVALID_CONFIG;
+ if(before || after) {
+  if(!before || !after)return F39_INVALID_CONFIG;
+  r.metadata_arrays.before=*before;r.metadata_arrays.after=*after;
+  if(!dcat_metadata_witness::valid(r.metadata_arrays))return F39_INVALID_CONFIG;
+ }
  std::copy(c.tensors,c.tensors+3,r.tensors);s.registry[c.cache]=r;return 0;
+}
+extern "C" int fault39_gws_commit_v1(const Fault39MetadataEnvelopeV1* envelope) {
+ return commit_metadata(envelope,nullptr,nullptr);
+}
+extern "C" int fault39_gws_commit_arrays_v1(const Fault39MetadataEnvelopeV1* envelope,
+ const DcatMetadataArrayStateV1* before,const DcatMetadataArrayStateV1* after) {
+ if(!before || !after){capture={};return F39_INVALID_CONFIG;}
+ return commit_metadata(envelope,before,after);
 }
 namespace op::internal {
 void AddParamToBuf(const aclTensor* tensor){resolve();const bool nested=forwarding_param;forwarding_param=true;if(real_paramc)real_paramc(tensor);forwarding_param=nested;if(!nested && capture.active){const auto i=capture.params++;if(i<3)capture.tensors[i]=reinterpret_cast<uintptr_t>(tensor);}}

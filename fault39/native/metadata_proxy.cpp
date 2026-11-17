@@ -1,6 +1,7 @@
 // Minimal extraction of the CANN 8.5.1 historical lifecycle proxy.
 #include "fault39_metadata.h"
 #include "metadata_array_owner.h"
+#include "metadata_array_witness.h"
 #include "fault39_build_profile.h"
 #include <acl/acl.h>
 #include <aclnn/acl_meta.h>
@@ -25,7 +26,9 @@ using Execute=aclnnStatus(*)(void*,uint64_t,aclOpExecutor*,aclrtStream);
 static_assert(std::is_same<decltype(&aclnnMatmulGetWorkspaceSize),Getws>::value,"Matmul GWS ABI changed");
 static_assert(std::is_same<decltype(&aclnnMatmul),Execute>::value,"Matmul execute ABI changed");
 using Begin=void(*)(); using Commit=int(*)(const Fault39MetadataEnvelopeV1*);
+using CommitArrays=int(*)(const Fault39MetadataEnvelopeV1*,const DcatMetadataArrayStateV1*,const DcatMetadataArrayStateV1*);
 Getws getws=nullptr; Execute execute=nullptr; Begin begin=nullptr,abort_capture=nullptr; Commit commit=nullptr;
+CommitArrays commit_arrays=nullptr;
 std::once_flag once;
 void resolve() {
  // A split-opapi lookup can be handle-specific. Forward to this proxy's
@@ -56,6 +59,7 @@ void resolve() {
  begin=reinterpret_cast<Begin>(dlsym(RTLD_DEFAULT,"fault39_gws_begin_v1"));
  abort_capture=reinterpret_cast<Begin>(dlsym(RTLD_DEFAULT,"fault39_gws_abort_v1"));
  commit=reinterpret_cast<Commit>(dlsym(RTLD_DEFAULT,"fault39_gws_commit_v1"));
+ commit_arrays=reinterpret_cast<CommitArrays>(dlsym(RTLD_DEFAULT,"fault39_gws_commit_arrays_v1"));
 }
 }
 extern "C" uint32_t fault39_metadata_proxy_abi_v1(){return 1;}
@@ -65,10 +69,14 @@ extern "C" int fault39_metadata_arrays_v1(DcatMetadataArrayStateV1* output) {
 extern "C" aclnnStatus aclnnMatmulGetWorkspaceSize(const aclTensor* self,const aclTensor* mat2,
  aclTensor* out,int8_t cube_math_type,uint64_t* workspace_size,aclOpExecutor** executor) {
  std::call_once(once,resolve); if(!getws)return 1;
- const bool hooks=begin && commit && abort_capture;
+ const bool hooks=begin && commit && commit_arrays && abort_capture;
  if(hooks)begin();
  const auto status=getws(self,mat2,out,cube_math_type,workspace_size,executor);
  if(!hooks)return status;
+ dcat_metadata_witness::MatmulCapture witness;
+ if(dcat_metadata::snapshot(&witness.before) || !dcat_metadata_witness::quiescent(witness.before)) {
+  abort_capture();return status;
+ }
  Fault39MatmulMetadata m{};
  if(status!=ACL_SUCCESS || !capture_tensor_metadata(self,&m.self) ||
     !capture_tensor_metadata(mat2,&m.mat2) || !capture_tensor_metadata(out,&m.out)) {
@@ -81,7 +89,10 @@ extern "C" aclnnStatus aclnnMatmulGetWorkspaceSize(const aclTensor* self,const a
   for(int j=i+1;j<3;++j)if(ts[i]->storage_ptr==ts[j]->storage_ptr)m.any_shared_storage=1;
  }
  const Fault39MetadataEnvelopeV1 envelope{FAULT39_METADATA_MAGIC,1,sizeof(Fault39MetadataEnvelopeV1),sizeof(m),0,&m};
- (void)commit(&envelope); return status;
+ if(dcat_metadata::snapshot(&witness.after) || !dcat_metadata_witness::valid(witness)) {
+  abort_capture();return status;
+ }
+ (void)commit_arrays(&envelope,&witness.before,&witness.after); return status;
 }
 extern "C" aclnnStatus aclnnMatmul(void* workspace,uint64_t workspace_size,aclOpExecutor* executor,aclrtStream stream) {
  std::call_once(once,resolve); return execute?execute(workspace,workspace_size,executor,stream):1;

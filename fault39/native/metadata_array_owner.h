@@ -3,16 +3,10 @@
 
 #include <atomic>
 #include <cstdint>
+#include "metadata_array_state.h"
 
 // Additive, read-only ABI. Each metadata proxy owns an independent instance.
 // Counts concern SDK getter arrays only, not all host or device allocations.
-struct DcatMetadataArrayStateV1 {
-    uint32_t version{1}, size{sizeof(DcatMetadataArrayStateV1)};
-    uint64_t instance{}, capture_calls{}, active_captures{};
-    uint64_t getter_calls{}, active_getters{}, getter_failures{}, getter_exceptions{};
-    uint64_t capture_exceptions{}, acquired_arrays{}, released_arrays{}, live_arrays{};
-    uint64_t peak_live_arrays{}, ownership_errors{}, revision{};
-};
 
 // Internal linkage is essential: opapi and opapi_nn must not share counters
 // through ELF interposition or GNU-unique inline variables.

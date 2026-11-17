@@ -1,6 +1,7 @@
 // CPU-only SDK ownership simulation. Production function bodies are inserted
 // byte-for-byte by test_metadata_ownership.py; no CANN or NPU is loaded.
 #include "metadata_array_owner.h"
+#include "metadata_array_witness.h"
 #include "fault39_metadata.h"
 #include "fault20_buffer_api.h"
 #include <algorithm>
@@ -165,6 +166,20 @@ static bool capture(int route,const aclTensor* tensor,const char* api="api") {
 }
 int main() {
     track_arrays=true;aclTensor tensor;uint64_t scenarios=0;
+    dcat_metadata_witness::MatmulCapture witness;
+    assert(dcat_metadata::snapshot(&witness.before)==0);
+    for(int i=0;i<3;++i){control={};assert(capture(2,&tensor));}
+    assert(dcat_metadata::snapshot(&witness.after)==0 && dcat_metadata_witness::valid(witness));
+    assert(dcat_metadata_witness::json(witness)!="null");clean();++scenarios;
+    for(int defect=0;defect<5;++defect) {
+        auto bad=witness;
+        if(defect==0)++bad.after.instance;
+        if(defect==1)--bad.after.released_arrays;
+        if(defect==2)bad.after=bad.before;
+        if(defect==3)++bad.after.getter_failures;
+        if(defect==4)++bad.after.live_arrays;
+        assert(!dcat_metadata_witness::valid(bad) && dcat_metadata_witness::json(bad)=="null");++scenarios;
+    }
     // Full success, every getter failure before/after allocation, and unwind.
     for(int route=0;route<4;++route) {
         control={};assert(capture(route,&tensor));clean();++scenarios;

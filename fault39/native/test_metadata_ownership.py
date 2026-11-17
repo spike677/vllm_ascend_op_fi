@@ -27,6 +27,7 @@ def inputs(root, writer26=False):
     native = root / 'fault39/native'
     f20 = root / 'fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp'
     names = [f20, native / 'metadata_capture.inc', native / 'metadata_array_owner.h',
+             native / 'metadata_array_state.h', native / 'metadata_array_witness.h',
              native / 'metadata_ownership_fixture.cpp', native / 'fault39_metadata.h',
              root / 'fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/fault20_buffer_api.h']
     text = f20.read_text(encoding='utf-8')

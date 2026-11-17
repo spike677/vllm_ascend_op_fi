@@ -54,7 +54,7 @@ _RECIPES = (
     Recipe("fault39.matmul.abi0.v1", "39.matmul_range", "aclnnMatmul", "opcache_proxy",
            "fault39/native/build.sh", "FAULT39_OUTPUT_DIR", "libfault39_native_v1.so",
            ("fault39_abi_version_v1", "fault39_build_profile_v1", "fault39_configure_v1",
-            "fault39_disable_v1", "fault39_clean_v1", "fault39_snapshot_v1"),
+            "fault39_disable_v1", "fault39_clean_v1", "fault39_snapshot_v1", "fault39_gws_commit_arrays_v1"),
            _COMMON_SOURCES + ("fault39/native", "fault39/tools/version_profile.py", "fault39/tools/deployment_profile.py",
                "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp",
                "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/fault20_buffer_api.h"),

@@ -56,6 +56,7 @@ nm -D -C "$output_dir/libfault39_native_v1.so" | grep -F 'op::internal::OpExecCa
 nm -D -C "$output_dir/libfault39_native_v1.so" | grep -F 'op::internal::AddOpExecCache('
 nm -D -C "$output_dir/libfault39_native_v1.so" | grep -F 'op::internal::AddParamToBuf('
 nm -D "$output_dir/libfault39_native_v1.so" | grep -E 'fault39_(abi_version|build_profile|configure|disable|clean|snapshot|gws_commit)_v1'
+nm -D "$output_dir/libfault39_native_v1.so" | grep -E '[[:space:]]fault39_gws_commit_arrays_v1$'
 if nm -D "$output_dir/libfault39_native_v1.so" | grep -Eq 'fault(20|26|28)_'; then echo 'REFUSE: unexpected old fault ABI' >&2;exit 1;fi
 LD_BIND_NOW=1 python3 "$source_dir/test_control.py" "$output_dir/libfault39_native_v1.so"
 python3 "$source_dir/test_identity.py" --output "$output_dir/identity_tests.json"
