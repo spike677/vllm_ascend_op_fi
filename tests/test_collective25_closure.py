@@ -1,4 +1,5 @@
 """Failure-sensitive contracts; CPU receipts never qualify HCCL or injection."""
+import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -12,6 +13,17 @@ from experiments.c2c3_closure_20261117.collective25_supervisor import assess
 
 
 class Collective25Closure(unittest.TestCase):
+    def test_reviewed_smoke_has_valid_hccl_timeout_and_frozen_source(self):
+        root = Path(__file__).resolve().parents[1]
+        path = root / 'experiments/c2c3_closure_20261117/collective25_queue_smoke.json'
+        for case in json.loads(path.read_text()):
+            # CANN 8.5.1 rejected 60 with EI0001 on the actual first attempt.
+            self.assertTrue(120 <= int(case['env']['HCCL_CONNECT_TIMEOUT']) <= 7200)
+            self.assertEqual(case['review']['expected_hits'], 0)
+            self.assertEqual(case['review']['physical_cards'], [2, 5])
+            for relative, expected in case['review']['build_fingerprint']['files'].items():
+                self.assertEqual(hashlib.sha256((root / relative).read_bytes()).hexdigest(), expected)
+
     def test_release_requires_close_and_drops_local_group_observations(self):
         session = ReduceScatterSession(torch.nn.Identity(), simulation=True)
         session.observations.append(dict(group=object()))
