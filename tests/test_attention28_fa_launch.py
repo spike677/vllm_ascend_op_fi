@@ -79,7 +79,8 @@ class FaLaunchTests(unittest.TestCase):
         call, host, records, bundle, pod = fixture
         (root / 'runtime.jsonl').write_text(''.join(json.dumps(row) + '\n' for row in records))
         decoded = pod if decoder is None else decoder
-        with patch.object(fa.subprocess, 'run', return_value=NS(stdout=json.dumps(decoded))):
+        document = dict(schema='nes.fa.public_pod_values.v1', raw_size=1464, fields=decoded)
+        with patch.object(fa.subprocess, 'run', return_value=NS(stdout=json.dumps(document))):
             return fa.verify_fa_launch(root, call, bundle, None if off else host,
                                       root / (uuid.uuid4().hex + '.bin'), unscoped_off=off)
 
@@ -105,6 +106,28 @@ class FaLaunchTests(unittest.TestCase):
             self.assertFalse(result['historical_qualification_inherited']);self.assertFalse(result['c2'])
             wrong = dict(f[-1]);wrong['coreParams.s1BaseSize'] = 64
             with self.assertRaisesRegex(RuntimeError, 'NEW_COMPILED_DECODER_DISAGREES'):self.verify(root, f, decoder=wrong)
+
+    def test_real_decoder_envelope_requires_exact_schema_size_and_all_public_fields(self):
+        pod = fa.decode_public_pod(pod_bytes(), SCHEMA)
+        document = dict(schema='nes.fa.public_pod_values.v1', raw_size=1464, fields=pod)
+        fa.verify_compiled_decoder_document(document, pod)
+        invalid = [dict(pod), {**document, 'unknown': 1}, {**document, 'schema': 'nes.fia.values.v1'},
+                   {**document, 'raw_size': 1576}, {**document, 'raw_size': 1464.0}]
+        missing = copy.deepcopy(document);del missing['fields']['inputParams.scaleValue'];invalid.append(missing)
+        extra = copy.deepcopy(document);extra['fields']['unknown'] = 0;invalid.append(extra)
+        swapped = copy.deepcopy(document);del swapped['fields']['inputParams.scaleValue']
+        swapped['fields']['unknown'] = 0;invalid.append(swapped)
+        for candidate in invalid:
+            with self.subTest(candidate_keys=list(candidate)):
+                with self.assertRaisesRegex(RuntimeError, 'DECODER_ENVELOPE_DIFFERS'):
+                    fa.verify_compiled_decoder_document(candidate, pod)
+        # Neither semantic values nor source padding can be dropped or tolerated.
+        for name, value in (('coreParams.s1BaseSize', 64), ('inputParams.scaleValue', 0.0883883535861969),
+                            ('inputParams.remainPH', 1)):
+            changed = copy.deepcopy(document);changed['fields'][name] = value
+            with self.subTest(field=name):
+                with self.assertRaisesRegex(RuntimeError, 'DECODER_DISAGREES'):
+                    fa.verify_compiled_decoder_document(changed, pod)
 
     def test_fia_slot_or_matching_host_bytes_elsewhere_cannot_select_fa_raw(self):
         with tempfile.TemporaryDirectory() as tmp:

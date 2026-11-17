@@ -139,3 +139,23 @@ read-only against all eight original FIA CPU-FP64 runtime captures; final POD,
 key, block, schedule and serializer-padding comparisons all match the earlier
 review. This creates no new device or mechanism qualification. The separate
 regression receipt is `attention28_fia_observer_regression.json`.
+
+The next short attempt, `fa28-launch-short-a2`, reached exactly one baseline
+FA launch before a Python decoder-envelope bug stopped it. The real C++ decoder
+returns `{schema, raw_size, fields}`; the first Python implementation compared
+that whole document to the flat fields dictionary. The corrected adapter now
+requires exactly those three keys, the exact schema, integer raw size 1464,
+exactly 205 field names and exact equality of every field, including padding.
+No tolerance, omitted value, decoder rebuild or native source change is used.
+Negative tests cover the actual envelope and unknown/missing fields, wrong
+schema/size, a semantic integer change, a one-FP32-step scale change and padding.
+The targeted suite now has 50 passing tests (one environment skip).
+
+Read-only replay of the preserved actual baseline verifies registered ELF,
+function, final arguments, host byte equality, all C++/Python public values and
+100 matmul fields. The observed key is 22619644976, block 16, schedule 0,
+slot 200, raw data offset 216, native M=128 and nRatio=8. Detailed hashes are in
+`attention28_fa_short_a2_decode_review.json`. Its original run stays
+`FAILED_WITH_EVIDENCE`; baseline repeat, fault and OFF were **not executed**.
+This offline result validates only the one captured baseline launch. A new
+root-owned 90-second attempt remains necessary for the full sequence.

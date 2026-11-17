@@ -69,6 +69,16 @@ def decode_public_pod(raw, schema):
     return result
 
 
+def verify_compiled_decoder_document(document, pod):
+    """Validate the real C++ values envelope and every public field exactly."""
+    require(type(document) is dict and set(document) == {'schema', 'raw_size', 'fields'}
+            and document['schema'] == 'nes.fa.public_pod_values.v1'
+            and type(document['raw_size']) is int and document['raw_size'] == 1464
+            and type(document['fields']) is dict and len(document['fields']) == len(pod) == 205
+            and set(document['fields']) == set(pod), 'FA_NEW_COMPILED_DECODER_ENVELOPE_DIFFERS')
+    require(document['fields'] == pod, 'FA_NEW_COMPILED_DECODER_DISAGREES')
+
+
 def semantic_pod(raw, schema):
     values = decode_public_pod(raw, schema)
     return dict(fields={name: value for name, value in values.items() if name not in PADDING},
@@ -205,7 +215,7 @@ def verify_fa_launch(directory, call_id, bundle, host, raw_file, *, unscoped_off
     pod = decode_public_pod(raw, bundle['schema'])
     with Path(raw_file).open('xb') as stream:stream.write(raw)
     decoded = subprocess.run([bundle['decoder'], str(raw_file)], check=True, capture_output=True, text=True, timeout=15)
-    require(json.loads(decoded.stdout) == pod, 'FA_NEW_COMPILED_DECODER_DISAGREES')
+    verify_compiled_decoder_document(json.loads(decoded.stdout), pod)
     projection = verify_host_projection(pod, host) if host is not None else None
     if host is not None:
         require(host['selected_factors'] == dict(m=pod['coreParams.s1BaseSize'], n_ratio=pod['coreParams.nRatio']),
