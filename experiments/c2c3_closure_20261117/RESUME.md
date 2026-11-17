@@ -1,14 +1,15 @@
 # Current execution checkpoint
 
-## Active checkpoint — 4e9e4ca9, continuing actual validation
+## Active checkpoint — Native39 accepted; resource coordination pending
 
 This section supersedes the older running-session notes below. R is still
 `/home/17-fault-c2c3-20261117`; no old evidence was overwritten.
 
 - Native39 `providers39-a6` exited0. Fresh live C2 has113 targets/113 hits;
   subsequent C3 has113 targets/226 hits. Independent Agent7 review found342/568
-  reference bytes matching and same-Worker recovery; its reviewed summary is
-  pending root integration. C3 has no raw dump triplet, so C2 statistics cannot
+  reference bytes matching and same-Worker recovery; root accepted this bounded
+  C3 after checking113 actual output changes in each fault phase. Totals are
+  **C2 3/17, C3 3/17**. C3 has no raw dump triplet, so C2 statistics cannot
   be presented as C3 E5. C2 first linear output5.1875->Inf, later NaNs retained.
 - Natural DeepSeek MoE census `natural-moe8-a1` completed with two exact healthy
   replays:52 actual unpermute calls,26 per request, all five source-bound roles
@@ -24,10 +25,15 @@ This section supersedes the older running-session notes below. R is still
   `reviewed-next8-a1` was externally stopped: Docker signal15 then9, exit137,
   OOMKilled=false, no controller timeout. Preserve `external_stop_events.jsonl`.
   No mechanism or same-process recovery conclusion is possible from that run.
-- Current NPU queue is `reviewed-next8-a2`, root session16640, physical5. Order:
-  four28 FP64 B/F cases,41 group B/F,26 FIA inventory,26 QMM inventory. The four28
-  cases exited0; independent raw E5 and final launch rechecks remain separate.
- 41 B has started. Every case retains the original lock and fresh idle gate.
+- `reviewed-next8-a2` completed four28 FP64 B/F cases, then41 B was again stopped
+  outside the controller after about92seconds (signal15 then9, noOOM, exit137).
+  Both stop-event sidecars are preserved. There is no running root NPU task.
+  A user coordination question is pending: pause external cleanup for30minutes;
+  no expired host isolation or foreign-process kill has been performed.
+  Fresh28 final-argument/launch review passes8/8. Independent raw replay first
+  differs at FIA output Mean; separate Norm change1.7210312676%, six nulls retained.
+  Legal has two exact statistic changes, neither exceeds fixed tolerance. Both
+  remain standalone step0, not model C2/C3. Reviewed reports are now integrated.
 - Source-a24 CPU-only quant Native build passed at `build-quant-inventory-a1`;
   `providers-quant-inventory-a1-cases.json` is ready with source-a25/packages-a8.
   `worker18-statistics-a1-cases.json` is ready with source-a24. Neither has run.
@@ -37,8 +43,12 @@ This section supersedes the older running-session notes below. R is still
   and official platform vendor registration now verify Norm->stock/FIA->private.
   No-device full extension import aborts identically in both private and stock-only
   controls (`attention33-loading-cpu-a2`, `attention33-loading-stock-control-a1`).
-  This does not establish NPU failure or full import success. A new private B and
-  independent stock bridge remain mandatory before F.
+  This does not establish NPU failure or full import success. New source-a27
+  SHA `63558f149d0c6b54b46c8a0b91eea2c7a2057aab526c82ae9e1d10b868593340`
+  and packages-a9 explicitly distinguish these scopes and require a real binding
+  recheck after ordinary device-backed Worker initialization. CPU binding+platform
+  check passed in `attention33-loading-cpu-a3` (no complete extension/NPU claim).
+  `attention33-baseline-a2-cases.json` is ready, not run. Exact stock bridge beforeF.
 - Integration a5db7141: main unittest discovery692 passed/2 skipped; separate
   Worker Extension discovery191 passed. Do not add these overlapping counts.
 

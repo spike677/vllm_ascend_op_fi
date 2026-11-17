@@ -11,6 +11,9 @@ twice. This is an in-progress checkpoint, not a claim that17 mechanisms or whole
 model/version families are accepted. Existing scoped C1 receipts retain their
 original source, build and workload. CPU contract tests do not grant qualification.
 
+The [17-mechanism and27-node matrix](C2_C3_MATRIX.md) lists the accepted scopes,
+natural-path gaps, queued experiments and version/hardware limits individually.
+
 | Reviewed route | C2 | C3 | Independent statistics limitation |
 | --- | --- | --- | --- |
 |18.api_half, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|226/226 calls in two requests|Separate Worker capture pending; HF statistics cannot substitute|
@@ -35,6 +38,10 @@ tests. C3's missing raw triplet is an explicit E5 gap, not reconstructed data.
 Fresh standalone Fault28 B/F has [eight verified actual launches](attention28_cpu_fp64_launch_review.md).
 This does not grant model or Worker C2/C3. The disclosed CPU-FP64 collector is a
 new capture backend; older null statistics and historical results remain intact.
+Its [independent raw-statistics review](AGENT7_NATIVE20_ATTENTION28_REVIEW.md)
+finds no above-threshold legal-pair change; replay first differs at FIA output
+Mean, with separate Norm118.30810159723288→116.27198217667856 (1.7210312676%).
+Both pairs retain six nulls. These are standalone step0 results, not model steps.
 
 Fault20 additionally has a [root review](native20_group_summary.json):408 C2 and
 678 C3 evidence references match actual stored bytes; all targets have native
