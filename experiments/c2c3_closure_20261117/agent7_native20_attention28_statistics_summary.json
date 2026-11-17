@@ -1,0 +1,1652 @@
+{
+  "fault28_legal": {
+    "schema": "demoncat.raw_statistics_audit.v1",
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": "0.00001",
+    "atol": "0.00000001",
+    "reference": "baseline",
+    "comparison_rule": "abs(F-B) > atol + rtol*abs(B)",
+    "numerical_encoding": "decimal_text",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "expected_location_read": false,
+    "files": {
+      "baseline": {
+        "dump.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/observation/step0/rank0/dump.json",
+          "bytes": 3282,
+          "sha256": "3a188d615a1e96f6b2e4f906072c0458ac6a5b41601e0e717d0c3f8612ec2702"
+        },
+        "stack.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/observation/step0/rank0/stack.json",
+          "bytes": 1287,
+          "sha256": "4974c1b89f3b3894dd68bea983851432de7c748424b9f9a98d0b7af437fa5e09"
+        },
+        "construct.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/observation/step0/rank0/construct.json",
+          "bytes": 58,
+          "sha256": "34b0414e1492b9404813f3f34865a886766811daf65a74737f9a61bd499901d4"
+        },
+        "config": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/config.json",
+          "bytes": 322,
+          "sha256": "19bd38c4783622a68315bddda547a51993e4e2647687b0bd9704cae271a1b5e6"
+        },
+        "collector": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-baseline/run/collector_identity.json",
+          "bytes": 58404,
+          "sha256": "4f6bd471f9c56148c9f04546a9ebbcf9e5e29a643849a8bc39a5db755e9b22bc"
+        }
+      },
+      "fault": {
+        "dump.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/observation/step0/rank0/dump.json",
+          "bytes": 3282,
+          "sha256": "2a7db60f45fb944dc2109830903d6ceb0dfadd19d5e373f5d75645ad0de5e55f"
+        },
+        "stack.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/observation/step0/rank0/stack.json",
+          "bytes": 1287,
+          "sha256": "4974c1b89f3b3894dd68bea983851432de7c748424b9f9a98d0b7af437fa5e09"
+        },
+        "construct.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/observation/step0/rank0/construct.json",
+          "bytes": 58,
+          "sha256": "34b0414e1492b9404813f3f34865a886766811daf65a74737f9a61bd499901d4"
+        },
+        "config": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/config.json",
+          "bytes": 322,
+          "sha256": "19bd38c4783622a68315bddda547a51993e4e2647687b0bd9704cae271a1b5e6"
+        },
+        "collector": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-legal-cpu-fp64-fault/run/collector_identity.json",
+          "bytes": 58404,
+          "sha256": "4f6bd471f9c56148c9f04546a9ebbcf9e5e29a643849a8bc39a5db755e9b22bc"
+        }
+      }
+    },
+    "full_dump_inventory": {
+      "baseline": {
+        "counts": {
+          "finite": 18,
+          "null": 6,
+          "nan": 0,
+          "positive_inf": 0,
+          "negative_inf": 0,
+          "unsupported": 0
+        },
+        "exceptional_fields_count": 6
+      },
+      "fault": {
+        "counts": {
+          "finite": 18,
+          "null": 6,
+          "nan": 0,
+          "positive_inf": 0,
+          "negative_inf": 0,
+          "unsupported": 0
+        },
+        "exceptional_fields_count": 6
+      }
+    },
+    "boolean_extrema": {
+      "baseline": [
+        {
+          "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+          "field": "Min",
+          "raw_json_value": false,
+          "numeric_value": "0"
+        }
+      ],
+      "fault": [
+        {
+          "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+          "field": "Min",
+          "raw_json_value": false,
+          "numeric_value": "0"
+        }
+      ]
+    },
+    "comparator_sha256": "d5633600f8bde98590c4eaf367eb16d76d4e6c9ad5b0cb2f82d434ae6a377ca2",
+    "public_qualification_granted": false,
+    "root_cause_identified": false,
+    "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "aligned": true,
+    "records_compared": 6,
+    "fields_compared": 18,
+    "exact_change_count": 2,
+    "exceedance_count": 0,
+    "first_exact_change": {
+      "index": 4,
+      "identity": "NPU.npu_fused_infer_attention_score.0.forward/output/0",
+      "field": "Mean",
+      "baseline": "6.687361775448153E-7",
+      "fault": "6.677826149825705E-7",
+      "absolute_difference": "9.535625622448E-10",
+      "tolerance": "1.0006687361775448153E-8",
+      "relative_change": "0.001425917415961688543803138479677808679778947805875363",
+      "reason": "FINITE_STATISTIC_DIFFERS"
+    },
+    "first_exceedance": null,
+    "baseline_self_comparable": true,
+    "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "whole_dump_comparable": true,
+    "e5_statistics_comparable": true,
+    "entire_tensor_values_compared": false,
+    "first_location_is_observable_only": false,
+    "unobservable_fields_count": 6,
+    "incomparable_fields_count": 0,
+    "exceptional_field_details_retained_in_full_report": true,
+    "full_report": {
+      "path": "/home/17-fault-c2c3-20261117/agent7-28-native20-fixedtol-a1/fault28_legal/full.json",
+      "bytes": 9070,
+      "sha256": "b55862f8892d3e18d9e8525ec64d40c9cbc936feb197483168dd2548fd91c206"
+    },
+    "actual_steps": {
+      "baseline": 0,
+      "fault": 0
+    },
+    "qualifications_granted": false,
+    "collector_disclosure": {
+      "package": "/msprobe_packages/msprobe",
+      "edited_by_experiment": false,
+      "step_meaning": {
+        "0": "second identical standalone FIA call; not decode or complete model"
+      },
+      "runtime_statistics_method_replaced": true,
+      "statistics_backend": {
+        "schema": "demoncat.attention.statistics_backend.v1",
+        "backend": "attention-msprobe-cpu-fp64-v1",
+        "adapter_sha256": "1e66f220c1098a71eca9611bbc0cb582a088e7e47819269a5a8dbf3a8bb50b48",
+        "processor_module": "msprobe.core.dump.data_dump.data_processor.pytorch_processor",
+        "processor_source_sha256": "e981aa6fe9afa1e7a1f0654db44166d7c199674b0727d8d7ffa40626b1074011",
+        "method": "PytorchDataProcessor.get_stat_info",
+        "original_package_files_modified": false,
+        "runtime_method_replaced": true,
+        "task": "statistics",
+        "level": "mix",
+        "precision": "high",
+        "async_dump": false,
+        "supported": "complete nonempty dense nonscalar FP16/BF16/FP32/FP64 tensors",
+        "reduction": "blocking original-dtype CPU copy, then CPU float64 Max/Min/Mean/L2 norm",
+        "delegated": "original bool/integer/complex/scalar/empty/meta/NZ/unsupported handling",
+        "null_and_nonfinite_values_preserved": true,
+        "historical_dumps_read": false,
+        "record_filters_added": false,
+        "injector_information_read": false,
+        "limits": {
+          "max_tensor_bytes": 134217728,
+          "max_total_copied_bytes": 536870912,
+          "max_calls": 256
+        }
+      }
+    }
+  },
+  "fault28_replay": {
+    "schema": "demoncat.raw_statistics_audit.v1",
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": "0.00001",
+    "atol": "0.00000001",
+    "reference": "baseline",
+    "comparison_rule": "abs(F-B) > atol + rtol*abs(B)",
+    "numerical_encoding": "decimal_text",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "expected_location_read": false,
+    "files": {
+      "baseline": {
+        "dump.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/observation/step0/rank0/dump.json",
+          "bytes": 3282,
+          "sha256": "2a7db60f45fb944dc2109830903d6ceb0dfadd19d5e373f5d75645ad0de5e55f"
+        },
+        "stack.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/observation/step0/rank0/stack.json",
+          "bytes": 1287,
+          "sha256": "4974c1b89f3b3894dd68bea983851432de7c748424b9f9a98d0b7af437fa5e09"
+        },
+        "construct.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/observation/step0/rank0/construct.json",
+          "bytes": 58,
+          "sha256": "34b0414e1492b9404813f3f34865a886766811daf65a74737f9a61bd499901d4"
+        },
+        "config": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/config.json",
+          "bytes": 322,
+          "sha256": "19bd38c4783622a68315bddda547a51993e4e2647687b0bd9704cae271a1b5e6"
+        },
+        "collector": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-baseline/run/collector_identity.json",
+          "bytes": 58404,
+          "sha256": "4f6bd471f9c56148c9f04546a9ebbcf9e5e29a643849a8bc39a5db755e9b22bc"
+        }
+      },
+      "fault": {
+        "dump.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/observation/step0/rank0/dump.json",
+          "bytes": 3284,
+          "sha256": "b57547da6ab87cb4a3fa1451edf613ed3e0a774ccf6b69731dc4348b36d2df0f"
+        },
+        "stack.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/observation/step0/rank0/stack.json",
+          "bytes": 1287,
+          "sha256": "4974c1b89f3b3894dd68bea983851432de7c748424b9f9a98d0b7af437fa5e09"
+        },
+        "construct.json": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/observation/step0/rank0/construct.json",
+          "bytes": 58,
+          "sha256": "34b0414e1492b9404813f3f34865a886766811daf65a74737f9a61bd499901d4"
+        },
+        "config": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/config.json",
+          "bytes": 322,
+          "sha256": "19bd38c4783622a68315bddda547a51993e4e2647687b0bd9704cae271a1b5e6"
+        },
+        "collector": {
+          "path": "/home/17-fault-c2c3-20261117/reviewed-next8-a2/fia-replay-cpu-fp64-fault/run/collector_identity.json",
+          "bytes": 58404,
+          "sha256": "4f6bd471f9c56148c9f04546a9ebbcf9e5e29a643849a8bc39a5db755e9b22bc"
+        }
+      }
+    },
+    "full_dump_inventory": {
+      "baseline": {
+        "counts": {
+          "finite": 18,
+          "null": 6,
+          "nan": 0,
+          "positive_inf": 0,
+          "negative_inf": 0,
+          "unsupported": 0
+        },
+        "exceptional_fields_count": 6
+      },
+      "fault": {
+        "counts": {
+          "finite": 18,
+          "null": 6,
+          "nan": 0,
+          "positive_inf": 0,
+          "negative_inf": 0,
+          "unsupported": 0
+        },
+        "exceptional_fields_count": 6
+      }
+    },
+    "boolean_extrema": {
+      "baseline": [
+        {
+          "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+          "field": "Min",
+          "raw_json_value": false,
+          "numeric_value": "0"
+        }
+      ],
+      "fault": [
+        {
+          "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "NPU.npu_fused_infer_attention_score.0.forward/input_kwargs/atten_mask",
+          "field": "Min",
+          "raw_json_value": false,
+          "numeric_value": "0"
+        }
+      ]
+    },
+    "comparator_sha256": "d5633600f8bde98590c4eaf367eb16d76d4e6c9ad5b0cb2f82d434ae6a377ca2",
+    "public_qualification_granted": false,
+    "root_cause_identified": false,
+    "status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "aligned": true,
+    "records_compared": 6,
+    "fields_compared": 18,
+    "exact_change_count": 2,
+    "exceedance_count": 2,
+    "first_exact_change": {
+      "index": 4,
+      "identity": "NPU.npu_fused_infer_attention_score.0.forward/output/0",
+      "field": "Mean",
+      "baseline": "6.677826149825705E-7",
+      "fault": "-2.9812251511884824E-7",
+      "absolute_difference": "9.6590513010141874E-7",
+      "tolerance": "1.0006677826149825705E-8",
+      "relative_change": "1.44643647263358211938441527045415919663673898985492463",
+      "reason": "FINITE_STATISTIC_DIFFERS"
+    },
+    "first_exceedance": {
+      "index": 4,
+      "identity": "NPU.npu_fused_infer_attention_score.0.forward/output/0",
+      "field": "Mean",
+      "baseline": "6.677826149825705E-7",
+      "fault": "-2.9812251511884824E-7",
+      "absolute_difference": "9.6590513010141874E-7",
+      "tolerance": "1.0006677826149825705E-8",
+      "relative_change": "1.44643647263358211938441527045415919663673898985492463",
+      "reason": "FINITE_STATISTIC_DIFFERS",
+      "preceding_unobservable_fields": 2,
+      "preceding_incomparable_fields": 0
+    },
+    "baseline_self_comparable": true,
+    "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "whole_dump_comparable": true,
+    "e5_statistics_comparable": true,
+    "entire_tensor_values_compared": false,
+    "first_location_is_observable_only": true,
+    "unobservable_fields_count": 6,
+    "incomparable_fields_count": 0,
+    "exceptional_field_details_retained_in_full_report": true,
+    "full_report": {
+      "path": "/home/17-fault-c2c3-20261117/agent7-28-native20-fixedtol-a1/fault28_replay/full.json",
+      "bytes": 9577,
+      "sha256": "cc56003f5990f9054450fd00922d7314fac7dc11e9ad512e6184bc993c804131"
+    },
+    "actual_steps": {
+      "baseline": 0,
+      "fault": 0
+    },
+    "qualifications_granted": false,
+    "collector_disclosure": {
+      "package": "/msprobe_packages/msprobe",
+      "edited_by_experiment": false,
+      "step_meaning": {
+        "0": "second identical standalone FIA call; not decode or complete model"
+      },
+      "runtime_statistics_method_replaced": true,
+      "statistics_backend": {
+        "schema": "demoncat.attention.statistics_backend.v1",
+        "backend": "attention-msprobe-cpu-fp64-v1",
+        "adapter_sha256": "1e66f220c1098a71eca9611bbc0cb582a088e7e47819269a5a8dbf3a8bb50b48",
+        "processor_module": "msprobe.core.dump.data_dump.data_processor.pytorch_processor",
+        "processor_source_sha256": "e981aa6fe9afa1e7a1f0654db44166d7c199674b0727d8d7ffa40626b1074011",
+        "method": "PytorchDataProcessor.get_stat_info",
+        "original_package_files_modified": false,
+        "runtime_method_replaced": true,
+        "task": "statistics",
+        "level": "mix",
+        "precision": "high",
+        "async_dump": false,
+        "supported": "complete nonempty dense nonscalar FP16/BF16/FP32/FP64 tensors",
+        "reduction": "blocking original-dtype CPU copy, then CPU float64 Max/Min/Mean/L2 norm",
+        "delegated": "original bool/integer/complex/scalar/empty/meta/NZ/unsupported handling",
+        "null_and_nonfinite_values_preserved": true,
+        "historical_dumps_read": false,
+        "record_filters_added": false,
+        "injector_information_read": false,
+        "limits": {
+          "max_tensor_bytes": 134217728,
+          "max_total_copied_bytes": 536870912,
+          "max_calls": 256
+        }
+      }
+    }
+  },
+  "native20_bf": {
+    "schema": "demoncat.raw_statistics_audit.v1",
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": "0.00001",
+    "atol": "0.00000001",
+    "reference": "baseline",
+    "comparison_rule": "abs(F-B) > atol + rtol*abs(B)",
+    "numerical_encoding": "decimal_text",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "expected_location_read": false,
+    "files": {
+      "baseline": {
+        "dump.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step5/rank0/dump.json",
+          "bytes": 1315814,
+          "sha256": "34675b77edfe34bbfce4ebc298533c84a01fa1a139e58a0ee522a544aaee5faa"
+        },
+        "stack.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step5/rank0/stack.json",
+          "bytes": 440527,
+          "sha256": "e45a0abd68ebf54cf27a6f3c2aa7df3600236eb05045f16000aefa523eec6906"
+        },
+        "construct.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step5/rank0/construct.json",
+          "bytes": 505661,
+          "sha256": "896ebb401895b9907cddea6a0ff9f15c1e5c1d512c36a81f5d2c4391ebffbe30"
+        },
+        "config": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/config.json",
+          "bytes": 339,
+          "sha256": "85ece83fcca98a48145bdb1eb6ef41083b43a0a06278872615c91a2abdeb6cd9"
+        },
+        "collector": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/collector_identity.json",
+          "bytes": 57257,
+          "sha256": "aa0825016f4675f6c6eef58c6f6aad7cd599f3e64b2208bb60ab0ee81ff15ebf"
+        }
+      },
+      "fault": {
+        "dump.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step6/rank0/dump.json",
+          "bytes": 1316060,
+          "sha256": "75083b0a70b29e29bffa20a4f331af5b024525d46d1add9fd6fcd9f99bd66bce"
+        },
+        "stack.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step6/rank0/stack.json",
+          "bytes": 440527,
+          "sha256": "e45a0abd68ebf54cf27a6f3c2aa7df3600236eb05045f16000aefa523eec6906"
+        },
+        "construct.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step6/rank0/construct.json",
+          "bytes": 505661,
+          "sha256": "896ebb401895b9907cddea6a0ff9f15c1e5c1d512c36a81f5d2c4391ebffbe30"
+        },
+        "config": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/config.json",
+          "bytes": 339,
+          "sha256": "85ece83fcca98a48145bdb1eb6ef41083b43a0a06278872615c91a2abdeb6cd9"
+        },
+        "collector": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/collector_identity.json",
+          "bytes": 57257,
+          "sha256": "aa0825016f4675f6c6eef58c6f6aad7cd599f3e64b2208bb60ab0ee81ff15ebf"
+        }
+      }
+    },
+    "full_dump_inventory": {
+      "baseline": {
+        "counts": {
+          "finite": 8650,
+          "null": 10266,
+          "nan": 0,
+          "positive_inf": 0,
+          "negative_inf": 0,
+          "unsupported": 0
+        },
+        "exceptional_fields_count": 10266
+      },
+      "fault": {
+        "counts": {
+          "finite": 8648,
+          "null": 10266,
+          "nan": 2,
+          "positive_inf": 0,
+          "negative_inf": 0,
+          "unsupported": 0
+        },
+        "exceptional_fields_count": 10268
+      }
+    },
+    "boolean_extrema": {
+      "baseline": [
+        {
+          "identity": "Tensor.__gt__.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__gt__.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.1.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.1.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.2.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.2.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.3.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.3.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.4.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.4.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        }
+      ],
+      "fault": [
+        {
+          "identity": "Tensor.__gt__.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__gt__.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.1.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.1.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.2.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.2.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.3.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.3.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.4.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.4.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        }
+      ]
+    },
+    "comparator_sha256": "d5633600f8bde98590c4eaf367eb16d76d4e6c9ad5b0cb2f82d434ae6a377ca2",
+    "public_qualification_granted": false,
+    "root_cause_identified": false,
+    "status": "INCOMPARABLE_STATISTICS",
+    "aligned": true,
+    "records_compared": 4729,
+    "fields_compared": 8648,
+    "exact_change_count": 5024,
+    "exceedance_count": 5024,
+    "first_exact_change": {
+      "index": 63,
+      "identity": "NPU.npu_quant_matmul.0.forward/output/0",
+      "field": "Max",
+      "baseline": "16.25",
+      "fault": "14.0",
+      "absolute_difference": "2.25",
+      "tolerance": "0.00016251",
+      "relative_change": "0.13846153846153846153846153846153846153846153846154",
+      "reason": "FINITE_STATISTIC_DIFFERS"
+    },
+    "first_exceedance": {
+      "index": 63,
+      "identity": "NPU.npu_quant_matmul.0.forward/output/0",
+      "field": "Max",
+      "baseline": "16.25",
+      "fault": "14.0",
+      "absolute_difference": "2.25",
+      "tolerance": "0.00016251",
+      "relative_change": "0.13846153846153846153846153846153846153846153846154",
+      "reason": "FINITE_STATISTIC_DIFFERS",
+      "preceding_unobservable_fields": 132,
+      "preceding_incomparable_fields": 0
+    },
+    "baseline_self_comparable": true,
+    "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "whole_dump_comparable": false,
+    "e5_statistics_comparable": false,
+    "entire_tensor_values_compared": false,
+    "first_location_is_observable_only": true,
+    "unobservable_fields_count": 10266,
+    "incomparable_fields_count": 2,
+    "exceptional_field_details_retained_in_full_report": true,
+    "full_report": {
+      "path": "/home/17-fault-c2c3-20261117/agent7-28-native20-fixedtol-a1/native20_bf/full.json",
+      "bytes": 6265102,
+      "sha256": "fbb8ac9cda8de7f225332a91e0b7a8f0ffcc07c6324613b52a73a152daeabcbe"
+    },
+    "actual_steps": {
+      "baseline": 5,
+      "fault": 6
+    },
+    "qualifications_granted": false
+  },
+  "native20_self": {
+    "schema": "demoncat.raw_statistics_audit.v1",
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": "0.00001",
+    "atol": "0.00000001",
+    "reference": "baseline",
+    "comparison_rule": "abs(F-B) > atol + rtol*abs(B)",
+    "numerical_encoding": "decimal_text",
+    "native_logs_read": false,
+    "private_tensors_read": false,
+    "expected_location_read": false,
+    "files": {
+      "baseline": {
+        "dump.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step5/rank0/dump.json",
+          "bytes": 1315814,
+          "sha256": "34675b77edfe34bbfce4ebc298533c84a01fa1a139e58a0ee522a544aaee5faa"
+        },
+        "stack.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step5/rank0/stack.json",
+          "bytes": 440527,
+          "sha256": "e45a0abd68ebf54cf27a6f3c2aa7df3600236eb05045f16000aefa523eec6906"
+        },
+        "construct.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step5/rank0/construct.json",
+          "bytes": 505661,
+          "sha256": "896ebb401895b9907cddea6a0ff9f15c1e5c1d512c36a81f5d2c4391ebffbe30"
+        },
+        "config": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/config.json",
+          "bytes": 339,
+          "sha256": "85ece83fcca98a48145bdb1eb6ef41083b43a0a06278872615c91a2abdeb6cd9"
+        },
+        "collector": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/collector_identity.json",
+          "bytes": 57257,
+          "sha256": "aa0825016f4675f6c6eef58c6f6aad7cd599f3e64b2208bb60ab0ee81ff15ebf"
+        }
+      },
+      "fault": {
+        "dump.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step5/rank0/dump.json",
+          "bytes": 1315814,
+          "sha256": "34675b77edfe34bbfce4ebc298533c84a01fa1a139e58a0ee522a544aaee5faa"
+        },
+        "stack.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step5/rank0/stack.json",
+          "bytes": 440527,
+          "sha256": "e45a0abd68ebf54cf27a6f3c2aa7df3600236eb05045f16000aefa523eec6906"
+        },
+        "construct.json": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/observation/step5/rank0/construct.json",
+          "bytes": 505661,
+          "sha256": "896ebb401895b9907cddea6a0ff9f15c1e5c1d512c36a81f5d2c4391ebffbe30"
+        },
+        "config": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/config.json",
+          "bytes": 339,
+          "sha256": "85ece83fcca98a48145bdb1eb6ef41083b43a0a06278872615c91a2abdeb6cd9"
+        },
+        "collector": {
+          "path": "/home/17-fault-c2c3-20261117/providers20-group-a1/providers20-deepseek-c2c3/c2/statistics/collector_identity.json",
+          "bytes": 57257,
+          "sha256": "aa0825016f4675f6c6eef58c6f6aad7cd599f3e64b2208bb60ab0ee81ff15ebf"
+        }
+      }
+    },
+    "full_dump_inventory": {
+      "baseline": {
+        "counts": {
+          "finite": 8650,
+          "null": 10266,
+          "nan": 0,
+          "positive_inf": 0,
+          "negative_inf": 0,
+          "unsupported": 0
+        },
+        "exceptional_fields_count": 10266
+      },
+      "fault": {
+        "counts": {
+          "finite": 8650,
+          "null": 10266,
+          "nan": 0,
+          "positive_inf": 0,
+          "negative_inf": 0,
+          "unsupported": 0
+        },
+        "exceptional_fields_count": 10266
+      }
+    },
+    "boolean_extrema": {
+      "baseline": [
+        {
+          "identity": "Tensor.__gt__.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__gt__.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.1.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.1.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.2.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.2.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.3.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.3.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.4.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.4.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        }
+      ],
+      "fault": [
+        {
+          "identity": "Tensor.__gt__.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__gt__.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.any.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.__setitem__.1.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.0.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.1.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.1.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.1.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.2.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.2.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.2.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.3.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.3.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.3.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.4.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Torch.isfinite.4.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/input_args/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/input_args/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/output/0",
+          "field": "Max",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        },
+        {
+          "identity": "Tensor.all.4.forward/output/0",
+          "field": "Min",
+          "raw_json_value": true,
+          "numeric_value": "1"
+        }
+      ]
+    },
+    "comparator_sha256": "d5633600f8bde98590c4eaf367eb16d76d4e6c9ad5b0cb2f82d434ae6a377ca2",
+    "public_qualification_granted": false,
+    "root_cause_identified": false,
+    "status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "aligned": true,
+    "records_compared": 4729,
+    "fields_compared": 8650,
+    "exact_change_count": 0,
+    "exceedance_count": 0,
+    "first_exact_change": null,
+    "first_exceedance": null,
+    "baseline_self_comparable": true,
+    "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+    "whole_dump_comparable": true,
+    "e5_statistics_comparable": true,
+    "entire_tensor_values_compared": false,
+    "first_location_is_observable_only": false,
+    "unobservable_fields_count": 10266,
+    "incomparable_fields_count": 0,
+    "exceptional_field_details_retained_in_full_report": true,
+    "full_report": {
+      "path": "/home/17-fault-c2c3-20261117/agent7-28-native20-fixedtol-a1/native20_self/full.json",
+      "bytes": 6263537,
+      "sha256": "9912f8ee9694b3e595e20b9160dc76aa374ec398d19c69bc7331f8400d325753"
+    },
+    "actual_steps": {
+      "baseline": 5,
+      "fault": 5
+    },
+    "qualifications_granted": false
+  }
+}
