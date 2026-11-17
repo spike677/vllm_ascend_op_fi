@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "page_size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "s_inner": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "cache_geometry": {
+      "const": "observed"
+    }
+  },
+  "required": [
+    "page_size",
+    "s_inner",
+    "cache_geometry"
+  ],
+  "additionalProperties": false
+}

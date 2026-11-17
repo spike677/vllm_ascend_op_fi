@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "quant_scope": {
+      "const": "batch"
+    },
+    "scale_policy": {
+      "const": "shared"
+    },
+    "projection_scope": {
+      "const": "observed"
+    }
+  },
+  "required": [
+    "quant_scope",
+    "scale_policy",
+    "projection_scope"
+  ],
+  "additionalProperties": false
+}

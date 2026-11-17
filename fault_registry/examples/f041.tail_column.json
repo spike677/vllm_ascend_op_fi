@@ -1,0 +1,49 @@
+{
+  "schema": "demoncat.fault_config.v1",
+  "mechanism": {
+    "id": "41.tail_column",
+    "version": "1"
+  },
+  "execution": {
+    "backend": "native",
+    "operator": "KV Cache",
+    "model": "observed",
+    "cann": "9.1.0"
+  },
+  "target": {
+    "layer": null,
+    "operator_call": null,
+    "rank": [
+      0
+    ],
+    "device": [
+      0
+    ],
+    "request_scope": "all",
+    "request_ids": []
+  },
+  "trigger": {
+    "mode": "first",
+    "scope": "request",
+    "max_hits": 1
+  },
+  "fault": {
+    "type": "KV_TAIL_COLUMN_WRITE",
+    "parameters": {
+      "cache_kind": "value",
+      "tail_elements": 1,
+      "slot": "observed"
+    }
+  },
+  "lifecycle": {
+    "recovery": "restore_original",
+    "require_drain": true,
+    "require_healthy_replay": true
+  },
+  "evidence": {
+    "independent_observer": true,
+    "capture_baseline": true,
+    "capture_fault": true,
+    "capture_off": true
+  }
+}

@@ -14,34 +14,10 @@ class OperatorPath:
     lifecycle: str
 
 
-_MODEL = 'fault_injection.lifecycle.ModelFaultBackend'
-_TENSOR = 'demoncat.runtime.vllm_ascend.worker_extension.providers.tensor_natural.NaturalTensorGroupProvider'
-_POSTWRITE = 'fault_injection.deployments.postwrite'
-_KV = 'demoncat.runtime.vllm_ascend.worker_extension.postwrite41.Postwrite41WorkerProvider'
+from fault_registry import definitions
 
-# The first path is the existing default. Alt routes are explicit because the
-# difference can include the actual writer, scope, device ABI and OFF contract.
-OPERATOR_PATHS = MappingProxyType({
-    '8.restore_offset': (OperatorPath('MoE Unpermute', 'fault_injection.route8.RestoreOffsetSession', 'dispatch'),),
-    '15.alias_detach': (OperatorPath('AsStrided', _MODEL, 'model'),),
-    '17.spatial_padding': (OperatorPath('Conv3d', _MODEL, 'model'),),
-    '18.api_half': (OperatorPath('RMSNorm', _MODEL, 'model'), OperatorPath('RMSNorm', _TENSOR, 'group')),
-    '20.buffer_substitute': (OperatorPath('MatMul / QMM', _MODEL, 'model'),),
-    '22.wrong_row': (OperatorPath('RoPE / IndexSelect', 'fault_injection.index22.WrongRowSession', 'dispatch'),
-                     OperatorPath('RoPE / IndexSelect', _TENSOR, 'group')),
-    '25.reduce_scatter': (OperatorPath('ReduceScatter', 'fault_injection.collective25.ReduceScatterSession', 'collective'),),
-    '26.residual_stomp': (OperatorPath('MatMul / QMM', _MODEL, 'model'),),
-    '26.fia_destination': (OperatorPath('FIA destination', _MODEL, 'model'),),
-    '28.fa.legal_tiling': (OperatorPath('FA', 'fault_injection.strategy.NativeStrategyBridge', 'strategy'),),
-    '28.fia.legal_tiling': (OperatorPath('FIA tiling', _MODEL, 'model'),),
-    '28.fia.denominator_replay': (OperatorPath('FIA kernel', _MODEL, 'model'),),
-    '33.paged_decode': (OperatorPath('Paged IFA', _MODEL, 'model'),),
-    '39.matmul_range': (OperatorPath('MatMul / QMM', 'demoncat_fault39.backend.NativeBackend', 'native39'),),
-    '39.output_proxy': (OperatorPath('MatMul / QMM', _POSTWRITE + '.Fault39OutputProxyProvider', 'postwrite'),),
-    '41.tail_column': (OperatorPath('KV Cache', _KV, 'kv'),
-                       OperatorPath('KV Cache', _POSTWRITE + '.Fault41TailColumnProvider', 'postwrite')),
-    'quant.batch_shared_scale': (OperatorPath('DynamicQuant', _MODEL, 'model'),),
-})
+OPERATOR_PATHS = MappingProxyType({row['legacy_id']: tuple(OperatorPath(**path)
+    for path in row['operator_paths']) for row in definitions()})
 
 
 class OperatorAdapter:

@@ -16,14 +16,14 @@ class CatalogCliTests(unittest.TestCase):
                 "assert 'torch_npu' not in sys.modules;print(len(s))")
         result = subprocess.run([sys.executable, '-B', '-c', code], cwd=root,
                                 text=True, capture_output=True, check=True)
-        self.assertEqual(result.stdout.strip(), '15')
+        self.assertEqual(result.stdout.strip(), '17')
 
     def test_export_is_json_and_cannot_replace_existing_evidence(self):
         with tempfile.TemporaryDirectory() as directory:
             p = Path(directory) / 'catalog.json'
             self.assertEqual(main(['catalog', '--output', str(p)]), 0)
             data = json.loads(p.read_text(encoding='utf-8'))
-            self.assertEqual(len(data['mechanisms']), 15)
+            self.assertEqual(len(data['mechanisms']), 17)
             original = p.read_bytes()
             with self.assertRaises(FileExistsError):
                 main(['catalog', '--output', str(p)])

@@ -43,9 +43,9 @@ class CapabilityScopeTests(unittest.TestCase):
 
     def test_every_remaining_variant_has_explicit_non_inherited_scope(self):
         specs = list_mechanisms()
-        self.assertEqual(len(specs), 15)
+        self.assertEqual(len(specs), 17)
         self.assertEqual({s['name'] for s in specs},
-                         {s['name'] for s in list_faults() if not s['name'].startswith('39.')})
+                         {s['name'] for s in list_faults()})
         for spec in specs:
             self.assertFalse(spec['current_model_npu_accepted'])
             self.assertFalse(spec['native_launch_verified'])
@@ -54,7 +54,7 @@ class CapabilityScopeTests(unittest.TestCase):
             self.assertEqual(spec['evidence_contract']['rtol'], 1e-5)
             self.assertFalse(spec['evidence_contract']['use_injection_logs_to_choose_first_difference'])
         json.dumps(specs, allow_nan=False)
-        with self.assertRaises(ValueError): describe_mechanism('39.matmul_range')
+        self.assertEqual(describe_mechanism('39.matmul_range')['implementation_status'], 'independent_backend_required')
 
     def test_read_only_discovery_never_calls_forward_or_provider(self):
         model = torch.nn.Sequential(torch.nn.Linear(4, 4), torch.nn.RMSNorm(4)).eval()

@@ -1,0 +1,201 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "mode": {
+      "enum": [
+        "first",
+        "nth",
+        "every_nth",
+        "every_match",
+        "probability",
+        "condition"
+      ]
+    },
+    "scope": {
+      "enum": [
+        "process",
+        "worker",
+        "rank",
+        "request",
+        "operator",
+        "layer",
+        "device"
+      ]
+    },
+    "ordinal": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "max_hits": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1
+    },
+    "probability": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "seed": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "condition": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "enum": [
+            "operator",
+            "layer",
+            "rank",
+            "device",
+            "request_id"
+          ]
+        },
+        "op": {
+          "enum": [
+            "eq",
+            "ne",
+            "in"
+          ]
+        },
+        "value": {
+          "type": [
+            "string",
+            "number",
+            "array"
+          ],
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          }
+        }
+      },
+      "required": [
+        "field",
+        "op",
+        "value"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "mode",
+    "scope",
+    "max_hits"
+  ],
+  "additionalProperties": false,
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "scope": {},
+        "max_hits": {},
+        "mode": {
+          "const": "first"
+        }
+      },
+      "required": [
+        "max_hits",
+        "mode",
+        "scope"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ordinal": {},
+        "scope": {},
+        "max_hits": {},
+        "mode": {
+          "const": "nth"
+        }
+      },
+      "required": [
+        "max_hits",
+        "mode",
+        "ordinal",
+        "scope"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "ordinal": {},
+        "scope": {},
+        "max_hits": {},
+        "mode": {
+          "const": "every_nth"
+        }
+      },
+      "required": [
+        "max_hits",
+        "mode",
+        "ordinal",
+        "scope"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "scope": {},
+        "max_hits": {},
+        "mode": {
+          "const": "every_match"
+        }
+      },
+      "required": [
+        "max_hits",
+        "mode",
+        "scope"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "probability": {},
+        "seed": {},
+        "mode": {
+          "const": "probability"
+        },
+        "max_hits": {},
+        "scope": {}
+      },
+      "required": [
+        "max_hits",
+        "mode",
+        "probability",
+        "scope",
+        "seed"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "scope": {},
+        "condition": {},
+        "max_hits": {},
+        "mode": {
+          "const": "condition"
+        }
+      },
+      "required": [
+        "condition",
+        "max_hits",
+        "mode",
+        "scope"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

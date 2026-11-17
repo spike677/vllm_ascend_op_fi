@@ -1,0 +1,48 @@
+{
+  "schema": "demoncat.fault_config.v1",
+  "mechanism": {
+    "id": "8.restore_offset",
+    "version": "1"
+  },
+  "execution": {
+    "backend": "native",
+    "operator": "MoE Unpermute",
+    "model": "observed",
+    "cann": "9.1.0"
+  },
+  "target": {
+    "layer": null,
+    "operator_call": null,
+    "rank": [
+      0
+    ],
+    "device": [
+      0
+    ],
+    "request_scope": "all",
+    "request_ids": []
+  },
+  "trigger": {
+    "mode": "first",
+    "scope": "request",
+    "max_hits": 1
+  },
+  "fault": {
+    "type": "RESTORE_INDEX_OFFSET",
+    "parameters": {
+      "offset": 1,
+      "mapping_policy": "restore_offset"
+    }
+  },
+  "lifecycle": {
+    "recovery": "restore_original",
+    "require_drain": true,
+    "require_healthy_replay": true
+  },
+  "evidence": {
+    "independent_observer": true,
+    "capture_baseline": true,
+    "capture_fault": true,
+    "capture_off": true
+  }
+}

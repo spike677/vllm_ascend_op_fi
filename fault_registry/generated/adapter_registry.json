@@ -1,0 +1,725 @@
+{
+  "schema": "demoncat.adapter_registry.v1",
+  "contract_version": "1",
+  "mechanisms": [
+    {
+      "canonical_id": "F008.RESTORE_OFFSET",
+      "legacy_id": "8.restore_offset",
+      "backends": [
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f008.restore_offset.schema.json",
+      "operator_paths": [
+        {
+          "family": "MoE Unpermute",
+          "controller": "fault_injection.route8.RestoreOffsetSession",
+          "lifecycle": "dispatch"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F015.ALIAS_DETACH",
+      "legacy_id": "15.alias_detach",
+      "backends": [
+        "framework"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f015.alias_detach.schema.json",
+      "operator_paths": [
+        {
+          "family": "AsStrided",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F017.SPATIAL_PADDING",
+      "legacy_id": "17.spatial_padding",
+      "backends": [
+        "framework"
+      ],
+      "adapter_status": "CPU_EXECUTABLE",
+      "adapter_reason": "Actual guarded module adapter with per-call trigger.",
+      "schema": "schemas/mechanisms/f017.spatial_padding.schema.json",
+      "operator_paths": [
+        {
+          "family": "Conv3d",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F018.API_HALF",
+      "legacy_id": "18.api_half",
+      "backends": [
+        "framework"
+      ],
+      "adapter_status": "CPU_EXECUTABLE",
+      "adapter_reason": "Actual guarded module adapter with per-call trigger.",
+      "schema": "schemas/mechanisms/f018.api_half.schema.json",
+      "operator_paths": [
+        {
+          "family": "RMSNorm",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        },
+        {
+          "family": "RMSNorm",
+          "controller": "demoncat.runtime.vllm_ascend.worker_extension.providers.tensor_natural.NaturalTensorGroupProvider",
+          "lifecycle": "group"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F020.BUFFER_SUBSTITUTE",
+      "legacy_id": "20.buffer_substitute",
+      "backends": [
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f020.buffer_substitute.schema.json",
+      "operator_paths": [
+        {
+          "family": "MatMul / QMM",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F022.WRONG_ROW",
+      "legacy_id": "22.wrong_row",
+      "backends": [
+        "framework",
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f022.wrong_row.schema.json",
+      "operator_paths": [
+        {
+          "family": "RoPE / IndexSelect",
+          "controller": "fault_injection.index22.WrongRowSession",
+          "lifecycle": "dispatch"
+        },
+        {
+          "family": "RoPE / IndexSelect",
+          "controller": "demoncat.runtime.vllm_ascend.worker_extension.providers.tensor_natural.NaturalTensorGroupProvider",
+          "lifecycle": "group"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F025.REDUCE_SCATTER",
+      "legacy_id": "25.reduce_scatter",
+      "backends": [
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f025.reduce_scatter.schema.json",
+      "operator_paths": [
+        {
+          "family": "ReduceScatter",
+          "controller": "fault_injection.collective25.ReduceScatterSession",
+          "lifecycle": "collective"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F026.RESIDUAL_STOMP",
+      "legacy_id": "26.residual_stomp",
+      "backends": [
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f026.residual_stomp.schema.json",
+      "operator_paths": [
+        {
+          "family": "MatMul / QMM",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F026.FIA_DESTINATION",
+      "legacy_id": "26.fia_destination",
+      "backends": [
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f026.fia_destination.schema.json",
+      "operator_paths": [
+        {
+          "family": "FIA destination",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "FQUANT.BATCH_SHARED_SCALE",
+      "legacy_id": "quant.batch_shared_scale",
+      "backends": [
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/fquant.batch_shared_scale.schema.json",
+      "operator_paths": [
+        {
+          "family": "DynamicQuant",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F028.FA.LEGAL_TILING",
+      "legacy_id": "28.fa.legal_tiling",
+      "backends": [
+        "tiling",
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f028.fa.legal_tiling.schema.json",
+      "operator_paths": [
+        {
+          "family": "FA",
+          "controller": "fault_injection.strategy.NativeStrategyBridge",
+          "lifecycle": "strategy"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F028.FIA.LEGAL_TILING",
+      "legacy_id": "28.fia.legal_tiling",
+      "backends": [
+        "tiling",
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f028.fia.legal_tiling.schema.json",
+      "operator_paths": [
+        {
+          "family": "FIA tiling",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F028.FIA.DENOMINATOR_REPLAY",
+      "legacy_id": "28.fia.denominator_replay",
+      "backends": [
+        "device_kernel",
+        "native",
+        "tiling"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f028.fia.denominator_replay.schema.json",
+      "operator_paths": [
+        {
+          "family": "FIA kernel",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F033.PAGED_DECODE",
+      "legacy_id": "33.paged_decode",
+      "backends": [
+        "native",
+        "tiling",
+        "device_kernel"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f033.paged_decode.schema.json",
+      "operator_paths": [
+        {
+          "family": "Paged IFA",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F039.MATMUL_RANGE",
+      "legacy_id": "39.matmul_range",
+      "backends": [
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f039.matmul_range.schema.json",
+      "operator_paths": [
+        {
+          "family": "MatMul / QMM",
+          "controller": "demoncat_fault39.backend.NativeBackend",
+          "lifecycle": "native39"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F039.OUTPUT_PROXY",
+      "legacy_id": "39.output_proxy",
+      "backends": [
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f039.output_proxy.schema.json",
+      "operator_paths": [
+        {
+          "family": "MatMul / QMM",
+          "controller": "fault_injection.deployments.postwrite.Fault39OutputProxyProvider",
+          "lifecycle": "postwrite"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "canonical_id": "F041.TAIL_COLUMN",
+      "legacy_id": "41.tail_column",
+      "backends": [
+        "native"
+      ],
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f041.tail_column.schema.json",
+      "operator_paths": [
+        {
+          "family": "KV Cache",
+          "controller": "demoncat.runtime.vllm_ascend.worker_extension.postwrite41.Postwrite41WorkerProvider",
+          "lifecycle": "kv"
+        },
+        {
+          "family": "KV Cache",
+          "controller": "fault_injection.deployments.postwrite.Fault41TailColumnProvider",
+          "lifecycle": "postwrite"
+        }
+      ],
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "demoncat.fault_config.v1"
+    },
+    "mechanism": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "const": "1"
+        }
+      },
+      "required": [
+        "id",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "backend": {
+          "enum": [
+            "framework",
+            "native",
+            "tiling",
+            "device_kernel"
+          ]
+        },
+        "operator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cann": {
+          "enum": [
+            "cpu",
+            "8.5.1",
+            "9.1",
+            "9.1.0"
+          ]
+        }
+      },
+      "required": [
+        "backend",
+        "operator",
+        "model",
+        "cann"
+      ],
+      "additionalProperties": false
+    },
+    "target": {
+      "$ref": "target.schema.json"
+    },
+    "trigger": {
+      "$ref": "trigger.schema.json"
+    },
+    "fault": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "parameters": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "type",
+        "parameters"
+      ],
+      "additionalProperties": false
+    },
+    "lifecycle": {
+      "type": "object",
+      "properties": {
+        "recovery": {
+          "const": "restore_original"
+        },
+        "require_drain": {
+          "const": true
+        },
+        "require_healthy_replay": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "recovery",
+        "require_drain",
+        "require_healthy_replay"
+      ],
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "independent_observer": {
+          "const": true
+        },
+        "capture_baseline": {
+          "type": "boolean"
+        },
+        "capture_fault": {
+          "type": "boolean"
+        },
+        "capture_off": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "independent_observer",
+        "capture_baseline",
+        "capture_fault",
+        "capture_off"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "schema",
+    "mechanism",
+    "execution",
+    "target",
+    "trigger",
+    "fault",
+    "lifecycle",
+    "evidence"
+  ],
+  "additionalProperties": false
+}

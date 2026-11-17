@@ -1,0 +1,1816 @@
+{
+  "schema": "demoncat.fault_registry.v1",
+  "baseline_commit": "9dfdb0c6e0e900f8a67d04dcafc53544bc7fc477",
+  "mechanisms": [
+    {
+      "legacy_id": "8.restore_offset",
+      "canonical_id": "F008.RESTORE_OFFSET",
+      "fault_id": "F008",
+      "version": "1",
+      "name": "MoE restore mapping offset",
+      "family": "ROUTING_ERROR",
+      "primitive": "RESTORE_INDEX_OFFSET",
+      "backends": [
+        "native"
+      ],
+      "root_cause": "Historical MoE restore-index offset/mapping defect; physical origin is limited to the cited experiment.",
+      "simulated_semantics": "MoE restore indices/top-k mapping",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "8.restore_offset",
+        "boundary": "MoE restore indices/top-k mapping",
+        "integration": "evidence_only",
+        "validation": "historical fixed experiment",
+        "limitation": "No complete reusable local source",
+        "source": null,
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "MODEL_ADAPTER_MISSING",
+          "NATIVE_PROVIDER_MISSING",
+          "REQUEST_MAPPING_UNPROVEN"
+        ],
+        "evidence": {
+          "scope": "historical Qwen3-VL TP2",
+          "path": "artifacts/fault8/systemic_restore_offset_20260916/INJECTION_LOGIC.md",
+          "verified": [
+            "NATIVE_VERIFIED",
+            "MODEL_VERIFIED",
+            "RECOVERY_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "legacy_evidence_only",
+        "paired_moe_restore_mapping",
+        "Missing reusable worker; actual routing indices, top-k weights and restore consumer required.",
+        "Restore output or its consumer; no automatic msprobe alignment is supplied."
+      ],
+      "operator_paths": [
+        {
+          "family": "MoE Unpermute",
+          "controller": "fault_injection.route8.RestoreOffsetSession",
+          "lifecycle": "dispatch"
+        }
+      ],
+      "historical": {
+        "mechanism": "8.restore_offset",
+        "group": "A",
+        "batch": "2",
+        "model_scope": "Qwen3-VL TP2; DeepSeek-V2-Lite-W8A8 TP1",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "mapping proxy",
+        "historical_status": "HISTORICAL_SCOPED_PASS",
+        "c2": "PENDING",
+        "c3": "PENDING",
+        "engineering_gap": "完整 permutation 与请求绑定",
+        "npu_gap": "DeepSeek 新路径效果与恢复",
+        "current_source": "fault_injection/moe_census.py",
+        "current_probe": "experiments/c2c3_closure_20261117/natural_tensor_census.py",
+        "inherited_summary": "完整 Qwen B/I/F/R; 两 rank; 48 sites",
+        "entry_gate": "确认原始 permutation、lossless 和实际 consumer",
+        "job_id": "moe8-census",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/8.restore_offset.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "offset": 1,
+        "mapping_policy": "restore_offset"
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f008.restore_offset.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "15.alias_detach",
+      "canonical_id": "F015.ALIAS_DETACH",
+      "fault_id": "F015",
+      "version": "1",
+      "name": "Private-format view alias detach",
+      "family": "STORAGE_ALIAS_ERROR",
+      "primitive": "DETACH_VIEW_STORAGE",
+      "backends": [
+        "framework"
+      ],
+      "root_cause": "Historical private-format view/storage aliasing defect (old Fault27/NZ); current route models detached alias semantics.",
+      "simulated_semantics": "as_strided view construction",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "15.alias_detach",
+        "boundary": "as_strided view construction",
+        "integration": "automatic_operator",
+        "validation": "old NPU mechanism; new routing CPU simulation only",
+        "limitation": "Public torch.as_strided only; exact NZ29/BF16 geometry, actual copy_ and original-base consumer required; old name 27",
+        "source": "fault_injection/alias.py",
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "STORAGE_PROOF_MISSING",
+          "CONSUMER_PROOF_MISSING",
+          "NATIVE_VALIDATION_PENDING"
+        ],
+        "evidence": {
+          "scope": "current Python route",
+          "path": "tests/test_alias_auto.py",
+          "verified": [
+            "CPU_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "automatic_adapter",
+        "private_format_view_alias_detach",
+        "NPU NZ29/BF16 16x16 base and public as_strided 8x8/stride16,1/offset17; native internal calls unsupported.",
+        "View initial values and copy_ output may agree; original base after write is the first value difference."
+      ],
+      "operator_paths": [
+        {
+          "family": "AsStrided",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "historical": {
+        "mechanism": "15.alias_detach",
+        "group": "A",
+        "batch": "5",
+        "model_scope": "constructed NZ; natural causal VAE",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "private NZ alias detach",
+        "historical_status": "CONSTRUCTED_NPU_PASS",
+        "c2": "NOT_ESTABLISHED",
+        "c3": "NOT_ESTABLISHED",
+        "engineering_gap": "自然 private base/view/write/consumer 路径",
+        "npu_gap": "自然路径符合时再补 C2/C3",
+        "current_source": "fault_injection/alias.py",
+        "current_probe": "experiments/c2c3_closure_20261117/natural_tensor_census.py",
+        "inherited_summary": "旧 Fault27 六个 NZ 用例与11/16 B/F/OFF",
+        "entry_gate": "自然 private-NZ 全链身份",
+        "job_id": "alias-natural",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/15.alias_detach.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "storage_format": 29,
+        "view_shape": [
+          8,
+          8
+        ],
+        "stride": [
+          16,
+          1
+        ],
+        "storage_offset": 17
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f015.alias_detach.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "17.spatial_padding",
+      "canonical_id": "F017.SPATIAL_PADDING",
+      "fault_id": "F017",
+      "version": "1",
+      "name": "Conv3d spatial padding argument proxy",
+      "family": "SPATIAL_PARAMETER_ERROR",
+      "primitive": "CONV3D_PADDING_ARGUMENT",
+      "backends": [
+        "framework"
+      ],
+      "root_cause": "Historical Conv3d spatial behavior defect; parameter-padding proxy does not reproduce a physical Kernel defect.",
+      "simulated_semantics": "Functional.conv3d padding argument",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "17.spatial_padding",
+        "boundary": "Functional.conv3d padding argument",
+        "integration": "automatic_module",
+        "validation": "new native CPU Conv3d tests; historical fixed NPU evidence remains separate",
+        "limitation": "New reconstruction from documented proxy; only standard Conv3d with proven shape-preserving 16x16 patch geometry",
+        "source": "fault_injection/module_faults.py",
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "LAYER_ROLE_UNRESOLVED",
+          "NATIVE_VALIDATION_PENDING"
+        ],
+        "evidence": {
+          "scope": "current CPU route",
+          "path": "tests/test_module_faults.py",
+          "verified": [
+            "CPU_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "automatic_adapter",
+        "conv3d_padding_argument_proxy",
+        "Standard Conv3d; shape-preserving 16x16 patch geometry only; reconstructed CPU adapter, new NPU acceptance required.",
+        "Conv3d padding input changes first; tensor output changes afterward. Not equal-input kernel corruption."
+      ],
+      "operator_paths": [
+        {
+          "family": "Conv3d",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "historical": {
+        "mechanism": "17.spatial_padding",
+        "group": "A",
+        "batch": "5",
+        "model_scope": "Qwen3-VL-30B-A3B-Instruct-w8a8 TP2",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "native Conv3d parameter effect proxy",
+        "historical_status": "HISTORICAL_SCOPED_PASS",
+        "c2": "NOT_ESTABLISHED",
+        "c3": "NOT_ESTABLISHED",
+        "engineering_gap": "核对 patch16 几何与完整研究源码",
+        "npu_gap": "统一 C2/C3 所缺逐目标和同进程恢复",
+        "current_source": "fault_injection/module_faults.py",
+        "current_probe": "experiments/c2c3_closure_20261117/natural_tensor_census.py",
+        "inherited_summary": "padding [0,0,0] -> [0,7,7], white -> red; 旧恢复记录",
+        "entry_gate": "确认历史范围与当前目标一致",
+        "job_id": "conv3d-gap",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/17.spatial_padding.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "padding": [
+          0,
+          7,
+          7
+        ],
+        "kernel_spatial": [
+          16,
+          16
+        ]
+      },
+      "adapter_status": "CPU_EXECUTABLE",
+      "adapter_reason": "Actual guarded module adapter with per-call trigger.",
+      "schema": "schemas/mechanisms/f017.spatial_padding.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "18.api_half",
+      "canonical_id": "F018.API_HALF",
+      "fault_id": "F018",
+      "version": "1",
+      "name": "RMSNorm module-return half gain",
+      "family": "NORMALIZATION_ERROR",
+      "primitive": "MODULE_RETURN_GAIN",
+      "backends": [
+        "framework"
+      ],
+      "root_cause": "Historical normalization API/wrapper numerical deviation; current module-return half gain does not reproduce native Reduce internals.",
+      "simulated_semantics": "RMSNorm module return gain proxy",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "18.api_half",
+        "boundary": "RMSNorm module return gain proxy",
+        "integration": "automatic_module",
+        "validation": "new CPU module proxy tests; historical native wrapper evidence remains separate",
+        "limitation": "Standard nn.RMSNorm only; new module-return boundary, not a native Reduce error or the old wrapper",
+        "source": "fault_injection/module_faults.py",
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "OPERATOR_ADAPTER_MISSING",
+          "NATIVE_VALIDATION_PENDING"
+        ],
+        "evidence": {
+          "scope": "standard RMSNorm return, CPU",
+          "path": "tests/test_module_faults.py",
+          "verified": [
+            "CPU_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "automatic_adapter",
+        "rmsnorm_module_return_gain_proxy",
+        "Standard nn.RMSNorm only; gain0.5 at module return, not historical native wrapper or Reduce internals.",
+        "Observation order depends on module hooks; native RMSNorm may appear healthy before a downstream input differs."
+      ],
+      "operator_paths": [
+        {
+          "family": "RMSNorm",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        },
+        {
+          "family": "RMSNorm",
+          "controller": "demoncat.runtime.vllm_ascend.worker_extension.providers.tensor_natural.NaturalTensorGroupProvider",
+          "lifecycle": "group"
+        }
+      ],
+      "historical": {
+        "mechanism": "18.api_half",
+        "group": "accepted",
+        "batch": "1",
+        "model_scope": "Qwen3-0.6B TP1 BF16 fixed fresh prefill",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "RMS return half proxy",
+        "historical_status": "SCOPED_WORKER_PASS",
+        "c2": "SCOPED_PASS",
+        "c3": "SCOPED_PASS",
+        "engineering_gap": "完整请求统计窗口对齐",
+        "npu_gap": "补 Worker 独立原始统计",
+        "current_source": "fault_injection/rmsnorm_return.py",
+        "current_probe": "experiments/c2c3_closure_20261117/natural_rms_worker_statistics.py",
+        "inherited_summary": "C2 113/113 C3 226/226 与整组恢复",
+        "entry_gate": "同序号完整请求原始统计",
+        "job_id": "worker18-statistics",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/18.api_half.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "gain": 0.5
+      },
+      "adapter_status": "CPU_EXECUTABLE",
+      "adapter_reason": "Actual guarded module adapter with per-call trigger.",
+      "schema": "schemas/mechanisms/f018.api_half.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "20.buffer_substitute",
+      "canonical_id": "F020.BUFFER_SUBSTITUTE",
+      "fault_id": "F020",
+      "version": "1",
+      "name": "Native semantic input buffer substitution",
+      "family": "INPUT_BUFFER_ERROR",
+      "primitive": "SEMANTIC_SLOT_SUBSTITUTION",
+      "backends": [
+        "native"
+      ],
+      "root_cause": "Historical wrong semantic input buffer/slot at a native executor boundary; exact slot identity is deployment-specific.",
+      "simulated_semantics": "CANN executor semantic slot",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "20.buffer_substitute",
+        "boundary": "CANN executor semantic slot",
+        "integration": "native_provider_bridge",
+        "validation": "124 NPU: Qwen3-0.6B and SmolLM2-135M/Llama B/F/OFF; three statistics/mix steps",
+        "limitation": "CANN8.5.1 v17 MatmulWeightNz, FP16/BF16 ND input <=65536 bytes; newly tested BF16 with NZ29 weights; no new INT2/INT4 acceptance",
+        "source": "fault_injection/native.py",
+        "worker": null,
+        "provider": "fault_injection/deployments/buffer20.py",
+        "gaps": [
+          "TARGET_IDENTITY_UNPROVEN",
+          "STORAGE_PROOF_MISSING",
+          "NATIVE_VALIDATION_PENDING"
+        ],
+        "evidence": {
+          "scope": "9171f3b v17 WeightNz, build20-a1 only",
+          "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+          "verified": [
+            "NATIVE_VERIFIED",
+            "MODEL_VERIFIED",
+            "RECOVERY_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "deployment_provider_required",
+        "native_input_buffer_substitute",
+        "Matched ABI, semantic slot, live storage and original transform; a Linear candidate proves no slot.",
+        "Python may record original caller input; actual native operator output and downstream values require separate checking."
+      ],
+      "operator_paths": [
+        {
+          "family": "MatMul / QMM",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "historical": {
+        "mechanism": "20.buffer_substitute",
+        "group": "accepted",
+        "batch": "1",
+        "model_scope": "DeepSeek-V2-Lite-W8A8 TP1 BF16 3-token prefill",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "Native QMM input buffer substitution",
+        "historical_status": "SCOPED_WORKER_PASS",
+        "c2": "SCOPED_PASS",
+        "c3": "SCOPED_PASS",
+        "engineering_gap": "关联已有135目标和实际证据 SHA",
+        "npu_gap": "审计2个后续 NaN 的可比性与传播范围",
+        "current_source": "fault_injection/deployments/matmul.py",
+        "current_probe": "experiments/c2c3_closure_20261117/providers20_worker_probe.py",
+        "inherited_summary": "C2 135/135 C3 270/270; Max16.25->14",
+        "entry_gate": "先审计原件，只有实际缺少的采集才排队",
+        "job_id": "native20-statistics",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/20.buffer_substitute.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "source_slot": "input",
+        "replacement_transform": "original_provider"
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f020.buffer_substitute.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "22.wrong_row",
+      "canonical_id": "F022.WRONG_ROW",
+      "fault_id": "F022",
+      "version": "1",
+      "name": "IndexSelect returned-row proxy",
+      "family": "INDEX_MAPPING_ERROR",
+      "primitive": "RETURNED_ROW_REPLACEMENT",
+      "backends": [
+        "framework",
+        "native"
+      ],
+      "root_cause": "Historical index/address overflow hypothesis; returned-row replacement does not establish native uint32 overflow.",
+      "simulated_semantics": "IndexSelect returned row proxy",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "22.wrong_row",
+        "boundary": "IndexSelect returned row proxy",
+        "integration": "evidence_only",
+        "validation": "historical proxy",
+        "limitation": "No automatic model integration",
+        "source": null,
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "MODEL_ADAPTER_MISSING",
+          "REQUEST_MAPPING_UNPROVEN",
+          "CONSUMER_PROOF_MISSING"
+        ],
+        "evidence": {
+          "scope": "historical fixed RoPE",
+          "path": "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/INJECTION_LOGIC.md",
+          "verified": [
+            "NATIVE_VERIFIED",
+            "MODEL_VERIFIED",
+            "RECOVERY_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "legacy_evidence_only",
+        "index_select_return_row_proxy",
+        "Missing reusable worker; real RoPE cache/index/consumer mapping required; not address overflow.",
+        "IndexSelect post-return proxy or downstream consumer, depending on collection boundary."
+      ],
+      "operator_paths": [
+        {
+          "family": "RoPE / IndexSelect",
+          "controller": "fault_injection.index22.WrongRowSession",
+          "lifecycle": "dispatch"
+        },
+        {
+          "family": "RoPE / IndexSelect",
+          "controller": "demoncat.runtime.vllm_ascend.worker_extension.providers.tensor_natural.NaturalTensorGroupProvider",
+          "lifecycle": "group"
+        }
+      ],
+      "historical": {
+        "mechanism": "22.wrong_row",
+        "group": "A",
+        "batch": "5",
+        "model_scope": "Qwen3-32B-w8a8-nopdmix TP2 forward_oot",
+        "cann": "NOT_DOCUMENTED",
+        "hardware": "NOT_DOCUMENTED",
+        "implementation_boundary": "IndexSelect returned-output effect proxy",
+        "historical_status": "HISTORICAL_SCOPED_PASS",
+        "c2": "NOT_ESTABLISHED",
+        "c3": "NOT_ESTABLISHED",
+        "engineering_gap": "fused RoPE 与 index_select 执行路径区别",
+        "npu_gap": "先确定效果代理和原生溢出验收边界",
+        "current_source": "fault_injection/index22.py",
+        "current_probe": "experiments/c2c3_closure_20261117/natural_tensor_census.py",
+        "inherited_summary": "14 token prefill row13<-source0; B/F/R token恢复",
+        "entry_gate": "验收语义与真实 index_select 路径",
+        "job_id": "index22-gap",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/22.wrong_row.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "source_row": 0,
+        "target_row": 1
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f022.wrong_row.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "25.reduce_scatter",
+      "canonical_id": "F025.REDUCE_SCATTER",
+      "fault_id": "F025",
+      "version": "1",
+      "name": "ReduceScatter replay delta",
+      "family": "COLLECTIVE_ERROR",
+      "primitive": "REDUCE_SCATTER_DELTA_REPLAY",
+      "backends": [
+        "native"
+      ],
+      "root_cause": "Historical collective/reduction discrepancy; dedicated rank and process-group semantics require independent evidence.",
+      "simulated_semantics": "collective reduction",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "25.reduce_scatter",
+        "boundary": "collective reduction",
+        "integration": "not_implemented",
+        "validation": "not accepted",
+        "limitation": "Do not substitute a different fault",
+        "source": null,
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "OPERATOR_ADAPTER_MISSING",
+          "NATIVE_PROVIDER_MISSING",
+          "RECOVERY_UNPROVEN"
+        ],
+        "evidence": null
+      },
+      "legacy_details": [
+        "not_implemented",
+        "collective_reduction",
+        "No accepted dedicated implementation; actual collective, process group and rank semantics are required.",
+        "Unspecified until an actual mechanism and observable boundary are implemented."
+      ],
+      "operator_paths": [
+        {
+          "family": "ReduceScatter",
+          "controller": "fault_injection.collective25.ReduceScatterSession",
+          "lifecycle": "collective"
+        }
+      ],
+      "historical": {
+        "mechanism": "25.reduce_scatter",
+        "group": "C",
+        "batch": "4",
+        "model_scope": "bounded dual-rank collective",
+        "cann": "8.5.1|9.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "ReduceScatter replay",
+        "historical_status": "CALIBRATION_NO_SAMPLE",
+        "c2": "NO_SAMPLE",
+        "c3": "NO_SAMPLE",
+        "engineering_gap": "保留无故障样本判定",
+        "npu_gap": "寻找真实 replay sample",
+        "current_source": "fault_injection/collective25.py",
+        "current_probe": "experiments/c2c3_closure_20261117/collective25_closure_probe.py",
+        "inherited_summary": "6种 dtype/size 校准、4次 native repeat、双rank退出",
+        "entry_gate": "真实故障样本",
+        "job_id": "collective25-sample",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/25.reduce_scatter.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "split": 1,
+        "replay_delta": 1.0
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f025.reduce_scatter.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "26.residual_stomp",
+      "canonical_id": "F026.RESIDUAL_STOMP",
+      "fault_id": "F026",
+      "version": "1",
+      "name": "Native writer residual adjacency proxy",
+      "family": "DESTINATION_ERROR",
+      "primitive": "ADJACENT_RESIDUAL_WRITE",
+      "backends": [
+        "native"
+      ],
+      "root_cause": "Historical allocator-adjacent overwrite hypothesis; bounded residual write requires actual storage adjacency.",
+      "simulated_semantics": "native output allocation",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "26.residual_stomp",
+        "boundary": "native output allocation",
+        "integration": "native_provider_bridge",
+        "validation": "124 NPU: real 32B W8A8 TP2 B/F/OFF, 45 eligible native writes per rank after forward-lifetime fix; two captured steps",
+        "limitation": "CANN8.5.1/custom AddRmsNormBias; actual allocator adjacency required; rank0 statistical first difference downstream, rank1 NaN blocks independent earliest localization",
+        "source": "fault_injection/native.py",
+        "worker": "fault_injection/deployments/residual26_worker.py",
+        "provider": "fault_injection/deployments/residual26.py",
+        "gaps": [
+          "CONSUMER_PROOF_MISSING",
+          "INDEPENDENT_FIRST_DIFF_UNPROVEN"
+        ],
+        "evidence": {
+          "scope": "provider26-final-a2 QMM eligible TP2 calls only",
+          "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+          "verified": [
+            "NATIVE_VERIFIED",
+            "MODEL_VERIFIED",
+            "RECOVERY_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "deployment_provider_required",
+        "native_output_underflow_proxy",
+        "Actual allocator adjacency, live residual and exact writer/consumer lifecycle are mandatory.",
+        "Residual consumer may differ while the restored normal output agrees; statistics alone do not prove memory aliasing."
+      ],
+      "operator_paths": [
+        {
+          "family": "MatMul / QMM",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "historical": {
+        "mechanism": "26.residual_stomp",
+        "group": "B",
+        "batch": "2",
+        "model_scope": "DeepSeek-V2-Lite-W8A8 fresh-prefill",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "QMM writer residual proxy",
+        "historical_status": "HISTORICAL_SCOPED_PASS",
+        "c2": "PENDING",
+        "c3": "PENDING",
+        "engineering_gap": "全量 writer/producer/residual/consumer 身份关联",
+        "npu_gap": "完成被外部中断的 inventory 后补 C2/C3",
+        "current_source": "fault_injection/deployments/writer26_inventory.py",
+        "current_probe": "experiments/c2c3_closure_20261117/providers26_inventory_probe.py",
+        "inherited_summary": "旧受控写入、劣化、恢复与单目标链",
+        "entry_gate": "Native 分母、地址生命周期、consumer",
+        "job_id": "native26-residual",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/26.residual_stomp.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "writer": "qmm",
+        "destination": "adjacent_residual",
+        "consumer": "observed"
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f026.residual_stomp.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "26.fia_destination",
+      "canonical_id": "F026.FIA_DESTINATION",
+      "fault_id": "F026",
+      "version": "1",
+      "name": "FIA live residual destination proxy",
+      "family": "DESTINATION_ERROR",
+      "primitive": "FIA_RESIDUAL_DESTINATION",
+      "backends": [
+        "native"
+      ],
+      "root_cause": "FIA output destination diversion models live residual corruption; it does not prove natural out-of-bounds writes.",
+      "simulated_semantics": "FIA output destination proxy",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "26.fia_destination",
+        "boundary": "FIA output destination proxy",
+        "integration": "native_provider_bridge",
+        "validation": "124 NPU: real 32B W8A8 TP2 inference B/F/OFF, 126 completed writes per rank; generated tokens/text changed in 4/8 requests",
+        "limitation": "CANN8.5.1 FIA V3 and custom AddRmsNormBias; current-forward producer only; raw prefill first difference in consumer residual input, decode tokens already differ",
+        "source": "fault_injection/native.py",
+        "worker": "fault_injection/deployments/residual26_worker.py",
+        "provider": "fault_injection/deployments/residual26.py",
+        "gaps": [
+          "CONSUMER_PROOF_MISSING",
+          "RECOVERY_UNPROVEN"
+        ],
+        "evidence": {
+          "scope": "provider26-final-a2 FIA eligible TP2 calls only",
+          "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+          "verified": [
+            "NATIVE_VERIFIED",
+            "MODEL_VERIFIED",
+            "RECOVERY_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "deployment_provider_required",
+        "fia_live_residual_destination_proxy",
+        "Actual output destination and live residual consumer proof; not natural OOB; historical consumer coverage incomplete.",
+        "Residual read/consumer, after real writer destination diversion; original output can be restored."
+      ],
+      "operator_paths": [
+        {
+          "family": "FIA destination",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "historical": {
+        "mechanism": "26.fia_destination",
+        "group": "B",
+        "batch": "2",
+        "model_scope": "SmolLM2/GLM fresh-prefill scope per receipt",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "FIA destination writer proxy",
+        "historical_status": "HISTORICAL_SCOPED_PASS",
+        "c2": "PENDING",
+        "c3": "PENDING",
+        "engineering_gap": "FIA writer/consumer 生命周期映射",
+        "npu_gap": "全量自然调用与 every-match 恢复",
+        "current_source": "fault_injection/deployments/writer26_inventory.py",
+        "current_probe": "experiments/c2c3_closure_20261117/providers26_inventory_probe.py",
+        "inherited_summary": "历史 FIA writer lossless 与 destination 单目标证据",
+        "entry_gate": "Native 分母、FIA destination 绑定",
+        "job_id": "native26-fia",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/26.fia_destination.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "writer": "fia",
+        "destination": "live_residual",
+        "consumer": "observed"
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f026.fia_destination.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "quant.batch_shared_scale",
+      "canonical_id": "FQUANT.BATCH_SHARED_SCALE",
+      "fault_id": "FQUANT",
+      "version": "1",
+      "name": "DynamicQuant batch-shared scale",
+      "family": "QUANTIZATION_ERROR",
+      "primitive": "QUANTIZATION_REDUCTION_SCOPE",
+      "backends": [
+        "native"
+      ],
+      "root_cause": "Incorrect quantization reduction scope couples independent request rows through a shared scale.",
+      "simulated_semantics": "native quantization reduction",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "quant.batch_shared_scale",
+        "boundary": "native quantization reduction",
+        "integration": "automatic_quantization_requires_runtime",
+        "validation": "124 NPU: real 32B W8A8 TP2 B/F/OFF; DynamicQuant first difference, three steps on both ranks",
+        "limitation": "CANN9.1 pinned runner and TLS native provider; first observed eligible module, actual scheduler/healthy-input mapping; not all-layer coverage or input-induced batching",
+        "source": "fault_injection/quantization.py",
+        "worker": "fault_injection/deployments/batch_scale.py",
+        "provider": "fault_injection/deployments/batch_scale.py",
+        "gaps": [
+          "REQUEST_MAPPING_UNPROVEN",
+          "TARGET_IDENTITY_UNPROVEN"
+        ],
+        "evidence": {
+          "scope": "quant-model-a2 first eligible module, B8 pure decode",
+          "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+          "verified": [
+            "NATIVE_VERIFIED",
+            "MODEL_VERIFIED",
+            "RECOVERY_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "deployment_provider_required",
+        "dynamic_quant_reduction_scope_error",
+        "Verified W8A8 native backend plus TP2 pure-decode scheduler and healthy-input identity; no shape[0] request guess.",
+        "Quantized output/scale can change; distinguish backend scope error from anomalous prompt-induced batching."
+      ],
+      "operator_paths": [
+        {
+          "family": "DynamicQuant",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "historical": {
+        "mechanism": "quant.batch_shared_scale",
+        "group": "B",
+        "batch": "2",
+        "model_scope": "DeepSeek-V2-Lite-W8A8 B8 first-decode",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "DynamicQuant V2 scale proxy",
+        "historical_status": "SINGLE_PROJECTION_PASS",
+        "c2": "PENDING",
+        "c3": "PENDING",
+        "engineering_gap": "每投影请求行 lineage 与 native executor lifetime",
+        "npu_gap": "全量投影逐调用 lease 和整组恢复",
+        "current_source": "fault_injection/deployments/dynamic_quant_inventory.py",
+        "current_probe": "experiments/c2c3_closure_20261117/providers_quant_inventory_probe.py",
+        "inherited_summary": "已验首个 projection 的真实 B8 路径",
+        "entry_gate": "request row、prepare/execute lifetime",
+        "job_id": "quant-inventory",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/quant.batch_shared_scale.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "quant_scope": "batch",
+        "scale_policy": "shared",
+        "projection_scope": "observed"
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/fquant.batch_shared_scale.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "28.fa.legal_tiling",
+      "canonical_id": "F028.FA.LEGAL_TILING",
+      "fault_id": "F028",
+      "version": "1",
+      "name": "FA legal execution grouping",
+      "family": "ATTENTION_GROUPING",
+      "primitive": "FA_LEGAL_HOST_TILING",
+      "backends": [
+        "tiling",
+        "native"
+      ],
+      "root_cause": "Legal FA execution grouping changes rounding order; it need not imply any arithmetic correctness defect.",
+      "simulated_semantics": "FA S1S2 host policy",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "28.fa.legal_tiling",
+        "boundary": "FA S1S2 host policy",
+        "integration": "strategy_bridge",
+        "validation": "pinned FA operator/model matrix",
+        "limitation": "Use existing certified StrategySession; not FIA",
+        "source": "fault_injection/strategy.py",
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "OPERATOR_ADAPTER_MISSING",
+          "REQUEST_MAPPING_UNPROVEN"
+        ],
+        "evidence": {
+          "scope": "separate CPU strategy bridge",
+          "path": "tests/test_strategy_bridge.py",
+          "verified": [
+            "CPU_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "strategy_bridge_only",
+        "legal_fa_execution_grouping",
+        "Existing certified FA S1S2 StrategySession; model-to-native provider not implemented in attach.",
+        "FA output may differ or be exactly equal; legal strategy changes need not violate any precision standard."
+      ],
+      "operator_paths": [
+        {
+          "family": "FA",
+          "controller": "fault_injection.strategy.NativeStrategyBridge",
+          "lifecycle": "strategy"
+        }
+      ],
+      "historical": {
+        "mechanism": "28.fa.legal_tiling",
+        "group": "C",
+        "batch": "4",
+        "model_scope": "historical standalone FA",
+        "cann": "receipt-specific",
+        "hardware": "receipt-specific",
+        "implementation_boundary": "FA host tiling",
+        "historical_status": "HISTORICAL_IMPLEMENTATION",
+        "c2": "NOT_ESTABLISHED",
+        "c3": "NOT_ESTABLISHED",
+        "engineering_gap": "精确 FA 源码与构建身份",
+        "npu_gap": "独立 FA launch/数值/真实 Worker",
+        "current_source": "fault_injection/strategy.py",
+        "current_probe": "",
+        "inherited_summary": "FA 专用历史实现，来源另行对账",
+        "entry_gate": "FA 自身 build/launch; 禁止跨 FIA 借用",
+        "job_id": "fa28-qualification",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/28.fa.legal_tiling.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "m_tile": 128,
+        "s2_tile": 128
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f028.fa.legal_tiling.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "28.fia.legal_tiling",
+      "canonical_id": "F028.FIA.LEGAL_TILING",
+      "fault_id": "F028",
+      "version": "1",
+      "name": "FIA coupled legal grouping",
+      "family": "ATTENTION_GROUPING",
+      "primitive": "FIA_LEGAL_HOST_TILING",
+      "backends": [
+        "tiling",
+        "native"
+      ],
+      "root_cause": "Legal coupled FIA M/S2 grouping changes reduction order, separately from denominator arithmetic replay.",
+      "simulated_semantics": "FIA host M/S2 selection",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "28.fia.legal_tiling",
+        "boundary": "FIA host M/S2 selection",
+        "integration": "automatic_attention",
+        "validation": "old pinned Qwen3 experiments; new router CPU only",
+        "limitation": "Controlled coupled M/S2 512->128 healthy templates; no replay key, no new NPU acceptance, not historical default policy",
+        "source": "fault_injection/fia.py",
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "NATIVE_VALIDATION_PENDING",
+          "INDEPENDENT_FIRST_DIFF_UNPROVEN"
+        ],
+        "evidence": {
+          "scope": "current shared Python attention route",
+          "path": "tests/test_fia_masks.py",
+          "verified": [
+            "CPU_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "automatic_adapter",
+        "legal_fia_coupled_grouping",
+        "Pinned FP16 B1/B8 Hq16/Hkv8 S2048 D128 vendor; M/S2 512->128; no inherited new-router NPU acceptance.",
+        "FIA output may differ below tolerance; prior legal-strategy search did not reach the0.1% statistical target."
+      ],
+      "operator_paths": [
+        {
+          "family": "FIA tiling",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "historical": {
+        "mechanism": "28.fia.legal_tiling",
+        "group": "C",
+        "batch": "4",
+        "model_scope": "standalone FIA B8",
+        "cann": "9.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "FIA legal tiling",
+        "historical_status": "LAUNCH_NO_THRESHOLD_EFFECT",
+        "c2": "NOT_ESTABLISHED",
+        "c3": "NOT_ESTABLISHED",
+        "engineering_gap": "固定容差审计已有参数与原件",
+        "npu_gap": "取得有效数值差异后再验证模型",
+        "current_source": "fault_injection/native_adapters/attention28/launch.py",
+        "current_probe": "experiments/c2c3_closure_20261117/attention28_launch_probe.py",
+        "inherited_summary": "M/S2 512/512->128/128; 当前固定容差无首差",
+        "entry_gate": "真实 launch 参数和有效数值差异",
+        "job_id": "fia28-legal",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/28.fia.legal_tiling.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "m_tile": 128,
+        "s2_tile": 128
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f028.fia.legal_tiling.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "28.fia.denominator_replay",
+      "canonical_id": "F028.FIA.DENOMINATOR_REPLAY",
+      "fault_id": "F028",
+      "version": "1",
+      "name": "FIA online-softmax denominator replay",
+      "family": "ATTENTION_NUMERICAL_ERROR",
+      "primitive": "ONLINE_SOFTMAX_DENOMINATOR_REPLAY",
+      "backends": [
+        "device_kernel",
+        "native",
+        "tiling"
+      ],
+      "root_cause": "Simulated repeated previous mass in the online-softmax denominator; distinct from historical legal tiling.",
+      "simulated_semantics": "FIA native online softmax",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "28.fia.denominator_replay",
+        "boundary": "FIA native online softmax",
+        "integration": "automatic_attention",
+        "validation": "old Qwen3 NPU; new router CPU only",
+        "limitation": "New arithmetic error, exact pinned kernel geometry; not historical fault28",
+        "source": "fault_injection/fia.py",
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "TARGET_IDENTITY_UNPROVEN",
+          "NATIVE_VALIDATION_PENDING"
+        ],
+        "evidence": {
+          "scope": "current shared Python attention route",
+          "path": "tests/test_fia_masks.py",
+          "verified": [
+            "CPU_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "automatic_adapter",
+        "fia_softmax_denominator_replay",
+        "Pinned FP16 B1/B8 Hq16/Hkv8 S2048 D128 vendor; distinct arithmetic error, not historical legal-tiling fault.",
+        "FIA output then downstream logits; historical0.7968% Norm applies only to the frozen Qwen experiment."
+      ],
+      "operator_paths": [
+        {
+          "family": "FIA kernel",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "historical": {
+        "mechanism": "28.fia.denominator_replay",
+        "group": "C",
+        "batch": "4",
+        "model_scope": "standalone FIA B8",
+        "cann": "9.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "FIA device denominator replay",
+        "historical_status": "STANDALONE_EFFECT_PASS",
+        "c2": "NOT_ESTABLISHED",
+        "c3": "NOT_ESTABLISHED",
+        "engineering_gap": "区分 Kernel Entry 与模型适配",
+        "npu_gap": "进入真实模型/Worker 的传播和恢复",
+        "current_source": "fault_injection/native_adapters/attention28/launch.py",
+        "current_probe": "",
+        "inherited_summary": "Mean首差; Norm约1.721%; 八次真实launch复核",
+        "entry_gate": "匹配源码/build/launch 与模型桥接",
+        "job_id": "fia28-replay",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/28.fia.denominator_replay.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "s2_block": 2,
+        "replay_previous_mass": true
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f028.fia.denominator_replay.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "33.paged_decode",
+      "canonical_id": "F033.PAGED_DECODE",
+      "fault_id": "F033",
+      "version": "1",
+      "name": "Paged decode SInner grouping",
+      "family": "ATTENTION_GROUPING",
+      "primitive": "PAGED_ATTENTION_SINNER",
+      "backends": [
+        "native",
+        "tiling",
+        "device_kernel"
+      ],
+      "root_cause": "Paged attention SInner grouping changes reduction order under exact KV/page geometry.",
+      "simulated_semantics": "paged IFA SInner selection",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "33.paged_decode",
+        "boundary": "paged IFA SInner selection",
+        "integration": "native_provider_bridge",
+        "validation": "124 NPU: Qwen3 28 layers/B8, 84 actual switches, B/F/OFF and native launch audit",
+        "limitation": "CANN9.1 pinned vendor, Q1/KV16384/H16/KV8/D128 FP16/page128; raw statistics first differs at downstream mean, not uniquely at IFA; no free-running generation acceptance",
+        "source": "fault_injection/native.py",
+        "worker": null,
+        "provider": "fault_injection/deployments/paged33.py",
+        "gaps": [
+          "REQUEST_MAPPING_UNPROVEN",
+          "RECOVERY_UNPROVEN",
+          "INDEPENDENT_FIRST_DIFF_UNPROVEN"
+        ],
+        "evidence": {
+          "scope": "provider33-model-a2, fixed teacher decode",
+          "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+          "verified": [
+            "NATIVE_VERIFIED",
+            "MODEL_VERIFIED",
+            "RECOVERY_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "deployment_provider_required",
+        "paged_attention_reduction_grouping",
+        "Native IFA tiling, actual page table, KV lifetime and request mapping required; dense prefill is not equivalent.",
+        "Paged attention output then downstream; a FIA API label alone does not identify fault28 versus fault33."
+      ],
+      "operator_paths": [
+        {
+          "family": "Paged IFA",
+          "controller": "fault_injection.lifecycle.ModelFaultBackend",
+          "lifecycle": "model"
+        }
+      ],
+      "historical": {
+        "mechanism": "33.paged_decode",
+        "group": "accepted",
+        "batch": "1",
+        "model_scope": "Qwen3-0.6B Worker TND/page16/KV1025",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "private TND FIA/FAI",
+        "historical_status": "STOCK_PATH_AND_BUILD_VERIFIED",
+        "c2": "PENDING",
+        "c3": "PENDING",
+        "engineering_gap": "stock/private 库绑定与完整初始化",
+        "npu_gap": "device-backed B、独立 stock bridge、F和OFF",
+        "current_source": "fault_injection/native_adapters/attention28/fia/build_fresh.py",
+        "current_probe": "experiments/c2c3_closure_20261117/attention33_worker_probe.py",
+        "inherited_summary": "stock重复和OFF、六入口构建、CPU符号检查",
+        "entry_gate": "库共存、真实 Worker 初始化",
+        "job_id": "paged33-device",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/33.paged_decode.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "page_size": 128,
+        "s_inner": 128,
+        "cache_geometry": "observed"
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f033.paged_decode.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "39.matmul_range",
+      "canonical_id": "F039.MATMUL_RANGE",
+      "fault_id": "F039",
+      "version": "1",
+      "name": "Native matmul arithmetic range",
+      "family": "MATMUL_RANGE_ERROR",
+      "primitive": "NATIVE_INPUT_RANGE_SUBSTITUTION",
+      "backends": [
+        "native"
+      ],
+      "root_cause": "Native matmul range experiment; intermediate accumulator type and corruption location are not established by proxy evidence.",
+      "simulated_semantics": "native matmul arithmetic",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "39.matmul_range",
+        "boundary": "native matmul arithmetic",
+        "integration": "native_provider_bridge",
+        "validation": "old pinned finite-input experiment; new bridge CPU simulation only",
+        "limitation": "Deployment provider pending; intermediate accumulator type/location not proven",
+        "source": "fault39/src/demoncat_fault39/backend.py",
+        "worker": "fault39/src/demoncat_fault39/vllm_worker.py",
+        "provider": "fault39/src/demoncat_fault39/provider.py",
+        "gaps": [
+          "TARGET_IDENTITY_UNPROVEN",
+          "REQUEST_MAPPING_UNPROVEN",
+          "NATIVE_VALIDATION_PENDING"
+        ],
+        "evidence": {
+          "scope": "independent ABI v1 matched profiles and model cases",
+          "path": "experiments/provider_adaptation_20261116/validation_summary.json",
+          "verified": [
+            "NATIVE_VERIFIED",
+            "MODEL_VERIFIED",
+            "RECOVERY_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "independent_backend_required",
+        "native_input_range_substitution",
+        "Deployment provider pending; intermediate accumulator type/location not proven",
+        "Native output and downstream effect require independent B/F/OFF evidence."
+      ],
+      "operator_paths": [
+        {
+          "family": "MatMul / QMM",
+          "controller": "demoncat_fault39.backend.NativeBackend",
+          "lifecycle": "native39"
+        }
+      ],
+      "historical": {
+        "mechanism": "39.matmul_range",
+        "group": "accepted",
+        "batch": "1",
+        "model_scope": "Qwen3-0.6B TP1 BF16 14-token prefill",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "Native MatMul input substitution",
+        "historical_status": "SCOPED_WORKER_PASS",
+        "c2": "SCOPED_PASS",
+        "c3": "SCOPED_PASS",
+        "engineering_gap": "复用113目标独立审计与每目标效果",
+        "npu_gap": "补 C3 原始统计; 保留后续 NaN",
+        "current_source": "fault_injection/deployments/matmul.py",
+        "current_probe": "experiments/c2c3_closure_20261117/providers39_worker_probe.py",
+        "inherited_summary": "C2 113/113 C3 226/226; OFF和完整logits精确",
+        "entry_gate": "C3原始统计与独立审计",
+        "job_id": "native39-statistics",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/39.matmul_range.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "input_range": "matched_profile",
+        "substitution": "original_provider"
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f039.matmul_range.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "39.output_proxy",
+      "canonical_id": "F039.OUTPUT_PROXY",
+      "fault_id": "F039",
+      "version": "1",
+      "name": "Matmul output nonfinite proxy",
+      "family": "OUTPUT_VALUE_ERROR",
+      "primitive": "MATMUL_OUTPUT_PERTURBATION",
+      "backends": [
+        "native"
+      ],
+      "root_cause": "Output nonfinite perturbation models an outcome; it does not establish matmul arithmetic root cause.",
+      "simulated_semantics": "native matmul output",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "39.output_proxy",
+        "boundary": "native matmul output",
+        "integration": "native_provider_bridge",
+        "validation": "old pinned outcome proxy; new bridge CPU simulation only",
+        "limitation": "Deployment provider pending; explicit output perturbation, not arithmetic root cause",
+        "source": null,
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "HOST_CONTRACT_MISSING",
+          "NATIVE_PROVIDER_MISSING",
+          "STORAGE_PROOF_MISSING",
+          "RECOVERY_UNPROVEN"
+        ],
+        "evidence": {
+          "scope": "legacy v19 single-hit projection output proxy",
+          "path": "fault20_fast_validation/reports/fault39_float_matmul_output_nonfinite_proxy_validation.md",
+          "verified": [
+            "NATIVE_VERIFIED",
+            "MODEL_VERIFIED",
+            "RECOVERY_VERIFIED"
+          ]
+        }
+      },
+      "legacy_details": [
+        "independent_backend_required",
+        "matmul_output_perturbation",
+        "Deployment provider pending; explicit output perturbation, not arithmetic root cause",
+        "Native output and downstream effect require independent B/F/OFF evidence."
+      ],
+      "operator_paths": [
+        {
+          "family": "MatMul / QMM",
+          "controller": "fault_injection.deployments.postwrite.Fault39OutputProxyProvider",
+          "lifecycle": "postwrite"
+        }
+      ],
+      "historical": {
+        "mechanism": "39.output_proxy",
+        "group": "D",
+        "batch": "3",
+        "model_scope": "natural HF Qwen aten.matmul -> mul",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "returned-storage output proxy",
+        "historical_status": "SINGLE_TARGET_PASS",
+        "c2": "PENDING",
+        "c3": "PENDING",
+        "engineering_gap": "多目标 lease 隔离和 consumer 完成释放",
+        "npu_gap": "140条 eligible 链的 C2 与 live lease C3",
+        "current_source": "fault_injection/deployments/postwrite.py",
+        "current_probe": "experiments/c2c3_closure_20261117/../c2c3_postwrite_20261117/natural39_coverage_probe.py",
+        "inherited_summary": "单目标效果和OFF;140链inventory",
+        "entry_gate": "独立 lease、drain、同storage隔离",
+        "job_id": "output39-coverage",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/39.output_proxy.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "output_transform": "nonfinite",
+        "max_live_leases": 1
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f039.output_proxy.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    },
+    {
+      "legacy_id": "41.tail_column",
+      "canonical_id": "F041.TAIL_COLUMN",
+      "fault_id": "F041",
+      "version": "1",
+      "name": "KV-cache tail-column proxy",
+      "family": "CACHE_STATE_ERROR",
+      "primitive": "KV_TAIL_COLUMN_WRITE",
+      "backends": [
+        "native"
+      ],
+      "root_cause": "Cached tail/state corruption hypothesis; actual writer, slot, lifetime and consumer must be proven.",
+      "simulated_semantics": "cached tail/state",
+      "model_path": "Observed runtime path required; no model-name inference.",
+      "recovery": "Stop admission, drain owned calls, restore exact owned state, verify healthy replay.",
+      "legacy_catalog": {
+        "name": "41.tail_column",
+        "boundary": "cached tail/state",
+        "integration": "not_implemented",
+        "validation": "design/blocked",
+        "limitation": "Real dispatcher integration not completed",
+        "source": null,
+        "worker": null,
+        "provider": null,
+        "gaps": [
+          "OPERATOR_ADAPTER_MISSING",
+          "STORAGE_PROOF_MISSING",
+          "CONSUMER_PROOF_MISSING",
+          "NATIVE_PROVIDER_MISSING",
+          "RECOVERY_UNPROVEN"
+        ],
+        "evidence": null
+      },
+      "legacy_details": [
+        "not_implemented",
+        "cached_tail_state_corruption",
+        "Historical dispatcher interception was blocked; live cache writer/storage/consumer must be proven first.",
+        "Unspecified until actual dispatcher and cache lifetime are established."
+      ],
+      "operator_paths": [
+        {
+          "family": "KV Cache",
+          "controller": "demoncat.runtime.vllm_ascend.worker_extension.postwrite41.Postwrite41WorkerProvider",
+          "lifecycle": "kv"
+        },
+        {
+          "family": "KV Cache",
+          "controller": "fault_injection.deployments.postwrite.Fault41TailColumnProvider",
+          "lifecycle": "postwrite"
+        }
+      ],
+      "historical": {
+        "mechanism": "41.tail_column",
+        "group": "D",
+        "batch": "3",
+        "model_scope": "Qwen3-0.6B standard Worker TP1 first decode",
+        "cann": "8.5.1",
+        "hardware": "A2/910B4",
+        "implementation_boundary": "real KV storage tail-column proxy",
+        "historical_status": "SINGLE_TARGET_PASS",
+        "c2": "PENDING",
+        "c3": "PENDING",
+        "engineering_gap": "slot/block/offset、writer-consumer、恢复事务",
+        "npu_gap": "重新执行被中断的28目标 Baseline后补once/every-match",
+        "current_source": "fault_injection/deployments/postwrite_kv.py",
+        "current_probe": "experiments/c2c3_closure_20261117/../c2c3_postwrite_20261117/natural41_coverage_probe.py",
+        "inherited_summary": "真实KV writer/V storage/FIA单目标与恢复",
+        "entry_gate": "28目标真实分母与storage/consumer",
+        "job_id": "kv41-coverage",
+        "source_commit": "8f73f8293f47049f0c4dc4eb0b797a99b9278f74",
+        "evidence_paths": "experiments/c2c3_closure_20261117/C2_C3_MATRIX.md|docs/overnight_fault_cards/41.tail_column.md",
+        "raw_bytes_verified_locally": "false"
+      },
+      "parameters": {
+        "cache_kind": "value",
+        "tail_elements": 1,
+        "slot": "observed"
+      },
+      "adapter_status": "NOT_IMPLEMENTED",
+      "adapter_reason": "Legacy implementation retained; unified parameter/trigger/lease bridge not yet implemented. No injection through this API.",
+      "schema": "schemas/mechanisms/f041.tail_column.schema.json",
+      "compatibility": [
+        {
+          "cann": "8.5.1",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        },
+        {
+          "cann": "9.1.0",
+          "models": [
+            "Qwen",
+            "GLM",
+            "DeepSeek"
+          ],
+          "soc": "EXACT_RUNTIME_REQUIRED",
+          "status": "DECLARED_RECIPE_ONLY",
+          "npu_qualified": false
+        }
+      ]
+    }
+  ]
+}

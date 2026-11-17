@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "output_transform": {
+      "const": "nonfinite"
+    },
+    "max_live_leases": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 256
+    }
+  },
+  "required": [
+    "output_transform",
+    "max_live_leases"
+  ],
+  "additionalProperties": false
+}
