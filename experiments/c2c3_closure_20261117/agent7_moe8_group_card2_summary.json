@@ -1,0 +1,528 @@
+{
+  "schema": "demoncat.agent7.moe8_worker_group_review.v1",
+  "original_receipt": {
+    "path": "/home/17-fault-c2c3-20261117/natural-vision17-moe8-rope22-card2-a1/natural-moe8-group/probe/result.json",
+    "bytes": 20203147,
+    "sha256": "0bc9d2c82134f41a5ffdb61d980fdc9d4c99d23621e00354f098870322ad4a5d"
+  },
+  "auditor": {
+    "path": "/home/17-fault-c2c3-20261117/agent7_review_moe8_group_v2.py",
+    "bytes": 21347,
+    "sha256": "790a2ece83ed24ac40646692b701392865b183cec008c7aa5462ae292c277654"
+  },
+  "record_checks_passed": true,
+  "public_qualification_granted": false,
+  "recommendation": "Limited actual standard-Worker TP1 eager MoE C2/C3 candidate for root review; no E5.",
+  "scope": "INITIALIZED_STANDARD_WORKER_TP1_FRESH_PREFILL",
+  "mechanism": "8.restore_offset",
+  "model": "DeepSeek-V2-Lite-W8A8",
+  "source_manifest": {
+    "path": "/home/17-fault-c2c3-20261117/source-a36/source_manifest.json",
+    "bytes": 117474,
+    "sha256": "b50acc508d8fa15e51bae75dd4e219541262f4ec785abf5ef5595ece229e00c0"
+  },
+  "source_files_verified": 625,
+  "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+  "controller": {
+    "path": "/home/17-fault-c2c3-20261117/natural-vision17-moe8-rope22-card2-a1/controller.json",
+    "bytes": 166874,
+    "sha256": "a051e38a024c3e771d6d7e8fbbbd53d8e0a671cce7f20dd49ea7a1931863e3ae"
+  },
+  "exit_code": 0,
+  "model_source_files_verified": 11,
+  "moe_source_files_verified": 3,
+  "weight_shards_verified": 4,
+  "weights_bytes": 17214938536,
+  "model_weights_sha256": "a3d1b89d88917fa8f89e0967cb3e13cdf342aad3d1a02705bbebf0312d8550f7",
+  "model_source_sha256": "01833f46d7c0cbb9d98fede255840ad982645ffe7bb26ae431e4043239460934",
+  "provider_sources": {
+    "tensor_natural.py": "f39c327d3c81bf815ef61ec8f0122084c85f14d1065fd1952737e6b4f9c9851c",
+    "rmsnorm_return.py": "45a3b92e102333de960bd444109b0a706af960c23c90188489fb400b1fc84888",
+    "index22.py": "40f89ddcfc896aaccec4822b2978d2baada7129d8143540eb7791fbed0e089b4",
+    "tensor_observer.py": "e7a612d856f0ccfd2938bd03ff38132c379002fb94d484b53173458a90084e08",
+    "tensor_callable.py": "c03715df7c90144a7f07fbff42d2aa3d3017e38818bda674f1fc273625c5e5dd",
+    "_scoped_dispatch.py": "5fc8c3b525ed064ffcfb9cd74b488caa6d768dd798120617ed5e0917d09e5a87",
+    "module_faults.py": "c31aa053ebd13099224f953e6bca027ea74e646de6f09c834bc20ab201256f2c",
+    "route8.py": "c2a75189c1f9391417965f786a97628d3b35316891cfb8495e8f2a48dae93239",
+    "moe_census.py": "a86954ca23541a70bdf19e23a9457952ef1f29eef0c1b3638b67dbeb47e7f4d3",
+    "moe_restore.py": "fdd3d4d2701a9d94bd4de3cc6c1e4b5086fc6fe0d72e2f6f010571fe566009b9",
+    "conv3d_natural.py": "8608f9eebe7bef6c3a429dc0a51ab1b6ce299f0ada610200ed9c70cda84715e1",
+    "serving_tensor.py": "202b8417805c23d0c890acf1793df9a6fcad959b48275e5847ddae21f72f7afd",
+    "serving_moe.py": "126650b77e1b6b09ae0119a92e6f6490c6712437328d6cd30e195dbcc3a8d441"
+  },
+  "selected_sources": [
+    {
+      "path": "/home/17-fault-c2c3-20261117/source-a36/experiments/c2c3_closure_20261117/natural_moe_worker_probe.py",
+      "bytes": 578,
+      "sha256": "381da3e40301c3069426eebd3ac72c19e2dca51c3a36441c071eaf83ab141ca2"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/source-a36/experiments/c2c3_closure_20261117/natural_rms_worker_probe.py",
+      "bytes": 9573,
+      "sha256": "e3749d03489385d2833b2f5032b1a77ea655c95ec9c532b0a5dafcf95c46b4c3"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/source-a36/fault_injection/coverage_session.py",
+      "bytes": 31951,
+      "sha256": "ddbf76e0a6f898681f9d62593427b6792747787bcf28ac1c2d4388a7d27bde1c"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/source-a36/fault_injection/moe_restore.py",
+      "bytes": 10960,
+      "sha256": "fdd3d4d2701a9d94bd4de3cc6c1e4b5086fc6fe0d72e2f6f010571fe566009b9"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/source-a36/fault_injection/route8.py",
+      "bytes": 8344,
+      "sha256": "c2a75189c1f9391417965f786a97628d3b35316891cfb8495e8f2a48dae93239"
+    }
+  ],
+  "phases": [
+    {
+      "phase": "native_baseline",
+      "request_id": "1-a7900a8e",
+      "actual_targets": 26,
+      "independently_joined_producers": 26,
+      "actual_native_calls": 26,
+      "applied_targets": 0,
+      "output": {
+        "hidden": {
+          "shape": [
+            10,
+            2048
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "c0f4193152d1ce2a648c950c9f43736012c1a8575fad9a5e48df2385086a1ab2",
+          "finite": true
+        },
+        "logits": {
+          "shape": [
+            1,
+            102400
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "aa2f5c4d524e29664d911d2be287051db2460cfded6c952b1f6cb418999bf6ee",
+          "finite": true
+        }
+      },
+      "output_tokens": [
+        185
+      ],
+      "adapter_cleanup": {
+        "cleanup_confirmed": true,
+        "hook_owned": false,
+        "inflight": 0,
+        "leases": 0
+      },
+      "true_standard_worker_request": true
+    },
+    {
+      "phase": "baseline",
+      "request_id": "2-aefe6bd2",
+      "actual_targets": 26,
+      "independently_joined_producers": 26,
+      "actual_native_calls": 26,
+      "applied_targets": 0,
+      "output": {
+        "hidden": {
+          "shape": [
+            10,
+            2048
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "c0f4193152d1ce2a648c950c9f43736012c1a8575fad9a5e48df2385086a1ab2",
+          "finite": true
+        },
+        "logits": {
+          "shape": [
+            1,
+            102400
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "aa2f5c4d524e29664d911d2be287051db2460cfded6c952b1f6cb418999bf6ee",
+          "finite": true
+        }
+      },
+      "output_tokens": [
+        185
+      ],
+      "adapter_cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "true_standard_worker_request": true
+    },
+    {
+      "phase": "baseline_repeat",
+      "request_id": "3-bf12399e",
+      "actual_targets": 26,
+      "independently_joined_producers": 26,
+      "actual_native_calls": 26,
+      "applied_targets": 0,
+      "output": {
+        "hidden": {
+          "shape": [
+            10,
+            2048
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "c0f4193152d1ce2a648c950c9f43736012c1a8575fad9a5e48df2385086a1ab2",
+          "finite": true
+        },
+        "logits": {
+          "shape": [
+            1,
+            102400
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "aa2f5c4d524e29664d911d2be287051db2460cfded6c952b1f6cb418999bf6ee",
+          "finite": true
+        }
+      },
+      "output_tokens": [
+        185
+      ],
+      "adapter_cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "true_standard_worker_request": true
+    },
+    {
+      "phase": "lossless",
+      "request_id": "4-9d8db9ed",
+      "actual_targets": 26,
+      "independently_joined_producers": 26,
+      "actual_native_calls": 26,
+      "applied_targets": 0,
+      "output": {
+        "hidden": {
+          "shape": [
+            10,
+            2048
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "c0f4193152d1ce2a648c950c9f43736012c1a8575fad9a5e48df2385086a1ab2",
+          "finite": true
+        },
+        "logits": {
+          "shape": [
+            1,
+            102400
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "aa2f5c4d524e29664d911d2be287051db2460cfded6c952b1f6cb418999bf6ee",
+          "finite": true
+        }
+      },
+      "output_tokens": [
+        185
+      ],
+      "adapter_cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "true_standard_worker_request": true
+    },
+    {
+      "phase": "c2_fault",
+      "request_id": "5-bbc14b14",
+      "actual_targets": 26,
+      "independently_joined_producers": 26,
+      "actual_native_calls": 26,
+      "applied_targets": 26,
+      "output": {
+        "hidden": {
+          "shape": [
+            10,
+            2048
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "858284ae2d0e294ca5c936dac1eae09ac828640038eb954209f83cd0842da4ad",
+          "finite": true
+        },
+        "logits": {
+          "shape": [
+            1,
+            102400
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "ce6fbe6b768cb622d661620dce1242404e09a40859dada19c6ba7e047b34e71f",
+          "finite": true
+        }
+      },
+      "output_tokens": [
+        185
+      ],
+      "adapter_cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "true_standard_worker_request": true
+    },
+    {
+      "phase": "c2_off",
+      "request_id": "6-9aafef7d",
+      "actual_targets": 26,
+      "independently_joined_producers": 26,
+      "actual_native_calls": 26,
+      "applied_targets": 0,
+      "output": {
+        "hidden": {
+          "shape": [
+            10,
+            2048
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "c0f4193152d1ce2a648c950c9f43736012c1a8575fad9a5e48df2385086a1ab2",
+          "finite": true
+        },
+        "logits": {
+          "shape": [
+            1,
+            102400
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "aa2f5c4d524e29664d911d2be287051db2460cfded6c952b1f6cb418999bf6ee",
+          "finite": true
+        }
+      },
+      "output_tokens": [
+        185
+      ],
+      "adapter_cleanup": {
+        "cleanup_confirmed": true,
+        "hook_owned": false,
+        "inflight": 0,
+        "leases": 0
+      },
+      "true_standard_worker_request": true
+    },
+    {
+      "phase": "c3_fault_0",
+      "request_id": "7-abd60147",
+      "actual_targets": 26,
+      "independently_joined_producers": 26,
+      "actual_native_calls": 26,
+      "applied_targets": 26,
+      "output": {
+        "hidden": {
+          "shape": [
+            10,
+            2048
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "858284ae2d0e294ca5c936dac1eae09ac828640038eb954209f83cd0842da4ad",
+          "finite": true
+        },
+        "logits": {
+          "shape": [
+            1,
+            102400
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "ce6fbe6b768cb622d661620dce1242404e09a40859dada19c6ba7e047b34e71f",
+          "finite": true
+        }
+      },
+      "output_tokens": [
+        185
+      ],
+      "adapter_cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "true_standard_worker_request": true
+    },
+    {
+      "phase": "c3_fault_1",
+      "request_id": "8-9807c41e",
+      "actual_targets": 26,
+      "independently_joined_producers": 26,
+      "actual_native_calls": 26,
+      "applied_targets": 26,
+      "output": {
+        "hidden": {
+          "shape": [
+            10,
+            2048
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "858284ae2d0e294ca5c936dac1eae09ac828640038eb954209f83cd0842da4ad",
+          "finite": true
+        },
+        "logits": {
+          "shape": [
+            1,
+            102400
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "ce6fbe6b768cb622d661620dce1242404e09a40859dada19c6ba7e047b34e71f",
+          "finite": true
+        }
+      },
+      "output_tokens": [
+        185
+      ],
+      "adapter_cleanup": {
+        "hook_owned": false,
+        "ownership_verified": true,
+        "enabled": false,
+        "inflight": 0,
+        "leases": 0,
+        "cleanup_confirmed": true
+      },
+      "true_standard_worker_request": true
+    },
+    {
+      "phase": "c3_off",
+      "request_id": "9-ba4e38c8",
+      "actual_targets": 26,
+      "independently_joined_producers": 26,
+      "actual_native_calls": 26,
+      "applied_targets": 0,
+      "output": {
+        "hidden": {
+          "shape": [
+            10,
+            2048
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "c0f4193152d1ce2a648c950c9f43736012c1a8575fad9a5e48df2385086a1ab2",
+          "finite": true
+        },
+        "logits": {
+          "shape": [
+            1,
+            102400
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "aa2f5c4d524e29664d911d2be287051db2460cfded6c952b1f6cb418999bf6ee",
+          "finite": true
+        }
+      },
+      "output_tokens": [
+        185
+      ],
+      "adapter_cleanup": {
+        "cleanup_confirmed": true,
+        "hook_owned": false,
+        "inflight": 0,
+        "leases": 0
+      },
+      "true_standard_worker_request": true
+    }
+  ],
+  "coverage": {
+    "c2": {
+      "schema": "demoncat.saved_coverage_audit.v1",
+      "report_sha256": "083a883f21d866cf89b31027f3ef1335f19b1a9f5fea1fc495493250fb2bd9ef",
+      "report_consistent": true,
+      "errors": [],
+      "recomputed": {
+        "targets": 26,
+        "calls": 52,
+        "eligible_calls": 26,
+        "hits": 26
+      },
+      "referenced_artifacts": 55,
+      "missing_artifact_sha256": [],
+      "referenced_artifact_bytes_verified": true,
+      "public_qualification_granted": false,
+      "c2_qualification_granted": false,
+      "c3_qualification_granted": false,
+      "remaining_review": [
+        "actual independent observer universe and eligibility",
+        "lossless target proofs",
+        "Native intervention and effect semantics",
+        "real device drain and same-process restoration",
+        "actual source/build/loaded-library identity",
+        "live C2 proof admission for C3"
+      ]
+    },
+    "c3": {
+      "schema": "demoncat.saved_coverage_audit.v1",
+      "report_sha256": "bd5f4046cf62b14eb9239a92fda384e21767332f93b8365d9fcffb0dbca9c05b",
+      "report_consistent": true,
+      "errors": [],
+      "recomputed": {
+        "targets": 26,
+        "calls": 78,
+        "eligible_calls": 52,
+        "hits": 52
+      },
+      "referenced_artifacts": 107,
+      "missing_artifact_sha256": [],
+      "referenced_artifact_bytes_verified": true,
+      "public_qualification_granted": false,
+      "c2_qualification_granted": false,
+      "c3_qualification_granted": false,
+      "remaining_review": [
+        "actual independent observer universe and eligibility",
+        "lossless target proofs",
+        "Native intervention and effect semantics",
+        "real device drain and same-process restoration",
+        "actual source/build/loaded-library identity",
+        "live C2 proof admission for C3"
+      ]
+    }
+  },
+  "all_eligible_targets": 26,
+  "actual_requests": 9,
+  "actual_unpermute_calls": 234,
+  "c2_hits": 26,
+  "c3_hits": 52,
+  "cleanup": {
+    "owned_serving_hooks": 0,
+    "active_adapter": false,
+    "independent_observer": false,
+    "standard_worker": true,
+    "requests": [
+      "1-a7900a8e",
+      "2-aefe6bd2",
+      "3-bf12399e",
+      "4-9d8db9ed",
+      "5-bbc14b14",
+      "6-9aafef7d",
+      "7-abd60147",
+      "8-9807c41e",
+      "9-ba4e38c8"
+    ]
+  },
+  "healthy_before": [
+    185
+  ],
+  "healthy_after": [
+    185
+  ],
+  "e5": false,
+  "statistics_status": "SEPARATE_STANDARD_WORKER_CAPTURE_REQUIRED",
+  "complete_value_basis": "Live CPU readbacks and exact rounded group oracle recorded by the reviewed adapter; private tensor payloads were not independently replayed offline.",
+  "resource_scope": "Owned serving hooks/adapters/observer, explicit leases and in-flight calls; not zero model allocator memory.",
+  "limitations": [
+    "Only fixed 10-token, TP1, serial eager request scope; no multi-request batch, TP2, decode or cross-model claim.",
+    "Fault remaps paired token contribution groups [1..9,9]; it is not an elementwise index offset or an out-of-bounds write.",
+    "Complete producer/object/consumer identities independently rejoined from actual native records; raw full tensor values remain private.",
+    "No statistics/mix capture in this run; no independent msprobe first difference can be granted."
+  ]
+}
