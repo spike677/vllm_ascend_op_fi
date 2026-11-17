@@ -66,6 +66,7 @@ assert initial['exact_cache_api_version'] == 2
 assert initial['selected_cache_address'] == initial['selected_cache_epoch'] == 0
 assert lib.fault39_configure_cache_v2(C.byref(cfg), 0, 1, C.byref(generation)) == -1
 assert lib.fault39_configure_cache_v2(C.byref(cfg), 1, 0, C.byref(generation)) == -1
+cfg.input_mask = 3  # Prior v1 case deliberately supplied an invalid inject mask.
 assert lib.fault39_configure_cache_v2(C.byref(cfg), 1, 1, C.byref(generation)) == -8
 assert generation.value == 999
 assert lib.fault39_bind_worker_rank_v1(-1) == -1
