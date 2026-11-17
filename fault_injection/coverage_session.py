@@ -385,7 +385,9 @@ class CoverageSession:
 
         Drain hooks must honour their remaining timeout. In-flight callbacks are
         awaited by a condition variable; this never treats a counter reset as a
-        device/stream drain. Failed disable can be retried on the same session.
+        device/stream drain. No restore/release begins until every target's drain
+        succeeds within the deadline. Failed disable retains every reservation
+        and can be retried on the same session.
         """
         if (type(timeout_seconds) not in (int, float) or not math.isfinite(timeout_seconds)
                 or timeout_seconds < 0):
@@ -412,12 +414,35 @@ class CoverageSession:
                     self._state = 'RECOVERY_PENDING'
                     self._recovery_errors.append('INFLIGHT_OR_STOP_PENDING')
                     return self.recovery_report()
+            # A partial barrier is not reusable: a later retry revalidates every
+            # target while all reservations remain held. After a successful
+            # barrier, retries of a failed restore need not drain already freed
+            # resources again.
+            if not self._recovered:
+                self._drained.clear()
             for lease in self.group.leases:
                 try:
                     if lease not in self._drained:
-                        if self.recovery.drain(lease, max(0, deadline - time.monotonic())) is not True:
+                        remaining = deadline - time.monotonic()
+                        if remaining <= 0:
+                            raise RuntimeError('GROUP_DRAIN_TIMEOUT')
+                        if self.recovery.drain(lease, remaining) is not True:
                             raise RuntimeError('DRAIN_UNCONFIRMED')
+                        if time.monotonic() > deadline:
+                            raise RuntimeError('GROUP_DRAIN_TIMEOUT')
                         self._drained.add(lease)
+                except Exception as error:
+                    self._recovery_errors.append('DRAIN_FAILED:' + lease.lease_id + ':' + str(error))
+            with self._condition:
+                if (self._active or len(self._drained) != len(self.group.leases)
+                        or self._recovery_errors):
+                    self._state = 'RECOVERY_PENDING'
+                    self._recovery_errors.append('GROUP_DRAIN_PENDING')
+                    return self.recovery_report()
+            # The whole group has reached the drain barrier. Only now may any
+            # target restore or release storage that another target could share.
+            for lease in self.group.leases:
+                try:
                     if lease not in self._recovered:
                         receipt = self.recovery.recover(lease)
                         _require(isinstance(receipt, RecoveryReport) and receipt.lease == lease,
@@ -455,6 +480,8 @@ class CoverageSession:
         with self._condition:
             return dict(state=self._state, complete=self._state == 'DISABLED_CONFIRMED',
                 owner=self.owner, generation=self.generation, inflight=len(self._active),
+                held_leases=[] if self._state == 'DISABLED_CONFIRMED' else [asdict(lease) for lease in self.group.leases],
+                pending_drains=[asdict(lease) for lease in self.group.leases if lease not in self._drained],
                 pending_leases=[asdict(lease) for lease in self.group.leases if lease not in self._recovered],
                 targets=[asdict(row) for row in self._recovered.values()],
                 workers=[asdict(row) for row in self._health.values()], errors=list(self._recovery_errors))

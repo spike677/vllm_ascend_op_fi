@@ -52,7 +52,10 @@ report = session.report()
 
 Stop hooks first disable all owned targets. `drain(lease, remaining_seconds)` must
 synchronize actual streams/ranks and obey the timeout; return exactly `True` only
-when drained. `recover(lease)` restores and releases its resources and returns a
+when drained. The session invokes no restore or release until **every** target's
+drain succeeds within the deadline. A later target failure or timeout retains all
+reservations and restores nothing; retry repeats the entire incomplete drain
+barrier. `recover(lease)` restores and releases its resources and returns a
 `RecoveryReport` bound to that exact lease, proof SHA and baseline-matching OFF
 output SHA. `health(worker_tuple, owner, generation)` returns `WorkerHealthProof`
 with equal full healthy baseline/OFF output hashes in that same Worker lifetime
@@ -84,7 +87,8 @@ $env:PYTHONPATH='src;fault39/src;.;tests'
 & '<unified-env>/Scripts/python.exe' -B -m unittest test_coverage_session test_coverage_planning test_boundary_targets test_auto_adaptation -v
 ```
 
-Initial verification: 48 tests passed, 0 skipped. No NPU/container action was run.
+Verification including the group drain barrier: 50 tests passed, 0 skipped.
+No NPU/container action was run.
 The suite covers C1 regression, same-shape distinct lifetimes, incomplete/ambiguous
 denominators, missing outcomes, every-match omissions, budgets, exact once original
 execution, non-target writes, effect proof, in-flight disable, retained ownership,

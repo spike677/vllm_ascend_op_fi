@@ -4,6 +4,7 @@ import json
 import threading
 import time
 import unittest
+from unittest.mock import patch
 import uuid
 
 from fault_injection.core import UnsupportedCall
@@ -258,6 +259,65 @@ class CoverageSessionTests(unittest.TestCase):
         f = Fixture(1); session = f.session()
         self.assertFalse(f.call(session, request_ids=None).admitted)
         self.assertFalse(f.close(session)['contract_satisfied'])
+
+    def test_second_drain_failure_blocks_every_restore_then_retry_redrains_all(self):
+        f = Fixture(); session = f.session()
+        for target in f.targets:
+            f.call(session, target)
+        original_hooks = session.recovery
+        allow_second = False
+
+        def drain(lease, timeout):
+            f.events.append(('drain', lease.lease_id))
+            return lease.lease_id == 'lease-0' or allow_second
+
+        session.recovery = replace(original_hooks, drain=drain)
+        pending = session.disable()
+        self.assertFalse(pending['complete'])
+        self.assertEqual(len(pending['held_leases']), 2)
+        self.assertEqual(len(pending['pending_leases']), 2)
+        self.assertFalse(any(event[0] in ('recover', 'health') for event in f.events))
+        with self.assertRaisesRegex(UnsupportedCall, 'ALREADY_OWNED'):
+            f.session(2)
+        before_retry = len(f.events)
+        allow_second = True
+        completed = session.disable()
+        self.assertTrue(completed['complete'])
+        self.assertEqual(completed['held_leases'], [])
+        self.assertEqual([event[0] for event in f.events[before_retry:]],
+                         ['drain', 'drain', 'recover', 'recover', 'health'])
+        session.observer.seal(artifact_sha256=C)
+        self.assertTrue(session.report()['contract_satisfied'])
+
+    def test_drain_returning_true_after_timeout_cannot_restore_or_release(self):
+        f = Fixture(); session = f.session()
+        for target in f.targets:
+            f.call(session, target)
+        elapsed = [100.0]
+
+        def drain(lease, timeout):
+            f.events.append(('drain', lease.lease_id))
+            if lease.lease_id == 'lease-1':
+                elapsed[0] += 2.0
+            return True
+
+        original_hooks = session.recovery
+        session.recovery = replace(original_hooks, drain=drain)
+        with patch('fault_injection.coverage_session.time.monotonic', side_effect=lambda: elapsed[0]):
+            pending = session.disable(timeout_seconds=1)
+        self.assertFalse(pending['complete'])
+        self.assertEqual(len(pending['held_leases']), 2)
+        self.assertTrue(any('GROUP_DRAIN_TIMEOUT' in reason for reason in pending['errors']))
+        self.assertFalse(any(event[0] in ('recover', 'health') for event in f.events))
+        with self.assertRaisesRegex(UnsupportedCall, 'ALREADY_OWNED'):
+            f.session(2)
+        session.recovery = original_hooks
+        before_retry = len(f.events)
+        self.assertTrue(session.disable()['complete'])
+        self.assertEqual([event[0] for event in f.events[before_retry:]],
+                         ['drain', 'drain', 'recover', 'recover', 'health'])
+        session.observer.seal(artifact_sha256=C)
+        self.assertTrue(session.report()['contract_satisfied'])
 
     def test_observer_overflow_cannot_be_sealed_complete(self):
         f = Fixture(1); observer = f.observer(); observer.max_calls = 1
