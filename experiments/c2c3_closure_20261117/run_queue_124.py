@@ -178,6 +178,7 @@ def main():
                 save()
                 return 3
             for case in cases:
+                receipt['status'] = 'CHECKING_DEVICE'
                 gate = idle_gate(a.cards)
                 row = dict(id=case['id'], review=case['review'], gate=gate)
                 receipt['cases'].append(row)
@@ -188,6 +189,8 @@ def main():
                     return 3
                 case_folder = folder / case['id']
                 case_folder.mkdir()
+                receipt['status'] = 'RUNNING_CASE'
+                save()
                 run_case(case, a.cards, case_folder, save, row)
                 row['post_cleanup_gate'] = idle_gate(a.cards)
                 save()
