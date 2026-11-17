@@ -15,6 +15,9 @@
 #include <mutex>
 #include <unordered_map>
 #include <thread>
+#include <sys/syscall.h>
+#include <unistd.h>
+#include "batch_scale_inventory.h"
 
 namespace {
 constexpr aclnnStatus invalid = 161001;
@@ -36,6 +39,7 @@ std::unordered_map<aclOpExecutor*, std::unique_ptr<Context>> pending;
 bool owned{};
 std::thread::id scope_owner;
 uint64_t executing{};
+dcat_dq_inventory::Inventory<32768> independent_inventory;
 
 void* original(const char* name) {
     static void* handle = [] {
@@ -63,6 +67,36 @@ bool tensor_info(const aclTensor* t, aclDataType type, int64_t rows, int64_t col
     if (dtype != type || format != ACL_FORMAT_ND || offset != 0 || !*addr) return false;
     if (cols == 0) return n == 1 && ns == 1 && dims[0] == rows && strides[0] == 1;
     return n == 2 && ns == 2 && dims[0] == rows && dims[1] == cols && strides[0] == cols && strides[1] == 1;
+}
+
+dcat_dq_inventory::Event observe_prepare(const aclTensor* x,const aclTensor* a,const aclTensor* b,
+    int64_t dtype,const aclTensor* q,const aclTensor* s,const aclTensor* offset) {
+    dcat_dq_inventory::Event event{};
+    event.thread=static_cast<uint64_t>(syscall(SYS_gettid));
+    (void)aclrtGetDevice(&event.device);
+    const aclTensor* tensors[]{x,q,s};
+    uint64_t* pointers[]{&event.input,&event.quant,&event.scale};
+    int32_t* types[]{&event.input_dtype,&event.quant_dtype,&event.scale_dtype};
+    int32_t* formats[]{&event.input_format,&event.quant_format,&event.scale_format};
+    for(unsigned i=0;i<3;++i) {
+        if(!tensors[i])continue;
+        void* raw{};aclDataType actual_type{};aclFormat format{};
+        if(!aclGetRawTensorAddr(tensors[i],&raw))*pointers[i]=reinterpret_cast<uint64_t>(raw);
+        if(!aclGetDataType(tensors[i],&actual_type))*types[i]=static_cast<int32_t>(actual_type);
+        if(!aclGetFormat(tensors[i],&format))*formats[i]=static_cast<int32_t>(format);
+    }
+    int64_t* shape{};uint64_t dimensions{};
+    if(x && !aclGetViewShape(x,&shape,&dimensions) && dimensions==2) {
+        event.rows=shape[0];event.columns=shape[1];
+        void* raw{};
+        if((event.input_dtype==ACL_BF16 || event.input_dtype==ACL_FLOAT16)
+            && tensor_info(x,static_cast<aclDataType>(event.input_dtype),event.rows,event.columns,&raw))event.flags|=1;
+        if(tensor_info(q,ACL_INT8,event.rows,event.columns,&raw))event.flags|=2;
+        if(tensor_info(s,ACL_FLOAT,event.rows,0,&raw))event.flags|=4;
+    }
+    if(!a && !b && !offset)event.flags|=8;
+    if(dtype==ACL_INT8)event.flags|=16;
+    return independent_inventory.begin(event); // Before selection/owner/admission.
 }
 
 template<class Call>
@@ -107,7 +141,8 @@ aclnnStatus prepare(int api, const aclTensor* x, const aclTensor* smooth, const 
     return rc;
 }
 
-aclnnStatus execute(const char* api, void* workspace, uint64_t size, aclOpExecutor* executor, aclrtStream stream) {
+aclnnStatus execute(const char* api, void* workspace, uint64_t size, aclOpExecutor* executor, aclrtStream stream,
+    uint64_t* original_calls) {
     using Fn = aclnnStatus (*)(void*, uint64_t, aclOpExecutor*, aclrtStream);
     std::unique_ptr<Context> ctx;
     {
@@ -119,6 +154,7 @@ aclnnStatus execute(const char* api, void* workspace, uint64_t size, aclOpExecut
             ++executing;
         }
     }
+    ++*original_calls;
     auto rc = reinterpret_cast<Fn>(original(api))(workspace, size, executor, stream);
     if (!ctx) return rc;
     if (!rc && ctx->fault) {
@@ -142,6 +178,14 @@ aclnnStatus execute(const char* api, void* workspace, uint64_t size, aclOpExecut
 
 // This capability is accepted only together with the approved source/DSO hashes.
 extern "C" uint32_t dcat_dq_thread_scope_v1() { return 1; }
+extern "C" int dcat_dq_inventory_state_v1(dcat_dq_inventory::State* output) {
+    if(!output || output->version!=1 || output->size!=sizeof(dcat_dq_inventory::State))return -1;
+    *output=independent_inventory.state();return 0;
+}
+extern "C" int dcat_dq_inventory_read_v1(uint64_t index,dcat_dq_inventory::Event* output) {
+    if(!output || output->version!=1 || output->size!=sizeof(dcat_dq_inventory::Event))return -1;
+    return independent_inventory.read(index,output)?0:-2;
+}
 extern "C" int dcat_dq_state_v1(uint64_t* out,size_t count) {
     std::lock_guard<std::mutex> lock(guard);
     if(!out || count!=7)return -1;
@@ -175,9 +219,17 @@ extern "C" bool CanUsePTACache(const char* name) {
 }
 
 extern "C" aclnnStatus aclnnDynamicQuantV2GetWorkspaceSize(const aclTensor* x,const aclTensor* a,const aclTensor* b,int64_t d,const aclTensor* q,const aclTensor* s,const aclTensor* o,uint64_t* w,aclOpExecutor** e) {
+    const auto observed=observe_prepare(x,a,b,d,q,s,o);
+    uint64_t original_calls=0;
     auto fn=reinterpret_cast<decltype(&aclnnDynamicQuantV2GetWorkspaceSize)>(original("aclnnDynamicQuantV2GetWorkspaceSize"));
-    return prepare(2,x,a,b,d,true,"pertoken",q,s,o,w,e,
-        [&](const aclTensor* xx,const aclTensor* qq,const aclTensor* ss,uint64_t* ww,aclOpExecutor** ee){return fn(xx,a,b,d,qq,ss,o,ww,ee);});
+    const auto status=prepare(2,x,a,b,d,true,"pertoken",q,s,o,w,e,
+        [&](const aclTensor* xx,const aclTensor* qq,const aclTensor* ss,uint64_t* ww,aclOpExecutor** ee){
+            ++original_calls;return fn(xx,a,b,d,qq,ss,o,ww,ee);});
+    independent_inventory.prepared(observed,!status && e?reinterpret_cast<uint64_t>(*e):0,status,original_calls);
+    return status;
 }
-#define EXEC(NAME) extern "C" aclnnStatus NAME(void* w,uint64_t size,aclOpExecutor* e,aclrtStream stream) { return execute(#NAME,w,size,e,stream); }
+#define EXEC(NAME) extern "C" aclnnStatus NAME(void* w,uint64_t size,aclOpExecutor* e,aclrtStream stream) { \
+    auto observed=independent_inventory.enter(reinterpret_cast<uint64_t>(e),static_cast<uint64_t>(syscall(SYS_gettid))); \
+    uint64_t original_calls=0;auto status=execute(#NAME,w,size,e,stream,&original_calls); \
+    independent_inventory.leave(observed,status,original_calls);return status; }
 EXEC(aclnnDynamicQuantV2)

@@ -156,11 +156,15 @@ class PinnedQuantRuntime:
         control,source,build=root/'backend_control.py',root/'native_backend.cpp',root/'runtime/build.json'
         expected=Path(__file__).parent/'native_adapters/batch_scale_v2_only.cpp'
         expected_control=Path(__file__).parent/'native_adapters/batch_scale_control_v2.py'
-        if _sha(control)!=_sha(expected_control) or _sha(source)!=_sha(expected) or _sha(build)!=approved_build_sha256:
+        inventory=root/'batch_scale_inventory.h'
+        expected_inventory=Path(__file__).parent/'native_adapters/batch_scale_inventory.h'
+        if (not inventory.is_file() or _sha(inventory)!=_sha(expected_inventory)
+                or _sha(control)!=_sha(expected_control) or _sha(source)!=_sha(expected) or _sha(build)!=approved_build_sha256):
             raise UnsupportedCall('Portable V2 source/build differs')
         data=json.loads(build.read_bytes());library=root/'runtime/vendor/op_api/lib/libcust_opapi.so'
         real=Path(os.environ.get('DCAT_REAL_OPAPI',''))
         if (data.get('schema')!='demoncat.quant.v2_portable.v1' or data.get('source_sha256')!=_sha(source)
+                or data.get('inventory_source_sha256')!=_sha(inventory)
                 or data.get('library_sha256')!=_sha(library) or not real.is_absolute() or not real.is_file()
                 or data.get('real_opapi_sha256')!=_sha(real) or os.environ.get('DCAT_DQ_V2_ENABLE')!='1'):
             raise UnsupportedCall('Portable V2 deployment identity incomplete')
@@ -171,6 +175,7 @@ class PinnedQuantRuntime:
         obj=cls(backend,context_provider,dict(build_sha256=approved_build_sha256,
             library_sha256=_sha(library),source_sha256=_sha(source),real_opapi_sha256=_sha(real),
             control_sha256=_sha(control),resolver_strategy=backend.resolver_strategy,resolver_identity=backend.resolver_identity,
+            inventory_source_sha256=_sha(inventory),
             api='aclnnDynamicQuantV2',thread_scope=1,tp1_live_admission_not_acceptance=True),
             _load_token=_VERIFIED_LOAD,_invocation_binding_pending=True)
         obj.thread_scoped=True;obj.admitted_tp_sizes=(1,)
