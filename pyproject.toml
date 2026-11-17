@@ -9,11 +9,14 @@ description = "Owner-scoped model fault lifecycle with structural routing and ex
 requires-python = ">=3.10"
 dependencies = ["jsonschema>=4.23,<5"]
 
+[project.scripts]
+demoncat = "demoncat.__main__:main"
+
 [project.optional-dependencies]
 transformers = ["transformers==5.5.4"]
 
 [tool.setuptools.packages.find]
-include = ["fault_registry*", "fault_injection*", "native_execution_strategy*"]
+include = ["demoncat", "fault_registry*", "fault_injection*", "native_execution_strategy*"]
 exclude = ["native_execution_strategy.tests*"]
 
 [tool.setuptools.package-data]
