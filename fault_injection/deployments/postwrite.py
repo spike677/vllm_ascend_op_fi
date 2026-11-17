@@ -253,6 +253,14 @@ class _ObserveDispatch(TorchDispatchMode):
         self.operator_counts = {}
         self.projection_observations = []
         self.rejections = []
+        from .postwrite_inventory import ProjectionWorkloadInventory
+        self.inventory = ProjectionWorkloadInventory()
+
+    def _coverage_projection(self, record, candidate=None, rejection=None):
+        if record is not None:
+            record.candidate, record.rejection = candidate, rejection
+            if self.provider._coverage is not None:
+                self.provider._coverage.projection(self, record)
 
     @staticmethod
     def _writes(func, args, kwargs, storage):
@@ -275,6 +283,7 @@ class _ObserveDispatch(TorchDispatchMode):
         if p._lease is not None and self._writes(func, args, kwargs, p._lease.storage):
             raise PostwriteRefused('WRITE_AFTER_SELECTED_WRITER_REFUSED')
         result = func(*args, **kwargs)  # Exactly one real original operation.
+        record = self.inventory.original_returned(func, p._stack[-1][0], p._stack[-1][1], result)
         self.original_calls += 1
         self.operator_counts[operation] = self.operator_counts.get(operation, 0) + 1
         if operation in ('aten.mm.default', 'aten.addmm.default', 'aten.linear.default',
@@ -318,6 +327,7 @@ class _ObserveDispatch(TorchDispatchMode):
                         indices = tuple(slot * cache.shape[1] + col
                             for col in range(cache.shape[1] - p.tail_elements, cache.shape[1]))
         if tensor is None:
+            self._coverage_projection(record, rejection='NO_ADAPTED_RETURN_GEOMETRY')
             return result
         try:
             p.transport.validate(tensor)
@@ -325,6 +335,7 @@ class _ObserveDispatch(TorchDispatchMode):
             p._rejections.append(str(error))
             self.rejections.append(dict(reason=str(error), operator=operation, module_path=p._stack[-1][0],
                                         shape=list(tensor.shape), dtype=str(tensor.dtype)))
+            self._coverage_projection(record, rejection=str(error))
             return result
         module_path, module = p._stack[-1]
         signature = (id(module), operation, tuple(tensor.shape), tuple(tensor.stride()),
@@ -334,7 +345,8 @@ class _ObserveDispatch(TorchDispatchMode):
         candidate = _Candidate(signature + (occurrence,), tensor, indices, operation,
                                module_path, _storage(tensor), [], producer_proof, [])
         self.candidates.append(candidate)
-        if self.phase in ('baseline', 'fault') and candidate.key == p._target:
+        self._coverage_projection(record, candidate=candidate)
+        if p._coverage is None and self.phase in ('baseline', 'fault') and candidate.key == p._target:
             if p._lease is not None:
                 raise PostwriteRefused('ONLY_ONE_TARGET_CALL_PER_REPLAY')
             p._lease = p.transport.open(tensor, p.owner, p.generation)
@@ -379,6 +391,9 @@ class PostwriteProvider:
         self._lock = threading.Lock()
         self._qualified = self._lossless = self._fault_attempted = False
         self._qualification_diagnostics = None
+        self._coverage = None
+        self._observations = []
+        self._last_observer = None
 
     def _identity(self):
         return (id(self.model), tuple((id(m), type(m).__module__, type(m).__qualname__)
@@ -391,6 +406,7 @@ class PostwriteProvider:
             raise PostwriteRefused('POSTWRITE_SYNCHRONOUS_OWNER_REQUIRED')
         hooks = []
         observer = _ObserveDispatch(self, phase)
+        self._last_observer = observer
         self._last_intervention = None
         try:
             if self._lease is not None:
@@ -398,6 +414,7 @@ class PostwriteProvider:
             for name, module in self.model.named_modules():
                 def pre(current, inputs, name=name):
                     self._stack.append((name, current))
+                    observer.inventory.module_entered(name, current)
                 def post(current, inputs, output):
                     if not self._stack or self._stack[-1][1] is not current:
                         raise PostwriteRefused('MODULE_CALL_STACK_MISMATCH')
@@ -413,11 +430,12 @@ class PostwriteProvider:
                 with torch.inference_mode(), observer:
                     output = self.model(*args, **kwargs)
             copied = _cpu(output)
+            self._last_observer = observer
             candidates = [c for c in observer.candidates if c.consumers]
             selected = [c for c in candidates if c.key == self._target]
-            if phase in ('baseline', 'fault') and (len(selected) != 1 or self._lease is None):
+            if self._coverage is None and phase in ('baseline', 'fault') and (len(selected) != 1 or self._lease is None):
                 raise PostwriteRefused('QUALIFIED_WRITER_OR_CONSUMER_NOT_OBSERVED')
-            if phase == 'off' and (len(selected) != 1 or self._lease is not None):
+            if self._coverage is None and phase == 'off' and (len(selected) != 1 or self._lease is not None):
                 raise PostwriteRefused('OFF_TARGET_OR_DRAIN_NOT_OBSERVED')
             report = dict(phase=phase, mechanism=self.mechanism,
                 transport=self.transport.transport_kind, original_operator_calls=observer.original_calls,
@@ -442,6 +460,8 @@ class PostwriteProvider:
                     storage_offset=chosen.tensor.storage_offset(), dtype=str(chosen.tensor.dtype),
                     logical_indices=list(chosen.indices), consumer_calls=list(chosen.consumers),
                     producer_proof=chosen.producer_proof, consumer_observations=chosen.consumer_observations)
+            if self._coverage is not None:
+                self._coverage.forward_returned(observer, copied)
             return copied, candidates, report
         finally:
             for hook in reversed(hooks):
@@ -458,8 +478,10 @@ class PostwriteProvider:
         identity, input_hash = self._identity(), _hash_inputs(args, kwargs)
         self._qualification_diagnostics = dict(status='IN_PROGRESS', observations=[], guards_relaxed=False)
         left, first, first_report = self._replay('observe', args, kwargs)
+        self._observations.append(self._last_observer)
         self._qualification_diagnostics['observations'].append(first_report)
         right, second, second_report = self._replay('observe', args, kwargs)
+        self._observations.append(self._last_observer)
         self._qualification_diagnostics['observations'].append(second_report)
         keys_equal = [c.key for c in first] == [c.key for c in second]
         outputs_equal = _equal(left, right)
