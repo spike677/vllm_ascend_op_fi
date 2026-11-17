@@ -1,0 +1,306 @@
+{
+  "schema": "demoncat.frozen_native_metadata_ownership_review.v1",
+  "observed_utc": "2026-11-17T17:48:03.538154+00:00",
+  "source_snapshot": "/home/17-fault-c2c3-20261117/source-a21",
+  "source_commit": "5a8b54486161132b34a0af7d427a851519134a8f",
+  "review_kind": "READ_ONLY_FROZEN_BUILD_AND_SOURCE_IDENTITY_NOT_NEW_NPU",
+  "runs": [
+    {
+      "mechanism": "20.buffer_substitute",
+      "attempt": "providers20-group-a1",
+      "build_manifest": {
+        "path": "/home/17-fault-c2c3-20261117/native20-group-a1/build_manifest.json",
+        "bytes": 1254,
+        "sha256": "42b422b0adc0771e465f77eb104a117320d2913e7081a7a6af8bb6b90305c579"
+      },
+      "version_profile": {
+        "path": "/home/17-fault-c2c3-20261117/native20-group-a1/version_profile.json",
+        "bytes": 266781,
+        "sha256": "d13eeca71055e15dc5c04ab9a8a8462d1cb38946e50bea80ea8362cd28550ad5"
+      },
+      "profile_sha256": "d68519cebd35d0d7e6053155b8ba77a835719434a0596eed6e684447629b4a86",
+      "libraries": [
+        {
+          "path": "/home/17-fault-c2c3-20261117/native20-group-a1/libdcat20_qmm.so",
+          "bytes": 179904,
+          "sha256": "0c3e3f5fc73401f7b6e9bcdba261c730cf8ba17d6389c90a3843399da6b3df30",
+          "matches_manifest": true
+        },
+        {
+          "path": "/home/17-fault-c2c3-20261117/native20-group-a1/libopapi.so",
+          "bytes": 83048,
+          "sha256": "5cd1c1296134fc13535c0286765d05b450fb66e2197be3bd472b436ccda0ce1b",
+          "matches_manifest": true
+        },
+        {
+          "path": "/home/17-fault-c2c3-20261117/native20-group-a1/libopapi_nn.so",
+          "bytes": 83048,
+          "sha256": "6d1e360ac0c0e2045fd0e60b01e8b191562cf21eef300acdbe8d18e75410094e",
+          "matches_manifest": true
+        },
+        {
+          "path": "/home/17-fault-c2c3-20261117/native20-group-a1/libopapi_math.so",
+          "bytes": 41832,
+          "sha256": "c05daf2cfdece79b450ccf20c79b9e94e60358787c160eed82dbe6100de0532f",
+          "matches_manifest": true
+        }
+      ],
+      "sources": [
+        {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp",
+          "bytes": 60309,
+          "sha256": "0384a7609202d01b9224fd92374f7e0206a314586a10c7b7cda9812c7d54c9e6",
+          "repository_path": "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp",
+          "profile_source_key": "fault20_fast_validation/source/l4_metadata_lifecycle_proxy/libopapi_metadata_proxy.cpp",
+          "matches_build_profile": true,
+          "reviewed_spans": [
+            {
+              "first": 354,
+              "last": 422,
+              "normalized_text_sha256": "2efe013806dbe14ad055e81fb9b08e5d6ce705dc3c56263f090f68f23f4ff146",
+              "getter_and_route_lines": [
+                {
+                  "number": 354,
+                  "text": "bool capture_x1_metadata(const aclTensor *x1, const aclTensor *out, bool transpose_x1,"
+                },
+                {
+                  "number": 373,
+                  "text": "        aclGetViewShape(x1, &view_dims, &view_count) != ACL_SUCCESS ||"
+                },
+                {
+                  "number": 374,
+                  "text": "        aclGetStorageShape(x1, &storage_dims, &storage_count) != ACL_SUCCESS ||"
+                },
+                {
+                  "number": 375,
+                  "text": "        aclGetViewStrides(x1, &strides, &stride_count) != ACL_SUCCESS ||"
+                },
+                {
+                  "number": 376,
+                  "text": "        aclGetViewShape(out, &out_dims, &out_count) != ACL_SUCCESS ||"
+                }
+              ],
+              "return_lines": [
+                357,
+                380,
+                386,
+                392,
+                421
+              ]
+            },
+            {
+              "first": 424,
+              "last": 491,
+              "normalized_text_sha256": "3431ace4f804a2640e15ffc284e80d25653ab0177d051f37170132b83ea5b169",
+              "getter_and_route_lines": [
+                {
+                  "number": 424,
+                  "text": "bool capture_tensor_metadata(const aclTensor *tensor, Fault20TensorMetadata *metadata) {"
+                },
+                {
+                  "number": 441,
+                  "text": "        aclGetViewShape(tensor, &view_dims, &view_count) != ACL_SUCCESS ||"
+                },
+                {
+                  "number": 442,
+                  "text": "        aclGetStorageShape(tensor, &storage_dims, &storage_count) != ACL_SUCCESS ||"
+                },
+                {
+                  "number": 443,
+                  "text": "        aclGetViewStrides(tensor, &strides, &stride_count) != ACL_SUCCESS ||"
+                }
+              ],
+              "return_lines": [
+                426,
+                447,
+                453,
+                459,
+                490
+              ]
+            },
+            {
+              "first": 531,
+              "last": 553,
+              "normalized_text_sha256": "bbe0bd4fe8762b0bcf643a1e11445b13f539eac59040e0d3d5fc12f39e9dfbc7",
+              "getter_and_route_lines": [
+                {
+                  "number": 531,
+                  "text": "bool capture_qmm_metadata("
+                },
+                {
+                  "number": 541,
+                  "text": "    if (!capture_x1_metadata(x1, out, transpose_x1, transpose_x2, group_size,"
+                },
+                {
+                  "number": 543,
+                  "text": "        !capture_tensor_metadata(x1, &value.x1) ||"
+                },
+                {
+                  "number": 544,
+                  "text": "        !capture_tensor_metadata(x2, &value.x2) ||"
+                },
+                {
+                  "number": 552,
+                  "text": "        !capture_tensor_metadata(out, &value.out)) {"
+                }
+              ],
+              "return_lines": [
+                538,
+                553
+              ]
+            },
+            {
+              "first": 886,
+              "last": 925,
+              "normalized_text_sha256": "7a4b85de7005bd90ca8549efd431deed659499fc3073f30d32881a404c008c51",
+              "getter_and_route_lines": [
+                {
+                  "number": 913,
+                  "text": "            capture_qmm_metadata(x1, x2, x1_scale, x2_scale, y_scale, x1_offset,"
+                }
+              ],
+              "return_lines": [
+                895
+              ]
+            }
+          ],
+          "whole_file_deallocation_lines": [
+            {
+              "number": 750,
+              "text": "    std::free(host);"
+            }
+          ],
+          "matches_frozen_git_bytes": true
+        }
+      ]
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "attempt": "providers39-a6",
+      "build_manifest": {
+        "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/build_manifest.json",
+        "bytes": 969,
+        "sha256": "4016161bff94bf54be7292cbfeb0ea7f7adb3a32ba13c739010cff2257d86974"
+      },
+      "version_profile": {
+        "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/version_profile.json",
+        "bytes": 262304,
+        "sha256": "f33b055c8b493e2a7523f98e15a7828946a7a9792859a3827945a10412d996f8"
+      },
+      "profile_sha256": "e31eefa42824b1960e7f2e1e58f3130dd4b07a054b6d3b15bfb2787885e75032",
+      "libraries": [
+        {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/libfault39_native_v1.so",
+          "bytes": 121944,
+          "sha256": "04f834ef2e479f2578ec2c33a7e895097a2eb2a5c0e619dea33a497c5bfbc07c",
+          "matches_manifest": true
+        },
+        {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/libopapi.so",
+          "bytes": 47672,
+          "sha256": "f346583372d3c8f09a17b19ff1eca9ecb646f41a79cb68862373d5a25c9be160",
+          "matches_manifest": true
+        },
+        {
+          "path": "/home/17-fault-c2c3-20261117/build39-a3/cache/2c83a5742eb393f7b7bd202f421b1b8abed5f42dc433e86dda23f40412f89ff7/attempt-a0743e472ccd4f5dbb32831f35c89123/native/libopapi_nn.so",
+          "bytes": 47672,
+          "sha256": "7c964184b4e5c3310bb982a4dee4c165cb952a49dd350fcf3856fb03dedc8c02",
+          "matches_manifest": true
+        }
+      ],
+      "sources": [
+        {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/fault39/native/metadata_capture.inc",
+          "bytes": 4371,
+          "sha256": "19a5ec47d9c70e39a2c9990711017bbe51e6c4b856dd1b230df41ac90256d1c3",
+          "repository_path": "fault39/native/metadata_capture.inc",
+          "profile_source_key": "metadata_capture.inc",
+          "matches_build_profile": true,
+          "reviewed_spans": [
+            {
+              "first": 42,
+              "last": 109,
+              "normalized_text_sha256": "73ec9226ab2198977c4d1023003ada26bc3951408e9634335b5a961d0c10d32c",
+              "getter_and_route_lines": [
+                {
+                  "number": 42,
+                  "text": "bool capture_tensor_metadata(const aclTensor *tensor, Fault39TensorMetadata *metadata) {"
+                },
+                {
+                  "number": 59,
+                  "text": "        aclGetViewShape(tensor, &view_dims, &view_count) != ACL_SUCCESS ||"
+                },
+                {
+                  "number": 60,
+                  "text": "        aclGetStorageShape(tensor, &storage_dims, &storage_count) != ACL_SUCCESS ||"
+                },
+                {
+                  "number": 61,
+                  "text": "        aclGetViewStrides(tensor, &strides, &stride_count) != ACL_SUCCESS ||"
+                }
+              ],
+              "return_lines": [
+                44,
+                65,
+                71,
+                77,
+                108
+              ]
+            }
+          ],
+          "whole_file_deallocation_lines": [],
+          "matches_frozen_git_bytes": true
+        },
+        {
+          "path": "/home/17-fault-c2c3-20261117/source-a21/fault39/native/metadata_proxy.cpp",
+          "bytes": 4189,
+          "sha256": "622d9cff10abdd5e41c47b04daa251f7ef859fbd2b9901c501c973bcad53af77",
+          "repository_path": "fault39/native/metadata_proxy.cpp",
+          "profile_source_key": "metadata_proxy.cpp",
+          "matches_build_profile": true,
+          "reviewed_spans": [
+            {
+              "first": 61,
+              "last": 80,
+              "normalized_text_sha256": "8e84ac50ff2bd3c3293ee60063b24e2e81584200b2858ffea4ba7fba8cd52cf4",
+              "getter_and_route_lines": [
+                {
+                  "number": 69,
+                  "text": " if(status!=ACL_SUCCESS || !capture_tensor_metadata(self,&m.self) ||"
+                },
+                {
+                  "number": 70,
+                  "text": "    !capture_tensor_metadata(mat2,&m.mat2) || !capture_tensor_metadata(out,&m.out)) {"
+                }
+              ],
+              "return_lines": [
+                63,
+                67,
+                71,
+                80
+              ]
+            }
+          ],
+          "whole_file_deallocation_lines": [],
+          "matches_frozen_git_bytes": true
+        }
+      ]
+    }
+  ],
+  "remote_mutations": 0,
+  "npu_calls": 0,
+  "container_starts": 0,
+  "official_contract": {
+    "view_shape": "https://www.hiascend.com/doc_center/source/en/canncommercial/850/API/aolapi/operatorlist_00038.html",
+    "view_strides": "https://www.hiascend.com/doc_center/source/en/canncommercial/850/API/aolapi/operatorlist_00039.html",
+    "ownership": "Returned view/storage/stride arrays require caller delete[]."
+  },
+  "conclusion": {
+    "frozen_success_paths_omit_required_array_release": true,
+    "prior_numerical_hit_off_evidence_preserved": true,
+    "all_resources_released_proven": false,
+    "new_npu_qualification_granted": false,
+    "historical_sources_or_receipts_modified": false,
+    "exact_historical_leaked_bytes_measured": false
+  }
+}
