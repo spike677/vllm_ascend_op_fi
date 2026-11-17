@@ -5,12 +5,17 @@ source clues are inventory hints, never authorization to inject. No tensor is
 copied, converted, written, or reconstructed by this observer.
 """
 from collections import Counter
+from contextlib import nullcontext
+from contextvars import ContextVar
 import copy
 import hashlib
 import inspect
 from pathlib import Path
 import threading
 import weakref
+
+
+_METADATA_DIAGNOSTICS = ContextVar('dcat_tensor_observer_metadata_diagnostics', default=None)
 
 
 def tensors(value):
@@ -26,13 +31,19 @@ def tensors(value):
 
 
 def metadata(tensor):
-    row = dict(object_id=id(tensor), storage_id=int(tensor.untyped_storage()._cdata),
-               shape=list(tensor.shape), stride=list(tensor.stride()),
-               offset=tensor.storage_offset(), dtype=str(tensor.dtype), device=str(tensor.device))
-    if tensor.device.type == 'npu':
-        import torch_npu
-        row['actual_format'] = int(torch_npu.get_npu_format(tensor))
-    return row
+    # Tensor.stride/storage_offset are public APIs too. The observer's own
+    # metadata queries must not become model construct nodes. A context-local
+    # guard also covers the deployment observer callbacks using this helper;
+    # the actual model operator always executes outside this tiny window.
+    diagnostics = _METADATA_DIAGNOSTICS.get()
+    with diagnostics() if diagnostics is not None else nullcontext():
+        row = dict(object_id=id(tensor), storage_id=int(tensor.untyped_storage()._cdata),
+                   shape=list(tensor.shape), stride=list(tensor.stride()),
+                   offset=tensor.storage_offset(), dtype=str(tensor.dtype), device=str(tensor.device))
+        if tensor.device.type == 'npu':
+            import torch_npu
+            row['actual_format'] = int(torch_npu.get_npu_format(tensor))
+        return row
 
 
 def callable_identity(module):
@@ -50,7 +61,8 @@ def callable_identity(module):
 
 class NaturalTensorObserver:
     """Bounded full eager census; does not depend on any injection implementation."""
-    def __init__(self, model, *, max_events=100000, on_module_enter=None, on_operator_enter=None):
+    def __init__(self, model, *, max_events=100000, on_module_enter=None, on_operator_enter=None,
+                 diagnostics_context=None):
         if type(max_events) is not int or max_events < 1:
             raise ValueError('A finite event budget is required')
         self.model, self.max_events = model, max_events
@@ -64,6 +76,9 @@ class NaturalTensorObserver:
         self.dropped = 0
         self.on_module_enter = on_module_enter
         self.on_operator_enter = on_operator_enter
+        self.diagnostics_context = diagnostics_context
+        self._metadata_token = None
+        self._owner_thread = None
 
     def _emit(self, row):
         if len(self.events) >= self.max_events:
@@ -185,6 +200,10 @@ class NaturalTensorObserver:
 
     def __enter__(self):
         import torch
+        if self._metadata_token is not None or self.closed:
+            raise RuntimeError('TENSOR_OBSERVER_CANNOT_BE_REENTERED')
+        self._owner_thread = threading.get_ident()
+        self._metadata_token = _METADATA_DIAGNOSTICS.set(self.diagnostics_context)
         for path, module in self.model.named_modules():
             identity = callable_identity(module)
             source = identity.get('source', '')
@@ -205,6 +224,8 @@ class NaturalTensorObserver:
         return self
 
     def close(self):
+        if self._metadata_token is not None and threading.get_ident() != self._owner_thread:
+            raise RuntimeError('TENSOR_OBSERVER_METADATA_OWNER_THREAD_CHANGED')
         if self.stack or self.mode is not None:
             raise RuntimeError('OBSERVER_FORWARD_STILL_INFLIGHT')
         for handle, callback in reversed(self.handles):
@@ -215,6 +236,9 @@ class NaturalTensorObserver:
         self.handles.clear()
         self.outputs.clear()
         self.views.clear()
+        if self._metadata_token is not None:
+            _METADATA_DIAGNOSTICS.reset(self._metadata_token)
+            self._metadata_token = None
         self.closed = True
 
     def report(self):

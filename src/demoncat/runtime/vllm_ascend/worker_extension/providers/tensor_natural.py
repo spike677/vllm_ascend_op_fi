@@ -151,7 +151,8 @@ class NaturalTensorGroupProvider:
         handle = self.model.register_forward_pre_hook(capture, with_kwargs=True, prepend=True)
         adapter = self._adapter(arm) if arm else None
         observer = NaturalTensorObserver(self.model, on_module_enter=self._module_enter,
-                                         on_operator_enter=self._operator_enter)
+            on_operator_enter=self._operator_enter,
+            diagnostics_context=getattr(self.model_observation, 'diagnostics', None))
         completed = False
         try:
             self.active_adapter = adapter
