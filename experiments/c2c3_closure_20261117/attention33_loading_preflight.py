@@ -1,5 +1,6 @@
 """Resolve actual 8.5.1 stock Norm and private FIA libraries without NPU ops."""
 import argparse
+import faulthandler
 import json
 import os
 from pathlib import Path
@@ -15,6 +16,7 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--child',action='store_true',help=argparse.SUPPRESS)
     args = parser.parse_args()
+    faulthandler.enable()
     from demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd import verify_bundle
     from demoncat.runtime.vllm_ascend.worker_extension.paged33_loading import bootstrap,require
     require(not list(Path('/dev').glob('davinci*')), 'CPU_LOADING_PREFLIGHT_MUST_HAVE_NO_NPU_DEVICES')
@@ -29,21 +31,28 @@ def main():
     report = dict(schema='demoncat.paged33.loading_preflight.v1',status='STARTED',
                   actual_npu_tensor_operations=0,model_initialized=False,
                   completion_sha256=args.completion_sha256,failures=[])
+    def checkpoint(stage):
+        report['stage']=stage
+        (args.out/'result.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
+        print(json.dumps(dict(status=report['status'],stage=stage)),flush=True)
     try:
+        checkpoint('BEFORE_LIBRARY_BOOTSTRAP')
         coexistence = bootstrap(bundle)
         report['before_framework'] = coexistence.report()
+        checkpoint('BEFORE_PLATFORM_IMPORT')
         from vllm.platforms import current_platform
+        checkpoint('BEFORE_PLATFORM_VENDOR_INITIALIZATION')
         report['after_platform'] = coexistence.prepare_platform(current_platform)
         # Load the unchanged extension so that its real dependencies coexist too.
         # This imports/registers operators; no operator is called and no model is built.
+        checkpoint('BEFORE_ACTUAL_EXTENSION_IMPORT')
         import vllm_ascend.vllm_ascend_C
         report['after_actual_extension_import'] = coexistence.verify()
         report['status'] = 'CPU_STOCK_PRIVATE_API_COEXISTENCE_VERIFIED'
     except BaseException as error:
         report.update(status='CPU_LOADING_PREFLIGHT_FAILED')
         report['failures'].append(dict(error=repr(error),traceback=traceback.format_exc()))
-    with (args.out/'result.json').open('x') as stream:
-        json.dump(report,stream,indent=2,allow_nan=False);stream.write('\n')
+    checkpoint('COMPLETE' if report['status']=='CPU_STOCK_PRIVATE_API_COEXISTENCE_VERIFIED' else 'FAILED')
     print(json.dumps({key:report[key] for key in ('status','actual_npu_tensor_operations','failures')}))
     return 0 if report['status'] == 'CPU_STOCK_PRIVATE_API_COEXISTENCE_VERIFIED' else 2
 
