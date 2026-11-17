@@ -141,7 +141,7 @@ bool serving_inputs_match(const Context& ctx,const Fault39MatmulMetadata& m,
 }
 // END CPU_TESTABLE_SERVING_INPUT_GUARD
 struct Registered { Fault39MatmulMetadata metadata{}; int device=-1,rank=-1; uint64_t tensors[3]{},cache_epoch=0; };
-struct Candidate { Fault39MatmulMetadata metadata{}; int rank=-1,device=-1; std::set<std::pair<Cache*,uint64_t>> caches; uint64_t observations=0; };
+struct Candidate { Fault39MatmulMetadata metadata{}; int rank=-1,device=-1; std::set<std::pair<Cache*,uint64_t>> caches; std::map<std::pair<Cache*,uint64_t>,uint64_t> cache_observations; uint64_t observations=0; };
 struct Lease {
  void* device[2]{}; void* host[3]{}; aclrtStream stream=nullptr; uint64_t generation=0;
  aclrtContext context=nullptr; int32_t device_id=-1; std::thread::id thread;
@@ -153,6 +153,7 @@ struct State {
  bool enabled=false; int error=0; std::string status="DISABLED",actual_ids="[]",last_run_api;
  std::map<Cache*,Registered> registry; std::map<std::string,Candidate> candidates;
  std::map<Cache*,uint64_t> cache_epochs;uint64_t next_cache_epoch=0;
+ Cache* selected_cache=nullptr;uint64_t selected_epoch=0,observation_cache=0,observation_epoch=0;
  std::vector<Lease> retained; fault39::Counts counts{};
  fault39::Counts original[2]{},temporary[2]{};
  uint64_t changed[2]{},unchanged[2]{};
@@ -325,9 +326,12 @@ aclnnStatus run(Cache* cache,void* workspace,aclrtStream stream,const std::vecto
     r=it->second;const std::string sig=fault39::signature(r.metadata,rank,device);
     if(sig.size()<sizeof(s.config.target_signature)) {
      auto& candidate=s.candidates[sig];candidate.metadata=r.metadata;candidate.rank=rank;candidate.device=device;
-     candidate.caches.insert({cache,r.cache_epoch});++candidate.observations;
+     candidate.caches.insert({cache,r.cache_epoch});++candidate.cache_observations[{cache,r.cache_epoch}];++candidate.observations;
      if(s.config.mode!=F39_DISCOVER && sig==s.config.target_signature) {
-      if(candidate.caches.size()!=1){s.enabled=false;fail(s,F39_AMBIGUOUS_TARGET);}
+      if(s.selected_cache && (cache!=s.selected_cache || r.cache_epoch!=s.selected_epoch)) {
+       ++s.rejected;s.status="EXACT_CACHE_NOT_SELECTED";
+      }
+      else if(!s.selected_cache && candidate.caches.size()!=1){s.enabled=false;fail(s,F39_AMBIGUOUS_TARGET);}
       else if(context.owner!=s.config.owner || context.ids.empty() || context.ids=="[]") {
        ++s.rejected;s.status="UNPROVEN_REQUEST_MAPPING";
       } else if(s.inflight) {++s.rejected;}
@@ -342,6 +346,7 @@ aclnnStatus run(Cache* cache,void* workspace,aclrtStream stream,const std::vecto
        s.pre_sync=s.run_status=s.post_sync=s.free_status=s.copy_status=-2147483647;
        s.error=0;s.status="INFLIGHT";
        s.observation_owner=cfg.owner;s.observation_ids=context.ids;s.observation_generation=generation;s.observation_hit=s.hits+1;
+       s.observation_cache=reinterpret_cast<uintptr_t>(cache);s.observation_epoch=r.cache_epoch;
        selected=true;++s.inflight;++s.hits;
        if(s.config.max_hits && s.hits>=s.config.max_hits)s.enabled=false;
       }
@@ -371,6 +376,7 @@ int stop(const char* owner,uint64_t generation,uint32_t timeout,bool clean) {
  }
  s.error=0;s.status=clean?"CLEAN":"DISABLED";
  if(clean){s.config={};s.candidates.clear();s.hits=0;s.counts={};s.actual_ids="[]";
+  s.selected_cache=nullptr;s.selected_epoch=s.observation_cache=s.observation_epoch=0;
   for(int i=0;i<2;++i){s.original[i]={};s.temporary[i]={};s.changed[i]=s.unchanged[i]=0;}
   s.proof_json="{}";s.observation_ids="[]";s.observation_generation=0;s.observation_hit=0;s.observation_owner.clear();
   s.self_verified=s.columns_verified=false;
@@ -420,7 +426,7 @@ extern "C" void fault39_clear_context_v1(){context={};}
 extern "C" int fault39_set_serving_inputs_v1(const char* owner,const uint64_t* values,size_t count) {
  return bind_serving_inputs(context,owner,values,count);
 }
-extern "C" int fault39_configure_v1(const Fault39ConfigV1* cfg,uint64_t* generation) {
+int configure_cache(const Fault39ConfigV1* cfg,uint64_t* generation,uint64_t cache_address,uint64_t cache_epoch) {
  if(!cfg || !generation)return F39_INVALID_CONFIG;
  if(cfg->abi_version!=1 || cfg->struct_size!=sizeof(*cfg))return F39_ABI_MISMATCH;
  if(cfg->mode<1 || cfg->mode>4 || cfg->pattern>4 || (cfg->exponent!=-1 && cfg->exponent!=58) ||
@@ -431,6 +437,10 @@ extern "C" int fault39_configure_v1(const Fault39ConfigV1* cfg,uint64_t* generat
  if(!resolve())return F39_UNSUPPORTED_RUNTIME;
  const char* dev=std::getenv("VLLM_SERVER_DEV_MODE");
  if(!dev || std::strcmp(dev,"1") || actual_rank()<0)return F39_UNSUPPORTED_RUNTIME;
+ const bool exact=cache_address!=0 || cache_epoch!=0;
+ if(exact && (!cache_address || !cache_epoch || cfg->mode==F39_DISCOVER || cfg->max_hits!=1 ||
+    context.owner!=cfg->owner || context.ids.empty() || context.ids=="[]" ||
+    !context.serving.requested || !context.serving.valid))return F39_INVALID_CONFIG;
  State& s=state();std::lock_guard<std::mutex> lock(s.mutex);
  if(s.config.owner[0] && std::strcmp(cfg->owner,s.config.owner))return F39_OWNER_MISMATCH;
  if(s.enabled || s.inflight)return F39_BUSY;
@@ -440,21 +450,38 @@ extern "C" int fault39_configure_v1(const Fault39ConfigV1* cfg,uint64_t* generat
  if(cfg->mode!=F39_DISCOVER) {
   auto it=s.candidates.find(cfg->target_signature);
   if(it==s.candidates.end())return fail(s,F39_TARGET_NOT_FOUND);
-  if(it->second.caches.size()!=1 || it->second.observations<2)return fail(s,F39_AMBIGUOUS_TARGET);
-  const auto cache_identity=*it->second.caches.begin();
+  if(!exact && (it->second.caches.size()!=1 || it->second.observations<2))return fail(s,F39_AMBIGUOUS_TARGET);
+  const auto cache_identity=exact?std::make_pair(reinterpret_cast<Cache*>(cache_address),cache_epoch):*it->second.caches.begin();
+  const auto seen=it->second.cache_observations.find(cache_identity);
+  if(exact && (seen==it->second.cache_observations.end() || seen->second<2))return fail(s,F39_TARGET_NOT_FOUND);
   if(s.cache_epochs[cache_identity.first]!=cache_identity.second)return fail(s,F39_TARGET_NOT_FOUND);
+  const auto registered=s.registry.find(cache_identity.first);
+  if(registered==s.registry.end() || registered->second.cache_epoch!=cache_identity.second ||
+     fault39::signature(registered->second.metadata,registered->second.rank,registered->second.device)!=cfg->target_signature)
+   return fail(s,F39_TARGET_NOT_FOUND);
   if(it->second.rank!=cfg->rank || it->second.device!=cfg->device)return fail(s,F39_TARGET_NOT_FOUND);
   if(!fault39::matmul_valid(it->second.metadata,cfg->max_bytes))return fail(s,F39_INVALID_CONFIG);
   if(next.exponent==-1){next.exponent=fault39::auto_exponent(it->second.metadata.self.view_shape[1]);if(next.exponent<0)return fail(s,F39_NO_OVERFLOW_SOLUTION);}
  }
  try{s.retained.reserve(1);}catch(...){return fail(s,F39_BUSY);}
  s.config=next;++s.generation;*generation=s.generation;s.enabled=true;s.hits=0;s.error=0;s.counts={};s.status="ARMED";
+ s.selected_cache=exact?reinterpret_cast<Cache*>(cache_address):nullptr;s.selected_epoch=cache_epoch;
+ s.observation_cache=s.observation_epoch=0;
  for(int i=0;i<2;++i){s.original[i]={};s.temporary[i]={};s.changed[i]=s.unchanged[i]=0;}
  s.proof_json="{}";s.actual_ids="[]";s.observation_ids="[]";s.observation_generation=0;s.observation_hit=0;s.observation_owner.clear();
  s.self_verified=s.columns_verified=false;
  s.serving_live_inputs_verified=false;
  s.storage_before[0].clear();s.storage_before[1].clear();s.storage_after[0].clear();s.storage_after[1].clear();s.output_sha256.clear();
  s.pre_sync=s.copy_status=s.run_status=s.post_sync=s.free_status=-2147483647;return 0;
+}
+extern "C" int fault39_configure_v1(const Fault39ConfigV1* cfg,uint64_t* generation) {
+ return configure_cache(cfg,generation,0,0);
+}
+// Additive exact identity API. The v1 ABI and its unique-signature gate remain.
+// Address is never dereferenced; a real typed cache registration/epoch is required.
+extern "C" int fault39_configure_cache_v2(const Fault39ConfigV1* cfg,uint64_t cache_address,uint64_t cache_epoch,uint64_t* generation) {
+ if(!cache_address || !cache_epoch)return F39_INVALID_CONFIG;
+ return configure_cache(cfg,generation,cache_address,cache_epoch);
 }
 extern "C" int fault39_disable_v1(const char* owner,uint64_t generation,uint32_t timeout){return stop(owner,generation,timeout,false);}
 extern "C" int fault39_clean_v1(const char* owner,uint64_t generation,uint32_t timeout){return stop(owner,generation,timeout,true);}
@@ -483,8 +510,10 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
    <<",\"interposed_run_calls\":"<<s.run_calls<<",\"last_run_api\":"<<quote(s.last_run_api)<<",\"typed_metadata_calls\":"<<s.metadata_calls<<",\"hits\":"<<s.hits
    <<",\"substituted\":"<<s.substituted<<",\"completed\":"<<s.completed<<",\"rejected\":"<<s.rejected
    <<",\"serving_input_rejections\":"<<s.serving_input_rejections
+   <<",\"exact_cache_api_version\":2,\"selected_cache_address\":"<<reinterpret_cast<uintptr_t>(s.selected_cache)<<",\"selected_cache_epoch\":"<<s.selected_epoch
    <<",\"actual_request_ids_json\":"<<quote(s.actual_ids)<<",\"worker_rank\":"<<actual_rank()<<",\"observer\":"<<counts_json(s.counts)
    <<",\"last_observation\":{\"generation\":"<<s.observation_generation<<",\"owner\":"<<quote(s.observation_owner)<<",\"hit\":"<<s.observation_hit
+   <<",\"cache_address\":"<<s.observation_cache<<",\"cache_epoch\":"<<s.observation_epoch
    <<",\"exponent\":"<<s.config.exponent<<",\"pattern\":"<<s.config.pattern
    <<",\"self_constant_positive_verified\":"<<(s.self_verified?"true":"false")<<",\"per_column_sign_counts_verified\":"<<(s.columns_verified?"true":"false")
    <<",\"serving_live_inputs_verified\":"<<(s.serving_live_inputs_verified?"true":"false")
@@ -508,7 +537,17 @@ extern "C" int fault39_snapshot_v1(char* out,size_t capacity) {
   bool first=true;for(const auto& entry:s.candidates){if(!first)j<<',';first=false;const auto& c=entry.second;
    j<<"{\"signature\":"<<quote(entry.first)<<",\"candidate_count\":"<<c.caches.size()<<",\"observations\":"<<c.observations
     <<",\"M\":"<<c.metadata.self.view_shape[0]<<",\"K\":"<<c.metadata.self.view_shape[1]<<",\"N\":"<<c.metadata.mat2.view_shape[1]
-    <<",\"rank\":"<<c.rank<<",\"device\":"<<c.device<<",\"api\":\"aclnnMatmul\",\"dtype\":\"BF16\",\"format\":\"ND\"}";}
+    <<",\"rank\":"<<c.rank<<",\"device\":"<<c.device<<",\"api\":\"aclnnMatmul\",\"dtype\":\"BF16\",\"format\":\"ND\",\"cache_identities\":[";
+   bool first_cache=true;for(const auto& identity:c.caches){if(!first_cache)j<<',';first_cache=false;
+    const auto current=s.cache_epochs.find(identity.first);
+    const auto registered=s.registry.find(identity.first);
+    const bool live=current!=s.cache_epochs.end() && current->second==identity.second &&
+        registered!=s.registry.end() && registered->second.cache_epoch==identity.second;
+    const auto seen=c.cache_observations.find(identity);
+    j<<"{\"address\":"<<reinterpret_cast<uintptr_t>(identity.first)<<",\"epoch\":"<<identity.second
+     <<",\"observations\":"<<(seen==c.cache_observations.end()?0:seen->second)
+     <<",\"live\":"<<(live?"true":"false")<<'}';}
+   j<<"]}";}
   j<<"]}";const auto text=j.str();if(text.size()>=INT32_MAX)return F39_BUSY;
   const size_t need=text.size()+1;if(out && capacity>=need)std::memcpy(out,text.c_str(),need);return int(need);
  }catch(...){return F39_BUSY;}

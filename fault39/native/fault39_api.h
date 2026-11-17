@@ -25,6 +25,12 @@ uint32_t fault39_abi_version_v1(void);
 /* Additive diagnostic: immutable identity of this exact toolkit/header build. */
 const char* fault39_build_profile_v1(void);
 int fault39_configure_v1(const Fault39ConfigV1*, uint64_t* generation);
+/* Additive exact cache registration identity; v1 unique-signature rules remain.
+ * Requires same-thread live serving inputs, two real observations of this cache
+ * epoch, and max_hits=1. Address is a lookup key, never a pointer to dereference.
+ */
+int fault39_configure_cache_v2(const Fault39ConfigV1*, uint64_t cache_address,
+                             uint64_t cache_epoch, uint64_t* generation);
 int fault39_disable_v1(const char* owner, uint64_t generation, uint32_t timeout_ms);
 int fault39_clean_v1(const char* owner, uint64_t generation, uint32_t timeout_ms);
 /* Returns required bytes INCLUDING NUL; insufficient buffers are never partially written. */

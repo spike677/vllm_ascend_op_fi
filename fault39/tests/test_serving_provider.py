@@ -4,6 +4,7 @@ import threading
 import unittest
 
 from demoncat_fault39.provider import CtypesProvider, NativeError, SERVING_INPUT_FIELDS
+from demoncat_fault39.schema import Fault39Config
 from test_contracts import FakeAbi, FakeFunction
 
 
@@ -24,6 +25,33 @@ class ServingAbi(FakeAbi):
 
 
 class ServingProviderTests(unittest.TestCase):
+    def test_exact_cache_is_additive_and_requires_actual_owner_context(self):
+        abi = ServingAbi()
+        provider = CtypesProvider(abi)
+        config = Fault39Config()
+        call = dict(cache_address=0x1234, cache_epoch=9, target_signature='actual-native-signature')
+        with self.assertRaisesRegex(ValueError, 'OWNED_CONTEXT'):
+            provider.configure_cache('owner', config, 0, 0, **call)
+        with provider.context('owner', ['request']):
+            with self.assertRaisesRegex(RuntimeError, 'EXACT_CACHE_CONFIGURATION_UNAVAILABLE'):
+                provider.configure_cache('owner', config, 0, 0, **call)
+        seen = []
+        def exact(raw, address, epoch, generation):
+            seen.append((raw._obj.max_hits, raw._obj.target_signature, address, epoch))
+            generation._obj.value = 71
+            return 0
+        abi.fault39_configure_cache_v2 = FakeFunction(exact)
+        with provider.context('owner', ['request']):
+            self.assertEqual(provider.configure_cache('owner', config, 0, 0, **call), 71)
+            for changed in ({'cache_epoch': 0}, {'cache_address': True}, {'cache_address': 2**64}):
+                with self.assertRaises(ValueError):
+                    provider.configure_cache('owner', config, 0, 0, **dict(call, **changed))
+            with self.assertRaises(ValueError):
+                provider.configure_cache('owner', Fault39Config(max_hits=2), 0, 0, **call)
+            with self.assertRaises(ValueError):
+                provider.configure_cache('other', config, 0, 0, **call)
+        self.assertEqual(seen, [(1, b'actual-native-signature', 0x1234, 9)])
+
     def test_legacy_attach_does_not_require_optional_guard_symbol(self):
         abi = FakeAbi()
         provider = CtypesProvider(abi, evidence_kind='CPU_CONTRACT_MOCK')

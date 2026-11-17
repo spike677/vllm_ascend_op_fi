@@ -18,6 +18,7 @@ class Config(C.Structure):
 lib = C.CDLL(sys.argv[1])
 assert C.sizeof(Config) == 368
 lib.fault39_configure_v1.argtypes = [C.POINTER(Config), C.POINTER(C.c_uint64)]
+lib.fault39_configure_cache_v2.argtypes = [C.POINTER(Config), C.c_uint64, C.c_uint64, C.POINTER(C.c_uint64)]
 lib.fault39_snapshot_v1.argtypes = [C.c_void_p, C.c_size_t]
 lib.fault39_disable_v1.argtypes = [C.c_char_p, C.c_uint64, C.c_uint32]
 lib.fault39_clean_v1.argtypes = [C.c_char_p, C.c_uint64, C.c_uint32]
@@ -60,6 +61,12 @@ cfg.max_hits = 1
 assert lib.fault39_configure_v1(C.byref(cfg), C.byref(generation)) == -8
 cfg.mode, cfg.input_mask = 2, 1
 assert lib.fault39_configure_v1(C.byref(cfg), C.byref(generation)) == -1
+assert generation.value == 999
+assert initial['exact_cache_api_version'] == 2
+assert initial['selected_cache_address'] == initial['selected_cache_epoch'] == 0
+assert lib.fault39_configure_cache_v2(C.byref(cfg), 0, 1, C.byref(generation)) == -1
+assert lib.fault39_configure_cache_v2(C.byref(cfg), 1, 0, C.byref(generation)) == -1
+assert lib.fault39_configure_cache_v2(C.byref(cfg), 1, 1, C.byref(generation)) == -8
 assert generation.value == 999
 assert lib.fault39_bind_worker_rank_v1(-1) == -1
 assert lib.fault39_bind_worker_rank_v1(3) == 0

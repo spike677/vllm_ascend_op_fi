@@ -106,6 +106,21 @@ class CtypesProvider:
             raise NativeError(code, "bind_worker_rank")
 
     def configure(self, owner, config, rank, device, mode="inject", target_signature="", input_mask=3):
+        return self._configure(owner, config, rank, device, mode, target_signature, input_mask)
+
+    def configure_cache(self, owner, config, rank, device, *, cache_address, cache_epoch,
+                        mode="inject", target_signature="", input_mask=3):
+        """One exact live cache epoch, never a replacement for v1 unique selection."""
+        if (any(type(value) is not int or not 0 < value < 2**64 for value in (cache_address, cache_epoch))
+                or config.max_hits != 1 or mode == 'discover' or not target_signature
+                or not getattr(self._context_local, 'active', False)
+                or getattr(self._context_local, 'owner', None) != owner):
+            raise ValueError('EXACT_CACHE_SINGLE_CALL_AND_OWNED_CONTEXT_REQUIRED')
+        return self._configure(owner, config, rank, device, mode, target_signature, input_mask,
+                               cache_identity=(cache_address, cache_epoch))
+
+    def _configure(self, owner, config, rank, device, mode, target_signature, input_mask,
+                   cache_identity=None):
         if mode not in MODE_IDS:
             raise ValueError("Unknown native mode")
         if not owner or type(rank) is not int or type(device) is not int or not 0 <= rank < 2**31 or not 0 <= device < 2**31:
@@ -118,7 +133,16 @@ class CtypesProvider:
                              _bounded_text(owner, 64, "owner"),
                              _bounded_text(target_signature, 256, "target_signature"), input_mask, 0)
         generation = ctypes.c_uint64()
-        code = self._symbols.fault39_configure_v1(ctypes.byref(raw), ctypes.byref(generation))
+        if cache_identity is None:
+            code = self._symbols.fault39_configure_v1(ctypes.byref(raw), ctypes.byref(generation))
+        else:
+            fn = getattr(self._symbols, 'fault39_configure_cache_v2', None)
+            if fn is None:
+                raise RuntimeError('EXACT_CACHE_CONFIGURATION_UNAVAILABLE')
+            fn.argtypes = [ctypes.POINTER(NativeConfigV1), ctypes.c_uint64, ctypes.c_uint64,
+                           ctypes.POINTER(ctypes.c_uint64)]
+            fn.restype = ctypes.c_int
+            code = fn(ctypes.byref(raw), *cache_identity, ctypes.byref(generation))
         if code:
             raise NativeError(code, "configure")
         if not generation.value:
