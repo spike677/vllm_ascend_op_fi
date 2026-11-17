@@ -18,7 +18,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
-SOURCE_COMMIT = "deb5de1e3efd893620f7202676a15b88aa17d5cf"
+SOURCE_COMMIT = "cb5b0dc120ce6c80f1469bb8b7248da27a7bb258"
 MATRIX_PATH = "docs/roadmap/17_fault_acceptance_matrix.json"
 MATRIX_SHA256 = "095d93744cfbca7c145b21b59f25f07060277f9d1fe2865cf4a8d5505fb0b78d"
 STAGES = {
@@ -324,8 +324,8 @@ def build(matrix, matrix_raw, review_paths):
     for mid, info in CURRENT.items():
         for path in info["files"]:
             file_owners.setdefault(path, delegated.get(path, mechanisms[mid]["owner"]))
-    commit = {"source_stage": SOURCE_COMMIT, "publication_commit": None,
-              "publication_state": "PENDING_REVIEWED_STAGE_COMMIT"}
+    commit = {"source_stage": SOURCE_COMMIT, "publication_commit": SOURCE_COMMIT,
+              "publication_state": "IMPLEMENTATION_AND_RECEIPTS_COMMITTED"}
     for task in matrix["m1_m2_tasks"]:
         nodes.append({
             "task_id": task["id"], "kind": "public_infrastructure", "workstream": task["owner"],

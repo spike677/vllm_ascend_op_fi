@@ -16,13 +16,15 @@
 | CPU 回归 | Windows 777 项：775 通过、2 项跳过；Linux 7 项门禁测试通过 | Linux 补测了 Windows 无权限的真实软链；Windows Gloo 项仍未执行 |
 | 全量覆盖 | C2=0/17、C3=0/17 | 未开放 all_eligible / every_match |
 
-源码阶段已发布提交为 `deb5de1e3efd893620f7202676a15b88aa17d5cf`。新增结果和后续修复
-按本分支后继提交发布，实际验证的源码快照、安装包、构建和比较器均另附 SHA，不能用
+首阶段提交为 `deb5de1e3efd893620f7202676a15b88aa17d5cf`，本轮实现和实机总结提交为
+`cb5b0dc120ce6c80f1469bb8b7248da27a7bb258`。实际验证的源码快照、安装包、构建和比较器均另附 SHA，不能用
 当前工作树替换已经执行的版本。详见 [27 节点与能力矩阵](CAPABILITY_MATRIX.md)、
 [CPU 回执](cpu_validation_summary.json)、[Linux 门禁回执](fia_cpu_contracts_summary.json)、[20 QMM](FAULT20_QMM.md)、
 [26 residual](FAULT26_RESIDUAL_REPORT.md)、[39 output / 41](POSTWRITE_REPORT.md)。
 新 FIA 的失败登记、官方索引修复、B/F/OFF 及统计负结果见
 [新工件报告](FAULT28_FRESH_BUILD.md)。
+[发布校验清单](publication_manifest.json) 保留本分支相对冻结基线的源码/总结逐文件 SHA，
+并核对 Git 暂存字节，避免换行转换改变已审查身份。
 
 [Tensor/MoE/通信报告](TENSOR_COLLECTIVE_REPORT.md) 记录五项构造推理及真实双 rank 校准的
 通过范围与失败。 [构建与证据管理摘要](infrastructure_summary.json) 列出五个 Native recipe
