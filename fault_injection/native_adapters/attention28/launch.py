@@ -113,11 +113,12 @@ def bundle_kernel_abi(vendor, files, kernel_sha256):
     return metadata, derive_fia_kernel_abi(sources[0], metadata, soc_family='ascend910b')
 
 
-def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_metadata=None, kernel_abi=None):
+def observe_launch(directory, call_id, *, kernel_sha256, tiling_size, kernel_metadata=None, kernel_abi=None):
     """One synchronous API scope, exactly one final matching kernel launch.
 
-    No scanning for the expected host raw bytes or key is used: the runtime's
-    own tilingDataOffset selects the raw bytes. Ambiguous launch scopes refuse.
+    Takes no host observation, expected key or policy profile. Runtime metadata
+    and the independently compiled entry ABI select bytes; ambiguous scopes
+    refuse. FA and FIA supply their own source-derived ABI and public POD size.
     """
     root = Path(directory).resolve(strict=True)
     require(re.fullmatch('[0-9a-f]{32}', call_id) and re.fullmatch('[0-9a-f]{64}', kernel_sha256),
@@ -165,13 +166,11 @@ def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_met
             require(candidate['result'] == 0, 'AUXILIARY_RUNTIME_LAUNCH_FAILED')
             excluded.append(dict(api=candidate['api'], kernel_sha256=hashes[name],
                 function_handle=candidate.get('function_handle'), tiling_key=candidate['tiling_key'],
-                reason='INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_FIA'))
+                reason='INDEPENDENT_REGISTERED_BINARY_DIFFERS_FROM_FRESH_KERNEL'))
     require(len(candidates) == 1, 'AMBIGUOUS_OR_MISSING_RUNTIME_LAUNCH')
     begin, end, launch = begins[0], ends[0], candidates[0]
     owner = (begin['pid'], begin['tid'])
     require(all((row['pid'], row['tid']) == owner for row in rows), 'LAUNCH_SCOPE_OWNER_DIFFERS')
-    require(owner == (host['pid'], host['tid']), 'HOST_RUNTIME_OWNER_DIFFERS')
-    require(host.get('token', host.get('call_id')) == call_id, 'HOST_RUNTIME_CALL_ID_DIFFERS')
     require(begin['monotonic_ns'] <= launch['launch_begin_ns'] <= launch['launch_end_ns']
             <= launch['monotonic_ns'] <= end['monotonic_ns'], 'LAUNCH_SCOPE_TIME_DIFFERS')
     require(launch['result'] == 0 and launch['snapshot_valid'] is True
@@ -195,7 +194,8 @@ def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_met
             and binary.stat().st_size == registered['binary_bytes'] and sha(binary) == kernel_sha256,
             'ACTUAL_REGISTERED_BINARY_DIFFERS_FROM_NEW_BUILD')
     raw_args = bytes.fromhex(launch['args_hex'])
-    size = schema['size']
+    size = tiling_size
+    require(type(size) is int and 0 < size <= 1024 * 1024, 'PUBLIC_TILING_SIZE_INVALID')
     if launch.get('argument_layout') == 'aclrt_host_placeholders':
         require(kernel_metadata and kernel_abi and kernel_metadata['sha256'] == kernel_sha256
                 and kernel_abi['pointer_bytes'] == 8, 'ACL_FINAL_ARGUMENT_KERNEL_ABI_REQUIRED')
@@ -227,28 +227,43 @@ def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_met
             and offset + size <= len(raw_args), 'FINAL_INLINE_TILING_ARGUMENT_UNAVAILABLE')
     require(type(address_offset) is int and 0 <= address_offset and address_offset + 8 <= offset,
             'TILING_ADDRESS_OFFSET_INVALID')
+    if kernel_abi is not None:
+        require(address_offset == kernel_abi['tiling_pointer_offset'], 'FINAL_TILING_SLOT_DIFFERS_FROM_COMPILED_ENTRY')
     for addr, data in struct.iter_unpack('<II', host_inputs):
         require(addr + 8 <= offset and offset + size <= data < len(raw_args),
                 'TILING_AND_HOST_INPUT_BYTES_OVERLAP_OR_UNADAPTED')
     raw = raw_args[offset:offset + size]
+    require(launch['schedule_mode'] >= 0, 'FINAL_LAUNCH_SCHEDULE_UNOBSERVED_OR_DIFFERENT')
+    return dict(schema='demoncat.attention.observed_launch.v1', status='RAW_ARGUMENTS_AND_RUNTIME_BINDING_OBSERVED',
+                call_id=call_id, pid=owner[0], tid=owner[1], kernel_sha256=kernel_sha256,
+                raw_hex=raw.hex(), raw_size=len(raw), raw_sha256=hashlib.sha256(raw).hexdigest(),
+                runtime_log_sha256=sha(root / 'runtime.jsonl'), args_sha256=hashlib.sha256(raw_args).hexdigest(),
+                args_size=len(raw_args), tiling_pointer_offset=address_offset, tiling_data_offset=offset,
+                tiling_key=int(launch['tiling_key']), block_dim=launch['block_dim'],
+                schedule_mode=launch['schedule_mode'], kernel_argument_abi=kernel_abi,
+                excluded_independently_bound_launches=excluded, kernel_argument_raw_observed=True,
+                device_completion_observed=True, production_loading_allowed=False,
+                public_worker_qualified=False, c2=False, c3=False, statistics='NOT_READ')
+
+
+def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_metadata=None, kernel_abi=None):
+    """Existing FIA public serializer comparison, after independent observation."""
+    observed = observe_launch(directory, call_id, kernel_sha256=kernel_sha256, tiling_size=schema['size'],
+                              kernel_metadata=kernel_metadata, kernel_abi=kernel_abi)
+    raw = bytes.fromhex(observed['raw_hex'])
+    require((observed['pid'], observed['tid']) == (host['pid'], host['tid']), 'HOST_RUNTIME_OWNER_DIFFERS')
+    require(host.get('token', host.get('call_id')) == call_id, 'HOST_RUNTIME_CALL_ID_DIFFERS')
     require(raw == bytes.fromhex(host['raw_hex']) and len(raw) == host['raw_size'], 'HOST_FINAL_ARGUMENT_BYTES_DIFFER')
-    require(int(launch['tiling_key']) == int(host['tiling_key'])
-            and launch['block_dim'] == host['block_dim'], 'FINAL_LAUNCH_KEY_OR_BLOCKS_DIFFER')
-    require(launch['schedule_mode'] >= 0 and launch['schedule_mode'] == host['schedule_mode'],
+    require(observed['tiling_key'] == int(host['tiling_key'])
+            and observed['block_dim'] == host['block_dim'], 'FINAL_LAUNCH_KEY_OR_BLOCKS_DIFFER')
+    require(observed['schedule_mode'] == host['schedule_mode'],
             'FINAL_LAUNCH_SCHEDULE_UNOBSERVED_OR_DIFFERENT')
     typed = decode_raw(raw, schema)
     padding = verify_public_values(typed, schema, host['typed'])
-    return dict(schema='demoncat.attention.independent_launch.v1', status='FINAL_ARGUMENT_AND_LAUNCH_VERIFIED',
-                call_id=call_id, pid=owner[0], tid=owner[1], kernel_sha256=kernel_sha256,
-                raw_sha256=hashlib.sha256(raw).hexdigest(), runtime_log_sha256=sha(root / 'runtime.jsonl'),
-                tiling_key=int(launch['tiling_key']), block_dim=launch['block_dim'],
-                schedule_mode=launch['schedule_mode'], typed=typed,
-                kernel_argument_abi=kernel_abi,
-                verified_public_serializer_padding=padding,
-                excluded_independently_bound_launches=excluded,
-                kernel_argument_raw_observed=True, native_launch_verified=True,
-                device_completion_observed=True, production_loading_allowed=False,
-                public_worker_qualified=False, c2=False, c3=False, statistics='NOT_READ')
+    observed.pop('raw_hex')
+    observed.update(schema='demoncat.attention.independent_launch.v1', status='FINAL_ARGUMENT_AND_LAUNCH_VERIFIED',
+                    typed=typed, verified_public_serializer_padding=padding, native_launch_verified=True)
+    return observed
 
 
 class LaunchObserver:
