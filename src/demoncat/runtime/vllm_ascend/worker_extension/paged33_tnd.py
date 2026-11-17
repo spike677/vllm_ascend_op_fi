@@ -16,11 +16,10 @@ import uuid
 from .paged33_audit import Paged33Audit, _meta
 from .serving_context import require
 from fault_injection.native_adapters.attention28.launch import LaunchObserver, verify_launch, sha, bundle_kernel_abi
+from fault_injection.native_adapters.attention28.fia.fai_fd_geometry import KEYS as FD_KEYS, VARIANT as FD_VARIANT, validate_fd_geometry
 
 COMMIT = 'c77c0829f1f0f0b8f882db1d9b051a758b605472'
-KEYS = {5000000000000200100, 5000000000000200103,
-        5000000000010200100, 5000000000010200103,
-        5900000000010200100, 5900000000010200103}
+KEYS = set(FD_KEYS)
 PREFIX = 'DCAT33_TND_'
 
 
@@ -30,9 +29,10 @@ def verify_bundle(completion, completion_sha256, vendor):
     data = json.loads(path.read_bytes())
     require(data.get('schema') == 'demoncat.fia.fresh_build.v1'
             and data.get('status') == 'CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION'
-            and data.get('source_commit') == COMMIT and data.get('variant') == 'tnd_page16_fai_s2_256'
+            and data.get('source_commit') == COMMIT and data.get('variant') == FD_VARIANT
             and data.get('loading_allowed') is False and data.get('npu_executed') is False
             and data.get('previous_experiment_objects_used') is False
+            and len(data.get('compiled_keys', [])) == len(KEYS)
             and set(data.get('compiled_keys', [])) == KEYS, 'TND33_INDEPENDENT_FRESH_BUILD_REQUIRED')
     files = {}
     for row in data['artifacts']:
@@ -57,6 +57,20 @@ def verify_bundle(completion, completion_sha256, vendor):
     kernels = [row for row in files.values() if row['path'].endswith('.o')]
     require(len(kernels) == 1 and kernels[0]['sha256'] == data['kernel_binary_sha256'],
             'TND33_MATCHING_NEW_KERNEL_REQUIRED')
+    from fault_injection.native_adapters.attention28.fia import fai_fd_geometry
+    require(data.get('fai_fd_geometry_validator_sha256') == sha(fai_fd_geometry.__file__)
+            and data.get('actual_worker_platform_observed') is False,
+            'TND33_FRESH_FD_CPU_CONTRACT_REQUIRED')
+    cpu_dir = path.parent/'fai_schema'
+    require(sha(cpu_dir/'compile_receipt.json') == data.get('fai_cpu_geometry_receipt_sha256')
+            and sha(cpu_dir/'fai_fd_geometry_matrix.json') == data.get('fai_fd_cpu_matrix_sha256'),
+            'TND33_FRESH_FD_CPU_EVIDENCE_DIFFERS')
+    cpu = json.loads((cpu_dir/'compile_receipt.json').read_bytes())['tools']['fai_host_geometry']['result']
+    require(cpu.get('status') == 'PASS_CPU_ACTUAL_FAI_FD_COVERAGE_AND_REDUCTION'
+            and cpu.get('cases') == 24576 and cpu.get('all_public_arrays_checked') is True
+            and cpu.get('actual_worker_aic_observed') is False
+            and cpu.get('matrix_sha256') == data['fai_fd_cpu_matrix_sha256'],
+            'TND33_FRESH_FD_CPU_MATRIX_INCOMPLETE')
     return dict(completion=data, vendor=str(root), artifacts=files)
 
 
@@ -105,6 +119,11 @@ def validate_fai_launch(launch, host, *, arm, kv_length):
     field. The observed function key, fresh ELF, and dependent workspace slices
     must all agree. Public C2/C3 qualification remains separate.
     """
+    if host.get('schema') == 'demoncat.paged33.fai_fd_host.v1':
+        return validate_fd_geometry(launch['typed'], host, key=launch['tiling_key'],
+            block_dim=launch['block_dim'], schedule_mode=launch['schedule_mode'], arm=arm, kv_length=kv_length)
+    # Kept solely for explicit old non-FD CPU regressions. A live adapter below
+    # requires the new FD build and FD host schema before this function runs.
     tile = 256 if arm == 'fault' else 512
     typed = launch['typed']
     require(host['route'] == 'FAInferTiling' and host['aic'] == 16
@@ -200,13 +219,18 @@ class TNDNativeAdapter:
             matches = [row for row in rows if row.get('token') == call_id]
             require(len(matches) == 1, 'TND33_EXACT_ONE_NATIVE_HOST_CALLBACK_REQUIRED')
             host = matches[0]
-            require(host['eligible'] is True and host['policy_applied'] == (self.arm == 'fault')
+            require(host.get('schema') == 'demoncat.paged33.fai_fd_host.v1'
+                    and host['eligible'] is True and host['policy_applied'] == (self.arm == 'fault')
                     and host['mode'] == mode and host['native_s2'] == 512
                     and host['selected_s2'] == (256 if self.arm == 'fault' else 512),
                     'TND33_ACTUAL_HOST_STRATEGY_DIFFERS')
             launch = verify_launch(self.runtime_dir, call_id, schema=self.schema, host=host,
                                    kernel_sha256=self.build['completion']['kernel_binary_sha256'],
                                    kernel_metadata=self.kernel_metadata, kernel_abi=self.kernel_abi)
+            require(launch['typed']['numBlocks'] == int(actual['key'].shape[0])
+                    and launch['typed']['maxNumBlocksPerBatch'] == int(actual['block_table'].shape[1])
+                    and launch['typed']['sparseMode'] == actual['sparse_mode']
+                    and launch['typed']['maskType'] == 1, 'TND33_FINAL_NATIVE_API_BINDING_DIFFERS')
             geometry = validate_fai_launch(launch, host, arm=self.arm, kv_length=shape['kv_length'])
             row = dict(call_id=call_id, module_path=boundary['module_path'],
                        module_object_id=boundary['module_object_id'], virtual_engine=boundary['virtual_engine'],

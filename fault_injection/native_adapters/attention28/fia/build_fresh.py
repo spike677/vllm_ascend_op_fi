@@ -28,6 +28,10 @@ TND33_KEYS = [103000000010200003, 103000000010300003,
 TND33_FAI_KEYS = [5000000000000200100, 5000000000000200103,
                   5000000000010200100, 5000000000010200103,
                   5900000000010200100, 5900000000010200103]
+TND33_FAI_FD_KEYS = [5000000000000200100, 5000000000000200103,
+                     5000000000010200100, 5000000000010200103,
+                     5100000000010200100, 5100000000010200103,
+                     6000000000010200100, 6000000000010200103]
 
 
 def sha(path):
@@ -251,7 +255,8 @@ class Builder:
         compatibility = None
         if getattr(args, 'opdef_compat', None):
             require(self.sdk.name == 'cann-8.5.1' and args.sdk_interface_manifest
-                    and self.variant in ('tnd_page16_s2_256', 'tnd_page16_fai_s2_256'), 'EXACT_TND33_CANN851_BUILD_REQUIRED')
+                    and self.variant in ('tnd_page16_s2_256', 'tnd_page16_fai_s2_256',
+                                         'tnd_page16_fai_fd_s2_256'), 'EXACT_TND33_CANN851_BUILD_REQUIRED')
             from opdef_compat import adapt
             compatibility = adapt(self.source)
             save(self.ev / 'opdef_compat.json', compatibility)
@@ -301,10 +306,12 @@ class Builder:
     def configure_policy(self, source_in):
         self.variant = (self.receipt.get('variant') if self.receipt['mechanism'] == '33.paged_decode'
                         else self.receipt['mechanism'].removeprefix('28.fia.'))
-        require(self.variant in ('legal_tiling', 'denominator_replay', 'tnd_page16_s2_256', 'tnd_page16_fai_s2_256'), 'UNREVIEWED_VARIANT')
+        require(self.variant in ('legal_tiling', 'denominator_replay', 'tnd_page16_s2_256',
+                                'tnd_page16_fai_s2_256', 'tnd_page16_fai_fd_s2_256'), 'UNREVIEWED_VARIANT')
         self.vendor_name = {'legal_tiling': 'dcat_f28_legal', 'denominator_replay': 'dcat_f28_replay',
                             'tnd_page16_s2_256': 'dcat_f33_tnd',
-                            'tnd_page16_fai_s2_256': 'dcat_f33_fai'}[self.variant]
+                            'tnd_page16_fai_s2_256': 'dcat_f33_fai',
+                            'tnd_page16_fai_fd_s2_256': 'dcat_f33_fai_fd'}[self.variant]
 
     def cpu_checks(self):
         self.run('geometry_compile', ['g++', '-std=c++17', '-I', HERE, HERE / 'geometry_check.cpp',
@@ -377,11 +384,16 @@ class Builder:
         save(self.ev / 'jit_include_sources.json', copied)
         self.report.update(host_package_sha256=sha(package), status='CPU_HOST_BUILT_KERNEL_BUILD_PENDING')
         save(self.ev / 'completion.json', self.report)
-        if self.variant == 'tnd_page16_fai_s2_256':
-            self.run('actual_fai_geometry_and_schema', [self.args.python, HERE/'compile_tnd33_fai_schema.py',
+        if self.variant in ('tnd_page16_fai_s2_256', 'tnd_page16_fai_fd_s2_256'):
+            compiler = 'compile_tnd33_fai_fd_schema.py' if self.variant == 'tnd_page16_fai_fd_s2_256' else 'compile_tnd33_fai_schema.py'
+            self.run('actual_fai_geometry_and_schema', [self.args.python, HERE/compiler,
                 '--source', self.source, '--sdk', self.sdk, '--out', self.ev/'fai_schema'], env=self.env)
             self.report['fai_public_schema_sha256'] = sha(self.ev/'fai_schema/fai_abi_schema.json')
             self.report['fai_cpu_geometry_receipt_sha256'] = sha(self.ev/'fai_schema/compile_receipt.json')
+            if self.variant == 'tnd_page16_fai_fd_s2_256':
+                self.report['fai_fd_cpu_matrix_sha256'] = sha(self.ev/'fai_schema/fai_fd_geometry_matrix.json')
+                self.report['fai_fd_geometry_validator_sha256'] = sha(HERE/'fai_fd_geometry.py')
+                self.report['actual_worker_platform_observed'] = False
 
     def kernel(self):
         params = list((self.source / 'build').rglob(EXPECTED_BIN + '_param.json'))
@@ -394,7 +406,8 @@ class Builder:
         require(dynamic.is_file(), 'NEW_PACKAGE_JIT_SOURCE_MISSING')
         opc = self.sdk / 'python/site-packages/opc_tool/opc.py'
         require(opc.is_file(), 'MATCHED_OPC_COMPILER_MISSING')
-        keys = (TND33_FAI_KEYS if self.variant == 'tnd_page16_fai_s2_256' else
+        keys = (TND33_FAI_FD_KEYS if self.variant == 'tnd_page16_fai_fd_s2_256' else
+                TND33_FAI_KEYS if self.variant == 'tnd_page16_fai_s2_256' else
                 TND33_KEYS if self.variant == 'tnd_page16_s2_256' else
                 KEYS + ([119000000000400000] if self.variant == 'denominator_replay' else []))
         output = kernel / 'output';output.mkdir()

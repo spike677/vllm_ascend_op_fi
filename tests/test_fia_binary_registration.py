@@ -62,5 +62,24 @@ class FiaBinaryRegistrationTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'OFFICIAL_GENERATOR_SOURCE_DIFFERS'):
                 registration.load_official(Path(tmp))
 
+    def test_native_fd_package_requires_eight_unique_matching_entries(self):
+        from fault_injection.native_adapters.attention28.fia.fai_fd_geometry import KEYS, VARIANT
+        self.assertEqual(registration.KEYS[VARIANT],set(KEYS))
+        with tempfile.TemporaryDirectory() as temporary:
+            binary=Path(temporary)/'new.o';binary.write_bytes(b'new-fd-test-binary')
+            metadata=self.metadata(binary)
+            metadata['kernelList']=[dict(tilingKey=key) for key in KEYS]
+            metadata['supportInfo']['tilingKey']=[str(key) for key in KEYS]
+            registration.validate_metadata(metadata,binary,VARIANT)
+            for part in ('kernelList','supportInfo'):
+                changed=copy.deepcopy(metadata)
+                entries=changed[part] if part=='kernelList' else changed[part]['tilingKey']
+                entries.append(entries[0])
+                with self.assertRaises(RuntimeError):registration.validate_metadata(changed,binary,VARIANT)
+            changed=copy.deepcopy(metadata)
+            changed['kernelList'][6]['tilingKey']=5900000000010200100
+            with self.assertRaisesRegex(RuntimeError,'KEY_SET_DIFFERS'):
+                registration.validate_metadata(changed,binary,VARIANT)
+
 if __name__=='__main__':unittest.main()
 

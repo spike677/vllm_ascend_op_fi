@@ -19,7 +19,11 @@ KEYS={'legal_tiling':{103000000000000000,109000000000000000,109000000000400000},
       'tnd_page16_s2_256':{103000000010200003,103000000010300003,104000000010200003,104000000010300003},
       'tnd_page16_fai_s2_256':{5000000000000200100,5000000000000200103,
                              5000000000010200100,5000000000010200103,
-                             5900000000010200100,5900000000010200103}}
+                             5900000000010200100,5900000000010200103},
+      'tnd_page16_fai_fd_s2_256':{5000000000000200100,5000000000000200103,
+                                5000000000010200100,5000000000010200103,
+                                5100000000010200100,5100000000010200103,
+                                6000000000010200100,6000000000010200103}}
 
 def require(ok,message):
     if not ok:raise RuntimeError(message)
@@ -58,7 +62,8 @@ def validate_metadata(metadata,binary,variant):
     require(support.get('simplifiedKeyMode')==0 and support.get('simplifiedKey')
         and support.get('optionalInputMode')=='gen_placeholder'
         and support.get('optionalOutputMode')=='gen_placeholder','NEW_KERNEL_SUPPORT_CONTRACT_DIFFERS')
-    require({int(x) for x in support.get('tilingKey',[])}==KEYS[variant],'SUPPORT_KEY_SET_DIFFERS')
+    require(len(support.get('tilingKey',[]))==len(KEYS[variant])
+        and {int(x) for x in support['tilingKey']}==KEYS[variant],'SUPPORT_KEY_SET_DIFFERS')
 
 def validate_generated(generated,existing,metadata):
     require(set(generated)=={'binary_info_config.json','fused_infer_attention_score.json'},'UNEXPECTED_GENERATED_REGISTRY')

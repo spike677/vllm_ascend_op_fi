@@ -29,7 +29,8 @@ LOADER_HEADER = STOCK_ROOT.parent/'csrc/aclnn_torch_adapter/op_api_common.h'
 LOADER_HEADER_SHA = '142023f0f0e682b3b79aeb987044ecbd9b7db0b63b20de967447ba6f9e3d6b16'
 PRIVATE_LIB = 'op_api/lib/libcust_opapi.so'
 NORM_SYMBOLS = ('aclnnAddRmsNormBias', 'aclnnAddRmsNormBiasGetWorkspaceSize')
-FIA_SYMBOLS = ('aclnnFusedInferAttentionScore', 'aclnnFusedInferAttentionScoreGetWorkspaceSize')
+FIA_SYMBOLS = ('aclnnFusedInferAttentionScore', 'aclnnFusedInferAttentionScoreGetWorkspaceSize',
+               'aclnnFusedInferAttentionScoreV3', 'aclnnFusedInferAttentionScoreV3GetWorkspaceSize')
 _ACTIVE = None
 
 

@@ -82,7 +82,7 @@ return 0;}catch(const std::exception& e){std::cerr<<e.what()<<'\n';return 1;}}
 '''
 
 
-def main():
+def main(*, geometry_source=None, geometry_validator=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--sdk', type=Path, required=True)
@@ -108,13 +108,16 @@ def main():
             index += 1;continue
         flags.append(item);index += 1
     receipts = {}
-    for name, source in (('fai_abi_decoder', decoder_source(fields)), ('fai_host_geometry', GEOMETRY)):
+    for name, source in (('fai_abi_decoder', decoder_source(fields)),
+                         ('fai_host_geometry', GEOMETRY if geometry_source is None else geometry_source)):
         cpp, binary = args.out/(name+'.cpp'), args.out/name
         cpp.write_text(source)
         argv = [original[0], *flags, '-I'+str(args.out), '-I'+str(host), str(cpp),
                 '-L'+str(args.sdk/'lib64'), '-lregister', '-lc_sec', '-o', str(binary)]
         subprocess.run(argv, cwd=entry['directory'], check=True, timeout=180)
         result = json.loads(subprocess.check_output([str(binary)], text=True, timeout=30))
+        if name == 'fai_host_geometry' and geometry_validator is not None:
+            result = geometry_validator(result)
         (args.out/(name+'.json')).write_text(json.dumps(result, indent=2)+'\n')
         receipts[name] = dict(argv=argv, cpp_sha256=sha(cpp), binary_sha256=sha(binary), result=result)
     result = receipts['fai_abi_decoder']['result']

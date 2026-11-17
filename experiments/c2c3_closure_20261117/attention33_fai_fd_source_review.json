@@ -1,0 +1,149 @@
+{
+  "schema": "demoncat.paged33.fai_fd_source_review.v1",
+  "status": "PASS_PINNED_SOURCE_PATCH_REVIEW_ONLY",
+  "source_commit": "c77c0829f1f0f0b8f882db1d9b051a758b605472",
+  "native_decision_sha256": "742a14b0a230a8f09d4ceb3407ab6ea58e63fc8ad8b4bcba2e64298222f43eb2",
+  "native_decision_bytes_unchanged": true,
+  "actual_worker_aic": null,
+  "actual_platform_preflight_required": true,
+  "actual_sdk_cpu_matrix_executed": false,
+  "actual_kernel_compiled": false,
+  "npu_executed": false,
+  "c2": false,
+  "c3": false,
+  "failed_attempt": {
+    "path": "/home/17-fault-c2c3-20261117/attention33-worker18-card2-a1/attention33-natural-baseline-a2/run/result.json",
+    "sha256": "c2321ef8e5f05729ad82f5f87f2cebb52b5f385d2f46fdfe87e4afe4c8ea8b99",
+    "missing_key": 5100000000010200103,
+    "original_result_reclassified": false
+  },
+  "new_variant": "tnd_page16_fai_fd_s2_256",
+  "native_keys": [
+    5000000000000200100,
+    5000000000000200103,
+    5000000000010200100,
+    5000000000010200103,
+    5100000000010200100,
+    5100000000010200103
+  ],
+  "new_fd_entries": [
+    {
+      "key": 6000000000010200100,
+      "mask": "NO_MASK",
+      "paged": true,
+      "flash_decode": true,
+      "key_declaration_count": 1,
+      "host_registration_count": 1
+    },
+    {
+      "key": 6000000000010200103,
+      "mask": "MASK_CAUSAL",
+      "paged": true,
+      "flash_decode": true,
+      "key_declaration_count": 1,
+      "host_registration_count": 1
+    }
+  ],
+  "public_fields": 52,
+  "public_arrays": [
+    {
+      "name": "coreInfo.startBIdx",
+      "count": 26
+    },
+    {
+      "name": "coreInfo.startN1Idx",
+      "count": 26
+    },
+    {
+      "name": "coreInfo.startS1Idx",
+      "count": 26
+    },
+    {
+      "name": "coreInfo.startS2Idx",
+      "count": 26
+    },
+    {
+      "name": "coreInfo.endBIdx",
+      "count": 26
+    },
+    {
+      "name": "coreInfo.endN1Idx",
+      "count": 26
+    },
+    {
+      "name": "coreInfo.endS1Idx",
+      "count": 26
+    },
+    {
+      "name": "coreInfo.endS2Idx",
+      "count": 26
+    },
+    {
+      "name": "coreInfo.firstSplitKVTaskLseOffset",
+      "count": 26
+    },
+    {
+      "name": "coreInfo.firstSplitKVTaskOOffset",
+      "count": 26
+    },
+    {
+      "name": "splitInfo.batchIdx",
+      "count": 26
+    },
+    {
+      "name": "splitInfo.headStartIdx",
+      "count": 26
+    },
+    {
+      "name": "splitInfo.headEndIdx",
+      "count": 26
+    },
+    {
+      "name": "splitInfo.qStartIdx",
+      "count": 26
+    },
+    {
+      "name": "splitInfo.qEndIdx",
+      "count": 26
+    },
+    {
+      "name": "splitInfo.splitNum",
+      "count": 26
+    },
+    {
+      "name": "splitInfo.lseTaskOffset",
+      "count": 26
+    },
+    {
+      "name": "splitInfo.oTaskOffset",
+      "count": 26
+    }
+  ],
+  "files": [
+    {
+      "path": "attention/fused_infer_attention_score/op_host/flash_attention_infer_tiling.h",
+      "before_sha256": "ab74f1603076d55e7dcdf969c83a221a57e87c03e1504dcafe85df1090e1b121",
+      "in_memory_after_sha256": "4e1c965fa014e335572704bb9ba107b47aee402fa9043a2212016964f209b3be"
+    },
+    {
+      "path": "attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling.cpp",
+      "before_sha256": "3ae7ba8858ad13e259a861d2df19e69467ab2263c5e7d12332707dd8a41e0419",
+      "in_memory_after_sha256": "8a2511c88ad54ea465f3f0a4df0ce996001562f652d9a991d44cdab1dda3a576"
+    },
+    {
+      "path": "attention/fused_infer_attention_score/op_kernel/fia_kernel_common.hpp",
+      "before_sha256": "c8666a28c93cfe2b08c0a34c1c851bf0f70c8a68bd650cba9b06b2dc65c0a205",
+      "in_memory_after_sha256": "f2deefb8d8c61ed257530b9b2f3db0981f2eb66b856c467ad8abc27e09e5369b"
+    },
+    {
+      "path": "attention/fused_infer_attention_score/op_kernel/fused_infer_attention_score.cpp",
+      "before_sha256": "d34068f64e515b4c8ff75f12a2222f22cf9a397fb4e5812dd3dea1c5c573f787",
+      "in_memory_after_sha256": "1cbfc175185d7bd9b1f094642315d974b30979bcaa3ac987b92f735b919aeb3f"
+    }
+  ],
+  "local_cpu_contracts": {
+    "tests": 42,
+    "passed": true,
+    "sdk_or_worker_substitute": false
+  }
+}
