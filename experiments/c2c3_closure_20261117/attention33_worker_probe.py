@@ -95,7 +95,6 @@ def response(row):
 
 def run(args, bundle):
     # Imports occur only in the exec'd child, after private vendor/preload setup.
-    from vllm import LLM, SamplingParams
     from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require_host_driven_core, read_enqueued_identity
     from demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd_probe import payload_identity
     report = dict(schema='demoncat.paged33.actual_fai_worker_run.v1', status='STARTED',
@@ -112,6 +111,15 @@ def run(args, bundle):
     save()
     llm, installed, seen = None, False, []
     try:
+        coexistence = None
+        if bundle is not None:
+            from demoncat.runtime.vllm_ascend.worker_extension.paged33_loading import bootstrap
+            coexistence = bootstrap(bundle)
+            report['library_bootstrap'] = coexistence.report();save()
+        from vllm import LLM, SamplingParams
+        if coexistence is not None:
+            from vllm.platforms import current_platform
+            report['library_coexistence'] = coexistence.prepare_platform(current_platform);save()
         llm = LLM(model=args.model, dtype='float16', tensor_parallel_size=1, enforce_eager=True,
             max_model_len=1280, max_num_seqs=1, max_num_batched_tokens=1280, block_size=16,
             num_gpu_blocks_override=128, enable_prefix_caching=False, enable_chunked_prefill=False,
@@ -234,7 +242,6 @@ def main():
         if bundle:
             runtime = args.out/'runtime';runtime.mkdir()
             env.update(ASCEND_CUSTOM_OPP_PATH=bundle['vendor'], LD_PRELOAD=library['path'], DCAT_ATTN_OBSERVER_DIR=str(runtime))
-            env['LD_LIBRARY_PATH'] = ':'.join([str(Path(bundle['vendor'])/'op_api/lib'), env.get('LD_LIBRARY_PATH', '')])
         os.execve(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:], '--child'], env)
     return run(args, bundle)
 

@@ -139,8 +139,9 @@ class TNDNativeAdapter:
         self.build = verify_bundle(completion, completion_sha256, vendor)
         self.kernel_metadata, self.kernel_abi = bundle_kernel_abi(self.build['vendor'], self.build['artifacts'],
             self.build['completion']['kernel_binary_sha256'])
-        require(os.environ.get('ASCEND_CUSTOM_OPP_PATH') == self.build['vendor']
-                and os.environ.get('ACLNN_CACHE_LIMIT') == '0' and os.environ.get('TASK_QUEUE_ENABLE') == '0',
+        from .paged33_loading import verify_runtime
+        self.library_coexistence = verify_runtime(self.build)
+        require(os.environ.get('ACLNN_CACHE_LIMIT') == '0' and os.environ.get('TASK_QUEUE_ENABLE') == '0',
                 'TND33_PREIMPORT_PRIVATE_VENDOR_UNCACHED_SYNC_REQUIRED')
         require(sha(schema) == schema_sha256 == self.build['completion'].get('fai_public_schema_sha256'),
                 'TND33_PUBLIC_SCHEMA_HASH_DIFFERS')
@@ -176,6 +177,8 @@ class TNDNativeAdapter:
 
     def execute(self, actual, boundary, invoke_once):
         import torch
+        from .paged33_loading import validate_environment
+        validate_environment(self.build['vendor'],platform_ready=True)
         require(threading.get_ident() == self.owner and self.enabled and not self.active, 'TND33_SCOPE_OWNER_REENTRY_OR_DISABLED')
         require(len(self.calls) + len(self.failures) < self.max_calls, 'TND33_SESSION_BUDGET_REACHED')
         shape = validate_tnd_call(actual, boundary)
@@ -231,6 +234,7 @@ class TNDNativeAdapter:
         torch.npu.synchronize()
         require(not any(name.startswith(PREFIX) for name in os.environ), 'TND33_NATIVE_SCOPE_LEAK')
         return dict(scope_cleared=True, local_streams_drained=True, calls=len(self.calls),
+                    library_coexistence=self.library_coexistence,
                     failures=self.failures, public_worker_qualified=False, c2=False, c3=False,
                     group_recovery='NOT_ESTABLISHED_BY_SERIAL_ADAPTER')
 
