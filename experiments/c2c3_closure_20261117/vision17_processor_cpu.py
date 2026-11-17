@@ -1,9 +1,11 @@
-"""Device-free processor diagnostic; no model construction or NPU access.
+"""Device-free processor diagnostic; no model or explicit NPU computation.
 
 The current vLLM image still imports torch_npu from Transformers even with
-device-backend autoload disabled. Without driver libraries that import fails;
-retain that result instead of bypassing the installed implementation. Passing
-this diagnostic would still not qualify model inference or any fault.
+device-backend autoload disabled. Without driver libraries that import fails.
+Even when libraries are present, import may attempt runtime device discovery;
+retain those warnings and never describe this as zero runtime API calls.
+No accelerator device nodes are supplied. Passing this diagnostic would still
+not qualify model inference or any fault.
 """
 import argparse
 import hashlib
@@ -76,13 +78,15 @@ def main():
         transformers=transformers.__version__, config_files=files, geometry=geometry,
         model_source_sha256=SOURCE_SHA256, processor_source_sha256=sha(inspect.getfile(type(processor))),
         image_sha256=IMAGE_SHA256, image_size=list(image.size), image_mode=image.mode,
-        prompt=PROMPT, processor_overrides={}, outputs=fields, actual_npu_calls=0,
+        prompt=PROMPT, processor_overrides={}, outputs=fields,
+        explicit_npu_compute_invocations=0, runtime_discovery_may_be_attempted=True,
         cpu_environment={'TORCH_DEVICE_BACKEND_AUTOLOAD': '0'},
         model_constructed=False, weights_loaded=False, raw_tensors_saved=False, c2=False, c3=False)
     with args.out.open('x', encoding='utf-8') as output:
         json.dump(receipt, output, indent=2, allow_nan=False)
         output.write('\n')
-    print(json.dumps(dict(status=receipt['status'], outputs=fields, actual_npu_calls=0)))
+    print(json.dumps(dict(status=receipt['status'], outputs=fields,
+        explicit_npu_compute_invocations=0, runtime_discovery_may_be_attempted=True)))
 
 
 if __name__ == '__main__':
