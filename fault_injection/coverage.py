@@ -50,6 +50,7 @@ class TargetIdentity:
     native_build_fingerprint: str
     provider_identity: str | None = None
     provider_proof: tuple[tuple[str, str], ...] = ()
+    process_start_identity: str | None = None
 
     def __post_init__(self):
         if any(type(n) is not int or n <= 0 for n in (
@@ -80,9 +81,14 @@ class TargetIdentity:
         keys = tuple(key for key, _ in fields)
         if keys != tuple(sorted(set(keys))) or (fields and self.provider_identity is None):
             raise ValueError('Expected distinct ordered fields bound to a provider')
+        if self.process_start_identity is not None:
+            _text_fields(self.process_start_identity)
 
     @property
     def worker(self):
+        if self.process_start_identity is not None:
+            return (self.process_id, self.process_start_identity, self.worker_id,
+                    self.rank, self.logical_device)
         return self.process_id, self.worker_id, self.rank, self.logical_device
 
 
@@ -504,7 +510,7 @@ class QualifiedTargetSet:
         cap = self.capability
         targets = {lease.target for lease in self.leases}
         eligible = set(self.candidates.eligible)
-        if (len(self.leases) < 2 or len(targets) != len(self.leases)
+        if (not self.leases or len(targets) != len(self.leases)
                 or not self.candidates.discovery_complete or targets - eligible):
             raise UnsupportedCall('A target set needs distinct eligible targets and complete discovery')
         if self.selection not in ('explicit', 'all_eligible') or (

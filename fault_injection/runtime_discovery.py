@@ -307,6 +307,12 @@ def native_facts(details, proof_kinds, fault):
         slots=[{key: row[key] for key in ('formal', 'slot', 'storage_bytes')}
                for row in sorted(slots, key=lambda row: (row['slot'], row['formal']))],
     )
+    # PID reuse must not merge two Worker lifetimes. Observe the current process
+    # independently of the provider's cache/executor address.
+    start = _process_start_identity()
+    if worker.get('process_start_identity', start) != start:
+        raise UnsupportedCall('Native observation process lifetime changed')
+    result['worker']['process_start_identity'] = start
     material = {key: result[key] for key in ('layout', 'slots')}
     result['layout_sha256'] = hashlib.sha256(
         json.dumps(material, sort_keys=True, separators=(',', ':')).encode()
@@ -455,6 +461,7 @@ def _candidate_set(report, model, plan, finished):
                 provider_identity=(f'{report["mechanism"]}:{matches[0]["implementation_version"]}'
                                    if len(matches) == 1 else None),
                 provider_proof=(('layout_sha256', facts['layout_sha256']),) if len(matches) == 1 else (),
+                process_start_identity=worker.get('process_start_identity'),
             )
         if len(matches) > 1 or (facts and facts['candidate_count'] > 1):
             status, reason = Eligibility.AMBIGUOUS, 'NATIVE_CALL_OR_PROFILE_IDENTITY_AMBIGUOUS'
@@ -486,3 +493,72 @@ def plan_adaptation(report, model, profiles, before, after, *, discovery_finishe
     plan['candidate_set'] = _candidate_set(report, model, plan, report['closed'] or discovery_finished)
     plan['coverage_capability'] = asdict(coverage_capability(report['mechanism']))
     return plan
+
+
+class RuntimeCandidateInventory:
+    """Join every independently observed boundary to an explicit module universe.
+
+    A structural module is never counted as an eligible native target. Adapters
+    classify actual calls and supply identities; unseen modules, missing healthy
+    repeats, changed identities and ambiguous native caches remain unresolved.
+    This is separate from the legacy unique-target C1 adaptation planner.
+    """
+
+    def __init__(self, *, expected_modules, expected_workers):
+        self.expected_modules = frozenset(expected_modules)
+        self.expected_workers = tuple(expected_workers)
+        if (not self.expected_modules or any(type(n) is not int or n <= 0 for n in self.expected_modules)
+                or not self.expected_workers or len(set(self.expected_workers)) != len(self.expected_workers)):
+            raise ValueError('Complete live module universe and Worker lifetimes required')
+        self._rows, self._forwards, self._observed = {}, {}, {}
+        self._sealed = False
+
+    def finish_forward(self, forward_id, *, healthy):
+        if self._sealed or not isinstance(forward_id, str) or not forward_id or type(healthy) is not bool:
+            raise ValueError('Open discovery and exact healthy forward identity required')
+        if forward_id in self._forwards:
+            raise ValueError('Discovery forward already completed')
+        self._forwards[forward_id] = healthy
+
+    def observe(self, candidate, *, forward_id, module_object_identity=None):
+        if self._sealed or not isinstance(candidate, Candidate) or not isinstance(forward_id, str) or not forward_id:
+            raise ValueError('Typed candidate and actual forward identity required')
+        if forward_id in self._forwards:
+            raise ValueError('Cannot add calls to a completed discovery forward')
+        module = module_object_identity
+        if candidate.identity is not None:
+            module = candidate.identity.module_object_identity
+            if candidate.identity.worker not in self.expected_workers:
+                raise UnsupportedCall('UNEXPECTED_DISCOVERY_WORKER')
+        if module not in self.expected_modules:
+            raise UnsupportedCall('UNEXPECTED_DISCOVERY_MODULE')
+        previous = self._rows.get(candidate.candidate_id)
+        if previous is not None and previous != candidate:
+            raise UnsupportedCall('DISCOVERY_TARGET_IDENTITY_CHANGED')
+        self._rows[candidate.candidate_id] = candidate
+        self._observed.setdefault(candidate.candidate_id, set()).add((forward_id, module))
+
+    def seal(self, observer, *, artifact_sha256):
+        if self._sealed:
+            raise ValueError('Discovery already sealed')
+        self._sealed = True
+        healthy = {key for key, ok in self._forwards.items() if ok}
+        rows = list(self._rows.values())
+        seen_modules = {module for sightings in self._observed.values() for forward, module in sightings
+                        if forward in healthy}
+        for module in sorted(self.expected_modules - seen_modules):
+            rows.append(Candidate(f'unobserved-module:{module}', EligibilityResult(
+                Eligibility.NOT_OBSERVED, ('NO_ACTUAL_BOUNDARY_IN_HEALTHY_DISCOVERY',))))
+        repeated = all(len({forward for forward, _ in sightings if forward in healthy}) >= 2
+                       for sightings in self._observed.values())
+        complete = (len(healthy) >= 2 and all(self._forwards.values()) and repeated
+                    and seen_modules == self.expected_modules
+                    and all(forward in healthy for sightings in self._observed.values() for forward, _ in sightings)
+                    and all(row.eligibility.status in (Eligibility.SUPPORTED, Eligibility.UNSUPPORTED) for row in rows))
+        candidates = CandidateSet(tuple(rows), complete)
+        if complete:
+            targets = tuple(row.identity for row in rows if row.identity is not None)
+            observer.seal_discovery(candidates, observed_targets=targets,
+                artifact_sha256=artifact_sha256, expected_workers=self.expected_workers,
+                observed_workers=tuple(dict.fromkeys(target.worker for target in targets)))
+        return candidates
