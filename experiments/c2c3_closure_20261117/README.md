@@ -5,8 +5,8 @@ Frozen source: `91decf5efe48dfdf8c5494e52d258ccde788cc5d` (implementation
 the previous engineering reports and all original 124 evidence remain intact.
 
 The frozen starting point was **C2 0/17, C3 0/17**. Root has now reviewed
-**C2 3/17, C3 2/17** in bounded standard-Worker scopes: Fault18, Fault20 and native
-Fault39 have C2; Fault18 and Fault20 have C3. The separate HF Fault18 scope is not counted
+**C2 3/17, C3 3/17** in bounded standard-Worker scopes: Fault18, Fault20 and native
+Fault39 have C2 and C3. The separate HF Fault18 scope is not counted
 twice. This is an in-progress checkpoint, not a claim that17 mechanisms or whole
 model/version families are accepted. Existing scoped C1 receipts retain their
 original source, build and workload. CPU contract tests do not grant qualification.
@@ -15,7 +15,7 @@ original source, build and workload. CPU contract tests do not grant qualificati
 | --- | --- | --- | --- |
 |18.api_half, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|226/226 calls in two requests|Separate Worker capture pending; HF statistics cannot substitute|
 |20.buffer_substitute, standard DeepSeek-V2-Lite-W8A8 Worker, BF16 fixed3-token fresh prefill, TP1|135/135 targets|270/270 calls in two requests|First QMM output Max16.25→14.0;2 later NaN fields prevent whole-capture E5|
-|39.matmul_range, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|a5 refused before C3 injection; corrected binding awaits fresh live C2/C3|First linear output5.1875→Inf; later NaNs prevent whole-capture acceptance|
+|39.matmul_range, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|226/226 calls after fresh live C2|C2 first linear output5.1875→Inf with later NaNs; C3 raw capture missing|
 |18.api_half, natural HF model, separately reviewed|113/113 targets|226/226 calls|First consumer linear input1.734375→0.8671875; nulls retained|
 
 The independent review is [AGENT7_ACTUAL_REVIEW.md](AGENT7_ACTUAL_REVIEW.md),
@@ -24,6 +24,17 @@ semantics. All rows above are actual8.5.1/Ascend910B4(A2); none qualifies CANN9.
 A3, concurrent requests, multiple Workers or another model automatically.
 See [RESUME.md](RESUME.md) for the current running attempts; unreviewed runtime
 successes do not silently change this table.
+
+Root additionally reviewed [Native39 a6](AGENT7_NATIVE39_A6_REVIEW.md):342 C2 and
+568 C3 references match original bytes. Each of113 targets changes in the once
+request and in both every-match requests; all original allocations remain intact,
+all target/group OFF and complete healthy logits restore.112 later input pairs
+already contain propagated nonfinite values, so this is not113 isolated causal
+tests. C3's missing raw triplet is an explicit E5 gap, not reconstructed data.
+
+Fresh standalone Fault28 B/F has [eight verified actual launches](attention28_cpu_fp64_launch_review.md).
+This does not grant model or Worker C2/C3. The disclosed CPU-FP64 collector is a
+new capture backend; older null statistics and historical results remain intact.
 
 Fault20 additionally has a [root review](native20_group_summary.json):408 C2 and
 678 C3 evidence references match actual stored bytes; all targets have native
