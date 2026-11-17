@@ -42,13 +42,15 @@ class CollectorPacketAttributes:
         require(hashlib.sha256(raw).hexdigest() == APPROVED_REGISTRY_SHA256,
                 'UNREVIEWED_COLLECTOR_CUSTOM_OP_REGISTRY')
         factory = module.ApiRegistry.register_custom_api
-        require(inspect.isfunction(factory) and Path(factory.__code__.co_filename).resolve() == path.resolve(),
-                'COLLECTOR_FACTORY_SOURCE_MISMATCH')
         compiled = compile(raw, factory.__code__.co_filename, 'exec', dont_inherit=True)
-        expected_factory = nested(compiled, ('ApiRegistry', 'register_custom_api'))
-        require(factory.__code__ == expected_factory,
-                'COLLECTOR_FACTORY_CODE_CHANGED')
-        expected_wrapper = nested(factory.__code__, ('wrap_api_func', 'api_function'))
+        factories = ((factory, ('ApiRegistry', 'register_custom_api'), ('wrap_api_func', 'api_function')),
+                     (module.ApiWrapper.wrap_api_func, ('ApiWrapper', 'wrap_api_func'), ('api_function',)))
+        expected_wrappers = []
+        for actual, factory_path, wrapper_path in factories:
+            require(inspect.isfunction(actual) and Path(actual.__code__.co_filename).resolve() == path.resolve(),
+                    'COLLECTOR_FACTORY_SOURCE_MISMATCH')
+            require(actual.__code__ == nested(compiled, factory_path), 'COLLECTOR_FACTORY_CODE_CHANGED')
+            expected_wrappers.append((nested(actual.__code__, wrapper_path), '.'.join(factory_path)))
         try:
             for namespace_name, namespace in tuple(vars(torch.ops).items()):
                 if not isinstance(namespace, _OpNamespace):
@@ -56,14 +58,16 @@ class CollectorPacketAttributes:
                 for name, wrapper in tuple(vars(namespace).items()):
                     if not isinstance(wrapper, FunctionType) or wrapper.__code__.co_filename != factory.__code__.co_filename:
                         continue
-                    require(wrapper.__code__ is expected_wrapper,
-                            'COLLECTOR_CUSTOM_OP_WRAPPER_CODE_CHANGED')
+                    matched = [label for code, label in expected_wrappers if wrapper.__code__ is code]
+                    require(len(matched) == 1, 'COLLECTOR_CUSTOM_OP_WRAPPER_CODE_CHANGED:'
+                            + namespace_name + '.' + name + ':' + wrapper.__code__.co_qualname)
                     closure = inspect.getclosurevars(wrapper).nonlocals
                     packet = closure.get('api_func')
                     if not isinstance(packet, OpOverloadPacket):
                         continue
-                    require(closure.get('api_name') == name and str(packet) == namespace_name + '.' + name,
-                            'COLLECTOR_CUSTOM_OP_PACKET_OWNERSHIP_CHANGED')
+                    require(closure.get('api_name') in (name, namespace_name + '.' + name)
+                            and str(packet) == namespace_name + '.' + name,
+                            'COLLECTOR_CUSTOM_OP_PACKET_OWNERSHIP_CHANGED:' + namespace_name + '.' + name)
                     for overload in packet.overloads():
                         value = getattr(packet, overload)
                         require(not hasattr(wrapper, overload) or getattr(wrapper, overload) is value,
@@ -73,6 +77,7 @@ class CollectorPacketAttributes:
                             self.owned.append((namespace, name, wrapper, overload, value))
                     self.observed.append(dict(namespace=namespace_name, operator=name,
                         overloads=packet.overloads(), registry_sha256=APPROVED_REGISTRY_SHA256,
+                        factory=matched[0], public_api_name=closure.get('api_name'),
                         collector_callable_preserved=True, operator_callable_preserved=True))
         except BaseException:
             self.restore()

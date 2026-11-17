@@ -91,6 +91,18 @@ the failure and checks one collector call, one original operator call, correct
 dispatch observation and exact attribute cleanup. This changes Python only;
 the final native `build39-a3` DSO remains the required native artifact.
 
+The retry `providers39-a2` retained a second pre-injection refusal:
+`COLLECTOR_CUSTOM_OP_WRAPPER_CODE_CHANGED`. The same pinned registry also
+creates operator wrappers through `ApiWrapper.wrap_api_func` (lines 84–102),
+in addition to `ApiRegistry.register_custom_api` (lines 218–227). The adapter
+now independently verifies both exact factory/nested-code paths and records
+which one owns each original packet. Unknown wrapper code still refuses with
+namespace/operator/code identity. Both exact factories from the SHA-verified
+124 source were exercised with real CPU custom operators, without importing
+the collector package or any NPU package: both reproduced the missing-overload
+failure before the fix and preserved one collector/original call after it.
+This CPU result grants no native or natural Worker coverage.
+
 For 20/shared quant, `providers20_inventory_probe.py` now drives two complete
 healthy natural DeepSeek fresh-prefill requests through a read-only public
 observer. Every discovered method is observed, including shared method objects;
