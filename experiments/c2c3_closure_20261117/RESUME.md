@@ -1,5 +1,29 @@
 # Current execution checkpoint
 
+## Active checkpoint — source-a30 and live-proof review
+
+- Source-a30 is frozen at5fef59cea4eb408c3bab5d22576c17fbc61f976e,596 files,
+  archive8f42df70245120876c2513302467eb4df9a8c134352fa8db1c8e83d30c100e48.
+  Remote extraction and every file hash passed. Subsequent review/documentation
+  commits do not change that immutable snapshot.
+- `fa28-launch-short-a1` passed the fresh card5 gate, but Docker exited125 before
+  creating a process: a read-only `/build` parent prevented its `/build/run`
+  nested mount. No NPU call or timeout occurred. Its original controller/logs
+  remain under R; only its unstarted owned container was removed. Correct the
+  manifest layout, then use a fresh attempt with the same90-second budget.
+  Long Worker experiments still await external-cleanup coordination.
+- C3 proof hardening9499d57+13955ef is integrated. The independent frozen-route
+  auditc936aa3 (root70402592) verifies exact18/20/39 driver bytes and their original
+  live-object handoffs. It does not retroactively run the new registry in old
+  processes. Root's59 focused coverage/authority/identity contracts passed.
+- The public vision weight download is still running in local session28838.
+  Preserve its first receipt, then independently reverify all pinned bytes with
+  the current helper before transfer. The original running helper predates edits:
+  its completion-time script hash alone is not a startup-code attestation.
+- Complete-set Native26 coverage/probe integration is pending final Agent5 review;
+  its v2 SDK artifact remains the already verified CPU build. No new Native26
+  NPU or whole-model qualification has been granted. C2/C3 stay3/17 each.
+
 ## Active checkpoint — further source review and device-free preparation
 
 - Published checkpoint remains8f73f82 on `codex/17-fault-c2c3-closure-20261117`.

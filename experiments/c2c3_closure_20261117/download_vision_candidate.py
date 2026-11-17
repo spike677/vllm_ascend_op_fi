@@ -68,6 +68,9 @@ def fetch(url, path, expected_size):
 
 
 def main():
+    # Bind the helper before network I/O; a long download may overlap later
+    # workspace edits. File identities below are independently pinned upstream.
+    preparation_script_sha256 = digest(Path(__file__))
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--endpoint", choices=("https://huggingface.co", "https://hf-mirror.com"),
@@ -127,7 +130,7 @@ def main():
                "revision": REVISION, "gated": False, "remote_code_downloaded": False,
                "official_metadata_url": metadata_url, "official_metadata_sha256": metadata_sha256,
                "download_endpoint": args.endpoint,
-               "preparation_script_sha256": digest(Path(__file__)),
+               "preparation_script_sha256": preparation_script_sha256,
                "complete_model_files_prepared": args.only_file is None,
                "files": files, "npu_calls": 0, "model_qualification": False}
     (output / "download_receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")

@@ -59,6 +59,14 @@ failure contracts; its SDK build and complete natural group proof are separate g
 Changes to shared code never upgrade older receipts to the current HEAD: all
 accepted scopes remain bound to the exact reviewed source/build/workload hashes.
 
+The [live C2 proof audit](coverage_proof_authority_review.md) fixes a separate C3
+admission defect: copying a frozen proof previously retained its private issuer
+marker. Admission now requires the original issued object, unchanged fields and
+the issuing process. Copies, reconstruction and fork-inherited proofs refuse.
+Independent review of the exact frozen18/20/39 drivers found direct original-object
+handoffs; their earlier results did not depend on the copy defect. That source
+audit does not assert that the new registry ran in those historical processes.
+
 The [independent build/scope audit](AGENT7_CPU_BUILDS_A29_REVIEW.md) confirms the
 actual FA and Native26 artifacts, SDK/image bytes and CPU ABI contracts. Native26
 requires the matched image C/C++ runtime; the default host lacks GLIBCXX_3.4.29.
