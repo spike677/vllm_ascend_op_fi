@@ -1,0 +1,1719 @@
+{
+  "schema": "demoncat.fault_coverage.acceptance_matrix.v1",
+  "baseline_commit": "b0d15696a0c4355c9226c391fb95d3e5ad0ba96c",
+  "baseline_inputs": {
+    "catalog": "fault_injection/catalog.py",
+    "worker_registry": "src/demoncat/runtime/vllm_ascend/worker_extension/providers/__init__.py",
+    "overnight_matrix": "experiments/overnight_20261116/fault_matrix.json",
+    "overnight_coverage": "experiments/overnight_20261116/coverage_matrix.json",
+    "latest_delta": "experiments/p3p4_closure_20261117/mechanism_delta.json",
+    "cpu_receipt": "experiments/p3p4_closure_20261117/summaries/cpu_p4_final.json",
+    "historical_model_matrix": "experiments/overnight_20261116/model_matrix.json",
+    "historical_environment_matrix": "experiments/overnight_20261116/environment_matrix.json"
+  },
+  "scope_key": [
+    "mechanism",
+    "implementation_version",
+    "entrypoint",
+    "model_implementation",
+    "operator",
+    "layout_and_workload",
+    "cann_version",
+    "soc",
+    "build_fingerprint",
+    "worker_and_rank"
+  ],
+  "workstreams": [
+    {
+      "id": "A",
+      "area": "Native Infrastructure",
+      "owns": [
+        "fault_injection/environment.py",
+        "fault39/tools/version_profile.py",
+        "fault39/tools/deployment_profile.py",
+        "fault39/native/build.sh",
+        "fault_injection/native_adapters/build_qmm.sh",
+        "fault_injection/native_adapters/fault20_abi_probe.cpp",
+        "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp"
+      ],
+      "deliverable": "公共Native发现、隔离构建、工件和加载验真。先接WeightNz/QMM与MatMul各自已有recipe"
+    },
+    {
+      "id": "B",
+      "area": "Model / Operator Adaptation",
+      "owns": [
+        "fault_injection/model_discovery.py",
+        "fault_injection/runtime_discovery.py",
+        "fault_injection/coverage.py",
+        "fault_injection/attention.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/serving_context.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/batch_context.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/call_binding.py"
+      ],
+      "deliverable": "实际模型对象、逻辑角色、算子边界、真实调度映射、候选及拒绝原因"
+    },
+    {
+      "id": "C",
+      "area": "Fault Providers 1",
+      "owns": [
+        "fault_injection/alias.py",
+        "fault_injection/module_faults.py",
+        "fault_injection/deployments/matmul.py",
+        "fault_injection/deployments/buffer20.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/serving20.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault20.py"
+      ],
+      "deliverable": "8、15、17、18、20、22、25的专用实现和最小复现，各用自己的机制测试"
+    },
+    {
+      "id": "D",
+      "area": "Fault Providers 2",
+      "owns": [
+        "fault_injection/deployments/residual26.py",
+        "fault_injection/deployments/residual26_worker.py",
+        "fault_injection/deployments/paged33.py",
+        "fault_injection/deployments/paged33_continuous.py",
+        "fault_injection/strategy.py",
+        "fault_injection/fia.py",
+        "fault_injection/quantization.py",
+        "fault39/native/runtime.cpp",
+        "fault39/src/demoncat_fault39/provider.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/serving26.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/serving_quant.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault26.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/providers/quant.py"
+      ],
+      "deliverable": "26双变体、共享量化、28三变体、33、39双变体、41的专用实现和最小复现"
+    },
+    {
+      "id": "E",
+      "area": "Validation & Evidence",
+      "owns": [
+        "experiments/overnight_20261116/evidence_contract.py",
+        "fault39/tools/compare_msprobe.py",
+        "fault39/tools/compare_model_capture.py",
+        "fault39/src/demoncat_fault39/diagnostics.py"
+      ],
+      "deliverable": "接收实际调用/恢复回执，独立处理原始统计，核对作用域和双分母"
+    }
+  ],
+  "lead_owns": [
+    "fault_injection/catalog.py",
+    "fault_injection/lifecycle.py",
+    "fault_injection/providers.py",
+    "src/demoncat/runtime/vllm_ascend/worker_extension/providers/__init__.py",
+    "src/demoncat/runtime/vllm_ascend/worker_extension/runtime.py",
+    "src/demoncat/runtime/vllm_ascend/worker_extension/extension.py",
+    "docs/roadmap/17_fault_full_coverage_roadmap.md",
+    "docs/roadmap/17_fault_acceptance_matrix.json",
+    "docs/roadmap/verify_acceptance_matrix.py"
+  ],
+  "m1_m2_tasks": [
+    {
+      "id": "freeze",
+      "owner": "lead",
+      "depends_on": [],
+      "acceptance": "冻结Git基线、17机制证据、文件所有权、M1/M2依赖和独立commit"
+    },
+    {
+      "id": "worker_lifecycle",
+      "owner": "lead",
+      "depends_on": [
+        "freeze"
+      ],
+      "acceptance": "同一Extension的专用Provider解析、按实际边界读状态、owner/generation隔离和失败保留。对原20/39/26FIA/quant做回归"
+    },
+    {
+      "id": "native_inventory",
+      "owner": "A",
+      "depends_on": [
+        "freeze"
+      ],
+      "acceptance": "分开安装与已加载CANN/SoC/ELF和依赖指纹，未知ABI拒绝"
+    },
+    {
+      "id": "build_recipes",
+      "owner": "A",
+      "depends_on": [
+        "native_inventory"
+      ],
+      "acceptance": "20 WeightNz/QMM及39 MatMul接入各自recipe，验证真实头文件、编译ABI、符号及库，缓存键绑定输入。输出部署manifest"
+    },
+    {
+      "id": "target_identity",
+      "owner": "B",
+      "depends_on": [
+        "freeze"
+      ],
+      "acceptance": "实际对象和逻辑角色到独立观测的typed调用，记录候选、未观察和具体拒绝，不给Python/通信伪造executor"
+    },
+    {
+      "id": "request_context",
+      "owner": "B",
+      "depends_on": [
+        "target_identity"
+      ],
+      "acceptance": "用真实scheduler绑定forward、token、slot、请求/RANK，按prefill/纯decode/通信边界筛选"
+    },
+    {
+      "id": "evidence_layout",
+      "owner": "E",
+      "depends_on": [
+        "freeze"
+      ],
+      "acceptance": "固定Experiment各阶段、构建/请求作用域、恢复回执和文件哈希。执行、效果、恢复和统计独立判定"
+    },
+    {
+      "id": "unique_binding",
+      "owner": "lead",
+      "depends_on": [
+        "worker_lifecycle",
+        "target_identity",
+        "evidence_layout"
+      ],
+      "acceptance": "候选独立观察至唯一合格目标进入无损门禁，分派机制实际执行，异常保留owner。无多目标资格提升"
+    },
+    {
+      "id": "independent_statistics",
+      "owner": "E",
+      "depends_on": [
+        "evidence_layout"
+      ],
+      "acceptance": "在B/F原始analytics独立计算固定容差首差及B自比，保留null/NaN/调用结构不齐、同输入或传播标记"
+    },
+    {
+      "id": "m1_m2_integrate",
+      "owner": "lead",
+      "depends_on": [
+        "build_recipes",
+        "request_context",
+        "independent_statistics",
+        "8.restore_offset",
+        "15.alias_detach",
+        "17.spatial_padding",
+        "18.api_half",
+        "20.buffer_substitute",
+        "22.wrong_row",
+        "25.reduce_scatter",
+        "26.residual_stomp",
+        "26.fia_destination",
+        "quant.batch_shared_scale",
+        "28.fa.legal_tiling",
+        "28.fia.legal_tiling",
+        "28.fia.denominator_replay",
+        "33.paged_decode",
+        "39.matmul_range",
+        "39.output_proxy",
+        "41.tail_column"
+      ],
+      "acceptance": "17/17专项可执行Provider与最小复现，共用Worker、发现、构建、证据回归。每项保留版本和真实能力范围"
+    }
+  ],
+  "advancement": {
+    "m3": "每条已具备合格M1路径即可按自己的环境和单点门禁开始E1–E5。用实际NPU/Worker证据更新该作用域",
+    "m4": "声明的Qwen Dense/MoE、GLM、DeepSeek MLA/MoE范围各有真实模型和实际算子证据",
+    "m5": "每个机制逐组合绑定CANN/SoC/ABI/build，A2与A3同样独立。未知接口拒绝",
+    "m6": "逐机制事先冻结有限工作负载、预算、计划目标和独立合格调用。两种覆盖分母、每次命中、故障传播和全组Recovery分别实测",
+    "m7": "取得现役黄区宿主源码和测试环境后验CLI到Worker、Native、恢复及发布边界"
+  },
+  "statistics_policy": {
+    "task": "statistics",
+    "level": "mix",
+    "summary_mode": "statistics",
+    "rtol": 1e-05,
+    "atol": 1e-08,
+    "reference": "baseline",
+    "statuses": [
+      "NOT_COLLECTED",
+      "HISTORICAL_ONLY",
+      "STRUCTURE_BLOCKED",
+      "NONFINITE_UNCOMPARABLE",
+      "OBSERVABLE_FIRST_DIFFERENCE",
+      "OBSERVABLE_PREFIX_WITH_LATER_INCOMPARABLE",
+      "VALID_DOWNSTREAM_FIRST_DIFFERENCE",
+      "NO_OBSERVABLE_DIFFERENCE"
+    ]
+  },
+  "mechanisms": [
+    {
+      "mechanism": "8.restore_offset",
+      "owner": "C",
+      "batch": "E",
+      "current_execution": "历史实现仅部分找回。当前统一目录能够发现缺口，缺可执行依赖与接线",
+      "sources": [],
+      "evidence": [
+        "experiments/overnight_20261116/legacy_source_audit.json",
+        "artifacts/fault8/systemic_restore_offset_20260916/INJECTION_LOGIC.md"
+      ],
+      "statistics_status": "HISTORICAL_ONLY",
+      "statistics_reports": [],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context"
+        ],
+        "gaps": {
+          "implementation": "取得缺失的Binding、只读观察和RequestScope，或按历史配对规则重建",
+          "entrypoint": "接实际token_combine producer、真实解排列API和当前prefill请求",
+          "recovery": "持有并回收成对副本，核对同进程新请求OFF",
+          "native_build": "先核验现用torch_npu API、dtype和调用语义，依实际边界决定是否构建Native桥"
+        },
+        "minimum_reproduction": {
+          "setup": "固定单请求完整多token MoE prefill，冻结同一组实际路由索引与权重",
+          "execution_and_observation": "在一次真实npu_moe_token_unpermute移配整组indices/probs，核对每组配对、真实原调用和完整输出。offset=0无损",
+          "off": "同步后撤销owner与包装，确认新请求完整输出精确恢复",
+          "refusals": "T=1透传，错配group、只有单个配对张量或来源不明拒绝"
+        }
+      }
+    },
+    {
+      "mechanism": "15.alias_detach",
+      "owner": "C",
+      "batch": "D",
+      "current_execution": "ModelFaultBackend / attach 可执行。构造NPU最小链B/F/OFF有回执",
+      "sources": [
+        "fault_injection/alias.py",
+        "experiments/overnight_20261116/npu_mechanism_probe.py",
+        "tests/test_alias_auto.py"
+      ],
+      "evidence": [
+        "experiments/overnight_20261116/mechanism_receipts-a1.json",
+        "experiments/overnight_20261116/recovery_receipts/index.json",
+        "experiments/overnight_20261116/summary15-a1.json"
+      ],
+      "statistics_status": "STRUCTURE_BLOCKED",
+      "statistics_reports": [
+        "experiments/p3p4_closure_20261117/summaries/p3_fault15.json"
+      ],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding"
+        ],
+        "gaps": {
+          "implementation": "复用已有视图代理，增加实际消费者适配",
+          "entrypoint": "接入Worker真实hook/调用状态，另找自然模型的view→write→base消费链",
+          "recovery": "按scope清理，fresh base输出复核。清理失败保留owner",
+          "native_build": "当前限定公开torch.as_strided与原生format_cast，不需要自编译Native。内部native视图另立边界"
+        },
+        "minimum_reproduction": {
+          "setup": "真实NZ29 BF16 base16×16，view8×8/stride(16,1)/offset17，同一初始值和实际copy_",
+          "execution_and_observation": "B共享存储，F视图值和写入正确但脱离base。全部64目标、非目标和真实add消费者精确核对",
+          "off": "同步，移除包装，新base经真实copy_后消费者逐元素恢复",
+          "refusals": "非NZ、错误storage/offset、未找到copy_或同base读取拒绝"
+        }
+      }
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "owner": "C",
+      "batch": "D",
+      "current_execution": "ModelFaultBackend / attach 可执行。标准Conv3d构造模块B/F/OFF",
+      "sources": [
+        "fault_injection/module_faults.py",
+        "experiments/overnight_20261116/npu_mechanism_probe.py",
+        "tests/test_module_faults.py"
+      ],
+      "evidence": [
+        "experiments/overnight_20261116/mechanism_receipts-a1.json",
+        "experiments/overnight_20261116/recovery_receipts/index.json",
+        "experiments/overnight_20261116/summary17-a1.json",
+        "artifacts/fault17/spatial_padding_hw7_20260920/INJECTION_LOGIC.md"
+      ],
+      "statistics_status": "STRUCTURE_BLOCKED",
+      "statistics_reports": [
+        "experiments/p3p4_closure_20261117/summaries/p3_fault17.json"
+      ],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding"
+        ],
+        "gaps": {
+          "implementation": "复用Conv3d参数代理，根据真实patch消费补结构合同",
+          "entrypoint": "绑定标准Conv3d和实际functional调用，视觉模型自然路径另行实测",
+          "recovery": "移除owned包装后精确OFF，核对参数和权重未残留修改",
+          "native_build": "限定Python参数边界，无私有DSO需求。融合或绕过边界单独适配"
+        },
+        "minimum_reproduction": {
+          "setup": "单个标准eval Conv3d，kernel=stride=(2,16,16)，健康padding=(0,0,0)，可保持shape的固定输入",
+          "execution_and_observation": "实际原Conv3d各调用一次，F只改变padding至(0,7,7)。验证调用参数、真实输出shape和逐元素参考",
+          "off": "关闭后同输入精确恢复，参数及存储维持原身份",
+          "refusals": "不保形、未知patch角色、override化的forward无实际API证据时拒绝"
+        }
+      }
+    },
+    {
+      "mechanism": "18.api_half",
+      "owner": "C",
+      "batch": "D",
+      "current_execution": "ModelFaultBackend / attach 可执行。标准nn.RMSNorm及add消费者B/F/OFF",
+      "sources": [
+        "fault_injection/module_faults.py",
+        "experiments/overnight_20261116/npu_mechanism_probe.py",
+        "tests/test_module_faults.py"
+      ],
+      "evidence": [
+        "experiments/overnight_20261116/mechanism_receipts-a1.json",
+        "experiments/overnight_20261116/recovery_receipts/index.json",
+        "experiments/overnight_20261116/summary18-a1.json",
+        "artifacts/fault18/systemic_api_half_20260915/README.md"
+      ],
+      "statistics_status": "STRUCTURE_BLOCKED",
+      "statistics_reports": [
+        "experiments/p3p4_closure_20261117/summaries/p3_fault18.json"
+      ],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding"
+        ],
+        "gaps": {
+          "implementation": "复用标准模块返回代理，自定义/融合Norm逐种辨认真实返回及消费者",
+          "entrypoint": "接入Worker按实际RMSNorm调用和owner选择，可观测hook先后次序",
+          "recovery": "核对乘法代理卸载、实际消费者数值恢复",
+          "native_build": "标准Python module return边界无需自编译。融合API需独立版本/边界检查"
+        },
+        "minimum_reproduction": {
+          "setup": "一个标准RMSNorm，固定input/weight、实际add消费者",
+          "execution_and_observation": "B/F原Norm一次且原值一致，F在返回边界乘0.5，消费者读取同一返回链，记录附加乘法",
+          "off": "退出后固定输入下原返回和消费者精确恢复",
+          "refusals": "自定义返回结构及fused add+norm语义不明先拒绝"
+        }
+      }
+    },
+    {
+      "mechanism": "20.buffer_substitute",
+      "owner": "C",
+      "batch": "A",
+      "current_execution": "WeightNz公共Worker正向。QMM有独立typed ABI、旧实机和当前深度只读。当前Serving选点约束为输出投影",
+      "sources": [
+        "fault_injection/deployments/matmul.py",
+        "fault_injection/deployments/buffer20.py",
+        "fault_injection/native_adapters/build_qmm.sh",
+        "fault_injection/native_adapters/fault20_abi_probe.cpp",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault20.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/serving20.py",
+        "experiments/worker_positive_20261117/serving_probe.py",
+        "experiments/worker_positive_20261117/readonly20_probe.py"
+      ],
+      "evidence": [
+        "experiments/worker_positive_20261117/FINAL_REPORT.md",
+        "experiments/worker_positive_20261117/summaries/qmm-readonly.json",
+        "fault20_fast_validation/reports/fault20_injection_capability_inventory_20260807.md"
+      ],
+      "statistics_status": "OBSERVABLE_FIRST_DIFFERENCE",
+      "statistics_reports": [
+        "experiments/worker_positive_20261117/summaries/fault20-independent-statistics.json"
+      ],
+      "worker_receipts": [
+        {
+          "kind": "weight_nz",
+          "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。显式NZ和controlled PTA。Qwen3-0.6B单输出投影",
+          "path": "experiments/worker_positive_20261117/summaries/fault20-fault.json"
+        },
+        {
+          "kind": "weight_nz",
+          "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。显式NZ和controlled PTA。SmolLM2实际Llama单输出投影",
+          "path": "experiments/worker_positive_20261117/summaries/fault20-smollm.json"
+        }
+      ],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "build_recipes"
+        ],
+        "gaps": {
+          "implementation": "WeightNz复用。补QMM实际中间量化投影的producer/consumer、原始x1/x2/scale/out合约和无损资格",
+          "entrypoint": "两条typed API分别选点。不能用FLOAT head通过QMM",
+          "recovery": "各自验证原存储、临时buffer释放、实际Run和同进程OFF",
+          "native_build": "接现有20 recipe到公共构建流程。保留主/nn/math及PTA加载门禁"
+        },
+        "minimum_reproduction": {
+          "setup": "两个独立用例：显式NZ和controlled PTA下的真实WeightNz。实际W8A8中间投影的真实QuantMatmulWeightNz",
+          "execution_and_observation": "逐条核对当前GWS→executor→Run live slot。先无损，后唯一作用域temporary self或x1替换，真实kernel一次及消费者输出",
+          "off": "同步、排空、清理，原输入及权重完整哈希一致。完整消费者/模型输出恢复",
+          "refusals": "默认PTA、缓存代次/scale/slot或consumer不明拒绝，readonly证据不授予QMM故障执行"
+        }
+      }
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "owner": "C",
+      "batch": "E",
+      "current_execution": "历史错误行输出代理有证据，审查范围未找到可重用源码，当前接口不可执行",
+      "sources": [],
+      "evidence": [
+        "experiments/overnight_20261116/legacy_source_audit.json",
+        "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/INJECTION_LOGIC.md",
+        "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/selected_statistics_comparison.json"
+      ],
+      "statistics_status": "HISTORICAL_ONLY",
+      "statistics_reports": [],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context"
+        ],
+        "gaps": {
+          "implementation": "按已知代理语义重建合法错行，核对RoPE cache和可用索引",
+          "entrypoint": "用真实IndexSelect返回及下一次rotary消费者绑定目标，无需填写layer路径",
+          "recovery": "限制单次并释放临时输出，保持cache完整。新请求精确恢复",
+          "native_build": "确认现用dispatcher及原前向可见性，若只有native内部路径需typed适配另验"
+        },
+        "minimum_reproduction": {
+          "setup": "绑定真实RoPE cache、positions、aten.index_select输出及下一rotary消费",
+          "execution_and_observation": "固定一次正常索引调用，B保留结果，F仅用合法source row替代选定输出行。source/index和其他行逐元素不变",
+          "off": "移除scope，重新运行同一输入，核对source和下游输出",
+          "refusals": "无同一storage消费、行越界、scatter/fused其他路径或拟用位宽溢出替代时拒绝"
+        }
+      }
+    },
+    {
+      "mechanism": "25.reduce_scatter",
+      "owner": "C",
+      "batch": "F",
+      "current_execution": "FP32次序和合法分片CPU设计。真实通信准入仍无执行函数",
+      "sources": [
+        "experiments/overnight_20261116/collective25_design.py"
+      ],
+      "evidence": [
+        "docs/overnight_fault_cards/25.reduce_scatter.md"
+      ],
+      "statistics_status": "NOT_COLLECTED",
+      "statistics_reports": [],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "实现实际所见后端的typed观察和干预。重排真实归约贡献，每份一次。如使用实测差值回放，作为单列代理",
+          "entrypoint": "绑定真实process group、全局/本地rank、send/receive/sequence/stream与调用/完成",
+          "recovery": "逐rank同时停止新命中并同步排空，放弃处于部分失败的group",
+          "native_build": "按实际HCCL/LCCL/ATB路径匹配头文件、符号与加载证据"
+        },
+        "minimum_reproduction": {
+          "setup": "真实通信组的一个有界ReduceScatter SUM，先固定每rank合法分片、数据、dtype和操作编号",
+          "execution_and_observation": "证明实际collective一次及各输出片范围。同输入对照已验证归约顺序，差值代理必须引用真实同输入原生B/F来源，且注明代理。双卡两数相加本身不证明非结合次序效应",
+          "off": "观察所有参与rank的wait/drain/leases，健康下一次通信与reference精确一致",
+          "refusals": "任一rank/sequence、成员、形状或完成信息不齐拒绝。缺真实效应证据仅记录观察"
+        }
+      }
+    },
+    {
+      "mechanism": "26.residual_stomp",
+      "owner": "D",
+      "batch": "B",
+      "current_execution": "已有独立Native QMM writer/consumer路由。旧32B W8A8 TP2通过限定45次/rank。旧采集宿主包装runner.execute_model，当前公共入口缺失",
+      "sources": [
+        "fault_injection/deployments/residual26.py",
+        "fault_injection/deployments/residual26_worker.py",
+        "fault_injection/native_adapters/legacy26_qmm_bridge.inc",
+        "experiments/provider_adaptation_20261116/build26.sh",
+        "experiments/provider_adaptation_20261116/probe26_model.py"
+      ],
+      "evidence": [
+        "experiments/provider_adaptation_20261116/validation_summary.json",
+        "experiments/overnight_20261116/fault26_nan_analysis.json",
+        "experiments/p3p4_closure_20261117/ALLOCATION_REPORT.md"
+      ],
+      "statistics_status": "NONFINITE_UNCOMPARABLE",
+      "statistics_reports": [],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "复用实际allocator及writer逻辑，历史rank1写前NaN来源仍待查",
+          "entrypoint": "正常runner保持原执行。用自有模型和算子观察绑定实际同一forward的producer→QMM→consumer，按实际存储邻接筛选",
+          "recovery": "确保拷回out及padding、真正消费后还原residual，pending=0，异常不卸载",
+          "native_build": "独立QMM writer build/ABI与所载alloc/call指纹，不能套用FIA状态"
+        },
+        "minimum_reproduction": {
+          "setup": "真实aclnnQuantMatmulWeightNz，当前forward的AddRmsNormBias生成两个相邻存活block和下游消费者",
+          "execution_and_observation": "先无损并核对原输出/residual/padding。F只改writer目标base，实际kernel一次并证明写入和消费者读取",
+          "off": "恢复三块存储及wrapper，非邻接透传。同进程独立请求完整OFF",
+          "refusals": "邻接/生命周期不明确、consumer未匹配、写越过预算拒绝或隔离，NaN原件保留"
+        }
+      }
+    },
+    {
+      "mechanism": "26.fia_destination",
+      "owner": "D",
+      "batch": "B",
+      "current_execution": "SmolLM2/GLM4真实公共Worker已有FIA V3 writer→consumer→恢复",
+      "sources": [
+        "fault_injection/deployments/residual26.py",
+        "fault_injection/native_adapters/legacy26_fia_bridge.inc",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault26.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/serving26.py",
+        "experiments/p3p4_closure_20261117/probe26_worker.py",
+        "experiments/p3p4_closure_20261117/build_native26_124.py"
+      ],
+      "evidence": [
+        "experiments/p3p4_closure_20261117/FIA26_REPORT.md",
+        "experiments/p3p4_closure_20261117/summaries/fia26-build.json"
+      ],
+      "statistics_status": "OBSERVABLE_PREFIX_WITH_LATER_INCOMPARABLE",
+      "statistics_reports": [
+        "experiments/p3p4_closure_20261117/summaries/fia26-smollm-statistics-step2.json",
+        "experiments/p3p4_closure_20261117/summaries/fia26-smollm-statistics-step3.json",
+        "experiments/p3p4_closure_20261117/summaries/fia26-glm-statistics-step1.json",
+        "experiments/p3p4_closure_20261117/summaries/fia26-glm-statistics-step2.json",
+        "experiments/p3p4_closure_20261117/summaries/fia26-glm-statistics-step3.json"
+      ],
+      "worker_receipts": [
+        {
+          "kind": "fia_destination",
+          "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。单fresh prefill scope，SmolLM2实际Llama的29次适用writer/consumer",
+          "path": "experiments/p3p4_closure_20261117/summaries/fia26-smollm-fault.json"
+        },
+        {
+          "kind": "fia_destination",
+          "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。单fresh prefill scope，GLM4的39次适用writer/consumer",
+          "path": "experiments/p3p4_closure_20261117/summaries/fia26-glm-fault.json"
+        }
+      ],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "复用已验收writer/consumer，确认scope和新公共生命周期回归",
+          "entrypoint": "沿用现有真实producer、FIA、AddRmsNormBias，适配组合逐项验收",
+          "recovery": "保留pending consumer、out回拷与residual字节验证。整缓存池恢复另验证",
+          "native_build": "使用8.5.1已审查FIA DSO与状态ABI，后续独立接通Build Manager"
+        },
+        "minimum_reproduction": {
+          "setup": "实际FIA V3及同forward存活residual，单次选点，首个无producer的层透传",
+          "execution_and_observation": "B/lossless实际调用和out不变，F改目标地址、正确out回拷、同一次真实consumer读改变值，后恢复",
+          "off": "pending=0、每次字节恢复、完整hidden/logits精确OFF。记录持久缓存池边界",
+          "refusals": "未知ABI/布局、consumer未结清及错owner不允许释放或重用"
+        }
+      }
+    },
+    {
+      "mechanism": "quant.batch_shared_scale",
+      "owner": "D",
+      "batch": "B",
+      "current_execution": "真DeepSeek-V2-Lite-W8A8公共Worker单个B8首decode量化投影有命中和OFF",
+      "sources": [
+        "fault_injection/quantization.py",
+        "fault_injection/native_adapters/batch_scale_v2_only.cpp",
+        "fault_injection/native_adapters/batch_scale_control_v2.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/providers/quant.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/serving_quant.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/batch_context.py",
+        "experiments/p3p4_closure_20261117/probe_quant_worker.py",
+        "experiments/p3p4_closure_20261117/build_quant_v2.py"
+      ],
+      "evidence": [
+        "experiments/p3p4_closure_20261117/QUANT_REPORT.md",
+        "experiments/p3p4_closure_20261117/summaries/quant-build.json",
+        "experiments/p3p4_closure_20261117/summaries/quant-execution-manifest.json"
+      ],
+      "statistics_status": "OBSERVABLE_PREFIX_WITH_LATER_INCOMPARABLE",
+      "statistics_reports": [
+        "experiments/p3p4_closure_20261117/summaries/quant-generation-statistics-step2.json",
+        "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step0.json",
+        "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step1.json",
+        "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step2.json",
+        "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step3.json"
+      ],
+      "worker_receipts": [
+        {
+          "kind": "quant_v2",
+          "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。真实DeepSeek MLA/MoE，首个B8 decode一个kv_a_proj_with_mqa",
+          "path": "experiments/p3p4_closure_20261117/summaries/quant-decode-per-request.json"
+        }
+      ],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "复用V2 descriptor归约域及真实row证明，旧TP2与当前TP1构建各自管理",
+          "entrypoint": "保留自动embedding→norm→projection，blocked或expert row不解释成request",
+          "recovery": "原生armed/pending/executing lease清零，核对完整输出和Q/scale",
+          "native_build": "CANN8.5.1 V2头文件、DSO和实现匹配。隐藏resolver要求实际typed GWS/execute计数"
+        },
+        "minimum_reproduction": {
+          "setup": "同一实际首B8 decode，BF16连续[8,H]，8个fresh请求及真实prefix/positions",
+          "execution_and_observation": "V2原生只运行一次，B逐行，F改[1,8H]归约并广播实值scale。逐request核对Q/scale并验证完整hidden/logits",
+          "off": "同步释放native scope。同进程OFF完整hidden/logits/Q/scale恢复",
+          "refusals": "token/expert语义不明、TP布局/量化API不符、线程/原生executor未清拒绝"
+        }
+      }
+    },
+    {
+      "mechanism": "28.fa.legal_tiling",
+      "owner": "D",
+      "batch": "C",
+      "current_execution": "现有FA StrategySession和固定S1S2证书可复用，通用真实模型forward到FA Native bridge缺接线",
+      "sources": [
+        "fault_injection/strategy.py",
+        "native_execution_strategy/session.py",
+        "native_execution_strategy/adapters/flash_attention.py",
+        "native_execution_strategy/tests/test_fa_adapter.py"
+      ],
+      "evidence": [
+        "docs/unified_fault_inventory.md",
+        "native_execution_strategy/data/evidence/fa_phase1_validation.json"
+      ],
+      "statistics_status": "HISTORICAL_ONLY",
+      "statistics_reports": [],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "绑定实际FA调用的Q/K/V/mask、证书、请求与真实launch。区别M-only、nRatio-only和联合",
+          "entrypoint": "从真实npu_fusion_attention_v3构造NativeFAInvocation，挂入共用Worker。模型代码经推理原forward",
+          "recovery": "关闭策略scope后比对实际原launch和完整输出，未知launch保持未证",
+          "native_build": "从故障28已发布源恢复fa_bridge.h及对齐build_cpu.py等，冻结来源及头文件/补丁/host/ABI/证书，完整构建不在本基线"
+        },
+        "minimum_reproduction": {
+          "setup": "CANN9.1/910B4，真实FlashAttentionScore S1S2，已审查B1或B8、Q16/KV8、S2048/D128、FP16 causal，无dropout",
+          "execution_and_observation": "真实FA原调用一次，先原策略与无损对照，再只切换一个证书允许的M候选。校验POD/raw/launch，保存全输出及因果分组",
+          "off": "退出后恢复原执行策略和输出，错误保留状态。合法切分数值相同也保留",
+          "refusals": "证书外布局/shape、错误分支或kernel/template/launch不匹配拒绝"
+        }
+      }
+    },
+    {
+      "mechanism": "28.fia.legal_tiling",
+      "owner": "D",
+      "batch": "C",
+      "current_execution": "`FiaBackend`具备固定健康模板路由。旧真实FIA合法切分、图与eager证据分别保存，共用Worker及匹配部署仍待接",
+      "sources": [
+        "fault_injection/fia.py",
+        "fault_injection/attention.py",
+        "tests/test_fia_masks.py"
+      ],
+      "evidence": [
+        "docs/unified_fault_inventory.md",
+        "docs/overnight_fault_cards/28.fia.legal_tiling.md"
+      ],
+      "statistics_status": "HISTORICAL_ONLY",
+      "statistics_reports": [],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "复用合法M/S2策略，确认实际template、合法key覆盖及causal粒度，无解不扩大FAULT",
+          "entrypoint": "把真实FIA调用边界和部署作用域接入Worker。graph/eager各自按实际调用认定",
+          "recovery": "scope和Attention注册/config恢复，检查原策略launch及同输入输出",
+          "native_build": "分别导入已审查合法host源码、源补丁和匹配kernel/vendor。与replay recipe保持区别"
+        },
+        "minimum_reproduction": {
+          "setup": "固定同一Q/K/V、B1/B8限定H16/KV8/D128/S2048 FP16 causal。先单次算子",
+          "execution_and_observation": "B M/S2=512，F=128，两侧都用合法模板，host重算循环、尾块、workspace与分核，采实际launch和完整输出",
+          "off": "OFF关闭scope恢复原策略和完整参考。保留旧0.1%统计幅度未达标",
+          "refusals": "异维MLA、padding、缓存偏移、replay key或不匹配vendor拒绝"
+        }
+      }
+    },
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "owner": "D",
+      "batch": "C",
+      "current_execution": "固定模板FIA Python适配器和历史受控kernel结果，当前基线无完整kernel构建/公共Worker",
+      "sources": [
+        "fault_injection/fia.py",
+        "fault_injection/attention.py",
+        "tests/test_fia_masks.py"
+      ],
+      "evidence": [
+        "docs/unified_fault_inventory.md",
+        "docs/overnight_fault_cards/28.fia.denominator_replay.md"
+      ],
+      "statistics_status": "HISTORICAL_ONLY",
+      "statistics_reports": [],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "保留分母重复累计为独立算术变体，获取匹配的实际device kernel源码",
+          "entrypoint": "接实际FIA scope与replay tiling key。不可让合法tiling模式选中错误kernel",
+          "recovery": "关闭replay后健康key、输出和外部注册恢复",
+          "native_build": "从已定位源取build_replay_kernel.py、host policy与匹配fia_block_vec_nonquant修改并验证构建指纹"
+        },
+        "minimum_reproduction": {
+          "setup": "沿用FP16 causal审查形状，固定Q/K/V和M/S2=128",
+          "execution_and_observation": "B健康key109...400000，F replay key119...400000，第二块仅重用首块的分母贡献。证明对应模板和真实执行一次，核对原始output统计与传播",
+          "off": "禁用后同输入原健康结果精确恢复，临时作用域清空",
+          "refusals": "未知kernel/不符几何或没有实际kernel约束拒绝，不在返回后修改值"
+        }
+      }
+    },
+    {
+      "mechanism": "33.paged_decode",
+      "owner": "D",
+      "batch": "C",
+      "current_execution": "真实HF连续分页生成，首个合格KV长度切换SInner，完成原生launch及OFF。共用Worker尚缺",
+      "sources": [
+        "fault_injection/deployments/paged33.py",
+        "fault_injection/deployments/paged33_continuous.py",
+        "experiments/p3p4_closure_20261117/probe33_continuous.py",
+        "experiments/p3p4_closure_20261117/verify33_continuous_launch.py",
+        "tests/test_paged33_continuous.py"
+      ],
+      "evidence": [
+        "experiments/p3p4_closure_20261117/FAULT33_REPORT.md",
+        "experiments/p3p4_closure_20261117/summaries/continuous33-generation.json",
+        "experiments/p3p4_closure_20261117/summaries/continuous33-baseline-native.json",
+        "experiments/p3p4_closure_20261117/summaries/continuous33-fault-native.json",
+        "experiments/p3p4_closure_20261117/summaries/continuous33-first-context.json"
+      ],
+      "statistics_status": "VALID_DOWNSTREAM_FIRST_DIFFERENCE",
+      "statistics_reports": [
+        "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step0.json",
+        "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step1.json",
+        "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step2.json",
+        "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step3.json"
+      ],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "复用审计paged IFA策略。增加真实服务KV/page/slot、实际长短和cache生命周期",
+          "entrypoint": "从真实vLLM attention调用和页表选点，观察用的是已匹配IFA还是不同API",
+          "recovery": "同步后撤销策略及owner，对真实可复核页和fresh生成做OFF。cache不相混",
+          "native_build": "导入独立CANN9.1审计host/source_policy/vendor构建，核验POD、最终raw和实际launch"
+        },
+        "minimum_reproduction": {
+          "setup": "优先已审查FP16 B8/Q1/KV16384/H16/KV8/D128/page128。真实服务端同请求页表与实际KV逐页核查",
+          "execution_and_observation": "唯一真实合格IFA调用SInner8192→1024，先lossless。保留step0–3自然token反馈，随KV增长的后3步正常分页",
+          "off": "确认SInner回到8192、完整logits与健康reference逐步精确恢复",
+          "refusals": "不确定request/page/slot、实际布局/后端不同或未支持长度拒绝故障选点。统计首差在下游仅记传播"
+        }
+      }
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "owner": "D",
+      "batch": "A",
+      "current_execution": "独立ABI v1有真实算子及模型。当前公共Worker Qwen3只有一个自然输出投影的范围",
+      "sources": [
+        "fault39/native/runtime.cpp",
+        "fault39/native/build.sh",
+        "fault39/tools/native_probe.py",
+        "fault39/src/demoncat_fault39/provider.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39.py",
+        "src/demoncat/runtime/vllm_ascend/worker_extension/serving.py",
+        "experiments/worker_positive_20261117/serving_probe.py"
+      ],
+      "evidence": [
+        "experiments/worker_positive_20261117/FINAL_REPORT.md",
+        "experiments/worker_positive_20261117/summaries/fault39-final-build.json",
+        "fault39/docs/cann_version_adaptation.md"
+      ],
+      "statistics_status": "OBSERVABLE_FIRST_DIFFERENCE",
+      "statistics_reports": [
+        "experiments/worker_positive_20261117/summaries/fault39-independent-statistics.json"
+      ],
+      "worker_receipts": [
+        {
+          "kind": "matmul_range",
+          "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。Qwen3-0.6B fresh prefill仅一个真实输出投影",
+          "path": "experiments/worker_positive_20261117/summaries/fault39-qwen.json"
+        }
+      ],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "build_recipes"
+        ],
+        "gaps": {
+          "implementation": "复用已验收的有限BF16输入触发真实MatMul非有限输出。独立于旧out代理",
+          "entrypoint": "公共Worker保持ABI v1和真实OpCache入参、request/阶段及一次实际命中",
+          "recovery": "分别校验self、mat2、dual的无损，异常停止后按实际native drain、原存储恢复及OFF",
+          "native_build": "独立exact profile四版本recipe接入M2，加载库指纹和ABI不匹配拒绝"
+        },
+        "minimum_reproduction": {
+          "setup": "最小真实BF16 ND aclnnMatmul，使用独立native_probe及共用输出投影验收样板",
+          "execution_and_observation": "先discovery，再self/mat2/dual无损。一次有限双输入临时替换→真实MatMul结果，保护初始输入并验证数值现象",
+          "off": "停止新命中、同步、撤销lease，原storage和完整模型/算子输出比对reference",
+          "refusals": "ABI/slot/cache代次或只读无损条件不齐拒绝。实际输出不能说明唯一accumulator类型"
+        }
+      }
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "owner": "D",
+      "batch": "G",
+      "current_execution": "历史C++中有可执行post-Run输出代理。蓝区当前缺独立Provider及out/consumer恢复合同",
+      "sources": [
+        "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp",
+        "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_control.cpp"
+      ],
+      "evidence": [
+        "fault20_fast_validation/reports/fault39_matmul_fault_reproduction_summary.md",
+        "docs/overnight_fault_cards/39.output_proxy.md"
+      ],
+      "statistics_status": "HISTORICAL_ONLY",
+      "statistics_reports": [],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "从旧实现提取有限healthy out校验→只改受控prefix→核验实际写入。独立模块/配置",
+          "entrypoint": "证明实际Run已完成，真实out槽/布局/容量和仍存活消费者。现有39 v1输入ABI不继承",
+          "recovery": "确认已完成消费者和stream后清理。可重用out须恢复可核验字节。无共享owner时fresh OFF复验",
+          "native_build": "新recipe独立审核匹配out descriptor和真实底层写入。避免修改20和历史preload原件"
+        },
+        "minimum_reproduction": {
+          "setup": "一次真实BF16 MatMul产生有限out，核对原storage范围和consumer关系",
+          "execution_and_observation": "原Run一次，F受控prefix1/5/51/512修改到明确的非有限值，完整核对目标/非目标与consumer效果，并标记事后代理",
+          "off": "等待消费完成后恢复可重用存储、停止命中并复验OFF原输出",
+          "refusals": "原out本身非有限、范围超限、alias/consumer不明、复用租约未释放时拒绝"
+        }
+      }
+    },
+    {
+      "mechanism": "41.tail_column",
+      "owner": "D",
+      "batch": "G",
+      "current_execution": "历史.so加载和arm存在，真实dispatcher零命中。当前仅设计与可追溯的失败记录",
+      "sources": [],
+      "evidence": [
+        "fault20_fast_validation/reports/fault41/fault41_tail_column_poison_smoke_20260901.md",
+        "fault20_fast_validation/reports/fault41/fault41_state_cache_tail_corruption_roadmap.md",
+        "docs/overnight_fault_cards/41.tail_column.md"
+      ],
+      "statistics_status": "NOT_COLLECTED",
+      "statistics_reports": [],
+      "worker_receipts": [],
+      "m1": {
+        "depends_on": [
+          "unique_binding",
+          "request_context",
+          "native_inventory"
+        ],
+        "gaps": {
+          "implementation": "先定位真正writer，再实现受控post-write tail代理，证明live尾列区间",
+          "entrypoint": "现用真实cache dispatcher→实际writer→slot/请求→同storage后续attention。避免同名符号替代观察",
+          "recovery": "等consumer和stream，精确还原目标尾列及核对其它cache区域。保留部分失败",
+          "native_build": "在观察到真实路径后决定typed GWS/executor或可验证dispatcher接线。旧preload载入不能授予资格"
+        },
+        "minimum_reproduction": {
+          "setup": "单请求、一个已观察的cache writer和私有live slot，保持page映射及完整尾列参考",
+          "execution_and_observation": "真实writer一次。B无损，F只修改已证尾列，下游实际attention读同一storage，核对未改区和完整消费输出",
+          "off": "同步排空、还原尾列并比较健康下一请求。未能隔离共享cache时保留Worker隔离",
+          "refusals": "加载成功但0实际命中、slot/consumer/共享存储不明时拒绝"
+        }
+      }
+    }
+  ],
+  "baseline_snapshot": {
+    "counts": {
+      "mechanisms": 17,
+      "worker_registered": 4,
+      "worker_scoped_e1_e4": 4,
+      "all_eligible_qualified": 0,
+      "every_match_qualified": 0,
+      "baseline_cpu_tests": 599
+    },
+    "m1_m2_topological_order": [
+      "freeze",
+      "worker_lifecycle",
+      "native_inventory",
+      "target_identity",
+      "evidence_layout",
+      "build_recipes",
+      "request_context",
+      "unique_binding",
+      "independent_statistics",
+      "8.restore_offset",
+      "15.alias_detach",
+      "17.spatial_padding",
+      "18.api_half",
+      "20.buffer_substitute",
+      "22.wrong_row",
+      "25.reduce_scatter",
+      "26.residual_stomp",
+      "26.fia_destination",
+      "quant.batch_shared_scale",
+      "28.fa.legal_tiling",
+      "28.fia.legal_tiling",
+      "28.fia.denominator_replay",
+      "33.paged_decode",
+      "39.matmul_range",
+      "39.output_proxy",
+      "41.tail_column",
+      "m1_m2_integrate"
+    ],
+    "mechanisms": [
+      {
+        "mechanism": "8.restore_offset",
+        "capability_card": "profiles/capabilities/8.restore_offset.json",
+        "catalog_route": "evidence_only",
+        "overnight_implementation": "LEGACY_SOURCE_RECOVERED_NOT_INTEGRATED",
+        "overnight_level": "AUDITED",
+        "historical_scope": "历史Qwen3-VL TP2：48适用调用/rank、B/I/新进程R一致；当前库无可复用worker源码。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "15.alias_detach",
+        "capability_card": "profiles/capabilities/15.alias_detach.json",
+        "catalog_route": "automatic_operator",
+        "overnight_implementation": "IMPLEMENTED_PYTHON_BOUNDARY",
+        "overnight_level": "NATIVE_VERIFIED",
+        "historical_scope": "旧故障27目录实际属15；旧六次NZ机制证据不代表本轮统一入口或自然模型通过。",
+        "overnight_every_match_scope": "VERIFIED_FOUR_FORWARDS_IN_THIS_MODULE_ONLY",
+        "latest_evidence_delta": "P3_DIAGNOSTIC_ALIGNMENT_ADDED_STRICT_FAILURE_RETAINED",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/p3_fault15.json",
+            "strict_status": "INCOMPLETE_COMPARISON",
+            "scope": "DIAGNOSTIC_ONLY"
+          }
+        ],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "17.spatial_padding",
+        "capability_card": "profiles/capabilities/17.spatial_padding.json",
+        "catalog_route": "automatic_module",
+        "overnight_implementation": "IMPLEMENTED_ARGUMENT_PROXY",
+        "overnight_level": "NATIVE_VERIFIED",
+        "historical_scope": "历史固定视觉patch实验；当前重建入口只有CPU路径验收。",
+        "overnight_every_match_scope": "VERIFIED_FOUR_FORWARDS_IN_THIS_MODULE_ONLY",
+        "latest_evidence_delta": "P3_DIAGNOSTIC_ALIGNMENT_ADDED_STRICT_FAILURE_RETAINED",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/p3_fault17.json",
+            "strict_status": "INCOMPLETE_COMPARISON",
+            "scope": "DIAGNOSTIC_ONLY"
+          }
+        ],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "18.api_half",
+        "capability_card": "profiles/capabilities/18.api_half.json",
+        "catalog_route": "automatic_module",
+        "overnight_implementation": "IMPLEMENTED_RETURN_PROXY",
+        "overnight_level": "NATIVE_VERIFIED",
+        "historical_scope": "历史Qwen3-VL wrapper；新模块返回代理不继承旧native边界证据。",
+        "overnight_every_match_scope": "VERIFIED_FOUR_FORWARDS_IN_THIS_MODULE_ONLY",
+        "latest_evidence_delta": "P3_DIAGNOSTIC_ALIGNMENT_ADDED_STRICT_FAILURE_RETAINED",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/p3_fault18.json",
+            "strict_status": "INCOMPLETE_COMPARISON",
+            "scope": "DIAGNOSTIC_ONLY"
+          }
+        ],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "20.buffer_substitute",
+        "capability_card": "profiles/capabilities/20.buffer_substitute.json",
+        "catalog_route": "native_provider_bridge",
+        "overnight_implementation": "IMPLEMENTED_TWO_OPERATOR_PATHS",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "9171f3b WeightNz Qwen3/SmolLM2：591/633调用、3step、OFF；旧QMM真实实验与新qualified桥分开。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": true,
+        "worker_e1_e4_verified_in_recorded_scope": true,
+        "worker_runtime_observations": [
+          {
+            "receipt": "experiments/worker_positive_20261117/summaries/fault20-fault.json",
+            "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。显式NZ和controlled PTA。Qwen3-0.6B单输出投影",
+            "E1_execution_observed": true,
+            "E2_native_intervention": true,
+            "E3_model_output_changed": true,
+            "E4_off_recovery": true,
+            "actual_fault_hits": 1
+          },
+          {
+            "receipt": "experiments/worker_positive_20261117/summaries/fault20-smollm.json",
+            "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。显式NZ和controlled PTA。SmolLM2实际Llama单输出投影",
+            "E1_execution_observed": true,
+            "E2_native_intervention": true,
+            "E3_model_output_changed": true,
+            "E4_off_recovery": true,
+            "actual_fault_hits": 1
+          }
+        ],
+        "independent_statistics_observations": [
+          {
+            "receipt": "experiments/worker_positive_20261117/summaries/fault20-independent-statistics.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": null,
+            "first_record": "Functional.linear.112.forward/output/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 17.625,
+              "fault": 16.875
+            },
+            "unobservable_fields": 6620
+          }
+        ],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "22.wrong_row",
+        "capability_card": "profiles/capabilities/22.wrong_row.json",
+        "catalog_route": "evidence_only",
+        "overnight_implementation": "LEGACY_EVIDENCE_ONLY",
+        "overnight_level": "AUDITED",
+        "historical_scope": "旧固定Qwen3-32B/TP2首次prefill每rank一次；input一致/IndexSelect output统计变化，新请求恢复。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "25.reduce_scatter",
+        "capability_card": "profiles/capabilities/25.reduce_scatter.json",
+        "catalog_route": "not_implemented",
+        "overnight_implementation": "DESIGN_ONLY_CPU_CONTRACT",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "None accepted",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "26.residual_stomp",
+        "capability_card": "profiles/capabilities/26.residual_stomp.json",
+        "catalog_route": "native_provider_bridge",
+        "overnight_implementation": "IMPLEMENTED_NATIVE_WRITER",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "provider26-final-a2：45eligible writes/rank、pending0、OFF exact；rank0首差下游RoPE，rank1 step0 NaN不可比较。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "NEW_RUN_ALLOCATION_TRACE_ADDED_HISTORICAL_NAN_UNRESOLVED",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "26.fia_destination",
+        "capability_card": "profiles/capabilities/26.fia_destination.json",
+        "catalog_route": "native_provider_bridge",
+        "overnight_implementation": "IMPLEMENTED_NATIVE_WRITER",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "provider26-final-a2：126/126completed/rank，首层无producer透传；4/8token/text改变；OFF exact。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "COMMON_WORKER_REAL_PRETRAINED_FIA_BFOFF",
+        "worker_registered": true,
+        "worker_e1_e4_verified_in_recorded_scope": true,
+        "worker_runtime_observations": [
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/fia26-smollm-fault.json",
+            "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。单fresh prefill scope，SmolLM2实际Llama的29次适用writer/consumer",
+            "E1_execution_observed": true,
+            "E2_native_intervention": true,
+            "E3_model_output_changed": true,
+            "E4_off_recovery": true,
+            "actual_fault_hits": 29
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/fia26-glm-fault.json",
+            "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。单fresh prefill scope，GLM4的39次适用writer/consumer",
+            "E1_execution_observed": true,
+            "E2_native_intervention": true,
+            "E3_model_output_changed": true,
+            "E4_off_recovery": true,
+            "actual_fault_hits": 39
+          }
+        ],
+        "independent_statistics_observations": [
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/fia26-smollm-statistics-step2.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": null,
+            "first_record": "_C_ascend.npu_add_rms_norm_bias.2.forward/input_args/1",
+            "difference": {
+              "field": "/Max",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 29.5,
+              "fault": 2.203125
+            },
+            "unobservable_fields": 392
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/fia26-smollm-statistics-step3.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": null,
+            "first_record": "NPU._npu_reshape_and_cache.2.forward/input_kwargs/key_cache",
+            "difference": {
+              "field": "/Min",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": -16.0,
+              "fault": -16.375
+            },
+            "unobservable_fields": 523
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/fia26-glm-statistics-step1.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": "NONFINITE_UNCOMPARABLE",
+            "first_record": "Tensor.__setitem__.74.forward/input_args/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "NONFINITE_UNCOMPARABLE",
+              "baseline": "NaN",
+              "fault": "NaN"
+            },
+            "unobservable_fields": 8022
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/fia26-glm-statistics-step2.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": "NONFINITE_UNCOMPARABLE",
+            "first_record": "_C_ascend.npu_add_rms_norm_bias.2.forward/input_args/1",
+            "difference": {
+              "field": "/Max",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 1.265625,
+              "fault": 6.4375
+            },
+            "unobservable_fields": 442
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/fia26-glm-statistics-step3.json",
+            "strict_status": "FIRST_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": null,
+            "first_record": "Torch.index_select.0.forward/input_args/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 20726,
+              "fault": 104276
+            },
+            "unobservable_fields": 0
+          }
+        ],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "quant.batch_shared_scale",
+        "capability_card": "profiles/capabilities/quant.batch_shared_scale.json",
+        "catalog_route": "automatic_quantization_requires_runtime",
+        "overnight_implementation": "IMPLEMENTED_NATIVE_TLS",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "quant-model-a2：每rank3命中；实际scheduler请求/token行映射及selected input一致；3step整批DynamicQuant output0 Max127→98不证明每请求scale/Q均变；6/8logprob变、token不变；OFF exact。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "REAL_DEEPSEEK_COMMON_WORKER_Q_SCALE_ROWS_AND_RECOVERY_VERIFIED",
+        "worker_registered": true,
+        "worker_e1_e4_verified_in_recorded_scope": true,
+        "worker_runtime_observations": [
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/quant-decode-per-request.json",
+            "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。真实DeepSeek MLA/MoE，首个B8 decode一个kv_a_proj_with_mqa",
+            "E1_execution_observed": true,
+            "E2_native_intervention": true,
+            "E3_model_output_changed": true,
+            "E4_off_recovery": true,
+            "actual_fault_hits": 1
+          }
+        ],
+        "independent_statistics_observations": [
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/quant-generation-statistics-step2.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": "NONFINITE_UNCOMPARABLE",
+            "first_record": "Tensor.__setitem__.2.forward/input_args/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "NONFINITE_UNCOMPARABLE",
+              "baseline": "NaN",
+              "fault": "NaN"
+            },
+            "unobservable_fields": 202
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step0.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": "NONFINITE_UNCOMPARABLE",
+            "first_record": "NPU.npu_kv_rmsnorm_rope_cache.0.forward/output/2",
+            "difference": {
+              "field": "/Max",
+              "reason": "NONFINITE_UNCOMPARABLE",
+              "baseline": "NaN",
+              "fault": "NaN"
+            },
+            "unobservable_fields": 242
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step1.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": "NONFINITE_UNCOMPARABLE",
+            "first_record": "Tensor.__setitem__.7.forward/input_args/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "NONFINITE_UNCOMPARABLE",
+              "baseline": "NaN",
+              "fault": "NaN"
+            },
+            "unobservable_fields": 958
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step2.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": "NONFINITE_UNCOMPARABLE",
+            "first_record": "NPU.npu_dynamic_quant.0.forward/output/1",
+            "difference": {
+              "field": "/Min",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 0.13877953588962555,
+              "fault": 0.14271654188632965
+            },
+            "unobservable_fields": 163
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step3.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": "NONFINITE_UNCOMPARABLE",
+            "first_record": "NPU.npu_kv_rmsnorm_rope_cache.0.forward/output/2",
+            "difference": {
+              "field": "/Max",
+              "reason": "NONFINITE_UNCOMPARABLE",
+              "baseline": "NaN",
+              "fault": "NaN"
+            },
+            "unobservable_fields": 218
+          }
+        ],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "28.fa.legal_tiling",
+        "capability_card": "profiles/capabilities/28.fa.legal_tiling.json",
+        "catalog_route": "strategy_bridge",
+        "overnight_implementation": "IMPLEMENTED_STRATEGY_BRIDGE",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "历史FA固定shape机制矩阵；当前桥CPU验证不代表新共用Worker实机。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "28.fia.legal_tiling",
+        "capability_card": "profiles/capabilities/28.fia.legal_tiling.json",
+        "catalog_route": "automatic_attention",
+        "overnight_implementation": "IMPLEMENTED_PINNED_ATTENTION_ADAPTER",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "历史固定Qwen3合法切分实验；当前router仅CPU合同。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "28.fia.denominator_replay",
+        "capability_card": "profiles/capabilities/28.fia.denominator_replay.json",
+        "catalog_route": "automatic_attention",
+        "overnight_implementation": "IMPLEMENTED_PINNED_ATTENTION_ADAPTER",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "历史完整Qwen3/B8/28层/3step首层FIA输出Norm0.7968%变化与OFF；新routerCPU通过不继承。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "33.paged_decode",
+        "capability_card": "profiles/capabilities/33.paged_decode.json",
+        "catalog_route": "native_provider_bridge",
+        "overnight_implementation": "IMPLEMENTED_NATIVE_PAGED_PROVIDER",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "provider33-model-a2：84/84策略切换，logits maxabs0.02734375、Top1不变、OFF exact；first mean.3 Max .05369125679→.05369321257。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "REAL_HF_AUTOREGRESSIVE_KV_GROWTH_NATIVE_LAUNCH_AND_RECOVERY_VERIFIED",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step0.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": null,
+            "first_record": "Tensor.mean.3.forward/output/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 0.053691256791353226,
+              "fault": 0.05369321256875992
+            },
+            "unobservable_fields": 328
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step1.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": null,
+            "first_record": "Tensor.mean.7.forward/output/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 0.09827947616577148,
+              "fault": 0.09828834235668182
+            },
+            "unobservable_fields": 980
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step2.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": null,
+            "first_record": "Tensor.__mul__.26.forward/output/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 32.09375,
+              "fault": 32.125
+            },
+            "unobservable_fields": 1000
+          },
+          {
+            "receipt": "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step3.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": null,
+            "first_record": "Functional.linear.10.forward/output/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 0.6728515625,
+              "fault": 0.67333984375
+            },
+            "unobservable_fields": 950
+          }
+        ],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "39.matmul_range",
+        "capability_card": "profiles/capabilities/39.matmul_range.json",
+        "catalog_route": "native_provider_bridge",
+        "overnight_implementation": "IMPLEMENTED_NATIVE_AND_WORKER_BINDING",
+        "overnight_level": "CPU_VERIFIED",
+        "historical_scope": "独立包四实际CANN算子通过；8.5.1 QwenTP1/TP2、9.1 QwenTP2通过。bfdd共用Worker只证明attach/拒绝/正常恢复。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": true,
+        "worker_e1_e4_verified_in_recorded_scope": true,
+        "worker_runtime_observations": [
+          {
+            "receipt": "experiments/worker_positive_20261117/summaries/fault39-qwen.json",
+            "scope": "124 A2 CANN8.5.1 TP1 BF16 eager。Qwen3-0.6B fresh prefill仅一个真实输出投影",
+            "E1_execution_observed": true,
+            "E2_native_intervention": true,
+            "E3_model_output_changed": true,
+            "E4_off_recovery": true,
+            "actual_fault_hits": 1
+          }
+        ],
+        "independent_statistics_observations": [
+          {
+            "receipt": "experiments/worker_positive_20261117/summaries/fault39-independent-statistics.json",
+            "strict_status": "FIRST_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_status": "NO_OBSERVABLE_STATISTICS_DIFFERENCE",
+            "baseline_self_reason": null,
+            "first_record": "Functional.linear.112.forward/output/0",
+            "difference": {
+              "field": "/Max",
+              "reason": "STATISTIC_DIFFERS",
+              "baseline": 17.625,
+              "fault": "+Inf"
+            },
+            "unobservable_fields": 6128
+          }
+        ],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "39.output_proxy",
+        "capability_card": "profiles/capabilities/39.output_proxy.json",
+        "catalog_route": "native_provider_bridge",
+        "overnight_implementation": "LEGACY_NATIVE_IMPLEMENTATION_ONLY",
+        "overnight_level": "AUDITED",
+        "historical_scope": "旧Qwen32B v19：prefix1/5/51/512 BF16非有限readback通过；不是当前共用Worker或新四版本通过。",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      },
+      {
+        "mechanism": "41.tail_column",
+        "capability_card": "profiles/capabilities/41.tail_column.json",
+        "catalog_route": "not_implemented",
+        "overnight_implementation": "DESIGN_ONLY_DISPATCH_BLOCKED",
+        "overnight_level": "AUDITED",
+        "historical_scope": "None accepted",
+        "overnight_every_match_scope": "UNVERIFIED",
+        "latest_evidence_delta": "UNCHANGED_FROM_D1C8A20",
+        "worker_registered": false,
+        "worker_e1_e4_verified_in_recorded_scope": false,
+        "worker_runtime_observations": [],
+        "independent_statistics_observations": [],
+        "all_eligible_qualified": false,
+        "every_match_qualified": false
+      }
+    ],
+    "baseline_git_blob_sha256": {
+      "artifacts/fault17/spatial_padding_hw7_20260920/INJECTION_LOGIC.md": "7d6f2067601f588bcc37408f5b16bfbef379863dd1ccd63e641a7f10ef2712d5",
+      "artifacts/fault18/systemic_api_half_20260915/README.md": "5e373482359508cfbaedc84e9517cb7f226f0b3fa29477a85961cc77e5976b12",
+      "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/INJECTION_LOGIC.md": "6597cb27c99b1127737719d512c771846ecad99b42a70b9f1abd959f511590e6",
+      "artifacts/fault22/wrong_row_output_proxy_steps012_20260929/selected_statistics_comparison.json": "1c2db066338aac78f939f6538fb181f5c580c4a5ac0fef347393a5741387dfb2",
+      "artifacts/fault8/systemic_restore_offset_20260916/INJECTION_LOGIC.md": "a6c79aa19d1631a4a3c3a1a3d849ac25861d4bb7a194e1eb71716f659d4260ea",
+      "docs/overnight_fault_cards/25.reduce_scatter.md": "5faa11a1ffc857307c08e5c9eb874a47464eca81ed1d0b4a607009800e93c5c6",
+      "docs/overnight_fault_cards/28.fia.denominator_replay.md": "837c13ac89e3bf0c48be7f45274829e2d5b39c851c1cb3c26824b7f1d8a05cf6",
+      "docs/overnight_fault_cards/28.fia.legal_tiling.md": "0da56444a8f00207e1842adfa419840c95befaa2b6b81770e98506c830e14908",
+      "docs/overnight_fault_cards/39.output_proxy.md": "f0241138430e880dc0a04918037e710ee81fc32d40150aa35e82411713c9a7b9",
+      "docs/overnight_fault_cards/41.tail_column.md": "1e3d674cf7f3c7fae8cef9b43f96a8598df519647aede845e4fef46eb244dfd3",
+      "docs/unified_fault_inventory.md": "07d04dc8857c074fd19bab1dd086784716f333e3c1d6042b34c7f08c618b309e",
+      "experiments/overnight_20261116/collective25_design.py": "035e40b1ff06f37014c6f8b9d37d049a072bb931b6eb3f28a1361982409c2ecc",
+      "experiments/overnight_20261116/coverage_matrix.json": "2842cb2b57b8db42f592df1088015c84c76f9c7f2e9573cb97721d1eeb9474f3",
+      "experiments/overnight_20261116/environment_matrix.json": "627e30c6c2aa545c03d9222e2c84da92941c9abe9ef5a8670b45cd9b246f834e",
+      "experiments/overnight_20261116/evidence_contract.py": "c68ff69b08dbb12459bbc233c581748b1d04ef7d91865d12c91a4d9d47e17076",
+      "experiments/overnight_20261116/fault26_nan_analysis.json": "0c442e7a98f3b054954ed0c909c5b57ca57f8883d257fe98c0126ac0dcea3898",
+      "experiments/overnight_20261116/fault_matrix.json": "6413779ec7027e59b18bd3ffc83c486b2b69064a28efde38cfa48022b74280cd",
+      "experiments/overnight_20261116/legacy_source_audit.json": "6910af68baba881da57300b31e521315d41874427a5c6e47cecb93d199272a58",
+      "experiments/overnight_20261116/mechanism_receipts-a1.json": "2dac0d682e313291af867999058a7e941acfeadbfc37d4529785eac68d5dcf30",
+      "experiments/overnight_20261116/model_matrix.json": "23a0b56d7d62963bf49bc1cc9db02e733d2414a9699d17f30f045d8c5778e542",
+      "experiments/overnight_20261116/npu_mechanism_probe.py": "e48c5786fe60cc8996b4bfe3fa69dd108e97a48be3f41758097fad6284e6b008",
+      "experiments/overnight_20261116/recovery_receipts/index.json": "16547612cd04d3911403a376c53bd22c28f904947d097d16e13378fd7c2c09c3",
+      "experiments/overnight_20261116/summary15-a1.json": "fb84cbee3d0b6e7cbcba1500cdcca2971adb9976f042adb52acbb329738f1df3",
+      "experiments/overnight_20261116/summary17-a1.json": "1eb2a522f6119560adf3c832c0be5f1fd1a49cf63751960d61c94be4eeab4f82",
+      "experiments/overnight_20261116/summary18-a1.json": "121b7bf77c36008f85191ce56fef56c26e06406b5e94f1a0b5ee22f4225874b2",
+      "experiments/p3p4_closure_20261117/ALLOCATION_REPORT.md": "846e24c6e8945f0257f6696f5a8ed7ee91a01034b11198247937d4b22e139238",
+      "experiments/p3p4_closure_20261117/FAULT33_REPORT.md": "36f26983bab795d6117aa3e2ba4df70c2c02f99cfb1e0932ff35ee34f6473244",
+      "experiments/p3p4_closure_20261117/FIA26_REPORT.md": "2f26fcf4119c4474e6ebb647c982f674911e9b428e913ef1dab902e4168b14eb",
+      "experiments/p3p4_closure_20261117/QUANT_REPORT.md": "386354b052f3a8f4cc9349742fff0cb108890f6e24eec1c3d41d88160bae4d74",
+      "experiments/p3p4_closure_20261117/build_native26_124.py": "8a51b5b7465b681c177bdc38c8ed1064400f19924275a6b148379ea8b9cc794a",
+      "experiments/p3p4_closure_20261117/build_quant_v2.py": "2222aee4afbe4f5b0b6cf771a99b3a780a5f8918f6ba4d0c1201b8fbd64c48ef",
+      "experiments/p3p4_closure_20261117/mechanism_delta.json": "442f7178872111730c286004ab574072525700079aa3bba7f40e8992ce9ae6d3",
+      "experiments/p3p4_closure_20261117/probe26_worker.py": "76cd868157276c8d1120a8dc90513559820642a0b8a2fc1f605ad3fd5a859280",
+      "experiments/p3p4_closure_20261117/probe33_continuous.py": "8e5b111f986e2bca8bcdc78099b73363702e9f3d8c3cfdbc29162d0bc219532b",
+      "experiments/p3p4_closure_20261117/probe_quant_worker.py": "e90ec7bfc1d8b737e40cad27b69cdefa550df63ee1445fc6431671e6de98af27",
+      "experiments/p3p4_closure_20261117/summaries/continuous33-baseline-native.json": "369b02a3040f3b08b6c1759540b974f01484b224904e4d3b01d678aab468791c",
+      "experiments/p3p4_closure_20261117/summaries/continuous33-fault-native.json": "0b02905c88d6d62606424eb12646d586f2a6a03b555750231d0e02605993e522",
+      "experiments/p3p4_closure_20261117/summaries/continuous33-first-context.json": "0006553e74d434ebcb8525f2d826eca52f244591bded2833d75eee08cfcf12c7",
+      "experiments/p3p4_closure_20261117/summaries/continuous33-generation.json": "9043d2c0e4d9bb203c0bef7c0079aee9e83543c38786c7874a97a5b7695f11ea",
+      "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step0.json": "50eee5f868eb781ca86735844ed0abb6dc2ae14b48fd6b68c7afb8009217e42c",
+      "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step1.json": "04c60d999fb2bbf5cc13a451f7e1db90616c93baa8e6ac09f7a7c552966e55c6",
+      "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step2.json": "ba2e8a514d7e96891ffc5fad439524947fac69c281001e33da44b546571a08cc",
+      "experiments/p3p4_closure_20261117/summaries/continuous33-statistics-step3.json": "2c082710aa4b8a29fb6ac5876e7f9076c7b8d11212bf58b83324119a096de987",
+      "experiments/p3p4_closure_20261117/summaries/cpu_p4_final.json": "34f520664ec94c345d2a7b9d9057a18a408a64a49c0b0728939646cc778adc9b",
+      "experiments/p3p4_closure_20261117/summaries/fia26-build.json": "a49ba61051c986d9ecd78650487e0a0aa511b9fdb3dd75eb755a3fe8cfb86b3e",
+      "experiments/p3p4_closure_20261117/summaries/fia26-glm-fault.json": "f06de829b50ed69d73a91e35a1fa2d839d12cd56667c6c916329a258217be7ca",
+      "experiments/p3p4_closure_20261117/summaries/fia26-glm-statistics-step1.json": "ad9d4f9aa6a81c7a9ccbe39ebc864278df9d55cd85262f3cd9332df7809db36a",
+      "experiments/p3p4_closure_20261117/summaries/fia26-glm-statistics-step2.json": "68b0b2932a57ee5fb8c08aa346eea8ff4e53c52e8158a0b47fd371f19c4fc06d",
+      "experiments/p3p4_closure_20261117/summaries/fia26-glm-statistics-step3.json": "c1b58a36d34eb1e7990ee6d75b3427746fd8a80672fdb4ba865eaed9d899fdc3",
+      "experiments/p3p4_closure_20261117/summaries/fia26-smollm-fault.json": "acfa9b4e7e8969db1424cfd00f39050304584582b138d0a4ae1183b9ca7eff4a",
+      "experiments/p3p4_closure_20261117/summaries/fia26-smollm-statistics-step2.json": "8d9262c2ce3e88ebd3776f2fc658f2044ca2bc46085a8e918b019009463b1d66",
+      "experiments/p3p4_closure_20261117/summaries/fia26-smollm-statistics-step3.json": "bf6665e072eff12eef9e4f09ca2cd873f53c32cc76ab529004c381b7e6c4fe5b",
+      "experiments/p3p4_closure_20261117/summaries/p3_fault15.json": "21542c67029b890c54dc114d7dee71f1a2ba83f383d860f612ced4f08d05a53d",
+      "experiments/p3p4_closure_20261117/summaries/p3_fault17.json": "96c73441edbb55252706c13bfa1acbb0364cb6b538fd3c9fea4fe560d23fef3b",
+      "experiments/p3p4_closure_20261117/summaries/p3_fault18.json": "97c5fdba0568ca35acf800d47f4b640f906fe8647cd31ca19c6916270c330f47",
+      "experiments/p3p4_closure_20261117/summaries/quant-build.json": "20cb3da44ab8b0e648b0ccaea458245c0f563741984eaa51b77ef75cd9fe8fc5",
+      "experiments/p3p4_closure_20261117/summaries/quant-decode-per-request.json": "8105006a5c55e1f7c4c4fbe0396cdfd323b3f0da3d2eaefe8a9a8c847ca765b2",
+      "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step0.json": "6b4dd08e6bbc311b7c969e9da068137f717becc8b93e1d58d96138836aef3295",
+      "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step1.json": "b57b6891ac5cc02a8d871033c7c1d079cef2b32d0a506e169d597e0180a9dee3",
+      "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step2.json": "7e2cdba58cf6d311dd9e8c205b0cdf7c659bbc5052e4b50c023985b62fd63e94",
+      "experiments/p3p4_closure_20261117/summaries/quant-decode-statistics-step3.json": "46a4b4a706afd7f2e3c8b49baab2644b59421309da2741d056e1f09829114f63",
+      "experiments/p3p4_closure_20261117/summaries/quant-execution-manifest.json": "0fa4fe6c5b375055f4f10a38a0ed8f1b5aa9e32d93993c1d0af68cfacdd4c362",
+      "experiments/p3p4_closure_20261117/summaries/quant-generation-statistics-step2.json": "f6d8bbbaa3a24f53983b073a36ed08b3f381016e1af275d53fe9bb760c2d2401",
+      "experiments/p3p4_closure_20261117/verify33_continuous_launch.py": "26bccd14627b8f00d7702cc6263887c53cc5aa15281a742224b2300c9bcc5fd6",
+      "experiments/provider_adaptation_20261116/build26.sh": "f09a71b25d8aeff59530620cd3b081b5bc0eb9dd1a1a5ed139a921e7fe0da60d",
+      "experiments/provider_adaptation_20261116/probe26_model.py": "a72b53da71ee9fedd0bc9f892aa05731d541d84604ab9999b74e0eec4f8f4589",
+      "experiments/provider_adaptation_20261116/validation_summary.json": "856082739038e888cd08f417199c685ab254a1948558e2de03880be1615816a7",
+      "experiments/worker_positive_20261117/FINAL_REPORT.md": "54ade032552f3492a23fe4e8e528beb43166b90bb7cf8d036aded78cf9e3d715",
+      "experiments/worker_positive_20261117/readonly20_probe.py": "571e7736a0168359b6b32dd2d33c9090c9a1754c057d113da60accb414cbed78",
+      "experiments/worker_positive_20261117/serving_probe.py": "b8806ae007f74d71fef197a1852f8bf3d7fc46321e96b22c5e69cb8408d2feb1",
+      "experiments/worker_positive_20261117/summaries/fault20-fault.json": "2196aad213749fac7341dccedb664956eea1c5c69bd5f7177228443a84358ef6",
+      "experiments/worker_positive_20261117/summaries/fault20-independent-statistics.json": "3137dfe772f0def681e22124bfc662f5db46797ecd41cb79ec2400682b5e8331",
+      "experiments/worker_positive_20261117/summaries/fault20-smollm.json": "6185497dc5ff70507bd46c3c681e6e0640d64b1bc639994e3c9409a2d715d696",
+      "experiments/worker_positive_20261117/summaries/fault39-final-build.json": "8d8571232fab8d78bb0a13af49f9c9c5225130776e80227c187d931158c95431",
+      "experiments/worker_positive_20261117/summaries/fault39-independent-statistics.json": "dd3abd52786f62e219de65d12b49047902bb57b0e7945d118dd324990231ba91",
+      "experiments/worker_positive_20261117/summaries/fault39-qwen.json": "a28f8ddacb84d766bea877e82d0d27f305c4e12e02f4799d6105094aec1c7792",
+      "experiments/worker_positive_20261117/summaries/qmm-readonly.json": "f2d6d7c7b393f24984e05e6b729d81667080dae038885956b1172e712b3aa795",
+      "fault20_fast_validation/reports/fault20_injection_capability_inventory_20260807.md": "867a7c1e8b30c0fc4f0b587d4e17a33096efa7418731a3e08cd46d7981f4ad8b",
+      "fault20_fast_validation/reports/fault39_matmul_fault_reproduction_summary.md": "be64ad2f72039aab029428e3fc345c3984a90ea4bd95c593f3bda19e4302a3be",
+      "fault20_fast_validation/reports/fault41/fault41_state_cache_tail_corruption_roadmap.md": "edd6ee150937a0a3e1fbe1a5a02a9912807e3191e4c64907b51dbae2944758c0",
+      "fault20_fast_validation/reports/fault41/fault41_tail_column_poison_smoke_20260901.md": "e9dccd409989bb75ebd3d1bd0ad9b998d35eacf40d397d67a563956000e719cf",
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_control.cpp": "c647c5ca6a6a5d826e41af18ce40ca38e7846e371ccfa2d1aa6f62c0015778fe",
+      "fault20_fast_validation/source/l4_buffer_substitute_allhit_v1/buffer_substitute_preload.cpp": "5e0b72b4202ec1314c6d6f9cc01c23120f0a7a13a8bc4f09d49969258a296c5a",
+      "fault39/docs/cann_version_adaptation.md": "24c417da028821d42e917cf3f30b77bd6805103ddff781f0cd57b839d3d10b40",
+      "fault39/native/build.sh": "d908e604e66ca09141efe5f1a12cb606c31e7aa2dd22505c31785d11c300ba9b",
+      "fault39/native/runtime.cpp": "60728292fba246b8fb20b8d309b278f3ecdf775811beaaace0e5b407031a5d25",
+      "fault39/src/demoncat_fault39/diagnostics.py": "50af14f23b3d24471ae2e4f5f29f444dcee2e267980eb9771b7e4c9e417b0881",
+      "fault39/src/demoncat_fault39/provider.py": "1c018b0242533d00330706ee5b81d6a4c972548c98a019f4acd6d87dc19bc981",
+      "fault39/tools/compare_model_capture.py": "8404ce2214e190556f953a70e28c7d30365ab082d36601a36a2ecd062417f6f8",
+      "fault39/tools/compare_msprobe.py": "28d9d87fa3bab5ed18c692b29e3ac880e86e46d31916397e0da040c4eb2e9bbe",
+      "fault39/tools/deployment_profile.py": "0d547988f698a3703f7bf0c4b181ab2c23eccf3961a7107c440d4804e2533228",
+      "fault39/tools/native_probe.py": "7c15177cd7cecf58e0e5ed66ce2d5813085f0356ecb792ac003a6a5b39781184",
+      "fault39/tools/version_profile.py": "7869cd135360e5350693022c61310d718ea165a56336f374cb88be6a8420fb55",
+      "fault_injection/alias.py": "064ea52b5252f4bb878cbffeb186ffbd8e22dc0dc485e65e3769654c9fb4a788",
+      "fault_injection/attention.py": "bd4aa9e8db12977c367137fbdfea8465ebd401273ce4eaa4372ab73c9c1f4b18",
+      "fault_injection/catalog.py": "f2fd7d3fed5bdc284f02c64b6320dc5eb687264e3310ba2d5ed54f6cb6b4184b",
+      "fault_injection/coverage.py": "9c508a4a04f89ed4ac2c4b8b139ec0f68543ed0baee5ec7bb3b76426f8d48732",
+      "fault_injection/deployments/buffer20.py": "1d0024da8945faa6d4e8adf08023882ef2d63e4918dbdd253098868ab8a2b466",
+      "fault_injection/deployments/matmul.py": "5d7b9c5c936e52fc9cefc499af9540572e607ab258ef9212460de976f21bf987",
+      "fault_injection/deployments/paged33.py": "55a975468738aae58677b84dafe3608794759678a1d4ddf2da6a66badc4062b3",
+      "fault_injection/deployments/paged33_continuous.py": "3da02b955e6d57bf7d6a8a734b0f1de2a488b17d83e6378d589e53b1bd426835",
+      "fault_injection/deployments/residual26.py": "ead81cdc2befb89961781733ed33ef27c5b5427acc77248488f5afd05cebe3a4",
+      "fault_injection/deployments/residual26_worker.py": "2768f5857037ebc4d32a5b9f0df6ef18370935bafc0988caa98ecb8f30d0779a",
+      "fault_injection/environment.py": "00546581c3ad3193a38c00ff6e0314195d39f171c254d4f9651a8d7d49bf1a69",
+      "fault_injection/fia.py": "9ef11e16fe2e85839290e7a155bf8f4737fcb3cec8bf96577bcb25ee2ca3c511",
+      "fault_injection/lifecycle.py": "725eff4dd9f3de6657823d00b72ed05388f6ca4b033f27b3289aa2c1e87e396d",
+      "fault_injection/model_discovery.py": "8ac146a40c50c93c471a3b8d8bc45d4ef7db538960b0a482c959117739024df9",
+      "fault_injection/module_faults.py": "903017adf8fb868f575087597344f12587ab3044d3892fa1ac2578598f442be6",
+      "fault_injection/native_adapters/batch_scale_control_v2.py": "95d6060f79ce9e519d84f621a5f5a5871a5e294ec1a3be0117650bd0cd559345",
+      "fault_injection/native_adapters/batch_scale_v2_only.cpp": "94d479155e7b1af9a1aa1154840e924a1f1a546463b290fd730a95c38404c682",
+      "fault_injection/native_adapters/build_qmm.sh": "d04940dc5545c983ea33c4c2fb6cab316cf790f159b7b90dba00709cab70037c",
+      "fault_injection/native_adapters/fault20_abi_probe.cpp": "294f309b424244f3c5db390ed7371f32a1b0ed1d8d7e96ccb3a4170a95f77648",
+      "fault_injection/native_adapters/legacy26_fia_bridge.inc": "57a71a9a07d18121f2d8961d79156531e785b5970bf85df77df30aeb5bbe3013",
+      "fault_injection/native_adapters/legacy26_qmm_bridge.inc": "a39ad82222fbb99e3b1a5902973449587d467b21034004c66310a8cb8e2ec5c0",
+      "fault_injection/providers.py": "da06c0e3a265ba24a52d683a6321024cebe7b7a048fb5017295c841a2a471afb",
+      "fault_injection/quantization.py": "4a3fd85b3a03d20175b66aa4aaf8eea7b66a8490d6ed79ad3ad8301bddb3fd52",
+      "fault_injection/runtime_discovery.py": "fa8e7217566a77d33d871411af7931257a9be6b9612c6439edcd667ac06134b1",
+      "fault_injection/strategy.py": "79ac02ccd923e3ab7a68fec066305bd0fb969d2ebce9aadf6bad0a2aeb1b94cf",
+      "native_execution_strategy/adapters/flash_attention.py": "fc5be3982f243852575ffb9f8a13a395a9475f9f7c22beb9091f7e723b721738",
+      "native_execution_strategy/data/evidence/fa_phase1_validation.json": "3399b779234d84b6f58d4e23a5a8d15aa18d08fcee737f4c25ace33122e93579",
+      "native_execution_strategy/session.py": "b77cb735a858c1e7a2292911b45be7cc3c058f1c53a5eee6ddf60c04d67a5275",
+      "native_execution_strategy/tests/test_fa_adapter.py": "111c2ff3ab15ce03b96171eca0c03741655e12853fe5a930073137dc45a99bc3",
+      "profiles/capabilities/15.alias_detach.json": "6c091ae86e6370c36c4660a5a75e34ade20468fb5ef8d8d277c60df171f88047",
+      "profiles/capabilities/17.spatial_padding.json": "34300c9f965946ffd4e44fb67bfe119aa2a3812a96034b5d3b4b641e753dbcc9",
+      "profiles/capabilities/18.api_half.json": "3917ec8c103ca5bdcef22995f9c02fbc72e7ac4b765d39674dd298dec8aeccd5",
+      "profiles/capabilities/20.buffer_substitute.json": "17e57c9d4b3f5ed3ff3ea550beea21843f6c568a1c144271f595019f491d8fc1",
+      "profiles/capabilities/22.wrong_row.json": "cb2f523ed1f5042afab7a0dcee95cb0cc2cf08d3ef57047737e0698d6bf852a8",
+      "profiles/capabilities/25.reduce_scatter.json": "3f0c88b01805b2e55ddcd9c26d63cdd1ce930256af61a44ebb8e7616329024a1",
+      "profiles/capabilities/26.fia_destination.json": "c4b47e2fcdeb49bba40bf9578549203b955be355cbb5ae4f64a242c547e7ddb0",
+      "profiles/capabilities/26.residual_stomp.json": "601812247c1b5ac4fb32992997a1015b3111291cfb7492ae8ae5b109aabed407",
+      "profiles/capabilities/28.fa.legal_tiling.json": "6ce97d80e973579575a205fe852f95ff852b06c6c00b5e879e2cce54e34a4aad",
+      "profiles/capabilities/28.fia.denominator_replay.json": "95030635bfb493ac769aed634262edfd68bcf431b423b297eaf1195086c04d5c",
+      "profiles/capabilities/28.fia.legal_tiling.json": "a42b2f4177fba9ea76cf2e46c639b1ff4fafc3b19540c114043ce5be52feb155",
+      "profiles/capabilities/33.paged_decode.json": "67406f65ff44aa424f438da6e8afab4b78bdab512e22576268abc231ec6028b0",
+      "profiles/capabilities/39.matmul_range.json": "febc63dbfa08e8d91dd9a86ceae8b2d2543a2eb9bdeb38cf2435f780e55d9e13",
+      "profiles/capabilities/39.output_proxy.json": "2f91254a4257e9708bc3e3eb39b56c628a0db74adf4cada6100e55e4f362c643",
+      "profiles/capabilities/41.tail_column.json": "c118569b981c7f9a907bad567c76548e75637bf5020bdf7217ebb5946efbe4e5",
+      "profiles/capabilities/8.restore_offset.json": "30bfafe493a7decc4a2e108e3c1656df3cede5b21aa711b49301f93960b33b73",
+      "profiles/capabilities/quant.batch_shared_scale.json": "13f7c6272f3d774f6a33ec005d5a97c3fe7bdc8ab5c33eb7e86ba54935e2b812",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/batch_context.py": "2aa2c0f4e76be7d5a5929e3558fa4c6528566ae4f9c1ad9ad09a60e0f576a610",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/call_binding.py": "43f725d91242503f9c4fadd7e4133e1569527af794517a6c1a9feba64cf94dba",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/extension.py": "ef372d973551f9e0437cc79e645fb0bb9ecb56cd5017fcf8b26c10051673a1a8",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/__init__.py": "3024d78de5832e9f41fa3f7d2c21259c14316015417346c9eafbdd9dd27692c2",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault20.py": "9e84bf48fdcb87d8fc124a6941f2ff39b4cc1799157ec139d91399d2f8278f15",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault26.py": "7382485a3e86904188fddb8bc124f814f6db9201334094a914059ce0c376c663",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39.py": "64b0b83840ca87635341c4be0bf9439fa3d276c3c55bf19bad578b3011982d97",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/quant.py": "696f17447d320f170acaf1288a390410eedd34007c8287a7941fa087c7fa98a4",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/runtime.py": "e1ba6e6fd62f6b195e320c73532ec7e1b0a5433c9cea2f71e400cb728131e5d0",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving.py": "71a5f6abcbcffbf27f8b042c0fde69d79665932305db1f0a5b5ddca878dbca4f",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving20.py": "7f4e511d4bddfba6535aa175640327afe43435bf1a035d62c4a4e8b13990d8f9",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving26.py": "305b197863e8c9baae5f8a2b15a93f69f159d06bbe9d5ee99294bb19efac40b7",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving_context.py": "38b5cb55275fedbcfb5f8b9b1af76feeccef84e8465747e447d1bd0962bc6975",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving_quant.py": "3b396c558c122a78f598397eb95cbc4128870b4df8dc83bc18df33adf9e6c562",
+      "tests/test_alias_auto.py": "ec388665639f2e022ada869da1090f25160b8ad62a14c5a3b0e531d62100a008",
+      "tests/test_fia_masks.py": "f863fdda0fb9a9d94fbaff2b7acab861427860e9521c83b56205ab26ba650056",
+      "tests/test_module_faults.py": "ca318d31ded29a86c0485afce756c24d5ec96c14c1d0d7980fb2391b3b79b561",
+      "tests/test_paged33_continuous.py": "ea3bcb7e894ba65a828b87f59f1d8f954aa183b79c8df7d13690549da012f201"
+    }
+  }
+}

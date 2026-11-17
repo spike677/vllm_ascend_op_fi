@@ -1,5 +1,6 @@
 # DemonCATPFI 文档
 
+- [17 条全覆盖路线图](roadmap/17_fault_full_coverage_roadmap.md) · [冻结验收台账](roadmap/17_fault_acceptance_matrix.json)
 - [本轮17条最终验收报告](fault_closure_report.md) · [执行记录](overnight_execution_plan.md) · [逐机制能力卡](overnight_fault_cards/)
 - [本轮模型适配矩阵](model_adaptation_matrix.md) · [CANN/硬件实际范围](cann_hardware_compatibility.md)
 - [共享Worker补充合同](worker_extension_contract.md) · [Provider规范](provider_contract.md) · [本轮证据索引](../experiments/overnight_20261116/README.md)
