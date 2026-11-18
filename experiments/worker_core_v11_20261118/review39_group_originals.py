@@ -23,11 +23,12 @@ def support():
 
 
 C, OLD = support()
+FORWARD = C.pure_module(Path(__file__).with_name('review39_forward_originals.py'), '_frames39')
 PREFIX = ['observe', 'observe_repeat', 'baseline', 'fault', 'off', 'health']
 EXTRA_MODULES = ['fault_injection/deployments/'+n+'.py' for n in
     ('postwrite_coverage', 'postwrite_structure', 'postwrite_evidence')] + [
-    'fault_injection/'+n+'.py' for n in ('coverage', 'coverage_session', 'runtime_discovery')] + [
-    OLD.CORE+n+'.py' for n in ('serving39_output_group', 'providers/fault39_output_group')]
+    'fault_injection/'+n+'.py' for n in ('coverage', 'coverage_session', 'runtime_discovery', 'environment')] + [
+    OLD.CORE+n+'.py' for n in ('serving39_output_group', 'serving39_output_discovery', 'providers/fault39_output_group')]
 
 
 def process_start_matches(target_start, worker, *, natural):
@@ -65,9 +66,9 @@ def provenance(d, host, final, source_root, manifest_sha, commit, native_library
         OLD.MODULES, OLD.SOURCES = saved_modules, saved_sources
     a = C.Audit(); names = {Path(name).name: name for name in d['sources']}
     pins = [OLD.CORE+n+'.py' for n in ('serving39_output_group', 'providers/fault39_output_group',
-        'serving39_output', 'providers/fault39_output', 'gemm_lineage')] + [
+        'serving39_output', 'serving39_output_discovery', 'providers/fault39_output', 'gemm_lineage', 'call_binding', 'identity')] + [
         'fault_injection/deployments/'+n+'.py' for n in ('postwrite_coverage', 'postwrite', 'postwrite_boundaries',
-            'postwrite_npu_consumers', 'postwrite_observed', 'postwrite_inventory', 'postwrite_structure')]
+            'postwrite_npu_consumers', 'postwrite_observed', 'postwrite_inventory', 'postwrite_structure')] + ['fault_injection/environment.py']
     expected = {Path(name).name: d['sources'][name] for name in pins}
     for label, group in final['finished_groups'].items():
         a.check(group['source_pins'] == expected and group['scope']['implementation_sha256'] == C.digest(expected),
@@ -115,7 +116,8 @@ def single_prerequisite(a, c, p, rows, aliases, worker, *, natural):
 def original_join(a, originals, d, host, context):
     rows, collected, prior = [], [], []
     states = context['states']
-    for index, request in enumerate(d.get('requests', [])):
+    for request in d.get('requests', []) + d.get('recovery_requests', []):
+        index = len(prior)
         rid = request['mapping']['internal_request_id']
         queries = [x for x in states if x['raw']['_reference'] == request.get('worker_observation_receipt')]
         armed = [x for x in states if x['action'] == 'advance' and
@@ -170,7 +172,8 @@ def check_native_receipt(a, receipt, geom, owner, generation, fault, *, natural,
             events[-1]['native_live'] is False, 'NATIVE_EFFECT_AND_RELEASE_READBACK', where)
 
 
-def check_group(a, p, group, name, original_rows, worker, *, natural):
+def check_group(a, p, group, name, original_rows, worker, *, natural, aliases=None,
+                model_source=None, direct_cpu_profile=None):
     coverage = group['coverage']; count = group['eligible_target_count']; device = 'npu' if natural else 'cpu'
     a.check(C.positive(count) and count <= 256 and group['worker'] == worker and
             group['scope'] == coverage['scope'] and group['trigger'] == coverage['trigger'] ==
@@ -192,6 +195,12 @@ def check_group(a, p, group, name, original_rows, worker, *, natural):
                 row['selected_indices'] == old['selected_indices'] and row['schema'] == old['schema'], 'HEALTHY_SIGNATURE_DRIFT', name)
     diagnostics = group['discovery']; structural = diagnostics['structural_noncall_inventory']
     actual_modules = {x['object_identity'] for x in first['modules']}
+    # Old unit fixtures without direct frames can supply their single-path
+    # aliases. A bounded helper proof always needs the full held alias census.
+    if aliases is None and not any(x.get('bounded_noncall_proofs') for x in healthy):
+        aliases = [dict(path=x['path'], object_identity=x['object_identity']) for x in first['modules']+structural]
+    direct = a.section(name+':actual_frames', FORWARD.check, a, C, group, original_rows, worker, aliases,
+        natural=natural, model_source=model_source, cpu_profile=direct_cpu_profile)
     a.check(diagnostics['actual_module_calls'] == first['modules'] and
             diagnostics['structural_modules'] == len(actual_modules | {x['object_identity'] for x in structural}) and
             diagnostics['independent_forwards'] == healthy, 'FULL_STRUCTURAL_AND_ACTUAL_UNIVERSE', name)
@@ -205,7 +214,8 @@ def check_group(a, p, group, name, original_rows, worker, *, natural):
                 x['original_returned'] is True and x['module_forward_observed'] is False
                 for x in row.get('actual_parameter_consumption', [])))
         a.check(row['structural_noncall'] is True and row['actual_forward_calls'] == 0 and
-                row['object_identity'] not in actual_modules and (container or borrowed), 'STRUCTURAL_NONCALL_PROOF', name)
+                row['object_identity'] not in actual_modules and (container or borrowed or
+                    direct is not None and row['object_identity'] in direct['rotary_children']), 'STRUCTURAL_NONCALL_PROOF', name)
     a.check(len(group['actual_parameter_consumption']) == 2 and group['actual_parameter_consumption'][0] ==
             group['actual_parameter_consumption'][1], 'BORROWED_PARAMETER_REPEAT_EXACT', name)
     recovered = coverage['recovery']['targets']; leases = {C.digest(x['lease']['target']): x['lease'] for x in recovered}
@@ -348,10 +358,67 @@ def check_group(a, p, group, name, original_rows, worker, *, natural):
                 all(type(row[k]) is int and row[k] == 0 for k in
                     ('active_leases', 'device_bytes', 'host_bytes', 'inflight_calls', 'owned_hooks')), 'REAL_HEALTH_ZERO_RESOURCES', name)
     return dict(eligible=count, projections=len(order), ledger_calls=len(calls), recomputed_hits=hits,
-                fault_forwards=repeat, native_receipts=len(native_receipts), contract_boolean_used_as_verdict=False)
+                fault_forwards=repeat, native_receipts=len(native_receipts), contract_boolean_used_as_verdict=False,
+                direct_discovery=None if direct is None else {k:v for k,v in direct.items() if k!='rotary_children'})
 
 
-def review(d, host, records, originals, *, natural=True, profile=OLD.CUSTOM_PROFILE):
+def check_live_proof(a, groups):
+    """An issuance/use audit remains historical even when the subsequent C3 fails."""
+    if 'c2' not in groups:
+        return None
+    b = groups['c2']['coverage']; issued = b['live_c2_proof']['issued']
+    a.check(len(issued) == 1 and b['live_c2_proof']['consumed'] is None, 'ONE_C2_ORIGINAL_ISSUANCE')
+    if len(issued) != 1:
+        return None
+    entry = issued[0]; proof = entry['proof']; stripped = {k:v for k,v in b.items() if k!='live_c2_proof'}
+    a.check(entry['proof_sha256'] == C.digest(proof) and entry['exact_issued_object_verified'] is True and
+        entry['qualification_granted'] is entry['serializable_authority'] is False and
+        all(proof[k] == b[k] for k in ('scope','owner','generation','session_id')) and
+        proof['report_sha256'] == C.digest(stripped) and proof['recovery_sha256'] == C.digest(b['recovery']) and
+        proof['candidates_sha256'] == b['discovery']['candidates_sha256'] and
+        proof['discovery_sha256'] == b['discovery']['artifact_sha256'] and
+        proof['observation_sha256'] == b['observation']['artifact_sha256'] and
+        proof['target_ids'] == sorted(C.digest(x['lease']['target']) for x in b['recovery']['targets']) and
+        entry['object_binding']['pid'] == groups['c2']['worker']['pid'] and
+        C.positive(entry['object_binding']['python_object_id']), 'C2_PROOF_BINDS_COMPLETE_ORIGINAL_SCOPE')
+    consumed = groups.get('c3', {}).get('coverage', {}).get('live_c2_proof', {}).get('consumed')
+    if consumed is not None:
+        f = groups['c3']['coverage']; consumer = consumed['consumer']
+        a.check(entry['proof'] == consumed['proof'] and entry['proof_sha256'] == consumed['proof_sha256'] and
+            entry['object_binding'] == consumed['object_binding'] and consumed['exact_issued_object_verified'] is True and
+            consumed['qualification_granted'] is consumed['serializable_authority'] is False and
+            b['scope'] == f['scope'] and b['owner'] == f['owner'] and f['generation'] == b['generation']+1 and
+            all(consumer[k] == f[k] for k in ('scope','owner','generation','session_id')) and
+            consumer['candidates_sha256'] == f['discovery']['candidates_sha256'] == proof['candidates_sha256'] and
+            consumer['target_ids'] == proof['target_ids'], 'ORIGINAL_LIVE_C2_OBJECT_CONSUMED_BY_C3')
+    return dict(issuance_recorded=True, consumption_recorded=consumed is not None,
+                consumption_is_not_c3_completion=True, saved_json_authority=False)
+
+
+def check_completed_requests(a, d, rows, *, natural):
+    drivers = [x for x in d.get('requests', [])+d.get('recovery_requests', []) if 'original_observations' in x]
+    a.check(len(rows) == len(drivers), 'COMPLETE_REQUEST_ORIGINAL_DENOMINATOR')
+    baseline = rows[0]['output_sha256']; seen = set()
+    for row, driver in zip(rows, drivers):
+        rid = row['actual_internal_request_id']; snap = row['snapshot']; mapping = driver['mapping']
+        a.check(rid not in seen and row['phase'] == driver['phase'] and
+            rid == mapping['internal_request_id'] == snap['internal_request_id'] and
+            mapping['source'] == 'ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR' and
+            driver['output']['request_id'] == mapping['external_request_id'] and row['native_leases'] == 0,
+            'ACTUAL_REQUEST_MAPPING_AND_NO_PENDING_NATIVE', rid)
+        seen.add(rid)
+        if natural:
+            tokens = snap['token_ids']; a.check(snap['num_requests'] == 1 and snap['num_computed_tokens'] == 0 and
+                snap['num_prompt_tokens'] == snap['num_scheduled_tokens'] == len(tokens) and
+                snap['positions'] == list(range(len(tokens))) and snap['token_ids'] == rows[0]['snapshot']['token_ids'] and
+                snap['device_input_bytes_equality'] == 'COMPLETE_DEVICE_READBACK_VERIFIED', 'FULL_FRESH_PREFILL_INPUT', rid)
+        if 'fault' not in row['phase']:
+            a.check(row['output_sha256'] == baseline and row['output_finite'] is True, 'REFERENCE_LOSSLESS_OFF_LOGITS', rid)
+    return seen
+
+
+def review(d, host, records, originals, *, natural=True, profile=OLD.CUSTOM_PROFILE,
+           direct_cpu_profile=None, frame_model_source=None):
     c, p = OLD.helpers(profile); a = C.Audit(); details = {}
     context = a.section('protocol', C.protocol, a, d, host, records, '39.output_proxy', natural=natural)
     if not context:
@@ -364,9 +431,36 @@ def review(d, host, records, originals, *, natural=True, profile=OLD.CUSTOM_PROF
     if not snapshots:
         return dict(**a.report(), classification='REFUSAL_BEFORE_COMPLETE_ORIGINAL', original_error=d.get('error'))
     final = snapshots[-1]; groups = final['finished_groups']
+    model_source = d.get('binding', {}).get('model_source', frame_model_source)
+    seen = a.section('completed_request_join', check_completed_requests, a, d, rows, natural=natural)
     if failed:
+        completed = {}
+        if 'c2' in groups and groups['c2'].get('failed_attempt') is None:
+            count = groups['c2']['eligible_target_count']
+            plan = PREFIX + ['c2_lossless'] + ['c2_fault']*count + ['c2_off', 'c2_health']
+            if d['stage'] == 'c2_c3':
+                plan += ['c3_lossless', 'c3_fault', 'c3_fault', 'c3_off', 'c3_health']
+            normal_phases = [x['phase'] for x in d.get('requests', [])]
+            recovery_phases = [x['phase'] for x in d.get('recovery_requests', [])]
+            a.check(normal_phases == plan[:len(normal_phases)] and recovery_phases in
+                ([], ['group_recovery_off'], ['group_recovery_health'], ['group_recovery_off','group_recovery_health']),
+                'PARTIAL_ACTUAL_PREFIX_AND_OFF_HEALTH_NOT_FAULT_RETRY')
+            details['c2'] = a.section('completed_c2', check_group, a, p, groups['c2'], 'c2', rows,
+                host['worker'], natural=natural, aliases=final['module_aliases'], model_source=model_source,
+                direct_cpu_profile=direct_cpu_profile)
+            a.section('initial_six', single_prerequisite, a,c,p,rows,final['module_aliases'],host['worker'],natural=natural)
+            details['live_c2_history'] = a.section('partial_live_proof', check_live_proof, a, groups)
+            completed['c2'] = details['c2'] is not None and not a.issues
+        a.check(bool(d.get('error')) and bool(final['failure'] or final['failures']), 'PARTIAL_ORIGINAL_FAILURE_PRESERVED')
         return dict(**a.report(), classification='FAILED_OR_PARTIAL_NOT_QUALIFIED', original_error=d.get('error'),
-                    completed_requests=len(rows), recorded_failure=final['failure'], group_completion_reconciled=False)
+            original_recovery_error=d.get('recovery_error'), completed_requests=len(rows),
+            recorded_failure=final['failure'], recorded_failures=final['failures'],
+            completed_stage_originals_reconciled=completed, details=details,
+            failed_stage_reports={name:g.get('failed_attempt') for name,g in groups.items() if g.get('failed_attempt')},
+            group_completion_reconciled=False, originals_rehashed=len(originals.checked),
+            limits=['A completed C2 record does not qualify the failed C3.',
+                    'Recorded live proof consumption is not successful every-match execution.',
+                    'No new live authority or E5 is granted by saved originals.'])
     count = groups['c2']['eligible_target_count']; plan = PREFIX + ['c2_lossless'] + ['c2_fault']*count + ['c2_off', 'c2_health']
     if d['stage'] == 'c2_c3':
         plan += ['c3_lossless', 'c3_fault', 'c3_fault', 'c3_off', 'c3_health']
@@ -374,35 +468,16 @@ def review(d, host, records, originals, *, natural=True, profile=OLD.CUSTOM_PROF
             context['actions'] == ['attach', 'prepare', 'register', 'check', 'enable'] +
             ['advance', 'query', 'advance']*len(plan) + ['finish', 'disable', 'unregister', 'detach'], 'EXACT_PUBLIC_PHASE_PROTOCOL')
     a.check(final['failure'] is None and not final['failures'], 'ORIGINAL_FAILURES_NOT_ERASED')
-    baseline = rows[0]['output_sha256']; seen = set()
-    for row, driver in zip(rows, d['requests']):
-        rid = row['actual_internal_request_id']; snap = row['snapshot']; mapping = driver['mapping']
-        a.check(rid not in seen and rid == mapping['internal_request_id'] == snap['internal_request_id'] and
-                mapping['source'] == 'ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR' and
-                driver['output']['request_id'] == mapping['external_request_id'] and row['native_leases'] == 0,
-                'ACTUAL_REQUEST_MAPPING_AND_NO_PENDING_NATIVE', rid)
-        seen.add(rid)
-        if natural:
-            tokens = snap['token_ids']; a.check(snap['num_requests'] == 1 and snap['num_computed_tokens'] == 0 and
-                snap['num_prompt_tokens'] == snap['num_scheduled_tokens'] == len(tokens) and
-                snap['positions'] == list(range(len(tokens))) and snap['token_ids'] == rows[0]['snapshot']['token_ids'] and
-                snap['device_input_bytes_equality'] == 'COMPLETE_DEVICE_READBACK_VERIFIED', 'FULL_FRESH_PREFILL_INPUT', rid)
-        if 'fault' not in row['phase']:
-            a.check(row['output_sha256'] == baseline and row['output_finite'] is True, 'REFERENCE_LOSSLESS_OFF_LOGITS', rid)
     for name in ('c2', 'c3'):
         if name not in groups:
             continue
-        details[name] = a.section(name, check_group, a, p, groups[name], name, rows, host['worker'], natural=natural)
+        details[name] = a.section(name, check_group, a, p, groups[name], name, rows, host['worker'], natural=natural,
+            aliases=final['module_aliases'], model_source=model_source, direct_cpu_profile=direct_cpu_profile)
     a.section('initial_six', single_prerequisite, a,c,p,rows,final['module_aliases'],host['worker'],natural=natural)
+    details['live_c2_history'] = a.section('live_proof', check_live_proof, a, groups)
     if 'c3' in groups:
-        b, f = groups['c2']['coverage'], groups['c3']['coverage']; issued = b['live_c2_proof']['issued']; consumed = f['live_c2_proof']['consumed']
-        a.check(len(issued) == 1 and consumed and issued[0]['proof'] == consumed['proof'] and
-                issued[0]['proof_sha256'] == consumed['proof_sha256'] == C.digest(issued[0]['proof']) and
-                issued[0]['object_binding'] == consumed['object_binding'] and issued[0]['exact_issued_object_verified'] is True and
-                consumed['exact_issued_object_verified'] is True and b['scope'] == f['scope'] and b['owner'] == f['owner'] and
-                f['generation'] == b['generation']+1, 'ORIGINAL_LIVE_C2_OBJECT_CONSUMED_BY_C3')
-        stripped = {k:v for k,v in b.items() if k != 'live_c2_proof'}
-        a.check(issued[0]['proof']['report_sha256'] == C.digest(stripped), 'C2_PROOF_HASH_BINDS_ORIGINAL_REPORT')
+        a.check(bool(details['live_c2_history'] and details['live_c2_history']['consumption_recorded']),
+                'COMPLETED_C3_REQUIRES_ORIGINAL_LIVE_PROOF_CONSUMPTION')
     health = d.get('post_unregister_health')
     a.check(health and health['worker'] == host['worker'] and health['mapping']['internal_request_id'] not in seen and
             all(health['output'][k] == d['healthy_before'][k] for k in ('tokens', 'text')), 'POST_UNREGISTER_ORDINARY_WORKER_HEALTH')
@@ -431,12 +506,16 @@ def main(argv=None):
         document = C.read(path); originals = C.Originals(args.evidence_root)
         host, records = C.load_rpc(originals, document, prefix=Path(args.result).parent.as_posix())
         result = review(document, host, records, originals, profile=args.profile)
-        refs = [x['original_observations'] for x in document.get('requests', []) if 'original_observations' in x]
+        refs = [x['original_observations'] for x in document.get('requests', []) + document.get('recovery_requests', [])
+                if 'original_observations' in x]
         if refs:
             final = originals.load(refs[-1], mounted=True)
             result['provenance'] = provenance(document,host,final,args.source_root,args.source_manifest_sha256,
                 args.source_commit,args.native_library,profile=args.profile)
             result['consistent'] = result['consistent'] and result['provenance']['consistent']
+            if 'completed_stage_originals_reconciled' in result:
+                result['completed_stage_originals_reconciled'] = {name:bool(ok and result['consistent'])
+                    for name,ok in result['completed_stage_originals_reconciled'].items()}
         else:
             result['consistent'] = False
             result['provenance'] = {'consistent':False,'reason':'NO_COMPLETE_ORIGINAL_TO_BIND'}
@@ -444,7 +523,9 @@ def main(argv=None):
     except (ValueError, TypeError, KeyError, OSError, IndexError) as error:
         a.check(False, 'ORIGINAL_REVIEW_REFUSED', repr(error)); result = a.report()
     result.update(schema='demoncat.output39.worker_group.independent_originals.v1', reviewer_sha256=C.file_sha(__file__),
-                  runtime_executed=False, read_only=True)
+        input_result_sha256=args.result_sha256,
+        independent_helpers={'review39_forward_originals.py':C.file_sha(Path(__file__).with_name('review39_forward_originals.py'))},
+        runtime_executed=False, read_only=True)
     print(json.dumps(result, indent=2, allow_nan=False)); return 0 if result['consistent'] else 2
 
 
