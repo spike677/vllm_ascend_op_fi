@@ -13,7 +13,9 @@ The public API is `WorkerFaultClient(HostAdapter(...), FaultConfig(id, variant))
 Serving owns Worker construction and scheduling. The trusted deployment adapter
 selects actual objects/calls and supplies the matching native package. End users
 do not select layers, pointers, ranks or library paths. There are17 catalog routes,
-12 RPC factories and5 separately implemented routes awaiting Worker RPC adapters.
+13 RPC factories and4 separately implemented routes awaiting Worker RPC adapters.
+The added `39.output_proxy` factory has its own public single-site contract; the
+older MODEL_LOCAL result does not qualify that new entrance.
 See the [route and acceptance matrix](C2_C3_MATRIX.md), not catalog presence,
 for what actually works on each model.
 

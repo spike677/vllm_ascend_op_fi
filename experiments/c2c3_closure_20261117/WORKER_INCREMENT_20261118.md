@@ -1,4 +1,4 @@
-# Worker Core: source51–62 incremental evidence
+# Worker Core: source51–65 incremental evidence
 
 This report preserves the six accepted C2 and now six accepted C3 scopes. It does
 not qualify all17 routes or another CANN/hardware version. Root owns the single
@@ -165,6 +165,47 @@ feeds rotary metadata. The current one-slice adapter still refuses this chain.
 The independent source61 evidence now supports targeted adaptation of both
 boundaries; it is not itself a new C1/C2/C3 result.
 
+Source64 `46cd8ad153ad07ce1057cfcbac73d7d9fb76e226` implements only the observed
+ND rank-two contiguous, zero-offset, exact-flat storage geometry and the actual
+two-slice MLA position-object chain. Padded storage, unknown lineage and field
+backfill remain refused. Fresh SDK build a1 exposed a real passthrough defect:
+an unselected padded call's refusal flag was incorrectly treated as a changed
+callback identity. Its failed receipt is retained (`ef0856b7cf07189c509fac6a809afbe3ca0a1bdb1559ec0fdb8c773a066019ec`).
+The repair uses exact equality of every observed field for passthrough only;
+admission, continuation, helper geometry and memory gates remain unchanged.
+
+Fresh `native-quant-group-nd-flat-a2/build.json` SHA256
+`b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac`
+passes27 actual-SDK typed runtime contracts and the separate core/ELF contracts.
+Managed loading in a no-device container also passes with zero activity, probe
+SHA256 `d8c9fee14f87faa411dd92e57b5b691966f5f33c5bdb1522b330de9259cc6792`.
+Those CPU/build results do not grant C1. Source64's new single-site natural
+Worker run uses fresh packages33; its own two healthy inventories precede
+Reference/Lossless/OFF/F/OFF. The original source63 failed build is never deployed.
+
+## 39.output_proxy: separate public Worker entrance
+
+The new public `FaultConfig(39, 'output_proxy')` route reuses the actual
+projection-return, later value-consumer and Native postwrite lease boundaries.
+It does not inherit the140-target MODEL_LOCAL result. The six-phase single-site
+plan runs through ordinary enqueued requests, followed by post-unregister
+health; RPCs never invoke the model. Unreviewed opaque GEMM calls are preserved
+and refused, not renamed as existing ATen producers.
+
+Independent CPU review found two cleanup defects before deployment: `clean`
+released the deployment ticket too early, and a missing deployment could retain
+an empty Runtime owner. Source65 `37bbeb4f9612df550a37dafef06727d005111568`
+fixes both without changing Runtime or Native safety gates. `clean` retains its
+separate reservation until `unregister`; missing/foreign reservations refuse.
+A missing deployment is rejected before creating an owner. Root's21 focused
+contracts pass, with four independent Host/Runtime checks and fresh packages34.
+Only subsequent original-file review can accept the new NPU entrance.
+
+The [public contract](../../docs/worker_core_v1/output39_host_contract.md) records
+the still-unadapted statistics boundary. `--statistics` refuses before model
+startup because current complete-value diagnostic Tensor reads would pollute a
+mix capture. No diagnostic operator is filtered or presented as fault E5.
+
 ## Remaining work and deployment boundary
 
 Fault33 source53 captured the actual first decode Q/K/V, immediate returns and
@@ -233,8 +274,16 @@ and generated token changes2→15442; both OFF and uninstalled health recover th
 baseline full-output hash and token2. Typed preparation/execution, Native memory
 and owned hooks are zero at completion. Result SHA256
 `c47ec0438492479e8b1ace37fcd9176d4031051a74b1648f0ad7863ed25045dd`.
-The independent original-file runtime review is pending; these observations
-do not create C2/C3 or all29-target acceptance.
+The independent original-file review now reconciles140 provenance conditions,
+one typed-build condition,7375 common evidence conditions and5605 typed conditions
+with no issues. It reopens all65 output bins (973440 bytes), joins485 detailed
+typed records in the eight request windows, and preserves60 warmup records as
+outside that detailed audit. Review SHA256
+`c0644273204d340e9e561e1f19d7a12bb9793688726435a91097953250612968`
+is [published as a summary](fia26_source62_review.json); the [reader contract](REVIEW_NATIVE26_FIA_SOURCE62.md)
+defines its limits. Complete residual and logits arrays remain original runtime
+hash/readback evidence, not independently saved bins. This is reconciled
+source-bound single-site evidence, not C2/C3 or all29-target acceptance.
 
 Separately, raw-only B/F statistics compare the real recovery-OFF step6 with
 fault step5, without renaming steps or receiving runtime/hit/target hints.

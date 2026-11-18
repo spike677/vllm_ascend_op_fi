@@ -1,0 +1,190 @@
+{
+  "schema": "demoncat.writer26.typed_fia_single_source62.independent_review.v1",
+  "read_only": true,
+  "reviewer_sha256": "e6f9e2885ed2b707e45d492d29ec4b56db0f3b267995eccdd267c1a8c6934393",
+  "public_qualification_granted": false,
+  "c2": false,
+  "c3": false,
+  "e5": false,
+  "single_site_source_bound_evidence_reconciled": true,
+  "originals": {
+    "result": {
+      "path": "/home/17-fault-c2c3-20261117/fia26-single-c1-source62-card2-a1/providers26-v2-fia-smol-c1_single_effects/result.json",
+      "sha256": "c47ec0438492479e8b1ace37fcd9176d4031051a74b1648f0ad7863ed25045dd",
+      "bytes": 196841
+    },
+    "inventory": {
+      "path": "/home/17-fault-c2c3-20261117/fia26-single-c1-source62-card2-a1/providers26-v2-fia-smol-c1_single_effects/writer-v2/candidate-experiment/writer_inventory.json",
+      "sha256": "20ddf4e7045fe636ea5c21d1c80557348baa7146ecdf806197c16ae82ac29a43",
+      "bytes": 19499087
+    },
+    "serving": {
+      "path": "/home/17-fault-c2c3-20261117/fia26-single-c1-source62-card2-a1/providers26-v2-fia-smol-c1_single_effects/writer-v2/runtime/serving_receipt.json",
+      "sha256": "f67623cbff02e1833c0f2b8c6ace18f3cc06c3423c2c39eec9e113a680626094",
+      "bytes": 38339144
+    }
+  },
+  "provenance": {
+    "checks": 140,
+    "consistent": true,
+    "issues": [],
+    "source_files_rehashed": 19,
+    "native_files_rehashed": 13,
+    "native_compile_sources_rehashed": 21,
+    "source_manifest_sha256": "352bb926eb5f0ea73612413aae743546e05724889f37b9d03617cdc10bf01a67",
+    "native_build_sha256": "2a6e4b861fe0342cb4274614d6edeb187bb36e3c87acab9ecc99be6f0e01bbae",
+    "external_model_method_source_files_rehashed": false,
+    "source_limit": "Saved external vLLM/model method source and code hashes bind target identity; their external files and loaded code objects are not independently re-read here."
+  },
+  "typed_build": {
+    "checks": 1,
+    "consistent": true,
+    "issues": []
+  },
+  "evidence": {
+    "common": {
+      "checks": 7375,
+      "consistent": true,
+      "issues": [],
+      "requests": {
+        "count": 8,
+        "input_sha256": "c7ff9bcce9f3204fa327a1e87e26d29130d68e27abbb6be3502ebd5f50ee22bc",
+        "healthy_logits_sha256": "69400257a6148c7fec562f4789a25bf08b0cf155369393d31ffeb294781e634b",
+        "fault_logits_sha256": "6d435eb7a455515049ea1560661793db572908d572417c85dd30197095172252",
+        "generated_tokens": [
+          2
+        ],
+        "post_native_remove_full_logits": true,
+        "post_python_remove_full_logits": false
+      },
+      "inventory": {
+        "per_request_counts": [
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30,
+          30
+        ],
+        "natural_calls": 240,
+        "healthy_classification": {
+          "UNVERIFIED": 1,
+          "OBSERVED_NOT_QUALIFIED": 29
+        },
+        "classification_reasons": {
+          "ACTUAL_PUBLIC_PRODUCER_LIFETIME_UNPROVEN": 1,
+          "CURRENT_PUBLIC_RESIDUAL_LIFETIME_UNPROVEN": 1,
+          "NEXT_ACTUAL_NATIVE_CONSUMER_UNPROVEN": 1,
+          "PUBLIC_CONSUMER_LIFETIME_NOT_PROVEN": 1
+        },
+        "resolved_count": 29,
+        "aliases": 397,
+        "selected_key": "0825e9f4e3d656493f4a945c24e754961fd48c76fdbb5905f1a43c45243065a6",
+        "selected_index": 17,
+        "outside_request_non_target_runs": [
+          {
+            "before_phase": "inventory_2",
+            "non_target_runs": 13
+          },
+          {
+            "before_phase": "single_site_reference",
+            "non_target_runs": 13
+          },
+          {
+            "before_phase": "single_site_lossless",
+            "non_target_runs": 13
+          },
+          {
+            "before_phase": "single_site_qualification_off",
+            "non_target_runs": 13
+          },
+          {
+            "before_phase": "single_site_fault",
+            "non_target_runs": 23
+          },
+          {
+            "before_phase": "single_site_recovery_off",
+            "non_target_runs": 41
+          },
+          {
+            "before_phase": "health",
+            "non_target_runs": 17
+          }
+        ]
+      },
+      "metadata_arrays": {
+        "images": 4,
+        "interval_delta": {
+          "capture_calls": 8315,
+          "getter_calls": 23505,
+          "acquired_arrays": 23505,
+          "released_arrays": 23505
+        },
+        "final_live_arrays": 0
+      },
+      "effect": {
+        "native_outcomes": 5,
+        "fault_invocations": 1,
+        "fault_changed_residual_bytes": [
+          14782
+        ],
+        "writer_output_sha256": "2d6be49a3b5f20ccc0125e56596415e43b065e2fbad2b98949f9b0b5f0567654",
+        "full_residual_sha256": "041dbcf327eb82f2dea12e22b68a2821f7d383c6a252e6d4afe461f9cc500b83",
+        "allocator_artifacts_rehashed": 0,
+        "final_host_bytes": 0
+      },
+      "scope": "ONE_ACTUAL_TYPED_FIA_SITE_FIXED_FRESH_PREFILL_NOT_ALL_ELIGIBLE_NOT_C2_C3",
+      "single_site_receipt_chain_reconciled": true,
+      "public_qualification_granted": false,
+      "c2": false,
+      "c3": false,
+      "e5": false,
+      "complete_tensor_bytes_rehashed": false,
+      "evidence_limits": [
+        "This shared receipt stage does not rehash tensor bins; the typed FIA reviewer separately rehashes literal writer-output files. Full logits and residual bytes remain runtime hash/readback receipts.",
+        "FIA uses the current retained residual as its typed destination; QMM allocator adjacency and tail shifting are not applicable.",
+        "Object/storage identity, strong-reference duration, original-call counts and exact readbacks are source-bound runtime/Native receipts, not new live observations.",
+        "Native owner fields may remain as retired identity after removal; active resources and callbacks are required to be zero.",
+        "Health request checks complete logits after Native removal; the later ordinary generation checks tokens after Python cleanup.",
+        "This fixed fresh-prefill typed FIA target is not the complete resolved set, C2, C3 or E5; typed descriptor and stock-byte review is additionally required.",
+        "No E5 or fault-only output attribution is inferred from the Native receipt chain."
+      ]
+    },
+    "typed": {
+      "checks": 5605,
+      "consistent": true,
+      "issues": [],
+      "typed_records": 485,
+      "full_output_bins_rehashed": 65,
+      "full_output_bytes_rehashed": 973440,
+      "stock_targets": 30,
+      "initial_typed_records_outside_windows": 60,
+      "source_bound_descriptor_receipts_reconciled": true,
+      "residual_and_logits_tensor_bins_available": false,
+      "public_qualification_granted": false,
+      "c2": false,
+      "c3": false,
+      "e5": false
+    },
+    "schema_checks": {
+      "checks": 0,
+      "consistent": true,
+      "issues": []
+    },
+    "consistent": true,
+    "public_qualification_granted": false,
+    "c2": false,
+    "c3": false,
+    "e5": false,
+    "limits": [
+      "The typed stage reports output files actually rehashed and compares stock/control bytes; residual and complete logits remain saved runtime hash/Native readback receipts.",
+      "Initial warmup typed records have saved state counters but are outside the eight detailed request windows.",
+      "Typed descriptor identity, callback lifetime, original-call count, stream synchronization and restoration are source-bound original receipts, not a new live NPU observation.",
+      "This is one selected typed FIA destination in a complete 30-call census, not all 29 resolved targets, C2, C3 or another mechanism.",
+      "Independent E5 statistics reported an earlier slot_indices difference and incomparable preceding nulls; no fault-only numerical localization is granted."
+    ]
+  },
+  "status": "SOURCE_BOUND_SINGLE_TYPED_FIA_RECONCILED_NOT_C2_C3_E5"
+}
