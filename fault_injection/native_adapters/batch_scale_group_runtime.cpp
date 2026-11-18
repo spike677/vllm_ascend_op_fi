@@ -154,6 +154,17 @@ bool same_owner(const Config* c) {
         && c->owner_lo==owner.owner_lo && c->generation==owner.generation && c->thread==owner.thread
         && c->thread==tid() && c->device==owner.device && device()==owner.device;
 }
+bool same_observed_view(const View& a,const View& b) noexcept {
+    return a.address==b.address && a.bytes==b.bytes && a.descriptor==b.descriptor
+        && a.rows==b.rows && a.columns==b.columns && a.stride0==b.stride0 && a.stride1==b.stride1
+        && a.offset==b.offset && a.dtype==b.dtype && a.format==b.format
+        && a.dimensions==b.dimensions && a.reserved==b.reserved;
+}
+bool same_observed_call(const Call& a,const Call& b) noexcept {
+    return a.version==b.version && a.size==b.size && a.token==b.token && a.thread==b.thread
+        && a.lifetime_token==b.lifetime_token && a.device==b.device && a.reserved==b.reserved
+        && same_observed_view(a.input,b.input) && same_observed_view(a.quant,b.quant) && same_observed_view(a.scale,b.scale);
+}
 struct Dimensions {
     int64_t* data{};
     ~Dimensions() noexcept {delete[] data;}
@@ -384,7 +395,10 @@ extern "C" int dcat_dqg_public_end_v1(const Config* c,uint64_t token,const View*
 } catch(...) {return abi_failure();}
 extern "C" int dcat_dqg_pass_v1(const Config* c,const Call* call) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    if(!same_owner(c) || !call || !runtime.callback_active || decided || !same_call(*call,callback_call))return reject(Identity);
+    // Passthrough authenticates the complete actual observation, including
+    // refusal flags. same_call()/valid_call() deliberately reject those flags
+    // and remain mandatory for admission and owned helper execution.
+    if(!same_owner(c) || !call || !runtime.callback_active || decided || !same_observed_call(*call,callback_call))return reject(Identity);
     decided=true;accepted=false;return Ok;
 } catch(...) {return abi_failure();}
 extern "C" int dcat_dqg_continue_v1(const Lease* lease) try {
