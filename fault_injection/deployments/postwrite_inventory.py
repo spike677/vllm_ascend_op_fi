@@ -4,6 +4,7 @@ The dispatcher calls this before it asks a postwrite injector to admit anything.
 This module has no Native handles, hit counters, mutation modes or skip policy.
 """
 from dataclasses import dataclass, field
+from copy import deepcopy
 
 from .postwrite_boundaries import PROJECTION_OPERATORS, tensor_geometry
 
@@ -27,7 +28,9 @@ class ProjectionCall:
                     original_calls=self.original_calls, rejection=self.rejection,
                     eligible=bool(candidate and candidate.consumers),
                     selected_indices=list(candidate.indices) if candidate else [],
-                    consumers=list(candidate.consumers) if candidate else [])
+                    consumers=list(candidate.consumers) if candidate else [],
+                    producer_proof=deepcopy(candidate.producer_proof) if candidate else None,
+                    consumer_observations=deepcopy(candidate.consumer_observations) if candidate else [])
 
 
 class ProjectionWorkloadInventory:

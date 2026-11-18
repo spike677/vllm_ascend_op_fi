@@ -22,10 +22,13 @@ def core_cases(*, source, native, sha256, build_fingerprint, model='/home/gyl/mo
         '> /evidence/worker-core39-output.stdout.log 2> /evidence/worker-core39-output.stderr.log')
     row['review'].update(experiment_id=row['id'], provider='WorkerFaultClient+FaultConfig(39,output_proxy) C1 only',
         worker='standard vLLM TP1 serial eager one fresh prefill per enqueue',
-        expected_hits='One actual projection output after two healthy observations and fresh lossless; opaque custom GEMM refuses',
+        expected_hits='One actual projection output after two healthy observations and fresh lossless; '
+            'reviewed source-bound vllm.unquantized_gemm may qualify only with an actual verified value consumer',
         recovery_plan='Six real requests: observe/repeat/lossless/F/OFF/health, then public cleanup and ordinary health. '
             'Existing finite input, Native owner/storage/bytes, consumer and exact full OFF gates retained. '
-            'Unknown lowering refuses; no model-local qualification inheritance. Failed owners remain for explicit OFF/health retry.',
+            'Only the inspected custom GEMM schema/source/owned weight and narrow ND RMSNorm/SwiGLU consumers are added; '
+            'unknown lowering or mutating attention refuses. No model-local qualification inheritance. '
+            'Failed owners remain for explicit OFF/health retry.',
         acceptance='NEW_SOURCE_STANDARD_WORKER_C1_REVIEW_REQUIRED_C2_C3_FALSE',
         statistics='UNADAPTED: root/logits diagnostic value reads must not pollute mix API statistics',
         raw_evidence=['/evidence/probe/result.json', '/evidence/probe/worker_core_rpc',

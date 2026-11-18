@@ -61,10 +61,57 @@ The first stable actual eligible projection/value-consumer pair is selected by
 the original policy. There is no layer count, first-layer name or failed-target
 fallback. All actual projection records, complete operator/module inventories,
 aliases and unsupported calls are retained; this is not an all-eligible claim.
-Only the original `aten.mm`, `aten.linear` and `aten.matmul` producer contracts
-are accepted. Opaque `vllm.unquantized_gemm`, `npu_linear` or other unreviewed
-lowerings are not renamed as MM. If no actual eligible pair is visible, the two
+The original `aten.mm`, `aten.linear` and `aten.matmul` producer contracts remain.
+The inspected `vllm.unquantized_gemm.default` has its own explicit return-storage
+adapter; it is never renamed as MM. Other unreviewed lowerings, including
+`npu_linear`, remain unsupported. If no actual eligible pair is visible, the two
 healthy inventories end in an explicit refusal with zero F.
+
+### Inspected custom GEMM and read-only consumers
+
+The custom GEMM adapter requires its exact schema
+`vllm::unquantized_gemm(Tensor x, Tensor weight, Tensor? bias=None) -> Tensor`,
+the current module's exact weight object, and no bias. The existing
+`ReviewedGemmBinding` verifies these source SHA256 values on each actual call,
+the loaded function code/globals, actual registration Library ownership and
+PrivateUse1 dispatch. Matching a model name, tensor shape or weight values does
+not provide this ownership.
+
+| Source | SHA256 |
+| --- | --- |
+| `vllm_ascend.patch.worker.patch_unquantized_gemm` | `0317441758008fa74133b2ee7d3e3b2588d632d6522acfb6a8c98ee21554e5bf` |
+| `vllm.model_executor.layers.utils` | `1d908a5cf4ff519fdd987b7a8798070f57510d9031f8f9c2e013149cdb060cad` |
+| `vllm.utils.torch_utils` | `b8c0a763d52c0eabb7b34c14b648b6f5e43f67d806f2819755b0ea23f4250221` |
+
+The actual BF16 return must have the reviewed linear geometry and exclusive
+storage. The Native transport still validates its original ND span and applies
+the existing prefix proxy directly. This proves no native MatMul cache identity.
+
+Two additional consumer adapters are limited to torch `2.9.0+cpu` and torch_npu
+`2.9.0.post1+gitee7ba04`, as inspected without device execution in image
+`35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0`.
+Both require the actual OpOverload, exact schema with no argument or return
+alias/write annotation, and the inspected PrivateUse1 registration. Their Meta
+shape source must have SHA256
+`3e3997c2b99dcff7a4ee4d693bd7e2365f6cf7e906dee5e08585081c7ea13df4`.
+
+* `npu.npu_rms_norm.default`: contiguous BF16 ND rank-two input, separate
+  BF16 last-dimension gamma, finite positive epsilon; original returns are
+  same-shape BF16 output and FP32 `[rows, 1]` rstd in separate ND allocations.
+* `npu.npu_swiglu.default`: contiguous BF16 ND rank-two input, actual `dim=-1`,
+  even last dimension; original ND BF16 return has exactly half that dimension.
+
+Only the actual `input` object is a value-read operand. The existing selected
+index proof checks its current storage, offset and stride, so disjoint slices
+of the same allocation do not qualify; gamma aliases do not supply input
+lineage. Actual source/schema/dispatch and return geometry are recorded per
+call. Every custom GEMM remains in the independent inventory even when refused.
+The original operation runs once; these checks execute no helper model or
+consumer. Opaque mutating attention is not a consumer, and the existing schema
+write check still rejects any write to a live selected lease before that call.
+
+These are source/CPU contracts. They require a new standard-Worker run to grant
+any C1; historical MODEL_LOCAL or matmul_range results grant no qualification.
 
 Root and logits pre/post hooks must be the final local hooks at those boundaries.
 They bind current positional/keyword arguments and the final actual return,

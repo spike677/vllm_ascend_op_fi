@@ -8,6 +8,7 @@ pointer, claimed writer receipt, or claimed consumer receipt is accepted.
 from __future__ import annotations
 
 import ctypes
+from copy import deepcopy
 from dataclasses import dataclass
 import hashlib
 import json
@@ -299,6 +300,7 @@ class _ObserveDispatch(TorchDispatchMode):
         self.operator_counts = {}
         self.projection_observations = []
         self.rejections = []
+        self.gemm_binding = None
         from .postwrite_inventory import ProjectionWorkloadInventory
         self.inventory = ProjectionWorkloadInventory()
 
@@ -307,6 +309,26 @@ class _ObserveDispatch(TorchDispatchMode):
             record.candidate, record.rejection = candidate, rejection
             if self.provider._coverage is not None:
                 self.provider._coverage.projection(self, record)
+
+    def _current_reviewed_consumers(self, candidate):
+        # A known schema/source change must refuse before opening a Native
+        # writer lease, not merely after the later consumer returns. This is a
+        # metadata check only; current value-read geometry is still observed
+        # at the actual consumer, and no future call is manufactured.
+        from .postwrite_npu_consumers import npu_consumer_registration
+        for observed in self.provider._observations[:1]:
+            for original in observed.candidates:
+                if original.key != candidate.key:
+                    continue
+                for row in original.consumer_observations:
+                    prior = row.get('reviewed_consumer')
+                    if prior is None:
+                        continue
+                    function = getattr(torch.ops.npu, prior['operator'].split('.')[1]).default
+                    current, reason = npu_consumer_registration(function)
+                    if reason or any(prior.get(name) != value for name, value in (current or {}).items()):
+                        raise PostwriteRefused('POSTWRITE_REVIEWED_CONSUMER_CHANGED_BEFORE_ADMISSION:'
+                                              + (reason or 'REGISTRATION_IDENTITY'))
 
     @staticmethod
     def _writes(func, args, kwargs, storage):
@@ -333,7 +355,8 @@ class _ObserveDispatch(TorchDispatchMode):
         self.original_calls += 1
         self.operator_counts[operation] = self.operator_counts.get(operation, 0) + 1
         if operation in ('aten.mm.default', 'aten.addmm.default', 'aten.linear.default',
-                         'aten.matmul.default', 'npu.npu_linear.default') and len(self.projection_observations) < 32:
+                         'aten.matmul.default', 'npu.npu_linear.default',
+                         'vllm.unquantized_gemm.default') and len(self.projection_observations) < 32:
             outputs = _tensors(result)
             self.projection_observations.append(dict(operator=operation, module_path=p._stack[-1][0],
                 admitted_producer_operator=operation in PROJECTION_OPERATORS,
@@ -342,22 +365,35 @@ class _ObserveDispatch(TorchDispatchMode):
                     offset=t.storage_offset(), storage_bytes=t.untyped_storage().nbytes(),
                     logical_bytes=t.numel() * t.element_size(), requires_grad=t.requires_grad,
                     aliases_input=_storage(t) in read_storages) for t in outputs]))
+        from .postwrite_npu_consumers import NPU_VALUE_CONSUMERS, npu_value_consumer
+        consumer_proof, consumer_inputs = None, operands
+        if previous and operation in NPU_VALUE_CONSUMERS:
+            consumer_proof, consumer_inputs, reason = npu_value_consumer(func, args, kwargs, result)
+            if reason:
+                self.rejections.append(dict(reason=reason, operator=operation, module_path=p._stack[-1][0]))
         for candidate in previous:
             if (operation in self.VALUE_CONSUMERS
-                    and not self._writes(func, args, kwargs, candidate.storage)):
-                reads = [t for t in operands if reads_selected_elements(t, candidate.indices, candidate.tensor)]
+                    or consumer_proof is not None) and (
+                    not self._writes(func, args, kwargs, candidate.storage)):
+                reads = [t for t in consumer_inputs if reads_selected_elements(t, candidate.indices, candidate.tensor)]
                 if reads:
                     candidate.consumers.append(operation)
                     candidate.consumer_observations.append(dict(operator=operation,
                         module_path=p._stack[-1][0], original_returned=True,
                         selected_elements_read=list(candidate.indices),
-                        operand_views=[tensor_geometry(t) for t in reads]))
-        tensor, indices, producer_proof = None, (), {}
+                        operand_views=[tensor_geometry(t) for t in reads],
+                        reviewed_consumer=consumer_proof))
+        tensor, indices, producer_proof, rejection = None, (), {}, 'NO_ADAPTED_RETURN_GEOMETRY'
         if p.mechanism == '39.output_proxy' and operation in PROJECTION_OPERATORS:
-            proof, reason = projection_return(func, args, kwargs, result)
+            if operation == 'vllm.unquantized_gemm.default' and self.gemm_binding is None:
+                from demoncat.runtime.vllm_ascend.worker_extension.gemm_lineage import ReviewedGemmBinding
+                self.gemm_binding = ReviewedGemmBinding()
+            proof, reason = projection_return(func, args, kwargs, result,
+                gemm_binding=self.gemm_binding, expected_weight=getattr(p._stack[-1][1], 'weight', None))
             if proof is not None and result.numel() >= p.prefix_elements:
                 tensor, indices, producer_proof = result, tuple(range(p.prefix_elements)), proof
             elif reason is not None:
+                rejection = reason
                 self.rejections.append(dict(reason=reason, operator=operation, module_path=p._stack[-1][0]))
         elif p.mechanism == '41.tail_column' and operation == 'aten.index_copy_.default':
             if len(args) >= 4:
@@ -373,7 +409,7 @@ class _ObserveDispatch(TorchDispatchMode):
                         indices = tuple(slot * cache.shape[1] + col
                             for col in range(cache.shape[1] - p.tail_elements, cache.shape[1]))
         if tensor is None:
-            self._coverage_projection(record, rejection='NO_ADAPTED_RETURN_GEOMETRY')
+            self._coverage_projection(record, rejection=rejection)
             return result
         try:
             p.transport.validate(tensor)
@@ -386,11 +422,18 @@ class _ObserveDispatch(TorchDispatchMode):
         module_path, module = p._stack[-1]
         signature = (id(module), operation, tuple(tensor.shape), tuple(tensor.stride()),
                      str(tensor.dtype), indices)
-        occurrence = self.counts.get(signature, 0)
-        self.counts[signature] = occurrence + 1
+        if operation == 'vllm.unquantized_gemm.default':
+            # Bind the raw public-call ordinal, including refused calls. A
+            # newly qualified earlier invocation must not relabel a later one.
+            occurrence = record.key[-1]
+        else:
+            occurrence = self.counts.get(signature, 0)
+            self.counts[signature] = occurrence + 1
         candidate = _Candidate(signature + (occurrence,), tensor, indices, operation,
                                module_path, _storage(tensor), [], producer_proof, [])
         self.candidates.append(candidate)
+        if self.phase in ('baseline', 'fault') and (p._coverage is not None or candidate.key == p._target):
+            self._current_reviewed_consumers(candidate)
         self._coverage_projection(record, candidate=candidate)
         if p._coverage is None and self.phase in ('baseline', 'fault') and candidate.key == p._target:
             if p._lease is not None:
@@ -560,8 +603,8 @@ class PostwriteProvider:
         return dict(status='ACTUAL_CALL_CANDIDATE_SELECTED', count=len(first),
                     selection='first eligible in stable actual execution order',
                     operator=first[0].operator, module_path=first[0].module_path,
-                    consumers=first[0].consumers, producer_proof=first[0].producer_proof,
-                    consumer_observations=first[0].consumer_observations, input_sha256=input_hash,
+                    consumers=list(first[0].consumers), producer_proof=deepcopy(first[0].producer_proof),
+                    consumer_observations=deepcopy(first[0].consumer_observations), input_sha256=input_hash,
                     requires_lossless=True)
 
     def run(self, phase, *args, model_observation=None, **kwargs):
