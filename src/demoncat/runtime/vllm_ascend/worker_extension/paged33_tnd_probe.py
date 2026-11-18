@@ -112,7 +112,13 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
             (self.folder/'collector_identity.json').write_text(json.dumps(identity, indent=2)+'\n')
             self.collector = PrecisionDebugger(config_path=str(self.folder/'config.json'))
             self.packet_attributes = CollectorPacketAttributes()
-        adapter = None if native_args is None else TNDNativeAdapter(**native_args, evidence_dir=self.folder/'native')
+        adapter_type = TNDNativeAdapter
+        if native_args is not None and native_args.get('normal_bridge') is True:
+            require(not statistics and boundary_args is not None, 'ARCH22_NORMAL_PROBE_NEEDS_INDEPENDENT_BOUNDARY')
+            from .paged33_arch22_bridge import NormalBridgeProbeAdapter
+            adapter_type = NormalBridgeProbeAdapter
+            native_args = {name: value for name, value in native_args.items() if name != 'normal_bridge'}
+        adapter = None if native_args is None else adapter_type(**native_args, evidence_dir=self.folder/'native')
         super().__init__(worker, adapter=adapter)
         self.binding = class_forward_binding(self.model)
         boundary = discover_logits_boundary(model, actual_logits_processor_type=LogitsProcessor,

@@ -5,6 +5,7 @@ import os
 import threading
 
 from .attention_native import MECHANISMS, FaNativeCall, FiaNativeCall, PagedNativeCall
+from .paged33_arch22_bridge import Arch22NormalNativeCall
 from .serving_context import require, require_serial_eager
 
 ATTRIBUTE = '_demoncat_attention_serving_bindings'
@@ -59,7 +60,7 @@ reported as Python observation, never a loaded Native provider or qualification.
     if not _simulation:
         require_serial_eager(runner, expected_max_seqs=1)
         require(_test_context is None, 'ATTENTION_CPU_SEAM_ON_REAL_WORKER')
-        require(native is None or type(native) in (FaNativeCall, FiaNativeCall, PagedNativeCall),
+        require(native is None or type(native) in (FaNativeCall, FiaNativeCall, PagedNativeCall, Arch22NormalNativeCall),
                 'ATTENTION_REVIEWED_NATIVE_ADAPTER_REQUIRED')
     else:
         require(type(_test_context) is dict, 'ATTENTION_EXPLICIT_CPU_CONTEXT_REQUIRED')

@@ -12,7 +12,8 @@ def main():
     p.add_argument('--source', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--interfaces', type=Path, required=True)
-    p.add_argument('--strategy', choices=('arch22-investigation', 'actual-fai', 'native-fd'), default='native-fd')
+    p.add_argument('--strategy', choices=('arch22-investigation', 'actual-fai', 'native-fd',
+                                         'arch22-normal-bridge'), default='native-fd')
     a = p.parse_args()
     a.out.mkdir(parents=True, exist_ok=False)
     pristine = Path('/home/17-fault-engineering-20261117/ops-transformer-pristine-a1')
@@ -23,7 +24,8 @@ def main():
         raise RuntimeError('PINNED_OFFICIAL_SOURCE_CHANGED')
     patch = a.out / 'patch'
     patch_name = {'native-fd': 'apply_tnd33_fai_fd_policy.py', 'actual-fai': 'apply_tnd33_fai_policy.py',
-                  'arch22-investigation': 'apply_tnd33_policy.py'}[a.strategy]
+                  'arch22-investigation': 'apply_tnd33_policy.py',
+                  'arch22-normal-bridge': 'apply_tnd33_arch22_bridge.py'}[a.strategy]
     subprocess.run(['python3', str(a.source / 'fault_injection/native_adapters/attention28/fia' / patch_name),
                     '--source', str(official), '--output', str(patch)], check=True)
     output = a.out / 'build'

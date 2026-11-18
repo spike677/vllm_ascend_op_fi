@@ -23,17 +23,18 @@ KEYS = set(FD_KEYS)
 PREFIX = 'DCAT33_TND_'
 
 
-def verify_bundle(completion, completion_sha256, vendor):
+def _verify_bundle_artifacts(completion, completion_sha256, vendor, *, variant, keys):
+    """Shared byte identity checks; callers retain separate ABI/route gates."""
     path, root = Path(completion).resolve(strict=True), Path(vendor).resolve(strict=True)
     require(sha(path) == completion_sha256, 'TND33_COMPLETION_HASH_DIFFERS')
     data = json.loads(path.read_bytes())
     require(data.get('schema') == 'demoncat.fia.fresh_build.v1'
             and data.get('status') == 'CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION'
-            and data.get('source_commit') == COMMIT and data.get('variant') == FD_VARIANT
+            and data.get('source_commit') == COMMIT and data.get('variant') == variant
             and data.get('loading_allowed') is False and data.get('npu_executed') is False
             and data.get('previous_experiment_objects_used') is False
-            and len(data.get('compiled_keys', [])) == len(KEYS)
-            and set(data.get('compiled_keys', [])) == KEYS, 'TND33_INDEPENDENT_FRESH_BUILD_REQUIRED')
+            and len(data.get('compiled_keys', [])) == len(keys)
+            and set(data.get('compiled_keys', [])) == set(keys), 'TND33_INDEPENDENT_FRESH_BUILD_REQUIRED')
     files = {}
     for row in data['artifacts']:
         relative = Path(row['path'])
@@ -57,6 +58,13 @@ def verify_bundle(completion, completion_sha256, vendor):
     kernels = [row for row in files.values() if row['path'].endswith('.o')]
     require(len(kernels) == 1 and kernels[0]['sha256'] == data['kernel_binary_sha256'],
             'TND33_MATCHING_NEW_KERNEL_REQUIRED')
+    return dict(completion=data, completion_path=str(path), completion_sha256=completion_sha256,
+                vendor=str(root), artifacts=files)
+
+
+def verify_bundle(completion, completion_sha256, vendor):
+    bundle = _verify_bundle_artifacts(completion, completion_sha256, vendor, variant=FD_VARIANT, keys=KEYS)
+    data, path = bundle['completion'], Path(bundle['completion_path'])
     from fault_injection.native_adapters.attention28.fia import fai_fd_geometry
     require(data.get('fai_fd_geometry_validator_sha256') == sha(fai_fd_geometry.__file__)
             and data.get('actual_worker_platform_observed') is False,
@@ -71,8 +79,7 @@ def verify_bundle(completion, completion_sha256, vendor):
             and cpu.get('actual_worker_aic_observed') is False
             and cpu.get('matrix_sha256') == data['fai_fd_cpu_matrix_sha256'],
             'TND33_FRESH_FD_CPU_MATRIX_INCOMPLETE')
-    return dict(completion=data, completion_path=str(path), completion_sha256=completion_sha256,
-                vendor=str(root), artifacts=files)
+    return bundle
 
 
 def validate_tnd_call(actual, boundary, *, allow_cpu_test=False):

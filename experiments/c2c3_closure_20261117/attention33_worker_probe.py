@@ -110,6 +110,10 @@ def run(args, bundle):
         report.update(schema='demoncat.paged33.first_boundary_worker_run.v1',
             diagnostic_only=True, bridge_compatible=False, fault_authorized=False,
             first_boundary_readbacks='IDENTICAL_CAPTURE_CODE_IN_STOCK_AND_PRIVATE_NO_STATISTICS')
+    if getattr(args, 'arch22_normal_bridge', False):
+        report.update(normal_bridge_variant='tnd_page16_arch22_normal_bridge',
+            normal_route_preference_changed=bundle is not None, stock_private_exact_proven=False,
+            fault_authorized=False)
     target = args.out/'result.json'
     def save():
         target.write_text(json.dumps(report, indent=2, allow_nan=False)+'\n')
@@ -153,6 +157,8 @@ def run(args, bundle):
                     vendor=str(args.vendor), schema=str(args.public_schema), schema_sha256=args.schema_sha256,
                     observer_receipt=str(args.observer_receipt), observer_receipt_sha256=args.observer_receipt_sha256,
                     arm=arm, experimental_qualification=True, max_calls=28)
+                if getattr(args, 'arch22_normal_bridge', False):
+                    native['normal_bridge'] = True
             row = dict(phase=phase);report['phases'].append(row);save()
             installed = True  # setup may install a partial owned session
             boundary = (dict(path=str(args.observer_receipt), expected_sha256=args.observer_receipt_sha256,
@@ -231,17 +237,25 @@ def main():
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--experimental-qualification', action='store_true')
     parser.add_argument('--first-boundary-diagnostic', action='store_true')
+    parser.add_argument('--arch22-normal-bridge', action='store_true',
+        help='Separate normal-only route candidate; requires new stock/private boundary captures and never accepts F')
     parser.add_argument('--child', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args()
     require(args.experimental_qualification and str(args.out).startswith('/evidence/'),
             'EXPLICIT_PRIVATE_EXPERIMENT_REQUIRED')
     require(not args.first_boundary_diagnostic or (args.phase in ('stock', 'baseline') and not args.statistics
             and args.bridge is None), 'FIRST_BOUNDARY_DIAGNOSTIC_NEVER_AUTHORIZES_FAULT_OR_STATISTICS')
+    require(not args.arch22_normal_bridge or (args.first_boundary_diagnostic and args.phase in ('stock', 'baseline')
+        and not args.statistics and args.bridge is None), 'ARCH22_NORMAL_BRIDGE_NEVER_AUTHORIZES_FAULT')
     bundle, library = None, None
     if args.phase != 'stock':
-        from demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd import verify_bundle
+        if args.arch22_normal_bridge:
+            from demoncat.runtime.vllm_ascend.worker_extension.paged33_arch22_bridge import verify_bundle
+        else:
+            from demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd import verify_bundle
         bundle = verify_bundle(args.completion, args.completion_sha256, args.vendor)
-        require(sha(args.public_schema) == args.schema_sha256 == bundle['completion']['fai_public_schema_sha256'],
+        schema_field = 'arch22_public_schema_sha256' if args.arch22_normal_bridge else 'fai_public_schema_sha256'
+        require(sha(args.public_schema) == args.schema_sha256 == bundle['completion'][schema_field],
                 'EXACT_NEW_FAI_SCHEMA_REQUIRED')
     if bundle is not None or args.first_boundary_diagnostic:
         require(sha(args.observer_receipt) == args.observer_receipt_sha256, 'EXACT_OBSERVER_RECEIPT_REQUIRED')
