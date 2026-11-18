@@ -76,9 +76,14 @@ def group_outcome(b, r, value, candidate, row, qualification, where, *, mechanis
 def typed_group_review(b, t, inventory, artifacts, *, expected_count):
     trace_state, records = t.trace_state, t.records
     r = b.Review(); rows = inventory['rows']; bridges = inventory['fia_typed_stock_bridge']
+    modes=[row['plan']['mode'] for row in rows]
+    expected_modes=[None,None,'reference','lossless','off','fault']
+    if inventory.get('coverage',{}).get('trigger')=='every_match':expected_modes.append('fault')
+    expected_modes.extend(('off',None))
+    r.check(modes==expected_modes,'COMPLETE_TYPED_GENERATION_PHASES')
     public = inventory['public_output_observer']; outcomes = inventory['outcomes']
     public_by_call = {v['independent_call']:v for v in public['calls'] if v.get('independent_call')}
-    r.check(len(public_by_call) == len(public['calls']) == 7*expected_count
+    r.check(len(public_by_call) == len(public['calls']) == (len(expected_modes)-1)*expected_count
         and public['owned_api_wrappers'] == public['inflight_public_calls'] == public['tensor_views_created'] == 0
         and public['source_scope'] == 'ACTUAL_FIA_PUBLIC_RETURN_ONLY' and not public['refusals'], 'ALL_ACTUAL_PUBLIC_FIA_RETURNS_AND_RESTORE')
     selected = {v['target_key'] for v in inventory['candidates'] if v['status'] == 'OBSERVED_NOT_QUALIFIED'}
@@ -109,7 +114,7 @@ def typed_group_review(b, t, inventory, artifacts, *, expected_count):
             chosen = callback is not None and callback['claimed'] == 1
             geometry = r.section(loc, records, b, r, actual, events, selected=chosen, where=loc)
             if callback is None:
-                r.check(index == 7 and not chosen, 'CALLBACK_MISSING_BEFORE_NATIVE_REMOVE', loc)
+                r.check(index == len(expected_modes)-1 and not chosen, 'CALLBACK_MISSING_BEFORE_NATIVE_REMOVE', loc)
                 continue
             r.check(callback['fia_typed_before'] == actual[0] and callback['fia_typed_public_records'] == actual
                 and not callback.get('public_output_refusals'), 'CALLBACK_CURRENT_TYPED_PUBLIC_RECORDS', loc)
@@ -162,7 +167,7 @@ def typed_group_review(b, t, inventory, artifacts, *, expected_count):
                             'FRESH_OWNED_REFERENCE_LOSSLESS_OFF_FULL_STOCK_BYTES', loc)
             else:
                 r.check('fia_full_output' not in callback, 'UNSELECTED_CALL_NOT_REPORTED_AS_NEW_REFERENCE', loc)
-    r.check(seen_artifacts == bridges['artifacts'] and len(seen_artifacts) == 2*expected_count + 5*len(selected)
+    r.check(seen_artifacts == bridges['artifacts'] and len(seen_artifacts) == 2*expected_count + sum(x is not None for x in expected_modes)*len(selected)
         and len(artifacts.files) == len(seen_artifacts) and len(stock) == expected_count,
         'COMPLETE_STOCK_AND_SELECTED_OUTPUT_ARTIFACT_SET')
     r.check(bridges['schema'] == 'demoncat.writer26.fia_stock_bridge.v3' and bridges['retained_host_bytes'] == 0

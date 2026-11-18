@@ -1,4 +1,4 @@
-"""Offline original-receipt audit for complete-set Worker Native26 C2.
+"""Offline original-receipt audit for complete-set Worker Native26 C2/C3.
 
 No saved successful flag grants authority. Native/model code is never imported.
 The two mechanisms share the full census and public RPC contract, but FIA also
@@ -29,6 +29,18 @@ def D(value):
 PHASES=('inventory_1','inventory_2','qualification_reference_all','qualification_lossless_all',
         'qualification_off_all','group_fault','group_off','health')
 MODES=(None,None,'reference','lossless','off','fault','off',None)
+C3_PHASES=PHASES[:6]+('group_fault_repeat',)+PHASES[6:]
+C3_MODES=MODES[:6]+('fault',)+MODES[6:]
+
+
+def profile(inv):
+    trigger=inv['coverage']['trigger']
+    if trigger not in ('once','every_match'):raise ValueError('EXPLICIT_GROUP_TRIGGER_REQUIRED')
+    return (C3_PHASES,C3_MODES) if trigger=='every_match' else (PHASES,MODES)
+
+
+def native_generation(context):
+    return context.get('native_generation',context['ticket']['generation'])
 
 
 def projection(inv):
@@ -41,15 +53,29 @@ def projection(inv):
     return result
 
 
-def load_original(a,originals,ref,state,context,*,natural):
+def load_original(a,originals,ref,state,context,*,natural,evidence=None,run=None):
     value=originals.load(ref,mounted=True);inv=value['inventory']
     a.check(value['schema']=='demoncat.writer26.core_observations.v1' and value['worker']==context['worker'] and
-        value['native_owner']==context['provider_owner'] and value['generation']==context['ticket']['generation'] and
+        value['native_owner']==context['provider_owner'] and C.positive(value['generation']) and value['generation']==context['ticket']['generation'] and
         value['action']==ref['action'] and value['simulation'] is (not natural) and value['qualification_granted'] is False,
         'ORIGINAL_COMPLETE_GROUP_SCOPE')
-    compact={k:v for k,v in state['evidence'].items() if k not in ('public_core','original_observations')}
-    a.check(compact==projection(inv) and value['serving']==state['serving'] and state['native']==inv['native_state'] and
-        ref['complete_requests']==len(inv['rows'])==len(value['serving_requests']), 'ORIGINAL_TO_COMPACT_RPC_EXACT_JOIN')
+    if run is not None or 'run' in value:
+        run=run or 'c2'
+        a.check(value['run']==run and C.positive(value['rpc_generation']) and C.positive(value['native_generation']) and
+            value['rpc_generation']==value['generation']==context['ticket']['generation'] and
+            value['native_generation']==context['ticket']['generation']+int(run=='c3'), 'ORIGINAL_TWO_GENERATIONS_EXACT_JOIN')
+    if evidence is None and state is not None:evidence=state['evidence']
+    if evidence is not None:
+        compact={k:v for k,v in evidence.items() if k not in ('public_core','original_observations','current_run','prior_c2')}
+        a.check(compact==projection(inv),'ORIGINAL_TO_COMPACT_RPC_EXACT_JOIN')
+        if 'current_run' in evidence:a.check(evidence['current_run']==(run or 'c2'),'ORIGINAL_RPC_RUN')
+        public=evidence['public_core']
+        a.check(public['worker_identity']==value['worker'] and public['owner']==value['native_owner'] and
+            public['generation']==value['generation'] and public['native_generation']==value.get('native_generation',value['generation']) and
+            public['simulation'] is (not natural) and public['qualification_granted'] is False,'ORIGINAL_PUBLIC_NATIVE_GENERATION')
+    if state is not None:
+        a.check(value['serving']==state['serving'] and state['native']==inv['native_state'],'ORIGINAL_NATIVE_SERVING_READBACK')
+    a.check(ref['complete_requests']==len(inv['rows'])==len(value['serving_requests']),'ORIGINAL_FULL_REQUEST_COUNT')
     return value
 
 
@@ -118,12 +144,13 @@ def current_absence(b,a,candidate,row,lifetime):
 
 
 class GroupArtifacts:
-    def __init__(self,originals,final_ref):
+    def __init__(self,originals,final_ref,*,run='c2'):
         path=final_ref['path']
         if path.startswith('/evidence/'):path=path[len('/evidence/'):]
         elif not originals.natural:path=Path(path).resolve().relative_to(originals.root).as_posix()
         else:raise ValueError('EXPLICIT_ORIGINAL_MOUNT_REQUIRED')
-        self.folder=(Path(path).parents[2]/'candidate-experiment').as_posix();self.originals=originals
+        if run not in ('c2','c3'):raise ValueError('EXPLICIT_ORIGINAL_GROUP_RUN_REQUIRED')
+        self.folder=(Path(path).parents[2]/('candidate-experiment-c3' if run=='c3' else 'candidate-experiment')).as_posix();self.originals=originals
         self.checked={}
 
     def load(self,name,expected_sha=None,expected=None):
@@ -166,6 +193,8 @@ def rebuild_identity(inv,frozen,worker):
 
 def native_group(b,a,inv,worker,context,artifacts,*,natural,expected_count):
     rows=inv['rows']; lifetime=inv['lifetime'];mechanism=1 if inv['mechanism']=='26.residual_stomp' else 2
+    phases,modes=profile(inv);off_index=phases.index('group_off');generation=native_generation(context)
+    a.check(len(rows)==len(phases),'FULL_GENERATION_PHASE_DENOMINATOR')
     aliases={(x['path'],x['object_identity']) for x in inv['alias_inventory']}
     a.check(len(aliases)==len(inv['alias_inventory']) and ('<root>',lifetime['model_object_identity']) in aliases,
             'COMPLETE_MODULE_ALIASES')
@@ -212,8 +241,8 @@ def native_group(b,a,inv,worker,context,artifacts,*,natural,expected_count):
     for outcome in inv['outcomes']:
         key=(outcome['request_id'],outcome['target']);a.check(key not in outcomes,'ONE_OUTCOME_PER_TARGET_PER_REQUEST');outcomes[key]=outcome
     for index,row in enumerate(rows):
-        mode=MODES[index];count=len(eligible) if mode else 0
-        a.check(row['plan']==dict(phase=PHASES[index],mode=mode,target='*' if mode else None) and
+        mode=modes[index];count=len(eligible) if mode else 0
+        a.check(row['plan']==dict(phase=phases[index],mode=mode,target='*' if mode else None) and
             row['admissions']==row['completed']==count and sum(k[0]==row['request_id'] for k in outcomes)==count,
             'EVERY_TARGET_REFERENCE_LOSSLESS_FAULT_OFF',row['phase'])
         for candidate in row['candidates']:
@@ -224,20 +253,24 @@ def native_group(b,a,inv,worker,context,artifacts,*,natural,expected_count):
             effect=outcomes[(row['request_id'],target)]
             if natural:
                 N.group_outcome(b,a,effect,candidate,row,dict(target_key=target,native_owner=native_owner,
-                    generation=context['ticket']['generation']),row['phase']+':'+target,mechanism=mechanism)
+                    generation=generation),row['phase']+':'+target,mechanism=mechanism)
             a.check(effect['mode']==mode and effect['native_call']==cb['native_packet'] and
                 effect['request_id']==row['request_id'] and effect['public_consumer_lifetime'] is True and
                 effect['residual_before_sha256']==effect['residual_after_sha256'], 'TARGET_OUTCOME_CURRENT_CALL_AND_RECOVERY')
     for target in eligible:
-        q=[outcomes[(rows[i]['request_id'],target)] for i in (2,3,4,6)]
+        q=[outcomes[(rows[i]['request_id'],target)] for i in (2,3,4,off_index)]
         a.check(len({x['writer_output_sha256'] for x in q})==len({x['residual_before_sha256'] for x in q})==1,
                 'COMPLETE_PER_TARGET_REFERENCE_LOSSLESS_OFF_EQUAL',target)
+        if 'group_fault_repeat' in phases:
+            first=outcomes[(rows[5]['request_id'],target)];second=outcomes[(rows[6]['request_id'],target)]
+            a.check(first['writer_output_sha256']==second['writer_output_sha256'] and
+                first['residual_before_sha256']==second['residual_before_sha256'],'EVERY_TARGET_FAULT_REPEAT_EXACT',target)
     if natural:
         state=inv['native_state'];core=state['core']
-        a.check([core['owner_hi'],core['owner_lo']]==native_owner and core['generation']==context['ticket']['generation'] and
-            core['thread']==lifetime['native_thread'] and core['mechanism']==mechanism and core['calls']==5*len(eligible) and
+        a.check([core['owner_hi'],core['owner_lo']]==native_owner and core['generation']==generation and
+            core['thread']==lifetime['native_thread'] and core['mechanism']==mechanism and core['calls']==sum(x is not None for x in modes)*len(eligible) and
             state['admitted_calls']==state['completion_calls']==core['calls'],'FINAL_REAL_NATIVE_OWNER_AND_CALL_COUNTS')
-        b.runtime_state(a,state,dict(native_owner=native_owner,generation=context['ticket']['generation']),
+        b.runtime_state(a,state,dict(native_owner=native_owner,generation=generation),
             lifetime['native_thread'],sum(len(x['callbacks']) for x in rows),len(outcomes),
             removed=True,sealed=True,where='complete_group_final',mechanism=mechanism)
         b.metadata(a,[('initial',inv['metadata_arrays_initial'])]+[(x['phase'],x['metadata_arrays']) for x in rows]+
@@ -246,10 +279,11 @@ def native_group(b,a,inv,worker,context,artifacts,*,natural,expected_count):
 
 
 def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural):
-    cov=inv['coverage'];rows=inv['rows'];owner=context['provider_owner'];generation=context['ticket']['generation']
+    cov=inv['coverage'];rows=inv['rows'];owner=context['provider_owner'];generation=native_generation(context)
+    phases,modes=profile(inv);off_index=phases.index('group_off');faults=modes.count('fault')
     a.check(cov['scope']['mechanism']==inv['mechanism'] and cov['scope']['evidence_kind']==
         ('natural_worker' if natural else 'cpu_contract') and cov['owner']==owner and cov['generation']==generation and
-        cov['trigger']=='once' and cov['selection']=='all_eligible' and cov['budget']['max_concurrency']==1 and
+        cov['trigger']==('every_match' if context.get('run')=='c3' else 'once') and cov['selection']=='all_eligible' and cov['budget']['max_concurrency']==1 and
         inv['execution_scope']=='SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS' and
         inv['independent_per_target_replay'] is False,'EXACT_COMPLETE_GROUP_SCOPE')
     candidates=[dict(candidate_id=x['target_key'] or 'unsupported-native-'+str(i),identity=x['identity'],
@@ -268,7 +302,7 @@ def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural):
     a.check(len(recovered)==len(recovery['targets'])==len(eligible) and set(recovered)==set(target_ids.values()),
             'ALL_ELIGIBLE_TARGET_RECOVERIES')
     for key,target in eligible.items():
-        reference=outcomes[(rows[2]['request_id'],key)];off=outcomes[(rows[6]['request_id'],key)]
+        reference=outcomes[(rows[2]['request_id'],key)];off=outcomes[(rows[off_index]['request_id'],key)]
         recovered_row=recovered[target_ids[key]];lease=recovered_row['lease'];call=reference['native_call']
         expected_lease=dict(target=target['identity'],owner=owner,generation=generation,
             lease_id=D([owner,generation,key]),device_bytes=call['output_bytes'],
@@ -282,7 +316,7 @@ def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural):
             ('installed','pending','executing','device_bytes','host_bytes','descriptor_pending','error')),
             'ORIGINAL_NATIVE_OFF_RELEASE_ARTIFACT',key)
     expected_calls=[]
-    for row in rows[5:7]:
+    for row in rows[5:off_index+1]:
         # Callbacks are observed at entry. Truly unowned Native calls are joined
         # at request completion; their original trace position is retained.
         ordered=[x for x in row['candidates'] if x['callback'] is not None]+[x for x in row['candidates'] if x['callback'] is None]
@@ -294,13 +328,17 @@ def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural):
         cb=candidate['callback'];key=cb.get('target_key') if cb else None;chosen=key in eligible;off=row['phase']=='group_off'
         hit=chosen and not off;phase='OFF_RECOVERY' if off else 'POST_FIRST_ANOMALY' if anomaly else 'PRE_FAULT_PROPAGATION'
         tid=C.digest(identity);call_id=str(candidate['native']['call']);worker=[identity[k] for k in
-            ('process_id','process_start_identity','worker_id','rank','logical_device')]
+            ('process_id','process_start_identity','worker_id','rank')]
+        if 'boundary' in identity:worker.append(identity['device_type'])
+        worker.append(identity['logical_device'])
         ticket=dict(observer_id=cov['discovery']['observer_id'],sequence=index,eligible=chosen,propagation_added=False,
             call=dict(target=identity,call_id=call_id,forward_context=row['request_id'],request_ids=[row['request_id']],phase=phase))
         tickets.append(ticket);decision=call['decision'];receipt=call['receipt']
         a.check(call['call_id']==call_id and call['target_id']==tid and call['forward_id']==row['request_id'] and
             call['request_ids']==[row['request_id']] and call['phase']==phase and call['eligible'] is chosen and
-            call['worker']==worker and call['owner']==owner and call['generation']==generation and
+            call['worker']==worker and call['model_instance']==identity['model_instance_id'] and
+            call['operator']==identity['operator_api'] and call['rank']==identity['rank'] and
+            call['device']==identity['logical_device'] and call['owner']==owner and call['generation']==generation and
             call['propagation_added'] is False and decision['ticket']==ticket and decision['session_id']==cov['session_id'] and
             decision['admitted'] is hit and decision['reason']==('OFF_RECOVERY' if off else 'ADMITTED' if chosen else 'NON_TARGET') and
             decision['lease']==(recovered[tid]['lease'] if chosen else None) and receipt['decision']==decision and
@@ -310,8 +348,8 @@ def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural):
         artifacts.load(('execution-' if chosen else 'passthrough-')+call_id,receipt['execution_sha256'],value)
         a.check(receipt['effect_sha256']==(receipt['execution_sha256'] if hit else None),'ORIGINAL_EFFECT_REFERENCE',call_id)
         if hit:hits+=1;anomaly=True
-    a.check(cov['hits']==hits==len(eligible) and cov['planned_targets']==cov['planned_targets_hit']==len(eligible) and
-        cov['observed_calls']==len(calls) and cov['observed_eligible_calls']==len(eligible) and
+    a.check(cov['hits']==hits==faults*len(eligible) and cov['planned_targets']==cov['planned_targets_hit']==len(eligible) and
+        cov['observed_calls']==len(calls) and cov['observed_eligible_calls']==faults*len(eligible) and
         not cov['missing_outcomes'] and not cov['propagation_added_calls'] and
         cov['observation']['calls_sha256']==C.digest(tickets) and cov['observation']['complete'] is True and
         cov['observation']['dropped_calls']==0,'RECOMPUTED_COMPLETE_GROUP_TOTALS')
@@ -326,18 +364,19 @@ def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural):
         'ACTUAL_POST_RELEASE_HEALTH_ZERO_RESOURCES')
     if natural:
         b.metadata(a,[('initial',inv['metadata_arrays_initial']),('health',raw['metadata_arrays'])],inv['lifetime'],inv['build'])
-        environment=artifacts.load('actual-environment');names=('libdcat26_group_v2.so','libfault26_readonly_trace_abi0.so','libnnopbase.so','libascendcl.so')
-        a.check(environment['maps_status']=='OBSERVED' and all(x['status']=='MAPPED_FILE_VERIFIED'
-            for x in environment['loaded_libraries']),'EXACT_VERIFIED_MAPPED_ENVIRONMENT')
-        mapped={x['name']:[x['sha256'],x['elf_build_id']] for x in environment['loaded_libraries']}
-        for name in names:
-            values=[(x['sha256'],x['elf_build_id']) for x in environment['loaded_libraries'] if x['name']==name]
-            a.check(bool(values) and len(set(values))==1,'NO_AMBIGUOUS_REQUIRED_MAPPED_LIBRARY',name)
-        material=dict(machine=environment['machine'],python=environment['python'],packages=environment['packages'],
-            torch_cxx11_abi=environment['torch_cxx11_abi'],libraries={n:mapped[n] for n in sorted(names)},
-            driver=dict(running_module_versions=environment['driver']['running_module_versions'],
-                installation_sha256=(environment['driver']['installation'] or {}).get('sha256')))
-        a.check(cov['scope']['environment_sha256']==C.digest(material),'EXACT_ENVIRONMENT_SCOPE_SHA')
+        environment=artifacts.load('actual-environment')
+        helper=C.pure_module(Path(__file__).with_name('review26_environment_originals.py'),'_env_originals26')
+        helper.review(C,a,environment,cov['scope']['environment_sha256'],inv['lifetime'],
+            native_images={x['name']:x['sha256'] for x in inv['metadata_arrays_initial']['images']})
+    if cov['trigger']=='once':check_c2_proof(a,inv,target_ids)
+    else:
+        live=cov['live_c2_proof'];a.check(live['issued']==[] and isinstance(live['consumed'],dict),'C3_REQUIRES_ORIGINAL_LIVE_C2_CONSUMPTION')
+    return dict(projection_calls_per_request=len(frozen),eligible_targets=len(eligible),fault_requests=faults,
+        per_target_native_outcomes=sum(x is not None for x in modes),ledger_calls=len(calls),recomputed_hits=hits,artifact_files_rehashed=len(artifacts.checked))
+
+
+def check_c2_proof(a,inv,target_ids):
+    cov=inv['coverage'];owner=cov['owner'];generation=cov['generation'];recovery=cov['recovery']
     live=cov['live_c2_proof'];a.check(len(live['issued'])==1 and live['consumed'] is None,'ONE_ORIGINAL_C2_OBJECT_ISSUANCE')
     issued=live['issued'][0];proof=issued['proof'];stripped={k:v for k,v in cov.items() if k!='live_c2_proof'}
     a.check(issued['proof_sha256']==C.digest(proof) and proof==dict(scope=cov['scope'],owner=owner,generation=generation,
@@ -347,16 +386,15 @@ def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural):
         issued['exact_issued_object_verified'] is True and issued['object_binding']['pid']==inv['lifetime']['pid'] and
         C.positive(issued['object_binding']['python_object_id']) and issued['qualification_granted'] is False and
         issued['serializable_authority'] is False,'SAVED_LIVE_C2_PROOF_EXACT_SCOPE_NOT_AUTHORITY')
-    return dict(projection_calls_per_request=len(frozen),eligible_targets=len(eligible),fault_requests=1,
-        per_target_native_outcomes=5,ledger_calls=len(calls),recomputed_hits=hits,artifact_files_rehashed=len(artifacts.checked))
 
 
 def requests(a,b,d,final,worker,*,natural):
     rows=final['inventory']['rows'];observed=final['serving_requests'];seen=set()
-    a.check(len(rows)==len(observed)==len(d['requests'])==8,'EXACT_COMPLETE_GROUP_REQUEST_DENOMINATOR')
+    phases,modes=profile(final['inventory'])
+    a.check(len(rows)==len(observed)==len(d['requests'])==len(phases),'EXACT_COMPLETE_GROUP_REQUEST_DENOMINATOR')
     for index,(row,obs,driver) in enumerate(zip(rows,observed,d['requests'])):
         rid=row['request_id'];snap=obs['snapshot'];mapping=driver['mapping']
-        a.check(row['phase']==obs['phase']==driver['phase']==PHASES[index] and rid not in seen and
+        a.check(row['phase']==obs['phase']==driver['phase']==phases[index] and rid not in seen and
             rid==obs['actual_internal_request_id']==snap['internal_request_id']==mapping['internal_request_id'] and
             mapping['source']=='ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR' and C.positive(mapping['request_state_object_id']) and
             obs['root_returned'] is True and obs['model_output_sha256']==row['output_sha256'] and
@@ -370,15 +408,50 @@ def requests(a,b,d,final,worker,*,natural):
                 snap['positions']==list(range(len(tokens))) and snap['device_input_bytes_equality']=='COMPLETE_DEVICE_READBACK_VERIFIED' and
                 row['input_sha256']==obs['input_sha256']==rows[0]['input_sha256']==
                     b.input_hash(tokens,snap['positions'],snap['input_tensor_metadata']), 'FULL_FIXED_FRESH_PREFILL_INPUT',rid)
-        if index!=5:
+        if modes[index]!='fault':
             a.check(row['output_sha256']==rows[0]['output_sha256'] and row['output_finite'] is True and
                 driver['output']==d['healthy_before'],'REFERENCE_LOSSLESS_OFF_COMPLETE_LOGITS',rid)
-    health=d['post_unregister_health'];a.check(health['worker']==worker and health['output']==d['healthy_before'] and
+    if 'group_fault_repeat' in phases:
+        a.check(rows[5]['output_sha256']==rows[6]['output_sha256'] and
+            d['requests'][5]['output']==d['requests'][6]['output'],'FULL_FAULT_REPEAT_LOGITS_EXACT')
+    health=d.get('post_unregister_health')
+    if health is None:
+        a.check(bool(d.get('error')),'MISSING_POST_UNREGISTER_HEALTH_WITHOUT_FAILURE');return
+    a.check(health['worker']==worker and health['output']==d['healthy_before'] and
         health['mapping']['internal_request_id'] not in seen and
         health['mapping']['source']=='ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR','POST_UNREGISTER_REAL_HEALTH')
 
 
+def complete_group(a,b,d,final,final_ref,originals,context,*,mechanism,expected_count,natural,run='c2'):
+    details={};inv=final['inventory'];context=dict(context,run=run,
+        native_generation=context['ticket']['generation']+int(run=='c3'))
+    a.check(inv['schema']=='demoncat.writer26.complete_set.v2' and inv['mechanism']==mechanism and
+        inv['stage']=='coverage' and d['stage'] in ('c2_once','c2_c3') and inv['phase']=='complete' and inv['finalized'] is True and
+        inv['failure'] is inv['first_failure'] is None and not inv['failure_events'] and not inv['blockers'],
+        'COMPLETE_GROUP_NO_ERASED_FAILURE')
+    artifacts=GroupArtifacts(originals,final_ref,run=run)
+    a.section(run+':requests',requests,a,b,d,final,context['worker'],natural=natural)
+    native=a.section(run+':native',native_group,b,a,inv,context['worker'],context,artifacts,natural=natural,expected_count=expected_count)
+    if native:
+        details['coverage']=a.section(run+':coverage',ledger,a,b,inv,*native,artifacts,context,natural=natural)
+    if natural and mechanism=='26.fia_destination':
+        typed=OLD.helper('review_native26_fia_single_source62.py')
+        details['typed_fia']=a.section(run+':typed_fia',N.typed_group_review,b,typed,inv,typed.FiaArtifacts(b,originals.root),expected_count=expected_count)
+        a.check(details['typed_fia'] is not None and details['typed_fia']['consistent'],'EVERY_FIA_TYPED_AND_STOCK_BRIDGE',run)
+    a.check(inv['installed'] is False and inv['native_removed'] is True and all(inv[k]==0 for k in
+        ('owned_hooks','owned_public_api_wrappers','pending_output_tensors','pending_residual_tensors','pending_public_storage_owners')) and
+        not inv['pending_outcomes'] and not inv['pending_per_call_leases'] and all(inv['native_state']['core'][k]==0 for k in
+        ('installed','pending','executing','device_bytes','host_bytes','descriptor_pending','error')),
+        'FINAL_NATIVE_TENSOR_HOOK_RESOURCE_ZERO',run)
+    return details
+
+
 def review(d,host,records,originals,*,mechanism,expected_count,natural=True):
+    if d.get('stage')=='c2_c3':
+        helper=C.pure_module(Path(__file__).with_name('review26_c3_originals.py'),'_c3_originals26')
+        from types import SimpleNamespace
+        return helper.review(SimpleNamespace(**globals()),d,host,records,originals,
+                             mechanism=mechanism,expected_count=expected_count,natural=natural)
     a=C.Audit();b=OLD.helper('review_native26_single_source54.py');details={}
     context=a.section('protocol',C.protocol,a,d,host,records,mechanism,natural=natural)
     if not context:return a.report()
@@ -390,27 +463,11 @@ def review(d,host,records,originals,*,mechanism,expected_count,natural=True):
             original_error=d.get('error'),original_cleanup_error=d.get('cleanup_error'),
             completed_original_requests=len(observed['snapshots']) if observed else None,
             aborted_request=d.get('owned_request_abort'))
-    final=observed['final'];inv=final['inventory'];scope=inv['coverage']
     a.check(context['actions']==['attach','prepare','register','check','enable']+['advance','query','advance']*8+
         ['finish','disable','unregister','detach'],'EXACT_COMPLETE_SET_PUBLIC_PROTOCOL')
-    a.check(inv['schema']=='demoncat.writer26.complete_set.v2' and inv['mechanism']==mechanism and
-        inv['stage']=='coverage' and d['stage']=='c2_once' and inv['phase']=='complete' and inv['finalized'] is True and
-        inv['failure'] is inv['first_failure'] is None and not inv['failure_events'] and not inv['blockers'],
-        'COMPLETE_GROUP_NO_ERASED_FAILURE')
-    artifacts=GroupArtifacts(originals,observed['final_ref'])
-    a.section('requests',requests,a,b,d,final,host['worker'],natural=natural)
-    native=a.section('native',native_group,b,a,inv,host['worker'],context,artifacts,natural=natural,expected_count=expected_count)
-    if native:
-        details['coverage']=a.section('coverage',ledger,a,b,inv,*native,artifacts,context,natural=natural)
-    if natural and mechanism=='26.fia_destination':
-        typed=OLD.helper('review_native26_fia_single_source62.py')
-        details['typed_fia']=a.section('typed_fia',N.typed_group_review,b,typed,inv,typed.FiaArtifacts(b,originals.root),expected_count=expected_count)
-        a.check(details['typed_fia'] is not None and details['typed_fia']['consistent'],'EVERY_FIA_TYPED_AND_STOCK_BRIDGE')
-    a.check(inv['installed'] is False and inv['native_removed'] is True and all(inv[k]==0 for k in
-        ('owned_hooks','owned_public_api_wrappers','pending_output_tensors','pending_residual_tensors','pending_public_storage_owners')) and
-        not inv['pending_outcomes'] and not inv['pending_per_call_leases'] and all(inv['native_state']['core'][k]==0 for k in
-        ('installed','pending','executing','device_bytes','host_bytes','descriptor_pending','error')),
-        'FINAL_NATIVE_TENSOR_HOOK_RESOURCE_ZERO')
+    a.check(d['stage']=='c2_once','EXACT_C2_ONLY_DRIVER_STAGE')
+    details=complete_group(a,b,d,observed['final'],observed['final_ref'],originals,context,
+        mechanism=mechanism,expected_count=expected_count,natural=natural)
     return dict(**a.report(),details=details,classification='SAVED_STANDARD_WORKER_GROUP_RECEIPTS' if natural else 'CPU_TOPOLOGY_CONTRACT_ONLY',
         group_completion_reconciled=not a.issues,originals_rehashed=len(originals.checked),
         limits=['Saved receipt reconciliation never issues a live C2/C3 capability.',
@@ -422,6 +479,9 @@ def review(d,host,records,originals,*,mechanism,expected_count,natural=True):
 def provenance(d,final,args):
     loaded=OLD.LOADED;required=OLD.REQUIRED_SOURCES
     extra={'fault_injection/deployments/writer26_coverage.py','fault_injection/coverage.py','fault_injection/coverage_session.py'}
+    producer=C.under(args.source_root,'experiments/c2c3_closure_20261117/providers26_worker_core_probe.py').read_text(encoding='utf-8')
+    environment_declared="'fault_injection.environment'" in producer
+    if environment_declared:extra.add('fault_injection/environment.py')
     try:
         OLD.LOADED=loaded|extra;OLD.REQUIRED_SOURCES=required|extra
         result=OLD.provenance(d,final,args.source_root,args.native_root,source_commit=args.source_commit,
@@ -430,8 +490,11 @@ def provenance(d,final,args):
             native_source_sha=args.native_source_manifest_sha256)
     finally:OLD.LOADED,OLD.REQUIRED_SOURCES=loaded,required
     hashes=d['sources'];prefix='fault_injection/deployments/'
-    shared=D([hashes[prefix+'writer26_coverage.py'],hashes[prefix+'writer26_experiment.py'],final['inventory']['build'],
-        hashes[prefix+'writer26_public.py'],hashes[prefix+'writer26_fia_typed.py'],hashes['fault_injection/metadata_arrays.py']])
+    components=[hashes[prefix+'writer26_coverage.py'],hashes[prefix+'writer26_experiment.py'],final['inventory']['build'],
+        hashes[prefix+'writer26_public.py'],hashes[prefix+'writer26_fia_typed.py']]
+    coverage_source=C.under(args.source_root,prefix+'writer26_coverage.py').read_text(encoding='utf-8')
+    if "joinpath('environment.py')" in coverage_source:components.append(hashes['fault_injection/environment.py'])
+    components.append(hashes['fault_injection/metadata_arrays.py']);shared=D(components)
     implementation=D([shared,hashes[OLD.PREFIX+'serving26_core.py'],hashes[OLD.PREFIX+'providers/fault26_core.py']])
     a=C.Audit();a.check(final['inventory']['coverage']['scope']['implementation_sha256']==implementation,
         'GROUP_SCOPE_BINDS_ACTUAL_CORE_COVERAGE_NATIVE_AND_METADATA_SOURCE')
@@ -450,10 +513,16 @@ def main(argv=None):
     try:
         originals=C.Originals(args.evidence_root);d=originals.load(dict(path='probe/result.json',sha256=args.result_sha256))
         host,records=C.load_rpc(originals,d);result=review(d,host,records,originals,mechanism=args.mechanism,expected_count=args.expected_writers)
-        refs=d.get('c2_attempt',{}).get('original_observations',{}).get('originals',[])
-        if refs:
-            final=originals.load(refs[-1],mounted=True);proof=provenance(d,final,args);result['provenance']=proof
+        proofs={}
+        for run in ('c2','c3') if d.get('stage')=='c2_c3' else ('c2',):
+            refs=d.get(run+'_attempt',{}).get('original_observations',{}).get('originals',[])
+            if not refs:continue
+            final=originals.load(refs[-1],mounted=True)
+            if final['inventory'].get('coverage') is None:continue
+            proof=provenance(d,final,args);proofs[run]=proof
             result['consistent']=bool(result['consistent'] and proof['consistent'])
+        result['provenance_by_run']=proofs
+        if proofs:result['provenance']=proofs.get('c2')
         else:
             result.update(consistent=False,provenance=dict(consistent=False,reason='NO_FINAL_COMPLETE_GROUP_ORIGINAL'))
         result['group_completion_reconciled']=bool(result.get('group_completion_reconciled') and result['consistent'])
@@ -465,7 +534,9 @@ def main(argv=None):
         if d.get('error'):
             result.update(classification='FAILED_OR_PARTIAL_NOT_QUALIFIED',group_completion_reconciled=False)
     result.update(schema='demoncat.writer26.worker_group.independent_originals.v1',reviewer_sha256=C.file_sha(__file__),
-        atomic_helpers=OLD.HELPERS,read_only=True,runtime_executed=False)
+        atomic_helpers=OLD.HELPERS,independent_helpers={name:C.file_sha(Path(__file__).with_name(name)) for name in
+            ('group_review_common.py','review26_group_native.py','review26_c3_originals.py','review26_environment_originals.py')},
+        read_only=True,runtime_executed=False)
     print(json.dumps(result,indent=2,allow_nan=False));return 0 if result['consistent'] else 2
 
 

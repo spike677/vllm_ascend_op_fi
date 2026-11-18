@@ -131,3 +131,50 @@ fixture plus two complete public CPU protocol runs with deterministic Linux
 and Windows identity-reader inputs. The producer, collector, RPC flow and
 audit remain real CPU implementations in those runs; saved originals are not
 edited. This is a portability/receipt regression result, not NPU acceptance.
+
+Native26 two-generation review is based on current integration
+`c0045f283de5af99628da9631d19d3ee9769d66d` (source77). The same CLI now accepts
+both `c2_once` and `c2_c3` original structures. It checks the stable public RPC
+generation separately from the fresh C3 Native generation, the completed C2
+`prior_c2` originals at the transition, and the final C3 originals. Each run's
+complete Native denominator, every eligible writer/consumer, Reference,
+Lossless, F and OFF, complete output receipts and zero owned resources are
+reconciled independently. C3 must include both F requests and exact repeated
+output evidence. Unsupported Native calls stay in each generation's census
+and execution ledger.
+
+The transition review compares the original issuance and consumption fields,
+object binding, consumer identity, scope, owner, next Native generation, full
+target set and uninterrupted Native/typed trace boundaries. It does not
+recreate a live proof object from JSON. Every offline report continues to say
+`c2=false`, `c3=false`, `e5=false`, `public_qualification_granted=false`;
+`group_completion_reconciled` only describes consistency of saved originals.
+Failures and missing request originals remain partial, with the earlier C2
+facts and each run's observed denominator retained. A saved success flag
+cannot supply a missing writer, outcome, original file or generation.
+
+The source77 held-function environment profile is reconciled without loading
+libraries or resolving symbols: all 16 source-defined getter slots, exact
+saved executable mappings, image hashes, retained collision groups and scope
+material must agree. Both the actual Worker and independent Native compiler
+snapshots remain required by provenance review. Current implementation hashes
+include `environment.py`; older C2 source records retain their original hash
+composition. The reviewer hashes every available run's provenance separately.
+Saved mapping/function records are not a fresh runtime mapping attestation.
+
+Validation uses the actual current public CPU driver for QMM and typed FIA,
+including all 17 requests and a post-unregister ordinary health request. The
+FIA CPU case retains three Native writers, two eligible targets, and C2/C3
+hits of two/four. A separate, explicitly enhanced CPU ABI test envelope checks
+the C3 typed verifier's 66 records and 18 full output artifacts. Negative cases
+cover wrong generations, copied object bindings, scope or target loss, missing
+second-F outcomes, missing OFF proof, leaked resources, altered original SHA,
+missing held symbols and incomplete/failed groups. These are CPU contracts;
+this change performs no SSH, container or NPU action and adds no device
+qualification or new statistics data.
+
+The six-module local regression passed 76 tests: the existing C2 originals,
+new C2/C3 originals, current-producer Fault39 originals, C2 public driver,
+C2/C3 public driver and current every-match provider contracts. The separate
+CLI help check also passed. These counts describe one regression invocation,
+not additional independent device cases.
