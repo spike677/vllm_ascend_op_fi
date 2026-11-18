@@ -79,7 +79,7 @@ class CustomPacketMetadata:
                 'CUSTOM_API_SET_CHANGED_AFTER_CAPTURE_SETUP')
         for row in self.rows:
             require(getattr(row['module'], row['name']) is row['wrapper']
-                    and row['wrapper'].default is row['default']
+                    and getattr(row['wrapper'], 'default', None) is row['default']
                     and row['default'].overloadpacket is row['packet'],
                     'CUSTOM_PACKET_METADATA_OWNER_CHANGED')
 

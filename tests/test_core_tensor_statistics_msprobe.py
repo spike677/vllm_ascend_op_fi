@@ -51,11 +51,12 @@ class ActualMsprobeCpuTests(unittest.TestCase):
         self.assertEqual(value.tolist(), [3.0, 5.0])
         self.assertEqual(calls, ['original'])
         self.assertEqual(dispatches, [packet.default])
-        # Reproduce the observed failure without changing either callable.
+        # A cached CPU dispatcher may already hold the overload. Missing
+        # metadata must nevertheless refuse before a new native dispatch.
         del wrapper.default
         try:
-            with self.assertRaisesRegex(AttributeError, 'default'), Observer():
-                wrapper(torch.tensor([1.0]))
+            with self.assertRaisesRegex(RuntimeError, 'METADATA_OWNER_CHANGED'):
+                sidecar.packet_metadata.verify()
         finally:
             wrapper.default = packet.default
         sidecar.packet_metadata.verify()
