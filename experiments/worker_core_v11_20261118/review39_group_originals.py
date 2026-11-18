@@ -33,9 +33,9 @@ EXTRA_MODULES = ['fault_injection/deployments/'+n+'.py' for n in
 def process_start_matches(target_start, worker, *, natural):
     """Join the saved CPU representation without weakening a real Worker join.
 
-    postwrite_evidence.process_start records /proc start ticks on Linux and an
-    explicit CPU-contract stamp when /proc is unavailable. Worker identity uses
-    boot/PID/ticks on Linux. Do not promote a ticks-only value in natural mode.
+    Older CPU originals record /proc start ticks or a CPU-contract stamp;
+    current Worker originals can retain the complete boot/PID/ticks identity.
+    Do not promote a ticks-only value in natural mode.
     """
     worker_start=worker.get('process_start_identity');pid=worker.get('pid')
     if not isinstance(target_start,str) or not isinstance(worker_start,str) or not C.positive(pid):
@@ -46,7 +46,7 @@ def process_start_matches(target_start, worker, *, natural):
     if fallback is not None:
         return int(fallback[1])==pid
     linux=re.fullmatch(r'proc:([^:]+):([1-9][0-9]*):([0-9]+)',worker_start)
-    return linux is not None and int(linux[2])==pid and target_start==linux[3]
+    return linux is not None and int(linux[2])==pid and target_start in (worker_start,linux[3])
 
 
 def provenance(d, host, final, source_root, manifest_sha, commit, native_library, *, profile):

@@ -106,3 +106,11 @@ that the fallback contains that PID and a numeric nonce. Natural Worker review
 still requires complete identity equality and does not accept the CPU tick
 projection. Four fixed-example tests exercise both platforms without depending
 on the host OS. No provider, original receipt or device qualification changes.
+
+Current producer receipts can now retain the complete `proc:boot:PID:tick`
+identity in CPU mode too. The auditor accepts that exact valid marker only
+when its embedded PID matches the recorded Worker PID; historical tick and
+Windows CPU-contract forms remain supported under their previous checks.
+A fifth fixed-example lifetime test covers this source76 representation and
+rejects foreign boot, PID, tick and malformed complete markers. No original
+receipt is generated or rewritten to make this test pass.

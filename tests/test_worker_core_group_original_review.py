@@ -15,6 +15,16 @@ from experiments.worker_core_v11_20261118 import review39_group_originals as r
 
 class ProcessStartRepresentationTests(unittest.TestCase):
     """Fixed saved examples exercise both OS branches on either test platform."""
+    def test_current_cpu_complete_proc_identity_requires_exact_pid_and_marker(self):
+        marker='proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:1:64770165'
+        worker=dict(pid=1,process_start_identity=marker)
+        self.assertTrue(r.process_start_matches(marker,worker,natural=False))
+        self.assertFalse(r.process_start_matches(marker,dict(worker,pid=2),natural=False))
+        for other in ('proc:foreign-boot:1:64770165',marker[:-1]+'6','proc::1:64770165'):
+            self.assertFalse(r.process_start_matches(other,worker,natural=False))
+        invalid='proc::1:64770165'
+        self.assertFalse(r.process_start_matches(invalid,dict(pid=1,process_start_identity=invalid),natural=False))
+
     def test_linux_cpu_tick_joins_the_exact_recorded_worker_tick_and_pid(self):
         worker=dict(pid=123,process_start_identity='proc:fixture-boot:123:45678')
         self.assertTrue(r.process_start_matches('45678',worker,natural=False))
