@@ -79,7 +79,7 @@ def main():
         if llm.reset_prefix_cache(reset_running_requests=False) is not True:raise RuntimeError('PREFIX_RESET_UNCONFIRMED')
         # Actual phase is retained. The root-owned helper must explicitly admit
         # group phases; no fake "healthy" phase is passed to bypass its guard.
-        report['mm_cache_resets'].append(reset_idle_mm_cache(llm,phase));save()
+        report['mm_cache_resets'].append(reset_idle_mm_cache(llm,phase,reset_encoder_cache=True));save()
         pending=llm.enqueue([prompt],params,use_tqdm=False)
         mapping=read_enqueued_identity(llm,pending,seen_internal_request_ids=seen);seen.extend(pending)
         tokens=driver_prompt(llm,pending[0])

@@ -8,11 +8,14 @@ class PublicLLM:
         self.pending = False
         self.calls = 0
         self.result = None
+        self.encoder_calls = 0
     def has_unfinished_requests(self):
         return self.pending
     def reset_mm_cache(self):
         self.calls += 1
         return self.result
+    def reset_encoder_cache(self):
+        self.encoder_calls += 1
 
 
 class CacheControlTests(unittest.TestCase):
@@ -53,6 +56,19 @@ class CacheControlTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, 'IDLE_DECLARED'):
                     reset_idle_mm_cache(llm, phase)
                 self.assertEqual(llm.calls, 0)
+
+    def test_explicit_public_engine_reset_does_not_grant_encoder_proof(self):
+        llm = PublicLLM()
+        row = reset_idle_mm_cache(llm, 'c2_fault', reset_encoder_cache=True)
+        self.assertEqual((llm.calls, llm.encoder_calls), (1, 1))
+        self.assertEqual(len(row['public_resets']), 2)
+        self.assertFalse(row['encoder_execution_proven'] or row['qualification_granted'])
+
+    def test_missing_public_engine_reset_refuses_before_any_mutation(self):
+        llm = PublicLLM(); llm.reset_encoder_cache = None
+        with self.assertRaisesRegex(RuntimeError, 'PUBLIC_BOUND'):
+            reset_idle_mm_cache(llm, 'c2_fault', reset_encoder_cache=True)
+        self.assertEqual(llm.calls, 0)
 
 
 if __name__ == '__main__':

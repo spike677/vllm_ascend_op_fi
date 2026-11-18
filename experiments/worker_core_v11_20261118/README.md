@@ -166,3 +166,34 @@ No F, ACLNN/device-payload or C1/C2/C3/E5 qualification follows. A new explicit
 `--reset-mm-cache` option uses only the public LLM method at idle boundaries;
 a successful reset still cannot replace observed scheduler/encoder evidence.
 The original cached attempt is preserved.
+
+Source74 repeated both healthy checks on124/card2. Quant recorded270 actual
+projections and270 Native prepare/execute pairs, all bound; only6/270 calls
+have proven request rows. The exact AddRms diagnostic shows current, matching
+x1/x2 row proofs, but gamma is an actual registered model Parameter with
+requires_grad=True that the observer had not admitted as broadcast. This is
+an inference-parameter adaptation gap, not evidence of a training fault.
+No Native owner or F was installed. Result SHA256:
+`8c36be35649fd27b1db06e5c2c8084ce13478ff1e04218f0e8d16783faf9a304`;
+inventory:`7177e5739adb2887c0003cd833760dce1057e6a9da6c7cc919385b6e7cce4341`.
+
+Source74 Vision17 called public reset_mm_cache twice, but still observed only
+one encoder execution; healthy output equality does not resolve that gap.
+Original SHA256:`ef613703b647bbd27d06ace5af6ecd0cc4c2ee5746dd23b15836f64849dad5cc`.
+Production vLLM separates preprocessing/MM caches from encoder caches.
+The next group probe explicitly calls the public LLMEngine.reset_encoder_cache
+at idle as well. That API clears both scheduler and Worker encoder cache state;
+no private cache dictionary is modified by the probe. Every phase must still
+independently observe its actual scheduled encoder execution. A successful
+cache reset never grants coverage or qualification.
+
+Both source74 cases exited0. The final queue state is POST_CASE_DEVICE_BUSY
+because the external kubelet checkpoint changed during the last case. Its
+original post-gate failure is retained; a new read-only owner review is required
+for the next attempt. Subsequent independent review found no live owner on
+either card; this remains a snapshot, not an exclusive allocation.
+
+Source75's fresh26 parent and group plus39 postwrite packages passed the actual
+8.5.1 SDK build and host-only contracts. The new33 arch22 normal route package
+also compiled successfully. These are build results only. They confer no
+device, stock/private-equivalence, C2/C3 or E5 qualification.

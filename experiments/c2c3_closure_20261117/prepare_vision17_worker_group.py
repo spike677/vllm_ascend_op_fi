@@ -14,7 +14,7 @@ def cases(source,card=2):
     row['command']=row['command'].replace('vision17_worker_census_probe.py','vision17_worker_group_probe.py')
     row['review'].update(experiment_id=row['id'],provider='Vision17GroupProvider through existing WorkerFaultRuntime/CoverageSession',
         expected_hits=3,acceptance='C1_AND_SINGLE_TARGET_SET_C2_C3_TORCH_PARAMETER_ONLY_NATIVE_AND_E5_UNOBSERVED',
-        recovery_plan='Four fresh healthy bridge requests, once-F/OFF, two every-match F/OFF, cleanup-healthy; public idle MM reset every request, actual scheduled encoder required. On failure retain originals and require real OFF plus healthy request before release.',
+        recovery_plan='Four fresh healthy bridge requests, once-F/OFF, two every-match F/OFF, cleanup-healthy; public idle MM and encoder cache reset every request, actual scheduled encoder required. On failure retain originals and require real OFF plus healthy request before release.',
         actual_group_targets='Must independently discover exactly one eligible projection; no multi-target qualification claim')
     return [row]
 
