@@ -144,6 +144,13 @@ class Output39ProbeTests(unittest.TestCase):
         self.assertIn('C2_C3_FALSE', row['review']['acceptance'])
         self.assertIn('/evidence/worker-core39-output.stderr.log', row['command'])
         self.assertTrue(all((probe.ROOT/path).is_file() for path in probe.SOURCES))
+        for name, relative in (
+                ('fault_injection.deployments.postwrite_npu_consumers',
+                 'fault_injection/deployments/postwrite_npu_consumers.py'),
+                ('demoncat.runtime.vllm_ascend.worker_extension.gemm_lineage',
+                 'src/demoncat/runtime/vllm_ascend/worker_extension/gemm_lineage.py')):
+            self.assertIn((name, relative), probe.MODULES)
+            self.assertEqual(probe.SOURCES.count(relative), 1)
 
 
 if __name__ == '__main__':

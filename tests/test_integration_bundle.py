@@ -419,7 +419,7 @@ class ActualSourceRelocationTests(unittest.TestCase):
             result = subprocess.run([sys.executable, '-I', '-B', '-c', contract_script], cwd=folder,
                                     capture_output=True, text=True, timeout=60)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn('Ran 16 tests', result.stderr)
+            self.assertIn('Ran 20 tests', result.stderr)
 
 
 if __name__ == '__main__':

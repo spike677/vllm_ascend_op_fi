@@ -23,19 +23,6 @@ def default_unquantized_gemm(layer, x, weight, bias=None):
 
 
 class GemmLineageTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.library = torch.library.Library('vllm', 'FRAGMENT')
-        cls.library.define('unquantized_gemm(Tensor x, Tensor weight, Tensor? bias=None) -> Tensor')
-        cls.library.impl('unquantized_gemm', lambda x, weight, bias=None:
-                         torch.nn.functional.linear(x, weight, bias), 'CPU')
-        cls.library.impl('unquantized_gemm', lambda x, weight, bias=None:
-                         torch.nn.functional.linear(x, weight, bias), 'PrivateUse1')
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.library._destroy()
-
     def setUp(self):
         self.stack = ExitStack()
         self.folder = Path(self.stack.enter_context(tempfile.TemporaryDirectory()))
@@ -50,11 +37,17 @@ class GemmLineageTests(unittest.TestCase):
         utils.__file__ = str(utils_path)
         utils.default_unquantized_gemm = self.module.default_unquantized_gemm
         register_path = self.folder / 'torch_utils.py'
-        register_path.write_text('import torch\ndef direct_register_custom_op():\n    pass\n')
+        register_path.write_text('import torch\nvllm_lib = torch.library.Library("vllm", "FRAGMENT")\n'
+                                 'def direct_register_custom_op():\n    pass\n')
         register = ModuleType(lineage.REGISTER_MODULE)
         register.__file__ = str(register_path)
         exec(compile(register_path.read_bytes(), str(register_path), 'exec'), register.__dict__)
-        register.vllm_lib = self.library
+        self.library = register.vllm_lib
+        self.stack.callback(self.library._destroy)
+        self.library.define('unquantized_gemm(Tensor x, Tensor weight, Tensor? bias=None) -> Tensor')
+        for key in ('CPU', 'PrivateUse1'):
+            self.library.impl('unquantized_gemm', lambda x, weight, bias=None:
+                              torch.nn.functional.linear(x, weight, bias), key)
         self.module.direct_register_custom_op = register.direct_register_custom_op
         self.stack.enter_context(patch.dict(sys.modules, {
             lineage.PATCH_MODULE: self.module, lineage.UTILS_MODULE: utils,
@@ -63,6 +56,9 @@ class GemmLineageTests(unittest.TestCase):
         self.stack.enter_context(patch.object(lineage, 'PATCH_SHA256', hashlib.sha256(patch_path.read_bytes()).hexdigest()))
         self.stack.enter_context(patch.object(lineage, 'UTILS_SHA256', hashlib.sha256(utils_path.read_bytes()).hexdigest()))
         self.stack.enter_context(patch.object(lineage, 'REGISTER_SHA256', hashlib.sha256(register_path.read_bytes()).hexdigest()))
+        self.stack.enter_context(patch.object(lineage, 'DISPATCH_TORCH_VERSION', str(torch.__version__)))
+        self.stack.enter_context(patch.object(lineage, 'DISPATCH_GUARD',
+            'CPU_FIXTURE_SINGLE_PRIVATEUSE1_NO_SHADOW_SOURCE_ORIGIN_NOT_NPU'))
         self.function = torch.ops.vllm.unquantized_gemm.default
         self.binding = lineage.ReviewedGemmBinding()
         self.x = torch.arange(8, dtype=torch.bfloat16).reshape(2, 4)

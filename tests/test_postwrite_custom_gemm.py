@@ -69,6 +69,63 @@ class CustomGemmBoundaryTests(unittest.TestCase):
         with patch.object(gemm_lineage, 'SCHEMA', gemm_lineage.SCHEMA + ' changed'):
             self.assertIn('UNREVIEWED_PUBLIC_GEMM_SCHEMA', self.proof(result=result)[1])
 
+    def test_actual_new_library_override_is_refused_then_removal_restores_original(self):
+        result = self.func(self.x, self.model.weight)
+        first = self.proof(result=result)[0]['registered_implementation']['current_registration']
+        library = torch.library.Library('vllm', 'IMPL')
+        try:
+            library.impl('unquantized_gemm', lambda x, weight, bias=None: x,
+                         'PrivateUse1', allow_override=True)
+            self.assertIn('vllm/unquantized_gemm/PrivateUse1', self.ops.library._op_impls)
+            proof, reason = self.proof(result=result)
+            self.assertIsNone(proof)
+            self.assertIn('CURRENT_REGISTRATION_SHADOWED', reason)
+        finally:
+            library._destroy()
+        self.assertEqual(self.proof(result=result)[0]['registered_implementation']['current_registration'], first)
+
+    def test_actual_same_library_override_is_refused_despite_same_origin(self):
+        result = self.func(self.x, self.model.weight)
+        self.ops.library.impl('unquantized_gemm', lambda x, weight, bias=None: x,
+                              'PrivateUse1', allow_override=True)
+        proof, reason = self.proof(result=result)
+        self.assertIsNone(proof)
+        self.assertIn('CURRENT_REGISTRATION_SHADOWED', reason)
+
+    def test_current_origin_definition_and_build_are_independently_bound(self):
+        result = self.func(self.x, self.model.weight)
+        original = torch._C._dispatch_dump('vllm::unquantized_gemm')
+        for replace, reason in (
+                (lambda dump: '\n'.join(line for line in dump.splitlines() if not line.startswith('PrivateUse1:')),
+                 'DISPATCH_REGISTRATION_UNPROVEN'),
+                (lambda dump: '\n'.join('PrivateUse1: registered at foreign.py:1 :: (none) [ boxed ]'
+                    if line.startswith('PrivateUse1:') else line for line in dump.splitlines()),
+                 'IMPL_NOT_DEFINITION_OWNER'),
+                (lambda dump: '\n'.join('debug: registered at foreign.py:1' if line.startswith('debug:') else
+                    'PrivateUse1: registered at foreign.py:1 :: (none) [ boxed ]'
+                    if line.startswith('PrivateUse1:') else line for line in dump.splitlines()),
+                 'REGISTRATION_SOURCE_ORIGIN_CHANGED')):
+            with self.subTest(reason=reason), patch.object(torch._C, '_dispatch_dump', return_value=replace(original)):
+                self.assertIn(reason, self.proof(result=result)[1])
+        with patch.object(gemm_lineage, 'DISPATCH_TORCH_VERSION', 'unreviewed'):
+            self.assertIn('DISPATCH_BUILD', self.proof(result=result)[1])
+
+    def test_privateuse1_override_after_lossless_opens_no_fault_lease(self):
+        p = PostwriteProvider(self.model, CpuTransport(), '39.output_proxy')
+        p.qualify(self.x)
+        p.run('baseline', self.x)
+        library = torch.library.Library('vllm', 'IMPL')
+        try:
+            library.impl('unquantized_gemm', lambda x, weight, bias=None: x,
+                         'PrivateUse1', allow_override=True)
+            with patch.object(p.transport, 'open', side_effect=AssertionError('Native must not open')):
+                with self.assertRaisesRegex(PostwriteRefused, 'QUALIFIED_WRITER_OR_CONSUMER_NOT_OBSERVED'):
+                    p.run('fault', self.x)
+            self.assertIsNone(p._last_intervention)
+            self.assertFalse(p.live_lease_count)
+        finally:
+            library._destroy()
+
     def test_source_code_and_registration_owner_changes_remain_in_inventory(self):
         for change in ('source', 'code', 'library'):
             with self.subTest(change=change), CustomOperatorsReplacement(self.ops, change):

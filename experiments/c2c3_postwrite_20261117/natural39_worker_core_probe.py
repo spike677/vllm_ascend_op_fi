@@ -21,11 +21,12 @@ SUCCESS = 'STANDARD_WORKER_OUTPUT39_C1_EVIDENCE_READY_FOR_REVIEW'
 STATISTICS_REFUSAL = ('OUTPUT39_STATISTICS_BOUNDARY_UNADAPTED: root/logits complete_tensor diagnostics '
     'would enter mix API statistics; no filtering or diagnostic first-difference is accepted')
 MODULES = tuple(('fault_injection.deployments.'+name, 'fault_injection/deployments/'+name+'.py')
-    for name in ('postwrite', 'postwrite_boundaries', 'postwrite_inventory', 'postwrite_observed')) + tuple(
+    for name in ('postwrite', 'postwrite_boundaries', 'postwrite_inventory', 'postwrite_observed',
+                 'postwrite_npu_consumers')) + tuple(
     ('demoncat.runtime.vllm_ascend.worker_extension.'+name,
      'src/demoncat/runtime/vllm_ascend/worker_extension/'+name.replace('.', '/')+'.py')
     for name in ('serving39_output', 'providers.fault39_output', 'serving', 'serving41',
-                 'serving_context', 'call_binding', 'host', 'config', 'runtime', 'identity', 'registry'))
+                 'serving_context', 'gemm_lineage', 'call_binding', 'host', 'config', 'runtime', 'identity', 'registry'))
 SOURCES = tuple(path for _, path in MODULES) + (
     'experiments/c2c3_postwrite_20261117/natural39_worker_core_probe.py',
     'experiments/c2c3_postwrite_20261117/prepare39_worker_core.py',

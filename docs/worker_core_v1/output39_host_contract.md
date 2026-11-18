@@ -74,8 +74,16 @@ The custom GEMM adapter requires its exact schema
 the current module's exact weight object, and no bias. The existing
 `ReviewedGemmBinding` verifies these source SHA256 values on each actual call,
 the loaded function code/globals, actual registration Library ownership and
-PrivateUse1 dispatch. Matching a model name, tensor shape or weight values does
-not provide this ownership.
+PrivateUse1 dispatch. The current-registration guard is pinned to Torch
+`2.9.0+cpu`: the complete PrivateUse1 list must contain just the original active
+registration, with no inactive/overridden entries. The active implementation and
+schema definition origins must agree with the exact file/line of the reviewed
+`vllm_lib` construction. The raw dump, construction lines, current origin and
+guard profile are recorded; the Library's historical `_op_impls` set alone is
+not authority. New-Library and same-Library `allow_override=True` registrations
+refuse. Matching a model name, tensor shape or weight values does not provide
+this ownership. Arbitrary private C++/Python state manipulation is not a sandbox
+isolation claim.
 
 | Source | SHA256 |
 | --- | --- |
@@ -156,6 +164,13 @@ Use a new reviewed source snapshot and matching packages. No Native ABI/vendor
 change is required; the actual existing postwrite library still needs its exact
 SHA and mapped-file verification. The case preserves the standard eager TP1
 fixed fresh-prefill workload. A model name is not an eligibility certificate.
+The probe's original loaded-file SHA checks include `gemm_lineage.py` and
+`postwrite_npu_consumers.py`. Before the new registration profile is used in the
+pinned image, root can run the device-free
+`check_torch_dispatch_override_cpu.py --expected-torch 2.9.0+cpu` contract. It
+registers and removes CPU-owned dispatcher metadata only and executes no tensor
+operator. Local fixture runs on a different Torch version do not validate the
+production version's dispatcher behavior.
 
 `natural39_worker_core_probe.py` saves every original collective RPC response
 individually, including identity/capabilities and exceptions. It performs only

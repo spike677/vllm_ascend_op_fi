@@ -18,7 +18,14 @@ class CustomOperators:
         self.stack = ExitStack()
         self.folder = Path(self.stack.enter_context(tempfile.TemporaryDirectory()))
         self.calls = []
-        self.library = torch.library.Library('vllm', 'FRAGMENT')
+        register_source = ('import torch\nvllm_lib = torch.library.Library("vllm", "FRAGMENT")\n'
+                           'def direct_register_custom_op():\n    pass\n')
+        register_path = self.folder / 'torch_utils.py'
+        register_path.write_bytes(register_source.encode())
+        register = ModuleType(gemm_lineage.REGISTER_MODULE)
+        register.__file__ = str(register_path)
+        exec(compile(register_path.read_bytes(), str(register_path), 'exec'), vars(register))
+        self.library = register.vllm_lib
         self.stack.callback(self.library._destroy)
         self.library.define(gemm_lineage.SCHEMA.split('::', 1)[1])
         def gemm(x, weight, bias=None):
@@ -58,11 +65,14 @@ class CustomOperators:
                 'def default_unquantized_gemm(layer, x, weight, bias=None):\n'
                 '    return torch.ops.vllm.unquantized_gemm(x, weight, bias)\n'),
             gemm_lineage.UTILS_MODULE: '# CPU-only utils identity fixture\n',
-            gemm_lineage.REGISTER_MODULE: 'import torch\ndef direct_register_custom_op():\n    pass\n',
+            gemm_lineage.REGISTER_MODULE: register_source,
             consumers.META_MODULE: '# CPU-only reviewed meta-source fixture\n',
         }
         self.modules = {}
         for index, (name, source) in enumerate(sources.items()):
+            if name == gemm_lineage.REGISTER_MODULE:
+                self.modules[name] = register
+                continue
             file = self.folder / (str(index) + '.py')
             file.write_bytes(source.encode())
             module = ModuleType(name)
@@ -84,6 +94,9 @@ class CustomOperators:
             digest = hashlib.sha256(Path(self.modules[source_name].__file__).read_bytes()).hexdigest()
             self.stack.enter_context(patch.object(module, attribute, digest))
         self.stack.enter_context(patch.object(consumers, 'TORCH_VERSION', str(torch.__version__)))
+        self.stack.enter_context(patch.object(gemm_lineage, 'DISPATCH_TORCH_VERSION', str(torch.__version__)))
+        self.stack.enter_context(patch.object(gemm_lineage, 'DISPATCH_GUARD',
+            'CPU_FIXTURE_SINGLE_PRIVATEUSE1_NO_SHADOW_SOURCE_ORIGIN_NOT_NPU'))
         registrations = {}
         for operation in consumers.NPU_VALUE_CONSUMERS:
             dump = torch._C._dispatch_dump('npu::' + operation.split('.')[1])
