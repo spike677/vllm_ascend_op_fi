@@ -153,3 +153,16 @@ inventory:`ebba0a3a31d6161b61e293add84d5097eae1f19a6e998c43fd123e9d2057a469`.
 The owner was never installed, owned API/method hooks were removed, both
 scheduler tensor references cleared, and before/after healthy tokens match.
 These two attempts improve evidence coverage without granting C2/C3.
+
+
+The source72 Qwen3-VL public two-healthy census completed with one actual
+encoder chain. Its first request proves original scheduler feature/pixels,
+Torch Conv3d padding `[0,0,0]`, returned alias `view`, and exact-object first
+consumer `aten.add.Tensor`. The second request reused cache and remains
+`NO_ACTUAL_ENCODER_CALL_POSSIBLE_CACHE_REUSE_NOT_PROVEN`. Hidden/logits healthy
+outputs are exact; owned hooks/modes/held tensors are zero. Original result
+SHA256:`e8b207877c1f94623564837db7e2b103a107cfa618ed4463ef8d9759113df252`.
+No F, ACLNN/device-payload or C1/C2/C3/E5 qualification follows. A new explicit
+`--reset-mm-cache` option uses only the public LLM method at idle boundaries;
+a successful reset still cannot replace observed scheduler/encoder evidence.
+The original cached attempt is preserved.

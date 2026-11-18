@@ -58,11 +58,13 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--model',type=Path,required=True);parser.add_argument('--image',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True);parser.add_argument('--memory',type=float,default=.60)
+    parser.add_argument('--reset-mm-cache',action='store_true',
+                        help='Call the public reset_mm_cache before each idle enqueue; actual encoder observation is still required')
     args=parser.parse_args()
     if not .1<=args.memory<=.8:parser.error('Bounded memory .1..8 required')
     args.out.mkdir(parents=True,exist_ok=False)
     report=dict(status='STARTED',fault_injections=0,standard_worker_qualified=False,c1=False,c2=False,c3=False,e5=False,
-                aclnn_launch_arguments=False,requests=[],rpc=[],mm_cache_reset_used=False)
+                aclnn_launch_arguments=False,requests=[],rpc=[],mm_cache_reset_used=False,mm_cache_resets=[])
     llm=client=None;bound=False;expected=None;pending=[];recorded=0
     def save():
         (args.out/'result.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n',encoding='utf-8')
@@ -105,6 +107,10 @@ def main():
             if llm.llm_engine.has_unfinished_requests():raise RuntimeError('UNRELATED_PENDING_REQUEST')
             if llm.reset_prefix_cache(reset_running_requests=False) is not True:
                 raise RuntimeError('PREFIX_RESET_UNCONFIRMED')
+            if args.reset_mm_cache:
+                from experiments.worker_core_v11_20261118.vision17_cache_control import reset_idle_mm_cache
+                report['mm_cache_resets'].append(reset_idle_mm_cache(llm,phase))
+                report['mm_cache_reset_used']=True;save()
             pending=llm.enqueue([prompt],params,use_tqdm=False)
             mapping=read_enqueued_identity(llm,pending,seen_internal_request_ids=seen);seen.extend(pending)
             tokens=driver_prompt(llm,pending[0])
