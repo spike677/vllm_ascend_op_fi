@@ -4,6 +4,11 @@ Frozen source: `91decf5efe48dfdf8c5494e52d258ccde788cc5d` (implementation
 `cb5b0dc120ce6c80f1469bb8b7248da27a7bb258`). This is an execution workstream;
 the previous engineering reports and all original 124 evidence remain intact.
 
+本轮公共框架、真实推理入口及内源交付结论见
+[Worker Core V1 交付报告](WORKER_CORE_DELIVERY_20261118.md)。source66 的8/18
+公共入口已有独立 C2/C3 复核；source67/68 的26两个变体和39.output_proxy
+完成新的公共 C1 链路。下面及矩阵分别保留历史范围，不把单点结果升级为全覆盖或E5。
+
 The frozen starting point was **C2 0/17, C3 0/17**. The current strict result is
 **C2 6/17, C3 6/17**, for bounded Fault18, MoE8, repaired Native39 and repaired
 Native20 standard-Worker scopes, plus public Core22 and Core41. The later

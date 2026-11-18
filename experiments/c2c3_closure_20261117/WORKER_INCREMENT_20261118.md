@@ -6,6 +6,91 @@ card2 queue on124; three specialists work on CPU/code only. Temporary Workers
 are created by normal serving startup. Source snapshots are immutable and all
 new raw statistics, tensors and Native binaries remain on124.
 
+## Public Native26: both C1 variants reconciled through the shared protocol
+
+QMM source68 and typed FIA source67 use the same public Host/Core lifecycle.
+Each performs eight normal enqueues: two full inventories, Reference, Lossless,
+qualification-OFF, one F, recovery-OFF and post-Native-release health; a ninth
+ordinary request runs after public unregister/detach. The33 public actions join
+49 immutable original artifact references. Read-only query never substitutes
+for explicit collect, and Runtime/public/Native owners are joined separately.
+
+| Variant | Complete inventory | Actual F / model effect | Independent a2 summary |
+|---|---|---|---|
+|26.residual_stomp|135 writers/request,1080 total;2 stable resolved targets, all other candidates retained|One selected index83;31 changed residual bytes, writer output unchanged, full logits hash changes; all token185; full OFF/health restore|[QMM source68](qmm26_core_source68_review.json), SHA`f1fac5eb3ead02b2000564820074922741ac86a9ca36ce0e86b27fc5d21abc1a`|
+|26.fia_destination|30 writers/request,240 total;29 resolved, first producer unresolved and retained|One selected index5;14743 changed residual bytes, full logits hash changes; token2/EOS→30/`.`; full OFF/health restore2|[FIA source67](fia26_core_source67_review.json), SHA`db80eb1ec203595fa3d824d8b3b99a53644f6b6156f27f4da8edf5bf2cee942d`|
+
+The source-bound independent reviews reconcile177 provenance/17286 evidence
+conditions for QMM and180/7581 for FIA. QMM rehashes924 allocator artifacts;
+FIA separately reconciles5605 typed conditions and65 literal stock/writer bins
+(973440bytes). Both independently join current producer/consumer, exact Native
+owner/generation, five selected Reference/Lossless/OFF/F/OFF admissions, actual
+metadata array acquisitions/releases and final zero owned resources. Ordinary
+post-unregister health checks tokens/text; complete logits are captured in the
+preceding health request after Native removal. Complete residual/logits arrays
+remain original runtime readback/hash receipts, not independently saved arrays.
+
+Worker sources and Native compilation sources are deliberately distinct.
+QMM runs Worker source68 with Native build`b81b8b9bb1f0b5c0e56109775a987bf503b88a00adcfb873964a258e8bf4e03e`,
+whose original build receipt binds source-a50 commit
+`006916a9f9bd37549f0f21fc986ecace23e22e9b` and its read-only source mount.
+FIA runs Worker source67 commit`d8d14ffff58e98f2eca429b8cc5ccce1bfe30ecf`
+with Native build`2a6e4b861fe0342cb4274614d6edeb187bb36e3c87acab9ecc99be6f0e01bbae`,
+compiled from source59 commit`112f2b56f0f29fcb50567b6d9f5b327c94efe673`.
+The a2 reviewer rehashes both original snapshot manifests and all compile/runtime
+inputs; a reused Native DSO is not relabelled as newly built. QMM review-a1's
+six compile-source mismatches came from comparing that old build to later FIA
+source extensions; a1 is retained and no device/evidence rerun was needed.
+
+QMM original result`6053a58c64e15f645c66796fefbeb931e8d7491483ae935108b5ec353f0bd5bd`,
+Host`2b6b759f865cdf659716d2822070095bb03da42a78ab91bf2b2ce32e735e3c29`;
+FIA result`452837771bcc28a4899ce614bee4bb8f135853690aee5ab00abdb94d5d76a4f0`,
+Host`63b305bb478c7f0e8ed3c6241ebf18357bf7d8690887f36810809c2b63d42be8`.
+Both controllers exit0 and confirm owned-container removal and idle gates.
+These are new public **single-site C1** results, not C2/C3 or training paths.
+The new diagnostic entrance refuses contaminated statistics capture; E5 is not
+granted. Older source54/source62 direct-entry effects and their raw-statistics
+limitations below remain separate, unchanged evidence.
+
+## Public output39 source68: custom GEMM C1 independently reconciled
+
+The source68 public Worker run closes the source65 custom-op adaptation gap.
+Actual vLLM GEMM dispatch registration, its three source fingerprints, the
+original module's weight object and the read-only NPU consumer are verified at
+the real call. The adapter observes113 actual projections and28 eligible pairs;
+selection chooses the first eligible pair in stable execution order, here
+`model.layers.0.mlp.gate_up_proj` returning to `npu.npu_swiglu.default`.
+The end user supplies no layer name. This is the explicit output proxy variant,
+not a claim that Native MatMul internals or out-of-bounds writes were intercepted.
+
+Six scheduled requests perform observe/repeat/lossless/F/OFF/health. Exactly one
+F changes complete logits; the generated first token changes576 (` The`) to0
+(`!`), and OFF/health restore576. The seventh ordinary same-Worker request after
+unregister also returns576. Complete hidden/logits OFF equality is the frozen
+runtime's gate; only saved logits hashes and ABI/readback receipts, not private
+tensor arrays, are independently reviewed. No multi-token generation claim is made.
+
+The [independent custom-profile review](output39_core_source68_review.json),
+SHA256 `a06fa4011fcbb23436250cc90e72d4e779794a39834089600dcebf4f28c27856`,
+reconciles53 artifact,47 provenance and6486 evidence conditions. It checks all
+five observed113-call denominators, current unshadowed registration, the actual
+Native open/apply/restore/release returns and exact-handle post-release readback.
+OFF opens no new lease. Final owned hooks/modes/reservations and Native leases
+are released; the controller removes only its own container and the idle gate
+passes. The Native ABI has no process-global owner table, so that is not claimed.
+
+Source68 commit `a267bf5db36d2792641ffe1a5739bd97f957596a`, source manifest
+`311a042f9d000cbb796c10609715de80f0ed641527e73d631c177984a7347b75`;
+original result `3339abdd5089564333102e1523618793160cc6eb86b904ca0cace7828ed89b62`;
+Host ledger `00958dde05b29b12b6ce1f798b853325002d05059a07c43e36a4d9a71e4039a7`;
+serving receipt `4cab873c906b28d468d85ee3c142a678dd5ff03c47a4523fe84e334c03c93a00`.
+Native postwrite DSO `8876f2b99e70a9df8201b6ae0ace2cc4be8702afcf6703f9b72d1dda3bc26622`
+is unchanged. This is source-bound public C1 in the exact8.5.1/A2 image,
+not C2/C3, E5,39.matmul_range or yellow-zone acceptance. The diagnostic
+input/logits tensor reads have not been adapted to an uncontaminated mix window;
+the new entrance explicitly refuses `--statistics` rather than publishing
+filtered or injector-directed first-difference evidence. Earlier captures remain.
+
 ## Public 8/18 source66: natural scheduled requests independently reconciled
 
 Source66 `239096ef14a3f5f4be15311d879aa8e67f77def4` uses the public

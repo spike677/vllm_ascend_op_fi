@@ -1,0 +1,148 @@
+{
+  "schema": "demoncat.output39.public_core.independent_review.v1",
+  "read_only": true,
+  "projection_profile": "reviewed-custom-gemm-v1",
+  "public_qualification_granted": false,
+  "c2": false,
+  "c3": false,
+  "e5": false,
+  "source_bound_c1_receipts_reconciled": true,
+  "artifacts": {
+    "consistent": true,
+    "checks": 53,
+    "failures": 0,
+    "issues": []
+  },
+  "serving_original": {
+    "path": "/home/17-fault-c2c3-20261117/core26-39-source68-card2-a1/natural-output39-worker-core-c1/output39-runtime/8737f3d081887d12b8ae7d1749a62b0f/serving_receipt.json",
+    "sha256": "4cab873c906b28d468d85ee3c142a678dd5ff03c47a4523fe84e334c03c93a00",
+    "bytes": 4898763
+  },
+  "original": {
+    "path": "/home/17-fault-c2c3-20261117/core26-39-source68-card2-a1/natural-output39-worker-core-c1/probe/result.json",
+    "sha256": "3339abdd5089564333102e1523618793160cc6eb86b904ca0cace7828ed89b62",
+    "bytes": 4914681
+  },
+  "provenance": {
+    "consistent": true,
+    "checks": 47,
+    "failures": 0,
+    "issues": [],
+    "source_files_rehashed": 22,
+    "native_dso_rehashed": true,
+    "build_fingerprint_receipt_rehashed": false,
+    "external_model_weights_and_sources_rehashed": false
+  },
+  "evidence": {
+    "consistent": true,
+    "checks": 6486,
+    "failures": 0,
+    "issues": [],
+    "sections": {
+      "rpc": {
+        "consistent": true,
+        "checks": 205,
+        "failures": 0,
+        "issues": []
+      },
+      "actual_observations": {
+        "consistent": true,
+        "checks": 6024,
+        "failures": 0,
+        "issues": []
+      },
+      "cleanup": {
+        "consistent": true,
+        "checks": 6,
+        "failures": 0,
+        "issues": []
+      },
+      "c1": {
+        "consistent": true,
+        "checks": 205,
+        "failures": 0,
+        "issues": []
+      },
+      "custom_deployment": {
+        "consistent": true,
+        "checks": 1,
+        "failures": 0,
+        "issues": []
+      },
+      "custom_c1": {
+        "consistent": true,
+        "checks": 44,
+        "failures": 0,
+        "issues": []
+      }
+    },
+    "details": {
+      "cleanup": {
+        "post_unregister_health_observed": true,
+        "process_global_native_owner_table_observed": false
+      },
+      "c1": {
+        "observed_projection_calls": 113,
+        "eligible_pairs": 28,
+        "selected_key": [
+          281462286110288,
+          "vllm.unquantized_gemm.default",
+          0
+        ],
+        "selected_operator": "vllm.unquantized_gemm.default",
+        "native_fault_invocations": 1,
+        "logits_changed": true
+      },
+      "custom_deployment": null,
+      "custom_c1": {
+        "profile": "reviewed-custom-gemm-v1",
+        "selected_key": [
+          281462286110288,
+          "vllm.unquantized_gemm.default",
+          0
+        ],
+        "selected_operator": "vllm.unquantized_gemm.default",
+        "full_projection_denominator": 113,
+        "qualification_granted": false
+      },
+      "observations": {
+        "completed_requests": 6,
+        "partial_failures": [],
+        "per_completed_projection_counts": [
+          113,
+          113,
+          113,
+          113,
+          113
+        ],
+        "per_completed_eligible_counts": [
+          28,
+          28,
+          28,
+          28,
+          28
+        ],
+        "recorded_first_failure": null
+      }
+    },
+    "projection_profile": "reviewed-custom-gemm-v1",
+    "source_bound_c1_receipts_reconciled": true,
+    "cleanup_reconciled": true,
+    "classification": "SOURCE_BOUND_SINGLE_C1_RECEIPTS",
+    "original_driver_error": null,
+    "original_recovery_error": null,
+    "public_qualification_granted": false,
+    "c2": false,
+    "c3": false,
+    "e5": false,
+    "limits": [
+      "Complete logits hashes, literal producer/consumer metadata and Native readback/recovery are saved source-bound receipts, not newly observed device execution.",
+      "Complete hidden+logits lossless/OFF equality is a frozen runtime gate; full hidden hashes and raw tensor bins are absent and are not independently rehashed.",
+      "The explicit custom profile checks actual registered GEMM and RMS/Swi receipts; schema examples do not establish runtime geometry.",
+      "The seventh ordinary request proves same Worker tokens/text only; no post-unregister full tensor is captured.",
+      "No process-global Native owner table, MODEL_LOCAL inheritance, matmul_range, C2/C3, E5 or portable device qualification is granted."
+    ]
+  },
+  "review_consistent": true,
+  "status": "SOURCE_BOUND_SINGLE_C1_RECEIPTS"
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "demoncat.source_bundle.cpu_relocation_audit.v1",
+  "base_commit": "a267bf5db36d2792641ffe1a5739bd97f957596a",
+  "changed_source_files": [
+    "tools/export_integration_bundle.py",
+    "tests/test_integration_bundle.py",
+    "docs/worker_core_v1/integration_bundle.md"
+  ],
+  "added_existing_source_files": [
+    "docs/worker_core_v1/moe_nested_mode_recovery.md",
+    "tests/worker_extension/test_writer26_group_build.py",
+    "experiments/c2c3_closure_20261117/providers26_build_group.py"
+  ],
+  "source_files": 373,
+  "archive_members": 387,
+  "archive_sha256": "4eda47fb8d043c25471ee73acbb7c42595b391562307c368b8c56a913ccd7789",
+  "source_review_sha256": "a1de756d9d7ec36a96ee1fd5025c8fb63e90bfb080d69b24218c5e5547201aeb",
+  "exporter_contracts": {
+    "tests": 23,
+    "passed": 22,
+    "skipped": 1,
+    "skip": "Windows source symlink creation not available; archive link refusal passed"
+  },
+  "relocated_source": {
+    "tests": 214,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 214,
+    "runtime_modules_verified": 75,
+    "source_only_paths": true,
+    "actual_npu_calls": 0
+  },
+  "installed_runtime": {
+    "passed": 214,
+    "skipped": 0,
+    "source_runtime_fallback": false,
+    "details": [
+      {
+        "tests": 188,
+        "failures": 0,
+        "errors": 1,
+        "skipped": 0,
+        "passed": 187,
+        "runtime_modules_verified": 86,
+        "installed_wheels_only": true,
+        "source_runtime_fallback": false,
+        "actual_npu_calls": 0
+      },
+      {
+        "tests": 27,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "passed": 27,
+        "runtime_modules_verified": 29,
+        "installed_wheels_only": true,
+        "source_runtime_fallback": false,
+        "test_namespace_from_bundle": true,
+        "actual_npu_calls": 0
+      }
+    ],
+    "initial_harness_issue": "tests namespace absent; KV41 module was not imported. Bind only bundled tests namespace; rerun its 27 tests, with all production imports still checked under installed wheels."
+  },
+  "wheels": {
+    "wheels": [
+      {
+        "file": "demoncat_fault39_core-0.1.0-py3-none-any.whl",
+        "bytes": 49100,
+        "sha256": "b69c1904a5c0f8e7e9a2572a25cf9b629818e1e5d80bdb762f4783daac97250a"
+      },
+      {
+        "file": "demoncat_worker_extension-0.1.0-py3-none-any.whl",
+        "bytes": 271119,
+        "sha256": "4e65028e0c130dcc55f9541953f72ead31b892a876c40751993276918e2f1e55"
+      },
+      {
+        "file": "demoncatpfi-0.2.0-py3-none-any.whl",
+        "bytes": 625081,
+        "sha256": "9b0d489b1df55cb7ccad7cbc98ba5b6b73db35cc06776402938ddd1a27e5ed98"
+      }
+    ],
+    "no_dependencies_downloaded": true,
+    "actual_npu_calls": 0,
+    "native_builds": 0
+  },
+  "wheel_closure": {
+    "python_source_files_rehashed": 201,
+    "wheel_members": 267,
+    "observer_files": [
+      "engineering_closure/__init__.py",
+      "engineering_closure/native_observer.py",
+      "engineering_closure/path_discovery.py"
+    ],
+    "dependency_downloads": 0,
+    "native_builds": 0,
+    "actual_npu_calls": 0
+  },
+  "actual_npu_calls": 0,
+  "native_builds": 0,
+  "final_root_delivery": false,
+  "qualification_granted": false,
+  "inner_framework_integration": "PENDING",
+  "cann_9_x": "NOT_ACCEPTED_BY_THIS_BUNDLE",
+  "a3": "NOT_ACCEPTED_BY_THIS_BUNDLE",
+  "all_17_accepted": false,
+  "limits": [
+    "Runtime CPU and packaging checks only; no SDK/device numerical acceptance",
+    "Root creates final source review/archive and records its own hashes",
+    "Core26/custom39 root-owned prepare/probes remain in full deployment snapshot, not the runtime/CPU bundle subset"
+  ]
+}

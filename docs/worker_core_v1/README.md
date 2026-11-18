@@ -67,6 +67,11 @@ The [Native26 public contract](writer26_host_contract.md) uses the same
 prepare/register/advance/finish lifecycle for its QMM and typed FIA variants.
 It keeps the complete natural inventory while selecting one proven site for
 C1; it does not provide C2/C3 or turn diagnostic runtime captures into E5.
+Actual source67/68 runs now reconcile both public C1 chains. The separate
+source68 output39 custom-GEMM run also reconciles its current producer/consumer,
+one actual Native intervention, exact OFF and owned cleanup. These runs use
+pretrained models and normally scheduled inference; they introduce no training
+path. See [the delivery scope](../../experiments/c2c3_closure_20261117/WORKER_CORE_DELIVERY_20261118.md).
 
 An ordinary census cannot observe all internal kernels. Native or fused edges
 without a matched observer remain `NOT_VISIBLE`/unverified. A failed request

@@ -1,0 +1,131 @@
+{
+  "checks": 7581,
+  "consistent": true,
+  "issues": [],
+  "details": {
+    "requests": {
+      "requests": 8,
+      "ordinary_post_unregister_requests": 1,
+      "complete_output_shape": [
+        1,
+        49152
+      ],
+      "healthy_logits_sha256": "69400257a6148c7fec562f4789a25bf08b0cf155369393d31ffeb294781e634b",
+      "fault_logits_sha256": "a8a12f8ec3b10afcbd41fb72123e0dea21313695a21638577a1646dde92d13d2",
+      "fault_logits_finite": true,
+      "whole_request_output_changed": true,
+      "post_native_remove_full_logits": true,
+      "post_python_remove_full_logits": false
+    },
+    "native": {
+      "natural_calls": 240,
+      "calls_per_request": [
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30,
+        30
+      ],
+      "classification": {
+        "UNVERIFIED": 1,
+        "OBSERVED_NOT_QUALIFIED": 29
+      },
+      "reasons": {
+        "ACTUAL_PUBLIC_PRODUCER_LIFETIME_UNPROVEN": 1,
+        "CURRENT_PUBLIC_RESIDUAL_LIFETIME_UNPROVEN": 1,
+        "NEXT_ACTUAL_NATIVE_CONSUMER_UNPROVEN": 1,
+        "PUBLIC_CONSUMER_LIFETIME_NOT_PROVEN": 1
+      },
+      "resolved_targets": 29,
+      "selected_key": "03605f6f7d7f206b6e7975aaaead1bad10d684ec55a4c19cedca03b51967ea85",
+      "selected_index": 5,
+      "fault_invocations": 1,
+      "fault_changed_residual_bytes": 14743,
+      "metadata_arrays": {
+        "images": 4,
+        "interval_delta": {
+          "capture_calls": 8175,
+          "getter_calls": 23085,
+          "acquired_arrays": 23085,
+          "released_arrays": 23085
+        },
+        "final_live_arrays": 0
+      },
+      "allocator_artifacts_rehashed": 0
+    },
+    "typed_fia": {
+      "checks": 5605,
+      "consistent": true,
+      "issues": [],
+      "typed_records": 485,
+      "full_output_bins_rehashed": 65,
+      "full_output_bytes_rehashed": 973440,
+      "stock_targets": 30,
+      "initial_typed_records_outside_windows": 60,
+      "source_bound_descriptor_receipts_reconciled": true,
+      "residual_and_logits_tensor_bins_available": false,
+      "public_qualification_granted": false,
+      "c2": false,
+      "c3": false,
+      "e5": false
+    }
+  },
+  "mechanism": "26.fia_destination",
+  "public_protocol_reconciled": true,
+  "public_qualification_granted": false,
+  "c2": false,
+  "c3": false,
+  "e5": false,
+  "originals_rehashed": 49,
+  "evidence_kind": "saved_source_bound_natural_worker_receipts",
+  "limits": [
+    "This independently rebuilds one selected Native writer/consumer/recovery chain, not all eligible targets or any live C2/C3 authority.",
+    "F functional effect is the actual changed residual and complete consumer receipt. Full-logit change/finite status is reported separately; no E5 attribution is inferred.",
+    "Full inputs, residuals and logits are frozen-runtime hash/readback receipts, not independently rehashed tensor files. Typed FIA additionally rehashes saved stock/writer files.",
+    "Actual pointer ownership, synchronization, original-call counts and module/dispatcher identity remain source-bound receipts, not new live observations.",
+    "The immutable Core files do not save the logits boundary object; complete per-request output shapes join the reviewed final-logits source guard.",
+    "The ordinary post-unregister request checks same Worker, tokens and text; full logits are only captured during the preceding post-Native-release health request."
+  ],
+  "provenance": {
+    "checks": 180,
+    "consistent": true,
+    "issues": [],
+    "source_files_rehashed": 31,
+    "native_files_rehashed": 13,
+    "native_compile_sources_rehashed": 21,
+    "external_model_and_weight_files_rehashed": false,
+    "worker_source_snapshot": {
+      "commit": "d8d14ffff58e98f2eca429b8cc5ccce1bfe30ecf",
+      "manifest_sha256": "81e574bc2b7f5962f635c1635837b8a60ca0d7ba645838d2970f742c810af089"
+    },
+    "native_compile_source_snapshot": {
+      "commit": "112f2b56f0f29fcb50567b6d9f5b327c94efe673",
+      "manifest_sha256": "e6e142630331bd7951d48efd590d8fcb6224a1a4f3942ef96f7cc7040f70ab2f",
+      "identity_basis": "ACTUAL_BUILD_RECEIPT_COMMIT_AND_SOURCE_MOUNT",
+      "manifest_binding": "EXPLICIT_REVIEW_MANIFEST_PIN"
+    },
+    "native_compile_receipt": {
+      "source_commit": "112f2b56f0f29fcb50567b6d9f5b327c94efe673",
+      "source_mount": "/home/17-fault-c2c3-20261117/source59",
+      "origin_checked": true
+    },
+    "native_and_worker_same_snapshot": false,
+    "limit": "Weight/config and external model source digests are original frozen-runtime receipts; those large/external files are not re-read by this CLI."
+  },
+  "provenance_schema": {
+    "checks": 0,
+    "consistent": true,
+    "issues": []
+  },
+  "result_sha256": "452837771bcc28a4899ce614bee4bb8f135853690aee5ab00abdb94d5d76a4f0",
+  "schema": "demoncat.writer26.public_core.independent_review.v1",
+  "reviewer_sha256": "9826cf8288d92f7dcf5ba7bf4952067cb771285c883582253780d507bb49289a",
+  "read_only": true,
+  "atomic_helpers": {
+    "review_native26_single_source54.py": "8151f93dca35ead3b32b98d66881e5bc23432884bf5af8c1c6694f1b59fb8b5d",
+    "review_native26_fia_single_source62.py": "e6f9e2885ed2b707e45d492d29ec4b56db0f3b267995eccdd267c1a8c6934393"
+  }
+}
