@@ -72,6 +72,12 @@ inline bool OwnerAncestry(State& s) {
     char* end=nullptr;const unsigned long root=std::strtoul(id.c_str(),&end,10);
     if(!end||*end||root==0||root>2147483647UL)return false;
     s.ownerPid=uint32_t(root);uint32_t current=uint32_t(::getpid());
+    // Optional public-Worker scope: never inherit into a child process or a
+    // foreign thread. Historical standalone callers without TID keep their
+    // original ancestry contract; new Worker adapters require these bytes.
+    const std::string ownerTid=Env("FAULT28_FIA_GRAPH_TID");
+    if(!ownerTid.empty() && (current!=s.ownerPid ||
+        ownerTid!=std::to_string(::syscall(SYS_gettid))))return false;
     for(unsigned depth=0;depth<32&&current;++depth) {
         std::ifstream file("/proc/"+std::to_string(current)+"/stat");std::string line;
         if(!std::getline(file,line))return false;

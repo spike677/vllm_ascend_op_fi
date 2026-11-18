@@ -179,6 +179,15 @@ extern "C" int dcat_attention_observer_begin_v1(const char* id) {
 extern "C" int dcat_attention_observer_end_v1() {
     if(token.empty())return -1;bool ok=emit("\"event\":\"end\"");token.clear();return ok?0:-2;
 }
+// Host-only TLS readback. It neither creates a scope nor touches a device.
+// Public Worker owners use this after a failed end/ack before releasing a lease.
+extern "C" int dcat_attention_observer_scope_active_v1() {
+    return token.empty()?0:1;
+}
+extern "C" int dcat_attention_observer_scope_matches_v1(const char* id) {
+    if(token.empty())return 0;
+    return id && token==id?1:2;
+}
 extern "C" int dcat_attention_observer_memory_selftest_v1() {
     // Host-only budget boundary checks; no allocation, file or NPU operation.
     if(!fits_capture_budget(1,333,35521944) || !fits_capture_budget(1,1023,max_capture_bytes-1) ||

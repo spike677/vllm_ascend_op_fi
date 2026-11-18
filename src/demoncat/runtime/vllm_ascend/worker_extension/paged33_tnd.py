@@ -71,7 +71,8 @@ def verify_bundle(completion, completion_sha256, vendor):
             and cpu.get('actual_worker_aic_observed') is False
             and cpu.get('matrix_sha256') == data['fai_fd_cpu_matrix_sha256'],
             'TND33_FRESH_FD_CPU_MATRIX_INCOMPLETE')
-    return dict(completion=data, vendor=str(root), artifacts=files)
+    return dict(completion=data, completion_path=str(path), completion_sha256=completion_sha256,
+                vendor=str(root), artifacts=files)
 
 
 def validate_tnd_call(actual, boundary, *, allow_cpu_test=False):
