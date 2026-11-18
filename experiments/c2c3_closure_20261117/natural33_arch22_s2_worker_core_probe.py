@@ -23,6 +23,16 @@ def save(path,data):
     with Path(path).open('w',encoding='utf-8') as stream:json.dump(data,stream,allow_nan=False,indent=2);stream.write('\n')
 
 
+def record_setup_diagnostic(out,report):
+    """Read only this attempt's Worker-written receipt; preserve RPC first error."""
+    path=out/'deployment_setup.json'
+    try:
+        if path.is_file():
+            report['deployment_setup']=dict(path=path.name,sha256=sha(path),receipt=json.loads(path.read_bytes()))
+        save(out/'result.json',report)
+    except Exception as error:report['deployment_diagnostic_error']=repr(error)
+
+
 def remove(worker,expected,mechanism):
     from demoncat.runtime.vllm_ascend.worker_extension.serving_attention import remove_attention_serving_binding
     worker=worker_object(worker)
@@ -32,22 +42,47 @@ def remove(worker,expected,mechanism):
 
 def setup(worker,expected,prompt,proof_args,native_args,execution):
     import inspect
-    from demoncat.runtime.vllm_ascend.worker_extension.paged33_s2_evidence import load_verified_normal_evidence
-    from demoncat.runtime.vllm_ascend.worker_extension.paged33_arch22_s2_effects import Arch22S2EffectsNativeCall
-    from demoncat.runtime.vllm_ascend.worker_extension.serving_attention import install_attention_serving_binding
-    worker=worker_object(worker)
-    require(Path(inspect.getfile(Arch22S2EffectsNativeCall)).resolve().is_relative_to('/installed'),
-            'S2_INSTALLED_WHEEL_REQUIRED')
-    observed=worker.demoncat_worker_identity()
-    require(observed.get('status')=='WORKER_IDENTIFIED' and not observed.get('quarantined')
-        and observed['worker']==expected,'S2_DEPLOYMENT_ACTUAL_WORKER_CHANGED')
-    normal=load_verified_normal_evidence(**proof_args,current_execution=execution)
-    native=Arch22S2EffectsNativeCall(normal_evidence=normal,**native_args)
-    install_attention_serving_binding(worker,'33.paged_decode',prompt_token_ids=prompt,native=native,
-        provenance=dict(standard_worker=True,constructed_replay=False,normal_evidence=normal.data(),
-                        normal_evidence_sha256=normal.fingerprint,execution_contract=execution))
-    return dict(worker=observed['worker'],normal_evidence=normal.data(),
-        normal_evidence_sha256=normal.fingerprint,native_build=native.fingerprint,qualification_granted=False)
+    # Written by the Worker before crossing collective_rpc, which may retain
+    # only an exception type. This is diagnostics, never a qualification token.
+    path=Path(native_args['evidence_dir']).parent/'deployment_setup.json'
+    diagnostic=dict(schema='demoncat.paged33.deployment_setup.v1',worker=expected,
+        stage='installed_source',binding_installed=False,qualification_granted=False)
+    try:
+        from demoncat.runtime.vllm_ascend.worker_extension.paged33_s2_evidence import load_verified_normal_evidence
+        from demoncat.runtime.vllm_ascend.worker_extension.paged33_arch22_s2_effects import Arch22S2EffectsNativeCall
+        from demoncat.runtime.vllm_ascend.worker_extension.serving_attention import install_attention_serving_binding
+        worker=worker_object(worker)
+        require(Path(inspect.getfile(Arch22S2EffectsNativeCall)).resolve().is_relative_to('/installed'),
+                'S2_INSTALLED_WHEEL_REQUIRED')
+        diagnostic['stage']='worker_identity'
+        observed=worker.demoncat_worker_identity()
+        require(observed.get('status')=='WORKER_IDENTIFIED' and not observed.get('quarantined')
+            and observed['worker']==expected,'S2_DEPLOYMENT_ACTUAL_WORKER_CHANGED')
+        diagnostic['stage']='normal_raw_replay'
+        normal=load_verified_normal_evidence(**proof_args,current_execution=execution)
+        diagnostic['stage']='native_constructor'
+        native=Arch22S2EffectsNativeCall(normal_evidence=normal,**native_args)
+        diagnostic['stage']='serving_binding'
+        install_attention_serving_binding(worker,'33.paged_decode',prompt_token_ids=prompt,native=native,
+            provenance=dict(standard_worker=True,constructed_replay=False,normal_evidence=normal.data(),
+                            normal_evidence_sha256=normal.fingerprint,execution_contract=execution))
+        diagnostic.update(stage='complete',binding_installed=True,status='INERT_DEPLOYMENT_INSTALLED')
+        result=dict(worker=observed['worker'],normal_evidence=normal.data(),
+            normal_evidence_sha256=normal.fingerprint,native_build=native.fingerprint,qualification_granted=False)
+        save(path,diagnostic)
+        return result
+    except BaseException as error:
+        diagnostic.update(status='DEPLOYMENT_REFUSED',error_type=type(error).__name__,error=repr(error),
+            reason=str(error),code=getattr(error,'code',None),traceback=traceback.format_exc())
+        if getattr(error,'response',None) is not None:
+            try:diagnostic['observed_failure']=deepcopy(error.response)
+            except Exception as copy_error:diagnostic['observed_failure_copy_error']=repr(copy_error)
+        try:save(path,diagnostic)
+        except BaseException as write_error:diagnostic['diagnostic_write_error']=repr(write_error)
+        # The file preserves the original failure if transport discards attrs.
+        try:error.response=diagnostic
+        except (AttributeError,TypeError):pass
+        raise
 
 
 def drive(llm,client,*,prompt,params,out,report):
@@ -97,7 +132,7 @@ def drive(llm,client,*,prompt,params,out,report):
             except BaseException as abort_error:report['abort_error']=repr(abort_error)
     # A recovery request must leave the original except context. Natural
     # observers correctly reject calls started under an active old exception.
-    if failure is not None:
+    if failure is not None and client.snapshot()['ticket'] is not None:
         try:
             state=action('query',expected='QUERY_OK')
             native=state['native_state'];resource=state['serving']['resource_state']
@@ -105,6 +140,16 @@ def drive(llm,client,*,prompt,params,out,report):
                 action('recover');request('recovery_off')
         except BaseException as error:report['recovery_error']=repr(error)
     try:
+        if failure is not None and client.snapshot()['ticket'] is None:
+            # An uncertain prepare may have reached the Worker without a
+            # returned lease. Only same-tenant public detach can resolve it;
+            # query/disable/unregister require a ticket we do not possess.
+            action('detach',expected='DETACHED')
+            require(not client.snapshot()['ownership_retained'],'S2_PUBLIC_OWNER_RETAINED')
+            report['status']='FAILED_BEFORE_PROTOCOL_WITH_ORIGINAL_ERROR_AND_PUBLIC_DETACH'
+            report['prepare_recovery']=dict(action='detach',lease_ticket_observed=False,
+                ordinary_health_submitted=False,qualification_granted=False)
+            return
         if failure is None:
             final=action('finish')
             require(final['C1'] is True and final['C2'] is False and final['C3'] is False
@@ -180,18 +225,23 @@ def run(args,bundle):
             schema_sha256=bundle['completion']['arch22_public_schema_sha256'],observer_receipt=args.observer,
             observer_receipt_sha256=args.observer_receipt_sha256,evidence_dir=args.out/'native')
         def deploy(expected,config):
-            rows=llm.collective_rpc(setup,args=(expected,tokens,normal_arguments(args),native,report['execution_contract']),timeout=600)
+            try:
+                rows=llm.collective_rpc(setup,args=(expected,tokens,normal_arguments(args),native,report['execution_contract']),timeout=600)
+            finally:record_setup_diagnostic(args.out,report)
             require(len(rows)==1 and rows[0]['worker']==expected,'S2_TP1_DEPLOYMENT_CHANGED')
             report['setup']=rows[0];return {}
         client=WorkerFaultClient(HostAdapter(llm,prepare_binding=deploy,timeout=600),FaultConfig(33,'paged_decode'))
         drive(llm,client,prompt=prompt,params=params,out=args.out,report=report)
-        if report.get('setup') and not client.snapshot()['ownership_retained']:
+        setup_receipt=report.get('deployment_setup',{}).get('receipt',{})
+        if (report.get('setup') or setup_receipt.get('binding_installed') is True) and not client.snapshot()['ownership_retained']:
             report['library_coexistence_after_owned_cleanup']=loader.verify()
             rows=llm.collective_rpc(remove,args=(client.snapshot()['worker'],'33.paged_decode'),timeout=300)
             require(len(rows)==1 and rows[0]['status']=='SERVING_DEPLOYMENT_REMOVED','S2_DEPLOYMENT_REMOVAL_UNCONFIRMED')
             report['binding_removal']=rows[0]
     except BaseException as error:
-        report.update(status='REFUSED_OR_FAILED',error=repr(error),traceback=traceback.format_exc())
+        report.update(status='REFUSED_OR_FAILED')
+        if 'error' in report:report['post_protocol_error']=dict(error=repr(error),traceback=traceback.format_exc())
+        else:report.update(error=repr(error),traceback=traceback.format_exc())
     finally:save(args.out/'result.json',report)
     print(json.dumps({key:report[key] for key in ('status','error','C2','C3','E5') if key in report}))
     return 0 if report['status']==SUCCESS else 2

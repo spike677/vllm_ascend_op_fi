@@ -13,8 +13,7 @@ import struct
 import sys
 from types import SimpleNamespace
 
-from .serving_context import require
-from .paged33_logical_binding import LogicalPagedInput
+from .serving_context import ContextRefused,require
 
 _MINT=object()
 FIRST='model.layers.0.self_attn.attn'
@@ -57,6 +56,7 @@ class VerifiedNormalEvidence:
         return value
 
     def match(self,binding):
+        from .paged33_logical_binding import LogicalPagedInput
         require(type(binding) is LogicalPagedInput and binding.module_path==FIRST
             and not binding.closed and binding.cpu is self.simulation,'S2_ACTUAL_LIVE_INPUT_REQUIRED')
         reference=self.data()['reference_input'];current=binding.before['signature']
@@ -79,6 +79,23 @@ def _module(name,path):
     return value
 
 
+def normal_observer_root(receipt,expected_sha256):
+    """Translate the Native receipt file to the offline reader's build root.
+
+    These are distinct interfaces. Do not search parents or accept an
+    arbitrary same-named receipt: the exact canonical file and hash must match.
+    The frozen reader separately checks its source, selftest and library bytes.
+    """
+    path=Path(receipt)
+    require(path.is_absolute() and path.name=='result.json'
+        and path.parent.name=='attention-preflight' and not path.is_symlink()
+        and path.resolve(strict=True)==path and path.is_file(),
+        'S2_NORMAL_OBSERVER_RECEIPT_LAYOUT_REQUIRED')
+    require(hashlib.sha256(path.read_bytes()).hexdigest()==expected_sha256,
+            'S2_NORMAL_OBSERVER_RECEIPT_CHANGED')
+    return path.parent.parent
+
+
 def load_verified_normal_evidence(*,source,source_manifest_sha256,build_root,completion_sha256,
         observer,observer_receipt_sha256,stock_run,stock_sha256,baseline_run,baseline_sha256,
         report,report_sha256,current_execution):
@@ -90,20 +107,30 @@ def load_verified_normal_evidence(*,source,source_manifest_sha256,build_root,com
             'S2_FROZEN_NORMAL_READER_DIFFERS')
     require(common.sha(report)==report_sha256,'S2_NORMAL_REVIEW_FILE_CHANGED')
     saved=common.read(report)
+    observer_root=normal_observer_root(observer,observer_receipt_sha256)
     args=SimpleNamespace(source=source,source_manifest_sha256=source_manifest_sha256,build_root=Path(build_root),
-        completion_sha256=completion_sha256,observer=Path(observer),observer_receipt_sha256=observer_receipt_sha256,
+        completion_sha256=completion_sha256,observer=observer_root,observer_receipt_sha256=observer_receipt_sha256,
         stock_run=Path(stock_run),stock_sha256=stock_sha256,baseline_run=Path(baseline_run),baseline_sha256=baseline_sha256,
         arch22_s2_normal=True)
     # Complete raw replay, including 435 payload pairs, runtime/ELF joins,
     # full final private POD, all cleanup and the original error records.
     fresh=reader.review(args)
-    require(not fresh['issues'] and fresh.get('normal_payloads_exact') is True
+    valid=(not fresh['issues'] and fresh.get('normal_payloads_exact') is True
         and fresh.get('complete_payload_pairs')==435 and fresh['build']['variant']==VARIANT
         and fresh['build']['completion_sha256']==completion_sha256
         and fresh['source']['manifest_sha256']==source_manifest_sha256
         and fresh['observer']['receipt_sha256']==observer_receipt_sha256
         and fresh['native_call_scope']==dict(module_path=FIRST,layout='TND',query_tokens=1,kv_length=1025,page_size=16,
-            private_calls=4,natural_layers_per_phase=28,normal_only=True), 'S2_FRESH_NORMAL_RAW_REPLAY_FAILED')
+            private_calls=4,natural_layers_per_phase=28,normal_only=True))
+    if not valid:
+        error=ContextRefused('S2_FRESH_NORMAL_RAW_REPLAY_FAILED')
+        error.response=dict(schema='demoncat.paged33.normal_replay_failure.v1',
+            observer_receipt=str(observer),observer_build_root=str(observer_root),
+            observer_receipt_sha256=observer_receipt_sha256,
+            replay={key:deepcopy(fresh.get(key)) for key in
+                ('status','checks','issues','normal_payloads_exact','complete_payload_pairs','source','build','observer','native_call_scope')},
+            qualification_granted=False)
+        raise error
     # The published report is provenance only; its booleans cannot replace
     # the replay above. Check its pinned inputs and retain its original hash.
     require(saved['source']['manifest_sha256']==source_manifest_sha256

@@ -34,7 +34,7 @@ F 不重试。不确定 F 回执只能通过显式公共 `recover` 归档失败�
 python3 -B "$SOURCE/experiments/c2c3_closure_20261117/prepare_arch22_s2_single_cases.py" \
   --source "$SOURCE" --source-manifest-sha256 "$SOURCE_SHA" --installed "$INSTALLED" \
   --build-root "$BUILD" --completion-sha256 "$COMPLETION_SHA" \
-  --observer "$OBSERVER_RESULT" --observer-receipt-sha256 "$OBSERVER_SHA" --model "$MODEL" \
+  --observer "$OBSERVER_BUILD_ROOT" --observer-receipt-sha256 "$OBSERVER_SHA" --model "$MODEL" \
   --stock-run "$NORMAL_STOCK" --stock-sha256 "$NORMAL_STOCK_SHA" \
   --baseline-run "$NORMAL_PRIVATE" --baseline-sha256 "$NORMAL_PRIVATE_SHA" \
   --normal-report "$NORMAL_REVIEW" --normal-report-sha256 "$NORMAL_REVIEW_SHA" \
@@ -49,7 +49,7 @@ python3 -B "$SOURCE/experiments/c2c3_closure_20261117/prepare_arch22_s2_single_c
 python3 -B "$SOURCE/experiments/c2c3_closure_20261117/review_arch22_s2_single.py" \
   --source "$SOURCE" --source-manifest-sha256 "$SOURCE_SHA" \
   --build-root "$BUILD" --completion-sha256 "$COMPLETION_SHA" \
-  --observer "$OBSERVER_RESULT" --observer-receipt-sha256 "$OBSERVER_SHA" \
+  --observer "$OBSERVER_BUILD_ROOT" --observer-receipt-sha256 "$OBSERVER_SHA" \
   --stock-run "$NORMAL_STOCK" --stock-sha256 "$NORMAL_STOCK_SHA" \
   --baseline-run "$NORMAL_PRIVATE" --baseline-sha256 "$NORMAL_PRIVATE_SHA" \
   --normal-report "$NORMAL_REVIEW" --normal-report-sha256 "$NORMAL_REVIEW_SHA" \
@@ -64,9 +64,28 @@ reader 不导入 injector/torch/DSO，只在永久禁止动态加载的 audit ho
 $env:PYTHONDONTWRITEBYTECODE='1'
 $env:TORCH_DEVICE_BACKEND_AUTOLOAD='0'
 $env:PYTHONPATH='src;fault39/src;.;tests;tests/worker_extension'
-& $PY -B -m unittest test_arch22_s2_effects test_core_paged33_s2 test_arch22_s2_probe test_arch22_s2_single_review test_arch22_s2_normal test_arch22_normal_bridge_review test_paged33_logical_binding test_core_attention_serving test_attention28_stock_census test_attention28_review_protocol
+& $PY -B -m unittest test_arch22_s2_prepare test_arch22_s2_effects test_core_paged33_s2 test_arch22_s2_probe test_arch22_s2_single_review test_arch22_s2_normal test_arch22_normal_bridge_review test_paged33_logical_binding test_core_attention_serving test_attention28_stock_census test_attention28_review_protocol
 ```
 
 CPU 中用真实 torch Module、API 原调用和公共 Host/Runtime 完成五请求，但 Native 是明确的模拟 seam，C1/C2/C3 必须 false。负例覆盖错误 owner/phase/final POD/完整数组、页表和 unused 页/数据变化、F 不确定回执、OFF 不确定回执、foreign thread/API、清理失败重试、策略无数值效果、末端 logits 不传播、原始 RPC 篡改及冷进程 reader。CPU 不替代实机。
 
 新 normal 任一原始失败、跨臂 payload 不 exact、当前实际输入不相等价或 source/build/observer 变化时，在 F 之前拒绝。F 发生后，无论数值效果或资格如何均须实际 OFF；OFF/清理不确定则停止并保留 owner。C2 后续单独扩展另外 27 个实际对象的 normal/logical/native/effect 证明，再做全目标一次；C3 必须复用该完整 live C2 proof 做全目标连续两次。此提交没有将这些缺失项改为不可适用。
+
+## Source102 prepare 失败的 CPU 修复
+
+Source102 normal 独立 reader 的 435 个跨臂完整 payload pairs 已通过；随后公共入口在 `prepare_binding` 拒绝，零协议请求、零 F。原失败 result SHA `66aa8a4c126a916941a888d66dfdbdbdabd23b6980ef058799339c364e75dc7b` 保留。问题是接口路径混用：Native 接受 `/build/attention-preflight/result.json` 回执文件，而 normal reader 接受 `/build` 构建根，再追加 `attention-preflight/result.json`。旧 loader 把文件当根，重放失败被汇总为 `S2_FRESH_NORMAL_RAW_REPLAY_FAILED`，Host 原回执仅留下 `ContextRefused` 类型。
+
+修复只从绝对、无 symlink、规范 `attention-preflight/result.json` 且 SHA 完全相符的文件解出 reader 根；完整 435 对重放、observer/source/库身份、实际执行合同和 live F/OFF 条件不变。`deployment_setup.json` 在 Worker 跨 RPC 返回前保留失败阶段、原 reason/traceback、嵌套 reader issues 和是否已安装 inert binding；后续清理错误不能覆盖第一错误。
+
+prepare 不确定且 Host 尚无 lease ticket 时，probe 只调用公共同 tenant `detach`，由 Runtime 核实及清理可能已经执行的 prepare。不再无票据调用 query/disable/unregister，也不补发健康或故障请求。detach 不确认恢复就保留 owner，已有真实 F/OFF 恢复分支不变。公共 detach 完成且确认 inert binding 曾安装时，仍通过原 trusted removal 检查移除 binding。
+
+仅诊断旧原件时可在原只读 mounts、无设备环境运行候选 loader；`PYTHONPATH` 指向候选源码及其 `src`，`/repo` 等证据路径仍指向 source102 原件：
+
+```bash
+python3 -B "$CANDIDATE/experiments/c2c3_closure_20261117/diagnose_arch22_s2_prepare.py" \
+  --failed-result /old-result.json \
+  --failed-result-sha256 66aa8a4c126a916941a888d66dfdbdbdabd23b6980ef058799339c364e75dc7b \
+  --out /diagnostic/new-review.json
+```
+
+入口在安装永久 runtime 禁止 audit hook 前只初始化 CPU NumPy 字节读取，不加载 Torch/Worker/Native 适配器。它使用旧 result 的 `normal_inputs` 和 `execution_contract`，显式报告候选 loader SHA、旧 source/报告 SHA 及无新包资格。该 CPU 重放不能转授 source102 normal 结论；新 source/package 仍须独立 normal 与 F/OFF。原失败、原正常结果和新诊断分别保留，不修改或重标签原件。

@@ -16,7 +16,8 @@ class Client:
     def __init__(self):
         self.history=[];self.index=0;self.pending=None;self.rows=[];self.owned=True
         self.effect=False;self.off=False;self.fail_finish=False;self.actions=[]
-    def snapshot(self):return dict(history=deepcopy(self.history),ownership_retained=self.owned)
+    def snapshot(self):return dict(history=deepcopy(self.history),ownership_retained=self.owned,
+        ticket={'fixture_only':True} if self.owned else None)
     def state(self):
         return dict(serving=dict(next_phase=probe.PHASES[self.index] if self.index<5 else 'complete',pending_request=self.pending,
             resource_state={'needs_off':self.effect and not self.off,'owned_input_references':0}),
