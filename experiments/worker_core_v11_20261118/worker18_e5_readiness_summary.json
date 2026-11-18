@@ -1,0 +1,387 @@
+{
+  "schema": "demoncat.worker18.historical_statistics_readiness_review.v1",
+  "review_kind": "CPU_ONLY_OFFLINE_RAW_REVIEW_AND_SOURCE_BOUNDARY_CONTRACTS",
+  "mechanism": "18.api_half",
+  "historical_scope": "source-a37 standard Worker module-return gain proxy",
+  "current_public_scope_requalified": false,
+  "qualification_granted": false,
+  "c2": false,
+  "c3": false,
+  "e5": false,
+  "npu_executed_by_reviewer": false,
+  "containers_started_by_reviewer": false,
+  "raw_statistics_rewritten": false,
+  "private_tensor_payloads_read": false,
+  "statistics_before_runtime_context": true,
+  "numerical": {
+    "rtol": "1e-5",
+    "atol": "1e-8",
+    "rule": "abs(F-B) > 1e-8 + 1e-5 * abs(B)",
+    "comparator_sha256": "d5633600f8bde98590c4eaf367eb16d76d4e6c9ad5b0cb2f82d434ae6a377ca2",
+    "reader_sha256": "994fe6a65375dfc86b09c033913cbb82ec4c906608213fce7c4e3a9670849afe",
+    "readiness_report_sha256": "452ec986131dbffc36b22d35b38cb5081f4453615c93f0a483381a2204b0aeb2",
+    "actual_step_rank_sets": {
+      "baseline": [
+        [
+          0,
+          0
+        ]
+      ],
+      "baseline_repeat": [
+        [
+          0,
+          0
+        ]
+      ],
+      "fault": [
+        [
+          0,
+          0
+        ]
+      ]
+    },
+    "configured_step_selector": [
+      0,
+      1,
+      2
+    ],
+    "records_compared": 3020,
+    "fields_compared": 5974,
+    "comparisons": {
+      "self": {
+        "exact_change_count": 0,
+        "exceedance_count": 0,
+        "first_exceedance": null,
+        "e5_statistics_comparable": true
+      },
+      "repeat": {
+        "exact_change_count": 0,
+        "exceedance_count": 0,
+        "first_exceedance": null,
+        "e5_statistics_comparable": true
+      },
+      "bf": {
+        "exact_change_count": 4347,
+        "exceedance_count": 4347,
+        "first_exceedance": {
+          "index": 46,
+          "identity": "Functional.linear.0.forward/input_args/0",
+          "field": "Max",
+          "baseline": "1.734375",
+          "fault": "0.8671875",
+          "absolute_difference": "0.8671875",
+          "tolerance": "0.00001735375",
+          "relative_change": "0.5",
+          "reason": "FINITE_STATISTIC_DIFFERS",
+          "preceding_unobservable_fields": 102,
+          "preceding_incomparable_fields": 0
+        },
+        "e5_statistics_comparable": true
+      },
+      "repeat_f": {
+        "exact_change_count": 4347,
+        "exceedance_count": 4347,
+        "first_exceedance": {
+          "index": 46,
+          "identity": "Functional.linear.0.forward/input_args/0",
+          "field": "Max",
+          "baseline": "1.734375",
+          "fault": "0.8671875",
+          "absolute_difference": "0.8671875",
+          "tolerance": "0.00001735375",
+          "relative_change": "0.5",
+          "reason": "FINITE_STATISTIC_DIFFERS",
+          "preceding_unobservable_fields": 102,
+          "preceding_incomparable_fields": 0
+        },
+        "e5_statistics_comparable": true
+      }
+    },
+    "per_capture_inventory": {
+      "baseline": {
+        "finite": 5974,
+        "null": 6106,
+        "nan": 0,
+        "positive_inf": 0,
+        "negative_inf": 0,
+        "unsupported": 0
+      },
+      "fault": {
+        "finite": 5974,
+        "null": 6106,
+        "nan": 0,
+        "positive_inf": 0,
+        "negative_inf": 0,
+        "unsupported": 0
+      }
+    },
+    "preceding_null_fields": 102,
+    "full_numeric_prefix_observed": false,
+    "fault_repeat_stability_measured": false,
+    "unique_root_cause_identified": false,
+    "null_field_inventory": [
+      {
+        "dtype": "torch.bfloat16",
+        "field": "Mean",
+        "null_fields": 2654
+      },
+      {
+        "dtype": "torch.bfloat16",
+        "field": "Norm",
+        "null_fields": 2654
+      },
+      {
+        "dtype": "torch.bool",
+        "field": "Mean",
+        "null_fields": 3
+      },
+      {
+        "dtype": "torch.bool",
+        "field": "Norm",
+        "null_fields": 3
+      },
+      {
+        "dtype": "torch.float32",
+        "field": "Max",
+        "null_fields": 28
+      },
+      {
+        "dtype": "torch.float32",
+        "field": "Mean",
+        "null_fields": 142
+      },
+      {
+        "dtype": "torch.float32",
+        "field": "Min",
+        "null_fields": 28
+      },
+      {
+        "dtype": "torch.float32",
+        "field": "Norm",
+        "null_fields": 142
+      },
+      {
+        "dtype": "torch.int32",
+        "field": "Max",
+        "null_fields": 6
+      },
+      {
+        "dtype": "torch.int32",
+        "field": "Mean",
+        "null_fields": 47
+      },
+      {
+        "dtype": "torch.int32",
+        "field": "Min",
+        "null_fields": 6
+      },
+      {
+        "dtype": "torch.int32",
+        "field": "Norm",
+        "null_fields": 47
+      },
+      {
+        "dtype": "torch.int64",
+        "field": "Mean",
+        "null_fields": 145
+      },
+      {
+        "dtype": "torch.int64",
+        "field": "Norm",
+        "null_fields": 145
+      },
+      {
+        "dtype": "torch.int8",
+        "field": "Mean",
+        "null_fields": 28
+      },
+      {
+        "dtype": "torch.int8",
+        "field": "Norm",
+        "null_fields": 28
+      }
+    ]
+  },
+  "boundary": {
+    "native_rms_output_stats_unchanged": true,
+    "prepended_module_output_stats_unchanged": true,
+    "first_effective_consumer_input_changes": true,
+    "reviewed_gain": "0.5",
+    "first_consumer_parent": "Module.model.layers.0.self_attn.qkv_proj.AscendQKVParallelLinear.forward.0",
+    "collector_package_rehashed_in_full": false,
+    "module_processor_verified_sha256": "4876e89f7f726cd552fc1bf0e7b7745a898461deec2cb2abf33b02deba7329d7",
+    "collector_modified_by_experiment": false,
+    "model_operator_filters": false,
+    "raw_records_excluded": false,
+    "known_diagnostic_body_frames_found": 0,
+    "absence_of_frames_is_not_exhaustive_purity_proof": true,
+    "diagnostics_pauses_per_capture": 1386,
+    "window_completed_inactive_and_depth_zero": true,
+    "mean_norm_null_cause_not_established": true
+  },
+  "original_bindings": {
+    "transfer_tar_sha256": "b51a2f83ef793749b398794b34f7f4a940e62b614a7c10df6d03c65bee4ebe5f",
+    "source_commit": "1e76ca0452683255ed52362835b05d24208ea1b5",
+    "source_manifest_sha256": "0a71b5209274ceb16b28fbd302dae30a19c35b3dc3a8263ae15e09635d02fc1e",
+    "source_manifest_file_count": 678,
+    "reviewed_source_files": [
+      {
+        "path": "experiments/c2c3_closure_20261117/natural_rms_worker_statistics.py",
+        "sha256": "1b55ee2a42a0eec29ae7c68b912a9c7d67d7c51511c68894f039d2386255526b",
+        "git_blob_matches_manifest": true
+      },
+      {
+        "path": "experiments/c2c3_closure_20261117/tensor_statistics_capture.py",
+        "sha256": "0276dcfbfbba700410bf950bafe06c6244ddcc4f752341d7a0cd7f412889aa82",
+        "git_blob_matches_manifest": true
+      },
+      {
+        "path": "fault_injection/rmsnorm_return.py",
+        "sha256": "45a3b92e102333de960bd444109b0a706af960c23c90188489fb400b1fc84888",
+        "git_blob_matches_manifest": true
+      },
+      {
+        "path": "fault_injection/statistics_audit.py",
+        "sha256": "d5633600f8bde98590c4eaf367eb16d76d4e6c9ad5b0cb2f82d434ae6a377ca2",
+        "git_blob_matches_manifest": true
+      },
+      {
+        "path": "fault_injection/_scoped_dispatch.py",
+        "sha256": "5fc8c3b525ed064ffcfb9cd74b488caa6d768dd798120617ed5e0917d09e5a87",
+        "git_blob_matches_manifest": true
+      },
+      {
+        "path": "fault_injection/tensor_observer.py",
+        "sha256": "fb657b0bef6518ab4072ad0696acb68b8d539a1893d84f5b5b66b3b6af4de5ff",
+        "git_blob_matches_manifest": true
+      }
+    ],
+    "image_sha256": "35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+    "raw_groups": {
+      "baseline": {
+        "actual_steps": [
+          0
+        ],
+        "ranks": [
+          0
+        ],
+        "files": {
+          "dump.json": {
+            "sha256": "b2b8020c227a5357c653d000b9842049defd9aabbd1b0edc5f7d431622adcae7",
+            "bytes": 878379,
+            "result_reference_matches": true
+          },
+          "stack.json": {
+            "sha256": "2a565b66957e3b7e42599b1666fbd91b30ea360f884d2be6272b1768da6367ae",
+            "bytes": 267038,
+            "result_reference_matches": true
+          },
+          "construct.json": {
+            "sha256": "30e60a3e51168ba1a3cdb6d7feccdf95cf2fccd9303c9256104f1da266a0cb62",
+            "bytes": 102172,
+            "result_reference_matches": true
+          }
+        },
+        "config_sha256": "c8b6854dfbd881eb6ef285798bad649b86531446944c9b16b9911c873d8e1509",
+        "collector_identity_sha256": "1dea6adc72674edbda96ad2868416c1b09b842eaabf39c698796458165ff6947",
+        "capture_windows_sha256": "64031b5ce60f2d891ac05e773b2ddaa2fefcbef452ffa43471d9d1d40f921c4f",
+        "result_sha256": "4d3f219650f064a700044aacf560fbddc7a3379d5385e9e834bf6d3a609fe4da"
+      },
+      "baseline_repeat": {
+        "actual_steps": [
+          0
+        ],
+        "ranks": [
+          0
+        ],
+        "files": {
+          "dump.json": {
+            "sha256": "b2b8020c227a5357c653d000b9842049defd9aabbd1b0edc5f7d431622adcae7",
+            "bytes": 878379,
+            "result_reference_matches": true
+          },
+          "stack.json": {
+            "sha256": "2a565b66957e3b7e42599b1666fbd91b30ea360f884d2be6272b1768da6367ae",
+            "bytes": 267038,
+            "result_reference_matches": true
+          },
+          "construct.json": {
+            "sha256": "30e60a3e51168ba1a3cdb6d7feccdf95cf2fccd9303c9256104f1da266a0cb62",
+            "bytes": 102172,
+            "result_reference_matches": true
+          }
+        },
+        "config_sha256": "c8b6854dfbd881eb6ef285798bad649b86531446944c9b16b9911c873d8e1509",
+        "collector_identity_sha256": "1dea6adc72674edbda96ad2868416c1b09b842eaabf39c698796458165ff6947",
+        "capture_windows_sha256": "64031b5ce60f2d891ac05e773b2ddaa2fefcbef452ffa43471d9d1d40f921c4f",
+        "result_sha256": "c256b64a9c4ea80ca0082042fdd48bc592b37a1d9173464468d71b167f8ceebb"
+      },
+      "fault": {
+        "actual_steps": [
+          0
+        ],
+        "ranks": [
+          0
+        ],
+        "files": {
+          "dump.json": {
+            "sha256": "ff69bcf16dd5dd47d7f017d438cca68ed0d11326b86bb10e07090c40db10b417",
+            "bytes": 880259,
+            "result_reference_matches": true
+          },
+          "stack.json": {
+            "sha256": "2a565b66957e3b7e42599b1666fbd91b30ea360f884d2be6272b1768da6367ae",
+            "bytes": 267038,
+            "result_reference_matches": true
+          },
+          "construct.json": {
+            "sha256": "30e60a3e51168ba1a3cdb6d7feccdf95cf2fccd9303c9256104f1da266a0cb62",
+            "bytes": 102172,
+            "result_reference_matches": true
+          }
+        },
+        "config_sha256": "c8b6854dfbd881eb6ef285798bad649b86531446944c9b16b9911c873d8e1509",
+        "collector_identity_sha256": "1dea6adc72674edbda96ad2868416c1b09b842eaabf39c698796458165ff6947",
+        "capture_windows_sha256": "20bce9bbc8b9ebea622cadb3f52c30d34c3a5fb3ac8ef1de70625cad41dbe008",
+        "result_sha256": "3aca5b6821dc5614adb21f87edbcb2fdc2adf5fecf45b87f7836da68ba5a1543"
+      }
+    }
+  },
+  "separate_runtime_context": {
+    "model": "Qwen3-0.6B",
+    "dtype": "BF16",
+    "tp": 1,
+    "execution": "eager",
+    "captured_request_count": 1,
+    "prefill_tokens": 10,
+    "managed_request_ordinal": 5,
+    "driver_request_ordinal": 6,
+    "distinct_recorded_worker_identities": 3,
+    "same_recorded_weights_and_model_source_hashes": true,
+    "same_scheduler_cpu_token_ids_and_positions": true,
+    "request_mapping_joined_each_worker": true,
+    "scheduler_cpu_mirror_proves_npu_input_bytes": false,
+    "private_arrays_independently_compared": false,
+    "reported_cleanup_zero_owned_serving_hooks": true,
+    "reported_active_adapter_and_observer_false": true,
+    "healthy_before_after_token_results_equal": true
+  },
+  "minimum_remaining_work": [
+    "Retain this first-observable consumer-input result under the exact historical source-a37 scope.",
+    "Current public Core needs a collector adapter respecting actual root/logits ownership and unfiltered capture; legacy configure_statistics is not a drop-in option.",
+    "Validate hook order, pause/resume, append preservation and failure cleanup with CPU contracts, then obtain a targeted current-scope capture if E5 is required.",
+    "Do not rerun already accepted functional groups merely to refresh counts or transfer old statistics authority."
+  ],
+  "tests": {
+    "command": "python -B -m unittest test_statistics_readiness test_worker18_statistics_boundary test_statistics_audit test_tensor_statistics_window -q",
+    "passed": 28,
+    "new_tests": 12,
+    "new_tests_are_cpu_contracts_not_npu_or_msprobe_evidence": true
+  },
+  "limits": [
+    "Only one actual step per arm, despite configured step selector [0,1,2].",
+    "The 102 preceding nulls and 6106 nulls per capture remain unobservable.",
+    "Module-output statistics precede the gain hook; they do not observe the effective post-hook return.",
+    "No current public Core, full prefix, repeated-F, internal RMS kernel or unique-cause E5 is granted."
+  ]
+}
