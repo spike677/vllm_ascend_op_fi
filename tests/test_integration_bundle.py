@@ -20,6 +20,23 @@ SPEC.loader.exec_module(bundle)
 
 
 class BundleTests(unittest.TestCase):
+    def test_new_attention_normal_and_index_sources_survive_export(self):
+        payload = bundle._inventory(ROOT)
+        required = {
+            'fault_injection/native_adapters/attention28/runtime_log_index.py',
+            'fault_injection/native_adapters/attention28/fia/apply_tnd28_prefill_normal.py',
+            'fault_injection/native_adapters/attention28/fia/tnd28_prefill_contract.h',
+            'fault_injection/native_adapters/attention28/fia/tnd28_prefill_geometry.py',
+            'fault_injection/native_adapters/attention28/fia/tnd28_prefill_normal.h',
+            'fault_injection/native_adapters/attention28/fia/test_tnd28_prefill_contract.cpp',
+            'experiments/worker_core_v11_20261118/check_tnd28_normal_materials.py',
+            'tests/test_attention_runtime_log_index.py',
+            'tests/test_tnd28_prefill_normal.py',
+        }
+        self.assertFalse(required - payload.keys())
+        for name in required:
+            self.assertEqual(payload[name], (ROOT / name).read_bytes(), name)
+
     def test_actual_all_normal_reader_and_build_source_closure_is_exported(self):
         spec = importlib.util.spec_from_file_location('all_normal_export_contract',
             ROOT / 'experiments/c2c3_closure_20261117/arch22_normal_bridge_evidence.py')

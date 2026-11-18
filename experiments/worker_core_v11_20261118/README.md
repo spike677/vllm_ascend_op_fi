@@ -43,6 +43,13 @@ The source102 prepare refusal and first source105 offline-review failure are
 preserved. Loader/cleanup and scheduler-schema reader repairs do not change
 their original evidence. Earlier normal packages also remain unchanged.
 
+The fresh source108 all-target normal build passed 130 production-image CPU
+tests and compiled its own kernel/schema. Its stock arm independently passes
+five phases, 280 actual calls and 140 decode boundaries. The private arm
+completed four 28-target captures but was externally Docker-stopped before
+final health; the frozen reader rejects the incomplete pair. No F or new
+qualification follows. See [the preserved partial result and remaining work](ATTENTION33_SOURCE108_PARTIAL_REVIEW.md).
+
 Source99 completed the public Worker18 protocol and three native statistics
 windows on124/card5. The raw-only B/F and repeat/F first exceedance is linear
 input Max1.734375 to0.8671875 (50%);26 earlier null fields remain. Strict whole-
@@ -67,6 +74,27 @@ The [SDK build](QUANT_GMM2_SOURCE106_BUILD_REVIEW.md) remains a separate source1
 artifact. Request-row proof stays10/135: current routing integers, cross-stage
 lifetimes and routing/GMM1/unpermute implementation semantics are still missing.
 No fault, new C2/C3 qualification or statistics E5 is claimed by this observation.
+
+The subsequent [GMM1 fixed-wheel review](QUANT_GMM1_STATIC_BOUNDARY.md)
+confirms both actual public schemas and their generic PrivateUse1 registrations
+in a device-free process. It identifies the full installed torch_npu commit,
+but neither matching debug data nor the exact op-plugin build identity was
+available. The bounded static window did not locate the Native branch. GMM1
+therefore remains unknown; no hook or additional request-row proof is claimed.
+The failed first backend import and successful explicit-SDK retry are both kept.
+
+The [Fault28 TND adaptation review](ATTENTION28_TND_PREFILL_ADAPTATION_REVIEW.md)
+checks all56 source87 calls against the exact c77 host/kernel source. Actual
+TND/sparse3/int8-mask calls retain a strided V view; the old BNSD/sparse2/bool-mask
+policy cannot admit them. A new no-page TND normal package, its own compiled
+entry and exact stock/private comparison are required before either fault
+strategy. Fault33's Q1/page16 build does not establish that normal scope.
+
+The [new TND normal source candidate](ATTENTION28_TND_NORMAL_SOURCE_HANDOFF.md)
+keeps the actual strided V view and independently distinguishes raw API
+attributes from parsed Native values. Its Python contracts and source checks
+are complete; SDK build and live descriptor/copy-lineage validation remain
+separate pending gates. It adds no public fault or runtime loading authority.
 
 ## Ownership and execution
 

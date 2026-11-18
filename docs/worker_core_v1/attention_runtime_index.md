@@ -31,6 +31,12 @@ Additional cache-only contracts cover replacement, tampering, incomplete
 append, invalid append transactionality, foreign threads, read-time growth,
 and snapshot mutation.
 
+This is not equivalence for arbitrary malformed files: the index additionally
+rejects invalid unrelated rows, duplicate keys, nonfinite JSON constants and
+missing final newlines. These stricter failures are retained, not treated as
+successful observations. Parity covers valid observer logs and the tested
+conflicting registration/launch histories.
+
 Complete raw logs and binaries remain final-review inputs. This saves repeated
 JSON decoding, not repeated old-prefix hashing or binary verification. The
 new group probe must measure its complete normal phase cost, including these

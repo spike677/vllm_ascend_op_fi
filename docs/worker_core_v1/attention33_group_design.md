@@ -2,10 +2,10 @@
 
 This is a CPU design and a test of the existing coverage coordinator. It is
 not a new Provider, Native package, launch permission or qualification. The
-source105 first-layer C1 remains confined to its original scope. The new
+source105 first-layer function/OFF result remains confined to its original scope. The new
 `tnd_page16_arch22_all_normal` package remains normal-only. No edit to that
-package may silently enable F. The source108 normal pair is still a root-run
-experiment at the time of this design; its outcome is not assumed here.
+package may silently enable F. The source108 private arm was externally stopped
+before final health completed; that pair is incomplete and grants no admission.
 
 ## Existing boundaries and the smallest separation
 

@@ -2,7 +2,7 @@
 
 This increment establishes a **new normal-only scope**. It grants no F, C1,
 C2, C3, live C2Proof, E5 or generic device qualification. The accepted source105
-first-layer C1 and its original results are unchanged. Its normal certificate
+first-layer function/OFF scope and its original results are unchanged. Its normal certificate
 cannot qualify this package or the other 27 targets.
 
 The fresh variant is `tnd_page16_arch22_all_normal`; its vendor is
@@ -21,7 +21,8 @@ closures, wrapper ownership and retryable cleanup. The trusted Worker probe
 selects this session with `--arch22-all-normal-bridge`; no caller supplies layer
 names or tensor arguments. It is a standard Worker experiment over trusted
 setup/expect/finish RPC helpers, **not a new public Core fault Provider**.
-Registry, Host, Runtime and exporter are unchanged.
+Registry, Host and Runtime are unchanged. The portable exporter includes this
+increment and the shared reader/build source closure.
 
 Each request records all 28 prefill plus all 28 decode calls. The 28 decode
 targets are discovered from the loaded model's reviewed Attention/impl objects;

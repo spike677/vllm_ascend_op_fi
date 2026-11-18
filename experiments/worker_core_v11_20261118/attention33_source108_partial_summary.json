@@ -1,0 +1,198 @@
+{
+  "schema": "demoncat.attention33.source108.partial_summary.v1",
+  "status": "INCOMPLETE_PRIVATE_FINAL_HEALTH_EXTERNALLY_STOPPED",
+  "source_commit": "b2339400e3959bcae7358b4a3ffd389eab724d0b",
+  "source_manifest_sha256": "f6b263e075f6402000e016da3e6da210bcb80c9c5471fd51e5dc6a876ed65c98",
+  "source_tar_sha256": "30d0ba22af409e0fe63a1e7413a058db5e8d04d002ecaaba8dfc46f223460da4",
+  "build_completion_sha256": "06945ad24dcecc1279c325f0938221277d852991303c57f0d56cc612a3d01832",
+  "build_scope": "FRESH_CANN8.5.1_A2_ALL_TARGET_NORMAL_ONLY",
+  "cpu_preflight": {
+    "production_tests": 130,
+    "failures": 0,
+    "skipped": 0,
+    "log_sha256": "4b025ca922d01b677bca66d79c5409ef31cbcb0e1e21d9d28d9a817729f6d537"
+  },
+  "controller": {
+    "sha256": "4edda12f1f0997933793d8b63a9c6af0b75f8c330588f80f533d00ba09950dfc",
+    "status": "CASE_FAILED",
+    "cards": [
+      5
+    ]
+  },
+  "failure_inventory_sha256": "8858b2f0dc5a4faf0c2e4545b88ba2ef7034590ca6db17a83046dba680c6d63f",
+  "arms": {
+    "stock": {
+      "original": {
+        "path": "/home/17-fault-c2c3-20261117/v11-33-all-normal-source108-card5-a1/attention33-arch22-all-normal-stock/run/result.json",
+        "bytes": 65705149,
+        "sha256": "44f745b6e2e0398f36fbee9893d4c0217f41748f7b49629271c909c50490646d"
+      },
+      "original_status": "FIRST_BOUNDARY_DIAGNOSTIC_COMPLETE_REQUIRES_INDEPENDENT_REVIEW",
+      "phases": [
+        {
+          "phase": "baseline_before",
+          "target_count": 28,
+          "native_calls": 0,
+          "finish_present": true
+        },
+        {
+          "phase": "baseline_repeat",
+          "target_count": 28,
+          "native_calls": 0,
+          "finish_present": true
+        },
+        {
+          "phase": "measured",
+          "target_count": 28,
+          "native_calls": 0,
+          "finish_present": true
+        },
+        {
+          "phase": "off_after",
+          "target_count": 28,
+          "native_calls": 0,
+          "finish_present": true
+        },
+        {
+          "phase": "healthy_after",
+          "target_count": 28,
+          "native_calls": 0,
+          "finish_present": true
+        }
+      ],
+      "post_clean_health_present": true,
+      "exit_code": 0,
+      "controller_timed_out": false,
+      "oom_killed": false,
+      "started_at": "2026-11-18T17:16:18.474320833Z",
+      "finished_at": "2026-11-18T17:20:49.502113542Z",
+      "cleanup_status": "OWNED_CONTAINER_REMOVED",
+      "post_cleanup_gate_idle": true
+    },
+    "baseline": {
+      "original": {
+        "path": "/home/17-fault-c2c3-20261117/v11-33-all-normal-source108-card5-a1/attention33-arch22-all-normal-baseline/run/result.json",
+        "bytes": 131592390,
+        "sha256": "dcafd0c6047df4e7665b558f96127dbd428f0eb8e84b8558f8014dfe2b6620a4"
+      },
+      "original_status": "STARTED",
+      "phases": [
+        {
+          "phase": "baseline_before",
+          "target_count": 28,
+          "native_calls": 28,
+          "finish_present": true
+        },
+        {
+          "phase": "baseline_repeat",
+          "target_count": 28,
+          "native_calls": 28,
+          "finish_present": true
+        },
+        {
+          "phase": "measured",
+          "target_count": 28,
+          "native_calls": 28,
+          "finish_present": true
+        },
+        {
+          "phase": "off_after",
+          "target_count": 28,
+          "native_calls": 28,
+          "finish_present": true
+        },
+        {
+          "phase": "healthy_after",
+          "target_count": 0,
+          "native_calls": 0,
+          "finish_present": false
+        }
+      ],
+      "post_clean_health_present": false,
+      "exit_code": 137,
+      "controller_timed_out": false,
+      "oom_killed": false,
+      "started_at": "2026-11-18T17:20:56.516151123Z",
+      "finished_at": "2026-11-18T17:26:48.523265194Z",
+      "cleanup_status": "OWNED_CONTAINER_REMOVED",
+      "post_cleanup_gate_idle": true
+    }
+  },
+  "docker_events": {
+    "original": {
+      "path": "/home/17-fault-c2c3-20261117/v11-source108-failure-inspect-a1/docker-events.jsonl",
+      "bytes": 3218,
+      "sha256": "b28add3a80e776ff8dd3030a910232446945a466fe9d9aad10a383f84e9beb92"
+    },
+    "summary": [
+      {
+        "action": "kill",
+        "time": 1795022798,
+        "signal": "15",
+        "exit_code": null
+      },
+      {
+        "action": "kill",
+        "time": 1795022808,
+        "signal": "9",
+        "exit_code": null
+      },
+      {
+        "action": "die",
+        "time": 1795022808,
+        "signal": null,
+        "exit_code": "137"
+      },
+      {
+        "action": "stop",
+        "time": 1795022808,
+        "signal": null,
+        "exit_code": null
+      },
+      {
+        "action": "destroy",
+        "time": 1795022809,
+        "signal": null,
+        "exit_code": null
+      }
+    ]
+  },
+  "independent_review": {
+    "path": "/home/17-fault-c2c3-20261117/v11-source108-original-review-incomplete-a1/review.json",
+    "sha256": "487f876b376b3573b35705405f76281bd702f99a6b70a4e255668528748f62f4",
+    "status": "INCOMPLETE_OR_REJECTED_ALL_NORMAL_NO_F",
+    "checks": 123,
+    "exit_code": 2,
+    "issues": [
+      {
+        "path": "baseline",
+        "error": "KeyError('finish')"
+      }
+    ],
+    "stock_actual_calls": 280,
+    "stock_decode_calls": 140,
+    "stock_phases": 5,
+    "cross_arm_pairs": 0
+  },
+  "fault_calls": 0,
+  "qualification": {
+    "normal_pair": false,
+    "C1": false,
+    "C2": false,
+    "C3": false,
+    "E5": false
+  },
+  "retained_totals": {
+    "C2": "9/17",
+    "C3": "8/17"
+  },
+  "original_results_modified": false,
+  "raw_statistics_or_private_payloads_published": false,
+  "limits": [
+    "Four private phases exist in the original; the incomplete arm has no independent acceptance.",
+    "No per-target fault, numerical effect, C2/C3 or statistics first difference is established.",
+    "Docker stop events identify the interruption but not the caller or cleanup controller.",
+    "Device-idle checks do not prevent a future external cleanup.",
+    "The source108 embedded result is near the 128 MiB reader bound; new group runs use a separate source and artifact references, never rewrite this original."
+  ]
+}
