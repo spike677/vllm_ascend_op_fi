@@ -23,6 +23,7 @@ SOURCES = (
     'fault_injection/native_adapters/writer26_group_runtime.cpp',
     'fault_injection/native_adapters/test_writer26_group_core.cpp',
     'fault_injection/native_adapters/test_writer26_group_runtime_control.cpp',
+    'fault_injection/native_adapters/test_writer26_pending_runtime.cpp',
     'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_qmm_underflow_api.h',
     'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_inventory.h',
     'fault39/native/metadata_array_owner.h',
@@ -112,6 +113,8 @@ python3 -B /source/fault39/native/test_metadata_ownership.py --writer26 --output
 g++ "${flags[@]}" -fPIC -shared "$native/writer26_group_runtime.cpp" -Wl,-soname,libdcat26_group_v2.so -ldl -lpthread -o /build/libdcat26_group_v2.so
 g++ "${flags[@]}" "$native/test_writer26_group_runtime_control.cpp" -ldl -lpthread -o /build/test_group_control
 /build/test_group_control > /build/sdk-control.json
+g++ "${flags[@]}" "$native/test_writer26_pending_runtime.cpp" -ldl -lpthread -o /build/test_pending_runtime
+/build/test_pending_runtime > /build/pending-runtime-cpu.json
 g++ "${flags[@]}" "$native/test_writer26_group_core.cpp" -o /build/test_group_core
 /build/test_group_core > /build/cpu-contract.json
 nm -D /build/libdcat26_group_v2.so > /build/exported-symbols.txt
@@ -165,6 +168,7 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
         raise RuntimeError('ACTUAL_GROUP_METADATA_COUNTER_EXPORT_REQUIRED')
     receipt.update(status='SDK_BUILD_AND_CPU_CONTRACT_PASS_NOT_NATIVE_ACCEPTANCE',
         sdk_control=json.loads((out / 'sdk-control.json').read_text()),
+        pending_runtime_contract=json.loads((out / 'pending-runtime-cpu.json').read_text()),
         cpu_contract=json.loads((out / 'cpu-contract.json').read_text()))
     (out / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     output_files = {name: sha(out / name) for name in sorted(required | {'libdcat26_group_v2.so', 'metadata-array-group-cpu.json'})}

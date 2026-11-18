@@ -170,7 +170,16 @@ bool destroy_descriptor() {
 }
 bool dispatch(const Event& event,uint32_t mechanism) {
     if(!admit || !owned_thread())return false;
-    if(runtime.callback_active || runtime.completion_active || engine.state().pending) {reject(Busy);return false;}
+    const auto state=engine.state();
+    const auto pending=engine.receipt(engine.token());
+    const bool awaiting_consumer=state.pending && !state.error && !state.executing
+        && pending.writer_complete && !pending.consumer_complete;
+    // A completed writer can precede ordinary, unselected model calls before
+    // its actual consumer. Observe those calls before deciding to pass them.
+    // Engine::prepare still rejects a second selected lease while one is held.
+    if(runtime.callback_active || runtime.completion_active || (state.pending && !awaiting_consumer)) {
+        reject(Busy);return false;
+    }
     callback_call=make_call(event,mechanism);callback_event=event;continued=accepted=false;
     runtime.callback_active=1;++runtime.callback_calls;
     const int status=admit(&callback_call);
