@@ -1,8 +1,12 @@
 # Current repaired-build acceptance checkpoint
 
-Strict root-reviewed qualification remains **C2 2/17 and C3 2/17**: the
-previously reviewed bounded standard-Worker Fault18 and MoE8 scopes. This report
-does not transfer their qualification to newer source snapshots. Raw statistics,
+The earlier checkpoint below recorded C2/C3 2/17. The current strict count is
+**3/17 each**, adding only the independently reviewed repaired Native39 scope
+in [the fresh acceptance report](NATIVE39_REQUALIFICATION_20261118.md).
+Native20 later passed metadata-only discovery (15012 arrays released, zero
+owned resources, same healthy output), but has not passed a new fault group.
+Earlier failure receipts remain valid and are not overwritten. This report
+does not transfer qualification to newer source snapshots. Raw statistics,
 private arrays, SDK libraries and weights remain on124.
 
 ## Resumed work and new gates

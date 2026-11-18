@@ -1,5 +1,18 @@
 # Current execution checkpoint
 
+## Current checkpoint — Worker Core V1 and Native39 independently accepted
+
+- Strict scoped C2/C3 is now **3/17 each**: Fault18, MoE8, and repaired Native39. See NATIVE39_REQUALIFICATION_20261118.md; old leaking builds remain withdrawn.
+- Native39 source42/packages16 run native39-cache-witness-c2c3-card2-a2 completed normally. Independent group review aeef6f5a509e415da95ed82aae8eca1bf1d944ecf44da40317451ab43f774b0a and SDK C2/C3 paired review passed. C2 statistics are incomparable with Inf/NaN; C3 raw statistics are missing. Neither gap reverses demonstrated safe OFF.
+- Native20 short native20-repaired-metadata-card2-a2 completed with source44/packages18. Two discovery requests each observed135 QMM;15012 SDK arrays acquired/released. Zero hooks/native owners/leases after unregister, same healthy token304. Result1f9fda650dce4844122988232efac7a2b12fddc6b219877cb9bb4006f387079b; no fault or new C2/C3 qualification.
+- Root alone schedules NPU. Native26 two-case queue native26-metadata-v2-card2-a1 is active in session72960 using reviewed source44/packages18 and source45 controller; no host isolation. First command rejected an absolute --attempt before creating the attempt; corrected to its required name.
+- Fresh exact scope binds Pod5631f2d9-09f6-4b5b-98e1-1bc92dbd285c and checkpoint223e6fb5e99deb15ec6a668279176ec06a8771230c3f7e562a122387f23d2056; every case still checks current allocation and devices.
+- Main source45 is frozen at ab038dc5be0e79e7a9bd0a453d488035c5e7e438. New Core development lives in codex/worker-core-v1-20261118, based on649c4f88 (descendant of remote79a1e809). It does not overwrite deployed source.
+- Root unified17 provider route states, structural discovery and HostAdapter/FaultConfig (6273a0d,7f565d5d);58 focused CPU contracts pass. Eleven routes already have RPC factories, six still require adaptation; route availability grants no qualification.
+- CPU-only specialists: worker_core_v1 builds integration export; core_call_census fixes owner-retaining natural observation; c23_nativeproviders implements source-bound MLA request rows. None may launch NPU.
+- M0 machine snapshot m0-worker-core-20261118-a1/snapshot.json SHA7ab1b7fdb685e1abe49396ec84e80b78d16e580c652cc68a1f38829e72ddb2ff. Source42 was the actual running Native39 snapshot, independently distinguished from development HEAD.
+- The following checkpoints are chronological history, not current running-session claims.
+
 ## Current checkpoint — account restored, source44, Native39 requalification
 
 - Account/approval quota is restored. New remote operations and the three

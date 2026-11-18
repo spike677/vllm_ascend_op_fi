@@ -1,10 +1,12 @@
 # Reviewed checkpoint, not final 17/17 acceptance
 
-Root decisions after the SDK metadata ownership and MoE8 audits: **C2 2/17, C3 2/17**.
-Fault18 and MoE8 have bounded standard-Worker qualification. Fault20 and
+Root decisions after the repaired Native39 audit: **C2 3/17, C3 3/17**.
+Fault18, MoE8 and the new Native39 build have bounded standard-Worker qualification. Fault20 and
 native Fault39 had actual full-set numerical/OFF evidence, but their builds did
 not release SDK-allocated host metadata arrays. Complete-resource qualification
-is withdrawn pending repaired builds and new verification. Original historical and constructed results remain attached to
+of those old builds remains withdrawn. Native20 is still pending;
+[new Native39 acceptance](NATIVE39_REQUALIFICATION_20261118.md) is a separate
+source/build/workload scope. Original historical and constructed results remain attached to
 their original source, build, layout and model. This document is a report, not a
 runtime admission certificate. Rejected or interrupted runs never create a proof.
 See the [executed-build ownership audit](coverage_frozen_metadata_ownership_review.md).
@@ -25,7 +27,7 @@ See the [executed-build ownership audit](coverage_frozen_metadata_ownership_revi
 |28.fia.legal_tiling|Fresh9.1 standalone B8, actual final arguments/registered ELF/launch verified; M/S2 512/512→128/128|Not established|Not established|Fresh disclosed CPU-FP64 statistics have no observable fixed-tolerance first difference. Native output-byte change is separate evidence, not E5 or model acceptance.|
 |28.fia.denominator_replay|Fresh9.1 standalone B8, distinct real kernel entry, eight-launch review includes this B/F pair|Not established|Not established|Raw fixed-tolerance first difference is FIA output Mean; Norm118.30810159723288→116.27198217667856. Natural model/Worker coverage still pending; no historical default-root-cause claim.|
 |33.paged_decode|Natural stock Qwen Worker TND/page16; previous six-key private B failed on real FD key5100000000010200103; new eight-key FD build running|Pending|Pending|Preserved native branch decision and matched KV256 host/kernel; actual platform/launch, full stock-private bridge, fault/OFF and raw E5 remain required.|
-|39.matmul_range|Previous113/226 native interventions retained; first repaired full C2 reached113 hits but failed metadata activity health gate|Requalification required|Requalification required|Registration-time array release witness now binds actual cache/epoch; fresh SDK/CPU pass, short real preflight pending. Raw first linear output5.1875→Inf;1906 later NaNs prevent whole E5.|
+|39.matmul_range|New cache-witness SDK, source42/packages16, Qwen Worker TP1/BF16 fixed14-token prefill; both independent audits pass|**113/113**|**226/226**, two requests|Five actual cache registrations and689/803 SDK-counter snapshots verify release, cross-group identity and OFF. C2 first linear output5.1875→Inf; NaNs prevent whole E5, C3 raw capture missing. Old builds stay withdrawn.|
 |39.output_proxy|Natural HF Qwen140 eligible projection chains; fresh multi-lease SDK built; new baseline failed independent discovery before group faults|Pending|Pending|Structural noncalling-container classification under review; no group acceptance. Infinity/NaN limitations remain separate from native39 input substitution.|
 |41.tail_column|Natural standard Qwen Worker: once28/28 recovered in driver, every-match56/56 then uninstall ownership refusal|Independent root review pending|Failed; repaired source pending NPU|58 hooks/5 API patches remained. New pinned collector-ancestry cleanup tested onCPU. Raw step0 first downstream linear Max3.0625→2.96875; step1 still38 differences, preserved for valid-range audit.|
 
