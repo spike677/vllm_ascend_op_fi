@@ -30,19 +30,18 @@ request. Native GMM/routing/unpermute implementation ownership and row semantics
 are still unproved; see the [source93 review](QUANT_SOURCE93_ROUTED_FRAMES_REVIEW.md).
 The source-bound reader and root rerun produce the identical summary hash.
 
-The independent source94 Fault33 S2 candidate has passed the real pinned
-SplitCore22,528-case CPU geometry matrix. Its new host/kernel/package build has completed successfully without a device.
-Its source102 same-package normal bridge now passes435 exact complete payload
-pairs. The following public single-site attempt failed during prepare with
-ContextRefused, before any protocol request or F. Its failed cleanup receipt
-is retained; entry and uncertain-prepare cleanup need repair before a new run.
-The repair now strictly translates the pinned observer receipt file into the
-reader build root and uses public detach when prepare returns no lease ticket.
-A no-device production-image regression reproduced the old refusal and then
-replayed all435 original pairs successfully with the repaired loader; log SHA
-`952a4d4e9a7bc32fc8cdea6c4dabcbe35760bcacf4afe9a46fd3b7b277733d22`.
-This is a loader regression, not a new package's normal/F acceptance.
-The original source88 normal package and evidence remain unchanged.
+Fault33 source105 now passes a fresh435-pair stock/private normal bridge and
+the actual public Worker single-site function/OFF experiment. The independent
+raw-file review observes72 changed first-layer FIA elements (max absolute
+0.0001220703125) and135007 changed logits elements (max absolute0.017578125).
+Every recovery payload is exact; returned tokens/text stay equal. The actual
+S2 grouping changes512→256 with page size16 and M512 unchanged. This is a
+controlled strategy variant, not historical blockSize-trigger reproduction.
+The other27 input-matching decode sites remain unqualified; C2/C3 and E5 are
+not granted. See [acceptance, failures and limits](ATTENTION33_SOURCE105_SINGLE_ACCEPTANCE.md).
+The source102 prepare refusal and first source105 offline-review failure are
+preserved. Loader/cleanup and scheduler-schema reader repairs do not change
+their original evidence. Earlier normal packages also remain unchanged.
 
 Source99 completed the public Worker18 protocol and three native statistics
 windows on124/card5. The raw-only B/F and repeat/F first exceedance is linear
@@ -58,7 +57,11 @@ with104 source windows, exact token/text health recovery and no cleanup errors.
 The [independent original-file review](QUANT_SOURCE102_CONTAINER_REVIEW.md)
 reconciles607 complete lifetimes and130 current GMM2 member descriptors.
 Request-row proof remains10/135: actual named GWS slots and executor joins are
-not yet established. Observation alone grants no new C2/C3 qualification.
+not yet established. The fixed production wheel's actual GMM2 branch is
+WeightNz, not V5. Its [new bounded journal build](QUANT_GMM2_SOURCE106_BUILD_REVIEW.md)
+passes47 actual SDK-typed CPU contracts and startup original resolution; Python
+admission and real paired observation remain pending. Observation alone grants
+no new C2/C3 qualification.
 
 ## Ownership and execution
 
@@ -93,7 +96,7 @@ next-action ledger, including explicit stop conditions and separate E5/version t
 |quant.batch_shared_scale|Public C1 source64; source93 proves10 request-row mappings out of135|Close actual Native routing/GMM/unpermute row semantics; no repeated frame inventory; then coverage.|
 |39.output|Source84 isolated C2 accepted for28/28 eligible pairs;113 projection calls retained|Cumulative C3 failure retained; do not bypass the finite-input guard or infer E5.|
 |28.fa.legal,28.fia.legal,28.fia.replay|Distinct standalone/kernel and historical model scopes|Public request-scoped execution adapters for real layouts/launches, no empty factory.|
-|33.paged|Source88 normal bridge has435 exact complete payload pairs and281 independent checks with0 issues|Next implement/validate actual F and OFF in this new scope; retain earlier67-element mismatch and no inherited fault qualification.|
+|33.paged|Source105 fresh normal435 pairs exact; public first-layer S2 function and OFF independently accepted, including logits propagation|Extend actual per-site normal/effect binding to all28 matching decode targets before C2/C3. Keep source105's single-site scope and prior failures. E5 separate.|
 |15.alias|Healthy NZ constructed mechanism; observed natural VAE format30 does not match|Current natural VAE path closed as non-applicable. Reopen only for a different concrete qualifying chain; no global impossibility claim.|
 |17.spatial|Source77 actual standard Qwen3-VL Worker, Torch single projection, C2 1/1 and C3 2/2 accepted|Native/device, multi-projection and E5 remain separate; no rerun required to decide existing Torch evidence.|
 |25.reduce_scatter|Six bounded8.5.1/9.1 calibration cases have no replay sample|Current calibration path closed with NO_REPLAY_SAMPLE; no repeated identical calibration or manufactured fault.|
@@ -507,7 +510,8 @@ used to authorize this TND2048 route. The next adaptation must use its own
 matching source, normal comparison, legal tiling and fault/OFF proof.
 
 Source89's45 production-image CPU contracts passed in1201.272s before NPU
-startup. Its actual26 isolated-to-C3 case is running serially oncard5, retaining
-all30 observed calls and29 eligible targets. First-F cost gating passed without
-changing1200s/1800s limits. The actual run and subsequent independent review,
-not this progress note, determine its C2/C3 result.
+startup. Its actual26 isolated-to-C3 case subsequently completed oncard5,
+retaining all30 observed calls and29 eligible targets. First-F cost gating
+passed without changing1200s/1800s limits. The completed independent review
+and [source89 decision](NATIVE26_SOURCE89_ACCEPTANCE.md) supersede the earlier
+running status and accept only that named C2/C3 scope.

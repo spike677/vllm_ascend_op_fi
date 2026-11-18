@@ -1,0 +1,425 @@
+{
+  "schema": "demoncat.worker_v11.paged33.source105_review_summary.v1",
+  "scope": "SOURCE_BOUND_SINGLE_SITE_TND_FIRST_DECODE_S2_STRATEGY",
+  "root_decision": "ACCEPT_BOUNDED_PUBLIC_WORKER_SINGLE_SITE_FUNCTION_AND_OFF",
+  "runtime_authority": false,
+  "C2": false,
+  "C3": false,
+  "E5": "NOT_ASSESSED",
+  "source_commit": "8796f84dcf91704184a01cdac575858d6cfe1b81",
+  "source_manifest_sha256": "4a4bb617af27ecaca8232721782f8a1f3974a6e4fcb8081cb4c6e7c8018c2eb6",
+  "reviewer_source_sha256": "4deb3eedac4add1fd7f7bbd55c6f916ca80f8298621a54c6b5d594ccb25fcbc2",
+  "independent_report_sha256": "2e5d19cd91eb566e71a74429879f193ee8369fce00115f6556d7913daadf2111",
+  "result_sha256": "f87247ec8a78c8258489025216997c30deb3a61072603b90f0efd087147c2ecc",
+  "normal_report_sha256": "1e113a94c04398facb0cd678c28d66fc02ca484d842b75fbef5ffc6cdad3349f",
+  "normal_complete_pairs": 435,
+  "earlier_review_preserved_sha256": "24f11a6227a17637e112d41012ae00d6875981aca183372adc651c72de26a730",
+  "controller_sha256": "a594a290d17dc3045e70c76bea40cce6e1143cf64dafe193e3aebf564c96bf9f",
+  "checks": 11,
+  "check_count_scope": "TOP_LEVEL_AGGREGATE_READER_CHECKS_NOT_ELEMENT_COUNT",
+  "issues": [],
+  "original_status": "PUBLIC_SINGLE_SITE_S2_FUNCTION_AND_OFF_RECORDED_PENDING_INDEPENDENT_REVIEW",
+  "original_results_modified": false,
+  "original_failures": [],
+  "denominator_per_request": 56,
+  "decode_kernel_input_matching_targets": 28,
+  "source_bound_normal_targets": 1,
+  "other_matching_targets_without_per_site_proof": 27,
+  "operator_effect": {
+    "shape": [
+      1,
+      16,
+      128
+    ],
+    "dtype": "torch.float16",
+    "bytes": 4096,
+    "left_sha256": "7c4aec75bc22167fcc52492ed7b1e10d138fa9cc3ca4677311e6cde4eef49f7b",
+    "right_sha256": "0c74baf9077287815a326e348b0e7d83170cbaab91d7512b73c60205e2f33006",
+    "changed_bytes": 72,
+    "changed_elements": 72,
+    "numeric_changed_elements": 72,
+    "max_abs_difference": 0.0001220703125,
+    "exact": false
+  },
+  "logits_effect": {
+    "shape": [
+      1,
+      151936
+    ],
+    "dtype": "torch.float16",
+    "bytes": 303872,
+    "left_sha256": "11c2560c10b0516178fdff3ada54c099a08135cbf9d70b39e36c1878eee42261",
+    "right_sha256": "fee459edd0b42dad1fcf4ccd6003f4bfc52d99ff2110f64c03cd0e489b75a354",
+    "changed_bytes": 140523,
+    "changed_elements": 135007,
+    "numeric_changed_elements": 135007,
+    "max_abs_difference": 0.017578125,
+    "exact": false
+  },
+  "native": [
+    {
+      "phase": "reference",
+      "selected_s2": 512,
+      "block_dim": 16,
+      "full_typed_sha256": "1e9860d58101656545a2c56f07d8ce4fd7795598045bfdf6157eb8a68e8eb5d7",
+      "raw_tiling_sha256": "2b7b4ee666c645af04f154d13c089c3a28ccd0fc87f6899f081d2a8ff9460010"
+    },
+    {
+      "phase": "lossless",
+      "selected_s2": 512,
+      "block_dim": 16,
+      "full_typed_sha256": "1e9860d58101656545a2c56f07d8ce4fd7795598045bfdf6157eb8a68e8eb5d7",
+      "raw_tiling_sha256": "2b7b4ee666c645af04f154d13c089c3a28ccd0fc87f6899f081d2a8ff9460010"
+    },
+    {
+      "phase": "qualification_off",
+      "selected_s2": 512,
+      "block_dim": 16,
+      "full_typed_sha256": "1e9860d58101656545a2c56f07d8ce4fd7795598045bfdf6157eb8a68e8eb5d7",
+      "raw_tiling_sha256": "2b7b4ee666c645af04f154d13c089c3a28ccd0fc87f6899f081d2a8ff9460010"
+    },
+    {
+      "phase": "fault",
+      "selected_s2": 256,
+      "block_dim": 20,
+      "full_typed_sha256": "663bb622118275f2b3a958b0dc78d176f60d0723f710d4c68ba688d93ff8ce50",
+      "raw_tiling_sha256": "1e383becffce31bf816fbb1e8bb2232a35ef824bb32cf3aa20d28f4b2da3f078"
+    },
+    {
+      "phase": "recovery_off",
+      "selected_s2": 512,
+      "block_dim": 16,
+      "full_typed_sha256": "1e9860d58101656545a2c56f07d8ce4fd7795598045bfdf6157eb8a68e8eb5d7",
+      "raw_tiling_sha256": "2b7b4ee666c645af04f154d13c089c3a28ccd0fc87f6899f081d2a8ff9460010"
+    }
+  ],
+  "phase_comparisons": [
+    {
+      "phase": "reference",
+      "payload_pairs": 87,
+      "differing_payloads": 0,
+      "exact_payloads": 87,
+      "changed_attention_layers": {
+        "output": [],
+        "key": [],
+        "value": []
+      },
+      "first_recorded_attention_output_difference": null,
+      "preceding_attention_outputs_exact": 28,
+      "preceding_attention_cache_payloads_exact": true
+    },
+    {
+      "phase": "lossless",
+      "payload_pairs": 87,
+      "differing_payloads": 0,
+      "exact_payloads": 87,
+      "changed_attention_layers": {
+        "output": [],
+        "key": [],
+        "value": []
+      },
+      "first_recorded_attention_output_difference": null,
+      "preceding_attention_outputs_exact": 28,
+      "preceding_attention_cache_payloads_exact": true
+    },
+    {
+      "phase": "qualification_off",
+      "payload_pairs": 87,
+      "differing_payloads": 0,
+      "exact_payloads": 87,
+      "changed_attention_layers": {
+        "output": [],
+        "key": [],
+        "value": []
+      },
+      "first_recorded_attention_output_difference": null,
+      "preceding_attention_outputs_exact": 28,
+      "preceding_attention_cache_payloads_exact": true
+    },
+    {
+      "phase": "fault",
+      "payload_pairs": 87,
+      "differing_payloads": 85,
+      "exact_payloads": 2,
+      "changed_attention_layers": {
+        "output": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ],
+        "key": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ],
+        "value": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27
+        ]
+      },
+      "first_recorded_attention_output_difference": "model.layers.0.self_attn.attn",
+      "preceding_attention_outputs_exact": 0,
+      "preceding_attention_cache_payloads_exact": true
+    },
+    {
+      "phase": "recovery_off",
+      "payload_pairs": 87,
+      "differing_payloads": 0,
+      "exact_payloads": 87,
+      "changed_attention_layers": {
+        "output": [],
+        "key": [],
+        "value": []
+      },
+      "first_recorded_attention_output_difference": null,
+      "preceding_attention_outputs_exact": 28,
+      "preceding_attention_cache_payloads_exact": true
+    }
+  ],
+  "returned_outputs": {
+    "reference": [
+      {
+        "tokens": [
+          1102,
+          13
+        ],
+        "text": " result.",
+        "finish_reason": "length"
+      }
+    ],
+    "lossless": [
+      {
+        "tokens": [
+          1102,
+          13
+        ],
+        "text": " result.",
+        "finish_reason": "length"
+      }
+    ],
+    "qualification_off": [
+      {
+        "tokens": [
+          1102,
+          13
+        ],
+        "text": " result.",
+        "finish_reason": "length"
+      }
+    ],
+    "fault": [
+      {
+        "tokens": [
+          1102,
+          13
+        ],
+        "text": " result.",
+        "finish_reason": "length"
+      }
+    ],
+    "recovery_off": [
+      {
+        "tokens": [
+          1102,
+          13
+        ],
+        "text": " result.",
+        "finish_reason": "length"
+      }
+    ]
+  },
+  "post_unregister_outputs": [
+    {
+      "tokens": [
+        1102,
+        13
+      ],
+      "text": " result.",
+      "finish_reason": "length"
+    }
+  ],
+  "cleanup": {
+    "inflight": 0,
+    "leases": 0,
+    "owned_hooks": 0,
+    "owned_api_wrappers": 0,
+    "enabled": false,
+    "native_registered": false
+  },
+  "request_lineage": [
+    {
+      "phase": "reference",
+      "internal_request_id": "1-85423716",
+      "prefill_tokens": 1024,
+      "first_decode_position": 1024,
+      "prefill_page_count": 64,
+      "observed_forwards": 2,
+      "actual_calls": 56,
+      "actual_root_tensor_hashes_recomputed": true,
+      "prefill_legacy_counter_used_as_authority": false,
+      "writer_consumer": {
+        "actual_consumers": 28,
+        "logical_page_count": 65,
+        "logical_token_position": 1024,
+        "physical_slot_derived_from_actual_pages": true,
+        "returned_writer_storage_matched": true
+      }
+    },
+    {
+      "phase": "lossless",
+      "internal_request_id": "2-a7c10746",
+      "prefill_tokens": 1024,
+      "first_decode_position": 1024,
+      "prefill_page_count": 64,
+      "observed_forwards": 2,
+      "actual_calls": 56,
+      "actual_root_tensor_hashes_recomputed": true,
+      "prefill_legacy_counter_used_as_authority": false,
+      "writer_consumer": {
+        "actual_consumers": 28,
+        "logical_page_count": 65,
+        "logical_token_position": 1024,
+        "physical_slot_derived_from_actual_pages": true,
+        "returned_writer_storage_matched": true
+      }
+    },
+    {
+      "phase": "qualification_off",
+      "internal_request_id": "3-a48392d0",
+      "prefill_tokens": 1024,
+      "first_decode_position": 1024,
+      "prefill_page_count": 64,
+      "observed_forwards": 2,
+      "actual_calls": 56,
+      "actual_root_tensor_hashes_recomputed": true,
+      "prefill_legacy_counter_used_as_authority": false,
+      "writer_consumer": {
+        "actual_consumers": 28,
+        "logical_page_count": 65,
+        "logical_token_position": 1024,
+        "physical_slot_derived_from_actual_pages": true,
+        "returned_writer_storage_matched": true
+      }
+    },
+    {
+      "phase": "fault",
+      "internal_request_id": "4-90fe8b02",
+      "prefill_tokens": 1024,
+      "first_decode_position": 1024,
+      "prefill_page_count": 64,
+      "observed_forwards": 2,
+      "actual_calls": 56,
+      "actual_root_tensor_hashes_recomputed": true,
+      "prefill_legacy_counter_used_as_authority": false,
+      "writer_consumer": {
+        "actual_consumers": 28,
+        "logical_page_count": 65,
+        "logical_token_position": 1024,
+        "physical_slot_derived_from_actual_pages": true,
+        "returned_writer_storage_matched": true
+      }
+    },
+    {
+      "phase": "recovery_off",
+      "internal_request_id": "5-9e0ffdd4",
+      "prefill_tokens": 1024,
+      "first_decode_position": 1024,
+      "prefill_page_count": 64,
+      "observed_forwards": 2,
+      "actual_calls": 56,
+      "actual_root_tensor_hashes_recomputed": true,
+      "prefill_legacy_counter_used_as_authority": false,
+      "writer_consumer": {
+        "actual_consumers": 28,
+        "logical_page_count": 65,
+        "logical_token_position": 1024,
+        "physical_slot_derived_from_actual_pages": true,
+        "returned_writer_storage_matched": true
+      }
+    }
+  ],
+  "limits": [
+    "C1 scope is the actual first-layer experiment only; 27 other input-matching decode sites remain unproved.",
+    "Before-read mask/logical KV values are source-bound hashes; later complete matching KV bytes were independently read.",
+    "Selected ACLNN caller owner is unobserved; actual scoped launch/ELF/POD is checked.",
+    "Post-unregister health proves only tokens/text, not hidden/logits.",
+    "Page size stays16 and M stays512; this is controlled S2 grouping, not a reproduction of historical blockSize-trigger selection.",
+    "Output differences are complete-array comparisons, not an msprobe statistics/mix first-difference result.",
+    "The actual second emitted token comes from the first decode; continuous generation and task accuracy are not accepted.",
+    "Root acceptance records this experiment only; serialized summaries do not authorize future runtime injection."
+  ]
+}
