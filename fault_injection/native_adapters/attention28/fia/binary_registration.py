@@ -27,6 +27,7 @@ KEYS={'legal_tiling':{103000000000000000,109000000000000000,109000000000400000},
 KEYS['tnd_page16_arch22_normal_bridge'] = KEYS['tnd_page16_s2_256'] | {
     5000000000000200100, 5000000000000200103, 5000000000010200100,
     5000000000010200103, 5100000000010200100, 5100000000010200103}
+KEYS['tnd_page16_arch22_s2_256'] = set(KEYS['tnd_page16_arch22_normal_bridge'])
 
 def require(ok,message):
     if not ok:raise RuntimeError(message)
