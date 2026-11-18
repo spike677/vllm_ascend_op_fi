@@ -2,7 +2,9 @@
 from copy import deepcopy
 import hashlib
 import json
+import os
 from pathlib import Path
+import stat
 
 from .attention_execution import AttentionExecutionAdapter
 from .call_binding import ForwardBinding
@@ -14,6 +16,69 @@ from .paged33_s2_evidence import digest
 from .serving_context import require
 
 
+MAX_CAPTURE_BYTES=128*1024**2
+MAX_PHASE_FILES=1024
+MAX_PHASE_ARTIFACT_BYTES=512*1024**2
+
+
+def _plain_stat(path):
+    value=path.lstat()
+    require(not stat.S_ISLNK(value.st_mode) and not getattr(value,'st_file_attributes',0)&0x400,
+            'GROUP_OWNED_ARTIFACT_PATH_CHANGED:'+str(path))
+    return value
+
+
+def _directory_identity(path):
+    value=_plain_stat(path)
+    require(stat.S_ISDIR(value.st_mode) and path.resolve(strict=True)==path.absolute(),
+            'GROUP_OWNED_ARTIFACT_DIRECTORY_CHANGED:'+str(path))
+    return value.st_dev,value.st_ino
+
+
+def _file_identity(value):
+    require(stat.S_ISREG(value.st_mode) and value.st_size>=0,'GROUP_REGULAR_ARTIFACT_FILE_REQUIRED')
+    return value.st_dev,value.st_ino,value.st_size,value.st_mtime_ns,value.st_ctime_ns
+
+
+def _request_inventory(root,folder,root_identity,folder_identity):
+    require(folder.parent==root and _directory_identity(root)==root_identity
+        and _directory_identity(folder)==folder_identity,'GROUP_OWNED_REQUEST_DIRECTORY_CHANGED')
+    files={};directories={'.':folder_identity};total=0;count=0
+    for path in folder.rglob('*'):
+        require(path.resolve(strict=True).is_relative_to(folder.resolve(strict=True)),
+                'GROUP_OWNED_ARTIFACT_PATH_CHANGED:'+str(path))
+        value=_plain_stat(path);relative=path.relative_to(folder).as_posix()
+        if stat.S_ISDIR(value.st_mode):directories[relative]=_directory_identity(path)
+        else:
+            identity=_file_identity(value);files[relative]=identity
+            if relative=='runtime_result.json':
+                require(0<identity[2]<=MAX_CAPTURE_BYTES,'GROUP_CAPTURE_FILE_BOUND')
+            else:
+                count+=1;total+=identity[2]
+                require(count<=MAX_PHASE_FILES and total<=MAX_PHASE_ARTIFACT_BYTES,
+                        'GROUP_PHASE_ARTIFACT_RESOURCE_BOUND')
+    require('runtime_result.json' in files,'GROUP_COMPLETE_CAPTURE_FILE_REQUIRED')
+    require(_directory_identity(root)==root_identity and _directory_identity(folder)==folder_identity,
+            'GROUP_OWNED_REQUEST_DIRECTORY_CHANGED')
+    return dict(files=files,directories=directories,artifact_files=count,artifact_bytes=total)
+
+
+def _read_capture(path,identity):
+    # Bound allocation before reading; checking length after read_bytes is too late.
+    require(0<identity[2]<=MAX_CAPTURE_BYTES,'GROUP_CAPTURE_FILE_BOUND')
+    with path.open('rb') as stream:
+        opened=_file_identity(os.fstat(stream.fileno()))
+        # Windows path stat and handle stat expose different ctime semantics.
+        # Compare dev/inode/size/mtime across APIs, and each full identity with
+        # its own API before/after the read (including that API's ctime).
+        require(opened[:4]==identity[:4],'GROUP_CAPTURE_FILE_IDENTITY_CHANGED')
+        data=stream.read(identity[2]+1)
+        require(len(data)==identity[2] and _file_identity(os.fstat(stream.fileno()))==opened,
+                'GROUP_CAPTURE_FILE_CHANGED_DURING_READ')
+    require(_file_identity(_plain_stat(path))==identity,'GROUP_CAPTURE_FILE_IDENTITY_CHANGED')
+    return data
+
+
 class GroupExecutionAdapter(AllNormalWorkerSession):
     def __init__(self,deployment,guard):
         AttentionExecutionAdapter.__init__(self,deployment,guard)
@@ -21,6 +86,7 @@ class GroupExecutionAdapter(AllNormalWorkerSession):
         self.root_folder=self.driver.folder.parent/'group_requests'
         require(not self.root_folder.exists(),'GROUP_FRESH_REQUEST_ARTIFACT_DIRECTORY_REQUIRED')
         self.root_folder.mkdir();self.private=True
+        self.artifact_root_identity=_directory_identity(self.root_folder)
         require(len(deployment.leases)==1,'GROUP_ACTUAL_PUBLIC_TICKET_REQUIRED')
         self.owner_token,self.generation=next(iter(deployment.leases))
         self.targets=NormalTargetScope(self.worker,self.candidates,owner=self,generation=self.generation)
@@ -37,8 +103,11 @@ class GroupExecutionAdapter(AllNormalWorkerSession):
         self.control.begin_request(request_id,phase)
         if not self.deployment.simulation:self.driver.start_resource_phase(phase,self.control.index)
         self.folder=self.root_folder/(f'{len(self.request_artifacts):03d}-'+phase)
+        require(_directory_identity(self.root_folder)==self.artifact_root_identity,
+                'GROUP_OWNED_REQUEST_DIRECTORY_CHANGED')
         require(not self.folder.exists(),'GROUP_REQUEST_ARTIFACT_REUSE_REFUSED')
         self.folder.mkdir();(self.folder/'boundaries').mkdir()
+        self.artifact_folder_identity=_directory_identity(self.folder)
         self.driver.folder=self.folder/'native';self.driver.folder.mkdir()
         self.records={};self.payload_refs={};self.original=None;self.native_start=len(self.driver.calls)
         return AttentionExecutionAdapter.expect(self,request_id,phase)
@@ -79,12 +148,24 @@ class GroupExecutionAdapter(AllNormalWorkerSession):
 
     def collect(self):
         try:
+            require(self.folder.parent==self.root_folder
+                and _directory_identity(self.root_folder)==self.artifact_root_identity
+                and _directory_identity(self.folder)==self.artifact_folder_identity,
+                'GROUP_OWNED_REQUEST_DIRECTORY_CHANGED')
             capture=super().collect()
-            path=self.folder/'runtime_result.json';data=path.read_bytes()
+            inventory=_request_inventory(self.root_folder,self.folder,self.artifact_root_identity,self.artifact_folder_identity)
+            path=self.folder/'runtime_result.json';data=_read_capture(path,inventory['files']['runtime_result.json'])
+            require(json.loads(data)==capture,'GROUP_CAPTURE_ORIGINAL_CONTENT_DIFFERS')
+            require(_request_inventory(self.root_folder,self.folder,self.artifact_root_identity,self.artifact_folder_identity)==inventory,
+                    'GROUP_REQUEST_ARTIFACT_IDENTITY_CHANGED')
             row=capture['natural_request']
             artifact=dict(phase=row['phase'],request_id=row['request_id'],path=str(path),
                 sha256=hashlib.sha256(data).hexdigest(),bytes=len(data),actual_calls=56,decode_calls=28,
-                complete_payload_count=87,native_calls=len(capture['native_calls']))
+                complete_payload_count=87,native_calls=len(capture['native_calls']),
+                owned_artifacts=dict(files_excluding_capture=inventory['artifact_files'],
+                    bytes_excluding_capture=inventory['artifact_bytes'],inventory_sha256=digest(inventory),
+                    capture_identity=list(inventory['files']['runtime_result.json']),
+                    root_identity=list(self.artifact_root_identity),request_directory_identity=list(self.artifact_folder_identity)))
             # Preserve the complete original even if admission/comparison fails.
             self.request_artifacts.append(artifact)
             self.control.complete_request(capture,artifact)

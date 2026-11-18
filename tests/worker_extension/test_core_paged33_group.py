@@ -262,5 +262,28 @@ class PublicGroupContracts(unittest.TestCase):
         self.ok(self.client.disable());self.ok(self.client.unregister());self.assertEqual(self.client.detach()['status'],'DETACHED')
         self.assertIn('NO_F_CAPACITY_REFUSED',c.first_error)
 
+    def test_oversized_capture_never_completes_and_retains_actual_public_owner_for_off(self):
+        from demoncat.runtime.vllm_ascend.worker_extension import paged33_group_execution as execution
+        for index in range(3):self.request(index)
+        self.ok(self.client.advance('bounded-capture'));self.forward('bounded-capture')
+        provider=self.providers[0];session=provider.session;c=session.control
+        path=session.folder/'runtime_result.json';original=execution._plain_stat
+        def oversized(candidate):
+            value=original(candidate)
+            if candidate!=path:return value
+            return NS(st_mode=value.st_mode,st_dev=value.st_dev,st_ino=value.st_ino,
+                st_size=execution.MAX_CAPTURE_BYTES+1,st_mtime_ns=value.st_mtime_ns,st_ctime_ns=value.st_ctime_ns)
+        with patch.object(execution,'_plain_stat',side_effect=oversized):
+            reply=self.client.collect_replay()
+        self.assertNotEqual(reply['status'],'ACTION_COMPLETED')
+        self.assertIn('GROUP_CAPTURE_FILE_BOUND',c.first_error)
+        self.assertTrue(path.is_file() and session.installed and session.handles and session.owned_records)
+        self.assertTrue(c.off_pending and self.client.snapshot()['ownership_retained'])
+        self.assertIsNone(c.c2_proof);self.assertEqual(len(c.records),3)
+        before=path.read_bytes();self.assertEqual(sum(row['selection_applied'] for row in self.driver.calls),1)
+        self.ok(self.client.recover());self.request('bounded-off');self.request('bounded-health')
+        self.ok(self.client.disable());self.ok(self.client.unregister());self.assertEqual(self.client.detach()['status'],'DETACHED')
+        self.assertEqual(path.read_bytes(),before);self.assertIsNone(c.c2_proof)
+
 
 if __name__=='__main__':unittest.main()

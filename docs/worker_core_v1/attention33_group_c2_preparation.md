@@ -63,6 +63,15 @@ increase. Each capture is limited to 128 MiB; all 60 capture references total at
 most 7.5 GiB. The complete original log and all registration generations remain.
 No user flag can raise the cap or the 1800-second case budget.
 
+The live C2 collector enforces the normal collector's separate per-request
+limits before reading the capture or completing a request: capture JSON at
+most 128 MiB, and at most 1024 other files totaling 512 MiB. Root/request
+directory identities are retained from creation. Collection rejects symlinks,
+replacement, growth, and disagreement between saved JSON and the actual
+in-memory capture; opened-file and path identities are checked before/after
+the bounded read. A second inventory check precedes the completion receipt.
+Refusal leaves the originals and live recovery owner intact and cannot issue C2.
+
 The resource plan uses all five complete new normal phase measurements. It
 counts initialization and ordinary health once, uses the maximum observed
 phase increment with a factor of two, includes non-window logging and three
