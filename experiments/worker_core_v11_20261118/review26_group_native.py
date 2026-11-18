@@ -7,6 +7,31 @@ and complete-group cardinality. No new receipt is synthesized for the C1 API.
 from collections import Counter
 import struct
 
+
+def between_requests(r, previous, current, where):
+    """Retain counted non-QMM cache runs, but permit no writer/event gap.
+
+    Inventory::run increments all_runs and exactly one of qmm_runs and
+    non_target_runs. FIA/AddRms have independent event counters, which must
+    remain unchanged too. This is the existing C1 boundary rule with strict
+    integer/key checks, not a waiver for unexplained Native activity.
+    """
+    fields=set(('version size flags reserved capacity total_events stored_events overflow_events errors '
+        'all_runs qmm_runs non_target_runs qmm_enter qmm_exit fia_before fia_gws fia_enter fia_exit '
+        'add_rms_gws add_rms_enter add_rms_exit qmm_registration').split())
+    shape=(isinstance(previous,dict) and isinstance(current,dict) and set(previous)==set(current)==fields and
+        all(type(x) is int and x>=0 for row in (previous,current) for x in row.values()))
+    r.check(shape,'COMPLETE_INTEGER_NATIVE_BOUNDARY_STATES',where)
+    if not shape:return None
+    delta=current['all_runs']-previous['all_runs']
+    accounted=(delta>=0 and delta==current['non_target_runs']-previous['non_target_runs'] and
+        all(row['all_runs']==row['qmm_runs']+row['non_target_runs'] for row in (previous,current)) and
+        all(current[k]==previous[k] for k in fields-{'all_runs','non_target_runs'}))
+    r.check(accounted,'NO_UNACCOUNTED_NATIVE_WRITER_OR_EVENT_BETWEEN_REQUESTS',where)
+    return dict(boundary=where,non_target_runs=delta,accounted=accounted,
+                individual_non_target_operators_observed=False)
+
+
 def group_outcome(b, r, value, candidate, row, qualification, where, *, mechanism=1):
     integer_packet, words, positive, valid_sha = b.integer_packet, b.words, b.positive, b.valid_sha
     MODE_IDS = b.MODE_IDS

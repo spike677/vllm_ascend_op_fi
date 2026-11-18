@@ -205,7 +205,7 @@ def native_group(b,a,inv,worker,context,artifacts,*,natural,expected_count):
     for index,row in enumerate(rows):
         label=row['phase']; native=b.trace(a,row,lifetime,label,mechanism=mechanism)
         if index:
-            a.check(row['native_before']==rows[index-1]['native_after'],'NO_UNACCOUNTED_NATIVE_CALLS_BETWEEN_REQUESTS',label)
+            N.between_requests(a,rows[index-1]['native_after'],row['native_before'],label)
         a.check(len(native)==len(row['candidates'])==expected_count and not seen.intersection(x['call'] for x in native),
                 'FULL_NATIVE_WRITER_DENOMINATOR',label);seen.update(x['call'] for x in native)
         correlated=b.correlate(row,mechanism=mechanism)
@@ -278,7 +278,7 @@ def native_group(b,a,inv,worker,context,artifacts,*,natural,expected_count):
     return frozen,eligible,outcomes
 
 
-def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural):
+def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural,native_build_binding=None):
     cov=inv['coverage'];rows=inv['rows'];owner=context['provider_owner'];generation=native_generation(context)
     phases,modes=profile(inv);off_index=phases.index('group_off');faults=modes.count('fault')
     a.check(cov['scope']['mechanism']==inv['mechanism'] and cov['scope']['evidence_kind']==
@@ -367,7 +367,8 @@ def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural):
         environment=artifacts.load('actual-environment')
         helper=C.pure_module(Path(__file__).with_name('review26_environment_originals.py'),'_env_originals26')
         helper.review(C,a,environment,cov['scope']['environment_sha256'],inv['lifetime'],
-            native_images={x['name']:x['sha256'] for x in inv['metadata_arrays_initial']['images']})
+            native_images={x['name']:x['sha256'] for x in inv['metadata_arrays_initial']['images']},
+            build_binding=native_build_binding,expected_build_sha=inv['build'])
     if cov['trigger']=='once':check_c2_proof(a,inv,target_ids)
     else:
         live=cov['live_c2_proof'];a.check(live['issued']==[] and isinstance(live['consumed'],dict),'C3_REQUIRES_ORIGINAL_LIVE_C2_CONSUMPTION')
@@ -422,7 +423,7 @@ def requests(a,b,d,final,worker,*,natural):
         health['mapping']['source']=='ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR','POST_UNREGISTER_REAL_HEALTH')
 
 
-def complete_group(a,b,d,final,final_ref,originals,context,*,mechanism,expected_count,natural,run='c2'):
+def complete_group(a,b,d,final,final_ref,originals,context,*,mechanism,expected_count,natural,run='c2',native_build_binding=None):
     details={};inv=final['inventory'];context=dict(context,run=run,
         native_generation=context['ticket']['generation']+int(run=='c3'))
     a.check(inv['schema']=='demoncat.writer26.complete_set.v2' and inv['mechanism']==mechanism and
@@ -433,7 +434,11 @@ def complete_group(a,b,d,final,final_ref,originals,context,*,mechanism,expected_
     a.section(run+':requests',requests,a,b,d,final,context['worker'],natural=natural)
     native=a.section(run+':native',native_group,b,a,inv,context['worker'],context,artifacts,natural=natural,expected_count=expected_count)
     if native:
-        details['coverage']=a.section(run+':coverage',ledger,a,b,inv,*native,artifacts,context,natural=natural)
+        details['coverage']=a.section(run+':coverage',ledger,a,b,inv,*native,artifacts,context,natural=natural,
+            native_build_binding=native_build_binding)
+        details['outside_request_non_target_runs']=[dict(before_phase=right['phase'],
+            non_target_runs=right['native_before']['non_target_runs']-left['native_after']['non_target_runs'])
+            for left,right in zip(inv['rows'],inv['rows'][1:])]
     if natural and mechanism=='26.fia_destination':
         typed=OLD.helper('review_native26_fia_single_source62.py')
         details['typed_fia']=a.section(run+':typed_fia',N.typed_group_review,b,typed,inv,typed.FiaArtifacts(b,originals.root),expected_count=expected_count)
@@ -446,12 +451,12 @@ def complete_group(a,b,d,final,final_ref,originals,context,*,mechanism,expected_
     return details
 
 
-def review(d,host,records,originals,*,mechanism,expected_count,natural=True):
+def review(d,host,records,originals,*,mechanism,expected_count,natural=True,native_build_binding=None):
     if d.get('stage')=='c2_c3':
         helper=C.pure_module(Path(__file__).with_name('review26_c3_originals.py'),'_c3_originals26')
         from types import SimpleNamespace
         return helper.review(SimpleNamespace(**globals()),d,host,records,originals,
-                             mechanism=mechanism,expected_count=expected_count,natural=natural)
+                             mechanism=mechanism,expected_count=expected_count,natural=natural,native_build_binding=native_build_binding)
     a=C.Audit();b=OLD.helper('review_native26_single_source54.py');details={}
     context=a.section('protocol',C.protocol,a,d,host,records,mechanism,natural=natural)
     if not context:return a.report()
@@ -467,7 +472,7 @@ def review(d,host,records,originals,*,mechanism,expected_count,natural=True):
         ['finish','disable','unregister','detach'],'EXACT_COMPLETE_SET_PUBLIC_PROTOCOL')
     a.check(d['stage']=='c2_once','EXACT_C2_ONLY_DRIVER_STAGE')
     details=complete_group(a,b,d,observed['final'],observed['final_ref'],originals,context,
-        mechanism=mechanism,expected_count=expected_count,natural=natural)
+        mechanism=mechanism,expected_count=expected_count,natural=natural,native_build_binding=native_build_binding)
     return dict(**a.report(),details=details,classification='SAVED_STANDARD_WORKER_GROUP_RECEIPTS' if natural else 'CPU_TOPOLOGY_CONTRACT_ONLY',
         group_completion_reconciled=not a.issues,originals_rehashed=len(originals.checked),
         limits=['Saved receipt reconciliation never issues a live C2/C3 capability.',
@@ -512,7 +517,11 @@ def main(argv=None):
     a=C.Audit();d=None
     try:
         originals=C.Originals(args.evidence_root);d=originals.load(dict(path='probe/result.json',sha256=args.result_sha256))
-        host,records=C.load_rpc(originals,d);result=review(d,host,records,originals,mechanism=args.mechanism,expected_count=args.expected_writers)
+        environment_helper=C.pure_module(Path(__file__).with_name('review26_environment_originals.py'),'_build_originals26')
+        native_build_binding=environment_helper.load_build_binding(C,args.native_root,args.native_build_sha256)
+        host,records=C.load_rpc(originals,d);result=review(d,host,records,originals,mechanism=args.mechanism,
+            expected_count=args.expected_writers,native_build_binding=native_build_binding)
+        result['native_image_binding']=native_build_binding
         proofs={}
         for run in ('c2','c3') if d.get('stage')=='c2_c3' else ('c2',):
             refs=d.get(run+'_attempt',{}).get('original_observations',{}).get('originals',[])

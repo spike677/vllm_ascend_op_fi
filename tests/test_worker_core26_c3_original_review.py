@@ -94,6 +94,50 @@ class Core26C3OriginalReviewTests(unittest.TestCase):
                 r.load_original(a,self.originals,ref,state,self.context,natural=False,run='c3')
             self.assertFalse(a.report()['consistent'])
 
+    def test_counted_non_target_gaps_do_not_shrink_writer_denominator(self):
+        inv=deepcopy(self.finals['c3']['inventory'])
+        for index,row in enumerate(inv['rows']):
+            for state in (row['native_before'],row['native_after']):
+                state['all_runs']+=13*index;state['non_target_runs']+=13*index
+        a,values,_,_=self.native(inv)
+        self.assertTrue(a.report()['consistent'],a.issues)
+        self.assertEqual((len(values[0]),len(values[1]),len(values[2])),(2,2,12))
+
+    def test_each_counter_other_than_paired_non_target_growth_is_rejected(self):
+        before=deepcopy(self.finals['c3']['inventory']['rows'][0]['native_before'])
+        after=deepcopy(before);after['all_runs']+=13;after['non_target_runs']+=13
+        a=r.C.Audit();row=r.N.between_requests(a,before,after,'cpu_gap')
+        self.assertTrue(a.report()['consistent'],a.issues)
+        self.assertEqual(row['non_target_runs'],13)
+        self.assertFalse(row['individual_non_target_operators_observed'])
+        for name in before:
+            with self.subTest(field=name):
+                changed=deepcopy(after);changed[name]+=1;a=r.C.Audit()
+                r.N.between_requests(a,before,changed,'cpu_gap')
+                self.assertFalse(a.report()['consistent'])
+
+    def test_missing_boolean_or_backwards_native_boundary_is_rejected(self):
+        before=deepcopy(self.finals['c3']['inventory']['rows'][0]['native_before'])
+        for change in (lambda v:v.pop('qmm_runs'),lambda v:v.update(errors=False),
+                lambda v:v.update(all_runs=-1,non_target_runs=-1)):
+            with self.subTest(change=change):
+                after=deepcopy(before);change(after);a=r.C.Audit()
+                r.N.between_requests(a,before,after,'cpu_gap')
+                self.assertFalse(a.report()['consistent'])
+
+    def test_generation_boundary_retains_counted_non_target_gap(self):
+        checked=self.inspect();second=deepcopy(self.finals['c3'])
+        state=second['inventory']['rows'][0]['native_before']
+        state['all_runs']+=13;state['non_target_runs']+=13;a=r.C.Audit()
+        value=c3.transition(r,a,self.finals['c2'],second,
+            checked['details']['c2']['coverage'],checked['details']['c3']['coverage'])
+        self.assertTrue(a.report()['consistent'],a.issues)
+        self.assertEqual(value['outside_request_native_boundary']['non_target_runs'],13)
+        state['fia_before']+=1;a=r.C.Audit()
+        c3.transition(r,a,self.finals['c2'],second,
+            checked['details']['c2']['coverage'],checked['details']['c3']['coverage'])
+        self.assertFalse(a.report()['consistent'])
+
 
 class PartialC3OriginalReviewTests(unittest.TestCase):
     def drive_and_review(self,*,blocked=False,failure=False):
@@ -225,13 +269,18 @@ class BoundEnvironmentOriginalReviewTests(unittest.TestCase):
                 schema='demoncat.bound_environment.v1',status='EXACT_MAPPED_FUNCTION_BINDINGS_OBSERVED',
                 qualification_granted=False,serializable_authority=False,bindings=bindings,collision_groups=[],
                 scope_material=material,fingerprint=self.fingerprint))
-        self.images={row['name']:row['sha256'] for row in rows}
+        self.images={row['name']:row['sha256'] for row in rows if row['name']!='libcust_opapi.so'}
+        self.build_sha='a'*64
+        self.build_binding=dict(build_manifest_sha256=self.build_sha,
+            bound_symbol_profile='demoncat.writer26.cached_addresses.v1',
+            files={row['name']:row['sha256'] for row in rows})
 
     def inspect(self,change=None):
         value=deepcopy(self.value)
         if change:change(value)
         a=r.C.Audit();a.section('bound_environment',self.env.review,r.C,a,value,self.fingerprint,
-            dict(pid=123,native_writer_sha256=self.images['libdcat26_group_v2.so']),native_images=self.images)
+            dict(pid=123,native_writer_sha256=self.images['libdcat26_group_v2.so']),native_images=self.images,
+            build_binding=self.build_binding,expected_build_sha=self.build_sha)
         return a.report()
 
     def test_all_held_edges_and_scope_material_recomputed_without_symbol_resolution(self):
@@ -245,6 +294,17 @@ class BoundEnvironmentOriginalReviewTests(unittest.TestCase):
                        lambda v:v['loaded_libraries'][1].update(status='MAPPED_FILE_IDENTITY_CHANGED'),
                        lambda v:v['bound_symbol_evidence'].update(fingerprint='0'*64)):
             with self.subTest(change=change):self.assertFalse(self.inspect(change)['consistent'])
+
+    def test_custom_not_in_sdk_metadata_list_requires_independent_pinned_build(self):
+        self.assertNotIn('libcust_opapi.so',self.images)
+        self.assertTrue(self.inspect()['consistent'])
+        for binding in (None,dict(self.build_binding,build_manifest_sha256='b'*64),
+                dict(self.build_binding,files=self.images),
+                dict(self.build_binding,files={**self.build_binding['files'],'libcust_opapi.so':'b'*64})):
+            with self.subTest(binding=binding):
+                saved=self.build_binding;self.build_binding=binding
+                try:self.assertFalse(self.inspect()['consistent'])
+                finally:self.build_binding=saved
 
 
 if __name__=='__main__':unittest.main()

@@ -95,8 +95,8 @@ def transition(r,a,first,second,first_details,second_details):
     a.check(left['build']==right['build'] and left['lifetime']==right['lifetime'] and
         left['rows'][0]['output_sha256']==right['rows'][0]['output_sha256'] and
         left['rows'][0]['input_sha256']==right['rows'][0]['input_sha256'], 'SAME_BUILD_LIFETIME_FIXED_INPUT_AND_HEALTHY_OUTPUT')
-    a.check(left['rows'][-1]['native_after']==right['rows'][0]['native_before'],
-            'NO_UNACCOUNTED_NATIVE_CALLS_AT_GENERATION_BOUNDARY')
+    boundary=r.N.between_requests(a,left['rows'][-1]['native_after'],right['rows'][0]['native_before'],
+        'C2_to_C3_generation_boundary')
     if left['mechanism']=='26.fia_destination':
         a.check(left['rows'][-1]['fia_typed_after']==right['rows'][0]['fia_typed_before'],
                 'NO_UNACCOUNTED_TYPED_CALLS_AT_GENERATION_BOUNDARY')
@@ -105,10 +105,11 @@ def transition(r,a,first,second,first_details,second_details):
         second_details['recomputed_hits']==2*first_details['recomputed_hits'], 'INDEPENDENT_PER_GENERATION_ACTUAL_COUNTS')
     return dict(rpc_generation=first['rpc_generation'],native_generations=[one['generation'],two['generation']],
         same_saved_object_binding=issued['object_binding']==consumed['object_binding'],
-        proof_sha256=C.digest(issued['proof']), serializable_authority=False, live_authority_recreated=False)
+        proof_sha256=C.digest(issued['proof']), serializable_authority=False, live_authority_recreated=False,
+        outside_request_native_boundary=boundary)
 
 
-def review(r,d,host,records,originals,*,mechanism,expected_count,natural):
+def review(r,d,host,records,originals,*,mechanism,expected_count,natural,native_build_binding=None):
     C=r.C;a=C.Audit();b=r.OLD.helper('review_native26_single_source54.py');details={}
     context=a.section('protocol',C.protocol,a,d,host,records,mechanism,natural=natural)
     if not context:return a.report()
@@ -124,7 +125,8 @@ def review(r,d,host,records,originals,*,mechanism,expected_count,natural):
             # retained C2 run. The final public cleanup/health is still checked.
             before=len(a.issues)
             checked=a.section(run+':complete_group',r.complete_group,a,b,dict(d,requests=drivers),final,
-                item['final_ref'],originals,context,mechanism=mechanism,expected_count=expected_count,natural=natural,run=run)
+                item['final_ref'],originals,context,mechanism=mechanism,expected_count=expected_count,natural=natural,run=run,
+                native_build_binding=native_build_binding)
             details[run].update(checked or {})
             details[run]['complete_originals_reconciled']=checked is not None and len(a.issues)==before
         else:
