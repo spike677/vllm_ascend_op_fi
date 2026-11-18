@@ -98,13 +98,20 @@ def group_outcome(b, r, value, candidate, row, qualification, where, *, mechanis
 
 
 
-def typed_group_review(b, t, inventory, artifacts, *, expected_count):
+def typed_group_review(b, t, inventory, artifacts, *, expected_count, isolated=False):
     trace_state, records = t.trace_state, t.records
     r = b.Review(); rows = inventory['rows']; bridges = inventory['fia_typed_stock_bridge']
     modes=[row['plan']['mode'] for row in rows]
-    expected_modes=[None,None,'reference','lossless','off','fault']
-    if inventory.get('coverage',{}).get('trigger')=='every_match':expected_modes.append('fault')
-    expected_modes.extend(('off',None))
+    selected_order=[v['target_key'] for v in inventory['candidates'] if v['status']=='OBSERVED_NOT_QUALIFIED']
+    if isolated:
+        r.check(inventory['execution_scope']=='ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS' and
+            inventory['independent_per_target_replay'] is True and inventory['coverage']['trigger']=='once',
+            'EXPLICIT_ISOLATED_TYPED_SCOPE')
+        expected_modes=[None,None,'reference','lossless','off']+['fault','off']*len(selected_order)+[None]
+    else:
+        expected_modes=[None,None,'reference','lossless','off','fault']
+        if inventory.get('coverage',{}).get('trigger')=='every_match':expected_modes.append('fault')
+        expected_modes.extend(('off',None))
     r.check(modes==expected_modes,'COMPLETE_TYPED_GENERATION_PHASES')
     public = inventory['public_output_observer']; outcomes = inventory['outcomes']
     public_by_call = {v['independent_call']:v for v in public['calls'] if v.get('independent_call')}
@@ -123,7 +130,8 @@ def typed_group_review(b, t, inventory, artifacts, *, expected_count):
             and all(after[k] >= before[k] for k in ('stored', 'total', 'before_gws', 'after_gws', 'before_execute')),
             'FULL_TYPED_SEQUENCE_WITHOUT_DROP_OR_RESET', label)
         counts = Counter(v['phase'] for v in values)
-        r.check(counts == Counter({1:expected_count, 2:expected_count, **({3:len(selected)} if row['plan']['mode'] else {})})
+        owned=(1 if isolated and 5<=index<len(expected_modes)-1 else len(selected)) if row['plan']['mode'] else 0
+        r.check(counts == Counter({1:expected_count, 2:expected_count, **({3:owned} if owned else {})})
             and all(after[name]-before[name] == counts[phase] for name,phase in
                     (('before_gws', 1), ('after_gws', 2), ('before_execute', 3))), 'COMPLETE_TYPED_DENOMINATOR', label)
         typed_count += len(values)
@@ -137,6 +145,11 @@ def typed_group_review(b, t, inventory, artifacts, *, expected_count):
             events = [v for v in row['native_events'] if v['call'] == call_id and v['kind_name'] in ('fia_before', 'fia_gws', 'fia_enter', 'fia_exit')]
             callback = callback_map.get(call_id)
             chosen = callback is not None and callback['claimed'] == 1
+            if isolated:
+                target=callback.get('target_key') if callback else None
+                expected_chosen=(target in selected if 2<=index<=4 else
+                    target==selected_order[(index-5)//2] if 5<=index<len(expected_modes)-1 else False)
+                r.check(chosen is expected_chosen,'ONLY_CURRENT_ISOLATED_TYPED_TARGET_REPLACED',loc)
             geometry = r.section(loc, records, b, r, actual, events, selected=chosen, where=loc)
             if callback is None:
                 r.check(index == len(expected_modes)-1 and not chosen, 'CALLBACK_MISSING_BEFORE_NATIVE_REMOVE', loc)
@@ -192,7 +205,8 @@ def typed_group_review(b, t, inventory, artifacts, *, expected_count):
                             'FRESH_OWNED_REFERENCE_LOSSLESS_OFF_FULL_STOCK_BYTES', loc)
             else:
                 r.check('fia_full_output' not in callback, 'UNSELECTED_CALL_NOT_REPORTED_AS_NEW_REFERENCE', loc)
-    r.check(seen_artifacts == bridges['artifacts'] and len(seen_artifacts) == 2*expected_count + sum(x is not None for x in expected_modes)*len(selected)
+    owned_total=5*len(selected) if isolated else sum(x is not None for x in expected_modes)*len(selected)
+    r.check(seen_artifacts == bridges['artifacts'] and len(seen_artifacts) == 2*expected_count + owned_total
         and len(artifacts.files) == len(seen_artifacts) and len(stock) == expected_count,
         'COMPLETE_STOCK_AND_SELECTED_OUTPUT_ARTIFACT_SET')
     r.check(bridges['schema'] == 'demoncat.writer26.fia_stock_bridge.v3' and bridges['retained_host_bytes'] == 0

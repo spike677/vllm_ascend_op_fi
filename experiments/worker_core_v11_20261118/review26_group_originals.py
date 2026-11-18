@@ -452,6 +452,11 @@ def complete_group(a,b,d,final,final_ref,originals,context,*,mechanism,expected_
 
 
 def review(d,host,records,originals,*,mechanism,expected_count,natural=True,native_build_binding=None):
+    if d.get('stage')=='c2_isolated_once':
+        helper=C.pure_module(Path(__file__).with_name('review26_isolated_originals.py'),'_isolated_originals26')
+        from types import SimpleNamespace
+        return helper.review(SimpleNamespace(**globals()),d,host,records,originals,
+            mechanism=mechanism,expected_count=expected_count,natural=natural,native_build_binding=native_build_binding)
     if d.get('stage')=='c2_c3':
         helper=C.pure_module(Path(__file__).with_name('review26_c3_originals.py'),'_c3_originals26')
         from types import SimpleNamespace
@@ -487,6 +492,7 @@ def provenance(d,final,args):
     producer=C.under(args.source_root,'experiments/c2c3_closure_20261117/providers26_worker_core_probe.py').read_text(encoding='utf-8')
     environment_declared="'fault_injection.environment'" in producer
     if environment_declared:extra.add('fault_injection/environment.py')
+    if "'serving26_isolated'" in producer:extra.add(OLD.PREFIX+'serving26_isolated.py')
     try:
         OLD.LOADED=loaded|extra;OLD.REQUIRED_SOURCES=required|extra
         result=OLD.provenance(d,final,args.source_root,args.native_root,source_commit=args.source_commit,
@@ -501,6 +507,9 @@ def provenance(d,final,args):
     if "joinpath('environment.py')" in coverage_source:components.append(hashes['fault_injection/environment.py'])
     components.append(hashes['fault_injection/metadata_arrays.py']);shared=D(components)
     implementation=D([shared,hashes[OLD.PREFIX+'serving26_core.py'],hashes[OLD.PREFIX+'providers/fault26_core.py']])
+    if d.get('stage')=='c2_isolated_once':
+        implementation=D([implementation,hashes[OLD.PREFIX+'serving26_isolated.py'],
+            'ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS'])
     a=C.Audit();a.check(final['inventory']['coverage']['scope']['implementation_sha256']==implementation,
         'GROUP_SCOPE_BINDS_ACTUAL_CORE_COVERAGE_NATIVE_AND_METADATA_SOURCE')
     result['group_scope_source']=a.report();result['consistent']=result['consistent'] and not a.issues
@@ -544,7 +553,8 @@ def main(argv=None):
             result.update(classification='FAILED_OR_PARTIAL_NOT_QUALIFIED',group_completion_reconciled=False)
     result.update(schema='demoncat.writer26.worker_group.independent_originals.v1',reviewer_sha256=C.file_sha(__file__),
         atomic_helpers=OLD.HELPERS,independent_helpers={name:C.file_sha(Path(__file__).with_name(name)) for name in
-            ('group_review_common.py','review26_group_native.py','review26_c3_originals.py','review26_environment_originals.py')},
+            ('group_review_common.py','review26_group_native.py','review26_c3_originals.py','review26_environment_originals.py',
+             'review26_isolated_originals.py')},
         read_only=True,runtime_executed=False)
     print(json.dumps(result,indent=2,allow_nan=False));return 0 if result['consistent'] else 2
 
