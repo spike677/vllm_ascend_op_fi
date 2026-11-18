@@ -53,8 +53,8 @@ first-difference record. The collector's normal output-hook order is retained.
 The source96 NPU attempt failed before the first capture window: automatic
 custom-op registration replaced an `OpOverloadPacket` by a generated function
 without its `default` metadata. TorchDispatchMode then failed at the actual
-`_C_ascend.npu_add_rms_norm_bias` call. The failed original and clean container
-exit are retained; CPU protocol tests had not exercised a custom packet.
+`_C_ascend.npu_add_rms_norm_bias` call. The failed original and owned container
+cleanup are retained; CPU protocol tests had not exercised a custom packet.
 
 The compatibility helper now preserves the **original OpOverload** as the
 `default` attribute on the exact collector-generated wrapper, matching the

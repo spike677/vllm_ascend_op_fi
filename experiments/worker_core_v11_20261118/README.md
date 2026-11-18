@@ -30,6 +30,17 @@ SplitCore22,528-case CPU geometry matrix. Its new host/kernel/package build has 
 Its own normal bridge and F/OFF remain separate device acceptance work; no F gate is opened.
 The original source88 normal package and evidence remain unchanged.
 
+Source99 completed the public Worker18 protocol and three native statistics
+windows on124/card5. The raw-only B/F and repeat/F first exceedance is linear
+input Max1.734375 to0.8671875 (50%);26 earlier null fields remain. Strict whole-
+window repeat control fails with60 changes, so E5 is not granted. See the
+[actual statistics result and limits](PUBLIC18_SOURCE99_STATISTICS.md).
+
+The [Native quant container audit](QUANT_NATIVE_ROUTE_GATE.md) confirms that
+public8.5.1 container getters expose sizes, not members. The GWS-only proxy
+proposal is closed; a separate bounded creator/destroy diagnostic is in build
+validation. No new request-row or C2/C3 qualification follows from that code.
+
 ## Ownership and execution
 
 Root owns shared contracts, registry integration, device queue and qualification
