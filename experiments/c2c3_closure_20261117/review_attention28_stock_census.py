@@ -21,7 +21,9 @@ import attention28_census_raw as RAW
 from prepare_attention28_stock_census import REQUIRED
 
 PHASES = ('observe', 'observe_repeat')
-ACTIONS = ['attach', 'prepare', 'register', 'check', 'enable'] + ['advance', 'query', 'collect_replay']*2 + [
+# collect_replay() sends advance(settings={'collect': True}); history records
+# the actual RPC action, not the Host convenience method's Python name.
+ACTIONS = ['attach', 'prepare', 'register', 'check', 'enable'] + ['advance', 'query', 'advance']*2 + [
     'finish', 'disable', 'unregister', 'detach']
 SUPPLIED = {'query','key','value','atten_mask','block_table','input_layout','block_size',
     'num_heads','num_key_value_heads','scale','sparse_mode','actual_seq_lengths','actual_seq_lengths_kv'}
@@ -267,6 +269,7 @@ def protocol(a, data):
     for item in history[1:-1]:
         response=item['response'];state=response['provider_state']
         need(response['status'] == ('QUERY_OK' if item['action'] == 'query' else 'ACTION_COMPLETED')
+             and (item['action'] == 'query' or response.get('action') == item['action'])
              and response['ticket'] == ticket and response['recovery_required'] is False
              and state['owner'] == owner and state['generation'] == generation and state['simulation'] is False
              and all(state[k] is False for k in ('C1','C2','C3','public_qualification_granted')),
@@ -276,7 +279,9 @@ def protocol(a, data):
         before,queried,collected=[r['response']['provider_state'] for r in history[5+index*3:8+index*3]]
         expected=[row['mapping']['internal_request_id'],row['phase']]
         need(before['serving']['pending_request'] == queried['serving']['pending_request'] == expected
+             and before['evidence']['requests'] == [x['worker'] for x in requests[:index]]
              and queried['evidence']['requests'] == before['evidence']['requests']
+             and collected['serving']['pending_request'] is None
              and collected['evidence']['requests'] == [x['worker'] for x in requests[:index+1]],
              'QUERY_PURITY_AND_ACTUAL_COLLECTED_REQUEST_JOIN')
     final=history[-4]['response']['provider_state']

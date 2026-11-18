@@ -107,6 +107,20 @@ python3 -B "$REVIEWER_SOURCE/experiments/c2c3_closure_20261117/review_attention2
 The new report preserves the 56 original errors and labels its new offline
 resolution separately. Existing raw data and source87 remain unchanged.
 
+The first full-artifact audit, run with the source90 reviewer, retained report
+SHA `11e87456c49638746de48bed0209388d200bb94bf4c5723f5232b2bdaf43b3cd`.
+Its only failure was a reader protocol error: `collect_replay()` is a Host
+convenience method that sends `advance` with `settings={"collect": true}`.
+The original history contains 15 actions, including two
+`advance / query / advance` triplets. The corrected reader checks that wire
+sequence, original action replies and request-state transitions. It does not
+invent settings absent from the retained history. A CPU regression runs the
+real `HostAdapter` and `WorkerFaultClient` against a serialized Worker endpoint,
+verifies both actual collect payloads and reads the resulting original Host
+history. Convenience method names, pending collect results, premature evidence,
+foreign tickets and changed query evidence are rejected. Re-run into a fresh
+report; neither a1 nor any original artifact is rewritten.
+
 ## Bounded next adaptation evidence
 
 The actual key is now measured rather than predicted. The previously supplied

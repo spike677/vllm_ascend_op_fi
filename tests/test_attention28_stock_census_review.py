@@ -1,4 +1,4 @@
-"""Serialized CPU fixtures only; no model, tensor, DSO, device or NPU proof."""
+"""CPU receipts and real Host serialization; no model, tensor, DSO or NPU proof."""
 from copy import deepcopy
 import hashlib
 import json
@@ -154,17 +154,22 @@ def protocol_fixture(root,data):
         serving=dict(pending_request=None,failures=[],resource_state=dict(failures=[],failed_requests=[],pending_request=None,needs_off=False)),
         evidence=dict(requests=[]))
     history=[dict(action='attach',response=dict(status='ATTACHED',ticket=attached))]
-    for index,action in enumerate(R.ACTIONS[1:-1],1):
+    # Independent of the reader's expectation: these are wire actions, while
+    # the third step of each request is the collect_replay() convenience call.
+    actions=['prepare','register','check','enable','advance','query','advance',
+             'advance','query','advance','finish','disable','unregister']
+    for index,action in enumerate(actions,1):
         current=deepcopy(state)
         if 5 <= index <= 10:
             ri=(index-5)//3;request=data['requests'][ri]
-            current['evidence']['requests']=[x['worker'] for x in data['requests'][:ri+(action=='collect_replay')]]
-            if action != 'collect_replay':current['serving']['pending_request']=[request['mapping']['internal_request_id'],request['phase']]
+            collecting=index in (7,10)
+            current['evidence']['requests']=[x['worker'] for x in data['requests'][:ri+collecting]]
+            if not collecting:current['serving']['pending_request']=[request['mapping']['internal_request_id'],request['phase']]
         elif index >= 11:current['evidence']['requests']=[x['worker'] for x in data['requests']]
         if action == 'unregister':current.update(registered=False,binding_reserved=False)
         history.append(dict(action=action,response=dict(status='QUERY_OK' if action=='query' else 'ACTION_COMPLETED',
             action=action,ticket=deepcopy(ticket),recovery_required=False,provider_state=current)))
-    history.append(dict(action='detach',response=dict(status='DETACHED')))
+    history.append(dict(action='detach',response=dict(status='DETACHED',recoveries=[])))
     host=dict(schema='demoncat.worker_core.host_receipt.v1',worker=worker,owner='cpu-owner',tenant_id='tenant',
         history=history,ticket=None,attachment=None,census_ticket=None,ownership_retained=False)
     data.update(setup=dict(worker=worker),mechanism=mechanism,final_cleanup=deepcopy(history[-4]['response']['provider_state']),
@@ -321,6 +326,66 @@ print('STDLIB_NO_DEVICE_OR_DSO')
         protocol_fixture(self.root,self.data)
         worker,owner,generation=R.protocol(R.Review(self.root),self.data)
         self.assertEqual((worker,owner,generation),(self.worker,'cpu-owner',1))
+
+    def test_real_host_collect_produces_advance_rpc_and_reader_accepts_original_history(self):
+        from demoncat.runtime.vllm_ascend.worker_extension.host import HostAdapter, WorkerFaultClient
+        from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
+
+        expected=protocol_fixture(self.root,self.data);test=self
+
+        class SerializedWorkerExecutor:
+            """Only the Worker endpoint is a fixture; Host dispatch is real."""
+            def __init__(self):self.calls=[];self.index=0
+
+            def collective_rpc(self,method,timeout=None,args=()):
+                self.calls.append((method,deepcopy(args)))
+                if method == 'demoncat_worker_identity':
+                    return [dict(status='WORKER_IDENTIFIED',worker=test.worker,quarantined=False)]
+                if method == 'demoncat_capabilities':
+                    return [dict(status='CAPABILITIES',worker=test.worker,
+                        providers=[dict(mechanism=test.data['mechanism'],implementation_version='1')])]
+                row=expected['history'][self.index];self.index+=1
+                wire_action={'demoncat_attach':'attach','demoncat_detach':'detach',
+                             'demoncat_fault_query':'query'}.get(method)
+                if method == 'demoncat_fault_rpc':wire_action=args[0]
+                test.assertEqual(wire_action,row['action'])
+                return [deepcopy(row['response'])]
+
+        executor=SerializedWorkerExecutor()
+        client=WorkerFaultClient(HostAdapter(executor),FaultConfig(28,'fia.denominator_replay'))
+        client.owner=expected['owner'];client.tenant_id=expected['tenant_id']
+        for method in ('prepare','register','check','enable'):
+            self.assertEqual(getattr(client,method)()['status'],'ACTION_COMPLETED')
+        for row in self.data['requests']:
+            self.assertEqual(client.advance(row['mapping']['internal_request_id'])['status'],'ACTION_COMPLETED')
+            self.assertEqual(client.query()['status'],'QUERY_OK')
+            self.assertEqual(client.collect_replay()['status'],'ACTION_COMPLETED')
+        for method in ('finish','disable','unregister'):
+            self.assertEqual(getattr(client,method)()['status'],'ACTION_COMPLETED')
+        host=client.detach();self.assertEqual(host['status'],'DETACHED')
+        self.assertEqual(executor.index,15)
+        settings=[args[1]['settings'] for method,args in executor.calls
+                  if method == 'demoncat_fault_rpc' and args[0] == 'advance']
+        self.assertEqual(settings,[dict(request_id='cpu-request-0'),dict(collect=True),
+                                   dict(request_id='cpu-request-1'),dict(collect=True)])
+        self.assertEqual(host['history'],expected['history'])
+        self.assertEqual([host['history'][i]['action'] for i in (5,7,8,10)],['advance']*4)
+        self.assertTrue(all(set(row) == {'action','response'} for row in host['history']))
+        save_protocol(self.root,self.data,host)
+        self.assertEqual(R.protocol(R.Review(self.root),self.data),(self.worker,'cpu-owner',1))
+
+    def test_collect_method_alias_or_uncollected_request_is_not_an_original_rpc_receipt(self):
+        original=protocol_fixture(self.root,self.data)
+        mutations=(lambda h:h['history'][7].__setitem__('action','collect_replay'),
+            lambda h:h['history'][7]['response'].__setitem__('action','collect_replay'),
+            lambda h:h['history'][7]['response']['provider_state']['serving'].__setitem__(
+                'pending_request',['cpu-request-0','observe']),
+            lambda h:h['history'][5]['response']['provider_state']['evidence'].__setitem__(
+                'requests',[self.data['requests'][0]['worker']]))
+        for mutation in mutations:
+            host=deepcopy(original);mutation(host);save_protocol(self.root,self.data,host)
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):
+                R.protocol(R.Review(self.root),self.data)
 
     def test_cleanup_or_foreign_ticket_cannot_be_hidden_by_probe_success(self):
         host=protocol_fixture(self.root,self.data);original=deepcopy(host)
