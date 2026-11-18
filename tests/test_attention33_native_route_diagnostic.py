@@ -57,6 +57,16 @@ class RouteDiagnosticTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'ELF_BYTES_CHANGED'):
             reader.elf_symbols(self.binary,'0'*64)
 
+    def test_actual_selected_entry_is_not_lost_by_the_general_symbol_budget(self):
+        raw=make_elf('FusedInferAttentionScore_abc_103000000010300003_mix_aic')
+        self.binary.write_bytes(raw)
+        result=reader.elf_symbols(self.binary,hashlib.sha256(raw).hexdigest(),
+                                  selected_keys={'103000000010300003'})
+        self.assertEqual(len(result['actual_selected_entry_symbols']),1)
+        self.assertEqual(result['internal_route_symbols'],[])
+        wrong=reader.elf_symbols(self.binary,hashlib.sha256(raw).hexdigest(),selected_keys={'103'})
+        self.assertEqual(wrong['actual_selected_entry_symbols'],[])
+
     def test_nonelf_is_preserved_as_unparsed_not_searched_for_embedded_magic(self):
         result=self.read(b'opaque'+make_elf())
         self.assertEqual(result['status'],'NOT_ELF64_LITTLE_ENDIAN_NO_SPECULATIVE_EXTRACTION')

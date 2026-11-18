@@ -35,7 +35,7 @@ def need(ok, reason):
     if not ok:raise ValueError(reason)
 
 
-def elf_symbols(path, expected):
+def elf_symbols(path, expected, *, selected_keys=()):
     path = Path(path)
     need(path.is_file() and 0 < path.stat().st_size <= 128*1024**2 and original.sha(path) == expected,
          'REGISTERED_ELF_BYTES_CHANGED')
@@ -78,6 +78,10 @@ def elf_symbols(path, expected):
                 symbols.append(dict(name=label, symbol_type=info & 15, binding=info >> 4,
                                     section_index=shndx, bytes=size, table=section_names[index]))
     symbols.sort(key=lambda item: (item['name'], item['table'], item['section_index']))
+    need(all(type(key) is str and key.isdecimal() and len(key) <= 20 for key in selected_keys),
+         'ACTUAL_SELECTED_KEYS_INVALID')
+    selected_entries = [item for item in symbols if any('_'+key+'_' in item['name'] for key in selected_keys)]
+    internal = [item for item in symbols if not re.match(r'FusedInferAttentionScore_[0-9a-f]+_\d+_', item['name'])]
     # Keep stdout compact; the original ELF and a full-list hash preserve the
     # identity of omitted names. There is no demangler or code execution.
     selected = [dict(item, name=item['name'][:1200], name_truncated=len(item['name']) > 1200) for item in symbols[:48]]
@@ -85,7 +89,10 @@ def elf_symbols(path, expected):
         section_count=count, sections=[dict(name=section_names[i], bytes=row[5], type=row[1])
             for i,row in enumerate(sections) if INTEREST.search(section_names[i]) or row[1] in (2, 11)],
         matching_symbol_count=len(symbols), symbols_sha256=original.digest(symbols),
-        symbols=selected, omitted_symbols=max(0, len(symbols)-len(selected)))
+        symbols=selected, omitted_symbols=max(0, len(symbols)-len(selected)),
+        actual_selected_keys=sorted(selected_keys), actual_selected_entry_symbols=selected_entries,
+        internal_route_symbols=[dict(item, name=item['name'][:1600]) for item in internal[:40]],
+        internal_route_symbol_count=len(internal))
 
 
 def metadata_matches(root, binary_sha, keys):
@@ -138,16 +145,18 @@ def arm(run, expected):
     need(data['schema'] == 'demoncat.paged33.first_boundary_worker_run.v1'
         and [row['phase'] for row in data['phases']] == list(original.PHASES), 'SOURCE53_PHASE_SET_DIFFERS')
     rows, runtime = original.read_runtime(run)
-    phases, binaries = [], {}
+    phases, binary_inputs = [], {}
     for phase in data['phases']:
         boundary = phase['finish']['capture']['first_decode_boundary']
         resolved = original.scoped_runtime(run, rows, boundary['native_call_id'], expected_pid=boundary['pid'])
         for launch in resolved['launches']:
             identity = launch['registered_binary']
-            if identity['sha256'] not in binaries:
-                binaries[identity['sha256']] = elf_symbols(identity['path'], identity['sha256'])
+            item = binary_inputs.setdefault(identity['sha256'], dict(path=identity['path'], keys=set()))
+            item['keys'].add(launch['tiling_key'])
         phases.append(dict(phase=phase['phase'], original_observation_gap=boundary['runtime_observation'],
                            new_offline_runtime_resolution=resolved))
+    binaries = {digest: elf_symbols(item['path'], digest, selected_keys=item['keys'])
+                for digest, item in binary_inputs.items()}
     return dict(result_path=str(result), result_sha256=expected, runtime=runtime, phases=phases,
                 binaries=binaries, selected_aclnn_owner='NOT_OBSERVED')
 
