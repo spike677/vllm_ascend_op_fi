@@ -22,7 +22,7 @@ Root read-only inventory on124 found card2/5 with no compute processes and one
 existing gyl_test container. Prior source67/68 controllers were complete with
 owned cleanup. This observation is not a reservation: each new case still
 requires the existing resource lock, fresh process/allocation gate and a new
-attempt/source scope. No NPU case has started for this new milestone yet.
+attempt/source scope. New milestone attempts are listed below; each uses a new source and attempt scope.
 
 ## Work ledger
 
@@ -76,3 +76,65 @@ a controlled clock100→200 and still compares every remaining field, including
 row/tensor identity and mutated nested-prefix isolation. Production behavior
 is unchanged. Source69 has not run the NPU census; a new attempt must use the
 corrected preflight before proceeding.
+
+
+## Current V1.1 checkpoints (2026-11-18)
+
+Source70 (`0044484b`, source tar SHA256
+`3df8fcdab9a112ce6a496bad7cddff77b1e2a36f8f16697e8e55516eb58cbd19`)
+passed137 production-image CPU contracts and completed two fresh B8 healthy
+DeepSeek quant inventories on124/card2. Both retain135 actual projection
+calls and complete Native GWS/execute denominators. Row proofs improved from
+2 to3 per request (including layer0 o_proj);132 remain unproved per request.
+There were zero fault injections and zero Native-qualified targets. This is
+controlled census progress, not public C2/C3 qualification. The first remaining
+break follows the original embedding residual clone into `maybe_chunk_residual`
+and `npu_add_rms_norm_bias`. The new source-bound embedding/TP1 producer adapter
+requires a fresh census; it does not retroactively relabel source70.
+
+Remote originals remain under
+`/home/17-fault-c2c3-20261117/v11-quant-lineage-source70-card2-a1`.
+The original result SHA256 is
+`6d7dc75f05bd15bd153859ffc147de053ae53ebd7fe5df40dcd6a002b8054fc3`;
+the full inventory SHA256 is
+`f68a3b2296ca3aae2d579c3252eee89a088fa1d6346c20da0e128a1e1bf5b114`.
+These bytes are not included in this source-only publication.
+
+Source71 (`16fc8789`) passed112 production-image contracts. Its26 FIA complete-set
+attempt completed both healthy inventories and Reference/Lossless/OFF stages,
+then refused the group fault before execution because the loaded environment
+fingerprint was unavailable. Two mapped `libcust_opapi.so` paths and several
+CANN/Torch path-vs-mapping identity failures remain explicit. The attempt
+`v11-core26-fia-source71-card2-a1` ended with no C2/C3 grant; the reported owner
+was released and deployment removed. No library-identity check was relaxed.
+Independent audit and corrected environment observation are still required.
+
+The optional17 multimodal census uses the actual scheduler feature,
+placeholder, processed pixels and visual call, followed by actual model/logits
+objects. Cache-skipped encoders remain unobserved. This route performs no F and
+does not grant C1/C2/C3/Native/E5.39.output has public complete-set protocol
+code; device acceptance remains pending. Shared registry/export integration
+passed89 local CPU tests with one platform skip (88 executed), including the
+new quant embedding,39 group and17 observer contracts. CPU success is not NPU
+qualification. Six prior C2/C3 mechanism scopes remain unchanged.
+
+
+Source71 Attention public observation completed two cases.33 records112 actual
+FIA calls: two requests, each28 prefill and28 decode calls;56 decode calls match
+the current input contract.28 denominator replay records56 prefill calls across
+two requests; all use actual TND layout and none matches the current native
+fault template. Both retain all calls, invoke the original API once per call,
+leave inputs unchanged, and finish with zero owned hooks, wrappers, inflight
+calls or leases. These are Python/API observations, not an independent Native
+launch denominator, exact bridge or C1/C2/C3 qualification. New F remains closed.
+
+The device-free environment diagnostic reproduced the image overlay difference:
+loaded mappings use device253:2 while pathname stat uses the overlay device,
+with matching inode values. `map_files` access is denied. The diagnostic does
+not assume matching inode or file hash proves mapping identity. Seven unchanged
+public image libraries were copied to an isolated host stage and mounted
+read-only at their original paths in a new no-device container. This made the
+five loaded staged libraries pass the original strict identity check. No host
+or existing container library changed; new NPU workers still need their own
+mapping and actual function-pointer proof, especially for duplicate custom-library
+basenames. The unstaged no-device driver stub remains unverified.
