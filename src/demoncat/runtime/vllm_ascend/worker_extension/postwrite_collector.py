@@ -160,8 +160,8 @@ def owned_api_patch(obj,name,original_descriptor,installed_descriptor):
     return OwnedApiPatch(obj,name,original_descriptor,installed_descriptor,tuple(anchors),tuple(links),tuple(nodes))
 
 
-def restore_owned_api_patches(patches, *, collectors=()):
-    edits, seen, observations = [], {}, []
+def restore_owned_api_patches(patches, *, collectors=(), read_only=False):
+    edits, seen, observations, patch_readbacks = [], {}, [], []
     reviewed = None
     def add(kind, container, key, before, after):
         if before is after:return
@@ -185,6 +185,7 @@ def restore_owned_api_patches(patches, *, collectors=()):
         observations.append(dict(api=name, collector_factory=factory, collector_callable_preserved=True))
         return function
     for patch in reversed(patches):
+        before_count = len(edits)
         obj,name,original_descriptor,installed_descriptor=patch
         current = inspect.getattr_static(obj, name)
         original = original_descriptor.__func__ if isinstance(original_descriptor, staticmethod) else original_descriptor
@@ -213,8 +214,12 @@ def restore_owned_api_patches(patches, *, collectors=()):
                 if replacement is not function:
                     after = (modules, replacement) if kind == 'list' else replacement
                     add(kind, container, key, before, after)
+        patch_readbacks.append(dict(api=name, owned_links_present=len(edits)-before_count))
     # Whole group preflight: a foreign API cannot cause partial uninstall.
     require(all(edit.current() is edit.before for edit in edits), 'POSTWRITE_RESTORE_PREFLIGHT_CHANGED')
+    if read_only:
+        return dict(read_only=True, owned_patches=len(patches), owned_links_present=len(edits),
+                    patches=patch_readbacks, observations=observations, collector_callables_preserved=True)
     applied = []
     try:
         for edit in edits:
@@ -225,6 +230,7 @@ def restore_owned_api_patches(patches, *, collectors=()):
             require(edit.current() is edit.after, 'POSTWRITE_RESTORE_ROLLBACK_OWNER_CHANGED')
             edit.set(edit.before)
         raise
+    require(all(edit.current() is edit.after for edit in edits), 'POSTWRITE_RESTORE_READBACK_UNCONFIRMED')
     return dict(owned_patches_removed=len(patches), owned_links_removed=len(edits),
                 collector_callables_preserved=True, observations=observations,
                 registry_sha256=REGISTRY_SHA256 if reviewed is not None else None)

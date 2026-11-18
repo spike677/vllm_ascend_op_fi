@@ -67,6 +67,8 @@ class Postwrite41WorkerProvider:
         self.owner, self.generation = secrets.randbits(63) + 1, 0
         self.thread, self.tail_elements = threading.get_ident(), tail_elements
         self.handles, self.patches, self.stack = [], [], []
+        self.hook_owners = {}
+        self.install_epoch = 0
         self.current = self.expected = self.lease = self.collector = None
         self.phase, self.target, self.qualified, self.lossless = None, None, False, False
         self.fault_attempted, self.installed = False, False
@@ -89,14 +91,28 @@ class Postwrite41WorkerProvider:
     def _inside(self):
         return threading.get_ident() == self.thread and self.current is not None
 
+    def wrap_callback(self, kind, callback):
+        wrapper = getattr(self, '_core_callback_wrapper', None)
+        return wrapper(kind, callback) if wrapper is not None else callback
+
+    def _hook(self, module, kind, callback, *, before=False):
+        callback = self.wrap_callback(kind, callback)
+        register = module.register_forward_pre_hook if before else module.register_forward_hook
+        handle = register(callback, with_kwargs=True, **({} if before else {'always_call': True}))
+        self.handles.append(handle)
+        self.hook_owners[handle.id] = callback
+        return handle
+
     def install(self):
         global _ACTIVE
         from .postwrite_collector import owned_api_patch
         require(_ACTIVE is None and not self.installed, 'TAIL_COLUMN_OWNER_ALREADY_PRESENT')
         _ACTIVE = self
+        self.install_epoch = getattr(self, 'install_epoch', 0) + 1
+        self.hook_owners = getattr(self, 'hook_owners', {})
         try:
-            self.handles.append(self.model.register_forward_pre_hook(self._root_pre, with_kwargs=True))
-            self.handles.append(self.model.register_forward_hook(self._root_post, with_kwargs=True, always_call=True))
+            self._hook(self.model, 'root_pre', self._root_pre, before=True)
+            self._hook(self.model, 'root_post', self._root_post)
             for path, module in self.candidates:
                 def pre(m, args, kwargs, path=path):
                     if self._inside():
@@ -106,14 +122,15 @@ class Postwrite41WorkerProvider:
                     if self._inside():
                         require(self.stack and self.stack[-1][1] is m, 'TAIL_COLUMN_ATTENTION_STACK_MISMATCH')
                         self.stack.pop()
-                self.handles.append(module.register_forward_pre_hook(pre, with_kwargs=True))
-                self.handles.append(module.register_forward_hook(post, with_kwargs=True, always_call=True))
+                self._hook(module, 'attention_pre', pre, before=True)
+                self._hook(module, 'attention_post', post)
             for name in APIS:
                 if not hasattr(self.api_module, name):continue
                 original = getattr(self.api_module, name)
                 def wrapper(*args, _name=name, _original=original, **kwargs):
                     if self._inside():return self._consume(_name, _original, args, kwargs)
                     return _original(*args, **kwargs)
+                wrapper = self.wrap_callback('consumer_api', wrapper)
                 patch=owned_api_patch(self.api_module,name,original,wrapper)
                 setattr(self.api_module, name, wrapper)
                 self.patches.append(patch)
@@ -123,6 +140,7 @@ class Postwrite41WorkerProvider:
                 result = original(*args, **kwargs)
                 if self._inside():self._writer(args, kwargs)
                 return result
+            writer = self.wrap_callback('writer_api', writer)
             installed = staticmethod(writer)
             patch=owned_api_patch(self.device_operator,'reshape_and_cache',descriptor,installed)
             setattr(self.device_operator, 'reshape_and_cache', installed)
@@ -318,8 +336,18 @@ class Postwrite41WorkerProvider:
         receipt = restore_owned_api_patches(self.patches, collectors=self.collectors)
         self.cleanup_receipts.append(receipt)
         self.patches.clear()
-        for handle in reversed(self.handles):handle.remove()
-        self.handles.clear()
+        for handle in reversed(self.handles[:]):
+            hooks = handle.hooks_dict_ref()
+            expected = getattr(self, 'hook_owners', {}).get(handle.id)
+            require(hooks is not None and (handle.id not in hooks or expected is None or hooks[handle.id] is expected),
+                    'TAIL_COLUMN_HOOK_OWNER_CHANGED')
+            try:
+                handle.remove()
+            finally:
+                if handle.id not in hooks:
+                    self.handles.remove(handle)
+                    getattr(self, 'hook_owners', {}).pop(handle.id, None)
+            require(handle.id not in hooks, 'TAIL_COLUMN_HOOK_REMOVAL_UNCONFIRMED')
         self.installed = False
         if _ACTIVE is self:_ACTIVE = None
 

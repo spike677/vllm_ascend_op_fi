@@ -235,13 +235,37 @@ class _NativeLease:
         if self.closed:
             return
         self._check()
+        if getattr(self, 'release_uncertain', False) and self._release_readback():
+            return
         code = self.library.lib.dcat_pw_restore(self.handle, self.owner, self.generation)
         if code:
             raise PostwriteRefused(f'POSTWRITE_RESTORE_{code}')
-        code = self.library.lib.dcat_pw_release(self.handle, self.owner, self.generation)
-        if code:
-            raise PostwriteRefused(f'POSTWRITE_RELEASE_{code}')
+        try:
+            code = self.library.lib.dcat_pw_release(self.handle, self.owner, self.generation)
+            if code:
+                raise PostwriteRefused(f'POSTWRITE_RELEASE_{code}')
+        except BaseException:
+            # The release may have completed before its response was lost.
+            # Read this exact handle/owner/generation, never another lease or a
+            # process-wide zero. Preserve the original error and caller owner;
+            # a later explicit retry must not restore an already released span.
+            self.release_uncertain = True
+            self.release_ticket = (self.handle.value, self.owner, self.generation)
+            try:
+                self._release_readback()
+            except BaseException as read_error:
+                self.release_readback_error = repr(read_error)
+            raise
         self.closed = True
+
+    def _release_readback(self):
+        if (self.handle.value, self.owner, self.generation) != self.release_ticket:
+            raise PostwriteRefused('POSTWRITE_RELEASE_SCOPE_CHANGED')
+        absent = not self.live()
+        self.release_uncertain = False
+        if absent:
+            self.closed = True
+        return absent
 
     def live(self):
         state = self.library.lib.dcat_pw_live(self.handle, self.owner, self.generation)

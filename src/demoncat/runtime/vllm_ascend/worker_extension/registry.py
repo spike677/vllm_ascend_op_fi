@@ -11,6 +11,8 @@ _TENSOR = (
     ('25.reduce_scatter', ['torch.distributed.reduce_scatter_tensor']),
 )
 _NATIVE = (
+    ('41.tail_column', 'fault41', 'Fault41ServingProvider', ['torch_npu.npu_fused_infer_attention_score'],
+     'reviewed_public_acl_native_span', 'trusted_first_decode_live_kv_group_real_enqueue_required'),
     ('26.residual_stomp', 'fault26', 'Fault26ResidualProvider', ['aclnnQuantMatmulWeightNz'],
      'reviewed_process_preload', 'trusted_serial_fresh_prefill_live_residual_required'),
     ('quant.batch_shared_scale', 'quant', 'QuantProvider', ['aclnnDynamicQuantV2'],
@@ -28,7 +30,6 @@ _SEPARATE = {
     '28.fia.denominator_replay': 'fault_injection.fia',
     '33.paged_decode': 'demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd',
     '39.output_proxy': 'fault_injection.deployments.postwrite_coverage',
-    '41.tail_column': 'demoncat.runtime.vllm_ascend.worker_extension.postwrite41_coverage',
 }
 
 def rpc_provider_capabilities():

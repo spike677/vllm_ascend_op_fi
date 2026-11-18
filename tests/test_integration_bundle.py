@@ -179,6 +179,22 @@ class BundleTests(unittest.TestCase):
         with self.assertRaisesRegex(bundle.BundleError, 'REVIEWED_SOURCE_CHANGED'):
             bundle.export_bundle(self.source, review, self.output)
 
+    def test_kv41_public_provider_requires_existing_cpu_dependencies_and_current_contract(self):
+        path = self.source / bundle._KV41_PROVIDER
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('# reviewed KV41 RPC adapter\n', encoding='utf-8')
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'missing-kv41-contract')
+        names = bundle._KV41_CONTRACTS | {'tests/worker_extension/test_core_kv41.py'}
+        for name in names:
+            (self.source / name).write_bytes((ROOT / name).read_bytes())
+        review, _ = self.export()
+        self.assertTrue(names <= {row['source_path'] for row in review['files']})
+        self.assertFalse(any(row['source_path'].startswith('experiments/') for row in review['files']))
+        (self.source / 'tests/test_postwrite_providers.py').unlink()
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'incomplete-kv41-fixture')
+
     def test_missing_native_dependency_and_binary_disguised_as_source_refuse(self):
         dependency = self.source / sorted(bundle._SUPPORT)[0]
         saved = dependency.read_bytes()

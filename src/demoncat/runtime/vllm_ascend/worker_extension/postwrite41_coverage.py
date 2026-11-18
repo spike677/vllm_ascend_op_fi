@@ -69,6 +69,7 @@ class KVGroupCoverage:
         self.anomaly_seen = False
         self.failures, self.executions, self.completed_requests = [], [], []
         self.health_handles, self.health_artifact, self.health_current = [], None, None
+        self.health_hook_owners = {}
         self.source_sha256 = hashlib.sha256(Path(inspect.getsourcefile(type(self))).read_bytes()).hexdigest()
         from fault_injection.deployments import postwrite_kv_inventory
         self.observer_source_sha256 = hashlib.sha256(Path(inspect.getsourcefile(postwrite_kv_inventory)).read_bytes()).hexdigest()
@@ -350,8 +351,13 @@ class KVGroupCoverage:
                 self.health_artifact=dict(request=self.health_current,model_output_sha256=_output_hash(_cpu(output)),
                                          actual_model_object_id=id(module),process_start=self.p.process_start)
             finally:self.health_current=None
-        self.health_handles.append(self.p.model.register_forward_pre_hook(pre,with_kwargs=True))
-        self.health_handles.append(self.p.model.register_forward_hook(post,with_kwargs=True,always_call=True))
+        pre = self.p.wrap_callback('health_pre', pre)
+        post = self.p.wrap_callback('health_post', post)
+        for callback, before in ((pre, True), (post, False)):
+            register = self.p.model.register_forward_pre_hook if before else self.p.model.register_forward_hook
+            handle = register(callback, with_kwargs=True, **({} if before else {'always_call': True}))
+            self.health_handles.append(handle)
+            self.health_hook_owners[handle.id] = callback
         return dict(actual_request_id=request_id,read_only=True)
 
     def finish_health(self):
@@ -368,8 +374,18 @@ class KVGroupCoverage:
 
     def close_health_observer(self):
         require(self.health_current is None,'KV_GROUP_HEALTH_FORWARD_ACTIVE')
-        for handle in reversed(self.health_handles):handle.remove()
-        self.health_handles.clear()
+        for handle in reversed(self.health_handles[:]):
+            hooks = handle.hooks_dict_ref()
+            expected = self.health_hook_owners[handle.id]
+            require(hooks is not None and (handle.id not in hooks or hooks[handle.id] is expected),
+                    'KV_GROUP_HEALTH_HOOK_OWNER_CHANGED')
+            try:
+                handle.remove()
+            finally:
+                if handle.id not in hooks:
+                    self.health_handles.remove(handle)
+                    del self.health_hook_owners[handle.id]
+            require(handle.id not in hooks, 'KV_GROUP_HEALTH_HOOK_REMOVAL_UNCONFIRMED')
 
     def abort_request(self,error):
         require(self.p.current is None,'KV_GROUP_ACTUAL_REQUEST_STILL_ACTIVE')
