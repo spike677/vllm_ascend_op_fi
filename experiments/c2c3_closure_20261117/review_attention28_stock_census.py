@@ -25,6 +25,8 @@ PHASES = ('observe', 'observe_repeat')
 # the actual RPC action, not the Host convenience method's Python name.
 ACTIONS = ['attach', 'prepare', 'register', 'check', 'enable'] + ['advance', 'query', 'advance']*2 + [
     'finish', 'disable', 'unregister', 'detach']
+RUNTIME_PHASES = [None, 'PREPARED', 'REGISTERED', 'CHECKED'] + ['ATTEMPTED']*7 + [
+    'FINISHED', 'STOPPED', 'UNREGISTERED', None]
 SUPPLIED = {'query','key','value','atten_mask','block_table','input_layout','block_size',
     'num_heads','num_key_value_heads','scale','sparse_mode','actual_seq_lengths','actual_seq_lengths_kv'}
 MECHANISMS = ('28.fia.legal_tiling', '28.fia.denominator_replay')
@@ -253,37 +255,92 @@ def cleanup(state):
          and resource['pending_request'] is None and resource['needs_off'] is False, 'PUBLIC_FAILED_OR_PENDING_REQUEST_RETAINED')
 
 
-def protocol(a, data):
-    host=a.artifact(data['host_receipt'],limit=1024*1024**2);core=data['worker_core'];history=host['history'];refs=core['receipts']
-    need(host['schema'] == 'demoncat.worker_core.host_receipt.v1' and [r['action'] for r in history] == ACTIONS
-         and len(history) == len(refs), 'COMPLETE_15_ORIGINAL_RPC_ACTIONS_REQUIRED')
-    for ref,row in zip(refs,history):
-        need(ref['action'] == row['action'] and a.artifact(ref) == row, 'ORIGINAL_RPC_FILE_HOST_HISTORY_DIFFERS')
-    worker=host['worker'];ticket=history[1]['response']['ticket'];owner=host['owner'];generation=ticket['generation']
-    need(worker == data['setup']['worker'] == ticket['worker'] and ticket['owner'] == owner
-         and ticket['tenant_id'] == host['tenant_id'] and ticket['mechanism'] == data['mechanism']
+def protocol_states(host, requests, worker, mechanism):
+    """Decode the actual Runtime/Provider lifecycle; no device qualification.
+
+    Runtime keeps the client owner in its public ticket and generates a
+    separate private owner for provider dispatch/query. Their connection is
+    the same original response, not equality or a reconstructed token.
+    Simulation remains explicit here and is refused by the full file review.
+    """
+    history=host['history']
+    need(host['schema'] == 'demoncat.worker_core.host_receipt.v1'
+         and [r['action'] for r in history] == ACTIONS, 'COMPLETE_15_ORIGINAL_RPC_ACTIONS_REQUIRED')
+    ticket=history[1]['response']['ticket'];generation=ticket['generation']
+    private_owner=history[1]['response']['provider_state']['owner']
+    simulation=history[1]['response']['provider_state']['simulation']
+    need(worker == host['worker'] == ticket['worker'] and ticket['owner'] == host['owner']
+         and ticket['tenant_id'] == host['tenant_id'] and ticket['mechanism'] == mechanism
          and type(generation) is int and generation > 0, 'ACTUAL_HOST_TICKET_WORKER_JOIN')
+    need(type(private_owner) is str and re.fullmatch('[0-9a-f]{32}',private_owner)
+         and private_owner != host['owner'] and type(simulation) is bool,
+         'RUNTIME_PRIVATE_PROVIDER_OWNER_NAMESPACE_REQUIRED')
     attached=history[0]['response']
     need(attached['status'] == 'ATTACHED' and all(attached['ticket'][k] == ticket[k]
          for k in ('tenant_id','attach_nonce','worker')), 'ORIGINAL_ATTACHMENT_JOIN')
-    for item in history[1:-1]:
+    need(len(requests) == 2 and tuple(row['phase'] for row in requests) == PHASES,
+         'TWO_ACTUAL_PHASES_REQUIRED')
+    installed=history[4]['response']['provider_state']
+    for index,item in enumerate(history[1:-1],1):
         response=item['response'];state=response['provider_state']
         need(response['status'] == ('QUERY_OK' if item['action'] == 'query' else 'ACTION_COMPLETED')
              and (item['action'] == 'query' or response.get('action') == item['action'])
              and response['ticket'] == ticket and response['recovery_required'] is False
-             and state['owner'] == owner and state['generation'] == generation and state['simulation'] is False
+             and response['phase'] == RUNTIME_PHASES[index]
+             and state['owner'] == private_owner and state['generation'] == generation
+             and type(state['generation']) is int and state['simulation'] is simulation
+             and response['native'] == state and (item['action'] == 'query' or response['provider'] == state)
              and all(state[k] is False for k in ('C1','C2','C3','public_qualification_granted')),
              'PUBLIC_ACTION_OWNER_OR_RECOVERY_DIFFERS:'+item['action'])
+        active=4 <= index <= 10
+        reserved=2 <= index <= 12
+        completed=0 if index < 7 else 1 if index < 10 else 2
+        pending=([requests[(index-5)//3]['mapping']['internal_request_id'],PHASES[(index-5)//3]]
+                 if index in (5,6,8,9) else None)
+        resource=state['serving']['resource_state'];native=state['native_state']
+        need(state['execution_boundary'] == 'native' and state['native_loaded'] is True
+             and state['registered'] is reserved and state['binding_reserved'] is reserved
+             and state['replay_pending'] is active and state['replay_failed'] is False
+             and state['native_registered'] is active and state['enabled'] is False
+             and all(type(state[k]) is int and state[k] == 0 for k in ('inflight','leases')),
+             'ACTUAL_PROVIDER_LIFECYCLE_DIFFERS:'+str(index))
+        need(all(type(state[k]) is int and state[k] == resource[k]
+                 and (state[k] == installed[k] > 0 if active else state[k] == 0)
+                 for k in ('owned_hooks','owned_api_wrappers')),
+             'ACTUAL_OWNED_OBSERVER_RESOURCE_TRANSITION_DIFFERS:'+str(index))
+        need(native['native_loaded'] is True and native['observer_only'] is True
+             and native['scope_active'] is native['scope_owned'] is False
+             and all(type(native[k]) is int and native[k] == 0 for k in
+                     ('environment_owned','pending_drains','pending_references'))
+             and native['first_error'] is None and native['failures'] == [],
+             'ACTUAL_NATIVE_OBSERVER_NOT_QUIESCENT:'+str(index))
+        need(state['serving']['next_phase'] == ('baseline' if completed == 2 else PHASES[completed])
+             and state['serving']['pending_request'] == resource['pending_request'] == pending
+             and resource['completed_requests'] == completed and type(resource['completed_requests']) is int
+             and resource['inflight'] == 0 and resource['needs_off'] is False
+             and state['serving']['failures'] == resource['failures'] == []
+             and resource.get('failed_requests',[]) == []
+             and state['evidence']['requests'] == [row['worker'] for row in requests[:completed]],
+             'QUERY_PURITY_AND_ACTUAL_COLLECTED_REQUEST_JOIN:'+str(index))
+        if item['action'] == 'query':
+            need(response['quarantined'] is False and response['replay_pending'] is True,
+                 'QUERY_RUNTIME_OWNERSHIP_DIFFERS')
+    return dict(worker=worker,host_owner=host['owner'],provider_owner=private_owner,
+        tenant_id=host['tenant_id'],generation=generation,simulation=simulation,
+        owner_join='ORIGINAL_RUNTIME_RESPONSE_PUBLIC_TICKET_TO_PRIVATE_PROVIDER_STATE',
+        original_rpc_actions=list(ACTIONS),runtime_phases=list(RUNTIME_PHASES),
+        collect_request_settings_retained=False)
+
+
+def protocol(a, data):
+    host=a.artifact(data['host_receipt'],limit=1024*1024**2);core=data['worker_core'];history=host['history'];refs=core['receipts']
+    need(len(history) == len(refs), 'COMPLETE_15_ORIGINAL_RPC_ACTIONS_REQUIRED')
+    for ref,row in zip(refs,history):
+        need(ref['action'] == row['action'] and a.artifact(ref) == row, 'ORIGINAL_RPC_FILE_HOST_HISTORY_DIFFERS')
+    binding=protocol_states(host,data['requests'],data['setup']['worker'],data['mechanism'])
+    need(binding['simulation'] is False,'CPU_SIMULATION_IS_NOT_ACTUAL_STOCK_OBSERVATION')
+    a.protocol_summary=binding
     requests=data['requests']
-    for index,row in enumerate(requests):
-        before,queried,collected=[r['response']['provider_state'] for r in history[5+index*3:8+index*3]]
-        expected=[row['mapping']['internal_request_id'],row['phase']]
-        need(before['serving']['pending_request'] == queried['serving']['pending_request'] == expected
-             and before['evidence']['requests'] == [x['worker'] for x in requests[:index]]
-             and queried['evidence']['requests'] == before['evidence']['requests']
-             and collected['serving']['pending_request'] is None
-             and collected['evidence']['requests'] == [x['worker'] for x in requests[:index+1]],
-             'QUERY_PURITY_AND_ACTUAL_COLLECTED_REQUEST_JOIN')
     final=history[-4]['response']['provider_state']
     need(final == data['final_cleanup'], 'FINAL_FINISH_ORIGINAL_STATE_DIFFERS');cleanup(final)
     unregistered=history[-2]['response']['provider_state'];cleanup(unregistered)
@@ -301,7 +358,7 @@ def protocol(a, data):
     request_ids=[r['mapping']['internal_request_id'] for r in requests]+[health['mapping']['internal_request_id']]
     need(len(request_ids) == 3 and len(set(request_ids)) == 3 and all(type(x) is str and x for x in request_ids),
          'POST_UNREGISTER_ORDINARY_REQUEST_MUST_BE_NEW')
-    return worker,owner,generation
+    return binding['worker'],binding['provider_owner'],binding['generation']
 
 
 def review_files(a, data, parser, *, worker, owner, generation):
@@ -403,6 +460,7 @@ def main():
         result['original_status']=data.get('status');result['original_failures']={k:data[k] for k in ('error','abort_error','cleanup_errors') if k in data}
         a.check(not result['original_failures'], 'ORIGINAL_PROBE_FAILURES_PRESERVED')
         binding=a.attempt('public_protocol',lambda:protocol(a,data))
+        result['public_protocol']=getattr(a,'protocol_summary',None)
         if binding is None:
             state=data['final_cleanup'];binding=(data['setup']['worker'],state['owner'],state['generation'])
         result['census']=review_files(a,data,raw_reader(source),worker=binding[0],owner=binding[1],generation=binding[2])

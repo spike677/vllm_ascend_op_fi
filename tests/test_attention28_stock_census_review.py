@@ -13,6 +13,7 @@ import unittest
 from experiments.c2c3_closure_20261117 import review_attention28_stock_census as R
 
 ROOT=Path(__file__).resolve().parents[1]
+CPU_OWNER='0'*32
 
 
 def write(path,value):
@@ -74,7 +75,7 @@ def call_fixture(index,request,phase):
         snap=inputs[k]['snapshot'];call['input'][k]={f:(snap['metadata'][f] if f in ('shape','dtype') else snap[f])
             for f in ('shape','dtype','sha256','finite')}
     call['target_key']=R.E.digest(dict(path=path,operator=call['actual_operator'],occurrence=0,input=call['input'],decode=False))
-    scope=dict(owner='cpu-owner',generation=1,rank=0,logical_device=0,device_type='npu',phase=phase,
+    scope=dict(owner=CPU_OWNER,generation=1,rank=0,logical_device=0,device_type='npu',phase=phase,
         worker_object_id=10,runner_object_id=11,model_object_id=12)
     c={k:call[k] for k in ('request_id','module_path','module_object_id','actual_operator','occurrence','ordinal','target_key')}
     c.update(schema='demoncat.attention28.stock_native_census.v1',status='OBSERVED_INTERCEPTED_STOCK_LAUNCHES',
@@ -144,14 +145,16 @@ def cached_auxiliary(root,rows):
 def protocol_fixture(root,data):
     worker=dict(pid=12,rank=0,logical_device=0);mechanism=R.MECHANISMS[1]
     attached=dict(tenant_id='tenant',attach_nonce='nonce',worker=worker)
-    ticket=dict(attached,mechanism=mechanism,implementation_version='1',owner='cpu-owner',generation=1)
-    state=dict(owner='cpu-owner',generation=1,simulation=False,registered=True,binding_reserved=True,
+    ticket=dict(attached,mechanism=mechanism,implementation_version='1',owner='cpu-host-owner',generation=1)
+    state=dict(owner=CPU_OWNER,generation=1,simulation=False,registered=False,binding_reserved=False,
         C1=False,C2=False,C3=False,public_qualification_granted=False,
+        execution_boundary='native',native_loaded=True,
         inflight=0,leases=0,owned_hooks=0,owned_api_wrappers=0,enabled=False,native_registered=False,
         replay_pending=False,replay_failed=False,
-        native_state=dict(scope_active=False,scope_owned=False,environment_owned=0,pending_drains=0,pending_references=0,
+        native_state=dict(native_loaded=True,scope_active=False,scope_owned=False,environment_owned=0,pending_drains=0,pending_references=0,
             first_error=None,failures=[],observer_only=True),
-        serving=dict(pending_request=None,failures=[],resource_state=dict(failures=[],failed_requests=[],pending_request=None,needs_off=False)),
+        serving=dict(next_phase='observe',pending_request=None,failures=[],resource_state=dict(failures=[],failed_requests=[],
+            pending_request=None,needs_off=False,owned_hooks=0,owned_api_wrappers=0,inflight=0,completed_requests=0)),
         evidence=dict(requests=[]))
     history=[dict(action='attach',response=dict(status='ATTACHED',ticket=attached))]
     # Independent of the reader's expectation: these are wire actions, while
@@ -160,17 +163,28 @@ def protocol_fixture(root,data):
              'advance','query','advance','finish','disable','unregister']
     for index,action in enumerate(actions,1):
         current=deepcopy(state)
+        current.update(registered=2 <= index <= 12,binding_reserved=2 <= index <= 12,
+                       replay_pending=4 <= index <= 10,native_registered=4 <= index <= 10)
+        if 4 <= index <= 10:current.update(owned_hooks=15,owned_api_wrappers=2)
         if 5 <= index <= 10:
             ri=(index-5)//3;request=data['requests'][ri]
             collecting=index in (7,10)
             current['evidence']['requests']=[x['worker'] for x in data['requests'][:ri+collecting]]
             if not collecting:current['serving']['pending_request']=[request['mapping']['internal_request_id'],request['phase']]
         elif index >= 11:current['evidence']['requests']=[x['worker'] for x in data['requests']]
-        if action == 'unregister':current.update(registered=False,binding_reserved=False)
-        history.append(dict(action=action,response=dict(status='QUERY_OK' if action=='query' else 'ACTION_COMPLETED',
-            action=action,ticket=deepcopy(ticket),recovery_required=False,provider_state=current)))
+        completed=len(current['evidence']['requests'])
+        current['serving']['next_phase']=('observe','observe_repeat','baseline')[completed]
+        current['serving']['resource_state'].update(pending_request=current['serving']['pending_request'],
+            completed_requests=completed,owned_hooks=current['owned_hooks'],owned_api_wrappers=current['owned_api_wrappers'])
+        # Runtime phases are intentionally independent of the reader constants.
+        phase={1:'PREPARED',2:'REGISTERED',3:'CHECKED',11:'FINISHED',12:'STOPPED',13:'UNREGISTERED'}.get(index,'ATTEMPTED')
+        response=dict(status='QUERY_OK' if action=='query' else 'ACTION_COMPLETED',phase=phase,
+            ticket=deepcopy(ticket),recovery_required=False,provider_state=current,native=deepcopy(current))
+        if action == 'query':response.update(quarantined=False,replay_pending=True)
+        else:response.update(action=action,provider=deepcopy(current))
+        history.append(dict(action=action,response=response))
     history.append(dict(action='detach',response=dict(status='DETACHED',recoveries=[])))
-    host=dict(schema='demoncat.worker_core.host_receipt.v1',worker=worker,owner='cpu-owner',tenant_id='tenant',
+    host=dict(schema='demoncat.worker_core.host_receipt.v1',worker=worker,owner='cpu-host-owner',tenant_id='tenant',
         history=history,ticket=None,attachment=None,census_ticket=None,ownership_retained=False)
     data.update(setup=dict(worker=worker),mechanism=mechanism,final_cleanup=deepcopy(history[-4]['response']['provider_state']),
         binding_removal=dict(status='SERVING_DEPLOYMENT_REMOVED',mechanism=mechanism,native_scope_active=False),
@@ -198,7 +212,7 @@ class IndependentStockCensusTests(unittest.TestCase):
 
     def review(self):
         a=R.Review(self.root)
-        result=R.review_files(a,self.data,self.parser,worker=self.worker,owner='cpu-owner',generation=1)
+        result=R.review_files(a,self.data,self.parser,worker=self.worker,owner=CPU_OWNER,generation=1)
         return a,result
 
     def rewrite(self):
@@ -248,7 +262,7 @@ class IndependentStockCensusTests(unittest.TestCase):
         for change in mutate:
             self.rows=deepcopy(original);change()
             with self.subTest(change=change),self.assertRaises(ValueError):
-                R.raw_scope(R.Review(self.root),self.parser,self.rows,call,self.worker,'cpu-owner',1)
+                R.raw_scope(R.Review(self.root),self.parser,self.rows,call,self.worker,CPU_OWNER,1)
 
     def test_wrong_owner_and_duplicate_tokens_do_not_reconcile(self):
         call=self.data['requests'][0]['worker']['forwards'][0]['calls'][0]
@@ -256,13 +270,13 @@ class IndependentStockCensusTests(unittest.TestCase):
             R.raw_scope(R.Review(self.root),self.parser,self.rows,call,self.worker,'foreign-owner',1)
         self.rows.append(deepcopy(self.rows[1]));self.rewrite()
         with self.assertRaisesRegex(ValueError,'BEGIN_END'):
-            R.raw_scope(R.Review(self.root),self.parser,self.rows,call,self.worker,'cpu-owner',1)
+            R.raw_scope(R.Review(self.root),self.parser,self.rows,call,self.worker,CPU_OWNER,1)
 
     def test_actual_elf_entry_must_match_key_and_original_binary_hash(self):
         call=self.data['requests'][0]['worker']['forwards'][0]['calls'][0]
         path=self.root/'runtime/registered-12-1.bin';path.write_bytes(elf('888000000030000999'))
         with self.assertRaisesRegex(ValueError,'SYMBOLS_UNOBSERVED'):
-            R.raw_scope(R.Review(self.root),self.parser,self.rows,call,self.worker,'cpu-owner',1)
+            R.raw_scope(R.Review(self.root),self.parser,self.rows,call,self.worker,CPU_OWNER,1)
 
     def test_cached_auxiliary_is_not_dropped_or_misidentified_as_an_attention_entry(self):
         self.rows=cached_auxiliary(self.root,self.rows);self.rewrite()
@@ -281,14 +295,14 @@ class IndependentStockCensusTests(unittest.TestCase):
                          lambda r:r.pop(2),lambda r:r.insert(3,dict(r[1],generation=3,monotonic_ns=13))):
             rows=deepcopy(original);mutation(rows)
             with self.subTest(mutation=mutation),self.assertRaises(ValueError):
-                R.raw_scope(R.Review(self.root),self.parser,rows,call,self.worker,'cpu-owner',1)
+                R.raw_scope(R.Review(self.root),self.parser,rows,call,self.worker,CPU_OWNER,1)
 
     def test_later_foreign_binding_and_ambiguous_latest_timestamp_cannot_be_cached(self):
         self.rows=cached_auxiliary(self.root,self.rows);call=self.data['requests'][0]['worker']['forwards'][0]['calls'][0]
         for time in (12,99):
             rows=deepcopy(self.rows);rows.insert(3,dict(rows[2],monotonic_ns=time,call_id='foreign'))
             with self.subTest(time=time),self.assertRaises(ValueError):
-                R.raw_scope(R.Review(self.root),self.parser,rows,call,self.worker,'cpu-owner',1)
+                R.raw_scope(R.Review(self.root),self.parser,rows,call,self.worker,CPU_OWNER,1)
 
     def test_data_companions_are_preserved_but_empty_or_out_of_section_functions_refuse(self):
         path=self.root/'runtime/registered-12-1.bin';path.write_bytes(elf(companions=True))
@@ -325,7 +339,7 @@ print('STDLIB_NO_DEVICE_OR_DSO')
     def test_all_15_raw_public_messages_and_cleanup_are_independently_joined(self):
         protocol_fixture(self.root,self.data)
         worker,owner,generation=R.protocol(R.Review(self.root),self.data)
-        self.assertEqual((worker,owner,generation),(self.worker,'cpu-owner',1))
+        self.assertEqual((worker,owner,generation),(self.worker,CPU_OWNER,1))
 
     def test_real_host_collect_produces_advance_rpc_and_reader_accepts_original_history(self):
         from demoncat.runtime.vllm_ascend.worker_extension.host import HostAdapter, WorkerFaultClient
@@ -372,7 +386,7 @@ print('STDLIB_NO_DEVICE_OR_DSO')
         self.assertEqual([host['history'][i]['action'] for i in (5,7,8,10)],['advance']*4)
         self.assertTrue(all(set(row) == {'action','response'} for row in host['history']))
         save_protocol(self.root,self.data,host)
-        self.assertEqual(R.protocol(R.Review(self.root),self.data),(self.worker,'cpu-owner',1))
+        self.assertEqual(R.protocol(R.Review(self.root),self.data),(self.worker,CPU_OWNER,1))
 
     def test_collect_method_alias_or_uncollected_request_is_not_an_original_rpc_receipt(self):
         original=protocol_fixture(self.root,self.data)
@@ -428,10 +442,10 @@ print('STDLIB_NO_DEVICE_OR_DSO')
     def test_external_raw_and_binary_hashes_cannot_be_replaced_by_current_file_hashes(self):
         a=R.Review(self.root,expected_runtime='0'*64)
         with self.assertRaisesRegex(ValueError,'PINNED_RUNTIME'):
-            R.review_files(a,self.data,self.parser,worker=self.worker,owner='cpu-owner',generation=1)
+            R.review_files(a,self.data,self.parser,worker=self.worker,owner=CPU_OWNER,generation=1)
         a=R.Review(self.root,expected_elf={'registered-12-1.bin':'0'*64})
         with self.assertRaisesRegex(ValueError,'PINNED_REGISTERED_ELF'):
-            R.raw_scope(a,self.parser,self.rows,self.data['requests'][0]['worker']['forwards'][0]['calls'][0],self.worker,'cpu-owner',1)
+            R.raw_scope(a,self.parser,self.rows,self.data['requests'][0]['worker']['forwards'][0]['calls'][0],self.worker,CPU_OWNER,1)
 
 
 if __name__ == '__main__':unittest.main()

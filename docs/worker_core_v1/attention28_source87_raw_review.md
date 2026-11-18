@@ -121,6 +121,21 @@ history. Convenience method names, pending collect results, premature evidence,
 foreign tickets and changed query evidence are rejected. Re-run into a fresh
 report; neither a1 nor any original artifact is rewritten.
 
+The second report SHA
+`b3c989a44e0358ff9a53ae7e9c36394d6eea9d745801e9a91a284ffd9ec1b8a7`
+also remains unchanged. It exposed a separate reader error: Runtime deliberately
+keeps the Host owner in the public ticket and creates a different private owner
+for provider dispatch/query. The reader now joins those namespaces through each
+original response, requires the same private owner/generation in all provider
+states and actual Native scopes, and reports both identities separately.
+Prepare must be inert and unregistered; register/check retain the reservation;
+enable and the request triplets retain owned observers and replay ownership;
+finish/disable clear resources while preserving the reservation; unregister
+releases it. Each Runtime phase, request transition and dispatch/readback pair
+is checked. The CPU regression now runs the real Runtime and Attention provider
+as well as the real Host, and confirms that its explicitly simulated evidence
+is still rejected by the actual-stock file review.
+
 ## Bounded next adaptation evidence
 
 The actual key is now measured rather than predicted. The previously supplied
