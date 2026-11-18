@@ -97,3 +97,12 @@ Source71's reported `Exact workload ... scope required` refusal occurred before
 the shared F request completed. It remains failed/partial even if a summary
 claims success. This change has not connected to124 or independently read that
 attempt; the root must run this reviewer over the retained originals.
+
+CPU portability correction: `postwrite_evidence.process_start()` stores a bare
+start tick on Linux, whereas the Worker stores `proc:boot:PID:tick`; Windows uses
+the explicit `cpu-contract:PID:nonce` fallback. The CPU auditor now checks that
+a Linux tick exactly equals the recorded Worker's tick with the same PID, or
+that the fallback contains that PID and a numeric nonce. Natural Worker review
+still requires complete identity equality and does not accept the CPU tick
+projection. Four fixed-example tests exercise both platforms without depending
+on the host OS. No provider, original receipt or device qualification changes.

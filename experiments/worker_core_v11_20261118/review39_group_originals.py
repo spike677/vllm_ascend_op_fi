@@ -9,6 +9,7 @@ from collections import Counter
 import json
 import math
 from pathlib import Path
+import re
 import sys
 
 
@@ -27,6 +28,25 @@ EXTRA_MODULES = ['fault_injection/deployments/'+n+'.py' for n in
     ('postwrite_coverage', 'postwrite_structure', 'postwrite_evidence')] + [
     'fault_injection/'+n+'.py' for n in ('coverage', 'coverage_session', 'runtime_discovery')] + [
     OLD.CORE+n+'.py' for n in ('serving39_output_group', 'providers/fault39_output_group')]
+
+
+def process_start_matches(target_start, worker, *, natural):
+    """Join the saved CPU representation without weakening a real Worker join.
+
+    postwrite_evidence.process_start records /proc start ticks on Linux and an
+    explicit CPU-contract stamp when /proc is unavailable. Worker identity uses
+    boot/PID/ticks on Linux. Do not promote a ticks-only value in natural mode.
+    """
+    worker_start=worker.get('process_start_identity');pid=worker.get('pid')
+    if not isinstance(target_start,str) or not isinstance(worker_start,str) or not C.positive(pid):
+        return False
+    if natural:
+        return bool(target_start) and target_start==worker_start
+    fallback=re.fullmatch(r'cpu-contract:([1-9][0-9]*):([0-9]+)',target_start)
+    if fallback is not None:
+        return int(fallback[1])==pid
+    linux=re.fullmatch(r'proc:([^:]+):([1-9][0-9]*):([0-9]+)',worker_start)
+    return linux is not None and int(linux[2])==pid and target_start==linux[3]
 
 
 def provenance(d, host, final, source_root, manifest_sha, commit, native_library, *, profile):
@@ -188,8 +208,8 @@ def check_group(a, p, group, name, original_rows, worker, *, natural):
     a.check(len(leases) == len(recovered) == count, 'RECOVERY_TARGET_DENOMINATOR', name)
     prototype = recovered[0]['lease']['target']
     a.check(prototype['scope_kind'] == 'INITIALIZED_WORKER' and prototype['worker_id'] == worker['worker_start_identity'] and
-            prototype['process_id'] == worker['pid'] and (prototype['process_start_identity'] == worker['process_start_identity']
-                if natural else prototype['process_start_identity'].startswith('cpu-contract:')) and
+            prototype['process_id'] == worker['pid'] and process_start_matches(
+                prototype['process_start_identity'],worker,natural=natural) and
             prototype['model_instance_id'] == worker['model_instance_id'] and prototype['device_type'] == device and
             prototype['logical_device'] == (0 if natural else None), 'ACTUAL_WORKER_TARGET_LIFETIME', name)
     native_sha = dict(prototype['provider_proof'])['native_library_sha256']

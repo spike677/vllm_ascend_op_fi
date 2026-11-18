@@ -13,6 +13,32 @@ import unittest
 from experiments.worker_core_v11_20261118 import review39_group_originals as r
 
 
+class ProcessStartRepresentationTests(unittest.TestCase):
+    """Fixed saved examples exercise both OS branches on either test platform."""
+    def test_linux_cpu_tick_joins_the_exact_recorded_worker_tick_and_pid(self):
+        worker=dict(pid=123,process_start_identity='proc:fixture-boot:123:45678')
+        self.assertTrue(r.process_start_matches('45678',worker,natural=False))
+        self.assertFalse(r.process_start_matches('45679',worker,natural=False))
+        self.assertFalse(r.process_start_matches('045678',worker,natural=False))
+        self.assertFalse(r.process_start_matches('45678',dict(worker,pid=124),natural=False))
+
+    def test_linux_tick_needs_a_complete_worker_proc_identity(self):
+        for marker in ('45678','proc::123:45678','proc:boot:124:45678','process_local:123:fixture'):
+            self.assertFalse(r.process_start_matches('45678',dict(pid=123,process_start_identity=marker),natural=False))
+
+    def test_windows_cpu_fallback_has_exact_pid_and_numeric_nonce(self):
+        worker=dict(pid=123,process_start_identity='process_local:123:fixture')
+        self.assertTrue(r.process_start_matches('cpu-contract:123:45678',worker,natural=False))
+        for marker in ('cpu-contract:124:45678','cpu-contract:123:unknown','cpu-contract:123:', 'cpu-contract:123:45678:extra'):
+            self.assertFalse(r.process_start_matches(marker,worker,natural=False))
+
+    def test_natural_worker_still_requires_the_complete_exact_identity(self):
+        worker=dict(pid=123,process_start_identity='proc:fixture-boot:123:45678')
+        self.assertTrue(r.process_start_matches(worker['process_start_identity'],worker,natural=True))
+        for marker in ('45678','cpu-contract:123:45678','proc:foreign-boot:123:45678','proc:fixture-boot:123:45679'):
+            self.assertFalse(r.process_start_matches(marker,worker,natural=True))
+
+
 class Output39OriginalReviewTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
