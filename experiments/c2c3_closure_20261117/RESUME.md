@@ -1,5 +1,15 @@
 # Current execution checkpoint
 
+## Current checkpoint — Core22 accepted, source52 quant loader repaired
+
+- Strict C2 is6/17, C3 is5/17 after source50 public Core22 independent original-file review:9567 conditions, no issues, C2/C3 true. Review core22-review-source50-a1/review.json SHA8b23010fee90d3342977262f02f32002652d8531f175897a710658cd230acff2. Source46 missing-receipt result stays historical; E5 remains separate.
+- Source52 commitfb252cae48ae1cc6e180b6edaedf8f3994fe6947,784files, archive1b37841cd7a7af72fa95139e32628e3b01671621892f3984d2beff27cdff898a, manifest4a1049b8c118d28a5e890d2cd17c5a217ce9c1a9affa63efccb6d38a4107ee9b. Packages25 receipt4a363f455629a6046cabc00743c9a354e2b96b320c2a9a00ea1b51c7077296b1; installed smoke and observer SDK build pass.
+- Quant source51 NOLOAD diagnostic00bcfd9d proves rejected first shim GWS before real prepare/execute. Actual vendor libopapi has V2 APIs but no optional CanUsePTACache. Source52 fixes optional-vs-required resolution and actual ELF symbol owner checks. Fresh native-quant-group-v1-a5 manifestc9137e994eb29f76070c519f245aeeeb4c044a2b398aabd4b76ddde30ae78b71; SDK+7 real ELF CPU contracts pass, receipt70a0a0400fc1315ee4ac091b9ae1a4d39db10cd993c6ecb4beb0069f568c28b0. New C1 NPU not yet started.
+- Sole active NPU session53817 is postwrite39-repaired-source51-card2-a1. Baseline completed/recovered, resulte88e3f3f248a7f07e62e76a108c28a87a05342ba278de2031ed1a8e9f779cf01; F still running. This is39.output_proxy MODEL_LOCAL, not standard Worker/native39 input replacement. Baseline group140 controls/0 fault; its separate preceding C1 qualification includes a fault. No qualification from status alone; independent audit pending.
+- Root integrated Fault33 first-boundary diagnostic8f89fd8c (agenta94b6fd),56 related local CPU tests pass. New fresh source/packages required, stock/B only, same instrumentation/no statistics; noF or old bridge relaxation. Raw API inputs/immediate outputs and runtime registered binaries stay124; actual API selected DSO remains unobserved.
+- Three CPU agents: worker_core_v1 adds explicitly scoped Native26 automatic single-site effects without shrinking complete135 inventory; c23_nativeproviders implements FIA-NCL typed descriptor/lifetime mapping; core_call_census independently reviews output39 original evidence. Root alone serializes card2; no expired Docker isolation, no raw-data publication.
+- Following checkpoints are historical.
+
 ## Current checkpoint — source51 diagnostics and completed public Core22 run
 
 - Source50 commit006916a9, source51 commit3ec12a7bc3bd5daebc404c70342083238e075a00 are immutable. Source51 manifest86878d43bc63dc1572b9d571c02def8a4061da66fd66153198748ac3e390866f; packages24 receipt2cbf3aac0d1a4a0f36412a333e09a07e8efa7be73b923d7540df6254dee681fb. Source50 packages23 receipt44e9e961d8137b0cb733017fd1597b98422a0d9f326c53a6d43f6349ceffa7ba.

@@ -1,7 +1,7 @@
 # Worker Core and remaining providers: new execution evidence
 
 This is an incremental report for `codex/17-fault-c2c3-closure-20261117`.
-The existing six strict C2 and four strict C3 scopes are preserved. A new
+The existing six strict C2 and five strict C3 scopes are preserved. A new
 runtime success requires its own independent review; this report does not
 claim17/17, yellow-zone integration, CANN9.x Worker or A3 acceptance.
 
@@ -26,7 +26,17 @@ with the original Qwen3-0.6B workload and no model invocation inside fault RPCs.
 All10 enqueued requests completed: four healthy qualifications, C2 once and OFF,
 two C3 every-match requests and OFF, then post-cleanup same-Worker health.
 The runtime records28/28 and56/56 hits,29 original RPC receipts, live C2 object
-issuance/use and final `DETACHED`. Independent review is a separate requirement.
+issuance/use and final `DETACHED`. The separate source-pinned reviewer checked
+all774 frozen source files and9567 evidence conditions on124, with no issues.
+Both C2 and C3 pass in this scope, including complete outputs, target/alias/call
+joins, the exact original live capability's issuance/use, OFF and the tenth
+same-Worker healthy request. It does not reconstruct live authority from JSON.
+The original source46 missing-receipt result remains unchanged.
+
+Independent review `core22-review-source50-a1/review.json` SHA256:
+`8b23010fee90d3342977262f02f32002652d8531f175897a710658cd230acff2`.
+See [the reproducible reviewer contract](worker_core_rope_review.md). Its32 CPU
+tests also passed locally; they do not replace the actual-file review.
 
 Original result:
 `rope22-core-source50-card2-a1/natural-rope22-worker-core/probe/result.json`
@@ -104,6 +114,26 @@ The new optional failure diagnostic uses only an already mapped, exact-hash
 DSO's `RTLD_NOLOAD` ABI/state/journal read exports. It performs no SDK resolve,
 Native install, synchronization or recovery; original exceptions are retained.
 161001 alone cannot distinguish a shim rejection from a vendor error.
+
+Source51 retained the same native a4 library and workload and captured the
+failure in the same process. The first public GWS entry was rejected while
+the resolver was not ready: native prepares/executes were both zero, with no
+installed owner or allocated group resources. Exact vendor `libopapi.so`
+SHA256 `b3890625d3e0cc11ef32460083698ecaa8f702b5edd0169ea617e2e6bb76270c`
+exports both required DynamicQuantV2 functions but not `CanUsePTACache`.
+The old resolver incorrectly required that optional cache-advice function.
+Diagnostic SHA256:
+`00bcfd9d967823d94bcee297f16f474b713a83f62634fd9e55b6ccd388a301e9`.
+
+The reviewed source52 repair separates mandatory execution APIs from optional
+cache advice and checks symbols against their actual loaded ELF owner. Missing
+cache advice returns false; self or dependency-owned execution symbols remain
+rejected. Fresh `native-quant-group-v1-a5` passed the actual SDK build and seven
+host-only real ELF loader cases, including global vendor preload, absent cache
+advice, missing functions and wrong symbol owners. Build manifest SHA256:
+`c9137e994eb29f76070c519f245aeeeb4c044a2b398aabd4b76ddde30ae78b71`.
+These are CPU contracts, not new NPU or C1 acceptance. See
+[the loader repair and limits](providers_quant_loader_repair.md).
 
 ## Fault33: stable stock/private bridge mismatch, no fault admission
 

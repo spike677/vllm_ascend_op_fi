@@ -2,11 +2,13 @@ Current Native20 requalification and public Worker entry: [actual source46 accep
 
 # Reviewed checkpoint, not final 17/17 acceptance
 
-Root decisions after repaired Native39 and Native20 audits: **C2 6/17, C3 4/17**.
+Root decisions after repaired Native39/Native20 and public Core22 audits: **C2 6/17, C3 5/17**.
 Fault18, MoE8 and the two separately repaired Native builds have bounded
-C2/C3 standard-Worker qualification. Newly reviewed RoPE22 and KV41 add two
-C2 scopes; their C3 execution/recovery passes but direct live-proof receipts
-remain incomplete. See [the new recovery review](WORKER_RECOVERY_REVIEW_20261118.md). Old SDK-array-leaking builds remain withdrawn.
+C2/C3 standard-Worker qualification. RoPE22 and KV41 add two C2 scopes.
+Source50 RoPE22 now has independently verified original live-proof receipts
+and C3 qualification; KV41 retains its direct-proof receipt limitation. See
+[Core22 review](worker_core_rope_review.md) and the historical
+[recovery review](WORKER_RECOVERY_REVIEW_20261118.md). Old SDK-array-leaking builds remain withdrawn.
 [Native20/public Worker Core](WORKER_CORE_V1_ACCEPTANCE_20261118.md) and
 [new Native39 acceptance](NATIVE39_REQUALIFICATION_20261118.md) bind each result
 to its actual source/build/workload. Original historical and constructed results
@@ -20,11 +22,11 @@ interrupted runs never create a proof. See the [executed-build ownership audit](
 |17.spatial_padding|Full pretrained Qwen3-VL patch16 MODEL_LOCAL census and group completed oncard2;901 tokens/3536 patches|Not established for standard Worker|Not established for standard Worker|Independent audit completed: final native padding arguments and full consumer lineage are not independently proven. Storage-id reuse cannot expand coverage. No E5 capture in this group. Existing text Worker rejects multimodal request identity.|
 |18.api_half|Standard Qwen3-0.6B Worker BF16, fixed fresh prefill, TP1; actual native/custom RMSNorm return proxy|**113/113**|**226/226**, two requests|Complete hidden/logits OFF and healthy generation verified. Fresh Worker B/repeat/F raw statistics align; first observable linear input Max1.734375→0.8671875,102 preceding/6106 total nulls. Separate from HF evidence.|
 |20.buffer_substitute|Repaired Native build, public Worker Core source46/packages19; actual DeepSeek QMM BF16 fixed3-token fresh prefill TP1|**135/135**|**270/270**|Whole-group exact OFF and SDK release independently pass. First raw QMM output Max16.25→14.0;132 preceding nulls,2 later NaNs, C3 raw missing. Old leaking build withdrawn; later sites include propagated changes.|
-|22.wrong_row|source46 Qwen Worker,28 natural aliases joined through actual shared objects/ancestors/requests and source-bound Triton calls|**28/28**|56/56 execution/OFF verified; strict direct proof receipt incomplete|9259 independent conditions; only original live C2 capability receipt missing. Raw device payload and statistics unavailable; legal-position wrong-row variant, not uint32 overflow. New public Core binding still requires its own acceptance.|
+|22.wrong_row|Public Core source50 Qwen Worker,28 natural targets joined through actual shared objects/ancestors/requests and source-bound Triton calls|**28/28**|**56/56**, two requests|9567 independent conditions,29 original RPCs, exact live C2 issuance/use and tenth same-Worker healthy request pass. Source46's old proof-receipt limitation remains historical. Raw device payload and statistics unavailable; legal-position wrong-row variant, not uint32 overflow.|
 |25.reduce_scatter|Both8.5.1 and9.1: six bounded dtype/size cases, four actual native repeats, healthy collective and normal dual-rank exit|No sample|No sample|All cases NO_REPLAY_SAMPLE. No fabricated F; drain success cannot manufacture a numerical difference.|
 |26.residual_stomp|Source50/new pending-consumer DSO completes actual DeepSeek target000 reference/lossless/OFF; second target fails fresh allocation adjacency|Pending|Pending|No fault executed before the complete resolved-set qualification stopped. New cleanup has zero Native and public resources; old lost-lifetime failure retained. Single-site effects and C2 are separate scopes.|
 |26.fia_destination|Source49 SmolLM2 captures60 actual public FIA returns: public ND2 vs native NCL47|Pending|Pending|View/span match but full native storage-shape/offset is missing. Strict format gates retained; typed descriptor adapter and new B/L/F/OFF required. No fault; clean teardown.|
-|quant.batch_shared_scale|Public Core C1 adapter and actual row provenance integrated; source49 fails DynamicQuantV2 during healthy Worker construction before registration|Pending|Pending|161001 does not identify vendor vs shim rejection. New read-only NOLOAD state/journal diagnostics; no fault phases or C1 accepted. Existing group a4 SDK/load proofs and older scoped effects remain separate.|
+|quant.batch_shared_scale|Public Core C1 adapter and actual row provenance integrated; source51 diagnostic proves initial shim resolver rejection before vendor execution|Pending|Pending|Vendor lacks optional cache-advice export. Source52/new a5 fixes required-vs-optional resolution and passes SDK plus7 real ELF CPU contracts; new NPU C1 remains pending. Existing a4 failure and older scoped effects remain separate.|
 |28.fa.legal_tiling|Fresh9.1 FA a5: four actual launches independently verified, complete24 output leaves; M128/nRatio8→M64/nRatio4|Not established|Not established|Repeat/OFF complete output byte exact; F changes1112 attention-output elements. Independent new B/F statistics:4 exact changes,0 exceedances,10 nulls. Standalone joint strategy; no E5 first exceedance, stock bridge/model/Worker scope.|
 |28.fia.legal_tiling|Fresh9.1 standalone B8, actual final arguments/registered ELF/launch verified; M/S2 512/512→128/128|Not established|Not established|Fresh disclosed CPU-FP64 statistics have no observable fixed-tolerance first difference. Native output-byte change is separate evidence, not E5 or model acceptance.|
 |28.fia.denominator_replay|Fresh9.1 standalone B8, distinct real kernel entry, eight-launch review includes this B/F pair|Not established|Not established|Raw fixed-tolerance first difference is FIA output Mean; Norm118.30810159723288→116.27198217667856. Natural model/Worker coverage still pending; no historical default-root-cause claim.|

@@ -14,6 +14,8 @@
 [当前逐项矩阵](experiments/c2c3_closure_20261117/C2_C3_MATRIX.md) ·
 [本轮公共入口与新构建验证](experiments/c2c3_closure_20261117/CORE_PROVIDER_PROGRESS_20261118.md)。
 已有通过范围保留，新的原始统计、完整张量和 Native 库均留在124。
+目前严格限定验收为 C2 6/17、C3 5/17；公共 Core22 的原件独立复核已通过，
+覆盖、恢复与 msprobe 独立定位分别记账，不能由前两项推定 E5 通过。
 
 [2026-11-17 17条工程整合与新增机制实测](experiments/engineering_20261117/README.md)：
 从 `cae9cdf4` 继续建设算子专属构建器、真实边界身份、Tensor/MoE/RoPE/通信适配、
