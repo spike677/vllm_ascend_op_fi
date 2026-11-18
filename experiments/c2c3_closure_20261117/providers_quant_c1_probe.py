@@ -3,6 +3,7 @@ import argparse
 import hashlib
 import inspect
 import json
+import os
 from pathlib import Path
 import traceback
 
@@ -11,6 +12,21 @@ PROMPTS = ['Explain why the sky looks blue.', 'Name the capital city of France.'
     'Complete this sentence: Water freezes at', 'Write a Python function to add two integers.',
     'What is the result of seven multiplied by nine?', 'Describe a forest in spring.',
     'Translate good morning into Spanish.', 'Give one reason to read books.']
+EVIDENCE = Path('/evidence')
+
+
+def diagnose_initialization_failure(report, build_sha256):
+    """Read the failing process's existing DSO; never construct a binding."""
+    try:
+        from fault_injection.quant_group_diagnostics import capture_loaded_quant_state, diagnostic_summary
+        diagnostic = capture_loaded_quant_state('/quant', approved_build_sha256=build_sha256)
+        path = EVIDENCE / 'quant-native-init-diagnostic.json'
+        path.write_text(json.dumps(diagnostic, indent=2, allow_nan=False) + '\n')
+        report['initialization_native_diagnostic'] = dict(path=str(path),
+            sha256=hashlib.sha256(path.read_bytes()).hexdigest(), **diagnostic_summary(diagnostic))
+    except BaseException as error:
+        report['initialization_native_diagnostic'] = dict(status='DIAGNOSTIC_FAILED_PRIMARY_ERROR_PRESERVED',
+            error=repr(error), traceback=traceback.format_exc())
 
 
 def actual(worker):
@@ -65,10 +81,11 @@ def main():
         scope='ONE_AUTOMATICALLY_PROVEN_NATURAL_B8_SITE_ONCE_NOT_ALL_ELIGIBLE', num_gpu_blocks_override=64)
     client, llm = None, None
     bound = False
+    stage = 'IMPORT_RUNTIME'
     def save():
-        Path('/evidence/result.json').write_text(json.dumps(report, indent=2, allow_nan=False) + '\n')
+        (EVIDENCE / 'result.json').write_text(json.dumps(report, indent=2, allow_nan=False) + '\n')
         if client is not None:
-            Path('/evidence/host-core-receipts.json').write_text(json.dumps(client.snapshot(), indent=2, allow_nan=False) + '\n')
+            (EVIDENCE / 'host-core-receipts.json').write_text(json.dumps(client.snapshot(), indent=2, allow_nan=False) + '\n')
     def checked(value, status='ACTION_COMPLETED'):
         if value['status'] != status or value.get('response', {}).get('recovery_required'):
             raise RuntimeError('PUBLIC_WORKER_CORE_' + value['status'] + ':' + str(value.get('response'))[:2048])
@@ -79,16 +96,19 @@ def main():
         from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
         from demoncat.runtime.vllm_ascend.worker_extension.host import HostAdapter, WorkerFaultClient
         from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require_host_driven_core, actual_driver_request_map
+        stage = 'LLM_CONSTRUCTION'
         llm = LLM(model='/model', dtype='bfloat16', tensor_parallel_size=1, enforce_eager=True,
             max_model_len=128, max_num_seqs=8, max_num_batched_tokens=256, num_gpu_blocks_override=64,
             enable_prefix_caching=False, enable_chunked_prefill=False, async_scheduling=False,
             gpu_memory_utilization=.85, seed=42, trust_remote_code=False, disable_log_stats=True,
             worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension')
+        stage = 'HEALTHY_BEFORE'
         require_host_driven_core(llm)
         tokens = [llm.get_tokenizer().encode(prompt, add_special_tokens=True) for prompt in PROMPTS]
         prompts = [dict(prompt_token_ids=row) for row in tokens]
         params = SamplingParams(temperature=0, max_tokens=2, ignore_eos=True)
         report['healthy_before'] = [list(row.outputs[0].token_ids) for row in llm.generate(prompts, params, use_tqdm=False)]
+        stage = 'PUBLIC_CORE_C1'
         def prepare_binding(identity, config):
             nonlocal bound
             report['deployment'] = rpc(llm, setup, tokens, args.build_sha256)
@@ -146,7 +166,12 @@ def main():
             raise RuntimeError('SAME_WORKER_FINAL_HEALTH_NOT_CONFIRMED')
         report.update(status='SINGLE_SITE_C1_FUNCTION_AND_RECOVERY_READY_FOR_REVIEW', c1=True)
     except BaseException as error:
-        report.update(status='FAILED_WITH_EVIDENCE', error=repr(error), traceback=traceback.format_exc())
+        report.update(status='FAILED_WITH_EVIDENCE', error=repr(error), traceback=traceback.format_exc(),
+            failure_stage=stage, failure_process_id=os.getpid(),
+            failure_context=dict(llm_constructed=llm is not None, client_constructed=client is not None, binding_installed=bound))
+        if stage == 'LLM_CONSTRUCTION':
+            save()  # Preserve the first exception before the optional read-only diagnostic.
+            diagnose_initialization_failure(report, args.build_sha256)
     finally:
         if client is not None and client.snapshot()['ownership_retained']:
             report['cleanup'] = []

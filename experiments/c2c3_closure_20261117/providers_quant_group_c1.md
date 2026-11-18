@@ -131,3 +131,23 @@ fix and Core's `advance_batch`/`begin_decode_capture` methods. Use the unchanged
 a4 manifest SHA `8d8d02476a911b2b0251eb70b6af3e2cd45ea2498aa65d1beb1a316822f3012d`
 and library SHA `b25807b379345c35139138b5eeb1b57d00b421594d88aa2b62dc6ebd8021f557`.
 All raw results stay on 124; only reviewed summaries belong in Git.
+
+Initialization failure diagnostics retain the original constructor exception
+before any cleanup. `quant-native-init-diagnostic.json` reads only the already
+mapped, manifest/SHA-bound group DSO using `RTLD_NOLOAD`. All ctypes layouts
+must match the reviewed SDK ABI before state or journal reads. The whitelist
+contains only `dcat_dqg_abi_v1`, `dcat_dqg_state_v1` and `dcat_dqg_raw_v1`; it
+does not construct a binding, call `resolve`, install an owner, synchronize,
+or load a missing library. The acquired NOLOAD reference is explicitly closed.
+
+The artifact keeps the whole bounded journal, including unclassified parents,
+helper roles, failed reads, nonzero statuses, original-call counts, pending
+registrations and overflow. State and mapped-owner snapshots bracket the
+read. A changed snapshot or missing row is marked incomplete. `original_calls`
+distinguishes an actual Native function return from a refusal before calling
+it; error 161001 alone does not establish which occurred. A complete diagnostic
+snapshot does not mean a healthy runtime or C1 acceptance. Source49's model
+initialization failure has no installed binding or C1 phase and remains a
+failure pending the actual same-process diagnostic. This Python-only change
+uses the same a4 DSO and requires a fresh installed package plus probe, without
+a new Native SDK build or altered invocation parameters.
