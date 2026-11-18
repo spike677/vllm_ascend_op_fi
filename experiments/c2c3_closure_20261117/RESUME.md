@@ -1,5 +1,45 @@
 # Current execution checkpoint
 
+## Current checkpoint — account restored, source44, Native39 requalification
+
+- Account/approval quota is restored. New remote operations and the three
+  specialists work again. Do not retain the earlier quota block as current.
+- Strict root-reviewed count remains C2 2/17 and C3 2/17. The new long run is
+  not accepted from a runtime status alone. All new raw evidence stays on124.
+- Only root owns NPU queue/card2. Active session18870 is
+  `native39-cache-witness-c2c3-card2-a2` (source42/packages16/new cache-witness
+  SDK). Its metadata-only predecessor independently passed actual cache/array
+  release and same-Worker healthy recovery, with zero fault hits. The current
+  full C2/C3 statistics run must finish and be independently reviewed.
+- A new checkpoint allocation appeared during the interruption. The old scope
+  is invalid. The fresh read-only review of Pod5631f2d9-09f6-4b5b-98e1-1bc92dbd285c,
+  checkpoint47bc0ef0ff2fcea29035f1fa10e735f0e3e9eb60d5aa9e9e61a91e73d6d8f344,
+  passed actual no-current-owner checks. Each later attempt must bind its own
+  exact path and recheck; this is no permission to modify the checkpoint or
+  bypass a live owner. No host Docker isolation was restored.
+- source-a44 freezes722 files at172c060963f2e5922241123bd0a3ded09c4586a9;
+  archiveebc4e85e48f45a64f9d6eedb2f58006340333e3781ad947b147b68006612f014,
+  manifestdaed6a558a536d8f02df13ce335b411a381b5f92e7fd462ff6e4c22c7f53a453.
+  packages-a18 completed without devices; receipt
+  a21f2753b11acd0cacd7cafa28cb7ae8a6271afc8840ec3e16dfb025901315b6.
+- Prepared only, not started: `prepared-source44-a1/{native20-short,
+  native26-groups,postwrite41,quant-group-census,rope22-census,postwrite39}.json`.
+  Use separate bounded queues (at most8 cases), fresh attempt scopes and the
+  existing lock. Native20 uses `native20-repaired-group-a1`, not the unreviewed
+  raw SDK directory. Fault26 uses explicit before-import local dependency
+  loading. Fault41 adds full valid K/V-prefix byte recovery; old raw differences
+  remain. RoPE uses actual executing ancestor frames; start with zero-injection
+  census. The quant group census installs no native owner and grants no C2/C3.
+- Fault33 `tnd33-fai-fd-build-a1` completed. Specialist independently rehashed
+  all1163 files and revalidated all24576 CPU geometry rows/eight entries.
+  Actual AIC/FD launch and same-source/card stock/private full-output bridge
+  remain required. Wait for the specialist's execution-contract/bridge-gated
+  queue commit before starting stock/B; packages18 may remain usable.
+- Active specialists: alias_auto_adapter owns RoPE group driver;
+  c23_nativeproviders owns actual quant Attention/MoE row lineage;
+  c23_attention owns the Fault33 stock/B bridge and subsequent F gate.
+  All device/container launches remain with root.
+
 ## Current checkpoint — new failures diagnosed; source42 and repaired SDKs
 
 - See REQUALIFICATION_20261118.md for actual result hashes and strict2/17 count.

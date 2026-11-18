@@ -5,6 +5,34 @@ previously reviewed bounded standard-Worker Fault18 and MoE8 scopes. This report
 does not transfer their qualification to newer source snapshots. Raw statistics,
 private arrays, SDK libraries and weights remain on124.
 
+## Resumed work and new gates
+
+The account quota interruption is resolved. The repaired Native39 metadata-only
+run passed two actual discovery requests with five distinct typed-GWS cache
+witnesses, matched acquire/release deltas, zero remaining native leases and
+same-Worker healthy token576 (` The`). It armed no fault and grants no C2/C3.
+The fresh full run is `native39-cache-witness-c2c3-card2-a2`; independent review
+is still pending. Its predecessor a1 was blocked by a new device-allocation
+checkpoint before any NPU call. A fresh exact-scope read-only live review passed;
+the checkpoint itself and host Docker entry were not modified.
+
+Native20's metadata-only attempt refused before any group phase because the new
+SDK directory lacked its required group review. The new
+`native20-repaired-group-a1` is separately staged from the repaired library after
+the actual SDK/CPU contracts and source/hash checks. It has not yet passed NPU
+requalification. An old build's review is not copied as a substitute.
+
+Fault26's missing dependency is now directly observed in the pinned image:
+observe-only startup lacked `libopapi_nn.so`. Explicit before-import loading
+with `RTLD_NOW|RTLD_LOCAL` retained the original preload chain and passed all
+four independent loaded-counter identities. This device-free check neither
+installs a writer nor qualifies an NPU group. Unknown mappings still refuse.
+
+Source44 adds Fault41 full valid K/V-prefix byte checks, Fault39 output-proxy
+nonexecuting `ModuleList` ancestry handling, a natural B8 quant group-ABI census,
+and RoPE actual executing ancestor-frame resolution. packages18 was built from
+the frozen source44 without devices. Fresh model runs remain required.
+
 ## New actual attempts
 
 All paths below are relative to `/home/17-fault-c2c3-20261117`. Each device
@@ -52,7 +80,13 @@ difference.
 * Fault41 once-exhausted step1 still has38 exceedances; first is record1020,
   `Tensor.__setitem__.18.forward/input_args/0/Max`, `20.375 -> 20.5`.
   They must not be relabelled as all unchanged or all invalid-cache values.
-  Exact stack/page-mapping interpretation remains under review.
+  Subsequent independent stack/page review identifies36 pre-overwrite output
+  destination fields and two whole-value-cache fields with an earlier inactive
+  page history. It does not prove the old complete valid K/V prefix or the
+  element responsible for the whole-cache Max. All38 raw differences remain;
+  [the detailed review](../c2c3_postwrite_20261117/RECOVERY_REVIEW_20261118.md)
+  does not relabel the failed C3 cleanup as successful. The fresh driver adds
+  the missing complete valid-prefix comparison.
 * Fault41 B step0 versus B step1 is not a valid numerical-repeat control:
   actual KV slot indices change, with122 exceedances. B self-comparison has
   zero differences. Each step is a fresh request, not a decode-token index.
@@ -71,8 +105,11 @@ The later Fault41 focused run had19 pass/1 platform skip; suites overlap.
 The native metadata fixture now passes150 scenarios with210 actual `new[]`
 and210 `delete[]`,zero live arrays. Fresh Native39 SDK build and packages-a16
 completed using the pinned8.5.1 image; no NPU qualification follows.
-The Fault33 eight-entry native FD build is underway, using the unchanged
-original branch decision and matched KV256 host/device specialization. See
+The Fault33 eight-entry native FD build completed, using the unchanged
+original branch decision and matched KV256 host/device specialization. All1163
+files were independently rehashed and24576 CPU geometry rows revalidated.
+Actual platform AIC, FD launch and stock/private complete-output bridge remain
+unverified by this CPU result. See
 [the source and device-gate review](attention33_fai_fd_review.md).
 
 Quant group a4's exact-SDK build/CPU contracts passed. A separate actual-image,
@@ -98,6 +135,12 @@ request-row lineage and full Serving/Coverage remain pending.
 |Native39 new SDK controller|`58dc4d6210d3531bc4971fd33da9f3f75bdb76d0ebf8a97793357694e74d42b1`|
 |Quant a4 build manifest|`8d8d02476a911b2b0251eb70b6af3e2cd45ea2498aa65d1beb1a316822f3012d`|
 |Quant actual-image load controller|`2f444d7804c4921ca276e724953331b78daa4f1e7a2921ed09621b2fac305f92`|
+|Native39 metadata-only result|`1d72a7ed83c9a8129abe0f25f39150b42bfefee121072425b3426fee0708c230`|
+|Native20 newly staged group review|`49debc784928aa6e2687c4d50745eac651962865e9ae474a7d6707fdeadf4338`|
+|Fault26 explicit-local-startup result|`dcd8f0294406219a30c59241feb78044f8de9ad8cbad9ff86c6888f28ae398ac`|
+|Fault33 FD build completion|`bdc2183ef5395844c9fc69dbb30b618b2200d9c3cbc85a39be8ebd35acaae472`|
+|source44 manifest|`daed6a558a536d8f02df13ce335b411a381b5f92e7fd462ff6e4c22c7f53a453`|
+|packages18 device-free build receipt|`a21f2753b11acd0cacd7cafa28cb7ae8a6271afc8840ec3e16dfb025901315b6`|
 
 These are summaries and identity references, not replacements for retained raw
 evidence or runtime admission certificates. Multi-Worker, other CANN versions
