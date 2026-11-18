@@ -1,6 +1,8 @@
 """Actual Host/Runtime and original CPU projections; no NPU qualification."""
-from copy import deepcopy
+from copy import copy, deepcopy
 from dataclasses import replace
+import os
+from types import SimpleNamespace as NS
 import unittest
 from unittest.mock import patch
 
@@ -63,6 +65,8 @@ class CoreOutput39GroupTests(unittest.TestCase):
         state = self.ok(self.client.finish())
         evidence = state['evidence']
         first, second = (evidence['group_summary'][key]['coverage'] for key in ('c2', 'c3'))
+        self.assertTrue(all(target.process_start_identity == self.provider.identity['process_start_identity']
+            for target in self.provider.group.identities.values()))
         self.assertTrue(first['contract_satisfied'], first['rejection_reasons'])
         self.assertTrue(second['contract_satisfied'], second['rejection_reasons'])
         self.assertEqual(first['planned_targets'], 2)
@@ -207,6 +211,40 @@ class CoreOutput39GroupTests(unittest.TestCase):
                 self.request(index)
             self.ok(self.client.finish())
             self.ok(self.client.unregister())
+
+    def test_worker_target_replaces_linux_model_local_ticks_and_refuses_unproven_natural_lifetime(self):
+        self.start()
+        actual_type = self.provider._collect.__func__.__globals__['WorkerProjectionCoverage']
+        original_type = actual_type.__mro__[1]
+        identity_module = actual_type._identity.__globals__['identities']
+        with patch.dict(original_type.__init__.__globals__, process_start=lambda: '57423244'):
+            for index in range(6):
+                self.request(index)
+        group = self.provider.group
+        self.assertEqual(group.process_start, '57423244')  # Original ModelLocal helper remains unchanged.
+        self.assertTrue(all(target.process_start_identity == self.provider.identity['process_start_identity']
+            for target in group.identities.values()))
+        target = next(iter(group.identities.values()))
+        natural = copy(group)
+        natural.core = NS(binding=NS(simulation=False))
+        natural.worker_identity = dict(group.worker_identity,
+            process_start_identity=f'proc:actual-boot:{os.getpid()}:57423244')
+        with (patch.object(original_type, '_identity', return_value=target),
+              patch.object(identity_module, '_process_start', return_value=natural.worker_identity['process_start_identity'])):
+            bound = natural._identity(object())
+            self.assertEqual(bound.process_start_identity, natural.worker_identity['process_start_identity'])
+            self.assertEqual(bound.scope_kind, 'INITIALIZED_WORKER')
+            self.assertEqual(bound.device_type, 'npu')
+            natural.worker_identity['process_start_identity'] = '57423244'
+            with self.assertRaisesRegex(RuntimeError, 'OUTPUT39_GROUP_ACTUAL_PROCESS_LIFETIME_UNPROVEN'):
+                natural._identity(object())
+            natural.worker_identity['process_start_identity'] = f'proc:different-boot:{os.getpid()}:57423244'
+            with self.assertRaisesRegex(RuntimeError, 'OUTPUT39_GROUP_ACTUAL_PROCESS_LIFETIME_UNPROVEN'):
+                natural._identity(object())
+            natural.worker_identity['pid'] += 1
+            with self.assertRaisesRegex(RuntimeError, 'OUTPUT39_GROUP_HELD_PROCESS_LIFETIME_CHANGED'):
+                natural._identity(object())
+        self.ok(self.client.unregister())
 
 
 if __name__ == '__main__':

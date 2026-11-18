@@ -3,6 +3,7 @@ from copy import deepcopy
 from dataclasses import asdict, replace
 import hashlib
 import json
+import os
 from pathlib import Path
 
 from fault_injection.coverage_session import CoverageScope, GroupRecoveryHooks, WorkerHealthProof, target_id
@@ -10,6 +11,7 @@ from fault_injection.deployments.postwrite_coverage import ProjectionCoverage, _
 from fault_injection.deployments.postwrite_evidence import digest
 from .serving39_output import Serving39OutputSession
 from .serving_context import require
+from . import identity as identities
 
 
 STRUCTURED_OUTPUT_DIGEST = dict(algorithm='postwrite_evidence.output_digest.pytree_and_tensor_leaves.v1',
@@ -36,7 +38,7 @@ class WorkerProjectionCoverage(ProjectionCoverage):
                     for item in row.candidate.consumer_observations if item.get('reviewed_consumer')]
         sources = [Path(__file__), Path(__file__).with_name('providers')/'fault39_output_group.py',
             Path(__file__).with_name('serving39_output.py'), Path(__file__).with_name('providers')/'fault39_output.py',
-            Path(__file__).with_name('gemm_lineage.py')]
+            Path(__file__).with_name('gemm_lineage.py'), Path(identities.__file__)]
         from fault_injection.deployments import postwrite_coverage, postwrite, postwrite_boundaries, postwrite_npu_consumers
         from fault_injection.deployments import postwrite_observed, postwrite_inventory, postwrite_structure
         from fault_injection import environment as environment_module
@@ -69,7 +71,14 @@ class WorkerProjectionCoverage(ProjectionCoverage):
     def _identity(self, row):
         original = super()._identity(row)
         worker = self.worker_identity
-        return replace(original, worker_id=worker['worker_start_identity'], scope_kind='INITIALIZED_WORKER',
+        process_start = worker.get('process_start_identity')
+        require(worker['pid'] == os.getpid() == original.process_id and isinstance(process_start, str)
+            and bool(process_start), 'OUTPUT39_GROUP_HELD_PROCESS_LIFETIME_CHANGED')
+        if not self.core.binding.simulation:
+            require(process_start.startswith('proc:') and process_start == identities._process_start(os.getpid()),
+                    'OUTPUT39_GROUP_ACTUAL_PROCESS_LIFETIME_UNPROVEN')
+        return replace(original, process_start_identity=process_start,
+            worker_id=worker['worker_start_identity'], scope_kind='INITIALIZED_WORKER',
             rank=worker['rank'], logical_device=None if self.core.binding.simulation else worker['logical_device'],
             device_type='cpu' if self.core.binding.simulation else 'npu',
             model_instance_id=worker['model_instance_id'], provider_identity='39.output_proxy:worker-core-group-v1')

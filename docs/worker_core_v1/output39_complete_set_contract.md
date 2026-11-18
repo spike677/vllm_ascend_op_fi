@@ -125,3 +125,16 @@ after-release failure recovery. An earlier invocation included a nonexistent
 test module name (one loader error); the final run uses only existing modules.
 Local Torch is 2.10.0+cpu with explicit fixture registration pins, not actual
 Torch 2.9/PrivateUse1/NPU acceptance.
+
+## Actual Worker process lifetime
+
+Worker group target identities use the public Core identity's complete
+`process_start_identity`, alongside its Worker/model lifetime and current PID.
+For natural evidence, that identity must equal a fresh read of
+`proc:<boot_id>:<pid>:<start_ticks>` through the existing Core identity helper.
+Tick-only ModelLocal values, changed boot/process lifetimes and an unobserved
+Linux lifetime are refused. `identity.py` is included in the group's source
+fingerprint. The ModelLocal helper and the strict result auditor are unchanged.
+CPU contracts may use the public Core's explicit local identity without gaining
+natural Worker qualification. Earlier result originals are not rewritten or
+promoted by this producer correction.
