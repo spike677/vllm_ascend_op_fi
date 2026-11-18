@@ -9,8 +9,13 @@
 
 [公共 Worker Core V1](docs/worker_core_v1/README.md) 已统一 `FaultConfig`、真实 Worker 身份、
 模型结构发现、实际调用盘点、provider 生命周期和源码交付包。终端用户只填写故障编号及变体；
-部署适配器根据实际对象和调用选择位置。17 个清单入口中，13 个已有 RPC 工厂，4 个仍需接线；
+部署适配器根据实际对象和调用选择位置。17 个清单入口现均有 RPC 工厂；新增的28三变体及33
+目前接通实际调用观测与匹配正常路径阶段，真实故障执行仍受各自适配和正常版一致性门禁限制。
 工厂存在、模型自动发现与实际故障验收分别记录。
+[Worker Core V1.1 当前实现与实机检查点](experiments/worker_core_v11_20261118/README.md)：
+17的单投影Torch参数层、26 FIA累计注入的完整原件已独立复核；
+26逐目标独立回放、Batch共享尺度全部请求行、39输出全目标发现及33正常桥接仍在补齐。
+本检查点不声明17/17全部验收，也不继承E5或跨版本资格。
 [当前逐项矩阵](experiments/c2c3_closure_20261117/C2_C3_MATRIX.md) ·
 [本轮公共入口与新构建验证](experiments/c2c3_closure_20261117/CORE_PROVIDER_PROGRESS_20261118.md)。
 [后续单目标效果、原件复核与失败边界](experiments/c2c3_closure_20261117/WORKER_INCREMENT_20261118.md)：

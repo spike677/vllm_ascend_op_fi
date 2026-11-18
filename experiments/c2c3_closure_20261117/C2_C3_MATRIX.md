@@ -2,6 +2,16 @@ Current Native20 requalification and public Worker entry: [actual source46 accep
 
 # Reviewed checkpoint, not final 17/17 acceptance
 
+The [Worker Core V1.1 continuation](../worker_core_v11_20261118/README.md)
+records newer source77–81 evidence separately.17 now has an independently
+reconciled standard-Worker single-projection Torch-parameter run; Native padding
+and E5 remain unobserved.26 FIA's cumulative once/every-match originals reconcile,
+while29 separate isolated-target replays remain pending.Quant source79 proves
+8/135 request-row chains per healthy replay.39 output refuses incomplete discovery;
+33's new normal bridge refuses final Native argument geometry. These are scoped
+updates, not an increase to the six strictly accepted scopes below. All prior
+rows and failed attempts retain their original meaning.
+
 Root decisions after repaired Native39/Native20 and public Core22/Core41 audits: **C2 6/17, C3 6/17**.
 Fault18, MoE8 and the two separately repaired Native builds have bounded
 C2/C3 standard-Worker qualification. RoPE22 and KV41 add two C2 scopes.
