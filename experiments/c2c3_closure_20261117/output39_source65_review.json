@@ -1,0 +1,119 @@
+{
+  "schema": "demoncat.output39.public_core.independent_review.v1",
+  "read_only": true,
+  "public_qualification_granted": false,
+  "c2": false,
+  "c3": false,
+  "e5": false,
+  "source_bound_c1_receipts_reconciled": false,
+  "artifacts": {
+    "consistent": true,
+    "checks": 31,
+    "failures": 0,
+    "issues": []
+  },
+  "serving_original": {
+    "path": "/home/17-fault-c2c3-20261117/worker-core39-output-source65-card2-a1/natural-output39-worker-core-c1/output39-runtime/0076c460ea42d2ed51bcfcd1077da4b3/serving_receipt.json",
+    "sha256": "f5d2b2a45f51eae9b1960afc6e845083d613d95fa4948828ad9bb9f34c5bac39",
+    "bytes": 214072
+  },
+  "original": {
+    "path": "/home/17-fault-c2c3-20261117/worker-core39-output-source65-card2-a1/natural-output39-worker-core-c1/probe/result.json",
+    "sha256": "7494961e4996e3a4ffe6772de1883ed95b1eb33d0b99a86c851ad53dabf9a60a",
+    "bytes": 87403
+  },
+  "provenance": {
+    "consistent": true,
+    "checks": 42,
+    "failures": 0,
+    "issues": [],
+    "source_files_rehashed": 20,
+    "native_dso_rehashed": true,
+    "build_fingerprint_receipt_rehashed": false,
+    "external_model_weights_and_sources_rehashed": false
+  },
+  "evidence": {
+    "consistent": true,
+    "checks": 168,
+    "failures": 0,
+    "issues": [],
+    "sections": {
+      "rpc": {
+        "consistent": true,
+        "checks": 104,
+        "failures": 0,
+        "issues": []
+      },
+      "actual_observations": {
+        "consistent": true,
+        "checks": 59,
+        "failures": 0,
+        "issues": []
+      },
+      "cleanup": {
+        "consistent": true,
+        "checks": 5,
+        "failures": 0,
+        "issues": []
+      }
+    },
+    "details": {
+      "cleanup": {
+        "post_unregister_health_observed": false,
+        "process_global_native_owner_table_observed": false
+      },
+      "observations": {
+        "completed_requests": 1,
+        "partial_failures": [
+          {
+            "phase": "observe_repeat",
+            "projection_calls": 0,
+            "eligible": 0,
+            "operator_counts": {
+              "_C_ascend.npu_add_rms_norm_bias.default": 56,
+              "aten.alias.default": 1,
+              "aten.embedding.default": 1,
+              "aten.empty.memory_format": 28,
+              "aten.split_with_sizes.default": 28,
+              "aten.to.dtype": 1,
+              "aten.view.default": 252,
+              "npu.npu_rms_norm.default": 57,
+              "npu.npu_swiglu.default": 28,
+              "vllm.maybe_chunk_residual.default": 56,
+              "vllm.maybe_pad_and_reduce.default": 1,
+              "vllm.npu_rotary_embedding.default": 28,
+              "vllm.unified_attention_with_output.default": 28,
+              "vllm.unquantized_gemm.default": 113
+            },
+            "error": "NO_STABLE_ORIGINAL_WRITER_CONSUMER_REPLAY:NO_ELIGIBLE_WRITER_WITH_OBSERVED_VALUE_CONSUMER"
+          }
+        ],
+        "per_completed_projection_counts": [
+          0
+        ],
+        "per_completed_eligible_counts": [
+          0
+        ],
+        "recorded_first_failure": "NO_STABLE_ORIGINAL_WRITER_CONSUMER_REPLAY:NO_ELIGIBLE_WRITER_WITH_OBSERVED_VALUE_CONSUMER"
+      }
+    },
+    "source_bound_c1_receipts_reconciled": false,
+    "cleanup_reconciled": true,
+    "classification": "NO_ELIGIBLE_OBSERVED_PAIR",
+    "original_driver_error": "PostwriteRefused('NO_STABLE_ORIGINAL_WRITER_CONSUMER_REPLAY:NO_ELIGIBLE_WRITER_WITH_OBSERVED_VALUE_CONSUMER')",
+    "original_recovery_error": null,
+    "public_qualification_granted": false,
+    "c2": false,
+    "c3": false,
+    "e5": false,
+    "limits": [
+      "Complete logits hashes, literal producer/consumer metadata and Native readback/recovery are saved source-bound receipts, not newly observed device execution.",
+      "Complete hidden+logits lossless/OFF equality is a frozen runtime gate; full hidden hashes and raw tensor bins are absent and are not independently rehashed.",
+      "The denominator contains every observed supported projection and all operator counts; opaque custom GEMM entries remain unqualified.",
+      "The seventh ordinary request proves same Worker tokens/text only; no post-unregister full tensor is captured.",
+      "No process-global Native owner table, MODEL_LOCAL inheritance, matmul_range, C2/C3, E5 or portable device qualification is granted."
+    ]
+  },
+  "review_consistent": true,
+  "status": "NO_ELIGIBLE_OBSERVED_PAIR"
+}

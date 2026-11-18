@@ -50,6 +50,14 @@ keeps its MODEL_LOCAL evidence separate and leaves all three 28 variants plus
 33 pending. Only real standard enqueue requests can advance its single-target
 discovery/lossless/F/OFF/health sequence; C2/C3/E5 are not provided by that route.
 
+The [natural tensor/MoE contract](tensor_group_host_contract.md) now routes 8/18
+through actual enqueued requests. RPC actions arm or collect the existing group
+session; they do not invoke a replay forward. This new public entrance requires
+its own source-bound review and does not inherit the old natural-group result.
+The other legacy tensor factories still require trusted synchronous replay.
+Thirteen callable factories must not be described as thirteen naturally
+scheduled, verified public Worker routes.
+
 An ordinary census cannot observe all internal kernels. Native or fused edges
 without a matched observer remain `NOT_VISIBLE`/unverified. A failed request
 mapping is a failed observation; if its owned hooks/mode are demonstrably gone,

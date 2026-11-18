@@ -5,10 +5,12 @@ Frozen source: `91decf5efe48dfdf8c5494e52d258ccde788cc5d` (implementation
 the previous engineering reports and all original 124 evidence remain intact.
 
 The frozen starting point was **C2 0/17, C3 0/17**. The current strict result is
-**C2 6/17, C3 4/17**, for bounded Fault18, MoE8, repaired Native39 and repaired
-Native20 standard-Worker C2/C3 scopes, plus newly reviewed C2 for RoPE22 and KV41.
-[Their C3 execution and recovery](WORKER_RECOVERY_REVIEW_20261118.md) pass;
-original live-proof receipts are incomplete and do not increase strict C3. Old builds with unreleased SDK metadata remain
+**C2 6/17, C3 6/17**, for bounded Fault18, MoE8, repaired Native39 and repaired
+Native20 standard-Worker scopes, plus public Core22 and Core41. The later
+source50/source60 original-file reviews reconcile their original live C2 proof,
+C3 calls and recovery; see the [current incremental evidence](WORKER_INCREMENT_20261118.md).
+The older [C3 proof limitation](WORKER_RECOVERY_REVIEW_20261118.md) remains part of
+those earlier runs and is not retroactively repaired. Old builds with unreleased SDK metadata remain
 withdrawn; their numerical receipts are preserved without requalification.
 [Native39 fresh acceptance](NATIVE39_REQUALIFICATION_20261118.md) and
 [Worker Core V1 / Native20 fresh acceptance](WORKER_CORE_V1_ACCEPTANCE_20261118.md)

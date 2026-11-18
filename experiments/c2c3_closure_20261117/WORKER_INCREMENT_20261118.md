@@ -1,10 +1,70 @@
-# Worker Core: source51–65 incremental evidence
+# Worker Core: source51–66 incremental evidence
 
 This report preserves the six accepted C2 and now six accepted C3 scopes. It does
 not qualify all17 routes or another CANN/hardware version. Root owns the single
 card2 queue on124; three specialists work on CPU/code only. Temporary Workers
 are created by normal serving startup. Source snapshots are immutable and all
 new raw statistics, tensors and Native binaries remain on124.
+
+## Quant source64: public Core single-site effects and recovery reconciled
+
+Source64 `46cd8ad153ad07ce1057cfcbac73d7d9fb76e226`, installed packages33 and
+Native ND-flat build `b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac`
+completed the seven real B8 first-decode phases on the DeepSeek-V2-Lite-W8A8
+standard Worker: two discovery controls, Reference, Lossless, qualification-OFF,
+one F and OFF. All135 model projections per decode remain in the inventory:
+945 parents and946 native prepare/execute pairs, including the one batch-flat
+helper. The actual Native ND flat-storage metadata and both actual MLA prefix
+slices are joined without replacing Native geometry with public fields.
+
+Automatic selection chooses the first completely proven projection,
+`model.layers.0.self_attn.kv_a_proj_with_mqa`. Its current8×2048 input stays
+unchanged; F performs the shared-scale helper over1×16384 and publishes71 changed
+Q bytes and3 changed scale bytes to the original consumer. Exactly one F is
+admitted. F changes complete hidden/logits hashes; OFF and all healthy controls
+restore them exactly. All eight requests keep the same two generated tokens
+through all phases. No changed text, long-generation or business-accuracy
+claim follows from the numeric propagation.
+
+The [independent original-file summary](quant_source64_review.json) reconciles
+five original artifact hashes,61 provenance conditions,163 public-Core conditions
+and68712 runtime-evidence conditions. Its SHA256 is
+`5f319d5840a573ac1134c0a29bc7c38e928a5ad7ec0446fa0e52d0c5c5abdbea`.
+Original result SHA256:
+`261acddcb5cbbb34b879e5abbc27c1795ada5a0153fa77aa4bf505abe8a93d9f`.
+The first review failed because its input-hash reimplementation omitted the
+original dtype/shape header; that report remains on124. The corrected reviewer
+matches the frozen collector encoding and tests actual metadata mutations.
+Neither run modifies the evidence. Full tensor arrays and external weights/SDK
+bytes were not independently saved/rehashed by this reviewer.
+
+Owned Native/Python hooks, methods, profiles, leases and deployment are removed;
+same-Worker ordinary health and the controller's final idle gate pass. The
+published F output is consumed before its lease expires; OFF is a new healthy
+request, not a late write into expired output storage. Only two calls per
+decode have complete request-row lineage;133 unresolved sites remain visible.
+This is **source-bound single-site C1**, not all135-site C2/C3 or E5. Earlier
+source61 observation failures and the source63 SDK passthrough regression remain
+in the record. The repaired passthrough authenticates the complete unselected
+call while keeping selected-call admission strict.
+
+## Public output39 source65: correctly refused before injection
+
+The new WorkerFaultClient/FaultConfig entrance completed one healthy request
+and retained a partial second observation, then refused
+`NO_STABLE_ORIGINAL_WRITER_CONSUMER_REPLAY:NO_ELIGIBLE_WRITER_WITH_OBSERVED_VALUE_CONSUMER`.
+Its actual census contains113 `vllm.unquantized_gemm.default` calls, which the
+old ATen-only projection adapter does not accept. The custom call is not renamed
+as ATen MatMul. No target was selected and no fault was injected.
+
+The [independent review](output39_source65_review.json), SHA256
+`5f173c68ab9fdfc809c8ff02ceed3d04ddb351e887df48b5a418fd98d16c952e`,
+reconciles the original refusal, source/build identity and owned cleanup. Result
+SHA256 `7494961e4996e3a4ffe6772de1883ed95b1eb33d0b99a86c851ad53dabf9a60a`.
+The partial second request is not counted as complete; cleanup does not grant
+C1. Source65 remains immutable while a new adapter is reviewed against the
+actual custom-op registration, source fingerprints and read-only consumers.
+The earlier140-target HF MODEL_LOCAL evidence below is a different entrance.
 
 ## 41.tail_column: public Core and original live proof independently reconciled
 
