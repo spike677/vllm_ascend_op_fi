@@ -12,7 +12,10 @@ from unittest.mock import Mock, patch
 from fault_injection import quant_gmm2_native as native
 from experiments.worker_core_v11_20261118 import probe_quant_gmm2 as probe
 from experiments.worker_core_v11_20261118.prepare_quant_gmm2_case import adapt
-from test_quant_gmm2_native import fixture
+if __package__:
+    from .test_quant_gmm2_native import fixture
+else:
+    from test_quant_gmm2_native import fixture
 
 
 class TraceDouble:
