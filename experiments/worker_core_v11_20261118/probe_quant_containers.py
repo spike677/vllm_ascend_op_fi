@@ -27,7 +27,7 @@ def rpc(llm, function, *args):
     return rows[0]
 
 
-def setup(worker, prompts, quant_sha, trace_sha):
+def setup(worker, prompts, quant_sha, trace_sha, *, trace=None):
     from fault_injection import quant_container_native, metadata_arrays
     from demoncat.runtime.vllm_ascend.worker_extension import serving_shared_scale_group_inventory as serving
     from demoncat.runtime.vllm_ascend.worker_extension import quant_source_rows, quant_container_scopes
@@ -49,7 +49,10 @@ def setup(worker, prompts, quant_sha, trace_sha):
     worker = actual(worker)
     if hasattr(worker, '_demoncat_container_trace'):
         raise RuntimeError('EXCLUSIVE_CONTAINER_DIAGNOSTIC_REQUIRED')
-    trace = quant_container_native.NativeContainers('/container-trace', trace_sha)
+    if trace is None:
+        trace = quant_container_native.NativeContainers('/container-trace', trace_sha)
+    elif trace.manifest_sha256 != trace_sha:
+        raise RuntimeError('HELD_STARTUP_TRACE_BUILD_CHANGED')
     worker._demoncat_container_trace = trace
     try:
         result = serving.install_shared_scale_group_inventory(worker, prompts=prompts, root='/quant',
