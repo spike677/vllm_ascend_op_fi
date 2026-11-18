@@ -126,8 +126,7 @@ class MoERestoreTrace(NaturalMoETrace):
                     event['actual_producer_join'] = native['producer_proof']
                     event['observed_original_native_calls'] = native['original_calls']
                 return result
-        mode = Observe(); mode.__enter__()
-        return mode
+        return self._enter_native_mode(Observe())
 
     def report(self):
         result = super().report()

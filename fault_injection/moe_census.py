@@ -64,6 +64,9 @@ class NaturalMoETrace:
         self.thread = None; self.callback = self._profile
         self.request_id = None
         self.rows, self.native_rows, self.errors, self.pending = [], [], [], {}
+        # A Python frame returning does not prove that its dispatch mode left
+        # the real stack. Keep ownership separate from frame bookkeeping.
+        self.owned_modes, self.returned_frames = [], set()
         self.active = False
 
     @classmethod
@@ -125,8 +128,43 @@ class NaturalMoETrace:
                 native.update(output=[metadata(value) for value in tensors(result)],
                               original_calls=1, original_returned=True)
                 return result
-        mode = Observe(); mode.__enter__()
+        return self._enter_native_mode(Observe())
+
+    def _enter_native_mode(self, mode):
+        from torch.utils._python_dispatch import _get_current_dispatch_mode_stack
+        self.owned_modes.append(mode)
+        try:
+            mode.__enter__()
+        except BaseException:
+            if not any(item is mode for item in _get_current_dispatch_mode_stack()):
+                self.owned_modes.remove(mode)
+            raise
         return mode
+
+    def _retire_returned_frames(self):
+        for frame_id in tuple(self.returned_frames):
+            item = self.pending.get(frame_id)
+            if item is None or item[1] is None or not any(mode is item[1] for mode in self.owned_modes):
+                self.pending.pop(frame_id, None)
+                self.returned_frames.remove(frame_id)
+
+    def _close_native_mode(self, mode):
+        from torch.utils._python_dispatch import _get_current_dispatch_mode_stack
+        if threading.get_ident() != self.thread:
+            raise RuntimeError('MOE_NATIVE_MODE_OWNER_THREAD_CHANGED')
+        stack = _get_current_dispatch_mode_stack()
+        if not self.owned_modes or not any(item is mode for item in self.owned_modes) or not stack or stack[-1] is not mode:
+            raise RuntimeError('MOE_CENSUS_NATIVE_MODE_OWNERSHIP_CHANGED')
+        try:
+            mode.__exit__(None, None, None)
+        finally:
+            # Exit can throw before or after the actual pop. Only the latter
+            # retires this handle; the original exception still propagates.
+            if not any(item is mode for item in _get_current_dispatch_mode_stack()):
+                self.owned_modes.remove(mode)
+                self._retire_returned_frames()
+        if any(item is mode for item in self.owned_modes):
+            raise RuntimeError('MOE_CENSUS_NATIVE_MODE_REMOVAL_UNCONFIRMED')
 
     def _profile(self, frame, event, result):
         if event not in ('call', 'return') or frame.f_code not in self.bindings:
@@ -145,14 +183,16 @@ class NaturalMoETrace:
                         if key in _FIELDS or key in ('token_dispatch_input', 'fused_experts_input',
                                                    'mlp_compute_input')}, returned=False)
                 self.rows.append(row)
-                self.pending[id(frame)] = (row, self._open_native(row) if role == 'native_combine' else None)
+                self.pending[id(frame)] = (row, None)
+                if role == 'native_combine':
+                    self.pending[id(frame)] = (row, self._open_native(row))
             elif id(frame) in self.pending:
-                row, mode = self.pending.pop(id(frame))
+                frame_id = id(frame)
+                row, mode = self.pending[frame_id]
+                self.returned_frames.add(frame_id)
                 if mode is not None:
-                    from torch.utils._python_dispatch import _get_current_dispatch_mode
-                    if _get_current_dispatch_mode() is not mode:
-                        raise RuntimeError('MOE_CENSUS_NATIVE_MODE_OWNERSHIP_CHANGED')
-                    mode.__exit__(None, None, None)
+                    self._close_native_mode(mode)
+                self._retire_returned_frames()
                 row.update(output=describe(result), returned=result is not None)
         except BaseException as exc:
             # A profile callback must not alter model control flow. An error is
@@ -160,30 +200,41 @@ class NaturalMoETrace:
             self.errors.append(repr(exc))
 
     def __enter__(self):
-        if self.active or sys.getprofile() is not None:
+        if self.active or self.owned_modes or self.pending or sys.getprofile() is not None:
             raise RuntimeError('FOREIGN_PYTHON_PROFILE_OWNER_OR_ACTIVE_MOE_TRACE')
         self.thread = threading.get_ident(); self.active = True
         sys.setprofile(self.callback)
         return self
 
     def close(self):
-        if not self.active:
+        if not self.active and not self.owned_modes and not self.pending:
             return
-        if threading.get_ident() != self.thread or sys.getprofile() is not self.callback:
+        if threading.get_ident() != self.thread or sys.getprofile() is not (self.callback if self.active else None):
             raise RuntimeError('MOE_PROFILE_OWNERSHIP_CHANGED')
-        if self.pending:
+        if set(self.pending) - self.returned_frames:
             raise RuntimeError('MOE_PYTHON_BOUNDARY_STILL_INFLIGHT')
-        sys.setprofile(None); self.active = False
+        for mode in reversed(self.owned_modes[:]):
+            self._close_native_mode(mode)
+        self._retire_returned_frames()
+        if self.pending or self.owned_modes:
+            raise RuntimeError('MOE_NATIVE_MODE_CLEANUP_PENDING')
+        try:
+            sys.setprofile(None)
+        finally:
+            if sys.getprofile() is None:
+                self.active = False
 
     def report(self):
         unpermute = [row for row in self.native_rows
             if row['schema'].startswith('npu::npu_moe_token_unpermute(')]
         by_request = Counter(row['request_id'] for row in unpermute)
-        complete = (not self.active and not self.pending and not self.errors
+        complete = (not self.active and not self.pending and not self.owned_modes and not self.errors
             and all(row['returned'] for row in self.rows)
             and all(row.get('original_returned') and row['original_calls'] == 1 for row in self.native_rows))
         return dict(simulation=self.simulation, complete=complete,
             sources=self.sources, python_boundaries=self.rows, native_operators=self.native_rows,
+            owned_native_modes=len(self.owned_modes), pending_python_boundaries=len(self.pending),
+            profile_active=self.active,
             observed_unpermute_calls=len(unpermute), observed_unpermute_per_request=dict(by_request),
             role_counts=dict(Counter(row['role'] for row in self.rows)), errors=self.errors,
             mutations=0, model_methods_replaced=False, operator_reexecution=False,
