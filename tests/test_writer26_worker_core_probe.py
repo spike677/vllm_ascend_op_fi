@@ -127,7 +127,7 @@ class Core26ProbeTests(unittest.TestCase):
 
 
 class Core26CaseTests(unittest.TestCase):
-    def test_new_case_selects_public_entry_preserves_typed_profile_denominator_and_logs(self):
+    def prepare_case(self, stage, budget):
         from test_writer26_group_build import build
         from test_writer26_fia_typed import ABI
         with tempfile.TemporaryDirectory() as folder:
@@ -145,8 +145,8 @@ class Core26CaseTests(unittest.TestCase):
             output = folder/'cases.json'
             argv = ['cases','--installed','/installed','--native','/native','--probe',
                 '/source/experiments/c2c3_closure_20261117/providers26_worker_core_probe.py',
-                '--source-commit','37bbeb4f','--source','/source','--worker-core','--max-targets','1',
-                '--stages','c1_single_effects','--mechanisms','26.fia_destination','--out',str(output)]
+                '--source-commit','37bbeb4f','--source','/source','--worker-core','--max-targets',str(budget),
+                '--stages',stage,'--mechanisms','26.fia_destination','--out',str(output)]
             def path(value):
                 text = str(value)
                 return native if text == '/native' else source if text == '/source' else (
@@ -154,17 +154,33 @@ class Core26CaseTests(unittest.TestCase):
             with patch.object(sys, 'argv', argv), patch.object(cases, 'Path', side_effect=path):
                 cases.main()
             row, = json.loads(output.read_text())
-            self.assertIn('providers26_worker_core_probe.py', row['command'])
-            self.assertIn('worker-core26.stderr.log', row['command'])
-            self.assertIn('--source-root /source', row['command'])
-            self.assertIn('WorkerFaultClient', row['review']['public_entry'])
-            self.assertFalse(row['review']['previous_direct_entry_qualification_inherited'])
-            self.assertEqual(row['review']['resource_budget']['planned_single_site_targets'], 1)
-            self.assertEqual(row['review']['resource_budget']['independent_events'], 32768)
-            self.assertFalse(row['review']['resource_budget']['max_targets_selects_subset'])
-            self.assertIn('Two complete unmodified', row['review']['fia_stock_gate'])
-            self.assertIn('smollm2', row['review']['model'])
-            self.assertIn(['/source','/source','ro'], row['mounts'])
+            return row
+
+    def test_new_case_selects_public_entry_preserves_typed_profile_denominator_and_logs(self):
+        row = self.prepare_case('c1_single_effects', 1)
+        self.assertIn('providers26_worker_core_probe.py', row['command'])
+        self.assertIn('worker-core26.stderr.log', row['command'])
+        self.assertIn('--source-root /source', row['command'])
+        self.assertIn('WorkerFaultClient', row['review']['public_entry'])
+        self.assertFalse(row['review']['previous_direct_entry_qualification_inherited'])
+        self.assertEqual(row['review']['resource_budget']['planned_single_site_targets'], 1)
+        self.assertEqual(row['review']['resource_budget']['independent_events'], 32768)
+        self.assertFalse(row['review']['resource_budget']['max_targets_selects_subset'])
+        self.assertIn('Two complete unmodified', row['review']['fia_stock_gate'])
+        self.assertIn('smollm2', row['review']['model'])
+        self.assertIn(['/source','/source','ro'], row['mounts'])
+
+    def test_complete_set_case_uses_public_entry_full_budget_and_no_c3_or_subset(self):
+        row = self.prepare_case('c2_once', 128)
+        self.assertIn('--stage c2_once --max-targets 128', row['command'])
+        self.assertIn('public Core all_eligible once C2 attempt; not C3', row['review']['provider'])
+        self.assertEqual(row['review']['execution_scope'], 'same-request cumulative all stable eligible targets')
+        self.assertIsNone(row['review']['resource_budget']['planned_single_site_targets'])
+        self.assertEqual(row['review']['resource_budget']['independent_events'], 32768)
+        self.assertFalse(row['review']['resource_budget']['max_targets_selects_subset'])
+        self.assertIn('blocks the whole group; no subset', row['review']['c2_dynamic_eligibility'])
+        self.assertIn('C3 not requested', row['review']['expected_hits'])
+        self.assertIn('Two complete unmodified', row['review']['fia_stock_gate'])
 
 
 if __name__ == '__main__':

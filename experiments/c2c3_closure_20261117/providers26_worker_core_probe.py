@@ -1,4 +1,4 @@
-"""New-source public WorkerFaultClient C1; forwards are ordinary enqueues."""
+"""Source-bound public WorkerFaultClient C1/C2; ordinary enqueues own forwards."""
 import argparse
 import importlib
 import json
@@ -19,12 +19,19 @@ from demoncat.runtime.vllm_ascend.worker_extension.serving_context import read_e
 PHASES = ('inventory_1', 'inventory_2', 'single_site_reference', 'single_site_lossless',
           'single_site_qualification_off', 'single_site_fault', 'single_site_recovery_off', 'health')
 SUCCESS = 'STANDARD_WORKER_NATIVE26_SINGLE_SITE_C1_EVIDENCE_READY_FOR_REVIEW_NOT_C2'
+C2_PHASES = ('inventory_1', 'inventory_2', 'qualification_reference_all', 'qualification_lossless_all',
+             'qualification_off_all', 'group_fault', 'group_off', 'health')
+C2_SUCCESS = 'STANDARD_WORKER_NATIVE26_COMPLETE_SET_C2_EVIDENCE_READY_FOR_REVIEW'
+C2_BLOCKED = 'STANDARD_WORKER_NATIVE26_COMPLETE_SET_C2_QUALIFICATION_BLOCKED'
+C2_CPU_CONTRACT = 'CPU_CORE26_COMPLETE_SET_CONTRACT_COMPLETE_NO_QUALIFICATION'
 STATISTICS_REFUSAL = 'CORE26_STATISTICS_BOUNDARY_UNADAPTED: complete diagnostic byte/hash reads are not model statistics'
 MODULES = tuple(('fault_injection.deployments.'+name, 'fault_injection/deployments/'+name+'.py') for name in
-    ('writer26_loader', 'writer26_group', 'writer26_inventory', 'writer26_experiment', 'writer26_public',
+    ('writer26_loader', 'writer26_group', 'writer26_inventory', 'writer26_experiment', 'writer26_coverage', 'writer26_public',
      'writer26_fia_typed', 'residual26')) + (
     ('fault_injection.metadata_arrays', 'fault_injection/metadata_arrays.py'),
-    ('fault_injection.providers', 'fault_injection/providers.py')) + tuple(
+    ('fault_injection.providers', 'fault_injection/providers.py'),
+    ('fault_injection.coverage', 'fault_injection/coverage.py'),
+    ('fault_injection.coverage_session', 'fault_injection/coverage_session.py')) + tuple(
     ('demoncat.runtime.vllm_ascend.worker_extension.'+name,
      'src/demoncat/runtime/vllm_ascend/worker_extension/'+name.replace('.', '/')+'.py') for name in
     ('serving26_core', 'providers.fault26_core', 'providers.fault26', 'providers._scope', 'serving26_group',
@@ -70,7 +77,8 @@ class RecordingExecutor:
             self.receipts.append(dict(method=name, path=path.name, sha256=file_sha(path)))
 
 
-def setup(worker, expected_identity, mechanism, tokens, manifest_sha256, sources):
+def setup(worker, expected_identity, mechanism, tokens, manifest_sha256, sources,
+          stage='c1_single_effects', max_targets=1):
     worker = actual(worker)
     current = worker.demoncat_worker_identity()
     if current.get('worker') != expected_identity or current.get('quarantined') is not False:
@@ -84,7 +92,8 @@ def setup(worker, expected_identity, mechanism, tokens, manifest_sha256, sources
         loaded[relative] = dict(path=str(path), sha256=sha)
     from demoncat.runtime.vllm_ascend.worker_extension.serving26_core import install_writer26_core_binding
     bound = install_writer26_core_binding(worker, mechanism=mechanism, prompt_token_ids=tokens,
-        evidence_dir='/evidence/worker-core26-runtime', manifest_sha256=manifest_sha256)
+        evidence_dir='/evidence/worker-core26-runtime', manifest_sha256=manifest_sha256,
+        stage=stage, max_targets=max_targets)
     return dict(worker=expected_identity, binding=bound, loaded_sources=loaded,
                 model_source=model_source_identity(worker.model_runner.model))
 
@@ -99,6 +108,10 @@ def remove(worker, expected_identity, mechanism):
 
 def drive(llm, client, *, executor, prompt, params, out, report):
     seen, pending, last = [], [], None
+    complete_set = report.get('stage') == 'c2_once'
+    phases = list(C2_PHASES if complete_set else PHASES)
+    blocked = False
+    simulation = False
     def save():
         report['rpc_receipts'] = list(executor.receipts)
         write_json(out/'result.json', report)
@@ -130,11 +143,13 @@ def drive(llm, client, *, executor, prompt, params, out, report):
         try:
             for name in ('prepare', 'register', 'check', 'enable'):
                 action(name)
-            for index, phase in enumerate(PHASES):
+            index = 0
+            while index < len(phases):
+                phase = phases[index]
                 mapping = enqueue()
                 state = action('advance', pending[0])
                 if state['evidence']['phase'] != phase:
-                    raise RuntimeError('EXISTING_SINGLE_SITE_PHASE_CHANGED')
+                    raise RuntimeError('EXISTING_WRITER_PLAN_PHASE_CHANGED')
                 row = dict(phase=phase, mapping=mapping)
                 report['requests'].append(row)
                 save()
@@ -153,14 +168,35 @@ def drive(llm, client, *, executor, prompt, params, out, report):
                     raise RuntimeError('EXPLICIT_ORIGINAL_COLLECTION_UNCONFIRMED')
                 row['original_observations'] = originals['originals'][-1]
                 pending = []
+                if complete_set and index == 1 and state['evidence']['blockers']:
+                    # Keep the entire failed census. Run only its already
+                    # planned Native-release health; never pick a subset.
+                    blocked = True
+                    phases = phases[:2]+['health']
+                    report['complete_set_blockers'] = state['evidence']['blockers']
+                index += 1
                 save()
-            state = action('finish')
+            if not blocked:
+                state = action('finish')
             evidence = state['evidence']
-            if (not evidence['single_site_c1']['evidence_complete'] or evidence['c2'] or evidence['c3']
-                    or state['native_registered'] or state['leases'] or state['inflight']
+            if complete_set:
+                coverage = evidence.get('coverage')
+                simulation = evidence['public_core']['simulation']
+                qualified = (evidence.get('evidence_kind') == 'cpu_contract' and evidence['c2'] is False) \
+                    if simulation else evidence['c2'] is True
+                if not blocked and (not coverage or not coverage['contract_satisfied'] or not qualified
+                        or evidence['c3'] or len(coverage['live_c2_proof']['issued']) != 1
+                        or coverage['live_c2_proof']['consumed'] is not None):
+                    raise RuntimeError('COMPLETE_SET_C2_OR_ORIGINAL_PROOF_UNPROVEN')
+                report['c2_attempt'] = evidence
+                report['c2'] = bool(not blocked and evidence['c2'])
+            else:
+                if not evidence['single_site_c1']['evidence_complete'] or evidence['c2'] or evidence['c3']:
+                    raise RuntimeError('SINGLE_SITE_EFFECT_OFF_HEALTH_UNPROVEN')
+                report['c1'] = evidence
+            if not blocked and (state['native_registered'] or state['leases'] or state['inflight']
                     or state['serving']['owned_hooks'] or evidence['owned_hooks']):
-                raise RuntimeError('SINGLE_SITE_EFFECT_OFF_HEALTH_AND_ZERO_RESOURCES_UNPROVEN')
-            report['c1'] = evidence
+                raise RuntimeError('WRITER_ALL_OWNED_RESOURCES_MUST_BE_ZERO')
             scope = last['worker']
             action('disable')
             action('unregister')
@@ -171,7 +207,8 @@ def drive(llm, client, *, executor, prompt, params, out, report):
             report['post_unregister_health'] = dict(mapping=mapping, output=healthy, worker=scope)
             pending = []
             action('detach', expected='DETACHED')
-            report['status'] = SUCCESS
+            report['status'] = (C2_BLOCKED if blocked else C2_CPU_CONTRACT if simulation else C2_SUCCESS) \
+                if complete_set else SUCCESS
         except BaseException as error:
             report.update(status='REFUSED_OR_FAILED', error=repr(error), traceback=traceback.format_exc())
             if pending:
@@ -203,20 +240,22 @@ def main(argv=None):
     parser.add_argument('--mechanism', choices=('26.residual_stomp', '26.fia_destination'), required=True)
     parser.add_argument('--manifest-sha256', required=True)
     parser.add_argument('--source-root', type=Path, required=True)
-    parser.add_argument('--stage', choices=('c1_single_effects',), default='c1_single_effects')
+    parser.add_argument('--stage', choices=('c1_single_effects', 'c2_once'), default='c1_single_effects')
     parser.add_argument('--max-targets', type=int, default=1)
     parser.add_argument('--memory', type=float, default=.55)
     parser.add_argument('--statistics', action='store_true')
     args = parser.parse_args(argv)
     if args.statistics:
         parser.error(STATISTICS_REFUSAL)
-    if args.max_targets != 1 or not .1 <= args.memory <= .8 or len(args.manifest_sha256) != 64 or any(
-            c not in '0123456789abcdef' for c in args.manifest_sha256):
-        parser.error('Reviewed manifest, bounded memory and exactly one single-site plan required')
+    if (not 1 <= args.max_targets <= 128 or args.stage == 'c1_single_effects' and args.max_targets != 1
+            or not .1 <= args.memory <= .8 or len(args.manifest_sha256) != 64 or any(
+            c not in '0123456789abcdef' for c in args.manifest_sha256)):
+        parser.error('Reviewed manifest, bounded memory and explicit complete-set target budget required')
     out = Path('/evidence/probe')
     out.mkdir(exist_ok=False)
     report = dict(schema='demoncat.writer26.worker_core_probe.v1', status='STARTING', mechanism=args.mechanism,
-        stage=args.stage, scope=single_site_scope(args.mechanism), c2=False, c3=False,
+        stage=args.stage, scope=('SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS_FIXED_FRESH_PREFILL'
+            if args.stage == 'c2_once' else single_site_scope(args.mechanism)), c2=False, c3=False,
         qualification_granted=False, previous_direct_entry_qualification_inherited=False,
         E5='UNADAPTED_COLLECTOR_BOUNDARY', manifest_sha256=args.manifest_sha256, requests=[])
     llm = recorder = client = None
@@ -252,7 +291,7 @@ def main(argv=None):
         recorder = RecordingExecutor(llm, out/'worker_core_rpc')
         def bind(worker, config):
             replies = recorder.collective_rpc(setup, timeout=300,
-                args=(worker, config.mechanism, tokens, args.manifest_sha256, sources))
+                args=(worker, config.mechanism, tokens, args.manifest_sha256, sources, args.stage, args.max_targets))
             if len(replies) != 1:
                 raise RuntimeError('ONE_ACTUAL_DEPLOYMENT_WORKER_REQUIRED')
             report['setup'] = replies[0]
@@ -272,7 +311,7 @@ def main(argv=None):
             report['metadata_startup_failure'] = error.evidence
     finally:
         write_json(out/'result.json', report)
-    return 0 if report['status'] == SUCCESS else 2
+    return 0 if report['status'] in (SUCCESS, C2_SUCCESS) else 2
 
 
 if __name__ == '__main__':

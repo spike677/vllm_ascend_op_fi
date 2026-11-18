@@ -6,7 +6,8 @@ import threading
 from ._scope import Scope, reject_unknown
 from .. import identity as identities
 from ..serving_context import require
-from ..serving26_core import (ATTRIBUTE, Writer26CoreBinding, CoreWriter26Experiment, Serving26CoreSession)
+from ..serving26_core import (ATTRIBUTE, COMPLETE_SET_STAGE, Writer26CoreBinding, CoreWriter26Experiment,
+                            CoreWriter26Coverage, Serving26CoreSession)
 
 
 class Fault26CoreProvider(Scope):
@@ -19,6 +20,8 @@ class Fault26CoreProvider(Scope):
         self.native = self.backend = self.session = None
         self.reserved = self.checked = self.attempted = False
         self.stopped = True
+        self.cleanup_requested = False
+        self.cleanup_failures = []
         self.native_scope = None
         self._context()
         self._native_state()
@@ -75,9 +78,13 @@ class Fault26CoreProvider(Scope):
             self.native_scope = (owner, generation, config.owner_hi, config.owner_lo, config.thread)
             self.native = native
             self._context()
-            self.backend = CoreWriter26Experiment(self.model, native, self.binding.reader,
+            complete = self.binding.stage == COMPLETE_SET_STAGE
+            backend = CoreWriter26Coverage if complete else CoreWriter26Experiment
+            settings = dict(trigger='once', evidence_kind='cpu_contract' if self.binding.simulation else 'natural_worker') \
+                if complete else dict(stage='c1_single_effects')
+            self.backend = backend(self.model, native, self.binding.reader,
                 guard=self._context, worker_identity=self.identity, folder=self.binding.folder/owner/'candidate-experiment',
-                stage='c1_single_effects', max_targets=1)
+                max_targets=self.binding.max_targets, **settings)
             self.session = Serving26CoreSession(self)
         elif action == 'check':
             require(self._registered and self.session is not None, 'WRITER26_CORE_REGISTER_REQUIRED')
@@ -98,10 +105,20 @@ class Fault26CoreProvider(Scope):
             if action == 'finish':
                 require(self.backend is not None and self.backend.recovered and not self.backend.failure
                     and self.backend.phase == 'complete', 'WRITER26_CORE_REAL_OFF_AND_HEALTH_REQUIRED')
-            if self.session is not None:
-                self.session.close()
-            elif self.backend is not None:
-                self.backend.close()
+                require(not isinstance(self.backend, CoreWriter26Coverage) or self.backend.coverage is not None
+                    and not self.backend.blockers, 'WRITER26_COMPLETE_CENSUS_AND_ALL_TARGET_QUALIFICATION_REQUIRED')
+            self.cleanup_requested = True
+            try:
+                if self.session is not None:
+                    self.session.close()
+                elif self.backend is not None:
+                    self.backend.close()
+            except BaseException as error:
+                self.cleanup_failures.append(dict(action=action, owner=owner, generation=generation,
+                    error_type=type(error).__name__, reason=str(error),
+                    group_recovery=deepcopy(self.backend.coverage.recovery_report())
+                        if isinstance(self.backend, CoreWriter26Coverage) and self.backend.coverage is not None else None))
+                raise
             self.stopped = True
             if action in ('clean', 'unregister'):
                 self._registered = False
@@ -119,7 +136,17 @@ class Fault26CoreProvider(Scope):
         core = raw['core']
         serving = self.session.readback() if self.session is not None else None
         evidence = self.backend.report() if self.backend is not None else None
+        recovery = self.backend.coverage.recovery_report() if isinstance(self.backend, CoreWriter26Coverage) \
+            and self.backend.coverage is not None else None
         if evidence is not None:
+            if evidence.get('coverage') is not None:
+                from fault_injection.deployments.writer26_inventory import digest
+                coverage = evidence['coverage']
+                full_sha = digest(coverage)
+                for name in ('calls', 'discovery', 'observation'):
+                    value = coverage.pop(name)
+                    coverage[name+'_original_sha256'] = digest(value)
+                coverage.update(compact_rpc_projection=True, original_report_sha256=full_sha)
             rows = evidence.pop('rows')
             candidates = evidence.pop('candidates')
             # The complete report (including unselected calls, aliases, typed
@@ -138,7 +165,8 @@ class Fault26CoreProvider(Scope):
             evidence.pop('metadata_arrays_latest')
             evidence['public_core'] = dict(worker_identity=deepcopy(self.identity), owner=owner, generation=generation,
                 native_owner=[self.native.config.owner_hi, self.native.config.owner_lo], native_generation=generation,
-                simulation=self.binding.simulation, qualification_granted=False, c2=False, c3=False,
+                simulation=self.binding.simulation, qualification_granted=False,
+                c2=evidence['c2'], c3=evidence['c3'], stage=self.binding.stage,
                 owner_kind='runtime_lease_native_namespace', query_read_only=True, legacy_qualification_inherited=False)
         failed = bool(self.backend is not None and self.backend.failure or core['error']
             or raw['foreign_calls'] or raw['rejected_calls'])
@@ -148,7 +176,10 @@ class Fault26CoreProvider(Scope):
             registered=self._registered, enabled=False, owner=owner, generation=generation,
             inflight=int(bool(self.session and (self.session.root_running or self.session.logits_running or self.backend.active)))
                 + core['executing'] + raw['callback_active'] + raw['completion_active'],
-            leases=core['pending'] + core['descriptor_pending'] + raw['descriptor'] + raw['prepared_fia'],
+            leases=core['pending'] + core['descriptor_pending'] + raw['descriptor'] + raw['prepared_fia']
+                + (len(recovery['held_leases']) if recovery and self.cleanup_requested else 0),
+            group_recovery=recovery, cleanup_failures=list(self.cleanup_failures),
             native=raw, binding_reserved=self.reserved, serving=serving, evidence=evidence,
             replay_pending=bool(self.attempted and not self.stopped), replay_failed=bool(failed and (not self.stopped or resources)),
-            recovery_validation_pending=bool(self.attempted and not self.stopped), query_read_only=True)
+            recovery_validation_pending=bool(self.attempted and not self.stopped or recovery and not recovery['complete']),
+            query_read_only=True)

@@ -1,4 +1,4 @@
-"""Trusted natural single-site deployment; the existing writer owns effects."""
+"""Trusted natural writer deployment; existing candidate/group code owns effects."""
 from dataclasses import dataclass, field
 import hashlib
 import json
@@ -7,12 +7,14 @@ from pathlib import Path
 import threading
 
 from fault_injection.deployments.writer26_experiment import Writer26Experiment, SINGLE_SITE_STAGE
+from fault_injection.deployments.writer26_coverage import Writer26Coverage
 from .serving26_group import Serving26GroupExperiment
 from .serving_context import require, require_serial_eager
 
 
 ATTRIBUTE = '_demoncat_writer26_core_bindings'
 MECHANISMS = ('26.residual_stomp', '26.fia_destination')
+COMPLETE_SET_STAGE = 'c2_once'
 
 
 @dataclass(frozen=True)
@@ -30,16 +32,21 @@ class Writer26CoreBinding:
     pid: int
     thread: int
     simulation: bool = False
+    stage: str = SINGLE_SITE_STAGE
+    max_targets: int = 1
     leases: set = field(default_factory=set, compare=False, repr=False)
 
 
 def install_writer26_core_binding(worker, *, mechanism, prompt_token_ids, evidence_dir,
-        manifest_sha256, bundle='/native', _simulation=False, _runtime_factory=None, _reader=None):
+        manifest_sha256, bundle='/native', stage=SINGLE_SITE_STAGE, max_targets=1,
+        _simulation=False, _runtime_factory=None, _reader=None):
     """Read an already loaded deployment, without hooks, Native owner or forward."""
     from fault_injection.deployments.writer26_group import NativeWriter26Group
     from fault_injection.deployments.writer26_inventory import NativeWriterInventory
     from fault_injection.providers import register_runtime
     require(mechanism in MECHANISMS, 'EXACT_SINGLE_SITE_WRITER_MECHANISM_REQUIRED')
+    require(stage in (SINGLE_SITE_STAGE, COMPLETE_SET_STAGE) and type(max_targets) is int
+        and 1 <= max_targets <= 128, 'BOUNDED_WRITER26_CORE_STAGE_REQUIRED')
     require(type(_simulation) is bool and (_simulation or _runtime_factory is _reader is None),
             'WRITER26_CORE_OVERRIDES_CPU_ONLY')
     require(not _simulation or callable(_runtime_factory) and _reader is not None, 'EXPLICIT_CPU_WRITER26_CORE_REQUIRED')
@@ -71,14 +78,14 @@ def install_writer26_core_binding(worker, *, mechanism, prompt_token_ids, eviden
         inspection.build['files']['libfault26_readonly_trace_abi0.so'])
     reader.state()
     binding = Writer26CoreBinding(worker, runner, model, mechanism, tuple(prompt_token_ids), folder,
-        manifest_sha256, factory, reader, inspection, os.getpid(), threading.get_ident(), _simulation)
+        manifest_sha256, factory, reader, inspection, os.getpid(), threading.get_ident(), _simulation, stage, max_targets)
     def resolve(actual_model):
         require(actual_model is model and runner.model is model, 'WRITER26_CORE_MODEL_CHANGED')
         return binding
     register_runtime(mechanism, resolve)
     worker._demoncat_writer26_core_factory = resolve
     setattr(worker, ATTRIBUTE, {mechanism: binding})
-    return dict(status='DEPLOYMENT_BOUND_NOT_ACCEPTED', mechanism=mechanism, stage=SINGLE_SITE_STAGE,
+    return dict(status='DEPLOYMENT_BOUND_NOT_ACCEPTED', mechanism=mechanism, stage=stage,
         hooks_installed=0, native_owner_installed=False, workers_created=0, qualification_granted=False, c2=False, c3=False)
 
 
@@ -180,6 +187,132 @@ class CoreWriter26Experiment(Writer26Experiment):
                 if hooks is not None and handle.id not in hooks:
                     self.handles.remove(handle)
                     self.hook_callbacks.pop(handle.id, None)
+
+
+class CoreWriter26Coverage(CoreWriter26Experiment, Writer26Coverage):
+    """The existing complete-set engine with the public Core's owner guards.
+
+    This is the same-request cumulative multi-target experiment. Unstable or
+    unresolved candidates block the entire group; max_targets is only a budget.
+    """
+    def __init__(self, *args, **kwargs):
+        from fault_injection.deployments.writer26_inventory import digest
+        super().__init__(*args, **kwargs)
+        self.complete_aliases = self._actual_aliases()
+        self.capacity_plan = None
+        self.finalized = False
+        self.implementation_sha = digest([self.implementation_sha,
+            hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name('providers').joinpath('fault26_core.py').read_bytes()).hexdigest()])
+
+    def begin(self, request_id, input_sha256):
+        require(not self.failure, 'FAILED_COMPLETE_GROUP_CANNOT_RETRY_OR_SELECT_ANOTHER_SET')
+        require(self._actual_aliases() == self.complete_aliases, 'COMPLETE_GROUP_ACTUAL_MODULE_ALIASES_CHANGED')
+        return super().begin(request_id, input_sha256)
+
+    def _classify_candidate(self, candidate):
+        from fault_injection.deployments.writer26_inventory import digest
+        status, reasons = super()._classify_candidate(candidate)
+        if status != 'UNVERIFIED':
+            return status, reasons
+        # Native thread-local producer metadata can predate this fresh root.
+        # Missing lineage alone is never an exclusion. Prove absence from the
+        # complete current request and the next actual producer's sequence.
+        allowed = {'ACTUAL_PUBLIC_PRODUCER_LIFETIME_UNPROVEN',
+            'CURRENT_PUBLIC_RESIDUAL_LIFETIME_UNPROVEN', 'NEXT_ACTUAL_NATIVE_CONSUMER_UNPROVEN',
+            'PUBLIC_CONSUMER_LIFETIME_NOT_PROVEN'}
+        if not reasons or not set(reasons).issubset(allowed):
+            return status, reasons
+        requests = [row for row in self.rows if any(item is candidate for item in row['candidates'])]
+        if len(requests) != 1:
+            return status, reasons
+        row, native, callback = requests[0], candidate['native'], candidate.get('callback')
+        events = row['native_events']
+        before, after = row['native_before'], row['native_after']
+        complete = (not before['overflow_events'] and not after['overflow_events']
+            and not before['errors'] and not after['errors']
+            and before['stored_events'] == before['total_events']
+            and after['stored_events'] == after['total_events']
+            and [item['sequence'] for item in events] == list(range(before['stored_events']+1, after['stored_events']+1))
+            and all(item['thread'] == self.native_thread for item in events))
+        earlier = [item for item in events if item['kind_name'].startswith('add_rms_')
+                   and item['sequence'] < native['sequence']]
+        later = [item for item in events if item['kind_name'] == 'add_rms_exit'
+                 and item['sequence'] > native['sequence']]
+        if (not complete or not callback or callback.get('actual_request_id') != row['request_id']
+                or callback.get('original_continuations') != 1 or callback.get('claimed') != 0
+                or earlier or not later or later[0]['status'] != 0
+                or later[0]['producer'] != native['producer']+1
+                or len(candidate['execution']) != 1 or candidate['execution'][0]['status'] != 0):
+            return status, reasons
+        candidate['current_forward_residual_absence'] = dict(
+            schema='demoncat.writer26.current_forward_residual_absence.v1',
+            request_id=row['request_id'], complete_native_events_sha256=digest(events),
+            native_before=before, native_after=after, writer_sequence=native['sequence'],
+            inherited_producer=native['producer'], next_actual_producer=later[0],
+            original_unresolved_reasons=reasons, earlier_current_forward_producer_count=0,
+            qualification_granted=False)
+        return 'UNSUPPORTED', ['CURRENT_FRESH_FORWARD_HAS_NO_RESIDUAL_PRODUCER']
+
+    def _freeze(self):
+        super()._freeze()
+        if self.blockers:
+            return
+        row = self.rows[1]
+        remaining = len(self.plan)-2
+        events = row['native_after']['total_events']-row['native_before']['total_events']
+        self.capacity_plan = dict(remaining_complete_requests=remaining, planned_target_count=len(self.targets),
+            full_native_writer_count=len(self.candidate_inventory), full_request_native_events=events,
+            estimated_native_events=events*remaining,
+            available_native_events=row['native_after']['capacity']-row['native_after']['stored_events'],
+            native_capacity=row['native_after']['capacity'], max_targets_is_selector=False)
+        if self.fia_typed is not None:
+            before, after = row['fia_typed_before'], row['fia_typed_after']
+            typed = after['stored']-before['stored']
+            owned = len(self.targets)*(remaining-1)
+            self.capacity_plan.update(full_request_typed_events=typed, additional_owned_execute_records=owned,
+                estimated_typed_events=typed*remaining+owned,
+                available_typed_events=after['capacity']-after['stored'], typed_capacity=after['capacity'])
+            if typed*remaining+owned > after['capacity']-after['stored']:
+                self.blockers.append('COMPLETE_GROUP_PLAN_EXCEEDS_TYPED_FIA_EVENT_CAPACITY')
+                self.plan = self.plan[:2]+[dict(phase='health', mode=None, target=None)]
+
+    def _requested_mode(self, row):
+        from fault_injection.deployments.writer26_experiment import _STABLE_NATIVE
+        key = row['target_key']
+        if key in self.targets and self.entry['mode'] is not None:
+            frozen = self.targets[key]['second_native']
+            require(self._actual_aliases() == self.complete_aliases
+                and all(row['independent_event'][name] == frozen[name] for name in _STABLE_NATIVE),
+                'COMPLETE_GROUP_CURRENT_OBJECT_OR_NATIVE_FORMAL_CHANGED')
+            row['complete_group_current_binding_verified'] = True
+        return super()._requested_mode(row)
+
+    def _request_complete(self, row):
+        from fault_injection.deployments.writer26_inventory import digest
+        require(self._actual_aliases() == self.complete_aliases, 'COMPLETE_GROUP_ACTUAL_MODULE_ALIASES_CHANGED')
+        for candidate in row['candidates']:
+            self._classify_candidate(candidate)
+        super()._request_complete(row)
+        row['complete_inventory'] = dict(native_writer_count=len(row['candidates']),
+            native_events_sha256=digest(row['native_events']), candidates_sha256=digest(row['candidates']),
+            actual_aliases_sha256=digest(self.complete_aliases))
+        if row['phase'] == 'health':
+            require(len(row['candidates']) == len(self.candidate_inventory),
+                    'HEALTH_MUST_KEEP_COMPLETE_NATIVE_WRITER_DENOMINATOR')
+
+    def finalize(self):
+        if not self.finalized:
+            super().finalize()
+            self.finalized = True
+
+    def report(self):
+        value = super().report()
+        value.update(alias_inventory=self.complete_aliases, event_capacity_plan=self.capacity_plan,
+            execution_scope='SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS',
+            independent_per_target_replay=False, finalized=self.finalized)
+        value['c2'] = bool(value['c2'] and self.finalized and self.proof is not None)
+        return value
 
 
 class Serving26CoreSession(Serving26GroupExperiment):
@@ -341,6 +474,12 @@ class Serving26CoreSession(Serving26GroupExperiment):
             require(handle.id not in hooks, 'WRITER26_ROOT_LOGITS_REMOVE_UNCONFIRMED')
         self.installed = False
         self.expected = self.current = None
+        if isinstance(self.backend, CoreWriter26Coverage):
+            if self.backend.phase == 'complete' and not self.backend.failure:
+                self.backend.finalize()
+            if self.backend.coverage is not None:
+                recovery = self.backend.coverage.recovery_report()
+                require(recovery['complete'], 'WRITER26_CORE_GROUP_RECOVERY_REQUIRED')
         self.backend.save()
         self._save()
         if self.last_evidence_state != self._evidence_state():

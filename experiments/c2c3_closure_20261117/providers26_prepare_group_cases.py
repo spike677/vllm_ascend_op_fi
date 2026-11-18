@@ -18,16 +18,19 @@ def main():
     parser.add_argument('--max-targets', type=int, default=8)
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--worker-core', action='store_true')
-    parser.add_argument('--source', help='Frozen source root for the new public Core C1 probe')
-    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage', 'c1_single_effects'), default=['inventory'])
+    parser.add_argument('--source', help='Frozen source root for the public Core C1/C2 probe')
+    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage', 'c1_single_effects', 'c2_once'), default=['inventory'])
     parser.add_argument('--mechanisms', nargs='+', choices=('26.residual_stomp', '26.fia_destination'),
                         default=None)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
-    if args.worker_core and (args.stages != ['c1_single_effects'] or args.max_targets != 1 or args.statistics
+    if 'c2_once' in args.stages and not args.worker_core:
+        parser.error('c2_once requires the explicit public --worker-core entry')
+    if args.worker_core and (args.stages not in (['c1_single_effects'], ['c2_once'])
+            or args.stages == ['c1_single_effects'] and args.max_targets != 1 or args.statistics
             or args.source is None or not args.source.startswith('/')
             or any(c in args.source for c in ('\n', '\r', '\0', ','))):
-        parser.error('Public Core needs --source, only c1_single_effects, max-targets=1, and no unadapted statistics')
+        parser.error('Public Core needs --source, one explicit C1/C2 stage and no unadapted statistics; C1 max-targets=1')
     if args.worker_core:
         source = Path(args.source).resolve(strict=True)
         expected_probe = source/'experiments/c2c3_closure_20261117/providers26_worker_core_probe.py'
@@ -53,7 +56,7 @@ def main():
         path = (root / name).resolve(strict=True)
         if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             raise RuntimeError('NATIVE_BUNDLE_CHANGED:' + name)
-    if 'c1_single_effects' in args.stages and '26.fia_destination' in args.mechanisms:
+    if any(stage in args.stages for stage in ('c1_single_effects', 'c2_once')) and '26.fia_destination' in args.mechanisms:
         from fault_injection.deployments.writer26_fia_typed import profile
         profile(build.get('fia_typed_profile'))
     cases = []
@@ -61,7 +64,7 @@ def main():
         fia = mechanism == '26.fia_destination'
         model = '/home/fault39-integration-20261116-a1/models-smollm2-135m' if fia else '/home/haoran/models/DeepSeek-V2-Lite-W8A8'
         for stage in args.stages:
-            coverage = stage == 'coverage'
+            coverage = stage in ('coverage', 'c2_once')
             single_site = stage == 'c1_single_effects'
             name = ('providers26-core-' if args.worker_core else 'providers26-v2-') + ('fia-smol-' if fia else 'qmm-deepseek-') + stage
             command = ('source /usr/local/Ascend/cann-8.5.1/set_env.sh\n'
@@ -88,13 +91,17 @@ def main():
                     FAULT26_TRACE_ENABLED='1', FAULT26_TRACE_ALL_APIS='1', FAULT26_TRACE_CAPTURE_TENSORS='1',
                     FAULT26_WRITER_TOPOLOGY_ENABLED='1', FAULT26_TRACE_MAX_EVENTS='100000',
                     FAULT26_TRACE_LOG_PATH='/evidence/trace.jsonl', DCAT26_GROUP_V2_ALLOWED='1'), command=command,
-                review=dict(experiment_id=name, provider=mechanism + (' v2 all_eligible once then live every_match' if coverage
+                review=dict(experiment_id=name, provider=mechanism + (' public Core all_eligible once C2 attempt; not C3'
+                    if stage == 'c2_once' else ' v2 all_eligible once then live every_match' if coverage
                     else ' v2 one actual healthy-resolved ' + ('typed FIA' if fia else 'QMM') + ' site C1 effects (not C2)' if single_site
                     else ' v2 serial candidate experiment (not C2)'),
                     model=model, cann='8.5.1', soc='Ascend910B4/A2; verify actual Worker', physical_cards=[args.card], ranks=[0],
                     public_entry='WorkerFaultClient+FaultConfig(26,variant)' if args.worker_core else 'legacy callable experiment RPC',
                     public_core_new_source_requires_acceptance=args.worker_core,
                     previous_direct_entry_qualification_inherited=False,
+                    execution_scope='same-request cumulative all stable eligible targets' if coverage else 'one selected target per request',
+                    c2_dynamic_eligibility=('Any unresolved or two-healthy allocator eligibility flip blocks the whole group; no subset'
+                        if coverage else None),
                     worker='standard TP1 eager BF16; single fresh prefill/request; fixed64 KV blocks; no decode claim',
                     build_fingerprint=sha, source_commit=args.source_commit,
                     fia_typed_bridge=build.get('fia_typed_profile') if fia else None,
@@ -106,7 +113,8 @@ def main():
                     metadata_startup='Before importing Torch/vLLM, verify the immutable bundle and explicitly load '
                         'its missing split opapi with RTLD_NOW|RTLD_LOCAL; retain its handle. Then require all four '
                         'already-loaded counters with independent instances and exact mapped/dladdr identities.',
-                    expected_hits=('C2: one per complete frozen eligible target; C3: every existing-target call in two fresh requests; '
+                    expected_hits=('C2: one per complete frozen eligible target after fresh R/L/OFF; C3 not requested'
+                        if stage == 'c2_once' else 'C2: one per complete frozen eligible target; C3: every existing-target call in two fresh requests; '
                         'no subset, only after actual live C2' if coverage else
                         'exactly one F after the selected current site passes reference/lossless/OFF; no fallback or all-eligible claim'
                         if single_site else 0 if stage != 'effects'

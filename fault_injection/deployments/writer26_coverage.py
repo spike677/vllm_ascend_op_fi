@@ -346,7 +346,8 @@ class Writer26Coverage(Writer26Experiment):
         if self.coverage is None:
             return
         recovery = self.coverage.disable(timeout_seconds=30)
-        self.observer.seal(artifact_sha256=self.artifact('full-native-public-observation', self.rows), complete=True)
+        if self.observer.evidence is None:
+            self.observer.seal(artifact_sha256=self.artifact('full-native-public-observation', self.rows), complete=True)
         require(recovery['complete'] and self.coverage.report()['contract_satisfied'], 'WRITER_COVERAGE_OR_GROUP_RECOVERY_INCOMPLETE')
         self.proof = self.coverage.c2_proof() if self.trigger == 'once' else None
 

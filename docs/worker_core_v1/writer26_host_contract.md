@@ -1,5 +1,9 @@
 # Native26 public Worker single-site C1
 
+This document describes the default `c1_single_effects` stage. The separate,
+explicit [public complete-set C2 contract](writer26_complete_set_contract.md)
+reuses this owner and actual-enqueue protocol without inheriting C1 acceptance.
+
 This adapter starts from `37bbeb4f`. It adds an explicit
 `Writer26CoreBinding` branch to the existing `fault26.py` providers. The
 Native26 ABI, `NativeWriter26Group`, `Writer26Experiment`, deterministic

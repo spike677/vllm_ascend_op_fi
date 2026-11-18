@@ -317,6 +317,11 @@ class Writer26Experiment(WriterLifetimeInventory):
         return [dict(path=name or '<root>', object_identity=id(module))
                 for name, module in self.model.named_modules(remove_duplicate=False)]
 
+    def _classify_candidate(self, candidate):
+        # Deployment-specific exclusions must prove their actual boundary;
+        # the existing candidate/C1 path keeps its original strict classifier.
+        return classify_candidate(candidate)
+
     def _post(self, module, args, kwargs, output):
         if self.current is not None:
             for row in self.callbacks[self.current['callback_start']:]:
@@ -564,8 +569,8 @@ class Writer26Experiment(WriterLifetimeInventory):
         counts = Counter(c['callback'].get('target_key') for c in right if c.get('callback'))
         first_counts = Counter(c['callback'].get('target_key') for c in left if c.get('callback'))
         for index, (before, candidate) in enumerate(zip(left, right)):
-            status, reasons = classify_candidate(candidate)
-            previous_status, _ = classify_candidate(before)
+            status, reasons = self._classify_candidate(candidate)
+            previous_status, _ = self._classify_candidate(before)
             callback, previous = candidate.get('callback'), before.get('callback')
             key = callback.get('target_key') if callback else None
             if status != previous_status or (status == 'OBSERVED_NOT_QUALIFIED' and
