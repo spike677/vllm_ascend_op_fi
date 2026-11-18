@@ -4,12 +4,15 @@ The proxy changes legal BF16 tail columns only after an actual cache writer and
 before its actual attention consumer. It does not claim an out-of-bounds write.
 """
 from dataclasses import dataclass
+import hashlib
+import struct
 import threading
 
 import torch
 
 from .postwrite import PostwriteRefused, _storage, _validate_span
 from .postwrite_boundaries import tensor_geometry
+from .postwrite_evidence import snapshot
 
 
 @dataclass(frozen=True)
@@ -19,6 +22,49 @@ class KVSlotPlan:
     elements: int
     indices: tuple[int, ...]
     proof: dict
+
+
+def valid_kv_snapshot(transport,plan,actual):
+    """Read every K/V byte addressed by this verified request's logical prefix.
+
+    Physical pages/offsets are retained separately from logical content hashes,
+    so a new request can use another page without pretending the allocations are
+    equal. Unused pages and tail rows remain present in raw whole-cache statistics.
+    No Tensor op, cache clearing, packing, or content repair is performed here.
+    """
+    metadata=plan.proof['observational_metadata']
+    blocks,page,heads,columns=map(int,plan.cache.shape)
+    lengths,pages=metadata['sequence_lengths'],metadata['used_pages']
+    if (len(lengths)!=1 or len(pages)!=1 or type(lengths[0]) is not int or lengths[0]<=0
+            or len(pages[0])!=(lengths[0]+page-1)//page
+            or len(set(pages[0]))!=len(pages[0])
+            or any(type(block) is not int or not 0<=block<blocks for block in pages[0])):
+        raise PostwriteRefused('TAIL_COLUMN_VALID_PREFIX_MAPPING_REQUIRED')
+    width=heads*columns
+    if lengths[0]*width*2>1024*1024:raise PostwriteRefused('TAIL_COLUMN_VALID_PREFIX_BYTE_BOUND')
+    ranges=[]
+    for logical_page,physical_page in enumerate(pages[0]):
+        tokens=min(page,lengths[0]-logical_page*page)
+        ranges.append(dict(logical_token_start=logical_page*page,physical_page=physical_page,
+            token_count=tokens,element_offset=physical_page*page*width,elements=tokens*width))
+    hashes,nonfinite,storage={},{},{}
+    for name in ('key','value'):
+        tensor=actual[name]
+        expected=metadata[name]
+        if (tensor.dtype!=torch.bfloat16 or not tensor.is_contiguous()
+                or tensor.numel()!=blocks*page*width
+                or tensor.untyped_storage()._cdata!=expected['storage_identity']
+                or tensor.storage_offset()!=expected['storage_offset']):
+            raise PostwriteRefused('TAIL_COLUMN_VALID_PREFIX_STORAGE_CHANGED')
+        copied=[snapshot(transport,tensor,row['element_offset'],row['elements']) for row in ranges]
+        hashes[name]=hashlib.sha256(b''.join(copied)).hexdigest()
+        nonfinite[name]=sum((bits&0x7f80)==0x7f80 for raw in copied for bits, in struct.iter_unpack('<H',raw))
+        storage[name]=tensor_geometry(tensor)
+    return dict(logical=dict(valid_tokens=lengths[0],elements_per_token=width,
+        active_key_sha256=hashes['key'],active_value_sha256=hashes['value'],
+        active_key_nonfinite=nonfinite['key'],active_value_nonfinite=nonfinite['value']),
+        physical=dict(ranges=ranges,storage=storage,bytes_per_cache=lengths[0]*width*2,
+                      selected_slot=plan.proof['slot'],read_only=True))
 
 
 def live_value_tail_plan(*, operator, actual, impl, metadata, scheduler, writer,

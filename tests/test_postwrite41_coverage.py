@@ -117,6 +117,23 @@ class Harness:
 
 
 class KVGroupCoverageTests(unittest.TestCase):
+    def test_once_passthrough_requires_entire_valid_key_prefix_even_when_output_is_equal(self):
+        h=Harness();h.group.prepare('once');h.request('group_lossless');h.request('group_fault')
+        key=h.p.model.a.impl.key_cache
+        old=key[0,0,0,0].item();key[0,0,0,0]+=1
+        with self.assertRaisesRegex(RuntimeError,'ONCE_EXHAUSTED_OR_CONTROL_PREFIX_MISMATCH'):
+            h.request('group_fault')
+        self.assertIsNone(h.p.lease)
+        # CPU consumer intentionally does not use K; the full-prefix proof must
+        # still catch this input drift which a whole-output hash alone misses.
+        self.assertEqual(h.group.failures[0]['consumer_output_sha256'],
+                         next(iter(h.group.reference.values()))['consumer_output_sha256'])
+        key[0,0,0,0]=old
+        h.group.abort_request('effective K bytes changed')
+        report=h.recover()
+        self.assertTrue(report['recovery']['complete'])
+        self.assertFalse(report['contract_satisfied'])
+
     def test_group_uninstall_failure_retains_ownership_and_retries_without_resealing(self):
         h=Harness();h.group.prepare('once');h.request('group_lossless')
         for _ in range(2):h.request('group_fault')

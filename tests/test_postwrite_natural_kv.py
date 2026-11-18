@@ -5,7 +5,7 @@ import unittest
 import torch
 
 from fault_injection.deployments.postwrite import PostwriteRefused, _validate_span
-from fault_injection.deployments.postwrite_kv import live_value_tail_plan, LiveKVSlotLease
+from fault_injection.deployments.postwrite_kv import live_value_tail_plan, LiveKVSlotLease,valid_kv_snapshot
 from demoncat.runtime.vllm_ascend.worker_extension.paged33_audit import _meta
 from tests.test_postwrite_providers import CpuLease
 
@@ -38,6 +38,31 @@ def fixture():
 
 
 class NaturalKVSlotTests(unittest.TestCase):
+    def test_all_valid_kv_prefix_bytes_and_unused_tail_are_distinguished(self):
+        f=fixture();plan=live_value_tail_plan(**f);transport=CpuSpanTransport()
+        before=valid_kv_snapshot(transport,plan,f['actual'])
+        self.assertEqual(before['logical']['valid_tokens'],6)
+        self.assertEqual([r['token_count'] for r in before['physical']['ranges']],[4,2])
+        # This cache value would change full-cache statistics, but is outside
+        # both the active prefix and current selected slot.
+        f['impl'].value_cache[1,2,0,0]=10000
+        self.assertEqual(valid_kv_snapshot(transport,plan,f['actual'])['logical'],before['logical'])
+        f['impl'].key_cache[0,0,0,0]+=1
+        changed=valid_kv_snapshot(transport,plan,f['actual'])
+        self.assertNotEqual(changed['logical']['active_key_sha256'],before['logical']['active_key_sha256'])
+        self.assertEqual(changed['logical']['active_value_sha256'],before['logical']['active_value_sha256'])
+
+    def test_logical_prefix_hash_survives_actual_page_relocation_without_hiding_mapping(self):
+        f=fixture();transport=CpuSpanTransport()
+        before=valid_kv_snapshot(transport,live_value_tail_plan(**f),f['actual'])
+        for cache in (f['impl'].key_cache,f['impl'].value_cache):cache[2:4].copy_(cache[:2])
+        f['metadata'].block_tables.copy_(torch.tensor([[2,3]],dtype=torch.int32))
+        f['metadata'].slot_mapping.fill_(13);f['writer']['slots']=[13]
+        after=valid_kv_snapshot(transport,live_value_tail_plan(**f),f['actual'])
+        self.assertEqual(before['logical'],after['logical'])
+        self.assertNotEqual(before['physical']['ranges'],after['physical']['ranges'])
+        self.assertEqual(after['physical']['selected_slot'],13)
+
     def test_live_view_offset_tail_columns_consumer_and_exact_restoration(self):
         f = fixture(); cache = f['impl'].value_cache
         before_k, before_v = f['impl'].key_cache.clone(), cache.clone()

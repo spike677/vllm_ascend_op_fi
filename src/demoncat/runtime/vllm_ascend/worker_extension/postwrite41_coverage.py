@@ -23,7 +23,7 @@ from fault_injection.coverage_session import (CoverageScope, CoverageSession, Gr
 from fault_injection.runtime_discovery import RuntimeCandidateInventory
 from fault_injection.deployments.postwrite import _cpu
 from fault_injection.deployments.postwrite_evidence import digest, snapshot, output_digest
-from fault_injection.deployments.postwrite_kv import LiveKVSlotLease
+from fault_injection.deployments.postwrite_kv import LiveKVSlotLease,valid_kv_snapshot
 from .postwrite41 import _output_hash
 from .serving_context import require
 
@@ -104,11 +104,13 @@ class KVGroupCoverage:
         require(query.dtype==torch.bfloat16,'KV_GROUP_BF16_QUERY_REQUIRED')
         slot=snapshot(self.p.transport,plan.cache,plan.element_offset,plan.elements)
         query_bytes=snapshot(self.p.transport,query)
+        valid=valid_kv_snapshot(self.p.transport,plan,actual)
         return dict(slot_sha256=hashlib.sha256(slot).hexdigest(),
             query_sha256=digest(dict(shape=list(query.shape),stride=list(query.stride()),dtype=str(query.dtype),
                                     bytes_sha256=hashlib.sha256(query_bytes).hexdigest())),
             slot_nonfinite=sum((bits & 0x7f80)==0x7f80 for bits, in struct.iter_unpack('<H',slot)),
-            query_nonfinite=sum((bits & 0x7f80)==0x7f80 for bits, in struct.iter_unpack('<H',query_bytes)))
+            query_nonfinite=sum((bits & 0x7f80)==0x7f80 for bits, in struct.iter_unpack('<H',query_bytes)),
+            **valid['logical']),valid['physical']
 
     def consume(self, trace, row, plan, actual, original, args, kwargs):
         require(self.p.current['prefixes'] == self.prefixes, 'KV_GROUP_FIXED_LOGICAL_WORKLOAD_CHANGED')
@@ -116,9 +118,11 @@ class KVGroupCoverage:
         target = self.identities.get(key) or self._identity(trace, plan)
         phase = self.p.phase
         require(key not in self.current_records, 'KV_GROUP_DUPLICATE_TARGET_CALL')
+        input_before,valid_ranges=self._before(plan,actual)
         evidence = dict(target_id=target_id(target), target_key=key, call_id=trace['call_id'],
             forward_id=trace['forward_id'], request_ids=trace['request_ids'], boundary=plan.proof,
-            native_generation=self.generation,request_generation=self.p.generation,input_before=self._before(plan,actual))
+            native_generation=self.generation,request_generation=self.p.generation,input_before=input_before,
+            valid_kv_range_proof=valid_ranges)
         self.current_records[key] = evidence
         decision = None
         if phase in ('group_fault', 'group_off'):
@@ -132,7 +136,8 @@ class KVGroupCoverage:
         fault = phase == 'group_fault' and not self.baseline_control and do_native
         applied, finished = False, False
         try:
-            if evidence['input_before']['slot_nonfinite'] or evidence['input_before']['query_nonfinite']:
+            if any(evidence['input_before'][name] for name in
+                   ('slot_nonfinite','query_nonfinite','active_key_nonfinite','active_value_nonfinite')):
                 result=original(*args,**kwargs)
                 evidence['refused_consumer_output_sha256']=output_digest(self.p.transport,result)
                 raise RuntimeError('KV_GROUP_NONFINITE_INPUT_REFUSED')
@@ -149,7 +154,9 @@ class KVGroupCoverage:
                 self.p.lease = None
             else:
                 result = original(*args, **kwargs)
-            evidence.update(input_after=self._before(plan, actual),
+            input_after,after_ranges=self._before(plan,actual)
+            require(valid_ranges==after_ranges,'KV_GROUP_VALID_PREFIX_STORAGE_OR_MAPPING_CHANGED')
+            evidence.update(input_after=input_after,
                 consumer_output_sha256=output_digest(self.p.transport, result),
                 original_calls=trace['original_calls'], original_returned=trace['original_returned'],
                 native_applied=applied, baseline_control=getattr(self, 'baseline_control', False))
@@ -165,6 +172,11 @@ class KVGroupCoverage:
                 require(key in self.reference and evidence['consumer_output_sha256'] == self.reference[key]['consumer_output_sha256']
                         and evidence['input_before'] == self.reference[key]['input_before'], 'KV_GROUP_TARGET_OFF_MISMATCH')
                 self.off_records[key] = evidence
+            elif phase=='group_fault' and (self.baseline_control or (
+                    self.trigger=='once' and self.fault_requests>0 and not decision.admitted)):
+                require(key in self.reference and evidence['consumer_output_sha256']==self.reference[key]['consumer_output_sha256']
+                        and evidence['input_before']==self.reference[key]['input_before'],
+                        'KV_GROUP_ONCE_EXHAUSTED_OR_CONTROL_PREFIX_MISMATCH')
             if decision is not None:
                 self.session.finish(decision, Outcome.HIT if applied else Outcome.PASSTHROUGH,
                     execution_sha256=digest(evidence), effect_sha256=evidence.get('slot_during_sha256'),
@@ -262,8 +274,10 @@ class KVGroupCoverage:
         for lease in leases:
             evidence = self.lossless[keys[lease.target]]
             proofs.append(TargetLosslessProof(lease, 'live_slot_and_consumer', digest(evidence),
-                tuple(evidence['input_before'][name] for name in ('slot_sha256','query_sha256')),
-                tuple(evidence['input_after'][name] for name in ('slot_sha256','query_sha256')),
+                tuple(evidence['input_before'][name] for name in
+                      ('slot_sha256','query_sha256','active_key_sha256','active_value_sha256')),
+                tuple(evidence['input_after'][name] for name in
+                      ('slot_sha256','query_sha256','active_key_sha256','active_value_sha256')),
                 self.baseline_hash, run['model_output_sha256'], evidence['original_calls'], True,
                 evidence['native']['released']))
         capability = CoverageCapability(single_target=True,multi_target=True,every_match=True,max_concurrency=1,
