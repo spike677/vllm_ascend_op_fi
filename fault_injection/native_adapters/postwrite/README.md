@@ -60,3 +60,11 @@ The snapshot avoids adding diagnostic Tensor operations inside a statistics wind
 Older libraries remain usable for existing C1 calls, but snapshot requests refuse
 without the new export. Build new binaries from these exact Native sources and the
 actual CANN fingerprint before coverage experiments; no old receipt is upgraded.
+
+The fixed-C3 refusal experiment additionally exports `dcat_pw_copy_original_v1`.
+It copies the same owned lease's retained `original` BF16 bits to a caller-owned
+CPU buffer, with exact span/owner/generation/thread metadata. It performs **no
+ACL call**, fresh tensor read, write, recovery or lease creation. This is distinct
+from `dcat_pw_read_span`. Original mutation/recovery bodies and ABI version remain
+unchanged. The new export requires a fresh source-bound build; absence refuses.
+See [the bounded experiment and CPU contracts](../../../experiments/worker_core_v11_20261118/OUTPUT39_FIXED_C3_REFUSAL_DIAGNOSTIC.md).

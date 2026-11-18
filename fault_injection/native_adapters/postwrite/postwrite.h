@@ -17,6 +17,19 @@ int dcat_pw_read_span(const void *tensor, uint64_t bytes, int32_t device, void *
 /* The caller retains the actual tensor until restore/release succeeds. */
 int dcat_pw_open(void *tensor, uint64_t bytes, int32_t device,
                  uint64_t owner, uint64_t generation, uint64_t *handle);
+/* Read-only copy of the SAME retained lease.original; no ACL call. The caller
+ * owns valid writable host buffers. Payload is canonical little-endian BF16
+ * bits, not a fresh device read or a float conversion. Exact capacity required.
+ * Additive ABI-1 export: absence requires a fresh build, never a fallback. */
+typedef struct dcat_pw_original_info_v1 {
+    uint32_t version, little_endian_bf16;
+    uint64_t handle, owner, generation, tensor_address, elements, span_bytes;
+    int32_t device;
+    uint32_t applied;
+} dcat_pw_original_info_v1;
+int dcat_pw_copy_original_v1(uint64_t handle, uint64_t owner, uint64_t generation,
+                             void *host, uint64_t capacity,
+                             dcat_pw_original_info_v1 *info);
 /* BF16 only. 0=lossless,1=+Inf,2=-Inf,3=qNaN,4=finite sign flip,5=zero. */
 int dcat_pw_apply(uint64_t handle, uint64_t owner, uint64_t generation,
                   uint32_t mode, const uint64_t *indices, uint64_t count,

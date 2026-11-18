@@ -181,3 +181,44 @@ extern "C" int dcat_pw_live(uint64_t handle, uint64_t owner, uint64_t generation
     if (found == leases.end()) return 0;
     return owns(found->second, owner, generation) ? 1 : -1;
 }
+extern "C" int dcat_pw_copy_original_v1(uint64_t handle, uint64_t owner, uint64_t generation,
+                                         void *host, uint64_t capacity,
+                                         dcat_pw_original_info_v1 *info) {
+    std::lock_guard<std::mutex> lock(guard);
+    const Lease *live = owned(handle, owner, generation);
+    if (!live) return 2;
+    const uint64_t bytes = live->original.size() * sizeof(uint16_t);
+    if (!host || !info || capacity != bytes) return 1;
+    const auto payload = reinterpret_cast<uintptr_t>(host);
+    const auto metadata = reinterpret_cast<uintptr_t>(info);
+    const auto limit = std::numeric_limits<uintptr_t>::max();
+    if (bytes > limit - payload || sizeof(*info) > limit - metadata) return 1;
+    const auto overlaps = [](uintptr_t a, uint64_t na, uintptr_t b, uint64_t nb) {
+        return a < b + nb && b < a + na;
+    };
+    if (overlaps(payload, bytes, metadata, sizeof(*info))) return 14;
+    // Neither output may alias any owned tensor or either retained snapshot.
+    // This diagnostic must not become an alternative writer into a lease.
+    for (const auto &entry : leases) {
+        const Lease &other = entry.second;
+        const uint64_t size = other.original.size() * sizeof(uint16_t);
+        const uintptr_t protected_spans[] = {reinterpret_cast<uintptr_t>(other.tensor),
+            reinterpret_cast<uintptr_t>(other.original.data()),
+            reinterpret_cast<uintptr_t>(other.expected.data())};
+        for (uintptr_t start : protected_spans) {
+            if (overlaps(payload, bytes, start, size) ||
+                overlaps(metadata, sizeof(*info), start, size)) return 14;
+        }
+    }
+    auto *output = static_cast<uint8_t *>(host);
+    for (uint64_t i = 0; i < live->original.size(); ++i) {
+        const uint16_t bits = live->original[i];
+        output[2 * i] = static_cast<uint8_t>(bits & 0xffU);
+        output[2 * i + 1] = static_cast<uint8_t>(bits >> 8);
+    }
+    *info = {1, 1, handle, owner, generation,
+        static_cast<uint64_t>(reinterpret_cast<uintptr_t>(live->tensor)),
+        static_cast<uint64_t>(live->original.size()), bytes, live->device,
+        static_cast<uint32_t>(live->applied)};
+    return 0;
+}
