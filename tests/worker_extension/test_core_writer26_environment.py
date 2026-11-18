@@ -82,6 +82,20 @@ class CoreWriterEnvironmentTests(unittest.TestCase):
         self.assertEqual(self.backend.environment_refusal['actual_pid'], actual['pid'])
         self.assertFalse(self.case.native.executes or self.case.model.root_calls)
 
+    def test_new_build_routes_through_actual_holder_profile_and_retains_refusal(self):
+        actual = environment_fixture()
+        actual['bound_symbol_evidence'] = dict(status='REFUSED', refusal='NATIVE_CACHED_SYMBOL_UNRESOLVED:fixture:0:3')
+        self.case.native.build['bound_symbol_profile'] = 'demoncat.writer26.cached_addresses.v1'
+        holders = (object(),)
+        with (patch.object(self.case.native, 'environment_bindings', return_value=holders, create=True) as read,
+              patch.object(env, 'inspect_bound_environment', return_value=(actual, None)) as inspect):
+            with self.assertRaisesRegex(RuntimeError, 'LOADED_WORKER_ENVIRONMENT_UNPROVEN'):
+                self.backend._environment()
+        read.assert_called_once_with()
+        self.assertIs(inspect.call_args.args[0], holders)
+        self.assertEqual(self.backend.environment_refusal['bound_symbol_refusal'], actual['bound_symbol_evidence']['refusal'])
+        self.assertFalse(self.case.native.executes or self.case.model.root_calls)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,5 +1,6 @@
 """Read worker environment identity without importing device libraries."""
 import hashlib
+from dataclasses import dataclass
 from importlib import metadata
 import json
 import os
@@ -422,3 +423,165 @@ def environment_fingerprint(environment, required_libraries):
                     driver={'running_module_versions': driver['running_module_versions'],
                             'installation_sha256': (driver['installation'] or {}).get('sha256')})
     return hashlib.sha256(json.dumps(material, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+@dataclass(frozen=True)
+class NativeSymbolHolder:
+    """Trusted deployment holder of a source-reviewed, read-only address getter.
+
+    The getter reads addresses already used by this DSO; it must not resolve a
+    replacement symbol. This is not a serializable qualification credential.
+    """
+    library: object
+    getter: object
+    getter_name: str
+    path: str
+    sha256: str
+    symbols: tuple
+    kind: str = 'CACHED_FUNCTION_POINTER'
+
+
+def _native_pointer(function):
+    import ctypes as C
+    if not isinstance(function, C._CFuncPtr):
+        raise ValueError('ACTUAL_CTYPES_FUNCTION_HOLDER_REQUIRED')
+    return C.cast(function, C.c_void_p).value
+
+
+def _address_origin(address):
+    import ctypes as C
+    class Info(C.Structure):
+        _fields_ = [('path', C.c_char_p), ('base', C.c_void_p), ('symbol', C.c_char_p), ('symbol_address', C.c_void_p)]
+    loader = C.CDLL(None)
+    locate = loader.dladdr
+    locate.argtypes, locate.restype = [C.c_void_p, C.POINTER(Info)], C.c_int
+    value = Info()
+    if not address or locate(address, C.byref(value)) == 0 or not value.path or not value.symbol:
+        raise ValueError('ACTUAL_BOUND_SYMBOL_ORIGIN_UNAVAILABLE')
+    return dict(path=os.fsdecode(value.path), base=value.base, symbol=os.fsdecode(value.symbol),
+                symbol_address=value.symbol_address, address=address)
+
+
+def _binding_image(environment, origin, symbol):
+    if (origin['symbol'] != symbol or origin['symbol_address'] != origin['address']
+            or not origin['base'] or not origin['base'] <= origin['address']):
+        raise ValueError('EXACT_BOUND_SYMBOL_ADDRESS_REQUIRED')
+    rows = []
+    for row in environment['loaded_libraries']:
+        for segment in row['mapping']['executable_segments']:
+            start, end = (int(part, 16) for part in segment['address'].split('-'))
+            if start <= origin['address'] < end:
+                rows.append(row)
+    if len(rows) != 1 or rows[0].get('file_identity_status', rows[0]['status']) != 'MAPPED_FILE_VERIFIED':
+        raise ValueError('UNIQUE_VERIFIED_EXECUTABLE_SYMBOL_MAPPING_REQUIRED')
+    # dladdr may spell a loader symlink while maps names its target. Accept
+    # that alias only with the same full device/inode/file stamp, never a hash
+    # of a replacement path or an inode-only overlay exception.
+    if _file_identity(os.stat(origin['path'])) != rows[0]['path_identity_current']:
+        raise ValueError('BOUND_SYMBOL_PATH_DOES_NOT_NAME_MAPPED_FILE')
+    return rows[0]
+
+
+def _read_native_bindings(environment, holders, *, progress=None):
+    import ctypes as C
+    records = []
+    progress = {} if progress is None else progress
+    for holder in holders:
+        current = dict(holder_path=getattr(holder, 'path', None), getter_name=getattr(holder, 'getter_name', None))
+        progress['current_binding'] = current
+        if (type(holder) is not NativeSymbolHolder or holder.kind not in
+                ('CACHED_FUNCTION_POINTER', 'LINKED_FUNCTION_RELOCATION')
+                or not isinstance(holder.symbols, tuple) or not 1 <= len(holder.symbols) <= 64
+                or len({slot for slot, _ in holder.symbols}) != len(holder.symbols)
+                or getattr(holder.library, holder.getter_name, None) is not holder.getter):
+            raise ValueError('REVIEWED_LIVE_NATIVE_SYMBOL_HOLDER_REQUIRED')
+        getter = _address_origin(_native_pointer(holder.getter))
+        current['getter'] = getter
+        image = _binding_image(environment, getter, holder.getter_name)
+        getter['mapped_path'] = image['path']
+        if image['path'] != holder.path or image['sha256'] != holder.sha256:
+            raise ValueError('BOUND_GETTER_MANIFEST_IMAGE_CHANGED')
+        holder.getter.argtypes, holder.getter.restype = [C.c_uint32, C.POINTER(C.c_uint64)], C.c_int
+        for slot, name in holder.symbols:
+            current = dict(holder_path=holder.path, getter_name=holder.getter_name, getter=getter, slot=slot, symbol=name)
+            progress['current_binding'] = current
+            if type(slot) is not int or not 0 <= slot < 64 or not isinstance(name, str) or not name:
+                raise ValueError('BOUNDED_SOURCE_DEFINED_SYMBOL_SLOT_REQUIRED')
+            value = C.c_uint64()
+            code = holder.getter(slot, C.byref(value))
+            current.update(return_code=code, cached_address=value.value)
+            if code != 0 or not value.value:
+                raise ValueError('NATIVE_CACHED_SYMBOL_UNRESOLVED:'+holder.getter_name+':'+str(slot)+':'+str(code))
+            origin = _address_origin(value.value)
+            current['target'] = origin
+            target = _binding_image(environment, origin, name)
+            origin['mapped_path'] = target['path']
+            records.append(dict(kind=holder.kind, getter=getter, getter_sha256=image['sha256'],
+                slot=slot, symbol=name, target=origin, target_sha256=target['sha256'],
+                target_elf_build_id=target['elf_build_id']))
+            progress['completed_bindings'] = list(records)
+    return records
+
+
+def inspect_bound_environment(holders, *, required_libraries):
+    """Explicit collision profile; the default name-only fingerprint stays strict.
+
+    Every mapped image must have exact file identity, including unselected
+    same-name images. A collision additionally needs an actual held getter or
+    target in that group. The complete image set and verified function edges
+    enter the scope fingerprint. No path-only assertion or JSON is a holder.
+    """
+    required_libraries = tuple(required_libraries)
+    holders = tuple(holders)
+    additional = set(required_libraries) | {Path(holder.path).name for holder in holders if type(holder) is NativeSymbolHolder}
+    actual = inspect_environment(additional_libraries=additional)
+    audit = dict(schema='demoncat.bound_environment.v1', status='REFUSED', bindings=[],
+                 collision_groups=[], qualification_granted=False, serializable_authority=False)
+    actual['bound_symbol_evidence'] = audit
+    progress = dict(read_pass='first')
+    try:
+        rows = actual['loaded_libraries']
+        if (not holders or actual.get('pid') != os.getpid() or actual['maps_status'] != 'OBSERVED'
+                or not required_libraries or not set(required_libraries).issubset(row['name'] for row in rows)
+                or any(row.get('file_identity_status', row['status']) != 'MAPPED_FILE_VERIFIED' for row in rows)):
+            raise ValueError('COMPLETE_VERIFIED_MAPPED_ENVIRONMENT_REQUIRED')
+        before = _read_native_bindings(actual, holders, progress=progress)
+        audit['bindings'] = before
+        bound_paths = {origin['mapped_path'] for row in before for origin in (row['getter'], row['target'])}
+        names = sorted({row['name'] for row in rows})
+        for name in names:
+            group = [row for row in rows if row['name'] == name]
+            if len(group) > 1:
+                paths = [row['path'] for row in group]
+                audit['collision_groups'].append(dict(name=name, complete_paths=paths,
+                    actual_bound_paths=sorted(bound_paths.intersection(paths)), all_images_retained=True))
+                if not bound_paths.intersection(paths):
+                    raise ValueError('DUPLICATE_IMAGE_WITHOUT_ACTUAL_BOUND_SYMBOL:'+name)
+        progress = dict(read_pass='second')
+        after = _read_native_bindings(actual, holders, progress=progress)
+        if before != after:
+            raise ValueError('NATIVE_BOUND_SYMBOL_CHANGED_DURING_OBSERVATION')
+        inventory = {(row['path'], row['mapping']['device'], row['mapping']['inode'], row['mapping']['deleted']):
+            [(segment['address'], segment['file_offset']) for segment in row['mapping']['executable_segments']] for row in rows}
+        if _mapped_images(Path('/proc/self/maps').read_text(errors='surrogateescape'), additional) != inventory:
+            raise ValueError('EXECUTABLE_MAPPING_SET_CHANGED_DURING_BINDING')
+        if any(_file_identity(os.stat(row['path'])) != row['path_identity_current'] for row in rows):
+            raise ValueError('BOUND_ENVIRONMENT_PATH_IDENTITY_CHANGED')
+        # Paths distinguish same-name objects; ASLR addresses and process IDs
+        # remain diagnostics and are not stable scope material.
+        images = [dict(path=row['path'], name=row['name'], sha256=row['sha256'], elf_build_id=row['elf_build_id'])
+                  for row in sorted(rows, key=lambda row: row['path'])]
+        edges = [dict(kind=row['kind'], getter_path=row['getter']['mapped_path'], getter_symbol=row['getter']['symbol'],
+            getter_sha256=row['getter_sha256'], slot=row['slot'], symbol=row['symbol'],
+            target_path=row['target']['mapped_path'], target_sha256=row['target_sha256']) for row in before]
+        material = dict(profile=audit['schema'], machine=actual['machine'], python=actual['python'],
+            packages=actual['packages'], torch_cxx11_abi=actual['torch_cxx11_abi'], images=images, bindings=edges,
+            driver=dict(running_module_versions=actual['driver']['running_module_versions'],
+                installation_sha256=(actual['driver']['installation'] or {}).get('sha256')))
+        fingerprint = hashlib.sha256(json.dumps(material, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+        audit.update(status='EXACT_MAPPED_FUNCTION_BINDINGS_OBSERVED', scope_material=material, fingerprint=fingerprint)
+        return actual, fingerprint
+    except (OSError, ValueError, TypeError, AttributeError, KeyError) as error:
+        audit['refusal'] = str(error)
+        audit['readback_before_failure'] = progress
+        return actual, None

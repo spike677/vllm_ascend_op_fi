@@ -118,6 +118,8 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
     def end_actual(self, output, result, request):
         if self.group is None:
             super().end_actual(output, result, request)
+            from ..serving39_output_group import LOGITS_OUTPUT_DIGEST
+            self.rows[-1]['output_digest'] = deepcopy(LOGITS_OUTPUT_DIGEST)
             if self.index == len(_PHASES):
                 self.complete, self.stopped = False, False
             return
@@ -128,6 +130,8 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
                     'OUTPUT39_GROUP_SAME_WORKER_HEALTH_CHANGED')
             self.group.healthy_after = dict(actual_request_id=request['actual_internal_request_id'],
                 output_sha256=_cpu_digest(output), snapshot=deepcopy(request['snapshot']))
+            from ..serving39_output_group import STRUCTURED_OUTPUT_DIGEST
+            self.group.healthy_after['output_digest'] = deepcopy(STRUCTURED_OUTPUT_DIGEST)
         else:
             try:
                 self.group.complete_observed_forward(result[0])
@@ -143,6 +147,8 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
             output_finite=request['model_output_finite'], report=result[2] if result else None,
             complete_inventory=self.p._last_observer.inventory.report() if result else None,
             native_owner=self.native_owner, native_generation=self.p.generation, native_leases=self.p.live_lease_count))
+        from ..serving39_output_group import LOGITS_OUTPUT_DIGEST
+        self.rows[-1]['output_digest'] = deepcopy(LOGITS_OUTPUT_DIGEST)
         if self.recovering:
             self.recovering = 'health' if phase.endswith('_off') else False
             self.stopped = phase.endswith('_health')
@@ -202,6 +208,7 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
             raise
 
     def _capture(self, action):
+        from ..serving39_output_group import STRUCTURED_OUTPUT_DIGEST, LOGITS_OUTPUT_DIGEST
         folder = self.binding.folder/self._ticket[0]/'group-originals'
         folder.mkdir(exist_ok=True)
         path = folder/(str(self.capture_attempts).zfill(3)+'-'+action+'.json')
@@ -211,6 +218,8 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
             actual_requests=deepcopy(self.rows), module_aliases=super().evidence()['module_aliases'],
             group=self.group.report() if self.group else None, finished_groups=deepcopy(self.group_reports),
             failure=self.group_failure, failures=deepcopy(self.failures), qualification_granted=False)
+        value['digest_scopes'] = dict(actual_requests=deepcopy(LOGITS_OUTPUT_DIGEST),
+            forward_artifacts=deepcopy(STRUCTURED_OUTPUT_DIGEST), actual_health=deepcopy(STRUCTURED_OUTPUT_DIGEST))
         raw = (json.dumps(value, sort_keys=True, allow_nan=False)+'\n').encode('utf-8')
         with path.open('xb') as stream:
             stream.write(raw)
@@ -221,7 +230,8 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
         evidence = super().evidence()
         evidence['actual_requests'] = [dict(phase=row['phase'], actual_internal_request_id=row['actual_internal_request_id'],
             output_sha256=row['output_sha256'], output_finite=row['output_finite'], native_owner=row['native_owner'],
-            native_generation=row['native_generation'], native_leases=row['native_leases']) for row in self.rows]
+            native_generation=row['native_generation'], native_leases=row['native_leases'],
+            output_digest=row.get('output_digest')) for row in self.rows]
         evidence.update(scope='INITIALIZED_WORKER_COMPLETE_PROJECTION_SET_FIXED_FRESH_PREFILL',
             stage=self.binding.stage, next_plan=list(self.plan[self.index:]), collection_pending=len(self.rows)!=self.collected_requests,
             group_originals=deepcopy(self.originals), group_failure=self.group_failure,

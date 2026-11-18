@@ -137,6 +137,16 @@ class NativePostwriteLibrary:
             raise PostwriteRefused('POSTWRITE_REQUIRES_BASE_FORMAT')
         _validate_tensor(tensor)
 
+    def environment_bindings(self):
+        from ..environment import NativeSymbolHolder
+        name = 'dcat_pw_linked_address_v1'
+        function = getattr(self.lib, name, None)
+        if function is None:
+            raise PostwriteRefused('FRESH_POSTWRITE_LINKED_ADDRESS_BUILD_REQUIRED')
+        return (NativeSymbolHolder(self.lib, function, name, self.path, self.sha256,
+            ((0, 'aclrtGetDevice'), (1, 'aclrtSynchronizeDevice'), (2, 'aclrtMemcpy')),
+            kind='LINKED_FUNCTION_RELOCATION'),)
+
     def snapshot(self, tensor, element_offset=0, elements=None):
         """Read real bytes without adding diagnostic Tensor ops to msprobe."""
         if self._snapshot is None:

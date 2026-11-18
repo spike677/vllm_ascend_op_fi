@@ -29,6 +29,7 @@ MODULES = tuple(('fault_injection.deployments.'+name, 'fault_injection/deploymen
     ('writer26_loader', 'writer26_group', 'writer26_inventory', 'writer26_experiment', 'writer26_coverage', 'writer26_public',
      'writer26_fia_typed', 'residual26')) + (
     ('fault_injection.metadata_arrays', 'fault_injection/metadata_arrays.py'),
+    ('fault_injection.environment', 'fault_injection/environment.py'),
     ('fault_injection.providers', 'fault_injection/providers.py'),
     ('fault_injection.coverage', 'fault_injection/coverage.py'),
     ('fault_injection.coverage_session', 'fault_injection/coverage_session.py')) + tuple(

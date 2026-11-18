@@ -310,6 +310,19 @@ extern "C" aclnnStatus aclnnReduceSum(void *workspace, uint64_t workspace_size,
 #endif
 
 #if !defined(FAULT26_MAIN_PROXY_ONLY)
+// Serialized Worker diagnostic: these are the pointers already cached by the
+// actual continuation. Do not initialize pthread_once or look up another symbol.
+extern "C" int dcat26_custom_cached_address_v1(uint32_t slot,uint64_t* output) {
+    if(!output)return 1;
+    *output=0;
+    uintptr_t address=0;
+    if(slot==0)address=reinterpret_cast<uintptr_t>(g_real_add_rms_norm_bias);
+    else if(slot==1)address=reinterpret_cast<uintptr_t>(g_real_add_rms_norm_bias_gws);
+    else return 2;
+    if(!address)return 3;
+    *output=address;return 0;
+}
+
 extern "C" aclnnStatus aclnnAddRmsNormBiasGetWorkspaceSize(
     const aclTensor *x1, const aclTensor *x2, const aclTensor *gamma,
     const aclTensor *beta_optional, double epsilon, const aclTensor *y_out,

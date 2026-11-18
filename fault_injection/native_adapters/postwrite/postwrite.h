@@ -6,6 +6,8 @@ extern "C" {
 #endif
 /* Public ACL transfer ABI. No OpCache layout or externally supplied executor. */
 uint32_t dcat_pw_abi(void);
+/* Actual linked function addresses only; no resolver, ACL call or lease. */
+int dcat_pw_linked_address_v1(uint32_t slot, uint64_t *output);
 /* Maximum disjoint spans for one owner, generation, thread and device. */
 uint32_t dcat_pw_lease_capacity(void);
 /* Total retained span bytes, counting each device span once. */

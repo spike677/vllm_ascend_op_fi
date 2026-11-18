@@ -57,6 +57,16 @@ int write(const Lease &l, const std::vector<uint16_t> &values) {
 bool finite(uint16_t bits) { return (bits & 0x7f80U) != 0x7f80U; }
 }
 extern "C" uint32_t dcat_pw_abi(void) { return 1; }
+extern "C" int dcat_pw_linked_address_v1(uint32_t slot,uint64_t* output) {
+    if(!output)return 1;
+    *output=0;
+    // These are the direct linked relocations used above, not a new dlsym.
+    const uintptr_t values[]={reinterpret_cast<uintptr_t>(&aclrtGetDevice),
+        reinterpret_cast<uintptr_t>(&aclrtSynchronizeDevice),reinterpret_cast<uintptr_t>(&aclrtMemcpy)};
+    if(slot>=sizeof(values)/sizeof(values[0]))return 2;
+    if(!values[slot])return 3;
+    *output=values[slot];return 0;
+}
 extern "C" uint32_t dcat_pw_lease_capacity(void) { return max_leases; }
 extern "C" uint64_t dcat_pw_lease_byte_capacity(void) { return max_span_bytes; }
 extern "C" int dcat_pw_read_span(const void *tensor, uint64_t bytes, int32_t device, void *host) {

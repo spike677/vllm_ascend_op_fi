@@ -24,11 +24,14 @@ SOURCES = (
     'fault_injection/native_adapters/writer26_fia_typed_api.h',
     'fault_injection/native_adapters/test_writer26_group_core.cpp',
     'fault_injection/native_adapters/test_writer26_group_runtime_control.cpp',
+    'fault_injection/native_adapters/test_writer26_custom_bound_addresses.cpp',
     'fault_injection/native_adapters/test_writer26_pending_runtime.cpp',
     'fault_injection/native_adapters/test_writer26_fia_typed_runtime.cpp',
     'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_qmm_underflow_api.h',
     'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_inventory.h',
     'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_fia_typed.h',
+    'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_opapi_trace_proxy.cpp',
+    'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_trace_shared.h',
     'fault39/native/metadata_array_owner.h',
     'fault39/native/metadata_ownership_fixture.cpp',
     'fault39/native/test_metadata_ownership.py',
@@ -136,6 +139,10 @@ grep -Eq '^version=8\.5\.1$' /usr/local/Ascend/cann-8.5.1/aarch64-linux/ascend_t
 flags=(-std=c++17 -O2 -Wall -Wextra -Werror -D_GLIBCXX_USE_CXX11_ABI=0 -I/usr/local/Ascend/cann-8.5.1/aarch64-linux/include -I/usr/local/Ascend/cann-8.5.1/aarch64-linux/include/aclnn -I/usr/local/Ascend/cann-8.5.1/aarch64-linux/pkg_inc)
 native=/source/fault_injection/native_adapters
 python3 -B /source/fault39/native/test_metadata_ownership.py --writer26 --output /build/metadata-array-group-cpu.json
+g++ "${flags[@]}" -fPIC -shared -DFAULT26_CUSTOM_PROXY_ONLY=1 /source/fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_opapi_trace_proxy.cpp -L/build/real -Wl,--no-as-needed -l:libcust_opapi_real.so -Wl,-soname,libcust_opapi.so -Wl,-rpath,'$ORIGIN/real' -Wl,-z,origin -ldl -lpthread -o /build/libcust_opapi.so
+g++ "${flags[@]}" "$native/test_writer26_custom_bound_addresses.cpp" -ldl -lpthread -o /build/test_custom_bound_addresses
+/build/test_custom_bound_addresses > /build/custom-bound-addresses-cpu.json
+nm -D --defined-only /build/libcust_opapi.so > /build/custom-exported-symbols.txt
 g++ "${flags[@]}" -fPIC -shared "$native/writer26_group_runtime.cpp" -Wl,-soname,libdcat26_group_v2.so -ldl -lpthread -o /build/libdcat26_group_v2.so
 g++ "${flags[@]}" "$native/test_writer26_group_runtime_control.cpp" -ldl -lpthread -o /build/test_group_control
 /build/test_group_control > /build/sdk-control.json
@@ -155,6 +162,7 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
         actual_npu_calls=0, device_mounts=[], source_commit=args.source_commit, sources=sources,
         parent_manifest_sha256=args.parent_manifest_sha256, parent_files={name: files[name] for name in sorted(required)},
         omitted_legacy_writers=sorted(OMIT), requested_image=IMAGE, actual_image_id=None,
+        rebuilt_dependencies=['libcust_opapi.so'],
         cann='8.5.1', container_name=name, container_owner_nonce=nonce, build_returncode=None)
     launched = False
     try:
@@ -184,8 +192,10 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
     if receipt['build_returncode'] != 0 or not receipt['cleanup']['confirmed']:
         raise RuntimeError('SDK_BUILD_OR_CLEANUP_FAILED_RECEIPT_PRESERVED')
     for name in required:
-        if sha(out / name) != files[name]:
+        if name != 'libcust_opapi.so' and sha(out / name) != files[name]:
             raise RuntimeError('TRACE_PROXY_DEPENDENCY_CHANGED')
+    if not re.search(r'\bT dcat26_custom_cached_address_v1$', (out/'custom-exported-symbols.txt').read_text(), re.M):
+        raise RuntimeError('FRESH_CUSTOM_CACHED_ADDRESS_EXPORT_REQUIRED')
     exports = (out / 'exported-symbols.txt').read_text()
     for name in ('state', 'install', 'pass', 'continue', 'receipt', 'acknowledge', 'seal', 'stop', 'drain', 'restore', 'remove'):
         if not re.search(r'\bT dcat26_group_' + name + r'_v2$', exports, re.M):
@@ -194,6 +204,8 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
         raise RuntimeError('LEGACY_WRITER_ABI_MUST_NOT_BE_PRESENT')
     if not re.search(r'\bT dcat26_group_metadata_arrays_v1$', exports, re.M):
         raise RuntimeError('ACTUAL_GROUP_METADATA_COUNTER_EXPORT_REQUIRED')
+    if not re.search(r'\bT dcat26_group_cached_address_v1$', exports, re.M):
+        raise RuntimeError('FRESH_GROUP_CACHED_ADDRESS_EXPORT_REQUIRED')
     for name in ('abi', 'snapshots'):
         if not re.search(r'\bT dcat26_group_fia_' + name + r'_v3$', exports, re.M):
             raise RuntimeError('TYPED_FIA_GROUP_ABI_REQUIRED:' + name)
@@ -201,10 +213,13 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
         raise RuntimeError('TYPED_FIA_ADMISSION_ABI_REQUIRED')
     receipt.update(status='SDK_BUILD_AND_CPU_CONTRACT_PASS_NOT_NATIVE_ACCEPTANCE',
         sdk_control=json.loads((out / 'sdk-control.json').read_text()),
+        custom_bound_addresses_contract=json.loads((out/'custom-bound-addresses-cpu.json').read_text()),
         pending_runtime_contract=json.loads((out / 'pending-runtime-cpu.json').read_text()),
         fia_typed_runtime_contract=json.loads((out / 'fia-typed-runtime-cpu.json').read_text()),
         cpu_contract=json.loads((out / 'cpu-contract.json').read_text()))
     profile = typed_profile(receipt['sdk_control'], receipt['fia_typed_runtime_contract'])
+    if receipt['custom_bound_addresses_contract'] != dict(status='PASS_CPU_EXISTING_CUSTOM_CACHE_ONLY', actual_npu_calls=0):
+        raise RuntimeError('ACTUAL_CUSTOM_ADDRESS_CPU_CONTRACT_REQUIRED')
     receipt['fia_typed_profile'] = profile
     (out / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     output_files = {name: sha(out / name) for name in sorted(required | {'libdcat26_group_v2.so', 'metadata-array-group-cpu.json'})}
@@ -213,6 +228,7 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
         actual_npu_calls=0, native_qualified_targets=0, c2=False, c3=False,
         actual_image_id=receipt['actual_image_id'],
         fia_typed_profile=profile,
+        bound_symbol_profile='demoncat.writer26.cached_addresses.v1',
         metadata_array_ownership=dict(schema='demoncat.metadata_arrays.v1', state_version=1,
             images=dict(SYMBOLS, **{'libdcat26_group_v2.so': 'dcat26_group_metadata_arrays_v1'}),
             reset_supported=False, runtime_quiescent_readback_required=True,

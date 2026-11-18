@@ -16,6 +16,13 @@ SPEC.loader.exec_module(build)
 
 
 class GroupBuildTests(unittest.TestCase):
+    def test_fresh_build_includes_actual_cache_getter_contract_sources(self):
+        required = {'fault_injection/native_adapters/test_writer26_custom_bound_addresses.cpp',
+            'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_opapi_trace_proxy.cpp',
+            'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_trace_shared.h'}
+        self.assertTrue(required.issubset(build.SOURCES))
+        self.assertTrue(all((PATH.parents[2]/name).is_file() for name in required))
+
     def test_typed_fia_requires_every_new_trace_export_and_exact_sdk_layout(self):
         exports = '\n'.join('0000 T ' + name for name in build.TYPED_TRACE_EXPORTS)
         build.require_typed_trace(exports)

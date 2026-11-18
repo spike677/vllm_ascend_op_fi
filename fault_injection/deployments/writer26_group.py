@@ -94,6 +94,7 @@ class NativeWriter26Group:
                 'LEGACY_WRITER_MUST_NOT_SHARE_V2_BUNDLE')
         require(os.environ.get('TASK_QUEUE_ENABLE') == '0', 'SERIAL_NATIVE_WRITER_REQUIRED')
         self.lib = C.CDLL(str(root / 'libdcat26_group_v2.so'), mode=os.RTLD_LAZY | os.RTLD_NOLOAD)
+        self.root = root
         self.build, self.build_identity, self.sha256 = build, manifest_sha256, build['files']['libdcat26_group_v2.so']
         from ..metadata_arrays import LoadedWriter26MetadataArrays
         self._metadata_arrays = LoadedWriter26MetadataArrays(bundle=root, manifest_sha256=manifest_sha256)
@@ -129,6 +130,27 @@ class NativeWriter26Group:
 
     def metadata_arrays(self):
         return self._metadata_arrays.read()
+
+    def environment_bindings(self):
+        """New builds only; retain actual holders, never expose a lookup as use."""
+        from ..environment import NativeSymbolHolder
+        require(threading.get_native_id() == self.config.thread, 'FOREIGN_GROUP_NATIVE_THREAD')
+        require(self.build.get('bound_symbol_profile') == 'demoncat.writer26.cached_addresses.v1',
+                'FRESH_WRITER26_CACHED_ADDRESS_BUILD_REQUIRED')
+        symbols = ('aclrtGetDevice', 'aclGetDataType', 'aclGetFormat', 'aclGetViewOffset',
+            'aclGetViewShape', 'aclGetStorageShape', 'aclGetViewStrides', 'aclGetRawTensorAddr',
+            'aclCreateTensor', 'aclDestroyTensor', 'aclrtMalloc', 'aclrtFree', 'aclrtMemcpy', 'aclrtSynchronizeStream')
+        name = 'dcat26_group_cached_address_v1'
+        group = NativeSymbolHolder(self.lib, getattr(self.lib, name), name,
+            str(self.root/'libdcat26_group_v2.so'), self.sha256, tuple(enumerate(symbols)))
+        custom_path = self.root/'libcust_opapi.so'
+        require(hashlib.sha256(custom_path.read_bytes()).hexdigest() == self.build['files']['libcust_opapi.so'],
+                'WRITER26_CUSTOM_PROXY_CHANGED')
+        custom = C.CDLL(str(custom_path), mode=os.RTLD_NOW | os.RTLD_LOCAL | os.RTLD_NOLOAD)
+        name = 'dcat26_custom_cached_address_v1'
+        proxy = NativeSymbolHolder(custom, getattr(custom, name), name, str(custom_path),
+            self.build['files']['libcust_opapi.so'], ((0, 'aclnnAddRmsNormBias'), (1, 'aclnnAddRmsNormBiasGetWorkspaceSize')))
+        return (group, proxy)
 
     def state(self):
         value = RuntimeState(version=2, size=C.sizeof(RuntimeState))

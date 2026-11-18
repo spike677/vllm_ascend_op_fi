@@ -26,6 +26,7 @@ MODULES = tuple(('fault_injection.deployments.'+name, 'fault_injection/deploymen
     for name in ('postwrite', 'postwrite_boundaries', 'postwrite_inventory', 'postwrite_observed',
                  'postwrite_npu_consumers', 'postwrite_coverage', 'postwrite_structure', 'postwrite_evidence')) + (
     ('fault_injection.coverage', 'fault_injection/coverage.py'),
+    ('fault_injection.environment', 'fault_injection/environment.py'),
     ('fault_injection.coverage_session', 'fault_injection/coverage_session.py'),
     ('fault_injection.runtime_discovery', 'fault_injection/runtime_discovery.py')) + tuple(
     ('demoncat.runtime.vllm_ascend.worker_extension.'+name,

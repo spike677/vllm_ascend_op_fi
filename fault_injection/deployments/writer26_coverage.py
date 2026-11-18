@@ -33,6 +33,7 @@ class Writer26Coverage(Writer26Experiment):
             hashlib.sha256(Path(__file__).with_name('writer26_experiment.py').read_bytes()).hexdigest(), self.runtime.build_identity,
             hashlib.sha256(Path(__file__).with_name('writer26_public.py').read_bytes()).hexdigest(),
             hashlib.sha256(Path(__file__).with_name('writer26_fia_typed.py').read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).parents[1].joinpath('environment.py').read_bytes()).hexdigest(),
             self.metadata.implementation_sha256])
 
     def artifact(self, name, value):
@@ -125,16 +126,22 @@ class Writer26Coverage(Writer26Experiment):
             self.actual_environment_sha = digest(['EXPLICIT_CPU_MOCK_NOT_NPU', self.worker_identity, self.runtime.build_identity])
             return
         from ..coverage import _is_sha256
-        from ..environment import inspect_environment, environment_fingerprint
+        from ..environment import inspect_environment, environment_fingerprint, inspect_bound_environment
         libraries = ('libdcat26_group_v2.so', 'libfault26_readonly_trace_abi0.so', 'libnnopbase.so', 'libascendcl.so')
-        environment = inspect_environment(additional_libraries=libraries)
-        value = environment_fingerprint(environment, libraries)
+        if self.runtime.build.get('bound_symbol_profile') == 'demoncat.writer26.cached_addresses.v1':
+            environment, value = inspect_bound_environment(self.runtime.environment_bindings(), required_libraries=libraries)
+        else:
+            # Old source-bound attempts retain the original strict gate. They
+            # cannot acquire the new collision profile from serialized evidence.
+            environment = inspect_environment(additional_libraries=libraries)
+            value = environment_fingerprint(environment, libraries)
         artifact_sha = self.artifact('actual-environment', environment)
         if environment.get('pid') != os.getpid() or not _is_sha256(value):
             names = {row.get('name') for row in environment.get('loaded_libraries', ())}
             self.environment_refusal = dict(actual_environment_sha256=artifact_sha,
                 maps_status=environment.get('maps_status'), actual_pid=environment.get('pid'), expected_pid=os.getpid(),
                 required_libraries=list(libraries), missing_required_libraries=sorted(set(libraries)-names),
+                bound_symbol_refusal=environment.get('bound_symbol_evidence', {}).get('refusal'),
                 unverified_libraries=[{key: row.get(key) for key in ('name', 'path', 'status', 'identity_failure')}
                     for row in environment.get('loaded_libraries', ()) if row.get('status') != 'MAPPED_FILE_VERIFIED'],
                 scope_constructed=False, qualification_granted=False)

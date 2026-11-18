@@ -3,6 +3,28 @@
 #include <cassert>
 #include <iostream>
 int main() {
+    uint64_t address=999;
+    assert(dcat26_group_cached_address_v1(0,nullptr)==1);
+    assert(dcat26_group_cached_address_v1(0,&address)==3 && address==0);
+    // Explicit CPU function holder; the getter must never call it or resolve.
+    auto cpu_device=[](int32_t*)->aclError {assert(false);return ACL_SUCCESS;};
+    Config cpu_owner{};cpu_owner.mechanism=Qmm;cpu_owner.max_targets=1;
+    cpu_owner.owner_hi=1;cpu_owner.generation=1;cpu_owner.thread=tid();
+    cpu_owner.max_calls=1;cpu_owner.max_host_bytes=1024;
+    assert(engine.open(cpu_owner)==Ok);
+    api.device=cpu_device;api.ready=true;owner=cpu_owner;
+    assert(dcat26_group_cached_address_v1(0,&address)==0
+        && address==reinterpret_cast<uintptr_t>(api.device));
+    assert(dcat26_group_cached_address_v1(1,&address)==3 && address==0);
+    assert(dcat26_group_cached_address_v1(64,&address)==2 && address==0);
+    runtime.callback_active=1;
+    assert(dcat26_group_cached_address_v1(0,&address)==3 && address==0);
+    runtime.callback_active=0;owner.thread=0;
+    assert(dcat26_group_cached_address_v1(0,&address)==3 && address==0);
+    assert(engine.stop(cpu_owner)==Ok && engine.close(cpu_owner)==Ok);
+    owner=cpu_owner;
+    assert(dcat26_group_cached_address_v1(0,&address)==3 && address==0);
+    api={};owner={};
     RuntimeState state{};
     assert(dcat26_group_state_v2(&state)==Ok);
     assert(state.version==2 && state.size==sizeof(RuntimeState));

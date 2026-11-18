@@ -2,6 +2,7 @@
 from copy import deepcopy
 from dataclasses import asdict, replace
 import hashlib
+import json
 from pathlib import Path
 
 from fault_injection.coverage_session import CoverageScope, GroupRecoveryHooks, WorkerHealthProof, target_id
@@ -9,6 +10,14 @@ from fault_injection.deployments.postwrite_coverage import ProjectionCoverage, _
 from fault_injection.deployments.postwrite_evidence import digest
 from .serving39_output import Serving39OutputSession
 from .serving_context import require
+
+
+STRUCTURED_OUTPUT_DIGEST = dict(algorithm='postwrite_evidence.output_digest.pytree_and_tensor_leaves.v1',
+    value_boundary='TUPLE_OF_ACTUAL_ROOT_HIDDEN_AND_COMPLETE_LOGITS',
+    compare_only='SAME_STRUCTURE_WORKLOAD_AND_GROUP_GENERATION_B_OFF_HEALTH')
+LOGITS_OUTPUT_DIGEST = dict(algorithm='serving.complete_tensor.dtype_shape_then_raw_bytes.v1',
+    value_boundary='ACTUAL_FINAL_LOGITS_TENSOR_ONLY',
+    compare_only='SAME_LOGITS_BOUNDARY_WORKLOAD_AND_GROUP_GENERATION_B_OFF_HEALTH')
 
 
 class WorkerProjectionCoverage(ProjectionCoverage):
@@ -30,16 +39,23 @@ class WorkerProjectionCoverage(ProjectionCoverage):
             Path(__file__).with_name('gemm_lineage.py')]
         from fault_injection.deployments import postwrite_coverage, postwrite, postwrite_boundaries, postwrite_npu_consumers
         from fault_injection.deployments import postwrite_observed, postwrite_inventory, postwrite_structure
+        from fault_injection import environment as environment_module
         sources.extend(Path(module.__file__) for module in
             (postwrite_coverage, postwrite, postwrite_boundaries, postwrite_npu_consumers,
-             postwrite_observed, postwrite_inventory, postwrite_structure))
+             postwrite_observed, postwrite_inventory, postwrite_structure, environment_module))
         self.source_pins = {str(path.name): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources}
+        self.environment_observation = None
         if core.binding.simulation:
             environment = digest(dict(explicit_cpu_contract=True, worker=core.identity, native=core.binding.native_sha256))
         else:
-            from fault_injection.environment import inspect_environment, environment_fingerprint
-            environment = environment_fingerprint(inspect_environment(additional_libraries=('libdcat_postwrite.so',)),
-                                                  ('libdcat_postwrite.so',))
+            from fault_injection.environment import inspect_bound_environment
+            self.environment_observation, environment = inspect_bound_environment(
+                core.binding.transport.environment_bindings(), required_libraries=('libdcat_postwrite.so',))
+            path = core.binding.folder/core._ticket[0]/'group-environment.json'
+            with path.open('x', encoding='utf-8') as stream:
+                json.dump(self.environment_observation, stream, sort_keys=True, allow_nan=False)
+                stream.write('\n')
+            require(environment is not None, 'OUTPUT39_LOADED_BOUND_ENVIRONMENT_UNPROVEN')
         scope = CoverageScope('39.output_proxy', core.input_hash, environment, digest(self.source_pins),
                               'cpu_contract' if core.binding.simulation else 'natural_worker')
         super().__init__(core.p, scope, max_seconds=1200, max_live_leases=core.binding.max_live_leases)
@@ -128,6 +144,7 @@ class WorkerProjectionCoverage(ProjectionCoverage):
     def complete_observed_forward(self, output):
         self._capture_native_receipts()
         super().complete_observed_forward(output)
+        self.forward_artifacts[-1]['output_digest'] = deepcopy(STRUCTURED_OUTPUT_DIGEST)
 
     def fail_observed_forward(self, error):
         self._capture_native_receipts()
@@ -164,6 +181,8 @@ class WorkerProjectionCoverage(ProjectionCoverage):
     def report(self):
         return dict(schema='demoncat.output39.worker_group.v1', scope=asdict(self.scope),
             worker=deepcopy(self.worker_identity), source_pins=self.source_pins,
+            environment_observation=self.environment_observation,
+            output_digest=deepcopy(STRUCTURED_OUTPUT_DIGEST),
             coverage=self.session.report() if self.session is not None else None,
             independent_discovery=self.discovery_reports, discovery=self.discovery_diagnostics,
             all_projection_count=len(self.call_order), eligible_target_count=len(self.eligible),

@@ -283,6 +283,25 @@ void notify_completion() {
 extern "C" int dcat26_group_metadata_arrays_v1(DcatMetadataArrayStateV1* output) {
     return dcat_metadata::snapshot(output);
 }
+// Read existing cache only. Never call resolve(), dlsym(), or an ACL function.
+// Slots are pinned by the Python deployment and the fresh build manifest.
+extern "C" int dcat26_group_cached_address_v1(uint32_t slot,uint64_t* output) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(!output)return 1;
+    *output=0;
+    if(!api.ready || !same_owner(&owner)
+        || runtime.callback_active || runtime.completion_active)return 3;
+    const uintptr_t values[]={reinterpret_cast<uintptr_t>(api.device),reinterpret_cast<uintptr_t>(api.type),
+        reinterpret_cast<uintptr_t>(api.format),reinterpret_cast<uintptr_t>(api.offset),
+        reinterpret_cast<uintptr_t>(api.shape),reinterpret_cast<uintptr_t>(api.storage),
+        reinterpret_cast<uintptr_t>(api.strides),reinterpret_cast<uintptr_t>(api.address),
+        reinterpret_cast<uintptr_t>(api.create),reinterpret_cast<uintptr_t>(api.destroy),
+        reinterpret_cast<uintptr_t>(api.allocate),reinterpret_cast<uintptr_t>(api.release),
+        reinterpret_cast<uintptr_t>(api.copy),reinterpret_cast<uintptr_t>(api.sync)};
+    if(slot>=sizeof(values)/sizeof(values[0]))return 2;
+    if(!values[slot])return 3;
+    *output=values[slot];return 0;
+}
 extern "C" int dcat26_group_fia_abi_v3(FiaAbiV3* output) try {
     if(!output || output->version!=3 || output->size!=sizeof(*output))return Identity;
     *output=FiaAbiV3{};output->descriptor=sizeof(dcat26_fia_typed::Descriptor);output->record=sizeof(dcat26_fia_typed::Record);

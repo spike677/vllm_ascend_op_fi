@@ -67,6 +67,19 @@ class CoreOutput39GroupTests(unittest.TestCase):
         self.assertTrue(second['contract_satisfied'], second['rejection_reasons'])
         self.assertEqual(first['planned_targets'], 2)
         self.assertEqual((first['hits'], second['hits']), (2, 4))
+        # These describe different values and different algorithms. Compare
+        # B/OFF/health within each boundary, not the two hashes to one another.
+        for label in ('c2', 'c3'):
+            original = self.provider.group_reports[label]
+            health = original['actual_health']
+            off = next(row for row in original['forward_artifacts'] if row['phase'] == 'off')
+            request = next(row for row in self.provider.rows
+                if row['actual_internal_request_id'] == health['actual_request_id'])
+            self.assertEqual(health['output_sha256'], off['output_sha256'])
+            self.assertNotEqual(health['output_sha256'], request['output_sha256'])
+            self.assertEqual(health['output_digest']['value_boundary'], 'TUPLE_OF_ACTUAL_ROOT_HIDDEN_AND_COMPLETE_LOGITS')
+            self.assertEqual(request['output_digest']['value_boundary'], 'ACTUAL_FINAL_LOGITS_TENSOR_ONLY')
+            self.assertEqual(off['output_digest'], health['output_digest'])
         issued, = first['live_c2_proof']['issued']
         consumed = second['live_c2_proof']['consumed']
         self.assertEqual(issued['object_binding'], consumed['object_binding'])
