@@ -45,6 +45,18 @@ incomplete observations and forged join flags with inconsistent metadata fail
 closed. Only the report is printed; large source bodies and tensor records are
 not copied into the review output.
 
+For a shared RoPE module, the independent module hook reports the canonical
+`named_modules()` path while the reader reports its actual call alias. These
+strings need not match. The reviewer joins the event's canonical path to the
+independent `module_inventory` object identity, then to the reader's identical
+module and cache objects. It reconstructs all aliases from the complete reader
+and structural sets and requires a unique alias below the recorded active
+ancestor for the actual request. Exact operator/schema, event order/forward,
+and all four tensor metadata records still must match the provider call.
+An unrecorded alias, another module with equal-shaped tensors, a copied tensor,
+an ambiguous ancestor, or a request mismatch is rejected. This schema correction
+does not modify or relabel the source46 result or supply a missing live proof.
+
 The source46 probe does **not** export the original live C2Proof object's
 issuance/use receipt. Its pinned code obtains the proof from the owning C2
 session and the frozen runtime checks exact issued-object identity before C3.
@@ -68,8 +80,10 @@ claimed. Digest comparisons rely on the recorded full-tensor observations and
 the externally pinned artifact origin; the reviewer does not possess those
 device tensors.
 
-Fifteen new CPU tests generate their baseline through the existing real CPU
+Nineteen CPU tests generate their baseline through the existing real CPU
 RoPE forward/controller fixtures and then corrupt individual evidence edges.
-The new tests and seven serving fixture tests pass together (22 tests). The
+The tests capture the fixture's real opaque operator events, including a single
+shared canonical module hook reached at three distinct actual aliases. They and
+seven serving fixture tests pass together (26 tests). The
 private test-only CPU mode never grants Worker qualification, and the CLI has no
 simulation override.

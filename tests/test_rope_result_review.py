@@ -7,8 +7,10 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from experiments.c2c3_closure_20261117.review_natural_rope_result import Review, read_result
+from fault_injection.tensor_observer import NaturalTensorObserver
 import test_rope_serving_group as worker_fixture
 
 
@@ -51,7 +53,12 @@ def cpu_result():
 class RoPEResultReviewTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.original = cpu_result()
+        # The CPU fixture operator is named "opaque", outside the production
+        # observer's rotary-name filter. Capture its real dispatch events too.
+        def capture_all(*args, **kwargs):
+            return NaturalTensorObserver(*args, **dict(kwargs, record_all_operators=True))
+        with patch('fault_injection.rope_serving.NaturalTensorObserver', side_effect=capture_all):
+            cls.original = cpu_result()
 
     def review(self, change=None):
         result = copy.deepcopy(self.original)
@@ -88,6 +95,56 @@ class RoPEResultReviewTests(unittest.TestCase):
         report = self.review(change)
         self.assertIn('INDEPENDENT_OPERATOR_DENOMINATOR_CHANGED', self.codes(report))
 
+    def test_real_shared_module_canonical_event_joins_all_actual_aliases(self):
+        row = self.original['requests'][4]['worker']
+        readers = row['independent']['rope_trace']['readers']
+        events = [event for event in row['independent']['events']
+                  if event.get('operator') == row['calls'][0]['operator']]
+        self.assertEqual(len({reader['module_object_id'] for reader in readers}), 1)
+        self.assertEqual(len({event['path'] for event in events}), 1)
+        self.assertNotEqual(events[1]['path'], readers[1]['model_path'])
+        self.assertTrue(self.review()['c2_execution_evidence_valid'])
+
+    def test_shared_alias_does_not_accept_foreign_canonical_owner_or_path(self):
+        def wrong_owner(r):
+            inventory = r['requests'][4]['worker']['independent']['module_inventory']
+            next(item for item in inventory if item['role'] == 'rope_table_owner')['module_object_id'] += 1
+        self.assertIn('INDEPENDENT_CANONICAL_MODULE_OWNER_MISMATCH', self.codes(self.review(wrong_owner)))
+        def arbitrary_alias(r):
+            row = r['requests'][4]['worker']
+            events = [event for event in row['independent']['events']
+                      if event.get('operator') == row['calls'][0]['operator']]
+            events[1]['path'] = row['calls'][1]['path']  # A real alias is still not the canonical hook path.
+        self.assertIn('INDEPENDENT_CANONICAL_ALIAS_OBJECT_JOIN_CHANGED', self.codes(self.review(arbitrary_alias)))
+
+    def test_shared_alias_requires_unique_actual_ancestor_request_and_complete_aliases(self):
+        for field, value in (('active_parent_path', 'model.body'), ('request_id', 'foreign')):
+            with self.subTest(field=field):
+                def change(r):
+                    r['requests'][4]['worker']['independent']['rope_trace']['readers'][1][field] = value
+                self.assertIn('INDEPENDENT_ACTUAL_ALIAS_ANCESTOR_OR_REQUEST_CHANGED', self.codes(self.review(change)))
+        def missing_alias(r):
+            r['requests'][4]['worker']['independent']['rope_trace']['structural_cache_owners'].pop()
+        self.assertIn('ALL_NATURAL_READERS_DENOMINATOR_CHANGED', self.codes(self.review(missing_alias)))
+
+    def test_shared_alias_cannot_join_another_object_clone_or_event_forward(self):
+        def different_owner(r):
+            r['requests'][4]['worker']['independent']['rope_trace']['readers'][1]['module_object_id'] += 1
+        self.assertIn('INDEPENDENT_CANONICAL_MODULE_OWNER_MISMATCH', self.codes(self.review(different_owner)))
+        for change in ('clone', 'forward', 'order'):
+            with self.subTest(change=change):
+                def mutate(r):
+                    row = r['requests'][4]['worker']
+                    events = [event for event in row['independent']['events']
+                              if event.get('operator') == row['calls'][0]['operator']]
+                    if change == 'clone':
+                        events[1]['input'][0]['object_id'] += 1
+                    elif change == 'forward':
+                        events[1]['forward'] += 1
+                    else:
+                        events[1]['sequence'] = events[0]['sequence']
+                self.assertIn('INDEPENDENT_OPERATOR_CALLSITE_JOIN_CHANGED', self.codes(self.review(mutate)))
+
     def test_driver_mapping_requires_the_actual_worker_request(self):
         report = self.review(lambda r: r['requests'][4]['mapping'].update(internal_request_id='different'))
         self.assertIn('DRIVER_REQUEST_MAPPING_MISMATCH', self.codes(report))
@@ -120,7 +177,7 @@ class RoPEResultReviewTests(unittest.TestCase):
     def test_old_cache_object_lifetime_cannot_be_replaced_by_equal_bytes(self):
         def change(r):
             r['requests'][4]['worker']['independent']['rope_trace']['readers'][0]['cache_lifetime_object_id'] += 1
-        self.assertIn('READER_OR_CACHE_LIFETIME_CHANGED', self.codes(self.review(change)))
+        self.assertIn('INDEPENDENT_CANONICAL_ALIAS_OBJECT_JOIN_CHANGED', self.codes(self.review(change)))
 
     def test_execution_digest_is_recomputed_from_full_reader_outer_and_triton(self):
         report = self.review(lambda r: r['c2']['calls'][0]['receipt'].update(execution_sha256='f' * 64))

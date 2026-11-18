@@ -251,20 +251,68 @@ class Review:
         self.need(independent['operator_counts'][operator] == n, 'INDEPENDENT_OPERATOR_DENOMINATOR_CHANGED')
         if not self.cpu:
             self.need(operator == 'vllm.npu_rotary_embedding.default', 'UNREVIEWED_OUTER_ROPE_OPERATOR')
-            native_outer = [event for event in independent['events'] if event.get('kind') == 'operator'
-                            and event.get('operator') == operator]
-            self.need(len(native_outer) == n and all(event['original_returned'] is True for event in native_outer),
-                      'INDEPENDENT_OPERATOR_EVENTS_MISSING')
-            self.need(all(event['operator'] == operator for event in independent['events']
-                          if event.get('kind') == 'operator' and 'rotary' in event.get('schema', '')),
-                      'UNCLASSIFIED_NATURAL_ROTARY_OPERATOR')
-            self.need(all(event['path'] == call['path'] and event['input'] == call['metadata']
-                          for event, call in zip(native_outer, row['calls'])), 'INDEPENDENT_OPERATOR_CALLSITE_JOIN_CHANGED')
+        native_outer = [event for event in independent['events'] if event.get('kind') == 'operator'
+                        and event.get('operator') == operator]
+        self.need(len(native_outer) == n and all(event['original_returned'] is True for event in native_outer),
+                  'INDEPENDENT_OPERATOR_EVENTS_MISSING')
+        self.need(all(event['operator'] == operator for event in independent['events']
+                      if event.get('kind') == 'operator' and 'rotary' in event.get('schema', '')),
+                  'UNCLASSIFIED_NATURAL_ROTARY_OPERATOR')
+        self.operator_callsites(row, readers, native_outer)
         for i, (reader, out, launch, call) in enumerate(zip(readers, outer, launches, row['calls'])):
             self.reader(phase, row, i, reader, out, launch, call, baseline['readers'][i], events[i] if events else None)
         self.need(all(native['original_calls'] == 1 and native['original_returned'] is True
                       and native['request_id'] == request and native['reader_sequence'] in range(n)
                       for native in trace['native_operators']), 'NESTED_OPERATOR_EXECUTION_INCOMPLETE')
+
+    def operator_callsites(self, row, readers, events):
+        # The independent module observer installs one named_modules() hook per
+        # object, so a shared module emits its canonical path at every alias.
+        # The separate reader records ModuleSites' actual ancestor resolution.
+        # Join those observations through the recorded object, never by name,
+        # tensor geometry, or by simply discarding a path mismatch.
+        independent, request = row['independent'], row['request_id']
+        trace = independent['rope_trace']
+        aliases, by_path = {}, {}
+        for reader in readers:
+            owner, path = reader['module_object_id'], reader['model_path']
+            self.need(type(owner) is int and owner > 0 and path not in by_path,
+                      'INDEPENDENT_READER_ALIAS_IDENTITY_MISSING')
+            aliases.setdefault(owner, set()).add(path)
+            by_path[path] = reader
+        structural = trace['structural_cache_owners']
+        self.need(len(structural) == len(set(structural)) == len(readers)
+                  and set(structural) == set(by_path) == set(self.paths)
+                  == set(self.result['setup']['provenance']['structural_rope_sites']),
+                  'INDEPENDENT_READER_ALIAS_SET_INCOMPLETE')
+        canonical = [item for item in independent['module_inventory'] if item['role'] == 'rope_table_owner']
+        self.need(len(canonical) == len(aliases)
+                  and len({item['path'] for item in canonical}) == len(canonical)
+                  and len({item['module_object_id'] for item in canonical}) == len(canonical)
+                  and {item['module_object_id'] for item in canonical} == set(aliases)
+                  and all(item['path'] in aliases[item['module_object_id']] for item in canonical),
+                  'INDEPENDENT_CANONICAL_MODULE_OWNER_MISMATCH')
+        canonical = {item['path']: item for item in canonical}
+        previous = -1
+        for event, call, reader in zip(events, row['calls'], readers):
+            owner, path = reader['module_object_id'], reader['model_path']
+            parent = reader['active_parent_path']
+            self.need(isinstance(parent, str) and bool(parent)
+                      and [alias for alias in aliases[owner]
+                           if parent == '<root>' or alias.startswith(parent + '.')] == [path]
+                      and reader['request_id'] == request and reader['scheduler'] == row['scheduler']
+                      and call['path'] == path, 'INDEPENDENT_ACTUAL_ALIAS_ANCESTOR_OR_REQUEST_CHANGED')
+            self.need(event['path'] in canonical and canonical[event['path']]['module_object_id'] == owner
+                      and by_path[event['path']]['cache_lifetime_object_id'] == reader['cache_lifetime_object_id']
+                      and by_path[event['path']]['cache'] == reader['cache'],
+                      'INDEPENDENT_CANONICAL_ALIAS_OBJECT_JOIN_CHANGED')
+            self.need(event['input'] == call['metadata'] and event['schema'] == call['schema']
+                      and event['operator'] == call['operator']
+                      and type(event['sequence']) is int and event['sequence'] > previous
+                      and type(event['forward']) is int
+                      and event['forward'] == independent['forwards'][0]['index'],
+                      'INDEPENDENT_OPERATOR_CALLSITE_JOIN_CHANGED')
+            previous = event['sequence']
 
     def reader(self, phase, row, index, reader, outer, triton, call, healthy, event):
         fault, request, path = 'fault' in phase, row['request_id'], self.paths[index]
