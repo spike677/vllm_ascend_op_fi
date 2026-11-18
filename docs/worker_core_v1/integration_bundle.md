@@ -29,6 +29,18 @@ reviewed Worker discovery/census modules and `test_core_*.py` contracts are
 included when present in the selected root. Packaging does not require a Git
 history scan or execute a referenced module.
 
+Source policy revision 2 includes the exact existing observer closure:
+`engineering_closure/__init__.py`, `path_discovery.py`, and `native_observer.py`,
+plus `tests/worker_extension/test_serving_context.py`. If the selected snapshot
+contains `call_census.py`, its current Worker Core README and census contract
+are required too. Other engineering history, queues, execution receipts and
+reports remain excluded. This packaging-policy revision does not implement
+Worker Coverage V2. Verify older policy-1 artifacts with their original bundled
+exporter rather than interpreting them as a complete census distribution.
+The exporter also refuses a census snapshot unless its unchanged root
+pyproject declares `engineering_closure*` in package discovery; copying its
+observer source files alone is insufficient.
+
 Keep `review.json` and the returned archive SHA256 separately from the archive.
 Verification reads archive members without extraction and rejects traversal,
 links, unexpected or duplicate entries, missing files, changed source bytes,
@@ -107,14 +119,29 @@ integrity, exclusions and deterministic generation. The exported host contracts
 can then be run from the relocated tree using the instructions in
 `tests/README.md` inside the bundle.
 
-Recorded CPU validation on 2026-11-18 for the host branch plus this exporter:
-15 exporter tests ran, 14 passed, and one source-symlink creation test was
+For a reviewed tree with census, run the complete relocated Core contract set:
+`python -B -m unittest discover -s tests/worker_extension -p "test_core_*.py"`.
+The three wheels must come from that same source review, including the root
+distribution's `engineering_closure` package declaration. Verify imports from
+installed wheel contents as well as the relocated source tree; source imports
+alone cannot establish installed-package closure.
+
+Recorded CPU validation on 2026-11-18:
+17 exporter tests ran, 16 passed, and one source-symlink creation test was
 skipped because this Windows host does not grant that operation. Archive-link
-refusal was tested independently and passed. A source-only bundle verified
-successfully, relocated imports passed, and 29 relocated Host
-contracts passed. All three original distributions built wheels offline with
+refusal was tested independently and passed. The current root snapshot
+`11607cda4d30a402b4e69dc4318fd6ff927053a2` was copied read-only into a bounded
+reviewed staging tree; only this exporter, its test and this guide came from
+the agent overlay. Every other source hash was checked against the root tree.
+Its 305-source-file / 319-member source-only bundle verified successfully.
+All 67 relocated `test_core_*` contracts passed with no skips. All three
+original distributions built wheels offline with
 `PIP_NO_INDEX=1`, `--no-deps`, and `--no-build-isolation`; wheel inspection found
 no native binary, tensor, raw statistics, bytecode, evidence or history payload.
+The root wheel contained exactly the three existing observer modules, byte for
+byte equal to the root snapshot. After installing all three wheels into a fresh
+directory, the same 67 Core contracts passed again using installed runtime
+imports, with no runtime source-tree fallback.
 These are packaging and CPU contract results, with zero Native builds and zero
 NPU calls. Source counts may change when the main reviewed tree adds discovery
 or census modules; each final export must use its own source-review digest.

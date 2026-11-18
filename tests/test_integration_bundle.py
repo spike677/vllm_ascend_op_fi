@@ -120,6 +120,40 @@ class BundleTests(unittest.TestCase):
                          bundle._sha(data))
         self.assertEqual(self.members()[bundle.ARCHIVE_ROOT + '/sources/' + name], data)
 
+    def test_census_requires_observers_fixture_and_docs_without_engineering_history(self):
+        census = self.source / bundle._CENSUS
+        census.write_text('# natural call census fixture\n', encoding='utf-8')
+        for name in bundle._CORE_DOCS:
+            (self.source / name).write_text('# current Core contract\n', encoding='utf-8')
+        project = self.source / 'pyproject.toml'
+        project.write_text(project.read_text(encoding='utf-8').replace(
+            '"native_execution_strategy*"]', '"native_execution_strategy*", "engineering_closure*"]'), encoding='utf-8')
+        private = ('engineering_closure/historical_evidence/inherited_pass.csv',
+                   'engineering_closure/engineering_tests/validation.json',
+                   'engineering_closure/npu_execution/batch1.json',
+                   'engineering_closure/reports/receipt.py', 'engineering_closure/queue.py')
+        for name in private:
+            path = self.source / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('must not ship\n', encoding='utf-8')
+        review, _ = self.export()
+        names = {row['source_path'] for row in review['files']}
+        self.assertTrue(bundle._OBSERVERS | bundle._CORE_DOCS <= names)
+        self.assertIn('tests/worker_extension/test_serving_context.py', names)
+        self.assertTrue(names.isdisjoint(private))
+        (self.source / 'docs/worker_core_v1/census_contract.md').unlink()
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'incomplete-census')
+
+    def test_census_refuses_source_only_observers_missing_from_wheel_declaration(self):
+        (self.source / bundle._CENSUS).write_text('# census\n', encoding='utf-8')
+        for name in bundle._CORE_DOCS:
+            (self.source / name).write_text('# current contract\n', encoding='utf-8')
+        project = self.source / 'pyproject.toml'
+        project.write_text(project.read_text(encoding='utf-8').replace(', "engineering_closure*"', ''), encoding='utf-8')
+        with self.assertRaisesRegex(bundle.BundleError, 'CENSUS_OBSERVER_PACKAGE_NOT_IN_ROOT_DISTRIBUTION'):
+            bundle.create_review(self.source, 'source-only-observers')
+
     def test_adding_selected_code_after_review_is_not_silently_included(self):
         review = bundle.create_review(self.source, 'review-before-new-file')
         (self.source / 'fault_injection/new_provider.py').write_text('# new\n', encoding='utf-8')
@@ -240,6 +274,8 @@ class ActualSourceRelocationTests(unittest.TestCase):
                 'from fault_injection.native_build import NativeBuildManager; '
                 'from fault_injection.integration import HostContract; '
                 'from demoncat_fault39.contracts import HostContract as Fault39Host; '
+                'from engineering_closure.path_discovery import observe_execution_path; '
+                'from engineering_closure.native_observer import NativeObserver; '
                 'assert FaultConfig(20,"buffer_substitute").mechanism == "20.buffer_substitute"; '
                 'assert FaultConfig(39,"matmul_range").mechanism == "39.matmul_range"; '
                 'assert "torch_npu" not in sys.modules; print("relocated-imports-ok")'

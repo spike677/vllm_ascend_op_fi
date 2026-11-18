@@ -6,6 +6,7 @@ the exporter checks bytes and scope, not the truth of that review reference.
 """
 
 import argparse
+import ast
 import gzip
 import hashlib
 import io
@@ -17,7 +18,7 @@ import stat
 import tarfile
 
 
-POLICY = 'demoncat.worker_core.source_only.v1'
+POLICY = 'demoncat.worker_core.source_only.v2'
 ARCHIVE_ROOT = 'demoncatpfi-integration'
 MAX_FILE = 16 * 1024 * 1024
 MAX_TOTAL = 128 * 1024 * 1024
@@ -44,6 +45,10 @@ _DISTRIBUTIONS = {
     'fault39/pyproject.toml': ('demoncat-fault39-core', 'fault39'),
 }
 _LEGACY = 'fault20_fast_validation/source/'
+_OBSERVERS = {'engineering_closure/__init__.py', 'engineering_closure/path_discovery.py',
+              'engineering_closure/native_observer.py'}
+_CORE_DOCS = {'docs/worker_core_v1/README.md', 'docs/worker_core_v1/census_contract.md'}
+_CENSUS = 'src/demoncat/runtime/vllm_ascend/worker_extension/call_census.py'
 # Current build inputs only: no whole legacy source tree or experiment history.
 _SUPPORT = {
     _LEGACY + 'l4_buffer_substitute_allhit_v1/' + name for name in (
@@ -59,16 +64,17 @@ _SUPPORT = {
 } | {
     _LEGACY + 'fault26_fia_writer_proxy_v1/' + name for name in ('fault26_fia_writer_lossless.cpp', 'build.sh')
 }
-_EXACT = set(_DISTRIBUTIONS) | _SUPPORT | {
+_EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | {
     'fault39/tools/version_profile.py', 'fault39/tools/deployment_profile.py',
     'native_execution_strategy/native/build_requirements.txt',
     'fault39/tests/test_contracts.py', 'tests/test_integration_contract.py',
     'tests/test_native_build.py', 'tests/test_integration_bundle.py',
     'tests/worker_extension/__init__.py', 'tests/worker_extension/test_extension.py',
+    'tests/worker_extension/test_serving_context.py',
     'tests/worker_extension/metadata_fixture.py', 'tools/export_integration_bundle.py',
     'docs/worker_core_v1/host_contract.md', 'docs/worker_core_v1/integration_bundle.md',
 }
-_REQUIRED = _EXACT | {
+_REQUIRED = (_EXACT - _CORE_DOCS) | {
     'fault_injection/integration.py', 'fault_injection/lifecycle.py',
     'fault_injection/native_build/manager.py', 'fault_injection/native_build/recipes.py',
     'fault_injection/native_adapters/build_qmm.sh',
@@ -79,6 +85,12 @@ _REQUIRED = _EXACT | {
     'src/demoncat/runtime/vllm_ascend/worker_extension/extension.py',
     'tests/worker_extension/test_core_host.py',
 }
+
+
+def _required(names):
+    # Older reviewed snapshots may lack census entirely. A snapshot that ships
+    # it must also ship the actual observer package, fixture and its contracts.
+    return _REQUIRED | (_CORE_DOCS if _CENSUS in names else set())
 
 
 class BundleError(ValueError):
@@ -171,7 +183,7 @@ def _inventory(source_root):
                     raise BundleError('LINKED_SOURCE_REFUSED: ' + (relative / child).as_posix())
             names.update((relative / name).as_posix() for name in files
                          if _allowed((relative / name).as_posix()))
-    missing = _REQUIRED - names
+    missing = _required(names) - names
     if missing:
         raise BundleError('REQUIRED_SOURCE_MISSING: ' + ', '.join(sorted(missing)))
     payload = {name: _read(root, name) for name in sorted(names) if _allowed(name)}
@@ -194,6 +206,16 @@ def _distributions(payload):
         result.append(dict(name=expected, version=fields['version'], source_root=root,
                            bundle_root='sources' if root == '.' else 'sources/' + root,
                            pyproject=project))
+    if _CENSUS in payload:
+        block = re.search(r'(?ms)^\[tool\.setuptools\.packages\.find\]\s*\n(.*?)(?=^\[|\Z)',
+                          payload['pyproject.toml'].decode('utf-8'))
+        include = None if block is None else re.search(r'(?m)^include\s*=\s*(\[[^\n]*\])\s*$', block[1])
+        try:
+            patterns = [] if include is None else ast.literal_eval(include[1])
+        except (SyntaxError, ValueError):
+            patterns = []
+        if not isinstance(patterns, list) or 'engineering_closure*' not in patterns:
+            raise BundleError('CENSUS_OBSERVER_PACKAGE_NOT_IN_ROOT_DISTRIBUTION')
     return result
 
 
@@ -236,7 +258,7 @@ def _validate_review(review):
             raise BundleError('INVALID_REVIEWED_SOURCE_ENTRY')
         names.append(row['source_path'])
     if (names != sorted(set(names)) or len({name.lower() for name in names}) != len(names)
-            or not _REQUIRED <= set(names)):
+            or not _required(names) <= set(names)):
         raise BundleError('REVIEWED_SOURCE_SET_INVALID')
     if sum(row['bytes'] for row in review['files']) > MAX_TOTAL:
         raise BundleError('SOURCE_SNAPSHOT_TOO_LARGE')
@@ -246,6 +268,8 @@ def _sections(name):
     sections = set()
     if name.startswith('src/demoncat/runtime/'):
         sections.add('worker_extension')
+    if name in _OBSERVERS:
+        sections.update(('worker_extension', 'adapters'))
     if '/providers/' in name or '/deployments/' in name or name.endswith(('/providers.py', '/provider.py', '/backend.py')):
         sections.add('providers')
     if (name.startswith(('fault_injection/native_', 'fault39/native/', 'fault39/tools/', _LEGACY,
@@ -282,6 +306,10 @@ scope checks and owner retention on uncertain/failed recovery unchanged.
 The current Worker source may include additional discovery/census modules from
 the explicitly reviewed source root. Inventory and C0 observations never grant
 runtime or native qualification. Read sources/docs/worker_core_v1/host_contract.md.
+When census is present, the package also includes the exact existing
+engineering_closure observer modules, the serving-context CPU fixture, and
+sources/docs/worker_core_v1/{README,census_contract}.md. Unrelated engineering
+history, queues, execution receipts and reports are not included.
 
 NativeBuildManager remains fault_injection.native_build.NativeBuildManager.
 Pass --repository pointing to sources/ when installed outside this source tree.
@@ -338,8 +366,8 @@ def _generated(review):
         '# Relocated CPU contracts\n\n'
         'From sources/, set PYTHONPATH to src, fault39/src, the current directory, '
         'tests and tests/worker_extension using the platform path separator.\n\n'
-        'Run `python -B -m unittest discover -s tests/worker_extension -p test_core_host.py`.\n'
-        'Run current discovery/census test_core_*.py separately if present in the reviewed snapshot.\n'
+        'Run `python -B -m unittest discover -s tests/worker_extension -p "test_core_*.py"`.\n'
+        'The serving-context fixture and the exact engineering_closure observer modules are included.\n'
         'Existing host contracts: `python -B -m unittest discover -s tests -p test_integration_contract.py`.\n'
         'Existing Fault39: `python -B -m unittest discover -s fault39/tests -p test_contracts.py`.\n'
         'CPU readback fixtures grant no NPU or compatibility acceptance.\n'
