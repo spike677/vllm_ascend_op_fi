@@ -1,0 +1,165 @@
+{
+  "build_and_source": {
+    "build_inputs_sha256": "573fe480c090d6568fb6bf98afd4b1d293038246543fb248b81f261ccfdd3eab",
+    "build_key": "05e6a510efa3a8ac8f4a7c3f77056af2027137a3d90440cc36ec31f90af1ccbf",
+    "build_receipt_sha256": "cbadb3b6938bf2a10b5c8bcb5a603e7cd7a5342e35f5159ce09a2b5465874d32",
+    "build_sources_rehashed": 13,
+    "bundle_manifest_sha256": "9f80344984842660e2e7c143d5aed255ca02f04ed3373f917bd70ee9e4db8996",
+    "compiler_version_recorded": "aarch64-linux-gnu-g++-11 (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+    "container_cleanup_is_not_model_recovery": true,
+    "dso_bytes_rehashed_locally": false,
+    "header_sha_records": 2344,
+    "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+    "metadata_bytes_rehashed": 1295691209,
+    "metadata_files_rehashed": 162,
+    "native_bytes_recorded": 28912,
+    "native_elf_build_id_recorded": "fe167ce0f0cd4ee8839a5b082a1664e23cdd28a2",
+    "native_sha256": "9261d0867f822c90d0d179457e41bc9a2b132bc39e643b61fe5d47a3fd81424f",
+    "private_arrays_downloaded_or_published": false,
+    "runtime_controller_sha256": "6bab4865b8d6c2b6df105050e0823e56c1a7e63036c824a73ad6b4262fd30a25",
+    "same_process_recovery_basis": "SEPARATE_ORIGINAL_RPC_NATIVE_AND_MODEL_REVIEW",
+    "sdk_compiler_binary_and_library_bytes_rehashed_locally": false,
+    "sdk_version_recorded": "8.5.1"
+  },
+  "classification": "INCOMPLETE_C2_SESSION_TIME_BUDGET_STOP_NO_C3",
+  "cpu_tests": {
+    "command": "python -B -m unittest test_output39_refusal_prefix_review test_output39_refusal_original_review test_output39_refusal_diagnostic test_worker_core_group_original_review -q",
+    "overlap_with_prior_suites_not_added_as_independent_total": true,
+    "passed": 53,
+    "skipped": 0,
+    "tests": 53
+  },
+  "diagnostic_prefix": {
+    "cumulative_original_observed": false,
+    "downstream_first_nonfinite": {
+      "bits_hex": "0x7fff",
+      "classification": "quiet_nan",
+      "index": 0,
+      "sign_bit": 0
+    },
+    "downstream_fresh_nonfinite": 86016,
+    "healthy_nonfinite": 0,
+    "native_apply4_reproduced": false,
+    "observations": 3,
+    "predecessor_original_nonfinite": 0,
+    "source84_same_original_causal_chain_closed": false
+  },
+  "first_stop": {
+    "budgets_extended": false,
+    "call_id": "forward:26:1",
+    "call_limit_exceeded": false,
+    "cause_interpretation": "ELAPSED_LIMIT_BY_PINNED_SOURCE_BRANCH_ELIMINATION",
+    "counted_non_off_calls": 2713,
+    "elapsed_inference_basis": "Complete 0-based dispatch sequence and pinned CoverageSession.begin; counted 2713 <= 3164 leaves the elapsed >= 1200 branch. No elapsed duration sample was saved.",
+    "eligible": false,
+    "exact_elapsed_seconds_observed": false,
+    "first_decision_reason": "SESSION_BUDGET_EXHAUSTED",
+    "max_calls": 3164,
+    "max_seconds": 1200,
+    "module_path": "model.layers.0.self_attn.qkv_proj",
+    "operator": "vllm.unquantized_gemm.default",
+    "outer_hard_seconds": 1800,
+    "outer_soft_seconds": 1500,
+    "phase": "PRE_FAULT_PROPAGATION",
+    "sequence": 2712,
+    "subsequent_decision_reasons": [
+      "SESSION_STOPPED",
+      "SESSION_STOPPED"
+    ]
+  },
+  "independent_review": {
+    "all_frozen_source_files_rehashed": 1072,
+    "helper_sha256": {
+      "group_review_common.py": "cac3e421c29b98f31faccec2911439e513141a1f2519134f7ef00054b81a6f1b",
+      "review39_forward_originals.py": "1c42e60de05f423536a0b412d13c6434567e5d969350acad1bc82b902b340abf",
+      "review39_group_originals.py": "db3c434be3a8f4ae97d6ae16e89c970bcc534775ad1761b68a2dec4f2ea59f11",
+      "review39_refusal_diagnostic.py": "0fa45ff2d35faa7c324b45dca4de4c303dc085c99962d6bf792a9d85b5a120fd",
+      "review39_refusal_originals.py": "ed54ffe776a820f72bff2df754e1c4a245d579c522b822283f75fb3e0e61e0f8"
+    },
+    "issues": [],
+    "metadata_build_controller_checks": 182,
+    "metadata_bytes_rehashed": 1295691209,
+    "metadata_files_rehashed": 162,
+    "original_checks": 96961,
+    "reader_sha256": "5533114c3b0460ff51a69ddc8a5ee383b417e4af8a36fdf0d4e0bdfaff837c6e",
+    "referenced_originals_rehashed": 150,
+    "source_checks": 83
+  },
+  "limits": [
+    "This attempt stopped in C2 before the cumulative C3 arm; three observed records cannot substitute for five.",
+    "Single predecessor F produced a nonfinite downstream fresh snapshot. There is no cumulative same-lease original snapshot or apply4 event to close that comparison.",
+    "The 1200-second cause is source-bound branch elimination, not an observed exact elapsed duration.",
+    "DSO/SDK/compiler/weight bytes were not downloaded or rehashed locally; source and metadata bytes were. Actual loaded binary identities remain original runtime/build receipts.",
+    "No new statistics/mix was collected or published, so no E5 conclusion is made.",
+    "No original RPC, Native JSON, Pod/OCI record, tensor payload, weights or model image is included in this public summary."
+  ],
+  "observed_execution": {
+    "actual_forward_frames_audited": 15848,
+    "complete_forward_inventories_audited": 28,
+    "completed_fault_forwards": 24,
+    "completed_independent_fault_targets": 24,
+    "eligible_targets": 28,
+    "failed_fault_forwards": 1,
+    "initial_six_completed": true,
+    "ledger_calls": 2715,
+    "lossless_targets": 28,
+    "native_apply_return_counts": {
+      "0": 54
+    },
+    "normal_requests_attempted": 32,
+    "normal_requests_completed": 31,
+    "projections_per_full_forward": 113,
+    "recovery_requests_completed": 2,
+    "remaining_targets": 4,
+    "unique_native_leases": 54,
+    "untested_target_modules": [
+      "model.layers.24.mlp.gate_up_proj",
+      "model.layers.25.mlp.gate_up_proj",
+      "model.layers.26.mlp.gate_up_proj",
+      "model.layers.27.mlp.gate_up_proj"
+    ]
+  },
+  "original_identity": {
+    "diagnostic_sha256": "b17566a1da05cde78e41aebcf71001ba9173ff7f795982d89da87332afbd77b8",
+    "metadata_archive_sha256": "aa3323bd1b68e1d0a13e1b5d24ceadd9558e37857b8bb2641980431f72fcb9d4",
+    "metadata_manifest_sha256": "9f80344984842660e2e7c143d5aed255ca02f04ed3373f917bd70ee9e4db8996",
+    "private_full_review_sha256": "14f00ada71e181c0de0f3c8e742aabf13bb9e9ed455ab8fc258d1a2e0f83d00d",
+    "result_sha256": "70ef7235b1661fcc9d5a1467bcc892747e8b78e82a53642aa5071870cc8c7ed8",
+    "source_archive_sha256": "04cbd2e7c6faee08745d77d4c4bcc3da1787acf35217c9abdb6a4855251bbffb",
+    "source_manifest_sha256": "6c6b544f1709f6235961858d175bcffd6494ba47b7bbc556cf50cca49ebd715c"
+  },
+  "qualification": {
+    "c2_complete_in_this_attempt": false,
+    "c3": false,
+    "c3_started": false,
+    "complete_counterfactual_chain": false,
+    "e5": false,
+    "guard_apply4_reproduced": false,
+    "historical_source84_failure_rewritten": false,
+    "live_c2_proofs_issued": 0,
+    "new_c2": false,
+    "saved_json_authority": false
+  },
+  "recovery": {
+    "all_28_logical_targets_released": true,
+    "binding_removed": true,
+    "container_cleanup_used_as_model_recovery": false,
+    "experimental_trace_closed": true,
+    "native_restore_release_live_checks_consistent": true,
+    "off_and_health_complete_bundle_exact": true,
+    "off_and_health_complete_logits_exact": true,
+    "owned_container_removed": true,
+    "post_unregister_ordinary_health_consistent": true,
+    "public_owner_detached": true,
+    "same_worker_preserved": true
+  },
+  "schema": "demoncat.agent7.output39.source101.partial_summary.v1",
+  "scope": {
+    "execution": "eager BF16 fresh prefill",
+    "historical_scope_or_qualification_inherited": false,
+    "model": "Qwen3-0.6B",
+    "physical_card": 5,
+    "source_commit": "417d43ccc85b58554d243791546f9d484fdcd8f1",
+    "worker": "actual standard vLLM TP1 Worker"
+  }
+}

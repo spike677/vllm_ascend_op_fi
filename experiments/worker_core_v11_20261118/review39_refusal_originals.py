@@ -20,6 +20,8 @@ GROUP = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(GROUP)
 C, OLD = GROUP.C, GROUP.OLD
 NARROW = C.pure_module(HERE/'review39_refusal_diagnostic.py', '_narrow_refusal')
 HELPER = 'experiments.worker_core_v11_20261118.output39_refusal_probe.'
+INSTALL_METHODS = (HELPER+'install_diagnostic','__main__.install_diagnostic')
+FINISH_METHODS = (HELPER+'finish_diagnostic','__main__.finish_diagnostic')
 SELF = 'experiments/worker_core_v11_20261118/output39_refusal_probe.py'
 PLAN = dict(predecessor_module='model.layers.0.mlp.gate_up_proj',
     refused_module='model.layers.1.mlp.gate_up_proj', operator='vllm.unquantized_gemm.default',
@@ -37,12 +39,16 @@ PIN_FILES = ('fault_injection/deployments/postwrite.py',
 
 
 def helper_partition(a, d, host, records, diagnostic, *, natural):
-    installs = [(i,r) for i,r in enumerate(records) if r['method'] == HELPER+'install_diagnostic']
-    finishes = [(i,r) for i,r in enumerate(records) if r['method'] == HELPER+'finish_diagnostic']
+    installs = [(i,r) for i,r in enumerate(records) if r['method'] in INSTALL_METHODS]
+    finishes = [(i,r) for i,r in enumerate(records) if r['method'] in FINISH_METHODS]
     a.check(len(installs) == len(finishes) == 1, 'EXACT_TWO_ORIGINAL_HELPER_RPCS')
     if len(installs) != 1 or len(finishes) != 1:
         return None
     ii, install = installs[0]; fi, finish = finishes[0]
+    # The actual queue executes the pinned file as __main__; imports in CPU
+    # contracts use its package name. Neither name alone authenticates a helper:
+    # the full source arguments, SHA, exact Worker/ticket and response are below.
+    a.check(install['method'].rsplit('.',1)[0] == finish['method'].rsplit('.',1)[0], 'SAME_PINNED_HELPER_ENTRY_NAMESPACE')
     a.check(ii < fi, 'HELPER_INSTALL_BEFORE_FINISH')
     a.check(install.get('responses') == [d.get('diagnostic_install')] and
             finish.get('responses') == [d.get('diagnostic_original')], 'EXACT_HELPER_RESPONSE_ORIGINALS')
@@ -119,7 +125,7 @@ def all_originals(a, originals, d, records):
     return loaded
 
 
-def native_universe(a, snapshots, final, *, natural):
+def native_universe(a, snapshots, final, *, natural, expected_unique=None):
     """Deduplicate immutable copies, not actual Native invocations."""
     unique = {}; sightings = 0
     def walk(value):
@@ -178,7 +184,9 @@ def native_universe(a, snapshots, final, *, natural):
                 'NATIVE_DEVICE_SCOPE',where)
     count = final['finished_groups']['c2']['eligible_target_count']
     # Initial C1 B/F; C2 lossless + independent F; C3 lossless + two attempted leases.
-    a.check(len(unique) == 2+3*count+2, 'COMPLETE_NATIVE_LEASE_DENOMINATOR_FROM_ORIGINAL_SCHEDULE')
+    expected_unique = 2+3*count+2 if expected_unique is None else expected_unique
+    a.check(C.positive(expected_unique) and len(unique) == expected_unique,
+            'COMPLETE_NATIVE_LEASE_DENOMINATOR_FROM_ORIGINAL_SCHEDULE')
     return unique, dict(unique_leases=len(unique),snapshot_occurrences=sightings,
         repeated_originals_not_counted_as_new_calls=True,
         apply_return_counts={str(k):v for k,v in Counter(r['events'][1]['return_code'] for r in unique.values()).items()})
@@ -267,8 +275,8 @@ def causal_joins(a, d, diagnostic, final, unique):
     return summaries
 
 
-def recovery(a, d, host, diagnostic, final, *, natural):
-    group = final['finished_groups']['c3']; recovery = group['coverage']['recovery']
+def recovery(a, d, host, diagnostic, final, *, natural, stage='c3', expected_budget=None):
+    group = final['finished_groups'][stage]; recovery = group['coverage']['recovery']
     baseline = group['forward_artifacts'][0]; forwards = group['forward_artifacts']
     a.check(recovery['state'] == 'DISABLED_CONFIRMED' and recovery['errors'] == [] and
             recovery['held_leases'] == recovery['pending_leases'] == recovery['pending_drains'] == [] and
@@ -290,8 +298,9 @@ def recovery(a, d, host, diagnostic, final, *, natural):
             final['first_collection_failure'] is None and not d.get('recovery_error') and not d.get('runner_error'),
             'NO_HIDDEN_CLEANUP_OR_COLLECTION_FAILURE')
     budget = d['diagnostic_budget']; count = diagnostic['plan']['expected_eligible']
-    a.check(budget == dict(normal_requests=11+count,recovery_requests=2,maximum_normal_requests=11+count,
-        maximum_recovery_requests=2,cumulative_started=True,installed=True,closed=True), 'BOUNDED_ACTUAL_REQUEST_COUNTS')
+    expected_budget = dict(normal_requests=11+count,recovery_requests=2,maximum_normal_requests=11+count,
+        maximum_recovery_requests=2,cumulative_started=True,installed=True,closed=True) if expected_budget is None else expected_budget
+    a.check(budget == expected_budget, 'BOUNDED_ACTUAL_REQUEST_COUNTS')
     if natural:
         health = d['post_unregister_health']
         allids = {r['mapping']['internal_request_id'] for r in d['requests']+driver_recovery}
@@ -312,8 +321,11 @@ def recovery(a, d, host, diagnostic, final, *, natural):
     workers = recovery['workers']; original_health = next(r for r in final['actual_requests'] if r['phase']=='group_recovery_health')
     a.check(len(workers)==1 and group['actual_health']['snapshot'] == original_health['snapshot'], 'ACTUAL_RECOVERY_WORKER_HEALTH')
     for worker in workers:
+        _,projection=OLD.helpers(OLD.CUSTOM_PROFILE)
+        expected_worker=projection.worker(targets[0]['lease']['target'])
         a.check(worker['proof_sha256'] == C.digest(group['actual_health']) and worker['owner'] == recovery['owner'] and
             worker['generation'] == recovery['generation'] and worker['baseline_output_sha256'] == worker['off_output_sha256'] == baseline['output_sha256'] and
+            worker['worker'] == expected_worker and
             all(type(worker[k]) is int and worker[k]==0 for k in ('active_leases','device_bytes','host_bytes','inflight_calls','owned_hooks')),
             'ACTUAL_RECOVERY_WORKER_ZERO_RESOURCE_READBACK')
 
@@ -336,7 +348,7 @@ def review(d, host, records, originals, diagnostic, *, natural=True):
     if partition is None:
         # Keep already completed Core facts visible on missing/failed helpers.
         # The helper error above remains an issue; this partition grants nothing.
-        partition = [r for r in records if r['method'] not in (HELPER+'install_diagnostic',HELPER+'finish_diagnostic')]
+        partition = [r for r in records if r['method'] not in INSTALL_METHODS+FINISH_METHODS]
     detail['core_originals'] = a.section('unchanged_core_originals',GROUP.review,d,host,partition,originals,natural=natural)
     a.check(detail['core_originals'] is not None and detail['core_originals']['consistent'] is True,
             'FULL_CORE_AND_COMPLETED_C2_ORIGINALS_RECONCILED')
