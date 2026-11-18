@@ -13,6 +13,8 @@
 工厂存在、模型自动发现与实际故障验收分别记录。
 [当前逐项矩阵](experiments/c2c3_closure_20261117/C2_C3_MATRIX.md) ·
 [本轮公共入口与新构建验证](experiments/c2c3_closure_20261117/CORE_PROVIDER_PROGRESS_20261118.md)。
+[后续单目标效果、原件复核与失败边界](experiments/c2c3_closure_20261117/WORKER_INCREMENT_20261118.md)：
+26 QMM 完成真实推理单目标效果及恢复；39 输出变体完成140个独立目标回放复核，持续注入未通过。
 已有通过范围保留，新的原始统计、完整张量和 Native 库均留在124。
 目前严格限定验收为 C2 6/17、C3 5/17；公共 Core22 的原件独立复核已通过，
 覆盖、恢复与 msprobe 独立定位分别记账，不能由前两项推定 E5 通过。

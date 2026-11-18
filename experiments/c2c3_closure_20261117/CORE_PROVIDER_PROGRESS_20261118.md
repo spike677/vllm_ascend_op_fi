@@ -1,6 +1,10 @@
 # Worker Core and remaining providers: new execution evidence
 
 This is an incremental report for `codex/17-fault-c2c3-closure-20261117`.
+[Source51 onward](WORKER_INCREMENT_20261118.md) records the completed
+writer26 single-site run, output39 original-file/statistics reviews and quant
+loader/observer fixes. Read that continuation for the latest state; older failed
+attempts below remain evidence, not current queue status.
 The existing six strict C2 and five strict C3 scopes are preserved. A new
 runtime success requires its own independent review; this report does not
 claim17/17, yellow-zone integration, CANN9.x Worker or A3 acceptance.
