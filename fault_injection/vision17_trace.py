@@ -38,6 +38,7 @@ class Vision17Trace:
              'aten::permute', 'aten::squeeze', 'aten::unsqueeze', 'aten::slice', 'aten::select',
              'aten::alias', 'aten::detach'}
     COPY = {'aten::clone', 'aten::_to_copy'}
+    SHAPE_FACTORIES = {'aten::zeros_like', 'aten::ones_like', 'aten::empty_like', 'aten::full_like'}
     READERS = {'aten::add', 'aten::mul', 'aten::linear', 'aten::mm', 'aten::matmul', 'aten::addmm',
                'aten::bmm', 'aten::convolution', 'aten::conv3d', 'aten::cat'}
 
@@ -142,8 +143,11 @@ class Vision17Trace:
                             output_metadata=[metadata(out) for out in outputs],
                             relation='ACTUAL_RETURNED_ALIAS' if name in self.ALIAS else 'ACTUAL_RETURNED_COPY'))
                         record['lineage'].extend(out for out in outputs if not any(out is held for held in record['lineage']))
-                    elif name in self.READERS:
+                    elif name not in self.SHAPE_FACTORIES:
+                        # Do not skip an unknown first consumer and later call a
+                        # supported operation the first numerical reader.
                         record['row']['consumer'] = dict(operator=str(func), returned=True,
+                            supported_numerical_consumer=name in self.READERS,
                             path=self.stack[-1][0], actual_input_positions=sorted(set(i for i,_ in exact)),
                             actual_input_metadata=[metadata(inputs[i]) for i in sorted(set(i for i,_ in exact))],
                             consumed_values=[self.identity(inputs[i]) for i in sorted(set(i for i,_ in exact))],
@@ -188,7 +192,8 @@ class Vision17Trace:
 
     def report(self):
         complete = bool(self.rows) and all(f['returned'] for f in self.forwards) and all(
-            r['returned'] and r['inputs_unchanged'] and r['consumer'] is not None for r in self.rows)
+            r['returned'] and r['inputs_unchanged'] and r['consumer'] is not None
+            and r['consumer']['supported_numerical_consumer'] for r in self.rows)
         return dict(observed_calls=copy.deepcopy(self.rows), structural_candidates=list(self.owners),
                     resolved_candidates=[r['path'] for r in self.rows if r['returned']], qualified_targets=[],
                     forwards=copy.deepcopy(self.forwards), torch_dispatch_chain_complete=complete,

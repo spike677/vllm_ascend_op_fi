@@ -20,11 +20,12 @@ class CustomPatch(torch.nn.Module):
 
 class Encoder(torch.nn.Module):
     def __init__(self):
-        super().__init__();self.unusual_name=CustomPatch();self.ignore_output=False;self.fail=False
+        super().__init__();self.unusual_name=CustomPatch();self.ignore_output=False;self.fail=False;self.unknown_reader=False
     def forward(self,x):
         projected=self.unusual_name(x)
         if self.fail:raise RuntimeError('actual encoder failure')
         if self.ignore_output:return torch.zeros_like(projected)+3
+        if self.unknown_reader:projected.relu_()
         return projected.view(x.shape[0],2).clone()+3
 
 
@@ -63,6 +64,13 @@ class VisionTraceTests(unittest.TestCase):
             with Vision17Trace(self.model,simulation=True) as trace:self.model(self.x)
         self.assertFalse(trace.report()['torch_dispatch_chain_complete'])
         self.assertFalse(trace.report()['forwards'][0]['returned'])
+    def test_unknown_first_reader_cannot_be_skipped_for_later_add(self):
+        self.model.unknown_reader=True
+        with Vision17Trace(self.model,simulation=True) as trace:self.model(self.x)
+        report=trace.report();consumer=report['observed_calls'][0]['consumer']
+        self.assertEqual(consumer['operator'],'aten.relu_.default')
+        self.assertFalse(consumer['supported_numerical_consumer'])
+        self.assertFalse(report['torch_dispatch_chain_complete'])
     def test_no_calls_are_not_success(self):
         with Vision17Trace(self.model,simulation=True) as trace:pass
         self.assertFalse(trace.report()['torch_dispatch_chain_complete'])
