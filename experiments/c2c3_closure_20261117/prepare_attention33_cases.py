@@ -15,6 +15,8 @@ def prepare(args):
     from fault_injection.native_adapters.attention28.fia.binary_registration import validate_metadata
     require(args.stage in ('baseline', 'fault') and args.card in (2, 5)
         and 1 <= args.timeout <= 1800, 'TND33_BOUNDED_STAGE_REQUIRED')
+    boundary_diagnostic = getattr(args, 'boundary_diagnostic', False)
+    require(not boundary_diagnostic or args.stage == 'baseline', 'TND33_BOUNDARY_DIAGNOSTIC_NEVER_FAULT')
     source_manifest = read_json(args.source/'source_manifest.json')
     require(source_manifest.get('schema') == 'demoncat.c2c3.source.v1', 'TND33_FROZEN_SOURCE_REQUIRED')
     source_files = {row['path']: row for row in source_manifest['files']}
@@ -23,6 +25,11 @@ def prepare(args):
         relative = 'experiments/c2c3_closure_20261117/' + name
         require(relative in source_files and source_files[relative]['sha256'] == sha(args.source/relative),
                 'TND33_DRIVER_SOURCE_NOT_FROZEN:' + name)
+    if boundary_diagnostic:
+        for name in ('paged33_boundary_probe.py', 'paged33_tnd_probe.py'):
+            relative = 'src/demoncat/runtime/vllm_ascend/worker_extension/' + name
+            require(relative in source_files and source_files[relative]['sha256'] == sha(args.source/relative),
+                    'TND33_BOUNDARY_CAPTURE_SOURCE_NOT_FROZEN:' + name)
     completion = args.build_root/'evidence/completion.json'
     vendor = args.build_root/'stage/vendors/dcat_f33_fai_fd_transformer'
     bundle = verify_bundle(completion, sha(completion), vendor)
@@ -59,19 +66,31 @@ def prepare(args):
         require(reviewed == bridge, 'TND33_SAVED_BRIDGE_DIFFERS_FROM_CURRENT_RAW_EVIDENCE')
     cases = []
     for phase in (('stock', 'baseline') if args.stage == 'baseline' else ('fault',)):
-        label = 'attention33-fd-natural-' + phase
+        label = ('attention33-fd-first-boundary-' if boundary_diagnostic else 'attention33-fd-natural-') + phase
         argv = ['python3', '-B', '/repo/experiments/c2c3_closure_20261117/attention33_worker_probe.py',
             '--phase', phase, '--model', '/model', '--out', '/evidence/run', '--experimental-qualification']
         mounts = [[str(args.source), '/repo', 'ro'], [str(args.installed), '/installed', 'ro'],
                   [str(args.model), '/model', 'ro']]
+        if boundary_diagnostic:
+            argv += ['--first-boundary-diagnostic']
         if phase != 'stock':
-            argv += ['--statistics', '--completion', '/native/evidence/completion.json', '--completion-sha256', sha(completion),
+            if not boundary_diagnostic:
+                argv += ['--statistics']
+            argv += ['--completion', '/native/evidence/completion.json', '--completion-sha256', sha(completion),
                 '--vendor', '/native/stage/vendors/dcat_f33_fai_fd_transformer',
                 '--public-schema', '/native/evidence/fai_schema/fai_abi_schema.json',
-                '--schema-sha256', bundle['completion']['fai_public_schema_sha256'],
-                '--observer-receipt', '/build/attention-preflight/result.json', '--observer-receipt-sha256', sha(observer)]
-            mounts += [[str(args.build_root), '/native', 'ro'],
-                       [str(args.observer/'attention-preflight'), '/build/attention-preflight', 'ro']]
+                '--schema-sha256', bundle['completion']['fai_public_schema_sha256']]
+            mounts += [[str(args.build_root), '/native', 'ro']]
+        if phase != 'stock' or boundary_diagnostic:
+            argv += ['--observer-receipt', '/build/attention-preflight/result.json', '--observer-receipt-sha256', sha(observer)]
+            mounts += [[str(args.observer/'attention-preflight'), '/build/attention-preflight', 'ro']]
+            # The immutable compile receipt records its original absolute path.
+            # Provide a read-only alias to the same reviewed file, not new bytes.
+            recorded_parent = Path(receipt['observer_library']['path']).parent.as_posix()
+            if recorded_parent != '/build/attention-preflight':
+                require(recorded_parent.startswith('/output/') and '..' not in Path(recorded_parent).parts,
+                        'TND33_OBSERVER_BUILD_ALIAS_UNREVIEWED')
+                mounts += [[str(args.observer/'attention-preflight'), recorded_parent, 'ro']]
         if phase == 'fault':
             argv += ['--bridge', '/bridge.json', '--bridge-sha256', sha(args.bridge)]
             mounts.append([str(args.bridge), '/bridge.json', 'ro'])
@@ -88,6 +107,12 @@ def prepare(args):
                 recovery_plan='Same-Worker B/repeat/measured/OFF/healthy; exact full hidden/logits/all28 outputs/valid logical KV; owned cleanup only.',
                 prerequisite='Baseline also records actual aic/FD/basekey; F requires independent raw stock/private bridge and 112 original-key launches.',
                 bridge_sha256=sha(args.bridge) if bridge else None, public_coverage_qualified=False, c2=False, c3=False)))
+        if boundary_diagnostic:
+            cases[-1]['review'].update(provider='33.paged_decode / no-fault first API boundary diagnostic',
+                diagnostic_only=True, fault_authorized=False, statistics=False,
+                expected_hits='5 first-decode layer0 snapshots; 0 fault or argument changes in either arm',
+                prerequisite='Diagnostic only; original complete-byte bridge remains required for F.',
+                stock_native_limit='Raw runtime/registered binary fingerprints; no guessed private ABI or selected API DSO proof')
     return cases
 
 
@@ -98,6 +123,7 @@ def main():
     p.add_argument('--stage', choices=('baseline', 'fault'), default='baseline')
     p.add_argument('--card', type=int, choices=(2, 5), default=2)
     p.add_argument('--timeout', type=int, default=1800)
+    p.add_argument('--boundary-diagnostic', action='store_true')
     for name in ('bridge', 'stock-run', 'baseline-run'):p.add_argument('--' + name, type=Path)
     args = p.parse_args();cases = prepare(args)
     with args.out.open('x', encoding='utf-8') as stream:json.dump(cases, stream, indent=2, allow_nan=False);stream.write('\n')

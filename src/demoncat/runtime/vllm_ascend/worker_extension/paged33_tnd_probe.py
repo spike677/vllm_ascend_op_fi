@@ -3,6 +3,8 @@
 Retain actual return/cache references during inference. All full tensor reads,
 hashes and comparisons occur after the collector stops. No runner replacement,
 synthetic cache packing or output modification is performed.
+An explicitly separate no-statistics boundary diagnostic additionally reads
+the first decode API's inputs and immediate returns in both stock/private arms.
 """
 import hashlib
 import inspect
@@ -80,7 +82,9 @@ def payload_identity(report):
 
 
 class TNDWorkerProbeSession(Paged33TNDProvider):
-    def __init__(self, worker, *, native_args, evidence_dir, statistics=False):
+    def __init__(self, worker, *, native_args, evidence_dir, statistics=False, boundary_args=None):
+        require(boundary_args is None or (not statistics and (native_args is None or native_args['arm'] in ('baseline', 'off'))),
+                'TND33_BOUNDARY_DIAGNOSTIC_REQUIRES_NO_FAULT_NO_STATISTICS')
         import torch
         from vllm.model_executor.layers.logits_processor import LogitsProcessor
         self.folder = Path(evidence_dir)
@@ -117,6 +121,15 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
         self.logits_binding = class_forward_binding(self.logits_processor)
         self.logits_contract = boundary['report']
         self.synced = False
+        self.boundary_capture = self.boundary_stock_scope = None
+        if boundary_args is not None:
+            from . import paged33_boundary_probe
+            from .paged33_boundary_probe import FirstDecodeBoundaryCapture, stock_scope_from_receipt
+            require(hashlib.sha256(Path(paged33_boundary_probe.__file__).read_bytes()).hexdigest()
+                    == boundary_args['capture_source_sha256'], 'TND33_BOUNDARY_INSTALLED_SOURCE_CHANGED')
+            self.boundary_capture = FirstDecodeBoundaryCapture(worker, self.folder/'first_boundary', torch.npu.synchronize)
+            if self.adapter is None:
+                self.boundary_stock_scope = stock_scope_from_receipt(boundary_args['path'], boundary_args['expected_sha256'])
 
     def install(self):
         # start() installs msprobe API wrappers; install ours *after* that
@@ -162,8 +175,32 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
         self.pending_decode = False
 
     def _invoke_api(self, name, original, args, kwargs, record):
-        result = (Paged33Audit._invoke_api(self, name, original, args, kwargs, record) if self.adapter is None
-                  else super()._invoke_api(name, original, args, kwargs, record))
+        capture = self.boundary_capture
+        first = capture is not None and record is not None and capture.data is None
+        invoke = original
+        if first:
+            require(bool(self.stack), 'TND33_FIRST_BOUNDARY_OUTSIDE_MODULE')
+            capture.start(name, original, args, kwargs, record, self.stack[-1][1], len(self.rows)-1)
+            def invoke(*actual_args, **actual_kwargs):
+                return capture.invoke_original(original, actual_args, actual_kwargs)
+        if first and self.boundary_stock_scope is not None:
+            result = self.boundary_stock_scope.invoke(lambda: Paged33Audit._invoke_api(self, name, invoke, args, kwargs, record))
+        else:
+            result = (Paged33Audit._invoke_api(self, name, invoke, args, kwargs, record) if self.adapter is None
+                      else super()._invoke_api(name, invoke, args, kwargs, record))
+        if first:
+            from .paged33_boundary_probe import mapped_api_libraries, read_scoped_launches
+            token = self.boundary_stock_scope.token if self.boundary_stock_scope else self.adapter.calls[-1]['call_id']
+            runtime = self.boundary_stock_scope.runtime_dir if self.boundary_stock_scope else self.adapter.runtime_dir
+            capture.data['native_call_id'] = token
+            for key, observe in (('runtime_observation', lambda: read_scoped_launches(runtime, token)),
+                                 ('mapped_api_libraries', mapped_api_libraries)):
+                try:
+                    capture.data[key] = observe()
+                except Exception as error:
+                    # Missing coverage is evidence, never a guessed stock ABI.
+                    capture.data[key] = dict(status='UNOBSERVED_OR_INCOMPLETE', error=repr(error))
+            capture.write()
         if record is not None:
             require(record.get('metadata_binding') == 'VERIFIED' and self.stack,
                     'TND33_ACTUAL_BOUNDARY_REQUIRED_FOR_READBACK')
@@ -189,6 +226,7 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
 
     def collect(self):
         self.stop_capture()
+        boundary = self.boundary_capture.finalize() if self.boundary_capture is not None else None
         require(self.synced and self.current is None and not self.pending_decode and not self.errors,
                 'TND33_REQUEST_NOT_COMPLETED_CLEANLY')
         expected = {name for name, _ in self.candidates}
@@ -204,6 +242,8 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
             statistical_first_difference='NOT_SELECTED_BY_RUNTIME_PROBE', c2=False, c3=False,
             public_worker_qualified=False, complete_tensor_readback_during_statistics=False,
             integer_page_slot_metadata_readback_during_audit=True)
+        if boundary is not None:
+            report.update(first_decode_boundary=boundary, complete_tensor_readback_at_first_api_boundary=True)
         require(all(report['hidden'][key] == report['logits_hidden'][key]
                     for key in ('shape', 'dtype', 'bytes', 'sha256')), 'TND33_ROOT_TO_LOGITS_HIDDEN_BYTES_DIFFER')
         for index, name in enumerate(sorted(expected)):
@@ -223,9 +263,13 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
 
     def close(self):
         self.stop_capture()
+        stock_cleanup = self.boundary_stock_scope.close() if self.boundary_stock_scope is not None else None
         state = (self.adapter.disable() if self.adapter is not None else
                  dict(scope_cleared=True, local_streams_drained=self.synced, native_calls=0))
         Paged33Audit.close(self)
         require(not self.patches and not self.handles, 'TND33_OWNED_HOOK_OR_WRAPPER_LEAK')
         state.update(owned_hooks=0, owned_api_wrappers=0, core_methods_replaced=False)
+        if self.boundary_capture is not None:
+            self.boundary_capture.release()
+            state.update(boundary_refs_released=True, stock_launch_scope=stock_cleanup)
         return state

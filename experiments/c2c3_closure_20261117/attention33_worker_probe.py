@@ -34,7 +34,7 @@ def worker_object(worker):
     return worker
 
 
-def setup(worker, native_args, evidence_dir, statistics):
+def setup(worker, native_args, evidence_dir, statistics, boundary_args=None):
     worker = worker_object(worker)
     from demoncat.runtime.vllm_ascend.worker_extension import paged33_tnd_probe
     require(Path(inspect.getfile(paged33_tnd_probe)).resolve().is_relative_to('/installed'),
@@ -43,7 +43,7 @@ def setup(worker, native_args, evidence_dir, statistics):
     for owner in (worker, worker.model_runner):
         require('execute_model' not in vars(owner), 'CORE_METHOD_INSTANCE_OVERRIDE')
     session = paged33_tnd_probe.TNDWorkerProbeSession(worker, native_args=native_args,
-        evidence_dir=evidence_dir, statistics=statistics)
+        evidence_dir=evidence_dir, statistics=statistics, boundary_args=boundary_args)
     setattr(worker, OWNER, session)
     try:
         session.install()
@@ -52,7 +52,8 @@ def setup(worker, native_args, evidence_dir, statistics):
         raise
     return dict(candidate_count=len(session.candidates), source=session.source,
         module_path=inspect.getfile(paged33_tnd_probe), module_sha256=sha(inspect.getfile(paged33_tnd_probe)),
-        stock_read_only=native_args is None, core_methods_replaced=False)
+        stock_read_only=native_args is None, core_methods_replaced=False,
+        first_boundary_diagnostic=boundary_args is not None)
 
 
 def expect(worker, request_id, tokens):
@@ -104,7 +105,11 @@ def run(args, bundle):
         statistical_first_difference='SEPARATE_INDEPENDENT_RAW_COMPARATOR_REQUIRED',
         completion_sha256=args.completion_sha256 if bundle else None,
         schema_sha256=args.schema_sha256 if bundle else None,
-        observer_receipt_sha256=args.observer_receipt_sha256 if bundle else None)
+        observer_receipt_sha256=args.observer_receipt_sha256 if bundle or args.first_boundary_diagnostic else None)
+    if args.first_boundary_diagnostic:
+        report.update(schema='demoncat.paged33.first_boundary_worker_run.v1',
+            diagnostic_only=True, bridge_compatible=False, fault_authorized=False,
+            first_boundary_readbacks='IDENTICAL_CAPTURE_CODE_IN_STOCK_AND_PRIVATE_NO_STATISTICS')
     target = args.out/'result.json'
     def save():
         target.write_text(json.dumps(report, indent=2, allow_nan=False)+'\n')
@@ -150,7 +155,11 @@ def run(args, bundle):
                     arm=arm, experimental_qualification=True, max_calls=28)
             row = dict(phase=phase);report['phases'].append(row);save()
             installed = True  # setup may install a partial owned session
-            row['setup'] = rpc(llm, setup, native, str(args.out/phase), args.statistics and phase == 'measured')
+            boundary = (dict(path=str(args.observer_receipt), expected_sha256=args.observer_receipt_sha256,
+                            capture_source_sha256=sha(Path(__file__).resolve().parents[2]/
+                                'src/demoncat/runtime/vllm_ascend/worker_extension/paged33_boundary_probe.py'))
+                        if args.first_boundary_diagnostic else None)
+            row['setup'] = rpc(llm, setup, native, str(args.out/phase), args.statistics and phase == 'measured', boundary)
             require(row['setup']['candidate_count'] == 28, 'COMPLETE_QWEN_28_LAYER_CENSUS_REQUIRED')
             ids = llm.enqueue([prompt], params, use_tqdm=False)
             mapping = read_enqueued_identity(llm, ids, seen_internal_request_ids=seen)
@@ -183,6 +192,8 @@ def run(args, bundle):
                 'POST_CLEAN_GENERATION_DIFFERS')
         report['status'] = ('NATURAL_STOCK_WORKER_COMPLETE' if bundle is None else
                             'NATIVE_WORKER_ATTEMPT_AND_OFF_COMPLETE_REQUIRES_EVIDENCE_REVIEW')
+        if args.first_boundary_diagnostic:
+            report['status'] = 'FIRST_BOUNDARY_DIAGNOSTIC_COMPLETE_REQUIRES_INDEPENDENT_REVIEW'
     except BaseException as error:
         report.update(status='FAILED_WITH_EVIDENCE', error=repr(error), traceback=traceback.format_exc())
         if llm is not None and seen:
@@ -219,16 +230,20 @@ def main():
     parser.add_argument('--out', type=Path, default=Path('/evidence/run'))
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--experimental-qualification', action='store_true')
+    parser.add_argument('--first-boundary-diagnostic', action='store_true')
     parser.add_argument('--child', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args()
     require(args.experimental_qualification and str(args.out).startswith('/evidence/'),
             'EXPLICIT_PRIVATE_EXPERIMENT_REQUIRED')
+    require(not args.first_boundary_diagnostic or (args.phase in ('stock', 'baseline') and not args.statistics
+            and args.bridge is None), 'FIRST_BOUNDARY_DIAGNOSTIC_NEVER_AUTHORIZES_FAULT_OR_STATISTICS')
     bundle, library = None, None
     if args.phase != 'stock':
         from demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd import verify_bundle
         bundle = verify_bundle(args.completion, args.completion_sha256, args.vendor)
         require(sha(args.public_schema) == args.schema_sha256 == bundle['completion']['fai_public_schema_sha256'],
                 'EXACT_NEW_FAI_SCHEMA_REQUIRED')
+    if bundle is not None or args.first_boundary_diagnostic:
         require(sha(args.observer_receipt) == args.observer_receipt_sha256, 'EXACT_OBSERVER_RECEIPT_REQUIRED')
         receipt = json.loads(args.observer_receipt.read_bytes())
         require(receipt.get('observer_compiled') and receipt.get('actual_npu_calls') == 0
@@ -244,9 +259,11 @@ def main():
         args.out.mkdir(parents=True)
         env = dict(os.environ, ACLNN_CACHE_LIMIT='0', TASK_QUEUE_ENABLE='0', PYTHONDONTWRITEBYTECODE='1',
                    VLLM_ENABLE_V1_MULTIPROCESSING='0')
-        if bundle:
+        if library:
             runtime = args.out/'runtime';runtime.mkdir()
-            env.update(ASCEND_CUSTOM_OPP_PATH=bundle['vendor'], LD_PRELOAD=library['path'], DCAT_ATTN_OBSERVER_DIR=str(runtime))
+            env.update(LD_PRELOAD=library['path'], DCAT_ATTN_OBSERVER_DIR=str(runtime))
+        if bundle:
+            env['ASCEND_CUSTOM_OPP_PATH'] = bundle['vendor']
         os.execve(sys.executable, [sys.executable, str(Path(__file__).resolve()), *sys.argv[1:], '--child'], env)
     return run(args, bundle)
 
