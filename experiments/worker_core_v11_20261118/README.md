@@ -103,6 +103,9 @@ only permits normal/OFF. The separate [all-target C2 candidate](../../docs/worke
 now connects 28 isolated targets through the public Worker protocol and an
 independent original-file reader. Its final package still needs its own fresh
 normal pair and actual resource admission; CPU contracts confer no NPU scope.
+Independent review repaired capture-capacity and early-disable recovery gaps;
+the corrected60-request/189-RPC CPU protocol passed. See the
+[review and exact validation scope](ATTENTION33_GROUP_C2_CPU_REVIEW.md).
 The merged TND28/group-normal build, reader and export regression
 ran 160 local tests: 159 passed, one Windows symlink-creation test was skipped.
 The earlier import typo in the test command was corrected and rerun; no
@@ -124,7 +127,10 @@ budget/normal acceptance remains pending; these helpers grant no F.
 Frozen source110 (`823e4b59`) passed all 174 selected production-image CPU
 contracts, with zero skips. Its fresh TND28 SDK attempt uses the strict
 source-derived 65-field serializer check; source109's failure remains intact.
-Build completion and any later NPU acceptance are separate recorded outcomes.
+The fresh host/schema/kernel build completed, and root independently rehashed
+all1163 vendor artifacts and17 reconstructed source files; see
+[the source110 SDK review](ATTENTION28_SOURCE110_SDK_REVIEW.md).
+Loading and all NPU qualification remain withheld.
 
 The [FIA input journal candidate](../../docs/worker_core_v1/fia_input_journal.md)
 is default-off and not wired into a public provider. It records actual typed

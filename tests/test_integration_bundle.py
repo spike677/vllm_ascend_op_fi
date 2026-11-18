@@ -54,6 +54,7 @@ class BundleTests(unittest.TestCase):
         spec.loader.exec_module(evidence)
         payload = bundle._inventory(ROOT)
         required = set(evidence.REQUIRED + evidence.S2_REQUIRED + evidence.ALL_REQUIRED + evidence.GROUP_REQUIRED)
+        required.add('tests/worker_extension/test_paged33_group_artifacts.py')
         self.assertFalse(required - payload.keys())
         for name in required:
             self.assertEqual(payload[name], (ROOT / name).read_bytes(), name)

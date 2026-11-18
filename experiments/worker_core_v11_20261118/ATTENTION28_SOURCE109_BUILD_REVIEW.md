@@ -51,5 +51,7 @@ The follow-up source repair reconstructs the full pinned serializer layout,
 including exactly these two padding fields, and checks the compiler's actual
 macro-header dependency. It does not change the failed source109 result;
 the next fresh SDK build must independently verify that repair.
+That separate source110 attempt has now completed; see its
+[build result and remaining NPU gates](ATTENTION28_SOURCE110_SDK_REVIEW.md).
 No raw statistics, private tensors, compiled binaries or SDK header copies
 are included in this publication.
