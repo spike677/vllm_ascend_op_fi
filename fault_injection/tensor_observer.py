@@ -269,8 +269,16 @@ class NaturalTensorObserver:
     def close(self):
         if self._metadata_token is not None and threading.get_ident() != self._owner_thread:
             raise RuntimeError('TENSOR_OBSERVER_METADATA_OWNER_THREAD_CHANGED')
-        if self.stack or self.mode is not None:
+        if self.stack:
             raise RuntimeError('OBSERVER_FORWARD_STILL_INFLIGHT')
+        if self.mode is not None:
+            # Root return has already popped the module stack and recorded its
+            # outcome. A failed before-pop mode exit is cleanup to retry, not a
+            # still-running model. Never pop a foreign or other-thread mode.
+            if not self.forwards or self.forwards[-1]['status'] not in ('returned', 'failed'):
+                raise RuntimeError('OBSERVER_FORWARD_STILL_INFLIGHT')
+            from ._scoped_dispatch import _close_owned_mode
+            _close_owned_mode(self, 'mode', 'OBSERVER_MODE_OWNERSHIP_CHANGED')
         for handle, callback in reversed(self.handles[:]):
             hooks = handle.hooks_dict_ref()
             if hooks is not None and handle.id in hooks and hooks[handle.id] is not callback:

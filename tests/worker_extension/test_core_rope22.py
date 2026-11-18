@@ -479,6 +479,37 @@ class CoreRoPE22Tests(unittest.TestCase):
     def test_before_pop_error_keeps_owned_mode_for_explicit_cleanup_retry(self):
         self._actual_mode_exit_failure('trace', after_pop=False)
 
+    def test_before_pop_observer_exit_after_root_return_is_retryable_cleanup(self):
+        self.start()
+        saved = {}
+
+        def fail_before_observer_pop(module, args, output):
+            mode = self.provider.session.observer.mode
+            saved.update(mode=mode, exit=mode.__exit__)
+
+            def before_pop(*args):
+                raise RuntimeError('observer before-pop failure')
+
+            mode.__exit__ = before_pop
+
+        handle = self.model.register_forward_hook(fail_before_observer_pop)
+        self.ok(self.client.advance('observer-before-pop'))
+        try:
+            with self.assertRaisesRegex(RuntimeError, 'observer before-pop failure'):
+                self.model(input_ids=torch.tensor([1, 2, 3]), positions=torch.arange(3))
+        finally:
+            if saved:
+                saved['mode'].__exit__ = saved['exit']
+            handle.remove()
+        observer = self.provider.session.observer
+        self.assertEqual(observer.stack, [])
+        self.assertEqual(observer.forwards[-1]['status'], 'returned')
+        self.assertIs(observer.mode, saved['mode'])
+        self.assertTrue(self.client.query()['ownership_retained'])
+        self.ok(self.client.unregister())
+        self.assertIsNone(observer.mode)
+        self.assert_clean()
+
     def test_clean_cannot_unbind_runtime_ticket_before_unregister(self):
         self.start()
         self.ok(self.client.clean())
