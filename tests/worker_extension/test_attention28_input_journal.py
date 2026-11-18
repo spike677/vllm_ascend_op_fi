@@ -1,6 +1,7 @@
 """Real CPU public calls plus explicit Native control doubles; no NPU grant."""
 from copy import deepcopy
 import ctypes as C
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -244,6 +245,12 @@ class ProbeLifecycleContracts(unittest.TestCase):
         self.assertNotIn('post_release_health',self.order)
         self.assertFalse(self.report['failure_journal_cleanup']['errors'])
         self.assertIn('actual CPU request failure',self.report['error'])
+        failed=self.report['requests'][1]
+        self.assertFalse(failed['completed']);self.assertEqual(failed['phase'],'observe_repeat')
+        self.assertEqual(failed['mapping']['internal_request_id'],'actual-cpu-2')
+        self.assertEqual(failed['stage'],'PUBLIC_WINDOW_ARMED')
+        saved=json.loads((self.out/'result.json').read_bytes())
+        self.assertEqual(saved['requests'][1],failed)
 
     def test_failed_release_original_is_preserved_then_owned_retry_without_another_request(self):
         self.fail_release=True;self.run_drive()
@@ -267,7 +274,117 @@ class ProbeLifecycleContracts(unittest.TestCase):
         blocked=NS(snapshot=lambda:dict(ownership_retained=True))
         self.probe.finish_failed_run(self.llm,blocked,{},self.source,self.out,self.report)
         self.assertEqual(self.report['failure_journal_cleanup_withheld'],'PUBLIC_OWNERSHIP_RETAINED')
-        self.assertFalse(self.order)
+        self.assertEqual(self.order,['snapshot_failed_owner'])
+        refusal=self.report['failure_journal_snapshot']
+        self.assertEqual(refusal['status'],'READ_ONLY_FAILURE_SNAPSHOT_REFUSED')
+        self.assertIn('HELD_ACTUAL_WORKER_OR_MODEL_CHANGED',refusal['errors'][0]['error'])
+
+    def readonly_native_state_doubles(self,**changes):
+        """Production snapshot loop + actual ctypes return-code state/event seam."""
+        options=dict(active_calls=0,active_getters=0,wrong_owner=False,query_error=False,drift=False,drifted=False)
+        options.update(changes);journal=self.journal;config=journal.containers.config
+        def container_state():
+            value=J.record(Q.instance(Q.State))
+            value.update(installed=1,owner_hi=config.owner_hi,owner_lo=config.owner_lo,generation=config.generation,
+                owner_thread=config.thread,scope_token=self.control['scope_token'],active_calls=0,live_registrations=1)
+            value['arrays'].update(active_getters=options['active_getters'],acquired_arrays=int(options['drifted']))
+            return value
+        def state(address):
+            if options['query_error']:raise RuntimeError('explicit Native state query refused')
+            value=Q.instance(J.State)
+            value.installed=1;value.pid=os.getpid();value.thread=config.thread
+            value.owner_hi=config.owner_hi;value.owner_lo=config.owner_lo+int(options['wrong_owner'])
+            value.generation=config.generation;value.active_calls=options['active_calls'];value.pending_executors=1
+            value.retained_events=1;value.total_events=1;value.accepted_windows=len(journal.scopes)
+            C.memmove(address,C.byref(value),C.sizeof(value));return 0
+        def event(index,address):
+            self.order.append('readonly_native_event')
+            self.assertEqual(index,0);value=Q.instance(J.Event)
+            value.sequence=1;value.operation=2;value.phase=1;value.executor=991
+            C.memmove(address,C.byref(value),C.sizeof(value));return 0
+        def container_snapshot():
+            result=dict(state=container_state(),events=[],explicit_cpu_container_snapshot=True)
+            if options['drift']:options['drifted']=True
+            return result
+        journal.functions.update(state=state,event=event)
+        journal.containers.current=lambda:self.order.append('readonly_mapped_identity')
+        journal.containers.query=container_state;journal.containers.snapshot=container_snapshot
+        journal.containers.manifest_sha256='0'*64;journal.containers.mapping={'explicit_cpu_identity':True}
+        journal.sdk_tags={};journal.limits=None;journal.lifecycle=[];journal.first_lifecycle_error=None;journal.lifecycle_overflow=0
+        journal.snapshot=J.NativeFiaInputJournal.snapshot.__get__(journal)
+        return options
+
+    def fail_with_pending(self,**state):
+        self.control['end_status']=7
+        def restore():
+            self.control['end_status']=0;self.fixture.driver.stop()
+        self.addCleanup(restore)
+        self.run_drive();self.readonly_native_state_doubles(**state)
+        self.assertTrue(self.fixture.client.snapshot()['ownership_retained']);self.assertIsNotNone(self.journal.active)
+        self.assertEqual(len(self.journal.scopes),1)
+        primary=self.report['error']
+        self.probe.finish_failed_run(self.llm,self.fixture.client,self.fixture.client.snapshot()['worker'],
+            self.source,self.out,self.report)
+        self.assertEqual(self.report['error'],primary)
+        self.assertTrue(self.fixture.client.snapshot()['ownership_retained']);self.assertIsNotNone(self.journal.active)
+        self.assertFalse(self.released)
+        self.assertNotIn('journal_stop',self.order);self.assertNotIn('journal_release',self.order)
+        self.assertNotIn('post_release_health',self.order)
+        return self.report['failure_journal_snapshot']
+
+    def test_actual_core_pending_owner_saves_readonly_events_without_cleanup(self):
+        result=self.fail_with_pending()
+        self.assertEqual(result['status'],'READ_ONLY_PARTIAL_FAILURE_SNAPSHOT_RECORDED_OWNER_RETAINED')
+        saved=json.loads((self.out/'input_journal/failure-observation-01.json').read_bytes())
+        self.assertEqual(saved['events'][0]['executor'],991);self.assertEqual(saved['state']['pending_executors'],1)
+        self.assertEqual(saved['containers']['state']['live_registrations'],1)
+        self.assertNotEqual(saved['public_scopes'][0]['status'],'RETURNED')
+        self.assertFalse(result['cleanup_performed'] or result['ownership_release_confirmed'] or result['qualified'])
+        self.assertFalse((self.out/'input_journal/released-01.json').exists())
+        before=list(self.order);pin=self.probe.common.sha(self.out/'input_journal/failure-observation-01.json')
+        self.probe.finish_failed_run(self.llm,self.fixture.client,self.fixture.client.snapshot()['worker'],
+            self.source,self.out,self.report)
+        self.assertEqual(self.order,before);self.assertEqual(self.probe.common.sha(self.out/'input_journal/failure-observation-01.json'),pin)
+
+    def test_active_native_call_saves_refusal_without_reading_events(self):
+        result=self.fail_with_pending(active_calls=1)
+        self.assertEqual(result['status'],'READ_ONLY_FAILURE_SNAPSHOT_REFUSED')
+        self.assertIn('STILL_ACTIVE',result['errors'][0]['error']);self.assertNotIn('readonly_native_event',self.order)
+        self.assertTrue((self.out/'input_journal/failure-snapshot-01.json').exists())
+        self.assertFalse((self.out/'input_journal/failure-observation-01.json').exists())
+
+    def test_active_metadata_getter_saves_refusal_without_reading_events(self):
+        result=self.fail_with_pending(active_getters=1)
+        self.assertIn('STILL_ACTIVE',result['errors'][0]['error']);self.assertNotIn('readonly_native_event',self.order)
+
+    def test_query_failure_does_not_invent_zero_state(self):
+        result=self.fail_with_pending(query_error=True)
+        self.assertIn('Native state query refused',result['errors'][0]['error'])
+        self.assertNotIn('state_before',result);self.assertNotIn('readonly_native_event',self.order)
+
+    def test_foreign_native_owner_cannot_be_read_as_ours(self):
+        result=self.fail_with_pending(wrong_owner=True)
+        self.assertIn('OWNER_CHANGED',result['errors'][0]['error']);self.assertNotIn('readonly_native_event',self.order)
+
+    def test_container_full_state_drift_refuses_snapshot_not_cleanup(self):
+        result=self.fail_with_pending(drift=True)
+        self.assertIn('FULL_STATE_NOT_QUIESCENT',result['errors'][0]['error'])
+        self.assertFalse((self.out/'input_journal/failure-observation-01.json').exists())
+        self.assertTrue((self.out/'input_journal/failure-snapshot-01.json').exists())
+
+    def test_secondary_host_receipt_write_error_does_not_replace_api_failure(self):
+        self.fail_request=2;save=self.probe.common.save
+        def fail_host(path,data):
+            if path.name=='host_receipt.json':raise OSError('secondary host receipt disk error')
+            return save(path,data)
+        with patch.object(self.probe.common,'save',side_effect=fail_host):
+            try:self.run_drive()
+            except OSError as error:self.probe.note_failure(self.report,error,'probe_run')
+        self.assertIn('actual CPU request failure',self.report['error'])
+        self.assertIn('secondary host receipt disk error',self.report['secondary_errors'][0]['error'])
+        self.probe.finish_failed_run(self.llm,self.fixture.client,self.fixture.client.snapshot()['worker'],
+            self.source,self.out,self.report)
+        self.assertTrue(self.released)
 
 
 if __name__=='__main__':unittest.main()

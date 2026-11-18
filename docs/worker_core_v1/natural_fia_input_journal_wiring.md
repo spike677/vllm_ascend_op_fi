@@ -24,6 +24,10 @@
 
 原 API 异常先保存并保持为主错误。窗口开始/同步/leave 失败时，保留原输入引用、实际 owner、pending 和失败记录；不 reset 未知 executor。公共 Core ownership 未清除或实际 deployment 尚在时，禁止退休 journal。释放失败可进行一次有界清理重试，第一份原始文件不覆盖；不会因此补一个健康请求或把失败改成成功。全局预加载 wrapper/DSO 保留到独立进程退出，不宣称全局卸载。
 
+公共 owner 因 pending 保留时，实验另外尝试**一次只读失败快照**，不执行 stop/leave/release、`_phase` 或移除绑定。它先核同一 held PID/原生线程/Worker/model、实际映射身份和两组件真实 owner/generation；只有实际 Native `active_calls`、metadata `active_captures/active_getters` 均为零，且前后两组件完整 state 一致，才保存事件。pending executor、scope、live registration 可以非零，原值保留，不解引用 pending executor，也不据快照授予清理权。查询、身份或稳定性检查失败时另存明确拒绝原件，不能用默认零值代替未知状态。
+
+观察请求取得实际 enqueue 映射后立即保存 `completed=false`，wait/collect 失败仍保留该请求与 phase；完成收集后才改为 true。后续 host receipt、最终 result 写盘等错误不会覆盖首个 API/protocol 错误，而记录为 secondary error。若存储本身持续不可写，不能保证新文件落盘；终端退出信息仍保留首错并披露次级写盘错误。
+
 生产新增 FIA GWS/execute 的异常透明合同不扩展到旧四容器 TU：旧 creator/destroy 对原 C++ 异常的 catch→`nullptr`/`161001` 行为仍按原说明披露。本接线没有修改任何 Native 源码或 ABI。
 
 ## 原件与独立审查
@@ -39,6 +43,8 @@
 | `input_journal/observation-01.json` | 停止后的 Native/container/public-window 原件及生命周期 |
 | `input_journal/released-01.json` | 同 owner 实际释放后的两组件状态；只有释放返回后才保存 |
 | `input_journal/cleanup-01.json` | 清理阶段和原错误；有界重试使用 `02` 新文件 |
+| `input_journal/failure-observation-01.json` | owner 保留时允许读取的只读部分失败快照，不是清理成功证据 |
+| `input_journal/failure-snapshot-01.json` | 上述只读快照的实际状态/引用，或查询、owner、active、稳定性拒绝原件 |
 | `result.json` | 原件引用与执行/清理总结，始终不授资格 |
 
 `RECORDED_PENDING_INDEPENDENT_REVIEW` 只说明协议记录完成。探针核对 56 个窗口和实际 Native 计数，不用该状态替代独立逐事件审查。复核应分别连接 public call→真实 token→GWS descriptor/creator→execute→release，并重算各原件 SHA。现有纯 stdlib `fia_input_journal_review.py` 可审 observation/released；它不导入注入器，不把 saved success 当资格。
@@ -84,5 +90,9 @@ python -m unittest test_natural_attention28_input_journal_probe \
 本次本地 **34 项通过**，包括旧默认 stock 行为、确切类型/对象拒绝、真实非连续 CPU view、不增 query/sync、原异常/pending 清理、真实公共 Core 的 2×28 CPU 调用、实验 driver 的实际顺序、绑定未移除/公共 ownership 未退时拒绝释放、失败请求和释放重试原件保留，以及纯文件预算/alias/完整 artifact SHA/pre-LLM 拒绝合同。CPU 模型、scheduler、SDK return code 和最终 Native snapshot 中的模拟边界在测试中明确标注；这不是 Qwen/NPU 验收。
 
 最后联合运行上述 34 项与既有 `test_fia_input_journal` 的 37 项，共 71 项通过。二者合计是这次本地测试命令的执行数，不与历史测试重复累计为新的独立覆盖。
+
+独立审查后的失败取证增量再增加 8 项：实际 Core retained+pending 下的生产 Python snapshot 读取、Native 活跃调用、活跃 getter、查询拒绝、foreign owner、完整 container state 漂移，以及 host/final-result 两处 secondary 写盘错误不替代主错误。原失败请求测试同时检查未完成 request mapping 已写入原件。这些测试仍使用明确标注的 CPU Native state/event 返回码接口，未执行 NPU。
+
+增量后的相同联合命令实际运行 **79 项，通过，0 skip**；原 71 项及其日志保留，没有改写历史结果。
 
 此前 Root 报告 source111 独立 SDK 无设备构建的 38 项 Python/导出与 26 项生产 TU C++ 合同通过，属于另一组构建证据，不与本次 34 项相加宣称独立覆盖，也不作为本接线已上 NPU 的依据。

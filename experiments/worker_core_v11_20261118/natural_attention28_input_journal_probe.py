@@ -40,6 +40,15 @@ def immutable(folder,name,value):
     return dict(path=str(path),sha256=common.sha(path),bytes=len(raw))
 
 
+def note_failure(report,error,stage):
+    """Keep the original API/protocol failure when later evidence writes fail."""
+    report['status']='REFUSED_OR_FAILED'
+    if 'error' not in report:
+        report.update(error=repr(error),traceback=traceback.format_exc(),error_stage=stage)
+    else:
+        report.setdefault('secondary_errors',[]).append(dict(stage=stage,error=repr(error),traceback=traceback.format_exc()))
+
+
 def held_source(expected):
     # A serialized RPC cannot reconstruct an observer or create a new factory.
     # It must find the object already held by the canonical module in this PID.
@@ -161,11 +170,50 @@ def rpc_one(llm,callback,*args):
     return values[0]
 
 
+def snapshot_failed_owner(worker,expected,source,out):
+    """Read quiescent owned records, retaining scopes/pending/public ownership.
+
+    This deliberately does not call census.stop, journal.stop/leave/release or
+    _phase. Snapshot cannot authorize cleanup; no pending executor is inspected.
+    """
+    folder=Path(out)/'input_journal'
+    result=dict(schema='demoncat.fia_input_journal.failed_owner_snapshot.v1',
+        status='READ_ONLY_FAILURE_SNAPSHOT_REFUSED',source=source,expected_worker=expected,
+        trigger='HOST_REPORTED_PUBLIC_OWNERSHIP_RETAINED',errors=[],
+        cleanup_performed=False,ownership_release_confirmed=False,pending_reset=False,
+        C1=False,C2=False,C3=False,E5=False,qualified=False)
+    try:
+        module,journal,worker=verify_worker(worker,expected,source)
+        journal.containers.current()
+        before=journal._states();result['state_before']=before
+        journal._owners(before)
+        need(before['fia']['active_calls']==0 and before['containers']['active_calls']==0
+            and before['containers']['arrays']['active_captures']==0
+            and before['containers']['arrays']['active_getters']==0,'FAILURE_SNAPSHOT_CALL_OR_GETTER_STILL_ACTIVE')
+        data=journal.snapshot()
+        after=journal._states();result['state_after']=after
+        journal._owners(after)
+        need(before==after and data['state']==before['fia']
+            and data['containers']['state']==before['containers'],'FAILURE_SNAPSHOT_FULL_STATE_NOT_QUIESCENT')
+        result['observation']=immutable(folder,'failure-observation-01.json',data)
+        result['status']='READ_ONLY_PARTIAL_FAILURE_SNAPSHOT_RECORDED_OWNER_RETAINED'
+    except BaseException as error:
+        result['errors'].append(dict(stage='readonly_snapshot',error=repr(error)))
+    # A refused read is itself an immutable original. No zero-state default is
+    # invented when query/identity/ownership/quiescence cannot be verified.
+    result['snapshot_original']=immutable(folder,'failure-snapshot-01.json',result)
+    return result
+
+
 def finish_failed_run(llm,client,expected,source,out,report):
     if report.get('journal_cleanup') and not report['journal_cleanup'].get('errors'):return
     # Unknown/pending public resources cannot be bypassed by the sidecar.
     if client is not None and client.snapshot()['ownership_retained']:
-        report['failure_journal_cleanup_withheld']='PUBLIC_OWNERSHIP_RETAINED';return
+        report['failure_journal_cleanup_withheld']='PUBLIC_OWNERSHIP_RETAINED'
+        if not report.get('failure_journal_snapshot') and not report.get('failure_journal_snapshot_error'):
+            try:report['failure_journal_snapshot']=rpc_one(llm,snapshot_failed_owner,expected,source,str(out))
+            except BaseException as error:report['failure_journal_snapshot_error']=repr(error)
+        return
     try:
         report['failure_binding_removal']=rpc_one(llm,remove_owned_binding,expected,source)
         report['failure_journal_cleanup']=rpc_one(llm,finish_journal,expected,source,str(out))
@@ -206,7 +254,10 @@ def drive(llm,client,*,prompt,params,out,report,source):
         for name in ('prepare','register','check','enable'):action(name)
         report['requests']=[]
         for phase in ('observe','observe_repeat'):
-            pending,mapping=enqueue();_,before=action('advance',pending[0])
+            pending,mapping=enqueue()
+            request=dict(phase=phase,mapping=mapping,completed=False,stage='ENQUEUED')
+            report['requests'].append(request);save()
+            _,before=action('advance',pending[0]);request['stage']='PUBLIC_WINDOW_ARMED';save()
             need(before['serving']['next_phase']==phase,'ATTENTION_PHASE_CHANGED')
             outputs=llm.wait_for_completion(use_tqdm=False)
             need(len(outputs)==1 and outputs[0].request_id==mapping['external_request_id'],'ACTUAL_DRIVER_WORKER_REQUEST_MAPPING_CHANGED')
@@ -215,8 +266,8 @@ def drive(llm,client,*,prompt,params,out,report,source):
                 and queried['evidence']['requests']==before['evidence']['requests'],'READ_ONLY_QUERY_ADVANCED_REQUEST')
             _,collected=action('collect_replay');row=collected['evidence']['requests'][-1]
             need(row['request_id']==pending[0] and row['phase']==phase,'ATTENTION_ACTUAL_PHASE_BINDING_CHANGED')
-            report['requests'].append(dict(phase=phase,mapping=mapping,worker=row,
-                output_tokens=list(outputs[0].outputs[0].token_ids)));pending=[]
+            request.update(worker=row,output_tokens=list(outputs[0].outputs[0].token_ids),
+                completed=True,stage='COLLECTED');pending=[];save()
         _,state=action('finish')
         need(not any(state[k] for k in ('owned_hooks','owned_api_wrappers','inflight','leases','C1','C2','C3'))
             and state['native_loaded'] is True and state['native_state'].get('observer_only') is True
@@ -250,7 +301,7 @@ def drive(llm,client,*,prompt,params,out,report,source):
             'NATIVE_INPUT_JOURNAL_PARTIAL_OR_FAILED_RETAIN_ORIGINALS')
         report['actual_calls_per_request']=counts;report['status']=SUCCESS
     except BaseException as error:
-        report.update(status='REFUSED_OR_FAILED',error=repr(error),traceback=traceback.format_exc())
+        note_failure(report,error,'public_protocol')
         if pending:
             try:llm.llm_engine.abort_request(pending,internal=True)
             except BaseException as error:report['abort_error']=repr(error)
@@ -327,12 +378,17 @@ def run(args,bundle,observer):
         client=common.WorkerFaultClient(common.HostAdapter(llm,prepare_binding=deploy,timeout=300),common.FaultConfig(28,'fia.denominator_replay'))
         drive(llm,client,prompt=prompt,params=params,out=args.out,report=report,source=source)
     except BaseException as error:
-        report.update(status='REFUSED_OR_FAILED',error=repr(error),traceback=traceback.format_exc())
+        note_failure(report,error,'probe_run')
     finally:
         if llm is not None and expected is not None and source is not None:
-            finish_failed_run(llm,client,expected,source,args.out,report)
-        common.save(args.out/'result.json',report)
-    print(json.dumps({k:report[k] for k in ('status','error') if k in report}))
+            try:finish_failed_run(llm,client,expected,source,args.out,report)
+            except BaseException as error:note_failure(report,error,'final_failure_diagnostic')
+        try:common.save(args.out/'result.json',report)
+        except BaseException as error:note_failure(report,error,'final_result_write')
+    console={k:report[k] for k in ('status','error') if k in report}
+    if report.get('secondary_errors'):
+        console['secondary_errors']=[{key:row[key] for key in ('stage','error')} for row in report['secondary_errors']]
+    print(json.dumps(console))
     return 0 if report['status']==SUCCESS else 2
 
 

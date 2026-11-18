@@ -1,6 +1,8 @@
 """Pure-file/prestart CPU contracts; no SDK load, Worker or NPU authority."""
 from copy import deepcopy
+from contextlib import redirect_stdout
 import hashlib
+import io
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -109,6 +111,20 @@ class PrestartContracts(unittest.TestCase):
             report=json.loads((args.out/'result.json').read_bytes())
             self.assertIn('actual resolver refused',report['error']);self.assertNotIn('worker_binding',report)
             self.assertFalse(report['C1'] or report['C2'] or report['C3'] or report['E5'])
+
+    def test_final_unwritable_result_reports_secondary_without_replacing_startup_error(self):
+        with tempfile.TemporaryDirectory() as folder:
+            args=NS(out=Path(folder),journal_build_sha256='1'*64,observer_receipt_sha256='2'*64)
+            console=io.StringIO()
+            with (patch.object(probe,'prepare_startup',side_effect=RuntimeError('primary preflight refusal')),
+                    patch.object(probe.common,'save',side_effect=OSError('final result disk full')),
+                    redirect_stdout(console)):
+                self.assertEqual(probe.run(args,{},{}),2)
+            report=json.loads(console.getvalue())
+            self.assertIn('primary preflight refusal',report['error'])
+            self.assertEqual(report['secondary_errors'][0]['stage'],'final_result_write')
+            self.assertIn('disk full',report['secondary_errors'][0]['error'])
+            self.assertFalse((args.out/'result.json').exists())
 
     def test_canonical_held_object_cannot_be_reconstructed_or_foreign_process(self):
         source=dict(path=str(Path(probe.__file__).resolve()),sha256=probe.common.sha(probe.__file__))
