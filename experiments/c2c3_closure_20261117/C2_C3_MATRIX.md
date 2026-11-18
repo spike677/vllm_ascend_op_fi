@@ -8,12 +8,13 @@ reconciled standard-Worker single-projection Torch-parameter run; Native padding
 and E5 remain unobserved.26 FIA's cumulative once/every-match originals reconcile,
 and source82 separately completes29 isolated F/OFF pairs with independent
 original-file review. Quant source83 proves10/135 request-row chains per healthy
-replay.39 source84 has passed discovery but is not independently accepted yet;
-33 source85 has a new normal-only pair pending. These are scoped
+replay.39 source84 now has independent isolated C2 acceptance for28/28 targets,
+while its cumulative C3 failure remains.33 source85 has435 exact payload pairs
+but two retained capture errors; source88 repeats the normal-only pair. These are scoped
 updates. All prior
 rows and failed attempts retain their original meaning.
 
-Root decisions including source82 isolated26 FIA: **C2 7/17, C3 6/17**.
+Root decisions including source82 isolated26 FIA: **C2 8/17, C3 6/17**.
 Fault18, MoE8 and the two separately repaired Native builds have bounded
 C2/C3 standard-Worker qualification. RoPE22 and KV41 add two C2 scopes.
 Source50 RoPE22 now has independently verified original live-proof receipts
@@ -45,7 +46,7 @@ interrupted runs never create a proof. See the [executed-build ownership audit](
 |28.fia.denominator_replay|Fresh9.1 standalone B8, distinct real kernel entry, eight-launch review includes this B/F pair|Not established|Not established|Raw fixed-tolerance first difference is FIA output Mean; Norm118.30810159723288→116.27198217667856. Natural model/Worker coverage still pending; no historical default-root-cause claim.|
 |33.paged_decode|Source53 independent first-boundary review reconciles five stock/private phases and scoped actual launches|Pending|Pending|Matched-phase query bytes and captured inputs match; immediate FIA output differs67/2048 elements/maxabs6.103515625e-5. Within-arm outputs repeat exactly but page-table inputs vary across phases. Normal bridge fails, so noF. Pre-call K/V are hash-only and selected ACLNN DSO owner is unobserved; no private-ABI decoding of stock or E5 claim.|
 |39.matmul_range|New cache-witness SDK, source42/packages16, Qwen Worker TP1/BF16 fixed14-token prefill; both independent audits pass|**113/113**|**226/226**, two requests|Five actual cache registrations and689/803 SDK-counter snapshots verify release, cross-group identity and OFF. C2 first linear output5.1875→Inf; NaNs prevent whole E5, C3 raw capture missing. Old builds stay withdrawn.|
-|39.output_proxy|Public Core source68 real Qwen Worker:113 custom GEMM calls,28 eligible actual value-consumer pairs, automatic gate_up_proj toSwiGLU single target|Pending|Pending|Independent review a06fa401 reconciles53 artifact/47 provenance/6486 evidence checks, actual current registration and Native lease originals. One F changeslogits and token576 to0; OFF/health restore576, owned resources released. Public C1 only; no E5. Source65 refusal and source51 MODEL_LOCAL140/C3 nonfinite refusal remain unchanged; not39.matmul_range.|
+|39.output_proxy|Public Core source84, Qwen3-0.6B BF16 TP1/CANN8.5.1/A2/card5;113 actual projection calls/28 eligible pairs|**28/28 isolated F**|Failed, retained|Independent source88 audit reconciles106,972 execution checks plus130 provenance/identity checks and174 original files. C2 original live issuance/consumption recorded, but consumption does not qualify C3. First cumulative C3 request has Native apply return4/changed0, restore/release0 and livefalse; original numeric rejection array is not independently observed. Group cleanup and ordinary health pass; no E5/cross-version inheritance. See [summary](../worker_core_v11_20261118/output39_source84_independent_summary.json).|
 |41.tail_column|Public Core source60 Qwen Worker:17 protocol requests,43 original RPCs and one post-unregister healthy request; complete valid K/V prefixes and3D FIA view/4D allocation independently joined|**28/28**|**56/56**, two requests|Independent original-file review reconciles6796 conditions, three owner identities, live C2 issuance/use and exact group OFF. Hook/API/lease/deployment removal and same-Worker health pass. Complete tensor bytes remain source-bound SHA receipts; post-unregister health is tokens/text only. No new statistics in this entrance; historical nulls and nonunique E5 remain.|
 
 The earlier numerical/coverage reviews refer to [Native20](native20_group_summary.json),

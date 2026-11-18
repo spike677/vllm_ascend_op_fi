@@ -4,13 +4,15 @@ Base: `027916b3a2e021d107e41cc063d29e66d879ee6b`. Preserve the six accepted
 C2/C3 scopes and all earlier source snapshots, failures and raw evidence.
 This workstream does not reset or transfer their qualification.
 
-Latest reviewed increment: source82 adds **isolated C2 acceptance for
-26.fia_destination, 29/29 eligible targets** on SmolLM2-135M, CANN8.5.1/A2,
-TP1/card5. Root's acceptance is limited to that completed attempt; it is not a
-runtime capability. C3 for that isolated scope and E5 remain open. See the
-[independent review and limits](AGENT7_NATIVE26_SOURCE82_ISOLATED_REVIEW.md).
-The current strictly accepted totals are C2 **7/17**, C3 **6/17**; the original
-six scopes and all narrower historical results remain intact.
+Latest reviewed increments: source82 accepts **isolated C2 for
+26.fia_destination, 29/29 eligible targets**, and source84 accepts **isolated C2
+for39.output_proxy, 28/28 eligible targets**. Both are bounded CANN8.5.1/A2,
+TP1/card5 scopes; neither grants runtime authority from saved records.
+The current strictly accepted totals are C2 **8/17**, C3 **6/17**. The original
+six scopes remain intact.26's new same-Worker isolated-to-C3 transition is still
+under validation.39's cumulative C3 genuinely failed and is not accepted.
+E5 remains separate. See the [26 review](AGENT7_NATIVE26_SOURCE82_ISOLATED_REVIEW.md)
+and [39 original-file summary](output39_source84_independent_summary.json).
 
 ## Ownership and execution
 
@@ -40,7 +42,7 @@ attempt/source scope. New milestone attempts are listed below; each uses a new s
 |20,39.matmul,41|Repaired Native builds or public group C2/C3|Keep original recovery proof; extend E5/actual new API or environment separately.|
 |26.residual,26.fia|Public C1 source68/source67,135/30 observed calls and2/29 resolved chains|Qualify all stable candidates without truncation, then C2 and C3 with actual writer/consumer completion and full group OFF.|
 |quant.batch_shared_scale|Public C1 source64;2 proven row mappings out of135|Classify the other133 through actual row transformations; unresolved lineage remains unverified; then coverage.|
-|39.output|Public C1 source68;113 observed projections/28 eligible pairs|Reuse actual GEMM/consumer guard and Native receipts for multi-target C2/C3.|
+|39.output|Source84 isolated C2 accepted for28/28 eligible pairs;113 projection calls retained|Cumulative C3 failure retained; do not bypass the finite-input guard or infer E5.|
 |28.fa.legal,28.fia.legal,28.fia.replay|Distinct standalone/kernel and historical model scopes|Public request-scoped execution adapters for real layouts/launches, no empty factory.|
 |33.paged|Actual TND bridge has67 differing output elements|Resolve normal stock/private bridge first; F is prohibited while it fails.|
 |15.alias|Healthy NZ constructed mechanism; observed natural VAE format30 does not match|Natural private-base/view/write/base-consumer chain or explicit non-applicability for the inspected path, not a global model claim.|
@@ -372,4 +374,50 @@ propagation and completed-C2 review remain pending. Actual recovery OFF/health,
 owner release and deployment removal completed; the controller exited2 and
 keeps CASE_FAILED. No C3 qualification is inferred or failure erased. Final
 result SHA256: `80f3903b653c061d9a72630c4855237ba2c9e37ea93b018404b0f5c79b6c8a60`.
-No output39 group qualification is added pending independent review.
+This was the pre-review status. The completed C2 decision below supersedes that
+pending review only; C3 remains failed.
+
+## Source84 independent C2 decision and source87–89 continuation
+
+The source88 reader rechecks the same source84 originals using an explicit
+external Native DSO pin, rather than the old C1 build pin. All106,972 execution
+checks,67 loaded-source checks,58 group-source checks and5 typed Native identity
+checks pass.174 original files are rehashed. This reconciles28 isolated F
+requests and their28 Native leases against113 projection calls and3,277 ledger
+entries.18,112 source-bound actual frames cover32 complete forward inventories.
+The root accepts only this completed C2 scope. The earlier failed audit is kept
+unchanged. Its Native-fingerprint mismatch was a reviewer configuration issue;
+the actual C3 failure was not.
+
+C3's original error includes `POSTWRITE_APPLY_4` and the enclosing failed-frame
+observation. The rejected Native receipt has return4/changed0, then successful
+restore/release and live=false. The reader does not independently observe the
+original numeric array at that rejection and does not promote a code-based
+hypothesis into a proven propagation chain. The whole attempt remains failed;
+C3, E5 and cross-version qualification remain ungranted.
+
+Source85's fresh33 normal pair independently rechecks281 conditions. All435
+cross-arm complete payload pairs are exact, and the documented within-arm page
+relocation checks pass. Two original capture failures remain: repeated function
+binding association and mapped library identity. Source88 preserves these
+failures, fixes association using the complete prior binding history, and adds
+per-file map/stat diagnostics. A fresh normal-only pair is running with12 exact
+production image library files mounted read-only; no F is authorized by earlier
+numeric equality alone.
+
+Source87 completed two healthy B8 first decodes for Batch shared-scale and56
+actual TND FIA calls for28 (two requests,28 calls each), with zero F. Quant
+records270 projection/Native prepare/execute joins and20 proven request-row
+chains, plus bounded integer-route metadata. Native row qualification is still
+zero.28 retains56/56 API calls but its first capture classifies all56 Native
+scopes as unobserved; raw-file investigation is pending. Neither observation
+result qualifies a fault. Both cases completed with normal owned cleanup.
+
+Source86's cold-import test failure is retained; source87 fixed and passed the
+production CPU suite before any NPU run. Source88 passes67 local relevant CPU
+contracts and127 production-image CPU contracts. Source89 packages a new
+explicit26 FIA `c2_isolated_c3` stage, with fixed cost-original SHA pins,
+per-generation1200s and continuous-case1800s limits. Its25 new local CPU
+contracts pass, including the full73-request lifecycle. CPU success grants no
+new26 qualification; an actual run and independent original-file review are
+required. No new raw statistics, tensor files or Native binaries are published.
