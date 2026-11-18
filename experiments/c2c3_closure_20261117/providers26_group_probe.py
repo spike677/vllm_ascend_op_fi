@@ -10,7 +10,16 @@ PROMPT = 'Explain in one sentence why the sky appears blue during the day.'
 SINGLE_SITE_STAGE = 'c1_single_effects'
 
 
-def request_limit(stage, max_targets):
+def single_site_scope(mechanism):
+    if mechanism not in ('26.residual_stomp', '26.fia_destination'):
+        raise ValueError('EXACT_SINGLE_SITE_WRITER_MECHANISM_REQUIRED')
+    return ('ONE_ACTUAL_' + ('TYPED_FIA' if mechanism == '26.fia_destination' else 'QMM')
+            + '_SITE_FIXED_FRESH_PREFILL_NOT_ALL_ELIGIBLE_NOT_C2_C3')
+
+
+def request_limit(stage, max_targets, mechanism='26.residual_stomp'):
+    if stage == SINGLE_SITE_STAGE:
+        single_site_scope(mechanism)
     return 8 if stage == SINGLE_SITE_STAGE else 9 if stage == 'coverage' else 5 * max_targets + 4
 
 
@@ -77,10 +86,8 @@ def main():
     args = parser.parse_args()
     if not 1 <= args.max_targets <= 128 or not 0 < args.memory < 1:
         parser.error('Explicit bounded target and memory budgets required')
-    if args.stage == SINGLE_SITE_STAGE and args.mechanism != '26.residual_stomp':
-        parser.error('c1_single_effects is an explicit QMM-only single-site experiment')
     report = dict(status='STARTING', scope=('ALL_ELIGIBLE_NATIVE_WRITERS_FIXED_SINGLE_REQUEST_FRESH_PREFILL_NOT_DECODE'
-        if args.stage == 'coverage' else 'ONE_ACTUAL_QMM_SITE_FIXED_FRESH_PREFILL_NOT_ALL_ELIGIBLE_NOT_C2_C3'
+        if args.stage == 'coverage' else single_site_scope(args.mechanism)
         if args.stage == SINGLE_SITE_STAGE else 'SINGLE_FRESH_PREFILL_CANDIDATE_WINDOWS_NOT_ALL_ELIGIBLE_C2'),
         mechanism=args.mechanism, stage=args.stage, native_qualified_targets=0, c1=False, c2=False, c3=False,
         e5='UNVERIFIED_INDEPENDENT_RAW_B_F_COMPARISON_REQUIRED', phases=[], sessions={}, num_gpu_blocks_override=64)
@@ -120,7 +127,7 @@ def main():
             installed = True
             # The coverage plan is 8 C2 or 9 C3 complete fresh forwards. No
             # target subset or additional fault request is chosen by this loop.
-            for index in range(request_limit(args.stage, args.max_targets)):
+            for index in range(request_limit(args.stage, args.max_targets, args.mechanism)):
                 state = rpc(llm, query)
                 if state['phase'] == 'complete':
                     break

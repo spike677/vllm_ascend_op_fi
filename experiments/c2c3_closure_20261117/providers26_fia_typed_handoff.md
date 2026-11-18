@@ -120,8 +120,14 @@ Eighteen additional CPU Torch/Native-v3 mock tests cover the complete candidate
 loop, complete-group once followed by the original live CPU proof, copied proof
 refusal, changed before/after descriptors, omitted observations, final-byte stock
 changes, consumer-time snapshot changes, and failed-lease cleanup. These are
-fixture contracts, not CANN numerical or natural inference acceptance. Existing
-QMM-only `c1_single_effects` remains QMM-only. All full candidate reasons and
+fixture contracts, not CANN numerical or natural inference acceptance. The new
+typed FIA `c1_single_effects` adapter reuses the existing QMM single-site planner:
+it selects the minimum actual twice-healthy resolved key once, performs a fresh
+typed Reference/Lossless/OFF before one F/OFF, and retains the complete call and
+alias denominator. It requires a reviewed typed flat-storage profile and new
+source/packages; it does not reuse old Reference evidence or extend C2/C3.
+See [the single-site contract and prepare command](native26_single_site_c1.md).
+All full candidate reasons and
 independent call records remain available; unknown paths are not discarded.
 The complete writer26 Python regression suite passed 108 tests before the
 flat-storage extension, including the
@@ -142,7 +148,9 @@ The case preserves the existing SmolLM2 path, TP1 eager BF16, fixed 64 KV blocks
 one fresh prefill per request and the root queue's resource/device gate. Later
 `lossless`, `effects` or `coverage` cases each start their own complete two-stock
 inventory and run the same strict gates. `max-targets` bounds the entire resolved
-plan; it does not choose a subset. Only root may approve/run those device cases.
+plan in those existing stages; it does not choose a subset. The separate explicit
+`c1_single_effects` stage has its own one-target, eight-complete-request plan,
+with the original fixed observer capacities. Only root may approve/run those device cases.
 No C1, C2, C3, numerical Native acceptance or E5 conclusion follows from this
 code or its CPU tests.
 

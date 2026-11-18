@@ -4,6 +4,10 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import sys
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path[:0] = [str(ROOT)]
 
 
 def main():
@@ -15,16 +19,18 @@ def main():
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage', 'c1_single_effects'), default=['inventory'])
     parser.add_argument('--mechanisms', nargs='+', choices=('26.residual_stomp', '26.fia_destination'),
-                        default=['26.residual_stomp', '26.fia_destination'])
+                        default=None)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
+    if 'c1_single_effects' in args.stages and args.mechanisms is None:
+        parser.error('c1_single_effects requires explicit --mechanisms 26.residual_stomp and/or 26.fia_destination')
+    if args.mechanisms is None:
+        args.mechanisms = ['26.residual_stomp', '26.fia_destination']
     if (not re.fullmatch('[0-9a-f]{7,40}', args.source_commit) or not 1 <= args.max_targets <= 128
             or len(set(args.stages)) != len(args.stages) or len(set(args.mechanisms)) != len(args.mechanisms)
             or any(not path.startswith('/') or any(c in path for c in ('\n', '\r', '\0', ','))
                    for path in (args.installed, args.native, args.probe))):
         parser.error('Frozen paths, source and bounded distinct phases required')
-    if 'c1_single_effects' in args.stages and args.mechanisms != ['26.residual_stomp']:
-        parser.error('c1_single_effects requires explicit --mechanisms 26.residual_stomp; no FIA case is generated')
     root = Path(args.native).resolve(strict=True)
     manifest = root / 'build.json'
     build = json.loads(manifest.read_text())
@@ -36,6 +42,9 @@ def main():
         path = (root / name).resolve(strict=True)
         if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             raise RuntimeError('NATIVE_BUNDLE_CHANGED:' + name)
+    if 'c1_single_effects' in args.stages and '26.fia_destination' in args.mechanisms:
+        from fault_injection.deployments.writer26_fia_typed import profile
+        profile(build.get('fia_typed_profile'))
     cases = []
     for mechanism in args.mechanisms:
         fia = mechanism == '26.fia_destination'
@@ -65,7 +74,7 @@ def main():
                     FAULT26_WRITER_TOPOLOGY_ENABLED='1', FAULT26_TRACE_MAX_EVENTS='100000',
                     FAULT26_TRACE_LOG_PATH='/evidence/trace.jsonl', DCAT26_GROUP_V2_ALLOWED='1'), command=command,
                 review=dict(experiment_id=name, provider=mechanism + (' v2 all_eligible once then live every_match' if coverage
-                    else ' v2 one actual healthy-resolved QMM site C1 effects (not C2)' if single_site
+                    else ' v2 one actual healthy-resolved ' + ('typed FIA' if fia else 'QMM') + ' site C1 effects (not C2)' if single_site
                     else ' v2 serial candidate experiment (not C2)'),
                     model=model, cann='8.5.1', soc='Ascend910B4/A2; verify actual Worker', physical_cards=[args.card], ranks=[0],
                     worker='standard TP1 eager BF16; single fresh prefill/request; fixed64 KV blocks; no decode claim',

@@ -21,6 +21,10 @@ from .writer26_inventory import (WriterLifetimeInventory, allocation_segments, c
 
 SINGLE_SITE_STAGE = 'c1_single_effects'
 SINGLE_SITE_SCOPE = 'ONE_ACTUAL_QMM_SITE_FIXED_FRESH_PREFILL_NOT_ALL_ELIGIBLE_NOT_C2_C3'
+SINGLE_SITE_SCOPES = {
+    '26.residual_stomp': SINGLE_SITE_SCOPE,
+    '26.fia_destination': 'ONE_ACTUAL_TYPED_FIA_SITE_FIXED_FRESH_PREFILL_NOT_ALL_ELIGIBLE_NOT_C2_C3',
+}
 _STABLE_NATIVE = ('cache', 'registration', 'device', 'dtype', 'format', 'dimensions',
     'residual_dimensions', 'output_bytes', 'residual_bytes', 'shape', 'strides', 'residual_shape', 'residual_strides')
 
@@ -118,10 +122,15 @@ class Writer26Experiment(WriterLifetimeInventory):
         require(stage in ('inventory', 'lossless', 'effects', SINGLE_SITE_STAGE)
                 and type(max_targets) is int and 1 <= max_targets <= 128,
                 'BOUNDED_WRITER_EXPERIMENT_STAGE_REQUIRED')
-        require(stage != SINGLE_SITE_STAGE or (not self.runtime.fia and self.runtime.mechanism == '26.residual_stomp'),
-                'SINGLE_SITE_C1_EFFECTS_QMM_ONLY')
+        if stage == SINGLE_SITE_STAGE:
+            require(self.runtime.mechanism in SINGLE_SITE_SCOPES
+                and self.runtime.fia is (self.runtime.mechanism == '26.fia_destination'),
+                'EXACT_SINGLE_SITE_WRITER_MECHANISM_REQUIRED')
+            require(not self.runtime.fia or getattr(self.runtime, 'fia_typed', None) is not None,
+                    'SINGLE_SITE_FIA_CURRENT_TYPED_STOCK_BRIDGE_REQUIRED')
         self.stage, self.max_targets = stage, max_targets
         self.single_selection = self.single_qualification = None
+        self.single_scope = SINGLE_SITE_SCOPES.get(self.runtime.mechanism)
         self.single_aliases = self._actual_aliases() if stage == SINGLE_SITE_STAGE else None
         if stage == SINGLE_SITE_STAGE:
             self.root_hooks = 0
@@ -583,6 +592,7 @@ class Writer26Experiment(WriterLifetimeInventory):
             # This ordering is deterministic within this actual Worker lifetime.
             key = min(self.targets)
             self.single_selection = dict(policy='MIN_ACTUAL_HEALTHY_RESOLVED_TARGET_KEY_NO_FALLBACK', target_key=key,
+                mechanism=self.runtime.mechanism,
                 inventory_index=self.targets[key]['index'], complete_native_count=len(self.candidate_inventory),
                 complete_resolved_count=len(self.targets), inventory_sha256=digest(self.candidate_inventory),
                 aliases_sha256=digest(self.single_aliases), planned_target_count=1,
@@ -590,10 +600,30 @@ class Writer26Experiment(WriterLifetimeInventory):
         per_request_events = self.rows[1]['native_after']['total_events'] - self.rows[1]['native_before']['total_events']
         remaining_requests = self._planned_qualification_requests()
         available = self.rows[1]['native_after']['capacity'] - self.rows[1]['native_after']['stored_events']
+        if self.stage == SINGLE_SITE_STAGE:
+            capacity = dict(remaining_complete_requests=remaining_requests, full_request_native_events=per_request_events,
+                estimated_native_events=per_request_events * remaining_requests, available_native_events=available,
+                native_capacity=self.rows[1]['native_after']['capacity'], planned_target_count=1)
+            self.single_selection['event_capacity_plan'] = capacity
         if per_request_events * remaining_requests > available:
             self.blockers.append('COMPLETE_TARGET_PLAN_EXCEEDS_INDEPENDENT_NATIVE_EVENT_CAPACITY')
             self.plan.append(dict(phase='health', mode=None, target=None))
             return
+        if self.stage == SINGLE_SITE_STAGE and self.fia_typed is not None:
+            before, after = self.rows[1]['fia_typed_before'], self.rows[1]['fia_typed_after']
+            # Two typed stock records for every call remain in every request.
+            # R/L/OFF/F/OFF add one owned-before-execute record each; health is
+            # unselected after uninstall. Neither observer capacity is expanded.
+            typed_events = after['stored'] - before['stored']
+            typed_required = typed_events * remaining_requests + 5
+            typed_available = after['capacity'] - after['stored']
+            capacity.update(full_request_typed_events=typed_events, additional_owned_execute_records=5,
+                estimated_typed_events=typed_required, available_typed_events=typed_available,
+                typed_capacity=after['capacity'])
+            if typed_required > typed_available:
+                self.blockers.append('SINGLE_SITE_PLAN_EXCEEDS_COMPLETE_TYPED_FIA_EVENT_CAPACITY')
+                self.plan.append(dict(phase='health', mode=None, target=None))
+                return
         if self.stage == SINGLE_SITE_STAGE:
             for phase, mode in (('reference', 'reference'), ('lossless', 'lossless'), ('qualification_off', 'off'),
                                 ('fault', 'fault'), ('recovery_off', 'off')):
@@ -667,7 +697,8 @@ class Writer26Experiment(WriterLifetimeInventory):
                 outcomes_sha256=digest(self.outcomes), owner=getattr(self.runtime, 'owner', None),
                 native_owner=[self.runtime.config.owner_hi, self.runtime.config.owner_lo],
                 generation=self.runtime.config.generation, lifetime_sha256=digest(self.lifetime),
-                build=self.runtime.build_identity, baseline_output_sha256=self.baseline, scope=SINGLE_SITE_SCOPE,
+                build=self.runtime.build_identity, baseline_output_sha256=self.baseline, scope=self.single_scope,
+                mechanism=self.runtime.mechanism,
                 serializable_authority=False, qualification_granted=False)
         self.recovered = self.phase == 'complete' and row['phase'] == 'health' and output_sha256 == self.baseline
         self.save()
@@ -759,13 +790,19 @@ class Writer26Experiment(WriterLifetimeInventory):
                 ('installed', 'pending', 'executing', 'device_bytes', 'descriptor_pending', 'error'))
                 and not any(state[name] for name in ('callback_active', 'completion_active', 'descriptor',
                                                      'prepared_fia', 'foreign_calls', 'rejected_calls')))
+            typed_state = self.fia_typed.state() if self.fia_typed is not None else None
+            typed_released = (not self.runtime.fia or (typed_state is not None
+                and not any(typed_state[name] for name in ('preparing', 'prepared', 'executing'))
+                and self.fia_bridge.host_bytes == 0 and not self.public_output.owned))
             complete = (self.recovered and not self.installed and not self.failure and not self.blockers
-                and self.single_qualification is not None and native_released
+                and self.single_qualification is not None and native_released and typed_released
                 and not self.pending and not self.pending_lifetimes and not self.handles and not self.root_hooks
                 and not self.output_refs and not self.retained and len(self.rows) == 8
                 and modes == ['reference', 'lossless', 'off', 'fault', 'off'])
-            value.update(scope=SINGLE_SITE_SCOPE, alias_inventory=self.single_aliases,
+            value.update(scope=self.single_scope, alias_inventory=self.single_aliases,
                 single_site_c1=dict(schema='demoncat.writer26.single_site_c1.v1', selection=self.single_selection,
+                    mechanism=self.runtime.mechanism, scope=self.single_scope, typed_fia_required=self.runtime.fia,
+                    typed_fia_state=typed_state, typed_fia_resources_released=typed_released if self.runtime.fia else None,
                     reference_lossless_off=self.single_qualification, evidence_complete=complete,
                     native_released=native_released, owned_root_logits_hooks=self.root_hooks,
                     selected_native_admissions=sum(row['admissions'] for row in self.rows),

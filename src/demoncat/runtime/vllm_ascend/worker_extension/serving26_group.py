@@ -111,7 +111,8 @@ def install_writer26_group_experiment(worker, *, mechanism, prompt_token_ids, ev
     from fault_injection.deployments.writer26_inventory import NativeWriterInventory
     from fault_injection.deployments.writer26_experiment import Writer26Experiment, SINGLE_SITE_STAGE
     require(not hasattr(worker, '_demoncat_writer26_group_experiment'), 'EXCLUSIVE_WRITER_EXPERIMENT_REQUIRED')
-    require(stage != SINGLE_SITE_STAGE or mechanism == '26.residual_stomp', 'SINGLE_SITE_C1_EFFECTS_QMM_ONLY')
+    require(stage != SINGLE_SITE_STAGE or mechanism in ('26.residual_stomp', '26.fia_destination'),
+            'EXACT_SINGLE_SITE_WRITER_MECHANISM_REQUIRED')
     identity = worker.demoncat_worker_identity()
     require(identity['status'] == 'WORKER_IDENTIFIED' and not identity.get('quarantined'), 'ACTUAL_HEALTHY_WORKER_REQUIRED')
     folder = Path(evidence_dir)
@@ -122,6 +123,8 @@ def install_writer26_group_experiment(worker, *, mechanism, prompt_token_ids, ev
         require(c2_proof is not None and c2_proof.scope.evidence_kind == 'natural_worker', 'LIVE_REAL_WRITER_C2_REQUIRED')
     runtime = NativeWriter26Group(mechanism=mechanism, bundle='/native', manifest_sha256=manifest_sha256,
         owner=c2_proof.owner if c2_proof is not None else None, generation=c2_proof.generation + 1 if c2_proof is not None else 1)
+    require(stage != SINGLE_SITE_STAGE or mechanism != '26.fia_destination'
+            or runtime.fia_typed is not None, 'SINGLE_SITE_FIA_CURRENT_TYPED_STOCK_BRIDGE_REQUIRED')
     reader = NativeWriterInventory('/native/libfault26_readonly_trace_abi0.so',
         runtime.build['files']['libfault26_readonly_trace_abi0.so'])
     model = worker.model_runner.model

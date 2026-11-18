@@ -553,12 +553,13 @@ class SingleSiteEntryTests(unittest.TestCase):
         self.assertEqual(probe.request_limit('effects', 8), 44)
         self.assertEqual(probe.request_limit('coverage', 8), 9)
 
-    def test_probe_refuses_fia_before_initializing_a_worker(self):
-        with patch.object(sys, 'argv', ['probe', '--mechanism', '26.fia_destination',
-                '--manifest-sha256', 'a' * 64, '--stage', SINGLE_SITE_STAGE]), redirect_stderr(io.StringIO()):
-            with self.assertRaises(SystemExit) as error:
-                probe.main()
-        self.assertEqual(error.exception.code, 2)
+    def test_probe_keeps_both_mechanisms_explicit_and_same_single_site_request_limit(self):
+        from fault_injection.deployments.writer26_experiment import SINGLE_SITE_SCOPES
+        for mechanism, scope in SINGLE_SITE_SCOPES.items():
+            self.assertEqual(probe.single_site_scope(mechanism), scope)
+            self.assertEqual(probe.request_limit(SINGLE_SITE_STAGE, 128, mechanism), 8)
+        with self.assertRaisesRegex(ValueError, 'EXACT_SINGLE_SITE_WRITER_MECHANISM_REQUIRED'):
+            probe.request_limit(SINGLE_SITE_STAGE, 1, 'unreviewed')
 
     def test_case_generator_explicit_qmm_mode_and_review_contract(self):
         folder = Path(self.enterContext(tempfile.TemporaryDirectory()))

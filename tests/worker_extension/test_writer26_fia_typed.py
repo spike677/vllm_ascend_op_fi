@@ -100,8 +100,10 @@ class TypedNative(public.PublicFiaV2):
         event = self.reader.append(3, output=output, residual=self.last, producer=self.sequence, dtype=27, format=47)
         call = Call(version=2, size=C.sizeof(Call), mechanism=2, dimensions=3, device=0, dtype=27, format=47,
             token=event.call, thread=threading.get_native_id(), independent_call=event.call, producer_sequence=self.sequence,
-            output=output.data_ptr(), output_bytes=output.untyped_storage().nbytes(), residual=self.last.data_ptr(),
-            residual_bytes=self.last.untyped_storage().nbytes(), shape=(C.c_int64*4)(*output.shape, 0))
+            output=output.data_ptr(), output_bytes=output.untyped_storage().nbytes(),
+            residual=0 if self.last is None else self.last.data_ptr(),
+            residual_bytes=0 if self.last is None else self.last.untyped_storage().nbytes(),
+            shape=(C.c_int64*4)(*output.shape, 0))
         typed = self.fia_typed
         before = packet(Record(version=2, size=656, phase=1, api=1, device=0, event_sequence=event.sequence,
             call=event.call, thread=call.thread, layout_length=3, layout=(C.c_uint8*16)(84, 78, 68)))
