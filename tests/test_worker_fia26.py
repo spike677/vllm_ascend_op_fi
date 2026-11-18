@@ -7,7 +7,7 @@ from fault_injection.core import UnsupportedCall
 from fault_injection.deployments.residual26 import FiaState,Residual26Runtime
 from demoncat.runtime.vllm_ascend.worker_extension.providers import resolve_provider
 from demoncat.runtime.vllm_ascend.worker_extension.providers._scope import ProviderError
-from demoncat.runtime.vllm_ascend.worker_extension.serving26 import FiaServingSession
+from demoncat.runtime.vllm_ascend.worker_extension.serving26 import FiaServingSession, FiaServingBinding
 
 
 class StateFunction:
@@ -43,13 +43,25 @@ class FiaNativeStateTests(unittest.TestCase):
 
 class FiaWorkerContractTests(unittest.TestCase):
     def provider(self):
-        p=resolve_provider('26.fia_destination','1',object(),object(),{})
+        with patch('fault_injection.providers.resolve_runtime',return_value=FiaServingBinding(None)):
+            p=resolve_provider('26.fia_destination','1',object(),object(),{})
         p.bind('owner',1);return p
 
     def test_no_factory_cannot_prepare(self):
-        p=self.provider()
         with patch('fault_injection.providers.resolve_runtime',return_value=None):
-            with self.assertRaisesRegex(ProviderError,'REVIEWED'):p.dispatch('prepare',{},owner='owner',generation=1)
+            with self.assertRaisesRegex(ProviderError,'REVIEWED'):
+                resolve_provider('26.fia_destination','1',object(),object(),{})
+
+    def test_query_of_completed_legacy_request_never_collects(self):
+        p=self.provider();calls=[]
+        p.session=SimpleNamespace(current={'logits_returned':True},error=None,aborted=False,
+            installed=True,recovered=False,collect=lambda:calls.append('collect'),
+            state=lambda:dict(registered=1,environment_enabled=0,callback_active=0,active_consumer=0,
+                prepared=0,queued_executors=0,pending_consumers=0),report=lambda:{})
+        p.query(owner='owner',generation=1)
+        self.assertEqual(calls,[])
+        p.dispatch('advance',{'collect':True},owner='owner',generation=1)
+        self.assertEqual(calls,['collect'])
 
     def test_query_reports_real_pending_to_common_quarantine(self):
         p=self.provider();p.session=SimpleNamespace(current=None,error=None,aborted=False,

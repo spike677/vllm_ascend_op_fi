@@ -17,11 +17,22 @@ def main():
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--max-targets', type=int, default=8)
     parser.add_argument('--statistics', action='store_true')
+    parser.add_argument('--worker-core', action='store_true')
+    parser.add_argument('--source', help='Frozen source root for the new public Core C1 probe')
     parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage', 'c1_single_effects'), default=['inventory'])
     parser.add_argument('--mechanisms', nargs='+', choices=('26.residual_stomp', '26.fia_destination'),
                         default=None)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
+    if args.worker_core and (args.stages != ['c1_single_effects'] or args.max_targets != 1 or args.statistics
+            or args.source is None or not args.source.startswith('/')
+            or any(c in args.source for c in ('\n', '\r', '\0', ','))):
+        parser.error('Public Core needs --source, only c1_single_effects, max-targets=1, and no unadapted statistics')
+    if args.worker_core:
+        source = Path(args.source).resolve(strict=True)
+        expected_probe = source/'experiments/c2c3_closure_20261117/providers26_worker_core_probe.py'
+        if Path(args.probe).resolve(strict=True) != expected_probe.resolve(strict=True):
+            parser.error('Public Core requires the reviewed providers26_worker_core_probe.py entry')
     if 'c1_single_effects' in args.stages and args.mechanisms is None:
         parser.error('c1_single_effects requires explicit --mechanisms 26.residual_stomp and/or 26.fia_destination')
     if args.mechanisms is None:
@@ -52,18 +63,22 @@ def main():
         for stage in args.stages:
             coverage = stage == 'coverage'
             single_site = stage == 'c1_single_effects'
-            name = 'providers26-v2-' + ('fia-smol-' if fia else 'qmm-deepseek-') + stage
+            name = ('providers26-core-' if args.worker_core else 'providers26-v2-') + ('fia-smol-' if fia else 'qmm-deepseek-') + stage
             command = ('source /usr/local/Ascend/cann-8.5.1/set_env.sh\n'
                 'export ASCEND_CUSTOM_OPP_PATH=/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend\n'
                 'export LD_PRELOAD=/native/libdcat26_group_v2.so:/native/libfault26_readonly_trace_abi0.so:'
                 '/native/libfault26_fia_opapi_proxy.so:/native/libopapi.so:/native/libcust_opapi.so\n'
                 'export LD_LIBRARY_PATH=/native:/native/real:$LD_LIBRARY_PATH\n'
-                'export PYTHONPATH=/installed:/msprobe_packages:$PYTHONPATH\n'
-                'exec python3 /probe.py --mechanism ' + mechanism + ' --manifest-sha256 ' + sha + ' --stage ' + stage
+                'export PYTHONPATH=/installed:/msprobe_packages'+(':/source' if args.worker_core else '')+':$PYTHONPATH\n'
+                'exec python3 ' + ('/source/experiments/c2c3_closure_20261117/providers26_worker_core_probe.py'
+                    if args.worker_core else '/probe.py') + ' --mechanism ' + mechanism + ' --manifest-sha256 ' + sha + ' --stage ' + stage
                 + ' --max-targets ' + str(args.max_targets) + ' --memory ' + ('.25' if fia else '.55')
-                + (' --statistics' if args.statistics else ''))
+                + (' --statistics' if args.statistics else '')
+                + (' --source-root /source > /evidence/worker-core26.stdout.log 2> /evidence/worker-core26.stderr.log'
+                   if args.worker_core else ''))
             cases.append(dict(id=name, timeout=1800, image=build['actual_image_id'],
-                mounts=[[args.installed, '/installed', 'ro'], [args.native, '/native', 'ro'], [args.probe, '/probe.py', 'ro'],
+                mounts=([[args.source, '/source', 'ro']] if args.worker_core else []) +
+                    [[args.installed, '/installed', 'ro'], [args.native, '/native', 'ro'], [args.probe, '/probe.py', 'ro'],
                     [model, '/model', 'ro'], [args.native + '/libopapi_nn.so',
                     '/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so', 'ro']],
                 env=dict(VLLM_ENABLE_V1_MULTIPROCESSING='0', VLLM_WORKER_MULTIPROC_METHOD='spawn',
@@ -77,6 +92,9 @@ def main():
                     else ' v2 one actual healthy-resolved ' + ('typed FIA' if fia else 'QMM') + ' site C1 effects (not C2)' if single_site
                     else ' v2 serial candidate experiment (not C2)'),
                     model=model, cann='8.5.1', soc='Ascend910B4/A2; verify actual Worker', physical_cards=[args.card], ranks=[0],
+                    public_entry='WorkerFaultClient+FaultConfig(26,variant)' if args.worker_core else 'legacy callable experiment RPC',
+                    public_core_new_source_requires_acceptance=args.worker_core,
+                    previous_direct_entry_qualification_inherited=False,
                     worker='standard TP1 eager BF16; single fresh prefill/request; fixed64 KV blocks; no decode claim',
                     build_fingerprint=sha, source_commit=args.source_commit,
                     fia_typed_bridge=build.get('fia_typed_profile') if fia else None,

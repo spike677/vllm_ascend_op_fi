@@ -9,8 +9,21 @@ class Fault26FiaProvider(Scope):
     def __init__(self,worker,model,identity):
         super().__init__(worker,model,identity)
         self.session=None;self.checked=False;self.attempted=False
+        from fault_injection.providers import resolve_runtime
+        from .. import serving26
+        from ..serving26_core import Writer26CoreBinding
+        binding=resolve_runtime(self.mechanism,self.model)
+        if type(binding) is Writer26CoreBinding:
+            if binding.mechanism!=self.mechanism:raise ProviderError('WRITER26_CORE_MECHANISM_MISMATCH')
+            from .fault26_core import Fault26CoreProvider
+            self.core=Fault26CoreProvider(worker,model,identity,binding)
+        elif type(binding) is getattr(serving26,self.binding_class):
+            self.core=None
+        else:raise ProviderError('REVIEWED_WRITER26_DEPLOYMENT_REQUIRED')
 
     def dispatch(self,action,settings,*,owner,generation):
+        if self.core is not None:
+            return self.core.dispatch(action,settings,owner=owner,generation=generation)
         if action=='prepare':
             self.bind(owner,generation);reject_unknown(settings)
             from fault_injection.providers import resolve_runtime
@@ -21,7 +34,7 @@ class Fault26FiaProvider(Scope):
             if type(self.session) is not getattr(serving26,self.session_class):raise ProviderError('REVIEWED_WRITER26_SESSION_REQUIRED')
             return self.query(owner=owner,generation=generation)
         self.verify(owner,generation)
-        reject_unknown(settings,('request_id',) if action=='advance' else ())
+        reject_unknown(settings,('request_id','collect') if action=='advance' else ())
         if self.session is None:raise ProviderError('FIA26_PREPARE_REQUIRED')
         if action=='register':self._registered=True
         elif action=='check':
@@ -30,7 +43,10 @@ class Fault26FiaProvider(Scope):
         elif action in ('enable','execute'):
             if not self.checked or self.attempted:raise ProviderError('SINGLE_REVIEWED_ATTEMPT_REQUIRED')
             self.attempted=True;self.session.install()
-        elif action=='advance':self.session.expect(settings.get('request_id'))
+        elif action=='advance':
+            if settings=={'collect':True}:self.session.collect()
+            elif set(settings)=={'request_id'}:self.session.expect(settings['request_id'])
+            else:raise ProviderError('EXPLICIT_WRITER26_ARM_OR_COLLECTION_REQUIRED')
         elif action=='finish':
             self.session.collect()
             if not self.session.recovered:raise ProviderError('FIA26_OFF_RECOVERY_NOT_VERIFIED')
@@ -42,10 +58,11 @@ class Fault26FiaProvider(Scope):
         return self.query(owner=owner,generation=generation)
 
     def query(self,*,owner,generation):
+        if self.core is not None:
+            return self.core.query(owner=owner,generation=generation)
         self.verify(owner,generation)
         if self.session is None:raise ProviderError('NATIVE_STATE_UNAVAILABLE')
         s=self.session
-        if s.current is not None and s.current.get('logits_returned') and not s.error:s.collect()
         raw=s.state()
         return dict(native_loaded=True,registered=self._registered,native_registered=bool(raw['registered']),
             enabled=bool(raw['environment_enabled']),inflight=raw['callback_active']+raw['active_consumer'],

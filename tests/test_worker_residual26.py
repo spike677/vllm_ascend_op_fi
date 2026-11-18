@@ -29,10 +29,9 @@ class ResidualWorkerTests(unittest.TestCase):
         with self.assertRaisesRegex(UnsupportedCall, 'missing'): runtime.native_state()
 
     def test_resolver_binding_is_mechanism_specific(self):
-        provider = Fault26ResidualProvider(object(), object(), {})
         with patch('fault_injection.providers.resolve_runtime', return_value=None) as resolve:
             with self.assertRaisesRegex(ProviderError, 'REVIEWED'):
-                provider.dispatch('prepare', {}, owner='o', generation=1)
+                Fault26ResidualProvider(object(), object(), {})
         self.assertEqual(resolve.call_args.args[0], '26.residual_stomp')
 
     def test_runtime_budget_checks_actual_supported_not_claim_counter(self):

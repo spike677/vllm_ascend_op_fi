@@ -90,6 +90,8 @@ def main():
             if len(responses)!=1:raise RuntimeError('ONE_COMPLETED_REQUEST_REQUIRED')
             row['output']=output(responses[0])
             if row['output']['request_id']!=mapping['external_request_id']:raise RuntimeError('DRIVER_MAPPING_CHANGED')
+            row['collect']=rpc(llm,'demoncat_fault_rpc','advance',dict(ticket,settings=dict(collect=True)));save()
+            if row['collect']['status']!='ACTION_COMPLETED':raise RuntimeError('EXPLICIT_COLLECTION_FAILED')
             row['query']=rpc(llm,'demoncat_fault_query',ticket);save()
             if row['query'].get('quarantined'):raise RuntimeError('SERVING_REPLAY_FAILED')
         report['finish']=rpc(llm,'demoncat_fault_rpc','finish',ticket)

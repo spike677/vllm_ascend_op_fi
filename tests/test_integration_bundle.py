@@ -250,6 +250,24 @@ class BundleTests(unittest.TestCase):
         with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
             bundle.create_review(self.source, 'incomplete-natural-tensor-fixture')
 
+    def test_writer26_core_requires_complete_reused_cpu_fixture_closure_without_experiments(self):
+        path = self.source / bundle._WRITER26_PROVIDER
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b'# reviewed Core writer bridge\n')
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'missing-writer26-fixture')
+        names = bundle._WRITER26_CONTRACTS | {'tests/worker_extension/test_core_writer26.py'}
+        for name in names:
+            target = self.source / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / name).read_bytes())
+        review, _ = self.export()
+        self.assertTrue(names <= {row['source_path'] for row in review['files']})
+        self.assertFalse(any(row['source_path'].startswith('experiments/') for row in review['files']))
+        (self.source / 'tests/worker_extension/test_collector_dispatch.py').unlink()
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'missing-typed-fia-public-observer-fixture')
+
     def test_changed_source_and_contract_payload_are_detected(self):
         review, _ = self.export()
         for suffix, error in (('/sources/fault_injection/integration.py', 'SOURCE_HASH_MISMATCH'),
