@@ -6,8 +6,8 @@ Direct OpOverload invocation is not a new collector boundary.
 """
 import hashlib
 import inspect
-import marshal
 from pathlib import Path
+import sys
 import types
 
 REGISTRY = 'core/dump/api_dump/api_registry.py'
@@ -35,10 +35,10 @@ class CustomPacketMetadata:
         require(files.get(REGISTRY) == REGISTRY_SHA
                 and hashlib.sha256(raw).hexdigest() == REGISTRY_SHA,
                 'UNREVIEWED_CUSTOM_REGISTRY_SOURCE')
-        expected = [code for code in codes(compile(raw, str(path), 'exec'))
+        expected = [code for code in codes(compile(raw, str(path), 'exec', dont_inherit=True))
                     if code.co_qualname == 'ApiRegistry.register_custom_api.<locals>.wrap_api_func.<locals>.api_function']
         require(len(expected) == 1, 'EXACT_CUSTOM_WRAPPER_CODE_REQUIRED')
-        expected_code = marshal.dumps(expected[0])
+        expected_code = expected[0]
         keys = collector._custom_op_auto_registered
         require(type(keys) is set, 'CUSTOM_REGISTRATION_SET_REQUIRED')
         pending = []
@@ -46,8 +46,13 @@ class CustomPacketMetadata:
             module = getattr(torch.ops, namespace)
             wrapper = getattr(module, name)
             require(type(wrapper) is types.FunctionType
-                    and marshal.dumps(wrapper.__code__) == expected_code,
+                    and wrapper.__code__ == expected_code
+                    and Path(wrapper.__code__.co_filename).resolve() == path.resolve(),
                     'UNKNOWN_CUSTOM_API_WRAPPER')
+            registry = sys.modules.get(wrapper.__globals__.get('__name__'))
+            require(registry is not None and wrapper.__globals__ is vars(registry)
+                    and Path(registry.__file__).resolve() == path.resolve(),
+                    'CUSTOM_REGISTRY_GLOBALS_CHANGED')
             closure = inspect.getclosurevars(wrapper).nonlocals
             packet = closure.get('api_func')
             require(type(packet) is torch._ops.OpOverloadPacket
