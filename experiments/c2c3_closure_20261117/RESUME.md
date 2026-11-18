@@ -1,5 +1,20 @@
 # Current execution checkpoint
 
+## Current checkpoint — recovered group reviews and next deployment
+
+- Remote ffe39134 publishes Core V1 and accepted Native20 source46. New local source differs; never relabel frozen deployments.
+- Strict C2 6/17, C3 4/17. RoPE22 source46 and KV41 source44 independently pass complete target execution and OFF. C3 execution56/56 each passes, but original live C2 object issuance/use is source-bound rather than directly recorded; retain strict receipt limitation. See WORKER_RECOVERY_REVIEW_20261118.md.
+- No active NPU at this checkpoint. Root read-only npu-smi found no compute processes on2/5; only gyl_test container. Every new case must recheck allocations and acquire the existing lock; no host isolation.
+- RoPE result2e92fcb0; corrected independent reviewa4bc8c4e checks9259 conditions, C2 pass and only C3 capability receipt missing. Canonical shared-object alias review fixed; no raw device payload/statistics claim.
+- KV41 B1e5de391/F9a34e280; full-prefix independent a2 review3d80c125 passes19 checks for B C2/F C2/F C3. Zero hook/API/native resources; raw statistics and earlier nulls remain independently limited.
+- Fault33 source45 stock41caf840 succeeds, private Bd769791e hits observer capture budget, noF. Observer count limit1024 CPU repair needs fresh SDK build and a new same-deployment stock/B bridge.
+- Fault39 output MODEL_LOCAL Bf26689e9 has single-target C1 fault/OFF, then group structural binding refusal after persistent collector wrapper. Native leases0 but group recovery pending; source-pinned structural repair reviewed/tested, new NPU required. Separate F case not started.
+- Fault26 real FIA-return lifetime repair is integrated; new snapshot/packages required. Quant single-site public Core admission has independent P1/P2 repairs in progress; do not deploy unfixed b423e5b7.
+- Public Core RoPE binding/cleanup/proof receipts are a CPU agent task. Root only owns NPU; all new raw evidence stays124. Code/summary publication only.
+- Source-only integration bundle at e22c3dd4 passed69 relocated contracts; new later adapters are not included. No yellow-zone/A3/general8x/9x qualification.
+- All following checkpoints are historical.
+
+
 ## Current checkpoint — Core V1 real Provider passed; next mechanisms
 
 - Native20 public Core source46/packages19 finished and independent coverage/effect/OFF/SDK audits pass135/270. Strict C2/C3 now4/17 in bounded8/18/repaired20/repaired39 scopes. See WORKER_CORE_V1_ACCEPTANCE_20261118.md for all exact hashes. E5 remains incomparable (first QMM Max16.25→14.0,132 preceding nulls,2 later NaNs); C3 raw missing.

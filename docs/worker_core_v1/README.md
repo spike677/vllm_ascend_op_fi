@@ -67,8 +67,9 @@ accepted113 C2 targets and226 C3 calls with exact OFF and SDK release. Fault20's
 source44 short preflight observed135 QMM calls twice and released15012 SDK arrays,
 but armed no fault. These are not results for the new Core snapshot.
 
-Strict current qualification is4/17 for C2 and C3, in bounded Fault18, MoE8,
-repaired Native39 and repaired Native20 scopes. Keep C0/C1/C2/C3, Recovery and E5 separate. In
+Strict current qualification is6/17 for C2 and4/17 for C3: the existing
+Fault18, MoE8, repaired Native39/Native20 scopes, plus C2 for RoPE22 and KV41.
+Their C3 execution/OFF is verified; separate live-proof receipt gaps remain. Keep C0/C1/C2/C3, Recovery and E5 separate. In
 particular, Native39's C2 Inf/NaN statistics and absent C3 raw capture remain
 independent E5 limitations. Do not rerun accepted cases merely to refresh counts.
 
