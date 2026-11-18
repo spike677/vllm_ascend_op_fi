@@ -7,6 +7,7 @@ Success is CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION, not NPU acceptance.
 """
 import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -33,6 +34,24 @@ TND33_FAI_FD_KEYS = [5000000000000200100, 5000000000000200103,
                      5100000000010200100, 5100000000010200103,
                      6000000000010200100, 6000000000010200103]
 TND33_ARCH22_KEYS = TND33_KEYS + TND33_FAI_FD_KEYS[:6]
+TND28_NORMAL_VARIANT = 'tnd_prefill_arch22_normal'
+TND28_NORMAL_KEYS = [103000000030000003, 5000000000000200100, 5000000000000200103,
+                    5000000000010200100, 5000000000010200103,
+                    5100000000010200100, 5100000000010200103]
+TND28_SDK_INTERFACE_SHA256 = '1a9c9159e9d1d84b82b754b2db806be1b878e05d06d45d3df07295c1280878e2'
+TND28_DENIED = ('loading_allowed', 'fault_execution_ready', 'stock_private_exact_proven',
+               'public_prepared_pointer_stride_join', 'c1', 'c2', 'c3')
+
+
+def tnd28_recipe():
+    spec = importlib.util.spec_from_file_location('tnd28_normal_build_recipe', HERE/'apply_tnd28_prefill_normal.py')
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def git_blob(source, path):
+    return subprocess.check_output(['git', '-C', str(source), 'show', COMMIT+':'+path])
 
 
 def sha(path):
@@ -258,7 +277,9 @@ class Builder:
             require(self.sdk.name == 'cann-8.5.1' and args.sdk_interface_manifest
                     and self.variant in ('tnd_page16_s2_256', 'tnd_page16_fai_s2_256',
                                          'tnd_page16_fai_fd_s2_256', 'tnd_page16_arch22_normal_bridge',
-                                         'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256'),
+                                         'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal',
+                                         'tnd_page16_arch22_group_s2_256',
+                                         TND28_NORMAL_VARIANT),
                     'EXACT_TND33_CANN851_BUILD_REQUIRED')
             from opdef_compat import adapt
             compatibility = adapt(self.source)
@@ -307,6 +328,11 @@ class Builder:
                            excluded_test_fixtures_sha256=sha(self.ev / 'excluded_test_fixtures.json'))
 
     def configure_policy(self, source_in):
+        if (self.receipt.get('variant') == TND28_NORMAL_VARIANT
+                or self.receipt.get('mechanism') == '28.fia.normal_candidate'
+                or self.receipt.get('schema') == 'demoncat.attention28.tnd_prefill_normal_source.v1'):
+            self.configure_tnd28_normal(source_in)
+            return
         self.variant = (self.receipt.get('variant') if self.receipt['mechanism'] == '33.paged_decode'
                         else self.receipt['mechanism'].removeprefix('28.fia.'))
         require(self.variant in ('legal_tiling', 'denominator_replay', 'tnd_page16_s2_256',
@@ -356,6 +382,71 @@ class Builder:
             self.report.update(fault_execution_ready=False, stock_private_exact_proven=False,
                                old_normal_certificate_reused=False)
 
+    def configure_tnd28_normal(self, source_in):
+        """Only this new normal recipe can enter the new 8.5.1 build branch."""
+        self.variant = TND28_NORMAL_VARIANT
+        self.vendor_name = 'dcat_f28_tnd_normal'
+        self.report.update(normal_only=True, **{name: False for name in TND28_DENIED})
+        recipe = tnd28_recipe()
+        receipt = self.receipt
+        require(receipt.get('schema') == 'demoncat.attention28.tnd_prefill_normal_source.v1'
+            and receipt.get('mechanism') == '28.fia.normal_candidate'
+            and receipt.get('variant') == self.variant and receipt.get('vendor') == self.vendor_name
+            and receipt.get('source_commit') == COMMIT
+            and receipt.get('status') == 'PATCHED_NOT_BUILT_NOT_NPU_VALIDATED'
+            and receipt.get('normal_only') is True and receipt.get('normal_route_preference_changed') is True
+            and all(receipt.get(name) is False for name in
+                (*TND28_DENIED, 'tensor_payload_mutated', 'kernel_source_modified', 'tiling_arithmetic_modified'))
+            and receipt.get('recipe_sha256') == sha(HERE/'apply_tnd28_prefill_normal.py')
+            and receipt.get('base_recipe_sha256') == sha(HERE/'base_policy.py')
+            and receipt.get('normal_key') == str(recipe.NORMAL_KEY)
+            and receipt.get('compile_keys') == [str(k) for k in TND28_NORMAL_KEYS]
+            and tuple(TND28_NORMAL_KEYS) == recipe.KEYS
+            and receipt.get('scope') == dict(layout='TND',batch=1,s1=2048,s2=2048,heads=16,
+                kv_heads=8,dim=128,page_attention=False,api_block_size=128,m=512,s2_base=512),
+            'TND28_NORMAL_EXACT_SOURCE_RECEIPT_REQUIRED')
+        require(self.sdk.name == 'cann-8.5.1'
+            and getattr(self.args, 'opdef_compat', None) == 'ascend910b-cann851'
+            and getattr(self.args, 'sdk_interface_manifest', None)
+            and getattr(self.args, 'sdk_interface_sha256', None) == TND28_SDK_INTERFACE_SHA256
+            and sha(self.args.sdk_interface_manifest) == TND28_SDK_INTERFACE_SHA256,
+            'TND28_EXACT_REVIEWED_CANN851_PROFILE_REQUIRED')
+        # Reconstruct all changed bytes from the actual c77 Git blobs, not
+        # merely a receipt that asserts the same recipe filename/hash.
+        pristine = {p: git_blob(source_in,p) for p in (*recipe.SOURCE_SHA,*recipe.EXTRA_UNCHANGED)}
+        recipe.verify_source({p: pristine[p] for p in recipe.SOURCE_SHA})
+        updated = recipe.patched({p: pristine[p].decode('utf-8') for p in recipe.PATHS})
+        typed, projection, fields = recipe.base.typed_materials(pristine[recipe.EXTRA_UNCHANGED[0]].decode('utf-8'))
+        typed = typed.replace('fault28_fia','tnd28_prefill_normal').replace(
+            'DEMONCAT_FAULT28_FIA_TYPED_H','DEMONCAT_TND28_PREFILL_TYPED_H')
+        expected = dict(pristine)
+        expected.update({p: value.encode('utf-8') for p,value in updated.items()})
+        expected.update({recipe.base.HOST+'tnd28_prefill_normal.h': (HERE/'tnd28_prefill_normal.h').read_bytes(),
+                         recipe.base.HOST+'tnd28_prefill_contract.h': (HERE/'tnd28_prefill_contract.h').read_bytes(),
+                         recipe.base.HOST+'tnd28_prefill_typed.h': typed.encode('utf-8')})
+        rows = receipt.get('files', [])
+        require(len(rows) == len(expected) and {r['path'] for r in rows} == set(expected),
+                'TND28_COMPLETE_UNIQUE_SOURCE_CLOSURE_REQUIRED')
+        for row in rows:
+            name = row['path']; path = source_in/name; value = expected[name]
+            require(row.get('before_sha256') == (hashlib.sha256(pristine[name]).hexdigest() if name in pristine else None)
+                and row.get('after_sha256') == hashlib.sha256(value).hexdigest()
+                and row.get('bytes') == len(value) and not path.is_symlink() and path.read_bytes() == value,
+                'TND28_RECONSTRUCTED_SOURCE_BYTES_DIFFER:'+name)
+        projection_sha = hashlib.sha256(projection.encode('utf-8')).hexdigest()
+        require(receipt.get('projection_sha256') == projection_sha and receipt.get('typed_field_count') == len(fields)
+            and bool(fields), 'TND28_GENERATED_TYPED_SCHEMA_DIFFERS')
+        self.report.update(tnd28_recipe_sha256=receipt['recipe_sha256'],
+            tnd28_base_recipe_sha256=receipt['base_recipe_sha256'],
+            tnd28_projection_sha256=projection_sha, tnd28_typed_field_count=len(fields),
+            tnd28_typed_fields=fields,
+            tnd28_headers={name: sha(HERE/name) for name in ('tnd28_prefill_normal.h','tnd28_prefill_contract.h')},
+            tnd28_source_closure_reconstructed=True,
+            tnd28_source_closure={p: hashlib.sha256(v).hexdigest() for p,v in expected.items()},
+            tnd28_sdk_interface_sha256=TND28_SDK_INTERFACE_SHA256,
+            tnd28_builder_sha256=sha(Path(__file__)),
+            tnd28_binary_registration_sha256=sha(HERE/'binary_registration.py'))
+
     def cpu_checks(self):
         self.run('geometry_compile', ['g++', '-std=c++17', '-I', HERE, HERE / 'geometry_check.cpp',
                                       '-o', self.ev / 'geometry_check'], env=self.env)
@@ -367,6 +458,23 @@ class Builder:
             self.report['arch22_s2_cpu_matrix_sha256'] = sha(self.ev/'arch22_s2_matrix/split_matrix.jsonl')
             self.report['arch22_s2_geometry_validator_sha256'] = sha(HERE/'arch22_s2_geometry.py')
             self.report['actual_worker_platform_observed'] = False
+        if self.variant == TND28_NORMAL_VARIANT:
+            program = HERE/'test_tnd28_prefill_contract.cpp'
+            binary = self.ev/'tnd28_normal_contract'
+            self.run('tnd28_normal_contract_compile',
+                ['g++','-std=c++17','-Wall','-Wextra','-Werror','-pedantic','-pthread',program,'-o',binary],env=self.env)
+            self.run('tnd28_normal_contract', [binary], env=self.env)
+            log = self.ev/'tnd28_normal_contract.log'
+            require(log.read_text().strip() == 'PASS_CPU_TND28_NORMAL_GEOMETRY_COORDINATES_NOT_SDK_OR_NPU',
+                    'TND28_CPU_NORMAL_CONTRACT_OUTPUT_DIFFERS')
+            cpu = dict(schema='demoncat.attention28.tnd_normal_cpu_contract.v1',
+                status='CPU_CONTRACT_PASS_NOT_NATIVE_ACCEPTANCE', source_sha256=sha(program),
+                contract_header_sha256=sha(HERE/'tnd28_prefill_contract.h'), executable_sha256=sha(binary),
+                compile_log_sha256=sha(self.ev/'tnd28_normal_contract_compile.log'), run_log_sha256=sha(log),
+                normal_only=True, npu_executed=False, loading_allowed=False,
+                actual_worker_platform_observed=False)
+            save(self.ev/'tnd28_normal_cpu_contract.json',cpu)
+            self.report['tnd28_cpu_contract_sha256'] = sha(self.ev/'tnd28_normal_cpu_contract.json')
 
     def host(self):
         args, source, deps = self.args, self.source, self.deps
@@ -449,6 +557,62 @@ class Builder:
                 self.report['fai_fd_cpu_matrix_sha256'] = sha(self.ev/'fai_schema/fai_fd_geometry_matrix.json')
                 self.report['fai_fd_geometry_validator_sha256'] = sha(HERE/'fai_fd_geometry.py')
                 self.report['actual_worker_platform_observed'] = False
+        if self.variant == TND28_NORMAL_VARIANT:
+            self.tnd28_public_schema()
+
+    def tnd28_public_schema(self):
+        folder = self.ev/'tnd28_schema'
+        self.run('actual_tnd28_public_schema', [self.args.python,HERE/'compile_public_schema.py',
+            '--source',self.source,'--sdk',self.sdk,'--out',folder],env=self.env)
+        compiled = json.loads((folder/'compile_receipt.json').read_bytes())
+        schema = json.loads((folder/'fia_abi_schema.json').read_bytes())
+        selftest = json.loads((folder/'fia_abi_selftest.json').read_bytes())
+        entries = json.loads((self.source/'build/compile_commands.json').read_bytes())
+        candidates = [e for e in entries if Path(e['file']).name == 'fia_tiling_nonquant.cpp'
+                      and '/arch22/' in e['file']]
+        fields = schema.get('fields',[])
+        expected = {f['name']: (f['dtype'],f['count']) for f in self.report['tnd28_typed_fields']}
+        widths = {'bool':1,'uint8_t':1,'int8_t':1,'uint16_t':2,'int16_t':2,
+                  'uint32_t':4,'int32_t':4,'uint64_t':8,'int64_t':8,'float':4,'double':8}
+        require(len(fields) == len(expected) and {f['name'] for f in fields} == set(expected)
+            and all((f.get('dtype'),f.get('count')) == expected[f['name']]
+                and type(f.get('width')) is int and f['width'] == widths.get(f['dtype'])
+                and type(f.get('count')) is int and f['count'] > 0
+                and type(f.get('offset')) is int and f['offset'] >= 0
+                and f['offset']+f['width']*f['count'] <= 1576 for f in fields),
+            'TND28_ACTUAL_SDK_TYPED_FIELDS_DIFFER')
+        spans = sorted((f['offset'],f['offset']+f['width']*f['count']) for f in fields)
+        require(all(a[1] <= b[0] for a,b in zip(spans,spans[1:])),
+                'TND28_ACTUAL_SDK_TYPED_FIELDS_OVERLAP')
+        actual_fields = {f['name']:{k:v for k,v in f.items() if k != 'name'} for f in fields}
+        require(len(candidates) == 1 and compiled.get('actual_new_fia_compile_entry') == candidates[0]
+            and compiled.get('compiler_source_sha256') == sha(HERE/'fia_abi_decoder.cpp')
+            and compiled.get('decoder_sha256') == sha(folder/'fia_abi_decoder')
+            and selftest.get('status') == 'PASS_CPU_DERIVED_LAYOUT_SENTINEL'
+            and selftest.get('serialized_bytes') == 1576 and selftest.get('fields') == actual_fields,
+            'TND28_ACTUAL_SDK_COMPILER_OR_SELFTEST_DIFFERS')
+        require(compiled.get('schema') == 'demoncat.fia.fresh_abi_compile.v1'
+            and compiled.get('npu_executed') is False and compiled.get('loading_allowed') is False
+            and compiled.get('schema_sha256') == sha(folder/'fia_abi_schema.json')
+            and compiled.get('projection_sha256') == self.report['tnd28_projection_sha256']
+            and compiled.get('projection_sha256') == sha(folder/'fia_schema_projection.h')
+            and compiled.get('public_source_sha256') == sha(self.source/
+                'attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling.h')
+            and schema.get('schema') == 'fault28.fia_graph.public_serializer_layout.v1'
+            and schema.get('type') == 'FusedInferAttentionScoreTilingData'
+            and schema.get('size') == 1576 and len(schema.get('fields',[])) == self.report['tnd28_typed_field_count']
+            and schema.get('kernel_argument_raw_observed') is False
+            and schema.get('projection_sha256') == compiled['projection_sha256']
+            and schema.get('public_source_sha256') == compiled['public_source_sha256']
+            and schema.get('layout_kind') == 'public_host_serializer_projection',
+            'TND28_ACTUAL_SDK_PUBLIC_SCHEMA_DIFFERS')
+        self.report.update(tnd28_public_schema_sha256=sha(folder/'fia_abi_schema.json'),
+            tnd28_schema_compile_sha256=sha(folder/'compile_receipt.json'),
+            tnd28_schema_compiler_sha256=sha(HERE/'compile_public_schema.py'),
+            tnd28_schema_selftest_sha256=sha(folder/'fia_abi_selftest.json'),
+            tnd28_schema_decoder_sha256=sha(folder/'fia_abi_decoder'),
+            tnd28_actual_host_compile_commands_sha256=sha(self.source/'build/compile_commands.json'),
+            tnd28_host_header_compiled_with_actual_sdk=True)
 
     def kernel(self):
         params = list((self.source / 'build').rglob(EXPECTED_BIN + '_param.json'))
@@ -461,7 +625,8 @@ class Builder:
         require(dynamic.is_file(), 'NEW_PACKAGE_JIT_SOURCE_MISSING')
         opc = self.sdk / 'python/site-packages/opc_tool/opc.py'
         require(opc.is_file(), 'MATCHED_OPC_COMPILER_MISSING')
-        keys = (TND33_ARCH22_KEYS if self.variant in ('tnd_page16_arch22_normal_bridge', 'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256') else
+        keys = (TND28_NORMAL_KEYS if self.variant == TND28_NORMAL_VARIANT else
+                TND33_ARCH22_KEYS if self.variant in ('tnd_page16_arch22_normal_bridge', 'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256') else
                 TND33_FAI_FD_KEYS if self.variant == 'tnd_page16_fai_fd_s2_256' else
                 TND33_FAI_KEYS if self.variant == 'tnd_page16_fai_s2_256' else
                 TND33_KEYS if self.variant == 'tnd_page16_s2_256' else
@@ -501,6 +666,9 @@ class Builder:
                            binary_summary_registration_sha256=sha(self.ev / 'binary_summary_registration.json'))
 
     def finish(self):
+        if self.variant == TND28_NORMAL_VARIANT:
+            require(all(self.report.get(name) is False for name in TND28_DENIED),
+                    "TND28_NORMAL_COMPLETION_AUTHORIZATION_MUST_REMAIN_FALSE")
         self.check_excluded_fixtures()
         require(all(sha(path) == digest for path, digest in self.frozen.items()), 'PATCHED_SOURCE_CHANGED_DURING_BUILD')
         artifacts = []
@@ -513,6 +681,23 @@ class Builder:
                            loading_allowed=False, qualification_missing=['new build artifact binding',
                             'actual serialized raw/POD/launch equality', 'lossless bridge', 'B/F/OFF',
                             'independent statistics', 'public Worker boundary'])
+        if self.variant == TND28_NORMAL_VARIANT:
+            require(all(self.report.get(name) is False for name in TND28_DENIED)
+                and self.report.get('tnd28_source_closure_reconstructed') is True
+                and self.report.get('tnd28_host_header_compiled_with_actual_sdk') is True
+                and self.report.get('compiled_keys') == TND28_NORMAL_KEYS
+                and self.report.get('tnd28_cpu_contract_sha256') == sha(self.ev/'tnd28_normal_cpu_contract.json')
+                and self.report.get('tnd28_public_schema_sha256') == sha(self.ev/'tnd28_schema/fia_abi_schema.json')
+                and self.report.get('tnd28_schema_compile_sha256') == sha(self.ev/'tnd28_schema/compile_receipt.json')
+                and self.report.get('tnd28_schema_selftest_sha256') == sha(self.ev/'tnd28_schema/fia_abi_selftest.json')
+                and self.report.get('tnd28_schema_decoder_sha256') == sha(self.ev/'tnd28_schema/fia_abi_decoder'),
+                'TND28_NORMAL_COMPLETION_EVIDENCE_REQUIRED')
+            self.report.update(qualification_missing=['new private package loaded-function identity',
+                'actual public V view and prepared pointer/copy/stride lineage', 'actual int8 mask contents',
+                'complete current raw/POD/launch/stream join', 'full stock/private normal repeat equality',
+                'same private Worker OFF health and zero owned resources'],
+                normal_only=True, actual_worker_platform_observed=False,
+                mask_values_verified=False, prepared_stride_values_verified=False)
         save(self.ev / 'completion.json', self.report)
 
     def check_excluded_fixtures(self):

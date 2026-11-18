@@ -75,8 +75,11 @@ and the host material. It checks all 56 calls from the two original requests,
 without copying private payloads or deleting any of 28 sites. The new small
 CPU summary records the hashes and explicit negative qualification fields.
 Its SHA256 is 98d2d3b1d181be9e594e07cf2462df2a5acea306fef59368510da2eeabce2e5c.
+That immutable summary belongs to the original d79831d6 source-only input;
+use that frozen source root to recompute it. The later scope fix and builder
+integration below require their own new receipts and do not relabel it.
 
-The final local run passed all 44 tests: the 19 new contracts plus the existing
+The original source-only d79831d6 local run passed all 44 tests: the 19 new contracts plus the existing
 10 prefill-boundary and 15 stock-census contracts. Earlier regression attempts
 had missing test-module search paths; the corrected full command passed:
 
@@ -90,33 +93,99 @@ block fields, core bounds and all 4096 coordinates. There is no C++ compiler
 in this local Windows environment, so this C++ binary and the real SDK header
 compile are **pending**. Python passes do not stand in for them.
 
-## Root integration delta
+## Additive builder integration, still not loadable
 
-No shared builder, binary registry, fault33 helper, Host, Runtime or provider
-was edited. Root needs these explicit additions in its separate integration:
+The new explicit build_fresh.py / binary_registration.py branch accepts only
+`tnd_prefill_arch22_normal` and vendor `dcat_f28_tnd_normal`. Old legal/replay
+and every fault33 variant/default remain separate. The root-owned
+build_tnd33_124.py controller adds only strategy `tnd28-prefill-normal`;
+this work adds no Docker controller and performs no container operation.
 
-| Component | Required additive change |
-| --- | --- |
-| build_fresh.configure_policy | Recognize only the new source receipt schema/variant/vendor; verify this recipe, base generator, normal header and contract header hashes. Never route it through old legal/replay admission. |
-| SDK compatibility | Permit only the exact reviewed CANN8.5.1 compatibility/profile for this new variant, preserving all old variant guards. Record actual interface/dependency/source hashes. |
-| Compile and binary registration | Compile and validate exactly recipe.KEYS: normal key 103000000030000003 plus the six unchanged fallback entries listed by the recipe. Do not borrow fault33's key list or add an unobserved fault/FD key to satisfy a mismatch. |
-| ABI schema | Run the existing real-SDK compile_public_schema.py against this fresh source; retain generated layout/size/field/type/offset and source/hash receipts. Do not inherit an old schema qualification. |
-| CPU build | Compile/run the portable normal contract below; additionally compile the complete new host header through the actual host build. Preserve failures as separate build attempts. |
-| Completion | Preserve the new normal receipt, recipe/header/contract/projection hashes, complete vendor byte inventory, actual compiled key metadata and both SDK/CPU receipts. loading_allowed, fault_execution_ready, stock_private_exact_proven remain false. |
-| Worker admission | Separate new boundary/native binding; exact public V and mask objects plus actual prepared descriptor/copy lineage; no public_candidate result used as live authority. Retain every Slice/FIA launch, join the exact current serializer/stream/kernel-argument record, and preserve the complete 28-site inventory. |
+Before compiling, the builder reconstructs all 17 source materials from the
+actual c77 Git blobs plus the current normal recipe/headers. It verifies the
+12 fixed source pins, every original/updated byte, generated typed projection,
+complete unique manifest, exact M512/S2=512 scope and seven normal/fallback
+keys. A forged manifest cannot approve altered kernels or generated headers.
+The new branch requires the actual reviewed CANN8.5.1 interface manifest SHA
+`1a9c9159e9d1d84b82b754b2db806be1b878e05d06d45d3df07295c1280878e2` and
+`ascend910b-cann851` compatibility. The existing source/dependency/SDK checks
+still run, including all actual interface file hashes.
 
-The preparation commands are concrete, but build_fresh.py intentionally
-does not yet accept the new variant:
+The build runs the strict C++ contract with `-pthread`, compiles the complete
+host header in the fresh SDK host translation unit, and derives the public
+serializer through that actual compile_commands entry. Its field names,
+types, widths, counts, non-overlapping bounds, generated projection, decoder
+binary and CPU sentinel receipt must agree. The completion receipt rehashes
+all new CPU/schema originals, frozen patched source and the complete vendor
+byte inventory. Exact seven-key registration and binary SHA are mandatory.
+No old fault33 normal certificate is an input.
 
-    python /source/fault_injection/native_adapters/attention28/fia/apply_tnd28_prefill_normal.py \
-      --source /build/new-pristine-c77 --output /build/new-normal-source-receipt
-    g++ -std=c++17 -Wall -Wextra -Werror -pedantic \
-      /source/fault_injection/native_adapters/attention28/fia/test_tnd28_prefill_contract.cpp \
-      -o /build/tnd28-normal-contract
-    /build/tnd28-normal-contract
-    python /source/fault_injection/native_adapters/attention28/fia/compile_public_schema.py \
-      --source /build/new-pristine-c77 --sdk /usr/local/Ascend/cann-8.5.1 \
-      --out /build/new-normal-schema
+A review of the original capture placement found that process-wide mode
+could make unrelated host calls throw. The fixed production Capture uses
+CaptureCurrentScope, shared directly with the executable C++ contract. Its
+initial thread/PID/token/observer and geometry probe is non-throwing. Foreign
+threads, absent/wrong tokens and different geometry return without capture.
+Only after both current scope and geometry match does strict validation run;
+owner/generation/token changes then reject, including a change during the
+geometry probe. The scope is rechecked before the bounded append. The CPU
+contract creates an actual foreign std::thread and tests this production
+helper, not a separate model of its predicate. Geometry values in this CPU
+contract remain explicitly synthetic; actual SDK/NPU geometry is not proven.
+
+The new tests exercise source reconstruction, missing/duplicate materials,
+wrong variants/keys/SDKs, modified generated bytes, actual schema-field joins,
+compile/selftest failure, stale output bytes, and a prior authorization flag
+that must never be silently overwritten to false by completion. The full
+focused regression command passed 110 tests with no skips or failures:
+
+    PYTHONPATH=src:fault39/src:.:tests:tests/worker_extension:experiments/c2c3_closure_20261117 \
+      python -m unittest test_tnd28_prefill_build test_tnd28_prefill_normal \
+      test_attention28_fresh_build test_fia_binary_registration \
+      test_paged33_arch22_s2_recipe test_paged33_arch22_bridge \
+      test_arch22_all_normal test_arch22_all_normal_review \
+      test_attention28_prefill_boundary test_attention28_stock_census -q
+
+The first new registration fixture omitted the existing required MIX/support
+metadata and was corrected; the production registration guard was unchanged.
+Local Python source/compiler fixtures are not actual SDK compilation. There
+is no local C++ compiler, so the executable C++ contract and the actual SDK
+host/kernel build must run in a new root-controlled attempt. A previous
+build or its ABI certificate cannot be reused for these changed source bytes.
+
+### Exact no-device build handoff
+
+After root integrates the strategy mapping and freezes the new source, run
+the following on 124 with that frozen source directory as the only argument.
+It recovers the *recorded* SDK manifest path from the existing controller,
+rehashes it, and invokes the existing controlled builder. No library is
+loaded in a Worker and no NPU request is authorized by this command.
+
+```sh
+python3 - /home/17-fault-c2c3-20261117/<new-frozen-source> <<'PY'
+import hashlib, json, subprocess, sys
+from pathlib import Path
+source = Path(sys.argv[1]).resolve(strict=True)
+root = Path('/home/17-fault-c2c3-20261117')
+old = json.loads((root/'tnd33-arch22-normal-build-a1/controller.json').read_bytes())
+mounts = [arg for arg in old['command'] if 'dst=/sdk_interfaces.json' in arg]
+assert len(mounts) == 1
+options = dict(part.split('=', 1) for part in mounts[0].split(',') if '=' in part)
+interfaces = Path(options['src']).resolve(strict=True)
+assert hashlib.sha256(interfaces.read_bytes()).hexdigest() == (
+    '1a9c9159e9d1d84b82b754b2db806be1b878e05d06d45d3df07295c1280878e2')
+subprocess.run(['python3', str(source/'experiments/c2c3_closure_20261117/build_tnd33_124.py'),
+    '--source', str(source), '--out', str(root/'tnd28-prefill-normal-build-a1'),
+    '--interfaces', str(interfaces), '--strategy', 'tnd28-prefill-normal'], check=True)
+PY
+```
+
+The controller retains its pinned actual image, runc, network=none, no
+NPU devices, readonly input mounts, owned-container cleanup and 7200-second
+build deadline. An existing output directory is refused; a retry uses a new
+attempt name. All build failures remain separate originals. Completion is
+only `CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION`, with `loading_allowed`,
+`fault_execution_ready`, `stock_private_exact_proven`, public/prepared lineage
+and C1/C2/C3 all false.
 
 After a successful fresh build and the missing live-view binding, root can
 queue the complete stock-repeat/private-normal-repeat/full-input-and-output

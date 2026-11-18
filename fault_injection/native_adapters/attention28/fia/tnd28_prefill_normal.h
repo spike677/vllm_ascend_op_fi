@@ -16,17 +16,7 @@
 #include "tnd28_prefill_contract.h"
 #include "../../../fused_infer_attention_score/op_host/fused_infer_attention_score_tiling_index.h"
 
-extern "C" int dcat_attention_observer_scope_matches_v1(const char*) __attribute__((weak));
 namespace tnd28_prefill_normal {
-inline std::string Env(const char* name) { const char* p=std::getenv(name); return p ? p : ""; }
-inline bool HexId(const std::string& value, size_t size) {
-    return value.size()==size && value.find_first_not_of("0123456789abcdef")==std::string::npos;
-}
-inline bool Decimal(const std::string& value, size_t maxSize, bool zero=false) {
-    return !value.empty() && value.size()<=maxSize
-        && value.find_first_not_of("0123456789")==std::string::npos
-        && (value[0]!='0' || (zero && value=="0"));
-}
 inline bool Shape(const gert::StorageShape* shape, std::initializer_list<int64_t> dims) {
     if (!shape || shape->GetStorageShape().GetDimNum()!=dims.size()) return false;
     size_t n=0;
@@ -104,47 +94,6 @@ inline std::string Hex(const void* data, size_t size) {
     for (size_t n=0;n<size;++n) { out+=digits[p[n]>>4]; out+=digits[p[n]&15]; }
     return out;
 }
-inline std::string ProcessStart() {
-    std::ifstream input("/proc/self/stat"); std::string line, field;
-    if (!std::getline(input,line)) throw std::runtime_error("TND28_PROCESS_START_UNOBSERVED");
-    const auto end=line.rfind(')');
-    if (end==std::string::npos) throw std::runtime_error("TND28_PROCESS_STAT_INVALID");
-    std::istringstream fields(line.substr(end+1));
-    for (unsigned n=3;n<=22;++n) if (!(fields>>field)) throw std::runtime_error("TND28_PROCESS_STAT_SHORT");
-    if (!Decimal(field,20)) throw std::runtime_error("TND28_PROCESS_START_INVALID");
-    return field;
-}
-struct Scope {
-    std::string mode,token,owner,generation,phase,target,targetSet,objectId,ordinal,path,start;
-};
-inline Scope CurrentScope() {
-    Scope s;
-    s.mode=Env("DCAT28_TND_MODE"); s.token=Env("DCAT28_TND_TOKEN"); s.owner=Env("DCAT28_TND_OWNER");
-    s.generation=Env("DCAT28_TND_GENERATION"); s.phase=Env("DCAT28_TND_PHASE");
-    s.target=Env("DCAT28_TND_TARGET"); s.targetSet=Env("DCAT28_TND_TARGET_SET");
-    s.objectId=Env("DCAT28_TND_OBJECT"); s.ordinal=Env("DCAT28_TND_ORDINAL");
-    s.path=Env("DCAT28_TND_LOG"); s.start=ProcessStart();
-    const bool phase=s.phase=="baseline" || s.phase=="baseline_repeat" || s.phase=="off" || s.phase=="recovery_off";
-    if (s.mode!="prefill_normal" || !HexId(s.token,32) || !HexId(s.owner,32)
-        || !Decimal(s.generation,18) || !phase || s.target.empty() || s.target.size()>511
-        || s.target.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._")!=std::string::npos
-        || !HexId(s.targetSet,64) || !Decimal(s.objectId,20) || !Decimal(s.ordinal,2,true)
-        || std::stoul(s.ordinal)>=28 || s.path.rfind("/evidence/",0)!=0 || s.path.size()>4096
-        || s.path.find("/../")!=std::string::npos || s.path.find("/./")!=std::string::npos
-        || s.path.back()=='/' || s.path.find('\n')!=std::string::npos || s.path.find('\r')!=std::string::npos
-        || Env("DCAT28_TND_PID")!=std::to_string(getpid())
-        || Env("DCAT28_TND_TID")!=std::to_string(syscall(SYS_gettid))
-        || Env("DCAT28_TND_PROCESS_START")!=s.start
-        || !dcat_attention_observer_scope_matches_v1
-        || dcat_attention_observer_scope_matches_v1(s.token.c_str())!=1)
-        throw std::runtime_error("TND28_NORMAL_CURRENT_OWNER_SCOPE_REQUIRED");
-    return s;
-}
-inline bool SameScope(const Scope& a, const Scope& b) {
-    return a.mode==b.mode && a.token==b.token && a.owner==b.owner && a.generation==b.generation
-        && a.phase==b.phase && a.target==b.target && a.targetSet==b.targetSet && a.objectId==b.objectId
-        && a.ordinal==b.ordinal && a.path==b.path && a.start==b.start;
-}
 inline bool ParsedGeometry(const optiling::FiaTilingInfo& i, gert::TilingContext* c) {
     using namespace optiling;
     return Matches(c) && !i.isMaxWorkspace && !i.emptyTensorFlag
@@ -175,9 +124,7 @@ inline void Capture(const optiling::FiaTilingInfo& i, gert::TilingContext* c,
     optiling::FusedInferAttentionScoreTilingData& d, uint64_t workspace, uint64_t libapi,
     uint32_t aic, uint32_t aiv, uint32_t m, uint32_t s2, uint32_t loops,
     uint32_t tail, uint32_t aligned, bool flashDecode) {
-    if (Env("DCAT28_TND_MODE").empty()) return;
-    const auto scope=CurrentScope();
-    if (!ParsedGeometry(i,c)) throw std::runtime_error("TND28_NORMAL_PARSED_CONTEXT_DIFFERS");
+    CaptureCurrentScope([&] { return ParsedGeometry(i,c); }, [&](const Scope& scope) {
     NormalTiling n;
     n.key=c->GetTilingKey(); n.s1=i.s1Size; n.s2=static_cast<uint32_t>(i.s2Size);
     n.groups=i.gSize; n.kvHeads=i.n2Size; n.m=m; n.s2Base=s2;
@@ -230,13 +177,14 @@ inline void Capture(const optiling::FiaTilingInfo& i, gert::TilingContext* c,
         <<",\"raw_size\":"<<raw->GetDataSize()<<",\"raw_hex\":"<<Quote(bytes)<<",\"typed\":";
     AppendTyped(o,d); o<<",\"kernel_argument_raw_observed\":false}\n";
     const auto text=o.str();
-    if (text.size()>524288 || !SameScope(scope,CurrentScope()))
-        throw std::runtime_error("TND28_NORMAL_CAPTURE_BUDGET_OR_OWNER_CHANGED");
+    if (text.size()>524288) throw std::runtime_error("TND28_NORMAL_CAPTURE_BUDGET");
+    RequireCurrentScope(scope);
     const int fd=open(scope.path.c_str(),O_WRONLY|O_CREAT|O_APPEND|O_NOFOLLOW|O_CLOEXEC,0600);
     if (fd<0) throw std::runtime_error("TND28_NORMAL_LOG_OPEN");
     const auto written=write(fd,text.data(),text.size()); const int closed=close(fd);
     if (written!=static_cast<ssize_t>(text.size()) || closed!=0)
         throw std::runtime_error("TND28_NORMAL_LOG_WRITE_OR_CLOSE");
+    });
 }
 } // namespace tnd28_prefill_normal
 #include "tnd28_prefill_typed.h"

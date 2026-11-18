@@ -3,9 +3,56 @@
 #include <cstdlib>
 #include <iostream>
 #include <limits>
+#include <thread>
 
 using namespace tnd28_prefill_normal;
 static void check(bool value) { if (!value) std::abort(); }
+static thread_local bool observer_owns=true;
+extern "C" int dcat_attention_observer_scope_matches_v1(const char* token) {
+    return observer_owns && std::string(token)==std::string(32,'a') ? 1 : 0;
+}
+static void env(const char* name, const std::string& value) { check(setenv(name,value.c_str(),1)==0); }
+static void scope_contract() {
+    env("DCAT28_TND_MODE","prefill_normal"); env("DCAT28_TND_TOKEN",std::string(32,'a'));
+    env("DCAT28_TND_OWNER",std::string(32,'b')); env("DCAT28_TND_GENERATION","1");
+    env("DCAT28_TND_PHASE","baseline"); env("DCAT28_TND_TARGET","model.layers.0.attn");
+    env("DCAT28_TND_TARGET_SET",std::string(64,'c')); env("DCAT28_TND_OBJECT","1234");
+    env("DCAT28_TND_ORDINAL","0"); env("DCAT28_TND_LOG","/evidence/cpu-not-written.jsonl");
+    env("DCAT28_TND_PID",std::to_string(getpid()));
+    env("DCAT28_TND_TID",std::to_string(syscall(SYS_gettid)));
+    env("DCAT28_TND_PROCESS_START",ProcessStart());
+    unsigned geometry=0,captures=0;
+    auto yes=[&] { ++geometry; return true; };
+    auto body=[&](const Scope& scope) { ++captures; RequireCurrentScope(scope); };
+    CaptureCurrentScope(yes,body); check(geometry==1 && captures==1);
+    // An actual other thread sees the same environment but cannot consume it.
+    std::thread foreign([&] { CaptureCurrentScope(yes,body); }); foreign.join();
+    check(geometry==1 && captures==1);
+    observer_owns=false; CaptureCurrentScope(yes,body); observer_owns=true;
+    env("DCAT28_TND_TOKEN",std::string(32,'d')); CaptureCurrentScope(yes,body);
+    env("DCAT28_TND_TOKEN",std::string(32,'a')); check(geometry==1 && captures==1);
+    env("DCAT28_TND_PHASE","fault");
+    CaptureCurrentScope([&] { ++geometry; return false; },body);
+    CaptureCurrentScope([]()->bool { throw std::runtime_error("unmatched geometry"); },body);
+    check(geometry==2 && captures==1);
+    bool rejected=false;
+    try { CaptureCurrentScope(yes,body); } catch (const std::runtime_error&) { rejected=true; }
+    check(rejected && captures==1); env("DCAT28_TND_PHASE","baseline");
+    rejected=false;
+    try { CaptureCurrentScope([] { observer_owns=false; return true; },body); }
+    catch (const std::runtime_error&) { rejected=true; }
+    observer_owns=true; check(rejected && captures==1);
+    rejected=false;
+    try { CaptureCurrentScope([] { env("DCAT28_TND_OWNER",std::string(32,'c')); return true; },body); }
+    catch (const std::runtime_error&) { rejected=true; }
+    check(rejected && captures==1); env("DCAT28_TND_OWNER",std::string(32,'b'));
+    rejected=false;
+    try { CaptureCurrentScope(yes,[&](const Scope& scope) {
+        ++captures; env("DCAT28_TND_GENERATION","2"); RequireCurrentScope(scope);
+    }); } catch (const std::runtime_error&) { rejected=true; }
+    check(rejected && captures==2); env("DCAT28_TND_GENERATION","1");
+    CaptureCurrentScope(yes,body); check(captures==3);
+}
 static NormalTiling fixture() {
     NormalTiling n;
     n.key=kNormalKey; n.s1=n.s2=2048; n.groups=2; n.kvHeads=8;
@@ -18,6 +65,7 @@ static NormalTiling fixture() {
     return n;
 }
 int main() {
+    scope_contract();
     check(NormalPostcondition(fixture()));
     check(!NormalPostcondition(NormalTiling{}));
     const std::array<uint32_t NormalTiling::*,14> fields = {
