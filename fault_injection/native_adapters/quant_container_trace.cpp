@@ -1,7 +1,12 @@
 // Four public container APIs only. No GWS interception, private layout, device
 // data copy, replacement, or fault operation is implemented by this library.
 #include "quant_container_trace.h"
+// This existing shared header is byte-pinned by the build profile. Its compact
+// formatting triggers GCC's indentation warning; keep our own TU strict.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmisleading-indentation"
 #include "../../fault39/native/runtime_identity.h"
+#pragma GCC diagnostic pop
 #include "../../fault39/native/metadata_array_owner.h"
 #include "quant_container_profile.h"
 #include <aclnn/acl_meta.h>
@@ -98,7 +103,7 @@ bool copy_payload(Event& event,const void* data,uint64_t bytes) {
     if(bytes)payload.insert(payload.end(),begin,begin+bytes);
     return true;
 }
-void capture(const aclTensor* value,Tensor& out) {
+void capture(const aclTensor* value,Tensor& out) try {
     dcat_metadata::CaptureScope capture_scope;
     out.descriptor=reinterpret_cast<uint64_t>(value);if(!value)return;
     aclDataType dtype=ACL_DT_UNDEFINED;aclFormat format=ACL_FORMAT_UNDEFINED;void* address=nullptr;
@@ -119,6 +124,11 @@ void capture(const aclTensor* value,Tensor& out) {
     }
     out.complete=out.called_mask==127 && !out.null_mask && !out.truncated_mask
         && std::all_of(std::begin(out.statuses),std::end(out.statuses),[](int32_t x){return x==0;});
+} catch(...) {
+    // OwnedArray and CaptureScope have already unwound. Preserve the capture
+    // failure in the shared counters before the outer ABI guard records it.
+    dcat_metadata::capture_exception();
+    throw;
 }
 struct Invocation {
     Event event{};bool observed{};

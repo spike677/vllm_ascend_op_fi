@@ -67,8 +67,9 @@ void test(const std::string& name) {
         partial_shape=name=="getter_status";throw_shape=name=="getter_throw";
         auto* out=aclCreateTensorList(list,1);assert(out && calls[0]==1);assert(aclDestroyTensorList(out)==0);
         const auto st=query();assert(st.first_error && !st.arrays.live_arrays && st.arrays.acquired_arrays==st.arrays.released_arrays);
-        if(throw_shape)assert(st.abi_exceptions && st.arrays.getter_exceptions==1);
-        else assert(st.getter_capture_failures==1 && st.arrays.getter_failures==1);
+        assert(!st.arrays.active_captures && !st.arrays.active_getters && !st.arrays.ownership_errors);
+        if(throw_shape)assert(st.abi_exceptions && st.arrays.getter_exceptions==1 && st.arrays.capture_exceptions==1);
+        else assert(st.getter_capture_failures==1 && st.arrays.getter_failures==1 && !st.arrays.capture_exceptions);
     } else if(name=="destroy_retry") {
         auto* out=aclCreateIntArray(ints,2);fail_destroy=true;assert(aclDestroyIntArray(out)==19);
         assert(dcat_qct_stop_v1(&c)==0);assert(dcat_qct_release_v1(&c)!=0 && query().live_registrations==1);

@@ -24,6 +24,18 @@ class ContainerBuildTests(unittest.TestCase):
         self.assertEqual(len(set(build.CASES)), 19)
         self.assertTrue(all(len(value) == 64 for value in build.PINS.values()))
 
+    def test_shared_header_warning_scope_ends_before_own_code(self):
+        source = (build.ROOT / 'fault_injection/native_adapters/quant_container_trace.cpp').read_text()
+        start = source.index('#pragma GCC diagnostic push')
+        end = source.index('#pragma GCC diagnostic pop', start)
+        self.assertEqual(source[start:end].count('#include'), 1)
+        self.assertIn('"../../fault39/native/runtime_identity.h"', source[start:end])
+        self.assertEqual(source.count('#pragma GCC diagnostic ignored'), 1)
+        self.assertIn('"-Wmisleading-indentation"', source[start:end])
+        self.assertLess(end, source.index('#include "../../fault39/native/metadata_array_owner.h"'))
+        self.assertIn('dcat_metadata::capture_exception();\n    throw;', source)
+        self.assertFalse(any(flag.startswith('-Wno') for flag in build.flags(Path('/build'))))
+
     def test_original_elf_is_not_rewritten_or_masked(self):
         text = Path(build.__file__).read_text()
         self.assertNotIn('--set-soname', text)
