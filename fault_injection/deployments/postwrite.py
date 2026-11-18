@@ -208,12 +208,56 @@ class _NativeLease:
         self.element_offset = element_offset
         self.elements = tensor.numel() if elements is None else elements
         self.handle = ctypes.c_uint64()
-        code = library.lib.dcat_pw_open(tensor.data_ptr() + element_offset * tensor.element_size(),
-            self.elements * tensor.element_size(),
-            tensor.device.index, owner, generation, ctypes.byref(self.handle))
+        self._receipt_events = []
+        self._receipt_failure = None
+        address = tensor.data_ptr() + element_offset * tensor.element_size()
+        size = self.elements * tensor.element_size()
         self.closed = False
-        if code:
-            raise PostwriteRefused(f'POSTWRITE_OPEN_{code}')
+        try:
+            code = self._native_call('open', library.lib.dcat_pw_open,
+                (address, size, tensor.device.index, owner, generation, ctypes.byref(self.handle)),
+                fields=dict(data_ptr=address, bytes=size, device=tensor.device.index))
+            if code:
+                raise PostwriteRefused(f'POSTWRITE_OPEN_{code}')
+        except BaseException as error:
+            error.postwrite_lease_receipt = self.receipt()
+            raise
+
+    def _native_call(self, operation, function, args, *, fields=None, capture=None, valid=(0,)):
+        """Keep actual existing call results; this performs no additional ABI call."""
+        event = dict(sequence=len(self._receipt_events) + 1, operation=operation,
+            handle=self.handle.value, owner=self.owner, generation=self.generation,
+            returned=False, return_code=None, error=None, **(fields or {}))
+        try:
+            code = function(*args)
+        except BaseException as error:
+            event.update(handle=self.handle.value, error=repr(error))
+            self._receipt_events.append(event)
+            if self._receipt_failure is None:
+                self._receipt_failure = deepcopy(event)
+            raise
+        event.update(handle=self.handle.value, returned=True, return_code=code)
+        if capture is not None:
+            event.update(capture())
+        if operation == 'live':
+            event['native_live'] = bool(code) if code in (0, 1) else None
+        self._receipt_events.append(event)
+        if code not in valid and self._receipt_failure is None:
+            self._receipt_failure = deepcopy(event)
+        return code
+
+    def receipt(self):
+        """Detached metadata only; never query, restore, or retain extra Tensors."""
+        events = self._receipt_events
+        def last(name):
+            return next((row for row in reversed(events) if row['operation'] == name), None)
+        return deepcopy(dict(schema='demoncat.postwrite.lease_receipt.v1',
+            owner=self.owner, generation=self.generation, handle=self.handle.value, thread=self.thread,
+            geometry=self.geometry, element_offset=self.element_offset, elements=self.elements,
+            open=last('open'), applications=[row for row in events if row['operation'] == 'apply'],
+            restore=last('restore'), release=last('release'),
+            live_readbacks=[row for row in events if row['operation'] == 'live'],
+            events=events, first_failure=self._receipt_failure, closed=self.closed))
 
     def _check(self):
         if threading.get_ident() != self.thread:
@@ -226,8 +270,9 @@ class _NativeLease:
         self._check()
         selected = (ctypes.c_uint64 * len(indices))(*indices)
         changed = ctypes.c_uint64()
-        code = self.library.lib.dcat_pw_apply(self.handle, self.owner, self.generation,
-            mode, selected, len(indices), ctypes.byref(changed))
+        code = self._native_call('apply', self.library.lib.dcat_pw_apply,
+            (self.handle, self.owner, self.generation, mode, selected, len(indices), ctypes.byref(changed)),
+            fields=dict(mode=mode, indices=list(indices)), capture=lambda: dict(changed_elements=changed.value))
         if code:
             raise PostwriteRefused(f'POSTWRITE_APPLY_{code}')
         return changed.value
@@ -238,11 +283,13 @@ class _NativeLease:
         self._check()
         if getattr(self, 'release_uncertain', False) and self._release_readback():
             return
-        code = self.library.lib.dcat_pw_restore(self.handle, self.owner, self.generation)
+        code = self._native_call('restore', self.library.lib.dcat_pw_restore,
+                                 (self.handle, self.owner, self.generation))
         if code:
             raise PostwriteRefused(f'POSTWRITE_RESTORE_{code}')
         try:
-            code = self.library.lib.dcat_pw_release(self.handle, self.owner, self.generation)
+            code = self._native_call('release', self.library.lib.dcat_pw_release,
+                                     (self.handle, self.owner, self.generation))
             if code:
                 raise PostwriteRefused(f'POSTWRITE_RELEASE_{code}')
         except BaseException:
@@ -262,14 +309,16 @@ class _NativeLease:
     def _release_readback(self):
         if (self.handle.value, self.owner, self.generation) != self.release_ticket:
             raise PostwriteRefused('POSTWRITE_RELEASE_SCOPE_CHANGED')
-        absent = not self.live()
+        absent = not self.live(record=True)
         self.release_uncertain = False
         if absent:
             self.closed = True
         return absent
 
-    def live(self):
-        state = self.library.lib.dcat_pw_live(self.handle, self.owner, self.generation)
+    def live(self, *, record=False):
+        args = (self.handle, self.owner, self.generation)
+        state = (self._native_call('live', self.library.lib.dcat_pw_live, args, valid=(0, 1)) if record
+                 else self.library.lib.dcat_pw_live(*args))
         if state not in (0, 1):
             raise PostwriteRefused('POSTWRITE_NATIVE_LEASE_OWNER_MISMATCH')
         return state == 1
@@ -438,9 +487,18 @@ class _ObserveDispatch(TorchDispatchMode):
         if p._coverage is None and self.phase in ('baseline', 'fault') and candidate.key == p._target:
             if p._lease is not None:
                 raise PostwriteRefused('ONLY_ONE_TARGET_CALL_PER_REPLAY')
-            p._lease = p.transport.open(tensor, p.owner, p.generation)
+            try:
+                p._lease = p.transport.open(tensor, p.owner, p.generation)
+            except BaseException as error:
+                if p.mechanism == '39.output_proxy':
+                    p._last_native_lease_receipt = deepcopy(getattr(error, 'postwrite_lease_receipt', None))
+                raise
+            p._remember_native_receipt(p._lease)
             mode = p.mutation_mode if self.phase == 'fault' else 0
-            changed = p._lease.apply(mode, indices)
+            try:
+                changed = p._lease.apply(mode, indices)
+            finally:
+                p._remember_native_receipt(p._lease)
             p._last_intervention = dict(operator=operation, original_executed=True,
                 selected_elements=len(indices), changed_elements=changed, readback_exact=True,
                 boundary='post_operator_tensor_output' if p.mechanism.startswith('39.')
@@ -477,6 +535,7 @@ class PostwriteProvider:
         self._lease = self._target = self._input_hash = self._model_identity = None
         self._group_leases = {}
         self._last_intervention = None
+        self._last_native_lease_receipt = None
         self._buffers = {id(t): t for t in model.buffers()}
         self._lock = threading.Lock()
         self._qualified = self._lossless = self._fault_attempted = False
@@ -498,6 +557,7 @@ class PostwriteProvider:
         observer = _ObserveDispatch(self, phase)
         self._last_observer = observer
         self._last_intervention = None
+        self._last_native_lease_receipt = None
         try:
             if self.live_lease_count:
                 raise PostwriteRefused('POSTWRITE_RECOVERY_REQUIRED')
@@ -637,6 +697,8 @@ class PostwriteProvider:
         report['recovery_confirmed'] = self._lease is None
         report['exact_baseline_output'] = _equal(output, self._baseline_output)
         report['new_fault_hits'] = (report['intervention'] or {}).get('new_fault_hits', 0)
+        if self.mechanism == '39.output_proxy':
+            report['native_lease_receipt'] = deepcopy(self._last_native_lease_receipt)
         self._history.append(report)
         return output, report
 
@@ -655,11 +717,16 @@ class PostwriteProvider:
         for key, lease in reversed(entries):
             try:
                 lease.recover()
-                if lease.live():
+                live = (lease.live(record=True) if self.mechanism == '39.output_proxy'
+                        and isinstance(lease, _NativeLease) else lease.live())
+                if live:
                     raise PostwriteRefused('POSTWRITE_NATIVE_LEASE_REMAINS')
             except Exception as error:
                 errors.append(error)
                 continue
+            finally:
+                if key is None:
+                    self._remember_native_receipt(lease)
             if key is None:
                 self._lease = None
             else:
@@ -668,6 +735,10 @@ class PostwriteProvider:
             raise errors[0]
         if errors:
             raise PostwriteRefused('POSTWRITE_MULTIPLE_RECOVERIES_PENDING:' + ', '.join(map(repr, errors))) from errors[0]
+
+    def _remember_native_receipt(self, lease):
+        if self.mechanism == '39.output_proxy' and isinstance(lease, _NativeLease):
+            self._last_native_lease_receipt = lease.receipt()
 
     def _live_leases(self):
         group = tuple(self._group_leases.values())
@@ -693,6 +764,7 @@ class PostwriteProvider:
             execution_boundary='public_acl_postwrite', transport=self.transport.transport_kind,
             qualified=self._qualified, lossless=self._lossless, attempted=self._fault_attempted,
             leases=self.live_lease_count, recovery_pending=bool(self.live_lease_count),
+            last_native_lease_receipt=deepcopy(self._last_native_lease_receipt),
             history=list(self._history), qualification_diagnostics=self._qualification_diagnostics,
             public_worker_qualified=False)
 

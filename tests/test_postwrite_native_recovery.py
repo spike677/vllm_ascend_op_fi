@@ -5,6 +5,7 @@ import unittest
 import torch
 
 from fault_injection.deployments.postwrite import _NativeLease, PostwriteRefused
+from test_postwrite_providers import CpuTransport
 
 
 class CpuABI:
@@ -14,6 +15,7 @@ class CpuABI:
         self.restore_calls, self.release_calls, self.readbacks = [], [], []
         self.fail = None
         self.fail_readback = False
+        self.apply_calls = []
 
     def dcat_pw_open(self, address, size, device, owner, generation, result):
         self.next_handle += 1
@@ -23,6 +25,17 @@ class CpuABI:
 
     def owned(self, handle, owner, generation):
         return self.owners.get(handle.value) == (owner, generation)
+
+    def dcat_pw_apply(self, handle, owner, generation, mode, selected, count, changed):
+        self.apply_calls.append((handle.value, owner, generation, mode, list(selected)))
+        if not self.owned(handle, owner, generation):
+            return 2
+        if self.fail == 'apply_code':
+            return 7
+        if mode:
+            self.tensor.view(-1)[list(selected)] = {1:float('inf'), 2:-float('inf'), 3:float('nan')}[mode]
+        changed._obj.value = count if mode else 0
+        return 0
 
     def dcat_pw_restore(self, handle, owner, generation):
         self.restore_calls.append((handle.value, owner, generation))
@@ -55,6 +68,23 @@ class CpuABI:
         if handle.value not in self.owners:
             return 0
         return 1 if self.owned(handle, owner, generation) else -1
+
+
+class CpuNativeTransport(CpuTransport):
+    """The original Python Native lease, backed only by CPU ABI calls."""
+    sha256 = 'a'*64
+
+    def __init__(self):
+        self.opened, self.abis = [], []
+        self.restore_failure = False
+
+    def open(self, tensor, owner, generation):
+        self.validate(tensor)
+        abi = CpuABI(tensor)
+        lease = _NativeLease(NS(lib=abi), tensor, owner, generation)
+        self.abis.append(abi)
+        self.opened.append(lease)
+        return lease
 
 
 class NativeRecoveryTests(unittest.TestCase):
@@ -168,6 +198,79 @@ class NativeRecoveryTests(unittest.TestCase):
             lease.recover()
         self.assertEqual(abi.restore_calls, [])
         self.assertFalse(lease.closed)
+
+    def test_receipt_records_real_span_and_call_results_without_new_queries(self):
+        tensor = torch.ones(8, dtype=torch.bfloat16)
+        abi = CpuABI(tensor)
+        lease = _NativeLease(NS(lib=abi), tensor, 101, 7, element_offset=2, elements=4)
+        # Query and receipt snapshots never extend the recorded ABI history.
+        self.assertTrue(lease.live())
+        before = len(abi.readbacks)
+        snapshot = lease.receipt()
+        self.assertEqual(len(abi.readbacks), before)
+        self.assertEqual([row['operation'] for row in snapshot['events']], ['open'])
+        self.assertEqual(snapshot['open']['data_ptr'], tensor.data_ptr()+4)
+        self.assertEqual(snapshot['open']['bytes'], 8)
+        self.assertEqual((snapshot['element_offset'], snapshot['elements']), (2,4))
+        snapshot['geometry']['shape'].clear()
+        snapshot['events'][0]['owner'] = 999
+        self.assertEqual(lease.receipt()['geometry']['shape'], [8])
+        self.assertEqual(lease.receipt()['events'][0]['owner'], 101)
+        lease.apply(0, (0,))
+        lease.recover()
+        self.assertFalse(lease.live(record=True))  # Existing provider recovery readback.
+        receipt = lease.receipt()
+        self.assertEqual([row['operation'] for row in receipt['events']], ['open','apply','restore','release','live'])
+        self.assertEqual([row['sequence'] for row in receipt['events']], [1,2,3,4,5])
+        self.assertTrue(all(row['returned'] and row['return_code'] == 0 for row in receipt['events']))
+        self.assertTrue(all((row['handle'],row['owner'],row['generation']) == (lease.handle.value,101,7)
+                            for row in receipt['events']))
+        self.assertEqual(receipt['applications'][0]['changed_elements'], 0)
+        self.assertIsNone(receipt['first_failure'])
+        self.assertTrue(receipt['closed'])
+        self.assertFalse(receipt['live_readbacks'][-1]['native_live'])
+        self.assertEqual((len(abi.restore_calls), len(abi.release_calls), len(abi.readbacks)), (1,1,2))
+
+    def test_failed_apply_and_release_receipts_preserve_first_return_code_through_retry(self):
+        tensor = torch.ones(8, dtype=torch.bfloat16)
+        abi = CpuABI(tensor)
+        lease = _NativeLease(NS(lib=abi), tensor, 101, 7)
+        abi.fail = 'apply_code'
+        with self.assertRaisesRegex(PostwriteRefused, 'APPLY_7'):
+            lease.apply(1, (0,))
+        first = lease.receipt()['first_failure']
+        self.assertEqual((first['operation'],first['return_code']), ('apply',7))
+        abi.fail = 'before_release'
+        with self.assertRaisesRegex(RuntimeError, 'CPU_BEFORE_RELEASE'):
+            lease.recover()
+        pending = lease.receipt()
+        self.assertFalse(pending['closed'])
+        self.assertTrue(pending['live_readbacks'][-1]['native_live'])
+        self.assertFalse(pending['release']['returned'])
+        self.assertIsNone(pending['release']['return_code'])
+        self.assertEqual(pending['first_failure'], first)
+        abi.fail = None
+        lease.recover()
+        self.assertFalse(lease.live(record=True))
+        final = lease.receipt()
+        self.assertTrue(final['closed'])
+        self.assertEqual(final['first_failure'], first)
+        self.assertEqual(len([row for row in final['events'] if row['operation'] == 'release']), 2)
+
+    def test_absent_handle_after_lost_release_is_not_rewritten_as_successful_release(self):
+        _, abi, lease = self.make()
+        abi.fail = 'after_release'
+        with self.assertRaisesRegex(RuntimeError, 'CPU_AFTER_RELEASE'):
+            lease.recover()
+        receipt = lease.receipt()
+        self.assertTrue(receipt['closed'])
+        self.assertFalse(receipt['release']['returned'])
+        self.assertIsNone(receipt['release']['return_code'])
+        self.assertEqual(receipt['first_failure']['operation'], 'release')
+        self.assertFalse(receipt['live_readbacks'][-1]['native_live'])
+        before = receipt['events']
+        lease.recover()
+        self.assertEqual(lease.receipt()['events'], before)
 
 
 if __name__ == '__main__':

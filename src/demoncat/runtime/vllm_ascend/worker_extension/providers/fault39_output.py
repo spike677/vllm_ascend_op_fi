@@ -219,7 +219,8 @@ class Fault39OutputServingProvider(Scope):
         window = self.session.window if self.session is not None else None
         self.failures.append(dict(phase=self.phase, error=str(error),
             partial_inventory=deepcopy(window.observer.inventory.report()) if window is not None else None,
-            intervention=deepcopy(self.p._last_intervention) if self.p is not None else None))
+            intervention=deepcopy(self.p._last_intervention) if self.p is not None else None,
+            native_lease_receipt=deepcopy(self.p._last_native_lease_receipt) if self.p is not None else None))
 
     def _cleanup(self):
         if self.session is not None:
@@ -243,6 +244,7 @@ class Fault39OutputServingProvider(Scope):
             module_aliases=[dict(path=name, object_identity=identity, forward_identity=id(function))
                 for name, identity, function in getattr(self, 'module_bindings', ())],
             failures=deepcopy(self.failures), actual_requests=deepcopy(self.rows),
+            last_native_lease_receipt=deepcopy(self.p._last_native_lease_receipt) if self.p is not None else None,
             worker_identity=deepcopy(self.identity), rpc_owner=self._ticket[0], rpc_generation=self._ticket[1],
             c1_evidence_complete=bool(self.complete and self.recovered and not self.failures),
             model_local_qualification_inherited=False, qualification_granted=False, c2=False, c3=False,

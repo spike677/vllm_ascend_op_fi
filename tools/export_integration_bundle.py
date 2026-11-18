@@ -59,6 +59,7 @@ _KV41_CONTRACTS = {'tests/worker_extension/kv41_fixture.py',
                    'docs/worker_core_v1/kv41_host_contract.md'}
 _OUTPUT39_PROVIDER = 'src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39_output.py'
 _OUTPUT39_CONTRACTS = {'tests/test_postwrite_providers.py',
+    'tests/test_postwrite_native_recovery.py',
     'tests/test_postwrite_custom_gemm.py', 'tests/worker_extension/output39_custom_fixture.py',
     'tests/worker_extension/test_core_output39_custom.py',
     'tests/worker_extension/test_serving_session_lifecycle.py',

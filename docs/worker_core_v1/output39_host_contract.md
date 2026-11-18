@@ -179,6 +179,25 @@ Host history semantics are unchanged. Complete request/partial-failure rows,
 Host receipt, stdout/stderr and loaded-source hashes remain in `/evidence`;
 public Git contains source, contracts and summaries only.
 
+Baseline and F reports now carry `native_lease_receipt` with schema
+`demoncat.postwrite.lease_receipt.v1`. It records the actual open address,
+byte span and device; exact owner/generation/handle and tensor geometry;
+apply mode, selected indices and changed count; restore/release return codes;
+and the existing recovery readback for that same Native handle. The ordered
+`events` use `operation`, `sequence`, `returned`, `return_code` and `error`.
+Normal completion is open, apply, restore, release, live(false). OFF carries
+null because it opens no lease. All snapshots are detached metadata and
+perform no additional Native query or Tensor operation.
+
+Failure evidence retains `last_native_lease_receipt` and its first failure.
+A release exception followed by an exact absent-handle readback can safely
+close the lease under the existing recovery rule, but its original exception
+and missing return code remain recorded; retry cannot rewrite it as a
+successful call. These originals let review join the selected actual output
+and Native span without changing the ABI, mutation, or recovery decisions.
+Their absence in an older profile is an evidence limit, not evidence that an
+older device run failed.
+
 `--statistics` refuses explicitly **before importing vLLM or creating a model**.
 The current root/logits complete-value binding performs diagnostic Tensor
 copies/hashes between the two boundaries; wrapping that window in mix statistics

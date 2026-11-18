@@ -56,6 +56,7 @@ class PostwriteObservedForward:
         require(p._lock.acquire(False), 'POSTWRITE_SYNCHRONOUS_OWNER_REQUIRED')
         self.locked, self.active = True, True
         p._last_observer, p._last_intervention = self.observer, None
+        p._last_native_lease_receipt = None
         for name, module in p.model.named_modules():
             if module in self.manual:
                 continue
