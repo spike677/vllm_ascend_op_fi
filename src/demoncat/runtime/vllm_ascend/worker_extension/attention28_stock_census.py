@@ -99,7 +99,7 @@ class StockTndPrefillCensus:
     simulation=False
     observer_only=True
 
-    def __init__(self, *, mechanism, observer_receipt, observer_receipt_sha256, evidence_dir):
+    def __init__(self, *, mechanism, observer_receipt, observer_receipt_sha256, evidence_dir, input_journal=None):
         require(mechanism in MECHANISMS, 'TND_STOCK_CENSUS_FIA_MECHANISM_REQUIRED')
         require(sha(observer_receipt) == observer_receipt_sha256, 'TND_CENSUS_OBSERVER_RECEIPT_CHANGED')
         receipt=json.loads(Path(observer_receipt).read_bytes()); library=receipt['observer_library']
@@ -122,7 +122,58 @@ class StockTndPrefillCensus:
             observer_source_sha256=receipt['observer_source']['sha256'],observer_only=True,private_native_build=None)
         self.calls,self.failures,self.refs=[],[],None
         self.pending_drain=False;self.first_error=None
+        self.input_journal=input_journal;self._journal_current=None;self._journal_requests={}
+        if input_journal is not None:self._validate_journal()
         self._check();self.folder.mkdir(parents=True)
+
+    def _validate_journal(self):
+        from fault_injection.fia_input_journal import NativeFiaInputJournal, process_identity
+        journal=self.input_journal
+        require(type(journal) is NativeFiaInputJournal, 'TND_CENSUS_EXACT_INPUT_JOURNAL_REQUIRED')
+        require(journal.startup is not None and journal.startup['identity'] == process_identity()
+            and journal.started and journal.active is None and journal.bound_worker is not None
+            and journal.bound_worker['pid'] == self.identity['pid'], 'TND_CENSUS_PRESTART_JOURNAL_WORKER_REQUIRED')
+        require(journal.profile['originals']['observer']['file_sha256'] == self.fingerprint['observer_library_sha256'],
+            'TND_CENSUS_JOURNAL_OBSERVER_DIFFERS')
+
+    def _journal_enter(self, token, row, actual, record):
+        journal=getattr(self,'input_journal',None)
+        if journal is None:return
+        from fault_injection.fia_input_journal import public_tensor_metadata
+        self._validate_journal()
+        scope=row['native_census_scope'];phase=scope['phase']
+        require(scope['worker_object_id'] == journal.bound_worker['worker_object_id']
+            and scope['model_object_id'] == journal.bound_worker['model_object_id']
+            and phase in ('observe','observe_repeat') and (scope['device_type'] == 'npu' or self.simulation),
+            'TND_CENSUS_ACTUAL_JOURNAL_OBJECT_SCOPE_CHANGED')
+        prior=self._journal_requests.setdefault(phase,row['request_id'])
+        require(prior == row['request_id'] and len(set(self._journal_requests.values())) == len(self._journal_requests),
+            'TND_CENSUS_JOURNAL_REQUEST_PHASE_CHANGED')
+        evidence=dict(actual_input_addresses={name:public_tensor_metadata(actual[name])
+                for name in ('query','key','value','atten_mask')},
+            request_id=row['request_id'],actual_operator=row['actual_operator'],module_path=row['module_path'],
+            ordinal=row['ordinal'],occurrence=row['occurrence'],execution_scope=deepcopy(scope),
+            scheduler=deepcopy(row['scheduler']),native_census_call_id=token,
+            correlation_indices='FORWARD_IS_OBSERVE_PHASE_INDEX; OPERATOR_IS_ACTUAL_ORDINAL_PLUS_ONE; BOUNDARY_IS_CENSUS_ORDER')
+        record['input_journal']=dict(enabled=True,call_id=token,public_inputs=deepcopy(evidence['actual_input_addresses']),
+            window_entered=False,window_left=False,internal_prepared_tensor_lineage_proven=False,slice_pointer_lineage_proven=False)
+        self._journal_current=dict(row=row,record=record,original_error=None,entered=False)
+        journal.enter(call_id=token,module_object_id=row['module_object_id'],
+            forward=1 if phase == 'observe' else 2,sequence=row['ordinal']+1,boundary=len(self.calls)+1,evidence=evidence)
+        self._journal_current['entered']=True
+        record['input_journal'].update(window_entered=True,token=journal.active['identity']['scope']['token'])
+
+    def _journal_leave(self):
+        current=getattr(self,'_journal_current',None)
+        if current is None:return
+        journal=self.input_journal
+        if journal.active is not None:
+            journal.leave(original_calls=current['row']['original_calls'],original_error=current['original_error'])
+            current['record']['input_journal'].update(window_left=True,original_calls=current['row']['original_calls'],
+                original_error=current['original_error'])
+        else:
+            require(not current['entered'], 'TND_CENSUS_JOURNAL_WINDOW_LOST_WITHOUT_LEAVE')
+        self._journal_current=None
 
     def _check(self):
         require(thread_identity() == self.identity, 'TND_CENSUS_PID_OR_THREAD_DOMAIN_CHANGED')
@@ -152,6 +203,7 @@ class StockTndPrefillCensus:
                 self._synchronize()
                 if self.scope.state()['active']:self.scope.observer.synchronize()
                 self.pending_drain=False
+            self._journal_leave()
             self.scope.stop()
             require(not self.scope.state()['owned'] and not self.pending_drain, 'TND_CENSUS_CLEANUP_UNCONFIRMED')
             self.refs=None
@@ -191,8 +243,15 @@ class StockTndPrefillCensus:
             self._synchronize()
             with self.scope.scope(token):
                 try:
-                    output=once();self.refs=(actual,output)
-                    self._synchronize();self.scope.observer.synchronize();self.pending_drain=False
+                    self._journal_enter(token,row,actual,record)
+                    try:
+                        output=once();self.refs=(actual,output)
+                    except BaseException as original_error:
+                        current=getattr(self,'_journal_current',None)
+                        if current is not None:current['original_error']=repr(original_error)
+                        raise
+                    self._synchronize();self.scope.observer.synchronize()
+                    self._journal_leave();self.pending_drain=False
                 except BaseException as error:
                     primary=error;self._error('original_or_completion',error);raise
         except BaseException as error:
