@@ -113,7 +113,7 @@ def bundle_kernel_abi(vendor, files, kernel_sha256):
     return metadata, derive_fia_kernel_abi(sources[0], metadata, soc_family='ascend910b')
 
 
-def observe_launch(directory, call_id, *, kernel_sha256, tiling_size, kernel_metadata=None, kernel_abi=None):
+def observe_launch(directory, call_id, *, kernel_sha256, tiling_size, kernel_metadata=None, kernel_abi=None, runtime_index=None):
     """One synchronous API scope, exactly one final matching kernel launch.
 
     Takes no host observation, expected key or policy profile. Runtime metadata
@@ -123,7 +123,12 @@ def observe_launch(directory, call_id, *, kernel_sha256, tiling_size, kernel_met
     root = Path(directory).resolve(strict=True)
     require(re.fullmatch('[0-9a-f]{32}', call_id) and re.fullmatch('[0-9a-f]{64}', kernel_sha256),
             'INVALID_LAUNCH_IDENTITY')
-    records = [json.loads(line) for line in (root / 'runtime.jsonl').read_text().splitlines()]
+    indexed=None
+    if runtime_index is not None:
+        from .runtime_log_index import RuntimeLogIndex
+        require(type(runtime_index) is RuntimeLogIndex,'EXACT_OWNED_RUNTIME_INDEX_REQUIRED')
+        indexed=runtime_index.scope(root,call_id)
+    records = indexed['rows'] if indexed is not None else [json.loads(line) for line in (root / 'runtime.jsonl').read_text().splitlines()]
     require(not any(row.get('event') == 'capture_overflow' for row in records), 'RUNTIME_OBSERVER_CAPTURE_BUDGET_EXCEEDED')
     rows = [row for row in records if row.get('call_id') == call_id]
     require(rows and all(row.get('schema') == 'demoncat.attention.runtime_observer.v1' for row in rows),
@@ -237,7 +242,7 @@ def observe_launch(directory, call_id, *, kernel_sha256, tiling_size, kernel_met
     return dict(schema='demoncat.attention.observed_launch.v1', status='RAW_ARGUMENTS_AND_RUNTIME_BINDING_OBSERVED',
                 call_id=call_id, pid=owner[0], tid=owner[1], kernel_sha256=kernel_sha256,
                 raw_hex=raw.hex(), raw_size=len(raw), raw_sha256=hashlib.sha256(raw).hexdigest(),
-                runtime_log_sha256=sha(root / 'runtime.jsonl'), args_sha256=hashlib.sha256(raw_args).hexdigest(),
+                runtime_log_sha256=indexed['prefix_sha256'] if indexed is not None else sha(root / 'runtime.jsonl'), args_sha256=hashlib.sha256(raw_args).hexdigest(),
                 args_size=len(raw_args), tiling_pointer_offset=address_offset, tiling_data_offset=offset,
                 tiling_key=int(launch['tiling_key']), block_dim=launch['block_dim'],
                 schedule_mode=launch['schedule_mode'], kernel_argument_abi=kernel_abi,
@@ -246,10 +251,10 @@ def observe_launch(directory, call_id, *, kernel_sha256, tiling_size, kernel_met
                 public_worker_qualified=False, c2=False, c3=False, statistics='NOT_READ')
 
 
-def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_metadata=None, kernel_abi=None):
+def verify_launch(directory, call_id, *, kernel_sha256, schema, host, kernel_metadata=None, kernel_abi=None, runtime_index=None):
     """Existing FIA public serializer comparison, after independent observation."""
     observed = observe_launch(directory, call_id, kernel_sha256=kernel_sha256, tiling_size=schema['size'],
-                              kernel_metadata=kernel_metadata, kernel_abi=kernel_abi)
+                              kernel_metadata=kernel_metadata, kernel_abi=kernel_abi,runtime_index=runtime_index)
     raw = bytes.fromhex(observed['raw_hex'])
     require((observed['pid'], observed['tid']) == (host['pid'], host['tid']), 'HOST_RUNTIME_OWNER_DIFFERS')
     require(host.get('token', host.get('call_id')) == call_id, 'HOST_RUNTIME_CALL_ID_DIFFERS')

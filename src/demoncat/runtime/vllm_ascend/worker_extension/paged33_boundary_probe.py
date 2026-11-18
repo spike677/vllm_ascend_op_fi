@@ -92,14 +92,19 @@ def same_tensor(before, after):
     return all(before.get(key) == after.get(key) for key in ('metadata', 'bytes', 'sha256', 'version'))
 
 
-def read_scoped_launches(directory, token, *, expected_pid=None, expected_native_tid=None):
+def read_scoped_launches(directory, token, *, expected_pid=None, expected_native_tid=None,runtime_index=None):
     """Join raw registration/launch facts, without decoding a guessed stock ABI."""
     root = Path(directory).resolve(strict=True); raw = root/'runtime.jsonl'
     require(raw.stat().st_size <= 128 * 1024**2 and re.fullmatch('[0-9a-f]{32}', token),
             'BOUNDARY_RAW_LAUNCH_LIMIT')
-    snapshot = raw.read_bytes()
-    require(len(snapshot) <= 128 * 1024**2, 'BOUNDARY_RAW_LAUNCH_LIMIT')
-    rows = [json.loads(line) for line in snapshot.splitlines()]
+    indexed=None
+    if runtime_index is not None:
+        from fault_injection.native_adapters.attention28.runtime_log_index import RuntimeLogIndex
+        require(type(runtime_index) is RuntimeLogIndex,'BOUNDARY_EXACT_OWNED_RUNTIME_INDEX_REQUIRED')
+        indexed=runtime_index.scope(root,token)
+    snapshot = raw.read_bytes() if indexed is None else None
+    if indexed is None:require(len(snapshot) <= 128 * 1024**2, 'BOUNDARY_RAW_LAUNCH_LIMIT')
+    rows = indexed['rows'] if indexed is not None else [json.loads(line) for line in snapshot.splitlines()]
     scoped = [row for row in rows if row.get('call_id') == token]
     begins = [row for row in scoped if row.get('event') == 'begin']
     ends = [row for row in scoped if row.get('event') == 'end']
@@ -163,7 +168,7 @@ def read_scoped_launches(directory, token, *, expected_pid=None, expected_native
                 and begin['monotonic_ns'] <= bound['monotonic_ns'] <= row['launch_begin_ns'],
                 'BOUNDARY_LATEST_EFFECTIVE_BIND_NOT_IN_CURRENT_SCOPE')
             binding = dict(rule='CURRENT_SCOPE_LAST_EFFECTIVE_BIND_WITH_ALL_PRIOR_FUNCTION_IDENTITIES_CONSISTENT',
-                function_handle=row['function_handle'],raw_line=bind_index+1,repeated_identical_history=len(history)-1,
+                function_handle=row['function_handle'],raw_line=indexed['line_numbers'][bind_index] if indexed is not None else bind_index+1,repeated_identical_history=len(history)-1,
                 current_scope_binds=1,handle=row['handle'],generation=row['generation'],tiling_key=str(row['tiling_key']))
         arguments = bytes.fromhex(row['args_hex'])
         require(len(arguments) == row['args_size'] <= 1024**2, 'BOUNDARY_ARGUMENT_SNAPSHOT_SIZE_CHANGED')
@@ -183,8 +188,8 @@ def read_scoped_launches(directory, token, *, expected_pid=None, expected_native
     last_launch = max((row['launch_end_ns'] for row in scoped if row.get('event') == 'launch'), default=0)
     require(any(row.get('event') in ('device_sync', 'stream_sync') and row.get('result') == 0
                 and row['monotonic_ns'] >= last_launch for row in scoped), 'BOUNDARY_SCOPE_COMPLETION_UNOBSERVED')
-    return dict(call_id=token, runtime_path=str(raw), runtime_prefix_bytes=len(snapshot),
-        runtime_prefix_sha256=hashlib.sha256(snapshot).hexdigest(), runtime_file_can_append=True, launches=launches,
+    return dict(call_id=token, runtime_path=str(raw), runtime_prefix_bytes=indexed['prefix_bytes'] if indexed is not None else len(snapshot),
+        runtime_prefix_sha256=indexed['prefix_sha256'] if indexed is not None else hashlib.sha256(snapshot).hexdigest(), runtime_file_can_append=True, launches=launches,
         intercepted_launch_count=len(launches), observation_gaps=sorted(set(gaps)),
         argument_abi_qualified=False, actual_api_library_owner_observed=False,
         all_runtime_entrypoints_covered=False, private_key_used_to_classify_stock=False)
