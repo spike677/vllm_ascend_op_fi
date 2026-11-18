@@ -70,6 +70,12 @@ def main():
                     model=model, cann='8.5.1', soc='Ascend910B4/A2; verify actual Worker', physical_cards=[args.card], ranks=[0],
                     worker='standard TP1 eager BF16; single fresh prefill/request; fixed64 KV blocks; no decode claim',
                     build_fingerprint=sha, source_commit=args.source_commit,
+                    fia_typed_bridge=build.get('fia_typed_profile') if fia else None,
+                    fia_stock_gate=('Two complete unmodified public-output byte samples; new owned-descriptor '
+                        'Reference must match both completely before lossless/OFF qualification or any F. '
+                        'Actual format 47 stays NCL; original descriptor reads stay inside GWS; every selected '
+                        'execute uses an owned descriptor with complete current typed snapshots. No old reference reuse.'
+                        if fia and build.get('fia_typed_profile') else None),
                     metadata_startup='Before importing Torch/vLLM, verify the immutable bundle and explicitly load '
                         'its missing split opapi with RTLD_NOW|RTLD_LOCAL; retain its handle. Then require all four '
                         'already-loaded counters with independent instances and exact mapped/dladdr identities.',
@@ -80,7 +86,8 @@ def main():
                         else 'one per completely observed and independently lossless-qualified candidate; never C2'),
                     resource_budget=dict(timeout_seconds=1800, memory_gib=80, cpus=16, independent_events=32768,
                         max_targets=args.max_targets, planned_single_site_targets=1 if single_site else None,
-                        max_targets_selects_subset=False, native_device_bytes=64 * 1024 * 1024, native_host_bytes=512 * 1024 * 1024),
+                        max_targets_selects_subset=False, native_device_bytes=64 * 1024 * 1024, native_host_bytes=512 * 1024 * 1024,
+                        fia_stock_host_bytes=512 * 1024 * 1024 if fia and build.get('fia_typed_profile') else 0),
                     recovery_plan=('Every original executes once. Two complete healthy censuses plus independent target '
                         'reference/lossless/OFF qualify the full set. Any unresolved, overlapping or over-budget set blocks '
                         'all group faults. Every Native call is independently observed before admission; frozen eligible failures '

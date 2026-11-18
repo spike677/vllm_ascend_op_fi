@@ -31,6 +31,7 @@ class Writer26Coverage(Writer26Experiment):
         self.implementation_sha = digest([hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             hashlib.sha256(Path(__file__).with_name('writer26_experiment.py').read_bytes()).hexdigest(), self.runtime.build_identity,
             hashlib.sha256(Path(__file__).with_name('writer26_public.py').read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name('writer26_fia_typed.py').read_bytes()).hexdigest(),
             self.metadata.implementation_sha256])
 
     def artifact(self, name, value):
@@ -252,6 +253,7 @@ class Writer26Coverage(Writer26Experiment):
             self.off_outcomes[outcome['target']] = outcome
 
     def _request_complete(self, row):
+        super()._request_complete(row)
         if self.coverage is None or not row['phase'].startswith('group_'):
             if row['phase'] == 'health':
                 self.health_sha = row['output_sha256']
@@ -320,11 +322,14 @@ class Writer26Coverage(Writer26Experiment):
         hooks = len(self.handles) + self.root_hooks + int(self.installed)
         state = self.runtime.state()
         metadata = self.metadata.read(require_activity=True)
+        bridge_host_bytes = self.fia_bridge.host_bytes if self.fia_bridge is not None else 0
         proof = self.artifact('worker-health-' + str(time.monotonic_ns()), dict(native=state, baseline=self.baseline,
             off=self.health_sha, owned_hooks=hooks, residual_refs=len(self.retained), output_refs=len(self.output_refs),
+            fia_stock_host_bytes=bridge_host_bytes,
             metadata_arrays=metadata))
         return WorkerHealthProof(worker, owner, generation, proof, self.baseline, self.health_sha,
-            state['core']['pending'], state['core']['device_bytes'], state['core']['host_bytes'], state['core']['executing'], hooks)
+            state['core']['pending'], state['core']['device_bytes'], state['core']['host_bytes'] + bridge_host_bytes,
+            state['core']['executing'], hooks)
 
     def _before_health(self):
         if self.coverage is None:

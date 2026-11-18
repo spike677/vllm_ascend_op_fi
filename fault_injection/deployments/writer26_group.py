@@ -117,6 +117,10 @@ class NativeWriter26Group:
             self.bound_functions[name] = function
         require([C.sizeof(t) for t in (Config, Call, Lease, Receipt, State, RuntimeState)] == [72, 144, 248, 296, 136, 240],
                 'GROUP_NATIVE_ABI_SIZE_CHANGED')
+        self.fia_typed = None
+        if self.fia and 'fia_typed_profile' in build:
+            from .writer26_fia_typed import NativeTypedFia
+            self.fia_typed = NativeTypedFia(self, root)
 
     def fn(self, name, *args):
         require(threading.get_native_id() == self.config.thread, 'FOREIGN_GROUP_NATIVE_THREAD')
@@ -144,7 +148,7 @@ class NativeWriter26Group:
     def passthrough(self, call):
         self.fn('pass', C.byref(self.config), C.byref(call))
 
-    def execute(self, call, mode, target, allocation=None):
+    def execute(self, call, mode, target, allocation=None, *, typed_before=None):
         lease = Lease(version=2, size=C.sizeof(Lease), mode=MODES[mode], owner_hi=self.config.owner_hi,
             owner_lo=self.config.owner_lo, generation=self.config.generation, thread=self.config.thread,
             target=(C.c_uint64 * 4)(*key_words(target)), expected=call)
@@ -153,6 +157,10 @@ class NativeWriter26Group:
             lease.residual_allocation_end = allocation['residual_block'][1]
             lease.output_allocation_begin = allocation['output_block'][0]
             lease.shift_bytes = allocation['shift']
+        if self.fia_typed is not None:
+            require(typed_before is not None, 'CURRENT_TYPED_FIA_ADMISSION_PROOF_REQUIRED')
+            return self.fia_typed.execute(lease, typed_before)
+        require(typed_before is None, 'TYPED_FIA_REQUIRES_NEW_BOUND_ABI')
         self.fn('continue', C.byref(lease))
         return packet(lease)
 

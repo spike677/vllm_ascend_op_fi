@@ -96,6 +96,10 @@ def classify_candidate(candidate):
         reasons.append('PUBLIC_WRITER_OUTPUT_NOT_RETAINED')
     if not callback.get('public_consumer_lifetime'):
         reasons.append('PUBLIC_CONSUMER_LIFETIME_NOT_PROVEN')
+    if callback.get('fia_typed_before') is not None and (
+            not callback.get('fia_typed_public_records') or
+            (callback.get('writer_output_retained') or {}).get('evidence') != 'ACTUAL_PUBLIC_FIA_RETURN'):
+        reasons.append('FIA_TYPED_ACTUAL_PUBLIC_PATH_UNVERIFIED')
     return ('OBSERVED_NOT_QUALIFIED', []) if not reasons else ('UNVERIFIED', sorted(set(reasons)))
 
 
@@ -138,6 +142,9 @@ class Writer26Experiment(WriterLifetimeInventory):
         self.metadata_initial = None
         from .writer26_public import FiaPublicOutputObserver
         self.public_output = FiaPublicOutputObserver(self) if self.runtime.fia else None
+        self.fia_typed = getattr(self.runtime, 'fia_typed', None)
+        from .writer26_fia_typed import FiaStockBridge
+        self.fia_bridge = FiaStockBridge(self) if self.fia_typed is not None else None
 
     @property
     def phase(self):
@@ -158,6 +165,8 @@ class Writer26Experiment(WriterLifetimeInventory):
                 'WRITER_GROUP_NATIVE_TRANSACTION_NOT_IDLE')
         require(not core['error'] and not state['foreign_calls'] and not state['rejected_calls'],
                 'WRITER_GROUP_NATIVE_ERROR_REQUIRES_EXPLICIT_RECOVERY')
+        if self.fia_typed is not None:
+            self.fia_typed.state(idle=True)
         return state
 
     def install(self):
@@ -201,6 +210,8 @@ class Writer26Experiment(WriterLifetimeInventory):
         require(not self.retained, 'RESIDUAL_LIFETIME_ESCAPED_PREVIOUS_REQUEST')
         self.current = dict(phase=self.phase, request_id=request_id, input_sha256=input_sha256,
             native_before=self.reader.state(), callback_start=len(self.callbacks), producer_start=len(self.producers))
+        if self.fia_typed is not None:
+            self.current['fia_typed_before'] = self.fia_typed.state(idle=True)
         self.requests.add(request_id)
         self.stack = [self.model]
         require(not self.output_refs and not self.pending and not self.pending_lifetimes,
@@ -264,6 +275,16 @@ class Writer26Experiment(WriterLifetimeInventory):
         pass
 
     def _request_complete(self, row):
+        if self.fia_typed is not None:
+            after, records = self.fia_typed.delta(row['fia_typed_before'])
+            row.update(fia_typed_after=after, fia_typed_records=records)
+            for phase, kind in ((1, 'fia_before'), (2, 'fia_gws')):
+                actual = [(item['call'], item['thread'], item['event_sequence']) for item in records if item['phase'] == phase]
+                native = [(item['call'], item['thread'], item['sequence']) for item in row['native_events']
+                          if item['kind_name'] == kind]
+                require(actual == native, 'COMPLETE_TYPED_FIA_NATIVE_DENOMINATOR_CHANGED')
+            require(sum(item['phase'] == 3 for item in records) == row['admissions'],
+                    'FIA_EVERY_SELECTED_OWNED_EXECUTE_MUST_BE_OBSERVED')
         if self.stage == SINGLE_SITE_STAGE:
             row['complete_inventory'] = dict(native_writer_count=len(row['candidates']),
                 native_events_sha256=digest(row['native_events']), candidates_sha256=digest(row['candidates']),
@@ -423,6 +444,10 @@ class Writer26Experiment(WriterLifetimeInventory):
                         ('output', 'output_bytes', 'residual', 'residual_bytes', 'cache', 'registration', 'device', 'dtype', 'format'))
                 and event['producer'] == call.producer_sequence, 'INDEPENDENT_WRITER_EVENT_CHANGED')
             row.update(independent_call=call.independent_call, independent_event=event, target_key=target_key(row))
+            if self.fia_typed is not None:
+                # Keep the existing actual site identity if a fresh descriptor
+                # check fails: that call is a failed eligible opportunity.
+                row['fia_typed_before'] = self.fia_typed.current_before(row['native_packet'], event)
             retained = self.retained.get(call.residual)
             require(retained is not None and retained['request_id'] == self.current['request_id']
                     and retained['sequence'] == call.producer_sequence and tensor_matches_native(retained['tensor'], event, residual=True),
@@ -444,6 +469,10 @@ class Writer26Experiment(WriterLifetimeInventory):
                 if retained_by.get('evidence') == 'ACTUAL_PUBLIC_FIA_RETURN':
                     require(self.public_output is not None and self.public_output.matches_callback(row),
                             'QUALIFIED_PUBLIC_FIA_CALL_SCOPE_CHANGED_BEFORE_ADMISSION')
+                if self.fia_bridge is not None:
+                    require(self.public_output is not None and self.public_output.matches_callback(row),
+                            'TYPED_FIA_ACTUAL_PUBLIC_STACK_REQUIRED')
+                    self.fia_bridge.before_admit(selected, row['fia_typed_before'], mode)
                 from demoncat.runtime.vllm_ascend.worker_extension.serving import complete_tensor
                 _, residual_sha, _ = complete_tensor(retained['tensor'])
                 self.pending[call.token] = dict(mode=mode, target=selected, native_call=packet(call),
@@ -451,7 +480,8 @@ class Writer26Experiment(WriterLifetimeInventory):
                 self.pending_lifetimes[call.token] = dict(residual=hold_storage(retained['tensor']),
                     producer_sequence=call.producer_sequence, request_id=self.current['request_id'])
                 row['original_continuations'] = 1
-                self.pending[call.token]['lease'] = self.runtime.execute(call, mode, selected, row.get('allocation'))
+                arguments = dict(typed_before=row['fia_typed_before']) if self.fia_typed is not None else {}
+                self.pending[call.token]['lease'] = self.runtime.execute(call, mode, selected, row.get('allocation'), **arguments)
                 row['claimed'] = 1
                 self.current['admissions'] += 1
         except BaseException as error:
@@ -500,6 +530,14 @@ class Writer26Experiment(WriterLifetimeInventory):
                 require(receipt['replacement'] not in (receipt['output'], receipt['residual'])
                         and receipt['reference_equal'] == receipt['lossless_qualified'] == 1,
                         'ACTUAL_TEMPORARY_LOSSLESS_OUTPUT_NOT_QUALIFIED')
+            if self.fia_typed is not None:
+                require(outcome.get('fia_public_typed') is not None
+                    and (outcome['mode'] == 'fault' or outcome['fia_public_typed']['stock_equal'] is True),
+                    'FIA_COMPLETED_PUBLIC_TYPED_AND_STOCK_BRIDGE_REQUIRED')
+                _, snapshot = self.fia_typed.snapshot(receipt['token'])
+                require(snapshot == outcome['fia_public_typed']['snapshots'],
+                        'FIA_TYPED_SNAPSHOT_CHANGED_BEFORE_CONSUMER_RELEASE')
+                outcome['fia_typed_consumer_snapshot'] = snapshot
             outcome['consumer_receipt'] = receipt
             outcome['released_receipt'] = self.runtime.acknowledge(receipt['token'])
             require(outcome['released_receipt']['released'] == 1, 'ACTUAL_NATIVE_WRITER_LEASE_NOT_RELEASED')
@@ -689,6 +727,8 @@ class Writer26Experiment(WriterLifetimeInventory):
         # Native close verified zero pending/executing/resources above. Any
         # remaining diagnostic outcome owns no Native memory or restore right.
         self.pending_lifetimes.clear()
+        if self.fia_bridge is not None:
+            self.fia_bridge.close()
         self.save()
 
     def report(self):
@@ -705,6 +745,7 @@ class Writer26Experiment(WriterLifetimeInventory):
             pending_per_call_leases=list(self.pending),
             pending_outcomes=list(self.pending.values()), pending_public_storage_owners=len(self.pending_lifetimes),
             public_output_observer=self.public_output.report() if self.public_output is not None else None,
+            fia_typed_stock_bridge=self.fia_bridge.report() if self.fia_bridge is not None else None,
             owned_public_api_wrappers=len(self.public_output.owned) if self.public_output is not None else 0,
             healthy_repeated=len(self.rows) >= 2 and self.rows[0]['output_sha256'] == self.rows[1]['output_sha256'],
             recovered=self.recovered, installed=self.installed, native_removed=self.native_removed,

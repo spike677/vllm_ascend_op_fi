@@ -131,6 +131,8 @@ class FiaPublicOutputObserver:
                 require(packet is binding['packet'] and wrappers == binding['wrappers'],
                         'FIA_PUBLIC_CALLABLE_CHAIN_CHANGED')
                 before = experiment.reader.state()
+                if getattr(experiment, 'fia_typed', None) is not None:
+                    frame['typed_before'] = experiment.fia_typed.state(idle=True)
                 frame['valid'] = True
             except (AttributeError, OSError, ValueError, RuntimeError, TypeError) as error:
                 record['errors'].append(str(error))
@@ -144,6 +146,8 @@ class FiaPublicOutputObserver:
                     record['errors'].append(str(error))
                     for row in experiment.callbacks[frame['callback_start']:]:
                         row.setdefault('public_output_refusals', []).append(str(error))
+                        if row.get('claimed'):
+                            experiment._record_failure(error, 'typed_public_return', token=row['native_packet']['token'])
             return result
         finally:
             require(self.frames and self.frames[-1] is frame, 'FIA_PUBLIC_OBSERVER_STACK_CHANGED')
@@ -196,8 +200,33 @@ class FiaPublicOutputObserver:
             dtype=str(tensor.dtype), storage_offset=tensor.storage_offset(),
             contiguous=tensor.is_contiguous(), full_native_formal_matched=True,
             exact_format_match=public_format == call['format'])
-        require(public_format == call['format'], 'PUBLIC_FIA_RETURN_NATIVE_FORMAT_CHANGED')
+        # Owning the literal return is useful even if its typed evidence fails;
+        # retaining an object alone never grants descriptor equivalence or HIT.
         experiment.output_refs[call['token']] = tensor
+        typed = getattr(experiment, 'fia_typed', None)
+        if typed is None:
+            require(public_format == call['format'], 'PUBLIC_FIA_RETURN_NATIVE_FORMAT_CHANGED')
+        else:
+            from .writer26_fia_typed import completed_records
+            require(public_format == 2 and call['format'] == 47, 'FIA_TYPED_PUBLIC_ND_TO_NATIVE_NCL_PATH_REQUIRED')
+            after, records = typed.delta(frame['typed_before'])
+            selected = bool(row['claimed'])
+            original = completed_records(records, call, (start, gws, enter), selected=selected)
+            require(original == row.get('fia_typed_before'), 'FIA_PUBLIC_TYPED_ADMISSION_RECORD_CHANGED')
+            row['fia_typed_public_records'] = records
+            frame['record'].update(typed_before=frame['typed_before'], typed_after=after, typed_records=records)
+            if selected:
+                _, snapshot = typed.snapshot(call['token'])
+                require(snapshot['before'] == records[0] and snapshot['after'] == records[1]
+                    and snapshot['before_execute'] == records[2] and snapshot['descriptor'] == 0
+                    and snapshot['created'] == snapshot['released'] == snapshot['native_return_success'] == 1
+                    and records[1]['effective']['descriptor'] != records[0]['original']['descriptor'],
+                    'FIA_ACTUAL_OWNED_DESCRIPTOR_LIFECYCLE_REQUIRED')
+            experiment.fia_bridge.public_output(row, tensor, records, selected=selected)
+            if selected:
+                experiment.pending[call['token']]['fia_public_typed'] = dict(snapshots=snapshot,
+                    stock_equal=row.get('fia_stock_bridge_equal') is True, public_tensor_identity=id(tensor),
+                    public_storage_identity=int(tensor.untyped_storage()._cdata))
         row['writer_output_retained'] = dict(evidence='ACTUAL_PUBLIC_FIA_RETURN',
             tensor_object_identity=id(tensor), storage_identity=int(tensor.untyped_storage()._cdata),
             storage_address=tensor.untyped_storage().data_ptr(), bytes=tensor.untyped_storage().nbytes(),
