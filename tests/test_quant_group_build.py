@@ -18,6 +18,30 @@ IMAGE_ID = 'sha256:' + 'b' * 64
 
 
 class QuantGroupBuildTests(unittest.TestCase):
+    def test_real_loader_contract_requires_every_case_and_retains_mock_boundary(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / 'loader-contract.jsonl'
+            rows = [dict(case=name, status='PASS_REAL_ELF_LOADER_CPU_MOCK', actual_npu_calls=0,
+                mocked_sdk_functions=True, native_prepare_calls=int(name in ('no_cache', 'with_cache')),
+                native_execute_calls=int(name in ('no_cache', 'with_cache'))) for name in builder.LOADER_CASES]
+            path.write_text('\n'.join(json.dumps(row) for row in rows))
+            self.assertEqual(builder.loader_contract(path)['cases'], rows)
+            path.write_text('\n'.join(json.dumps(row) for row in rows[:-1]))
+            with self.assertRaisesRegex(RuntimeError, 'COMPLETE_REAL_ELF'):
+                builder.loader_contract(path)
+            rows[-1]['native_prepare_calls'] = 1
+            path.write_text('\n'.join(json.dumps(row) for row in rows))
+            with self.assertRaisesRegex(RuntimeError, 'REAL_ELF_LOADER_CPU_CONTRACT_FAILED'):
+                builder.loader_contract(path)
+
+    def test_loader_driver_loads_production_dso_and_separate_host_only_standins(self):
+        self.assertIn('test_batch_scale_group_loader.cpp', builder.COMMANDS)
+        self.assertIn('-I/source/tests/native_quant_group_mock_sdk', builder.COMMANDS)
+        self.assertIn('/build/test_group_loader /build/runtime/vendor/op_api/lib/libcust_opapi.so', builder.COMMANDS)
+        for name in builder.LOADER_CASES:
+            self.assertIn(name, builder.COMMANDS)
+        self.assertNotIn('-Bsymbolic', builder.COMMANDS)
+
     def test_vendor_headers_are_system_headers_and_our_warnings_stay_strict(self):
         flags = next(line for line in builder.COMMANDS.splitlines() if line.startswith('flags=('))
         for option in ('-Wall', '-Wextra', '-Werror', '-pedantic'):

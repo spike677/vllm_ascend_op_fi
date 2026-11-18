@@ -38,6 +38,18 @@ template<class T>T symbol(void* handle,const char* name){return reinterpret_cast
 uint64_t tid(){return static_cast<uint64_t>(syscall(SYS_gettid));}
 int device(){int32_t value=-1;return api.device && api.device(&value)==ACL_SUCCESS?value:-1;}
 bool enabled(const char* key){const auto* v=std::getenv(key);return v && std::strcmp(v,"1")==0;}
+bool operator_symbol_owner(void* handle,const void* address) {
+    // A default-visible &aclnn... expression can itself be preempted by the
+    // already-global vendor DSO. Compare actual loaded objects instead. This
+    // private anchor cannot be interposed; dlsym dependency fallbacks are not
+    // accepted as symbols owned by the explicitly opened operator DSO.
+    link_map* loaded=nullptr;Dl_info own{},found{};
+    if(!handle || !address || dlinfo(handle,RTLD_DI_LINKMAP,&loaded) || !loaded
+       || !dladdr(reinterpret_cast<const void*>(&operator_symbol_owner),&own) || !own.dli_fbase
+       || !dladdr(address,&found) || !found.dli_fbase)return false;
+    return own.dli_fbase!=found.dli_fbase
+        && reinterpret_cast<uintptr_t>(found.dli_fbase)==static_cast<uintptr_t>(loaded->l_addr);
+}
 bool resolve() {
     if(api.ready)return true;
     const auto* real=std::getenv("DCAT_REAL_OPAPI");if(!real || real[0]!='/')return false;
@@ -58,8 +70,10 @@ bool resolve() {
     api.prepare=symbol<decltype(api.prepare)>(api.op,"aclnnDynamicQuantV2GetWorkspaceSize");
     api.execute=symbol<decltype(api.execute)>(api.op,"aclnnDynamicQuantV2");api.cache=symbol<decltype(api.cache)>(api.op,"CanUsePTACache");
     api.ready=api.device && api.type && api.format && api.offset && api.shape && api.strides && api.storage && api.address
-        && api.create && api.destroy && api.allocate && api.release && api.copy && api.sync && api.prepare && api.execute && api.cache
-        && api.prepare!=&aclnnDynamicQuantV2GetWorkspaceSize && api.execute!=&aclnnDynamicQuantV2;
+        && api.create && api.destroy && api.allocate && api.release && api.copy && api.sync && api.prepare && api.execute
+        && operator_symbol_owner(api.op,reinterpret_cast<const void*>(api.prepare))
+        && operator_symbol_owner(api.op,reinterpret_cast<const void*>(api.execute))
+        && (!api.cache || operator_symbol_owner(api.op,reinterpret_cast<const void*>(api.cache)));
     return api.ready;
 }
 bool legacy_present() {
@@ -343,7 +357,9 @@ extern "C" int dcat_dqg_remove_v1(const Config* c,Admission observed,Completed f
 extern "C" bool CanUsePTACache(const char* name) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(name && std::strcmp(name,"aclnnDynamicQuantV2")==0)return false;
-    return resolve() && api.cache(name);
+    // The reviewed 8.5.1 libopapi exports both V2 functions but no cache
+    // consultation function. Absence cannot authorize caching for other APIs.
+    return resolve() && api.cache && api.cache(name);
 } catch(...) {abi_failure();return false;}
 extern "C" aclnnStatus aclnnDynamicQuantV2GetWorkspaceSize(const aclTensor* x,const aclTensor* a,const aclTensor* b,int64_t dtype,
     const aclTensor* q,const aclTensor* s,const aclTensor* o,uint64_t* workspace,aclOpExecutor** executor) try {

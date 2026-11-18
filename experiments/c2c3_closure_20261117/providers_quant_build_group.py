@@ -17,13 +17,29 @@ import uuid
 IMAGE = 'quay.io/ascend/vllm-ascend:v0.18.0'
 SOURCES = tuple('fault_injection/native_adapters/' + name for name in (
     'batch_scale_group_core.h', 'batch_scale_group_runtime.h', 'batch_scale_group_runtime.cpp',
-    'test_batch_scale_group_core.cpp', 'test_batch_scale_group_runtime.cpp'))
+    'test_batch_scale_group_core.cpp', 'test_batch_scale_group_runtime.cpp',
+    'test_batch_scale_group_loader.cpp', 'test_batch_scale_group_loader_stub.cpp')) + (
+    'tests/native_quant_group_mock_sdk/acl/acl.h', 'tests/native_quant_group_mock_sdk/aclnnop/aclnn_dynamic_quant_v2.h')
 EXPORTS = ('abi', 'state', 'raw', 'install', 'public_begin', 'public_end', 'pass', 'continue',
            'seal', 'stop', 'drain', 'cancel_empty', 'recover', 'remove')
+LOADER_CASES = ('no_cache', 'with_cache', 'missing_prepare', 'missing_execute', 'self', 'foreign_owner', 'foreign_cache')
 
 
 def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def loader_contract(path):
+    rows = [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+    if tuple(row.get('case') for row in rows) != LOADER_CASES:
+        raise RuntimeError('COMPLETE_REAL_ELF_LOADER_CPU_CONTRACT_REQUIRED')
+    for row in rows:
+        expected_calls = int(row['case'] in ('no_cache', 'with_cache'))
+        if (row.get('status') != 'PASS_REAL_ELF_LOADER_CPU_MOCK' or row.get('actual_npu_calls') != 0
+                or row.get('mocked_sdk_functions') is not True or row.get('native_prepare_calls') != expected_calls
+                or row.get('native_execute_calls') != expected_calls):
+            raise RuntimeError('REAL_ELF_LOADER_CPU_CONTRACT_FAILED:' + row['case'])
+    return dict(sha256=sha(path), cases=rows)
 
 
 def inspect_image(expected):
@@ -61,8 +77,28 @@ g++ "${flags[@]}" "$native/test_batch_scale_group_runtime.cpp" -ldl -lpthread -o
 /build/test_group_runtime > /build/sdk-runtime-contract.log
 g++ "${flags[@]}" "$native/test_batch_scale_group_core.cpp" -o /build/test_group_core
 /build/test_group_core > /build/core-contract.log
+fixtures=/build/loader-fixtures
+mkdir -p "$fixtures"
+stub="$native/test_batch_scale_group_loader_stub.cpp"
+# These stand-ins expose host-only functions; the production DSO and driver
+# above/below continue to compile against the actual SDK declarations.
+stubflags=(-std=c++17 -O2 -Wall -Wextra -Werror -pedantic -fPIC -shared -I/source/tests/native_quant_group_mock_sdk)
+g++ "${stubflags[@]}" -DDCAT_DQ_LOADER_NN "$stub" -Wl,-soname,libnnopbase.so -o "$fixtures/libnnopbase.so"
+g++ "${stubflags[@]}" -DDCAT_DQ_LOADER_ACL "$stub" -Wl,-soname,libascendcl.so -o "$fixtures/libascendcl.so"
+g++ "${stubflags[@]}" "$stub" -Wl,-soname,libopapi-no_cache.so -o "$fixtures/libopapi-no_cache.so"
+g++ "${stubflags[@]}" -DDCAT_DQ_LOADER_WITH_CACHE "$stub" -o "$fixtures/libopapi-with_cache.so"
+g++ "${stubflags[@]}" -DDCAT_DQ_LOADER_MISSING_PREPARE "$stub" -o "$fixtures/libopapi-missing_prepare.so"
+g++ "${stubflags[@]}" -DDCAT_DQ_LOADER_MISSING_EXECUTE "$stub" -o "$fixtures/libopapi-missing_execute.so"
+g++ "${stubflags[@]}" -DDCAT_DQ_LOADER_CACHE_ONLY "$stub" -Wl,-soname,libforeign-cache.so -o "$fixtures/libforeign-cache.so"
+g++ "${stubflags[@]}" -DDCAT_DQ_LOADER_FORWARDER "$stub" -L"$fixtures" -Wl,--no-as-needed -l:libopapi-no_cache.so -Wl,-rpath,'$ORIGIN' -o "$fixtures/libopapi-foreign_owner.so"
+g++ "${stubflags[@]}" "$stub" -L"$fixtures" -Wl,--no-as-needed -l:libforeign-cache.so -Wl,-rpath,'$ORIGIN' -o "$fixtures/libopapi-foreign_cache.so"
+g++ "${flags[@]}" "$native/test_batch_scale_group_loader.cpp" -ldl -o /build/test_group_loader
+for loader_case in no_cache with_cache missing_prepare missing_execute self foreign_owner foreign_cache; do
+  /build/test_group_loader /build/runtime/vendor/op_api/lib/libcust_opapi.so "$fixtures" "$loader_case"
+done > /build/loader-contract.jsonl
 nm -D --defined-only /build/runtime/vendor/op_api/lib/libcust_opapi.so > /build/exported-symbols.txt
 readelf -d /build/runtime/vendor/op_api/lib/libcust_opapi.so > /build/elf-dynamic.txt
+readelf -rW /build/runtime/vendor/op_api/lib/libcust_opapi.so > /build/elf-relocations.txt
 python3 - <<'PY'
 import ctypes as C,hashlib,json
 from pathlib import Path
@@ -132,6 +168,7 @@ def main():
             raise RuntimeError('LEGACY_OR_UNREVIEWED_ABI_PRESENT')
         for relative in SOURCES:
             shutil.copyfile(source / relative, out / Path(relative).name)
+        receipt['real_elf_loader_cpu_contract'] = loader_contract(out / 'loader-contract.jsonl')
         receipt['sdk_identity'] = json.loads((out / 'sdk-identity.json').read_bytes())
         receipt['status'] = 'SDK_BUILD_AND_CPU_CONTRACT_PASS_NOT_NPU_ACCEPTANCE'
     except BaseException as error:
