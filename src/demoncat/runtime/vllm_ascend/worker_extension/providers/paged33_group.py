@@ -56,6 +56,9 @@ class Paged33GroupServingProvider(AttentionServingProvider):
     def _cleanup(self):
         session=self.session
         if session is not None and hasattr(session,'handles'):
+            # Readiness must be established before close removes the only
+            # observers/bindings that can prove a fresh recovery OFF/health.
+            if hasattr(session,'control'):session.control.check_cleanup_ready()
             session.close()
             if hasattr(session,'control'):
                 session.control.finalize()

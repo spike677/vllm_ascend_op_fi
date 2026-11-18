@@ -263,7 +263,8 @@ class GroupC2Controller:
         self.check_owner();self._recover(self.session.group.leases[0]);value=self.normal.data()['payloads']['logits']['sha256']
         return WorkerHealthProof(worker,owner,generation,digest(self.health),value,value,0,0,0,0,0)
 
-    def finalize(self):
+    def check_cleanup_ready(self):
+        """Keep the actual observers installed until required OFF/health can run."""
         self.check_owner();require(not self.off_pending,'GROUP_OFF_PENDING_OWNER_RETAINED')
         if self.session is None:return
         if self.finalized:return
@@ -272,6 +273,10 @@ class GroupC2Controller:
             # a real OFF and a complete healthy request before lease release.
             require(self.health and self.last_off,'GROUP_FAILED_EXPERIMENT_RECOVERY_HEALTH_REQUIRED')
         require(self.index==len(PHASES) or self.recovering and self.health,'GROUP_PROTOCOL_INCOMPLETE')
+
+    def finalize(self):
+        self.check_cleanup_ready()
+        if self.session is None or self.finalized:return
         if self.session.observer.evidence is None:self.session.observer.seal(artifact_sha256=digest(self.records),complete=not self.errors)
         recovery=self.session.disable(timeout_seconds=30);self.recovery_history.append(deepcopy(recovery))
         require(recovery['complete'],'GROUP_COVERAGE_RECOVERY_PENDING')

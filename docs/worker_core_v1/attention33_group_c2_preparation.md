@@ -54,6 +54,12 @@ OFF and health finish. Failed experiments cannot issue C2. C3 stays disabled:
 current propagated-input and stock-owner exact-normal authority are not proven.
 E5 and cross-model/device/shape qualification are not granted.
 
+Cleanup checks protocol/recovery readiness before removing observers or input
+references. An early disable after the three controls records the incomplete
+protocol, retains those resources, and permits only fresh recovery OFF and
+health requests. Once they complete, disable/unregister/detach can release the
+owner; the original error remains and no C2 proof is issued.
+
 ## Fixed cost and capacity gates
 
 The normal preparer stays at 128 MiB per runtime log. Only this exact group

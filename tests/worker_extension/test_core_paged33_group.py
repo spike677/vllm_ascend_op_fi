@@ -285,5 +285,28 @@ class PublicGroupContracts(unittest.TestCase):
         self.ok(self.client.disable());self.ok(self.client.unregister());self.assertEqual(self.client.detach()['status'],'DETACHED')
         self.assertEqual(path.read_bytes(),before);self.assertIsNone(c.c2_proof)
 
+    def test_early_disable_after_controls_keeps_observers_for_real_off_and_health(self):
+        for index in range(3):self.request(index)
+        provider=self.providers[0];session=provider.session;c=session.control
+        hooks=list(session.handles);records=list(session.owned_records)
+        self.assertEqual(sum(row['selection_applied'] for row in self.driver.calls),0)
+        reply=self.client.disable();self.assertNotEqual(reply['status'],'ACTION_COMPLETED')
+        self.assertIn('GROUP_PROTOCOL_INCOMPLETE',c.first_error);first=c.first_error
+        self.assertTrue(session.installed and c.off_pending and session.needs_off)
+        self.assertEqual(session.handles,hooks);self.assertEqual(session.owned_records,records)
+        self.assertTrue(all(not record['binding'].closed for record in records))
+        self.assertTrue(self.client.snapshot()['ownership_retained']);self.assertIsNone(c.c2_proof)
+        self.ok(self.client.recover());self.request('early-disable-off');self.request('early-disable-health')
+        final=self.ok(self.client.disable());self.assertFalse(session.installed)
+        self.assertEqual(final['serving']['resource_state']['owned_hooks'],0)
+        self.assertEqual(final['serving']['resource_state']['owned_input_references'],0)
+        self.assertIsNone(c.c2_proof);self.assertEqual(c.first_error,first)
+        self.assertFalse(final['C2'] or final['C3']);self.assertEqual(len(c.records),5)
+        self.assertEqual(sum(row['selection_applied'] for row in self.driver.calls),0)
+        self.ok(self.client.unregister());self.assertEqual(self.client.detach()['status'],'DETACHED')
+        remove_attention_serving_binding(self.worker,'33.paged_decode')
+        before=self.api_calls;self.forward('ordinary-after-cancel');self.assertEqual(self.api_calls-before,56)
+        self.assertIs(self.api.npu_fused_infer_attention_score,self.original)
+
 
 if __name__=='__main__':unittest.main()
