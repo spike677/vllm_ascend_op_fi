@@ -13,7 +13,8 @@ import uuid
 IMAGE = 'sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0'
 FILES = [
     '/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/' + name
-    for name in ('libacl_rt.so', 'libascendcl.so', 'libnnopbase.so', 'libopapi_math.so', 'libopapi.so')
+    for name in ('libacl_rt.so', 'libascendcl.so', 'libnnopbase.so', 'libopapi_math.so', 'libopapi.so',
+                 'libopapi_cv.so', 'libopapi_nn.so', 'libopapi_oam.so')
 ] + [
     '/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu/lib/libtorch_npu.so',
     '/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend/op_api/lib/libcust_opapi.so',
