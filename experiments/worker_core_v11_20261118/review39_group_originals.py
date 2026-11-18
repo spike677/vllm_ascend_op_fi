@@ -195,8 +195,9 @@ def check_native_receipt(a, receipt, geom, owner, generation, fault, *, natural,
                 event['returned'] is True and type(event['return_code']) is int and event['return_code'] == 0 and
                 event['error'] is None, 'ACTUAL_NATIVE_RETURN', where)
     device, sep, index = geom['device'].rpartition(':')
-    a.check(device == 'npu' and sep == ':' and index.isdecimal() and type(opened['device']) is int and
-            opened['device'] == int(index) and opened['data_ptr'] == geom['data_ptr'] and
+    actual_device = (device == 'npu' and sep == ':' and index.isdecimal() and type(opened['device']) is int and
+                     opened['device'] == int(index)) if natural else (geom['device'] == 'cpu' and opened['device'] is None)
+    a.check(actual_device and opened['data_ptr'] == geom['data_ptr'] and
             opened['bytes'] == geom['logical_bytes'] == geom['storage_bytes'] == receipt['elements']*2,
             'EXACT_NATIVE_DEVICE_AND_STORAGE', where)
     a.check(type(applied['mode']) is int and applied['mode'] == int(fault) and applied['indices'] == [0] and
@@ -360,7 +361,13 @@ def check_group(a, p, group, name, original_rows, worker, *, natural, aliases=No
                 proof['expected_output_shape'] == p.producer_geometry(proof) == geom['shape'], 'ACTUAL_WRITER_RETURN_NOT_CLONE', call['call_id'])
         p.consumers(a, effect['consumer_observations'], geom, ref[key]['selected_indices'], effect['consumers'], call['call_id'], device)
         native = native_receipts[(frame['request_id'], tid)]
-        a.check(native['forward_id'] == fid and tuple(native['target_key']) == key and native['explicit_cpu_mock'] is (not natural),
+        # A CPU ABI double can exercise the real lease receipt path. Its full
+        # device='cpu'/device=None events are checked below; never accept that
+        # representation as natural NPU evidence.
+        native_kind = native['explicit_cpu_mock'] is False if natural else (
+            native['explicit_cpu_mock'] is True or native['explicit_cpu_mock'] is False and
+            isinstance(native.get('receipt'), dict) and native['receipt']['geometry']['device'] == 'cpu')
+        a.check(native['forward_id'] == fid and tuple(native['target_key']) == key and native_kind,
                 'NATIVE_LEASE_TO_ACTUAL_TARGET_JOIN', call['call_id'])
         check_native_receipt(a, native['receipt'], geom, group['native_owner'], effect['native_generation'], True,
                              natural=natural, where=call['call_id'])

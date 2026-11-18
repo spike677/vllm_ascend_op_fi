@@ -9,7 +9,10 @@ import hashlib
 import json
 from pathlib import Path
 
-from .output39_refusal_diagnostic import digest
+def digest(value):
+    # Kept independent of the observer/provider, including at import time.
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'),
+                                     allow_nan=False).encode()).hexdigest()
 
 
 def _review(value):
