@@ -178,14 +178,15 @@ class SourceBoundRows:
         self.moe = None
         self.routes = None
         self.route_frames = None
+        self.container_trace = None
 
     @classmethod
-    def from_runtime(cls, graph, model, *, capture_integer_routes=False):
+    def from_runtime(cls, graph, model, *, capture_integer_routes=False, native_containers=None):
         from .quant_moe_rows import SharedMoERows, REVIEWED as MOE_REVIEWED, has_runtime_owner
         require(type(capture_integer_routes) is bool, 'EXPLICIT_INTEGER_ROUTE_CAPTURE_FLAG_REQUIRED')
         moe_enabled = has_runtime_owner(model)
         reviewed = dict(REVIEWED, **MOE_REVIEWED) if moe_enabled else REVIEWED
-        if capture_integer_routes and moe_enabled:
+        if (capture_integer_routes or native_containers is not None) and moe_enabled:
             from .quant_token_routes import IntegerRouteObserver, REVIEWED as ROUTE_REVIEWED
             from .quant_route_frames import RouteFrameObserver, REVIEWED as FRAME_REVIEWED
             reviewed = dict(reviewed, **ROUTE_REVIEWED, **FRAME_REVIEWED)
@@ -193,6 +194,9 @@ class SourceBoundRows:
         value = cls(graph, model, bindings, sources)
         if moe_enabled:
             value.moe = SharedMoERows(value)
+            if native_containers is not None:
+                from .quant_container_scopes import ContainerScopes
+                value.container_trace = ContainerScopes(value, native_containers)
             if capture_integer_routes:
                 value.routes = IntegerRouteObserver(value)
                 value.route_frames = RouteFrameObserver(value)
@@ -262,6 +266,8 @@ class SourceBoundRows:
                 'QUANT_ROUTE_OBSERVER_STILL_INFLIGHT')
         require(self.route_frames is None or not self.route_frames.live,
                 'QUANT_ROUTE_FRAMES_STILL_INFLIGHT')
+        if self.container_trace is not None:
+            self.container_trace.close()
         self.ending = True
         while self.owned_modes:
             current = _get_current_dispatch_mode()
@@ -357,7 +363,8 @@ class SourceBoundRows:
         try:
             binding = self.bindings[frame.f_code]
             if (binding['role'].startswith('rchain_') and binding['role'] != 'rchain_model'
-                    and (self.route_frames is None or not self.route_frames.live)):
+                    and (self.route_frames is None or not self.route_frames.live)
+                    and (self.container_trace is None or self._parent('rchain_model') is None)):
                 return
             # These global helpers run elsewhere too. Only the actual checked
             # embedding frame may attach them to a scheduler row producer.
@@ -752,6 +759,8 @@ class SourceBoundRows:
             self.routes.before_operator(state)
         if self.route_frames is not None:
             self.route_frames.before_operator(state)
+        if self.container_trace is not None:
+            self.container_trace.before_operator(state)
         if name == 'vllm.mla_forward.default':
             bound = _arguments(func, args, kwargs)
             writes = [arg.name for arg in schema.arguments if arg.alias_info is not None and arg.alias_info.is_write]
@@ -780,6 +789,8 @@ class SourceBoundRows:
         return state
 
     def failed_operator(self, state, error):
+        if self.container_trace is not None:
+            self.container_trace.after_operator(state, error=error)
         if self.routes is not None:
             self.routes.after_operator(state, error=error)
         if self.route_frames is not None:
@@ -793,6 +804,8 @@ class SourceBoundRows:
     def after_operator(self, state, output):
         if state is None:
             return set()
+        if self.container_trace is not None:
+            self.container_trace.after_operator(state)
         require(self.operator_stack and self.operator_stack[-1] is state, 'QUANT_ROW_OPERATOR_RETURN_ORDER_CHANGED')
         self.operator_stack.pop()
         if self.routes is not None:
@@ -1024,6 +1037,7 @@ class SourceBoundRows:
                 routed_output_row_qualified=False),
             integer_routes=self.routes.report() if self.routes is not None else None,
             routed_call_frames=self.route_frames.report() if self.route_frames is not None else None,
+            container_trace=self.container_trace.report() if self.container_trace is not None else None,
             inflight=len(self.pending), native_qualified=False,
             owned_nested_dispatch_modes=len(self.owned_modes), owned_profile_callbacks=int(not self.profile_released),
             owned_scheduler_input_refs=int(self.input_ids is not None),

@@ -31,7 +31,10 @@ capacity. Overflow never changes original execution and permanently invalidates
 the diagnostic. One installed diagnostic can be released but not reinstalled
 in that process. Snapshot queries are read-only; stopping does not erase
 records. After stop, a real destroy of a retained registration can still retire
-it. Release frees only observer records and copied metadata.
+it. Release frees only observer records and copied metadata. The preloaded
+interposer and exact-image mapping pins remain resident until Worker exit;
+zero scoped buffers/registrations/getter arrays does not mean an unloaded DSO
+or zero process-wide host memory. The snapshot labels this resource scope.
 
 ## Build handoff
 
@@ -40,7 +43,7 @@ Only root executes this command on 124, with a fresh output directory:
 ```text
 python3 <frozen-source>/experiments/worker_core_v11_20261118/build_quant_container_trace.py \
   --source <frozen-source> --source-commit <40-digit-frozen-commit> \
-  --out /home/17-fault-c2c3-20261117/quant-container-trace-sdk-a1
+  --out /home/17-fault-c2c3-20261117/quant-container-trace-sdk-a3
 ```
 
 The builder pins production image `sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0`,
@@ -60,9 +63,17 @@ NOLOAD must select the original, the delegated anchor must belong to that
 original mapping, and original SHA must remain unchanged. No segment masks or
 identity exceptions are used.
 
+Root's second build passed the real same-SONAME ELF contract, then stopped on
+two shared-header warnings treated as errors before the C++ scenarios ran.
+The next source confines an indentation diagnostic suppression to the existing
+byte-pinned identity header include; our TU and fixtures remain under strict
+warnings. Actual metadata capture exceptions now call the shared exception
+counter before rethrowing to the ABI guard, with array cleanup still tested.
+Both failed build originals remain preserved.
+
 Local validation so far: command/receipt contracts passed; no Docker or
-SDK compiler was run by this agent. The 19 C++ scenarios and new real ELF
-contract are prepared, **not yet executed**. A successful SDK/CPU receipt will still not prove the stock resolver
+SDK compiler was run by this agent. The 19 C++ scenarios are **not yet
+executed**. A successful SDK/CPU receipt will still not prove the stock resolver
 actually calls these functions in inference. The B8 diagnostic and its exact
 loaded-owner/current-source results remain separate required evidence.
 
@@ -72,3 +83,64 @@ existing quant vendor first in `ASCEND_CUSTOM_OPP_PATH`, then this new vendor,
 then the original vLLM custom vendor. Putting this proxy first could resolve
 DynamicQuant through its real dependency and bypass the existing complete
 Native/public census. The managed binding must attach by `RTLD_NOLOAD` only.
+
+## One B8 decode handoff
+
+The managed binding now verifies the approved bundle, actual owned mapping,
+all control-function owners, profile and ABI sizes before attaching by NOLOAD.
+The opt-in source observer binds current reviewed routing/GMM1/GMM2/unpermute
+frames to exact current public schemas, arguments, input objects and write
+epochs. It emits no graph row bindings. It records only descriptor metadata
+and scalar arguments; the integer route snapshot helper is not instantiated.
+Scope-end failures retain the handle and original failure, and record each
+retry return code. A source-owner/profile error leaves the Native raw census
+unclassified and rejects the diagnostic.
+
+`probe_quant_containers.py` performs healthy-before, one fresh B8 prefill and
+first decode, explicit collect, observer removal/release, and same-Worker
+healthy-after. It requires all 135 structural candidates, 135 actual projection
+and Native prepare/execute calls, 270 public API calls, complete public/Native
+bindings and unchanged healthy tokens. It does **not** change the old two-pass
+inventory's `complete_healthy_replays`/`recovered` qualification fields to true
+after one pass. Those remain historical scope fields; the new result separately
+reports this one-pass diagnostic's census, cleanup and health. No fault owner
+is installed.
+
+The raw Native record is saved before release. Every cleanup retry saves a new
+immutable `cleanup-observation-NNN.json`, so a release failure does not prevent
+retry or overwrite the first observation. Failure during model construction
+also attempts a same-process NOLOAD state read; it never reloads the library.
+
+After the fresh SDK build and fresh installed source package pass root review:
+
+```text
+python3 <frozen-source>/experiments/worker_core_v11_20261118/prepare_quant_container_case.py \
+  --installed <fresh-installed-package> --quant <existing-reviewed-quant-group-bundle> \
+  --trace <fresh-container-trace-sdk-bundle> --source-commit <frozen-worker-source-commit> \
+  --image-id sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0 \
+  --model /home/haoran/models/DeepSeek-V2-Lite-W8A8 --card 2 \
+  --probe <frozen-source>/experiments/worker_core_v11_20261118/probe_quant_containers.py \
+  --out <new-reviewed-case.json>
+```
+
+This only prepares the JSON; root's existing queue and device gate own launch.
+All inputs mount read-only, evidence stays on 124, and the outer 1800-second /
+80-GiB / 16-CPU case budget stays unchanged. Do not reuse the failed SDK a1/a2.
+
+New source-only closure: `fault_injection.quant_container_native` (depends on
+existing `fault_injection.metadata_arrays`) and
+`demoncat.runtime.vllm_ascend.worker_extension.quant_container_scopes`. The
+existing `quant_source_rows` and `serving_shared_scale_group_inventory` have
+opt-in glue; all default paths remain unchanged. Probe setup records hashes
+for the loaded observer/Native-binding modules. Root owns the common exporter
+and must include these new modules in the frozen package closure.
+
+Local validation passed all 328 quant tests, including 21 new
+binding/scope/cleanup/manifest tests. The subsequent shared-header compile fix
+passed all 8 build command/receipt contracts. These are not real stock Native
+entry evidence.
+Stop before F on missing actual entries, current caller/scope ambiguity,
+unmatched/nonretired registrations, source errors, truncation/overflow,
+incomplete 135 census, or changed health. Even a successful diagnostic only
+answers creator/destroy observability; GWS/member/executor use and routed-row
+semantics remain unproven.

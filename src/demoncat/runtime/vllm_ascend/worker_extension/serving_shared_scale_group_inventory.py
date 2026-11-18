@@ -36,7 +36,7 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
     def inventory_worker_identity(self):
         return self.worker.demoncat_worker_identity()
 
-    def __init__(self, *args, capture_integer_routes=False, **kwargs):
+    def __init__(self, *args, capture_integer_routes=False, native_containers=None, **kwargs):
         # Reuse actual scheduler/embedding/logits hooks but bypass the legacy
         # inventory constructor and its C1 Native loader entirely.
         require(type(capture_integer_routes) is bool, 'EXPLICIT_INTEGER_ROUTE_CAPTURE_FLAG_REQUIRED')
@@ -60,6 +60,8 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
             from .quant_source_rows import SourceBoundRows
             from .quant_mla_metadata_rows import MlaMetadataRows
             route_options = dict(capture_integer_routes=True) if capture_integer_routes else {}
+            if native_containers is not None:
+                route_options['native_containers'] = native_containers
             source_rows = SourceBoundRows.from_runtime(self.row_observer, self.model, **route_options)
             metadata_rows = MlaMetadataRows.from_runtime(self.runner)
             source_rows.metadata_producers = metadata_rows
@@ -121,7 +123,8 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
         return value
 
 
-def install_shared_scale_group_inventory(worker, *, prompts, root, build_sha256, evidence_dir, capture_integer_routes=False):
+def install_shared_scale_group_inventory(worker, *, prompts, root, build_sha256, evidence_dir,
+                                         capture_integer_routes=False, native_containers=None):
     require(not any(hasattr(worker, name) for name in ('_demoncat_shared_scale_inventory',
         '_demoncat_quant_factory', '_demoncat_quant_inventory', '_demoncat_serving20_factory')),
         'EXCLUSIVE_NEW_GROUP_QUANT_INVENTORY_REQUIRED')
@@ -134,7 +137,8 @@ def install_shared_scale_group_inventory(worker, *, prompts, root, build_sha256,
     require(isinstance(prompts, list) and len(prompts) == 8 and all(isinstance(row, list) and len(row) > 1
             and all(type(value) is int and value >= 0 for value in row) for row in prompts), 'EIGHT_FROZEN_PROMPTS_REQUIRED')
     session = SharedScaleGroupInventorySession(worker, worker.model_runner.model, root=root, build_sha256=build_sha256,
-                                             folder=folder, prompts=prompts, capture_integer_routes=capture_integer_routes)
+                                             folder=folder, prompts=prompts, capture_integer_routes=capture_integer_routes,
+                                             native_containers=native_containers)
     session.install()
     worker._demoncat_shared_scale_inventory = session
     return session.report()
