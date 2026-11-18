@@ -24,8 +24,6 @@ class Vision17GroupTests(unittest.TestCase):
         self.patches.enter_context(patch.object(identity,'_current_device',return_value=0))
         self.patches.enter_context(patch.object(torch.distributed,'is_initialized',return_value=True))
         self.patches.enter_context(patch.object(torch.distributed,'get_rank',return_value=7))
-        self.patches.enter_context(patch.object(runtime,'_resolve_provider',
-            lambda mechanism,version,worker,model,actual:Vision17GroupProvider(worker,model,actual)))
         self.client=WorkerFaultClient(HostAdapter(ExistingExecutor([self.worker]),prepare_binding=self.bind),FaultConfig(17,'spatial_padding'))
         self.provider=None;self.serial=0;self.cached=None
     def bind(self,actual,config):

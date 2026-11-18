@@ -51,6 +51,9 @@ def rpc_provider_capabilities():
         if row['mechanism'] == '17.spatial_padding':
             row.update(optional_two_healthy_mm_census=True,
                        observation_binding='_demoncat_vision17_observation_binding',
+                       group_binding='_demoncat_vision17_group_binding',
+                       group_scope='actual_single_projection_fresh_mm_requests',
+                       group_native_qualification=False,
                        census_grants_fault_admission=False)
         if row['mechanism'] == '22.wrong_row':
             row.update(execution='reviewed_fused_serving_group_real_enqueue_required',
@@ -94,6 +97,14 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     resolve(mechanism)
     if version != '1':
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
+    if (mechanism == '17.spatial_padding'
+            and hasattr(worker, '_demoncat_vision17_group_binding')):
+        if hasattr(worker, '_demoncat_vision17_observation_binding'):
+            raise RuntimeError('VISION17_DEPLOYMENT_BINDINGS_CONFLICT')
+        module = importlib.import_module(__package__ + '.providers.vision17_group')
+        if type(worker._demoncat_vision17_group_binding) is not module.Vision17GroupBinding:
+            raise RuntimeError('VISION17_TYPED_GROUP_BINDING_REQUIRED')
+        return module.Vision17GroupProvider(worker, model, identity)
     if (mechanism == '17.spatial_padding'
             and hasattr(worker, '_demoncat_vision17_observation_binding')):
         module = importlib.import_module(__package__ + '.providers.vision17')
