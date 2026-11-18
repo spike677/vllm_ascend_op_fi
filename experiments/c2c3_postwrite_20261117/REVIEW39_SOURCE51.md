@@ -70,6 +70,12 @@ bytes reconcile; exit 2 means inconsistent or incomplete C2 evidence. A refused
 C3 does not invalidate a separately reconciled C2. C3 recovery is checked even
 when its fault forward aborted and no complete fault output was recorded.
 
+C1's cumulative `rejections` include unrelated ineligible candidates (on source51,
+the oversized lm_head output). They are retained and reconciled with the actual
+transport refusal reasons; they are not assumed to be failures of the selected
+target. The selected producer/effect/consumer checks remain mandatory. The first
+review's zero-candidate-refusal assumption was incorrect; its result is retained.
+
 Limits remain explicit:
 
 - Complete model/target tensors were hashed by frozen runtime code, but no tensor

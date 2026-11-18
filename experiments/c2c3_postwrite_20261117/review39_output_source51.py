@@ -470,9 +470,16 @@ def review_document(document, *, expected_targets=140, cpu_contract=False):
             and all(target[k] == c1['off']['actual_target'][k] for k in ('pid','model_instance','owner','module_path','operator'))
             and target['module_path'] == natural_first['module_path'] and target['operator'] == natural_first['operator']
             and row['original_operator_calls'] == sum(row['discovery_diagnostics']['operator_counts'].values())
-            and row['eligible_with_consumers'] == expected_targets and row['rejections'] == []
+            and row['eligible_with_consumers'] == expected_targets
             and all(row[k] is False for k in ('native_acceptance_inherited','public_worker_qualified','all_eligible_qualified','every_match_qualified')),
             'C1_ACTUAL_IDENTITY_COUNTS_OR_GENERATION', label)
+        # These cumulative census refusals include the unselected large
+        # lm_head output. They do not describe a failed selected C1 execution;
+        # its actual producer, effect and consumer are checked independently.
+        transport = row['discovery_diagnostics']['transport_rejections']
+        r.check(isinstance(row['rejections'], list)
+            and all(isinstance(reason, str) and reason in {item['reason'] for item in transport}
+                    for reason in row['rejections']), 'C1_CANDIDATE_REFUSAL_RECONCILIATION', label)
         r.check(target['operator'] in PRODUCERS and proof['operator'] == target['operator']
             and proof['original_return_storage'] is True and proof['returned_tensor']['shape'] == target['shape']
             and proof['expected_output_shape'] == producer_geometry(proof) == target['shape'] and target['logical_indices'] == [0]
@@ -543,6 +550,8 @@ def review_document(document, *, expected_targets=140, cpu_contract=False):
                 issued[0].get(k) == consumed.get(k) for k in ('proof','proof_sha256','object_binding','exact_issued_object_verified'))
     return dict(**r.summary(), arm=document['arm'], groups=groups, c3_live_proof=proof,
         c1_fault_invocations=1, process_contains_c1_fault=True,
+        c1_cumulative_candidate_refusals={label:dict(Counter(c1[label]['rejections']))
+            for label in ('lossless','fault','off')},
         c1_final_off_consistent=not r.errors,
         c2_evidence_reconciled=not r.errors and groups.get('c2', {}).get('consistent', False)
             and groups['c2']['recovery']['consistent'],

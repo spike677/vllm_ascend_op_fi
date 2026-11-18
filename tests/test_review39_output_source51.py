@@ -103,6 +103,20 @@ class Review39Tests(unittest.TestCase):
         self.assertTrue(result['groups']['c3']['recovery']['consistent'], result['groups']['c3'])
         self.assertIn('CONCURRENCY_BUDGET_EXHAUSTED', result['groups']['c3']['stored_provider_failure'])
 
+    def test_unselected_census_refusal_does_not_erase_proven_selected_effect(self):
+        document = deepcopy(self.fault)
+        reason = 'POSTWRITE_REQUIRES_EXCLUSIVE_CONTIGUOUS_BOUNDED_STORAGE'
+        for count, label in enumerate(('lossless','fault','off'), start=3):
+            row = document['c1'][label]
+            row['rejections'] = [reason]*count
+            row['discovery_diagnostics']['transport_rejections'].append(dict(reason=reason,
+                operator='aten.linear.default', module_path='unselected.large_output'))
+        result = self.reviewed(document)
+        self.assertTrue(result['c2_evidence_reconciled'], result)
+        self.assertEqual(result['c1_cumulative_candidate_refusals']['fault'], {reason:4})
+        document['c1']['fault']['rejections'].append('UNEXPLAINED_SELECTED_FAILURE')
+        self.assertFalse(self.reviewed(document)['c2_evidence_reconciled'])
+
     def test_success_booleans_are_not_authority(self):
         document = deepcopy(self.fault)
         document['c2']['contract_satisfied'] = False
