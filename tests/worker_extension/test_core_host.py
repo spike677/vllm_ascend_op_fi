@@ -193,7 +193,7 @@ class CoreHostTests(unittest.TestCase):
         self.assertEqual(client.detach()['status'], 'DETACHED')
 
     def test_catalog_only_provider_refuses_without_native_resolution(self):
-        client = self.client(39, 'output_proxy')
+        client = self.client(28, 'fa.legal_tiling')
         row = client.prepare()
         self.assertEqual(row['response']['reason'], 'WORKER_PROVIDER_NOT_ADAPTED')
         self.resolver.assert_not_called()

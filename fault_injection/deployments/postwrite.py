@@ -476,40 +476,7 @@ class PostwriteProvider:
             with window:
                 with torch.inference_mode(), observer:
                     output = self.model(*args, **kwargs)
-            copied = _cpu(output)
-            self._last_observer = observer
-            candidates = [c for c in observer.candidates if c.consumers]
-            selected = [c for c in candidates if c.key == self._target]
-            if self._coverage is None and phase in ('baseline', 'fault') and (len(selected) != 1 or self._lease is None):
-                raise PostwriteRefused('QUALIFIED_WRITER_OR_CONSUMER_NOT_OBSERVED')
-            if self._coverage is None and phase == 'off' and (len(selected) != 1 or self._lease is not None):
-                raise PostwriteRefused('OFF_TARGET_OR_DRAIN_NOT_OBSERVED')
-            report = dict(phase=phase, mechanism=self.mechanism,
-                transport=self.transport.transport_kind, original_operator_calls=observer.original_calls,
-                observed_candidates=len(observer.candidates), eligible_with_consumers=len(candidates),
-                intervention=self._last_intervention,
-                consumers=selected[0].consumers if selected else [],
-                rejections=list(self._rejections), scope='controlled single-target inference replay',
-                native_acceptance_inherited=False, public_worker_qualified=False,
-                all_eligible_qualified=False, every_match_qualified=False)
-            report['discovery_diagnostics'] = dict(operator_counts=dict(sorted(observer.operator_counts.items())),
-                projection_observations=observer.projection_observations, projection_observation_limit=32,
-                transport_rejections=observer.rejections,
-                candidates=[dict(module_path=c.module_path, operator=c.operator,
-                    shape=list(c.tensor.shape), dtype=str(c.tensor.dtype), consumers=list(c.consumers))
-                    for c in observer.candidates[:64]], candidate_observation_limit=64)
-            if selected:
-                chosen = selected[0]
-                report['actual_target'] = dict(pid=os.getpid(), model_instance=id(self.model),
-                    owner=self.owner, generation=self.generation, operator=chosen.operator,
-                    module_path=chosen.module_path, storage_identity=chosen.storage,
-                    shape=list(chosen.tensor.shape), stride=list(chosen.tensor.stride()),
-                    storage_offset=chosen.tensor.storage_offset(), dtype=str(chosen.tensor.dtype),
-                    logical_indices=list(chosen.indices), consumer_calls=list(chosen.consumers),
-                    producer_proof=chosen.producer_proof, consumer_observations=chosen.consumer_observations)
-            if self._coverage is not None:
-                self._coverage.forward_returned(observer, copied)
-            return copied, candidates, report
+            return self._observed_result(observer, output, phase)
         finally:
             try:
                 for hook in reversed(hooks):
@@ -520,6 +487,42 @@ class PostwriteProvider:
                     self._recover_owned_entries()
                 finally:
                     self._lock.release()
+
+    def _observed_result(self, observer, output, phase):
+        copied = _cpu(output)
+        self._last_observer = observer
+        candidates = [c for c in observer.candidates if c.consumers]
+        selected = [c for c in candidates if c.key == self._target]
+        if self._coverage is None and phase in ('baseline', 'fault') and (len(selected) != 1 or self._lease is None):
+            raise PostwriteRefused('QUALIFIED_WRITER_OR_CONSUMER_NOT_OBSERVED')
+        if self._coverage is None and phase == 'off' and (len(selected) != 1 or self._lease is not None):
+            raise PostwriteRefused('OFF_TARGET_OR_DRAIN_NOT_OBSERVED')
+        report = dict(phase=phase, mechanism=self.mechanism,
+            transport=self.transport.transport_kind, original_operator_calls=observer.original_calls,
+            observed_candidates=len(observer.candidates), eligible_with_consumers=len(candidates),
+            intervention=self._last_intervention,
+            consumers=selected[0].consumers if selected else [],
+            rejections=list(self._rejections), scope='controlled single-target inference replay',
+            native_acceptance_inherited=False, public_worker_qualified=False,
+            all_eligible_qualified=False, every_match_qualified=False)
+        report['discovery_diagnostics'] = dict(operator_counts=dict(sorted(observer.operator_counts.items())),
+            projection_observations=observer.projection_observations, projection_observation_limit=32,
+            transport_rejections=observer.rejections,
+            candidates=[dict(module_path=c.module_path, operator=c.operator,
+                shape=list(c.tensor.shape), dtype=str(c.tensor.dtype), consumers=list(c.consumers))
+                for c in observer.candidates[:64]], candidate_observation_limit=64)
+        if selected:
+            chosen = selected[0]
+            report['actual_target'] = dict(pid=os.getpid(), model_instance=id(self.model),
+                owner=self.owner, generation=self.generation, operator=chosen.operator,
+                module_path=chosen.module_path, storage_identity=chosen.storage,
+                shape=list(chosen.tensor.shape), stride=list(chosen.tensor.stride()),
+                storage_offset=chosen.tensor.storage_offset(), dtype=str(chosen.tensor.dtype),
+                logical_indices=list(chosen.indices), consumer_calls=list(chosen.consumers),
+                producer_proof=chosen.producer_proof, consumer_observations=chosen.consumer_observations)
+        if self._coverage is not None:
+            self._coverage.forward_returned(observer, copied)
+        return copied, candidates, report
 
     def qualify(self, *args, **kwargs):
         if threading.get_ident() != self._thread or self._lock.locked():
@@ -534,6 +537,9 @@ class PostwriteProvider:
         right, second, second_report = self._replay('observe', args, kwargs)
         self._observations.append(self._last_observer)
         self._qualification_diagnostics['observations'].append(second_report)
+        return self._qualify_observed_pair(identity, input_hash, left, first, right, second)
+
+    def _qualify_observed_pair(self, identity, input_hash, left, first, right, second):
         keys_equal = [c.key for c in first] == [c.key for c in second]
         outputs_equal = _equal(left, right)
         identity_equal = self._identity() == identity
@@ -559,6 +565,11 @@ class PostwriteProvider:
                     requires_lossless=True)
 
     def run(self, phase, *args, model_observation=None, **kwargs):
+        self._begin_run(phase, args, kwargs)
+        output, _, report = self._replay(phase, args, kwargs, model_observation=model_observation)
+        return self._complete_run(phase, output, report)
+
+    def _begin_run(self, phase, args, kwargs):
         if threading.get_ident() != self._thread or self._lock.locked():
             raise PostwriteRefused('POSTWRITE_SYNCHRONOUS_OWNER_REQUIRED')
         if phase not in ('baseline', 'fault', 'off'):
@@ -572,7 +583,8 @@ class PostwriteProvider:
         if phase == 'fault':
             self._fault_attempted = True
         self.generation += 1
-        output, _, report = self._replay(phase, args, kwargs, model_observation=model_observation)
+
+    def _complete_run(self, phase, output, report):
         if phase == 'baseline':
             if not _equal(output, self._baseline_output):
                 raise PostwriteRefused('POSTWRITE_LOSSLESS_OUTPUT_MISMATCH')

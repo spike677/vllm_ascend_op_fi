@@ -30,7 +30,7 @@ remain explicit refusals.
 |---|---|---|
 | Identity, generation, tenants, ownership | existing `identity.py` / `runtime.py` | one actual Worker; uncertain actions retain owner |
 | Public configuration and routing | `config.py` / `host.py` | all17 catalog IDs resolve; this does not qualify their factories |
-| Provider inventory | `registry.py`, exposed in capabilities/discovery |12 existing RPC providers;5 routes explicitly awaiting RPC adaptation |
+| Provider inventory | `registry.py`, exposed in capabilities/discovery |13 callable RPC routes;4 entries explicitly awaiting RPC adaptation; factory availability grants no qualification |
 | Structural CandidateSet | `discovery.py` using existing model discovery | all aliases and unknown roles retained; no model forward or device load |
 | Natural call census | `call_census.py` using existing path/request/native observers | one naturally scheduled prefill or first-decode request; bounded capture |
 | Native build | existing `fault_injection.native_build.NativeBuildManager` | explicit recipes, source/compiler/ABI/library fingerprints; no universal8.x/9.x promise |
@@ -44,6 +44,11 @@ call `census_cleanup()`. The census itself does not invoke model execution.
 `prepare/register/check/execute/advance/finish/unregister` use the same provider
 state machine as before. See [the host contract](host_contract.md) and
 [the census contract](census_contract.md).
+
+The new [output39 C1 contract and remaining-route audit](output39_host_contract.md)
+keeps its MODEL_LOCAL evidence separate and leaves all three 28 variants plus
+33 pending. Only real standard enqueue requests can advance its single-target
+discovery/lossless/F/OFF/health sequence; C2/C3/E5 are not provided by that route.
 
 An ordinary census cannot observe all internal kernels. Native or fused edges
 without a matched observer remain `NOT_VISIBLE`/unverified. A failed request

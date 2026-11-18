@@ -71,13 +71,13 @@ class CoreDiscoveryTests(unittest.TestCase):
 
 
 class RegistryTests(unittest.TestCase):
-    def test_all_seventeen_are_explicit_but_five_do_not_claim_worker_rpc(self):
+    def test_all_seventeen_are_explicit_but_four_do_not_claim_worker_rpc(self):
         manifest = registry.worker_core_manifest()
         self.assertEqual(manifest['mechanism_count'], 17)
-        self.assertEqual(manifest['rpc_provider_count'], 12)
-        self.assertEqual(len(provider_capabilities()), 12)
+        self.assertEqual(manifest['rpc_provider_count'], 13)
+        self.assertEqual(len(provider_capabilities()), 13)
         pending = [r for r in manifest['mechanisms'] if not r['rpc_available']]
-        self.assertEqual(len(pending), 5)
+        self.assertEqual(len(pending), 4)
         self.assertTrue(all(r['qualification_required'] and not r['qualification_granted'] for r in manifest['mechanisms']))
         with patch('importlib.import_module') as loader:
             for row in pending:

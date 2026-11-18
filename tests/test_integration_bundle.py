@@ -206,6 +206,22 @@ class BundleTests(unittest.TestCase):
         with self.assertRaisesRegex(bundle.BundleError, 'BINARY_OR_OVERSIZED_SOURCE'):
             bundle.create_review(self.source, 'disguised-binary')
 
+    def test_output39_route_requires_reused_cpu_contract_closure_without_history(self):
+        path = self.source / bundle._OUTPUT39_PROVIDER
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('# reviewed output39 route\n', encoding='utf-8')
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'missing-output39-contract')
+        names = bundle._OUTPUT39_CONTRACTS | {'tests/worker_extension/test_core_output39.py'}
+        for name in names:
+            (self.source / name).write_bytes((ROOT / name).read_bytes())
+        review, _ = self.export()
+        self.assertTrue(names <= {row['source_path'] for row in review['files']})
+        self.assertFalse(any(row['source_path'].startswith('experiments/') for row in review['files']))
+        (self.source / 'tests/worker_extension/test_call_binding.py').unlink()
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'incomplete-output39-fixture')
+
     def test_existing_output_is_preserved(self):
         review = bundle.create_review(self.source, 'review')
         self.output.write_bytes(b'previous delivery')
