@@ -103,6 +103,11 @@ only permits normal/OFF. The separate [all-target C2 candidate](../../docs/worke
 now connects 28 isolated targets through the public Worker protocol and an
 independent original-file reader. Its final package still needs its own fresh
 normal pair and actual resource admission; CPU contracts confer no NPU scope.
+Further independent review found that normal-phase timing does not cover the
+public client's growing RPC history copies and final persistence. Root holds
+all group F pending that additional measured/enforced cost envelope; see the
+[public RPC cost review](ATTENTION33_GROUP_RPC_COST_REVIEW.md). Normal-only
+collection may proceed under its own device gate. The fixed budgets stay intact.
 Independent review repaired capture-capacity and early-disable recovery gaps;
 the corrected60-request/189-RPC CPU protocol passed. See the
 [review and exact validation scope](ATTENTION33_GROUP_C2_CPU_REVIEW.md).
