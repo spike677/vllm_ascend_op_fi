@@ -20,6 +20,18 @@ SPEC.loader.exec_module(bundle)
 
 
 class BundleTests(unittest.TestCase):
+    def test_optional_host_cursor_dependency_and_contracts_survive_export(self):
+        payload = bundle._inventory(ROOT)
+        required = {
+            'src/demoncat/runtime/vllm_ascend/worker_extension/host.py',
+            'src/demoncat/runtime/vllm_ascend/worker_extension/host_receipt_ledger.py',
+            'tests/worker_extension/test_host_receipt_cursor.py',
+            'docs/worker_core_v1/host_receipt_cursor.md',
+        }
+        self.assertFalse(required - payload.keys())
+        for name in required:
+            self.assertEqual(payload[name], (ROOT / name).read_bytes(), name)
+
     def test_fia_input_journal_sdk_source_closure_is_exported(self):
         from experiments.worker_core_v11_20261118.fia_input_journal_build import SOURCES
         payload = bundle._inventory(ROOT)

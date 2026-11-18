@@ -167,6 +167,16 @@ artifacts and prepared two normal-only cases. The22,528 geometry combinations
 are CPU checks, not NPU observations. See the [SDK result and remaining
 gates](ATTENTION33_SOURCE112_SDK_REVIEW.md); the public RPC cost hold remains.
 
+An explicit [Host receipt cursor](../../docs/worker_core_v1/host_receipt_cursor.md)
+now preserves complete originals while returning bounded controls and allowing
+incremental reads or streaming legacy export. Default full receipts remain
+unchanged. Independent review found and repaired two accepted-RPC error paths:
+a failed local receipt index no longer desynchronizes permanently, and failed
+control rendering after successful detach no longer invents uncertain Worker
+ownership. The62 short CPU contracts and three independent real-Runtime error
+replays pass. This optional interface is not yet the group33 cost-admission
+repair and adds no NPU qualification.
+
 ## Ownership and execution
 
 Root owns shared contracts, registry integration, device queue and qualification
