@@ -11,10 +11,10 @@ The original artifacts remain on 124:
 The first complete parent was 2296. Its input was BF16/dtype27, ND/format2,
 offset0, view/stride/storage counts `[2,2,1]`, view `[8,2048]`, strides
 `[2048,1]` and storage `[16384]`. All seven getters returned zero, the call mask
-was127, and null/truncated arrays were zero. Q had identical geometry and int8/
-dtype2. Scale was fp32/dtype0, rank1, shape/storage `[8]`, stride `[1]`, bytes32.
-The 270 actual input layouts comprise216 width2048, two width10944 and52
-width2816 calls. Every input used the same exact ND flat-storage representation.
+was 127, and null/truncated arrays were zero. Q had identical geometry and int8/
+dtype2. Scale was fp32/dtype0, rank1, shape/storage `[8]`, stride `[1]`, bytes 32.
+The 270 actual input layouts comprise 216 width 2048, two width 10944 and 52
+width 2816 calls. Every input used the same exact ND flat-storage representation.
 These are quant's own observed descriptors; FIA's NCL descriptors are unrelated.
 
 The new `view()` branch accepts only rank2 view/stride with rank1 storage,
@@ -34,9 +34,9 @@ reviewed preparation and execution rules. The engine, numerical fault, original
 C1 library, child registration/lease identity, workspace gates and failure
 recovery are unchanged. Every actual helper remains in the raw census.
 
-The C++ memory-double suite now has24 scenarios. New cases exercise full
+The C++ memory-double suite now has 24 scenarios. New cases exercise full
 reference/lossless/OFF/F/helper/OFF from flat original descriptors; all three
-actual B8 widths including10944 and2816; padding, short/negative storage,
+actual B8 widths including 10944 and 2816; padding, short/negative storage,
 offset, stride, format, dtype, null/misaligned/overflowing address, dimension
 overflow; and prepared executors retained after insufficient execute workspace.
 All SDK getter arrays must be released. These tests are prepared for root's
@@ -57,9 +57,9 @@ python3 "$SOURCE/experiments/c2c3_closure_20261117/providers_quant_build_group.p
   --out /home/17-fault-c2c3-20261117/native-quant-group-nd-flat-a1
 ```
 
-The additive diagnostic ABI sizes remain snapshot416, record1304, state72.
+The additive diagnostic ABI sizes remain snapshot 416, record 1304, state 72.
 Nevertheless the production source and DSO fingerprint change, so the source61
-bundle cannot be reused. Root must compile the24 runtime scenarios plus the
+bundle cannot be reused. Root must compile the 24 runtime scenarios plus the
 existing core and seven ELF loader contracts, record actual new SHA values,
 and run the existing device-free managed load probe before a device attempt.
 

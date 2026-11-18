@@ -29,6 +29,7 @@ def cpu_rotary(positions, use_cache=False):
 class CpuBuilder:
     def build(self, common_prefix_len, common_attn_metadata):
         positions = common_attn_metadata.positions[:8].long()
+        positions = positions[:8]
         cos, sin = cpu_rotary(positions, use_cache=True)
         return NS(input_positions=positions, cos=cos[:8], sin=sin[:8])
 
@@ -42,16 +43,30 @@ class CpuRunner:
 
 
 class CpuChangedBuilder:
-    def __init__(self, start=0, end=8, step=1, clone=False, mutate=False):
+    def __init__(self, start=0, end=8, step=1, clone=False, mutate=False, second=True,
+                 second_start=0, second_step=1, side_slice=False, replace=False, third=False, clone_middle=False):
         self.start, self.end, self.step, self.clone, self.mutate = start, end, step, clone, mutate
+        self.second, self.second_start, self.second_step = second, second_start, second_step
+        self.side_slice, self.replace = side_slice, replace
+        self.third, self.clone_middle = third, clone_middle
 
     def build(self, common_prefix_len, common_attn_metadata):
         positions = common_attn_metadata.positions[self.start:self.end:self.step].long()
+        if self.clone_middle:
+            positions = positions.clone()
+        if self.second:
+            positions = positions[self.second_start:8:self.second_step]
+        if self.third:
+            positions = positions[:8]
         if self.clone:
             positions = positions.clone()
         if self.mutate:
             common_attn_metadata.positions.add_(0)
         cos, sin = cpu_rotary(positions, use_cache=True)
+        if self.side_slice:
+            other = common_attn_metadata.positions[:8]
+            if self.replace:
+                positions = other
         return NS(input_positions=positions, cos=cos[:8], sin=sin[:8])
 
 
@@ -132,6 +147,11 @@ class EarlyMetadataTests(unittest.TestCase):
         self.assertEqual(chain['actual_slice_arguments'], [0, 0, 8, 1])
         self.assertTrue(chain['actual_return_object_verified'])
         self.assertFalse(chain['values_used_as_authority'])
+        self.assertEqual(chain['source_to_return_actual_slice_count'], 2)
+        first, second = chain['slice_chain']
+        self.assertLess(first['event'], second['event'])
+        self.assertEqual(first['completed_output'], second['input'])
+        self.assertEqual(second['completed_output']['object_id'], id(output.input_positions))
 
     def test_padded_position_version_drift_after_return_refuses_even_same_values(self):
         source = self.padded_source(versioned=True)
@@ -141,6 +161,10 @@ class EarlyMetadataTests(unittest.TestCase):
         self.assertEqual(chain['slice_dispatch_output']['version'], 0)
         self.assertEqual(chain['slice_output']['version'], 6)
         self.assertEqual(chain['slice_dispatch_output']['object_id'], chain['slice_output']['object_id'])
+        self.assertTrue(all(link['dispatch_output']['version'] == 0 and link['completed_output']['version'] == 6
+                            for link in chain['slice_chain']))
+        self.assertTrue(all(chain['slice_chain'][0]['event'] < event < chain['slice_chain'][1]['event']
+                            for event in chain['identity_cast_events']))
         self.graph.end()
         source.add_(0)  # No dispatch observer: the real shared version still changes.
         self.graph.begin('version-drift')
@@ -173,6 +197,42 @@ class EarlyMetadataTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'POSITION_OWNER_REQUIRED'):
             self.observer.consumer(output, self.graph)
         self.assertIn('NO_OBSERVED_PREFIX_SLICE', self.observer.rows[0]['reason'])
+
+    def test_independent_later_same_storage_slice_cannot_replace_either_actual_edge(self):
+        self.use_changed_builder(side_slice=True)
+        output = self.produce(self.padded_source(versioned=True))
+        proof = self.observer.consumer(output, self.graph)
+        chain = proof['position_lineage']['slice_chain']
+        source_id = chain[0]['input']['object_id']
+        side = [event for event in self.observer.events if event['operator'] == 'aten.slice.Tensor'
+                and event['inputs'][0]['object_id'] == source_id and event['sequence'] > chain[1]['event']]
+        self.assertEqual(len(side), 1)
+        self.assertNotEqual(side[0]['outputs'][0]['object_id'], chain[1]['completed_output']['object_id'])
+        self.assertEqual(side[0]['outputs'][0]['storage_address'], chain[1]['completed_output']['storage_address'])
+
+    def test_unreviewed_one_or_three_slices_clone_middle_and_wrong_second_slice_refuse(self):
+        for settings in ({'second': False}, {'third': True}, {'clone_middle': True},
+                         {'second_start': 1}, {'second_step': 2}, {'side_slice': True, 'replace': True}):
+            with self.subTest(settings=settings):
+                self.use_changed_builder(**settings)
+                output = self.produce(self.padded_source())
+                with self.assertRaisesRegex(RuntimeError, 'POSITION_OWNER_REQUIRED'):
+                    self.observer.consumer(output, self.graph)
+                builder = self.observer.report()['boundaries'][0]
+                self.assertEqual(builder['status'], 'UNVERIFIED')
+                self.assertEqual(builder['returned_positions_metadata']['object_id'], id(output.input_positions))
+                self.graph.end()
+
+    def test_retained_middle_object_metadata_cannot_drift_outside_observed_graph(self):
+        source = self.padded_source()
+        output = self.produce(source)
+        self.assertTrue(self.observer.consumer(output, self.graph)['verified'])
+        middle = self.observer.rows[0]['position_chain_tensors'][1]
+        self.graph.end()
+        middle.set_(source.untyped_storage(), 1, (8,), (1,))
+        self.graph.begin('changed-middle')
+        with self.assertRaisesRegex(RuntimeError, 'POSITION_OWNER_REQUIRED'):
+            self.observer.consumer(output, self.graph)
 
     def test_position_write_inside_builder_invalidates_entry_epoch(self):
         self.use_changed_builder(mutate=True)

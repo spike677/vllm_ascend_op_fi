@@ -193,10 +193,12 @@ class MlaMetadataRows:
                 row.pop('operations', None)
 
     def _builder_return(self, row, result):
-        """Bind the executed prefix slice, including a padded common buffer."""
+        """Bind the reviewed two executed slices to the exact returned object."""
         source = row['source_positions']
         before = row['source_positions_metadata']
         epoch = row['source_positions_epoch']
+        returned = getattr(result, 'input_positions', None)
+        row['returned_positions_metadata'] = metadata(returned) if isinstance(returned, torch.Tensor) else None
         require(result is not None and isinstance(getattr(result, 'input_positions', None), torch.Tensor)
                 and row['input']['common_attn_metadata'].positions is source
                 and metadata(source) == before and self.epochs.get(_key(source), 0) == epoch,
@@ -204,19 +206,30 @@ class MlaMetadataRows:
         require(before['dtype'] == str(torch.int64) and len(before['shape']) == 1
                 and before['shape'][0] >= len(self.expected_ids) and before['stride'] == [1],
                 'REVIEWED_CONTIGUOUS_COMMON_POSITION_VECTOR_REQUIRED')
-        candidates = []
-        for op in row['operations']:
-            if op['function'] is not torch.ops.aten.slice.Tensor:
-                continue
+        # The pinned builder executes common[:num_actual_tokens].long(), then
+        # middle[:num_decode_tokens]. Follow actual output/input identities
+        # backwards. An unrelated later source slice cannot substitute for
+        # either edge just because its storage and values happen to match.
+        slices = [op for op in row['operations'] if op['function'] is torch.ops.aten.slice.Tensor]
+        chain, output = [], returned
+        for _ in range(2):
+            matches = [op for op in slices if op.get('output') is output]
+            require(len(matches) == 1, 'NO_OBSERVED_PREFIX_SLICE_TO_METADATA_POSITION_RETURN')
+            op = matches[0]
+            chain.insert(0, op)
+            output = _arguments(op['function'], op['args'], op['kwargs']).get('self')
+        require(output is source and chain[0]['event']['sequence'] < chain[1]['event']['sequence'],
+                'ACTUAL_TWO_POSITION_SLICE_SOURCE_OR_ORDER_CHANGED')
+        tensors, links = [source], []
+        for op in chain:
             bound = _arguments(op['function'], op['args'], op['kwargs'])
-            if bound.get('self') is not source:
-                continue
+            require(bound.get('self') is tensors[-1], 'ACTUAL_POSITION_SLICE_PARENT_CHANGED')
             require(all(type(bound.get(key)) is int for key in ('dim', 'start', 'end', 'step'))
                     and (bound['dim'], bound['start'], bound['end'], bound['step']) == (0, 0, len(self.expected_ids), 1),
                     'ACTUAL_METADATA_POSITION_PREFIX_SLICE_CHANGED')
             event, output = op['event'], op.get('output')
             require(event['original_calls'] == 1 and event['returned'] and isinstance(output, torch.Tensor)
-                    and event['inputs'] == [before] and event['input_epochs'] == [epoch]
+                    and event['inputs'] == [metadata(tensors[-1])] and event['input_epochs'] == [epoch]
                     and len(event['outputs']) == 1 and event['output_epochs'] == [epoch],
                     'ACTUAL_METADATA_POSITION_SLICE_LIFETIME_CHANGED')
             raw_output, after = event['outputs'][0], metadata(output)
@@ -229,10 +242,12 @@ class MlaMetadataRows:
                         'storage_identity', 'storage_bytes', 'offset', 'version', 'inference_version_unavailable'))
                     and after['shape'] == [len(self.expected_ids)] and after['stride'] == [1],
                     'ACTUAL_METADATA_POSITION_SLICE_EXTENT_CHANGED')
-            if output is result.input_positions:
-                candidates.append((op, output))
-        require(len(candidates) == 1, 'NO_OBSERVED_PREFIX_SLICE_TO_METADATA_POSITION_RETURN')
-        op, positions = candidates[0]
+            require(self.epochs.get(_key(output), 0) == epoch, 'ACTUAL_METADATA_POSITION_SLICE_WRITE_EPOCH_CHANGED')
+            tensors.append(output)
+            links.append(dict(event=event['sequence'], schema=event['schema'], input=event['inputs'][0],
+                dispatch_output=raw_output, completed_output=after, epoch=epoch,
+                actual_arguments=[0, 0, len(self.expected_ids), 1]))
+        middle, positions = tensors[1:]
         # The reviewed .long() may be an identity with no dispatcher event. If
         # an actual to.dtype event occurs, it must be this same no-copy int64
         # object; an equal-valued conversion cannot create row authority.
@@ -241,19 +256,22 @@ class MlaMetadataRows:
             if candidate['function'] is not torch.ops.aten.to.dtype:
                 continue
             bound = _arguments(candidate['function'], candidate['args'], candidate['kwargs'])
-            if bound.get('self') is not positions:
+            if bound.get('self') is not middle:
                 continue
             require(bound.get('dtype') == torch.int64 and bound.get('copy') is False
                     and bound.get('non_blocking') is False and bound.get('memory_format') is None
-                    and candidate.get('output') is positions and candidate['event']['returned']
+                    and candidate.get('output') is middle and candidate['event']['returned']
                     and candidate['event']['original_calls'] == 1
-                    and candidate['event']['sequence'] > op['event']['sequence'],
+                    and chain[0]['event']['sequence'] < candidate['event']['sequence'] < chain[1]['event']['sequence'],
                     'ACTUAL_METADATA_POSITION_CAST_CHANGED')
             conversions.append(candidate['event']['sequence'])
+        op = chain[-1]
         row.update(output=result, positions=positions, positions_metadata=metadata(positions), positions_epoch=epoch,
+            position_chain_tensors=tuple(tensors), position_chain_metadata=[metadata(tensor) for tensor in tensors],
             position_lineage=dict(source=before, source_epoch=epoch, slice_event=op['event']['sequence'],
                 slice_schema=op['event']['schema'], actual_slice_arguments=[0, 0, len(self.expected_ids), 1],
                 slice_dispatch_output=op['event']['outputs'][0], slice_output=metadata(positions), identity_cast_events=conversions,
+                slice_chain=links, source_to_return_actual_slice_count=2,
                 actual_return_object_verified=True, values_used_as_authority=False))
 
     def _rotary_return(self, row, result):
@@ -323,6 +341,8 @@ class MlaMetadataRows:
                     and metadata(row['positions']) == row['positions_metadata']
                     and row['input']['common_attn_metadata'].positions is row['source_positions']
                     and metadata(row['source_positions']) == row['source_positions_metadata']
+                    and all(metadata(tensor) == expected for tensor, expected in
+                            zip(row['position_chain_tensors'], row['position_chain_metadata']))
                     and self.epochs.get(_key(row['source_positions']), 0) == row['source_positions_epoch']
                     and graph.epochs.get(graph.storage_key(metadata(row['source_positions'])), 0) == 0
                     and self.epochs.get(_key(row['positions']), 0) == row['positions_epoch']
@@ -350,7 +370,7 @@ class MlaMetadataRows:
 
     def watched_storages(self):
         return snapshot([metadata(tensor) for row in self.rows if row['status'] == 'OBSERVED'
-                         for tensor in tensor_values((row.get('output'), row.get('positions'), row.get('source_positions')))])
+                         for tensor in tensor_values((row.get('output'), row.get('positions'), row.get('position_chain_tensors')))])
 
     def release(self):
         require(not self.active and not self.pending, 'METADATA_PRODUCER_STILL_INFLIGHT')
@@ -366,7 +386,7 @@ class MlaMetadataRows:
             actual_calls=self.total, retained_calls=len(self.events), missing_calls=self.overflow,
             live_producer_records=0 if self.released else len(self.rows),
             boundaries=[{key: value for key, value in row.items() if key not in
-                ('input', 'operations', 'output', 'positions', 'source_positions', 'module', 'builder')} for row in self.rows],
+                ('input', 'operations', 'output', 'positions', 'source_positions', 'position_chain_tensors', 'module', 'builder')} for row in self.rows],
             complete=not self.active and not self.pending and not self.errors and not self.overflow
                 and all(event['original_calls'] == 1 and event['returned'] for event in self.events),
             model_or_operator_reexecution=False, native_qualified=False))
