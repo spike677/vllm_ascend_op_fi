@@ -125,7 +125,14 @@ class RoPEGroupProvider(NaturalTensorGroupProvider):
     def close_group(self):
         require(self.group is not None,'ROPE_GROUP_NOT_OPEN')
         recovery=self.group.disable(timeout_seconds=300)
-        self.group.observer.seal(artifact_sha256=_sha(self.rows[self.group_first_row:]),complete=True)
+        evidence_sha=_sha(self.rows[self.group_first_row:])
+        if self.group.observer.evidence is None:
+            self.group.observer.seal(artifact_sha256=evidence_sha,complete=True)
+        else:
+            # A failed drain/health cleanup may be retried against the same
+            # already observed OFF; never reopen or rewrite its denominator.
+            require(self.group.observer.evidence['artifact_sha256']==evidence_sha,
+                    'SEALED_ROPE_OBSERVATION_CHANGED')
         report=self.group.report()
         report.update(execution_boundary='operator_api',mechanism_semantics=
             'LEGAL_POSITIONS_INPUT_WRONG_ROW_NOT_UINT32_OVERFLOW',recovery=recovery,

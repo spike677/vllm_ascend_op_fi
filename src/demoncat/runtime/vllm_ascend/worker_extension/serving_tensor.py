@@ -19,11 +19,14 @@ from .providers.tensor_natural import NaturalTensorGroupProvider, _sha
 
 class ServingTensorGroup:
     def __init__(self, worker, *, prompt, weight_manifest, workload_sha256, environment_sha256,
-                 _simulation=False, _synchronize=None, _mechanism='18.api_half'):
+                 _simulation=False, _synchronize=None, _mechanism='18.api_half', _identity_guard=None):
         from vllm.model_executor.layers.logits_processor import LogitsProcessor
         self.worker, self.runner, self.model = worker, worker.model_runner, worker.model_runner.model
         require_serial_eager(self.runner)
-        identity = worker.demoncat_worker_identity()
+        # RPC providers already hold Runtime's freshly verified identity. Their
+        # local guard must not recursively acquire that Runtime's RPC lock.
+        self._identity_guard = _identity_guard
+        identity = self._read_worker_identity()
         require(identity['status'] == 'WORKER_IDENTIFIED' and not identity.get('quarantined'),
                 'READY_ACTUAL_WORKER_IDENTITY_REQUIRED')
         self.worker_identity = dict(identity['worker'])
@@ -65,6 +68,10 @@ class ServingTensorGroup:
         self.provider.owned_host_hooks = lambda: len(self.handles) + int(self.root_post_handle is not None)
         self._install_context()
 
+    def _read_worker_identity(self):
+        return (self._identity_guard() if self._identity_guard is not None
+                else self.worker.demoncat_worker_identity())
+
     def _install_context(self):
         require(not self.handles, 'SERVING_CONTEXT_ALREADY_INSTALLED')
         try:
@@ -75,7 +82,7 @@ class ServingTensorGroup:
             handle = self.processor.register_forward_hook(callback, with_kwargs=True, always_call=True)
             self.handles.append(handle); self._callbacks[handle.id] = callback
         except BaseException:
-            for handle in reversed(self.handles):
+            for handle in reversed(self.handles[:]):
                 self._remove_hook(handle)
             self.handles.clear()
             raise
@@ -84,7 +91,11 @@ class ServingTensorGroup:
         hooks = handle.hooks_dict_ref()
         require(hooks is not None and (handle.id not in hooks or
             hooks[handle.id] is self._callbacks.get(handle.id)), 'SERVING_TENSOR_HOOK_OWNERSHIP_CHANGED')
-        handle.remove(); self._callbacks.pop(handle.id, None)
+        handle.remove()
+        require(handle.id not in hooks, 'SERVING_TENSOR_HOOK_REMOVAL_UNCONFIRMED')
+        self._callbacks.pop(handle.id, None)
+        if handle in self.handles:
+            self.handles.remove(handle)
 
     def _context(self, *, verify_targets=True):
         require(threading.get_ident() == self.thread, 'SERVING_TENSOR_THREAD_CHANGED')
@@ -98,7 +109,7 @@ class ServingTensorGroup:
             # Cleanup still verifies owned resources but must not depend on a
             # changed target implementation being acceptable for inference.
             return
-        identity = self.worker.demoncat_worker_identity()
+        identity = self._read_worker_identity()
         require(identity['status'] == 'WORKER_IDENTIFIED' and not identity.get('quarantined')
                 and identity.get('worker') == self.worker_identity, 'SERVING_TENSOR_WORKER_IDENTITY_CHANGED')
         require(not self.model.training, 'INFERENCE_MODEL_REQUIRED')
@@ -252,7 +263,7 @@ class ServingTensorGroup:
     def finish_group(self):
         require(self.expected is None and self.current is None and self.adapter is None,
                 'SERVING_TENSOR_REQUEST_PENDING')
-        for handle in reversed(self.handles):
+        for handle in reversed(self.handles[:]):
             self._remove_hook(handle)
         self.handles.clear()
         return self.provider.close_group()
@@ -292,7 +303,7 @@ class ServingTensorGroup:
                 'SERVING_TENSOR_PHASE_PENDING')
         require(self.statistics_capture is None or not self.statistics_capture.active,
                 'SERVING_TENSOR_CAPTURE_STILL_ACTIVE')
-        for handle in reversed(self.handles):
+        for handle in reversed(self.handles[:]):
             self._remove_hook(handle)
         self.handles.clear()
         return dict(owned_serving_hooks=0, active_adapter=False, independent_observer=False,

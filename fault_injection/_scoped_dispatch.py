@@ -157,6 +157,8 @@ class ScopedDispatch:
             if hooks is not None and handle.id in hooks and hooks[handle.id] is not callback:
                 raise RuntimeError('Foreign model hook replaced an owned callback')
             handle.remove()
+            if hooks is not None and handle.id in hooks:
+                raise RuntimeError('Owned dispatcher hook removal is unconfirmed')
             self.hooks.remove((handle, callback))
         self.temps.clear()
         self.closed = True

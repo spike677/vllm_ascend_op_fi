@@ -333,8 +333,8 @@ class NaturalRoPETrace:
             self.hooks.clear();raise
 
     def close(self):
-        if not self.active:return
-        if threading.get_ident()!=self.thread or sys.getprofile() is not self.callback:
+        if not self.active and not self.hooks and self.outer_mode is None:return
+        if threading.get_ident()!=self.thread or self.active and sys.getprofile() is not self.callback:
             raise RuntimeError('ROPE_PROFILE_OWNERSHIP_CHANGED')
         if (self.pending or self.consumer_pending or self.stack or self.outer_pending
                 or self.triton and (self.triton.pending or self.triton.launch_frames)):
@@ -346,12 +346,16 @@ class NaturalRoPETrace:
         if self.outer_mode is not None:
             from torch.utils._python_dispatch import _get_current_dispatch_mode
             if _get_current_dispatch_mode() is not self.outer_mode:raise RuntimeError('ROPE_OUTER_MODE_OWNERSHIP_CHANGED')
-        sys.setprofile(None);self.active=False
+        if self.active:sys.setprofile(None);self.active=False
         if self.outer_mode is not None:
             self.outer_mode.__exit__(None,None,None);self.outer_mode=None
-        for handle,callback in reversed(self.hooks):
+        for handle,callback in reversed(self.hooks[:]):
             handle.remove()
-        self.hooks.clear();self.returned.clear()
+            hooks=handle.hooks_dict_ref()
+            if hooks is not None and handle.id in hooks:
+                raise RuntimeError('ROPE_CONSUMER_HOOK_REMOVAL_UNCONFIRMED')
+            self.hooks.remove((handle,callback))
+        self.returned.clear()
 
     def report(self):
         native=[row for row in self.native_rows if 'rotary' in row['schema']]
@@ -370,7 +374,8 @@ class NaturalRoPETrace:
             and all(row.get('reader_argument_join',{}).values())
             and all(row.get('reader_scalar_join',{}).values()) for row in self.outer_rows))
         joins=(triton_joins if self.triton is not None else nested_joins) and outer_joins
-        complete=(not self.active and not self.pending and not self.consumer_pending and not self.errors
+        complete=(not self.active and not self.hooks and self.outer_mode is None
+            and not self.pending and not self.consumer_pending and not self.errors
             and bool(self.rows) and structural and joins
             and len(self.root_rows)==len(self.request_ids) and all(row['status']=='returned' for row in self.root_rows)
             and all(row['returned'] and row['actual_positions_unchanged'] and row['root_positions_unchanged'] and row['complete_cache_unchanged']

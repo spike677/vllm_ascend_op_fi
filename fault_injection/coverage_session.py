@@ -6,6 +6,7 @@ exactly once. CPU receipts exercise this contract, not real Worker qualification
 Public qualification remains a separate review of the emitted evidence artifacts.
 """
 from dataclasses import asdict, dataclass, field
+from copy import deepcopy
 import hashlib
 import json
 import math
@@ -308,6 +309,16 @@ def _c2_proof_fields(proof):
     return {key: value for key, value in asdict(proof).items() if key != '_issuer'}
 
 
+def _proof_audit(proof):
+    """Detached audit data, never an input accepted by the live-object gate."""
+    fields = _c2_proof_fields(proof)
+    return dict(proof=fields, proof_sha256=_sha(fields),
+                object_binding=dict(pid=os.getpid(), python_object_id=id(proof)),
+                exact_issued_object_verified=True,
+                report_hash_scope='coverage_report_without_live_c2_proof',
+                serializable_authority=False, qualification_granted=False)
+
+
 class CoverageSession:
     """Serialize evidence and ownership around a provider's unchanged semantics."""
 
@@ -350,6 +361,7 @@ class CoverageSession:
         self.group, self.scope, self.observer, self.budget, self.recovery = group, scope, observer, budget, recovery
         self.session_id = uuid.uuid4().hex
         self.owner, self.generation = owner, generation
+        self._proof_issuances, self._proof_consumption = [], None
         self._condition = threading.Condition(threading.RLock())
         self._started = time.monotonic()
         self._state = 'ENABLED'
@@ -368,6 +380,11 @@ class CoverageSession:
             for target in targets:
                 _RESERVED_TARGETS[target] = self.session_id
             _GENERATIONS[self._reservation_key] = generation
+        if group.trigger == 'every_match':
+            self._proof_consumption = dict(_proof_audit(c2_proof),
+                consumer=dict(session_id=self.session_id, scope=asdict(scope), owner=owner,
+                              generation=generation, candidates_sha256=discovery['candidates_sha256'],
+                              target_ids=tuple(sorted(map(target_id, targets)))))
 
     def begin(self, ticket):
         with self._condition:
@@ -593,12 +610,21 @@ class CoverageSession:
                 contract_satisfied=not reasons, rejection_reasons=sorted(set(reasons)),
                 real_worker_evidence=self.scope.evidence_kind == 'natural_worker',
                 real_pretrained_model_evidence=self.scope.evidence_kind == 'natural_pretrained_model',
+                live_c2_proof=dict(schema='demoncat.live_c2_proof_audit.v1',
+                    issued=deepcopy(self._proof_issuances), consumed=deepcopy(self._proof_consumption),
+                    qualification_granted=False, serializable_authority=False),
                 public_qualification_granted=False)
 
     def c2_proof(self):
         report = self.report()
         _require(self.group.trigger == 'once' and report['contract_satisfied'], 'C2_CONTRACT_NOT_COMPLETE')
-        return _register_c2_proof(C2Proof(self.scope, self.observer.discovery['candidates_sha256'],
+        # Exclude only the audit ledger from the pre-issuance evidence hash:
+        # an issuance cannot recursively contain the hash of its own receipt.
+        report.pop('live_c2_proof')
+        proof = _register_c2_proof(C2Proof(self.scope, self.observer.discovery['candidates_sha256'],
             tuple(sorted(map(target_id, self._leases))), self.owner, self.generation, self.session_id,
             _sha(report), self.observer.discovery['artifact_sha256'],
             self.observer.evidence['artifact_sha256'], _sha(report['recovery']), _PROOF_ISSUER))
+        with self._condition:
+            self._proof_issuances.append(_proof_audit(proof))
+        return proof

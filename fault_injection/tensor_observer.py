@@ -271,12 +271,14 @@ class NaturalTensorObserver:
             raise RuntimeError('TENSOR_OBSERVER_METADATA_OWNER_THREAD_CHANGED')
         if self.stack or self.mode is not None:
             raise RuntimeError('OBSERVER_FORWARD_STILL_INFLIGHT')
-        for handle, callback in reversed(self.handles):
+        for handle, callback in reversed(self.handles[:]):
             hooks = handle.hooks_dict_ref()
             if hooks is not None and handle.id in hooks and hooks[handle.id] is not callback:
                 raise RuntimeError('OBSERVER_HOOK_OWNERSHIP_CHANGED')
             handle.remove()
-        self.handles.clear()
+            if hooks is not None and handle.id in hooks:
+                raise RuntimeError('OBSERVER_HOOK_REMOVAL_UNCONFIRMED')
+            self.handles.remove((handle, callback))
         self.outputs.clear()
         self.views.clear()
         self._dispatch_outputs.clear()

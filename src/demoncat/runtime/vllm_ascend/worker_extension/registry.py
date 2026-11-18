@@ -7,7 +7,7 @@ _TENSOR = (
     ('15.alias_detach', ['aten.as_strided', 'aten.copy_', 'base_consumer']),
     ('17.spatial_padding', ['torch.nn.Conv3d']),
     ('18.api_half', ['torch.nn.RMSNorm']),
-    ('22.wrong_row', ['aten.index_select', 'RoPE_consumer']),
+    ('22.wrong_row', ['vllm::npu_rotary_embedding.positions', 'RoPE_consumer']),
     ('25.reduce_scatter', ['torch.distributed.reduce_scatter_tensor']),
 )
 _NATIVE = (
@@ -36,6 +36,10 @@ def rpc_provider_capabilities():
     rows = [dict(mechanism=name, implementation_version='1', operators=ops,
         attachment='owned_python_hooks', execution='trusted_synchronous_tensor_replay_required',
         execution_boundary='python_hook', natural_model_verified=False) for name, ops in _TENSOR]
+    for row in rows:
+        if row['mechanism'] == '22.wrong_row':
+            row.update(execution='reviewed_fused_serving_group_real_enqueue_required',
+                       variant_selection='actual_source_bound_fused_calls', legacy_lookup_fallback=False)
     rows += [dict(mechanism=name, implementation_version='1', operators=ops,
         attachment=attachment, execution=execution) for name, _, _, ops, attachment, execution in _NATIVE]
     return deepcopy(rows)
@@ -68,6 +72,9 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     resolve(mechanism)
     if version != '1':
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
+    if mechanism == '22.wrong_row':
+        module = importlib.import_module(__package__ + '.providers.fault22')
+        return module.Fault22ServingProvider(worker, model, identity)
     if mechanism in {name for name, _ in _TENSOR}:
         module = importlib.import_module(__package__ + '.providers.tensor_modules')
         return module.TensorModuleProvider(worker, model, identity, mechanism)

@@ -49,6 +49,9 @@ _OBSERVERS = {'engineering_closure/__init__.py', 'engineering_closure/path_disco
               'engineering_closure/native_observer.py'}
 _CORE_DOCS = {'docs/worker_core_v1/README.md', 'docs/worker_core_v1/census_contract.md'}
 _CENSUS = 'src/demoncat/runtime/vllm_ascend/worker_extension/call_census.py'
+_ROPE_PROVIDER = 'src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault22.py'
+_ROPE_CONTRACTS = {'tests/worker_extension/rope22_fixture.py',
+                   'docs/worker_core_v1/rope22_host_contract.md'}
 # Current build inputs only: no whole legacy source tree or experiment history.
 _SUPPORT = {
     _LEGACY + 'l4_buffer_substitute_allhit_v1/' + name for name in (
@@ -71,10 +74,12 @@ _EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | {
     'tests/test_native_build.py', 'tests/test_integration_bundle.py',
     'tests/worker_extension/__init__.py', 'tests/worker_extension/test_extension.py',
     'tests/worker_extension/test_serving_context.py',
+    'tests/worker_extension/rope22_fixture.py',
     'tests/worker_extension/metadata_fixture.py', 'tools/export_integration_bundle.py',
     'docs/worker_core_v1/host_contract.md', 'docs/worker_core_v1/integration_bundle.md',
+    'docs/worker_core_v1/rope22_host_contract.md',
 }
-_REQUIRED = (_EXACT - _CORE_DOCS) | {
+_REQUIRED = (_EXACT - _CORE_DOCS - _ROPE_CONTRACTS) | {
     'fault_injection/integration.py', 'fault_injection/lifecycle.py',
     'fault_injection/native_build/manager.py', 'fault_injection/native_build/recipes.py',
     'fault_injection/native_adapters/build_qmm.sh',
@@ -90,7 +95,9 @@ _REQUIRED = (_EXACT - _CORE_DOCS) | {
 def _required(names):
     # Older reviewed snapshots may lack census entirely. A snapshot that ships
     # it must also ship the actual observer package, fixture and its contracts.
-    return _REQUIRED | (_CORE_DOCS if _CENSUS in names else set())
+    return (_REQUIRED | (_CORE_DOCS if _CENSUS in names else set())
+            | (_ROPE_CONTRACTS | {'tests/worker_extension/test_core_rope22.py'}
+               if _ROPE_PROVIDER in names else set()))
 
 
 class BundleError(ValueError):

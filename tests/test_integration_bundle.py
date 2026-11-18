@@ -154,6 +154,25 @@ class BundleTests(unittest.TestCase):
         with self.assertRaisesRegex(bundle.BundleError, 'CENSUS_OBSERVER_PACKAGE_NOT_IN_ROOT_DISTRIBUTION'):
             bundle.create_review(self.source, 'source-only-observers')
 
+    def test_rope_public_provider_requires_portable_fixture_and_current_contract_only(self):
+        path = self.source / bundle._ROPE_PROVIDER
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('# reviewed RoPE RPC adapter\n', encoding='utf-8')
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'missing-rope-contract')
+        names = bundle._ROPE_CONTRACTS | {'tests/worker_extension/test_core_rope22.py'}
+        for name in names:
+            (self.source / name).write_bytes((ROOT / name).read_bytes())
+        history = self.source / 'experiments/unreviewed/rope_receipt.json'
+        history.parent.mkdir(parents=True)
+        history.write_text('{"accepted": true}', encoding='utf-8')
+        review, _ = self.export()
+        self.assertTrue(names <= {row['source_path'] for row in review['files']})
+        self.assertFalse(any(row['source_path'].startswith('experiments/') for row in review['files']))
+        (self.source / 'tests/worker_extension/rope22_fixture.py').unlink()
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'incomplete-rope-fixture')
+
     def test_adding_selected_code_after_review_is_not_silently_included(self):
         review = bundle.create_review(self.source, 'review-before-new-file')
         (self.source / 'fault_injection/new_provider.py').write_text('# new\n', encoding='utf-8')

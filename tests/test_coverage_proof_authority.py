@@ -15,6 +15,37 @@ from test_coverage_session import A, B, C, Fixture
 
 
 class C2ProofAuthorityTests(unittest.TestCase):
+    def test_issue_and_consumption_audit_bind_exact_live_object_without_becoming_authority(self):
+        from fault_injection.coverage_session import _sha
+        fixture = Fixture(1)
+        c2 = fixture.session()
+        fixture.call(c2)
+        fixture.close(c2)
+        proof = c2.c2_proof()
+        report = c2.report()
+        audit = report.pop('live_c2_proof')
+        issued, = audit['issued']
+        self.assertEqual(proof.report_sha256, _sha(report))
+        self.assertEqual(issued['proof_sha256'], _sha(proof.report()))
+        self.assertEqual(issued['object_binding']['python_object_id'], id(proof))
+        serialized = json.loads(json.dumps(issued))
+        self.assert_unissued(fixture, serialized)
+        # Returning audit data must not expose either an authority object or
+        # writable aliases to the stored receipt/proof scope.
+        audit['issued'][0]['proof']['scope']['mechanism'] = 'changed'
+        self.assertEqual(c2.report()['live_c2_proof']['issued'][0]['proof']['scope']['mechanism'],
+                         fixture.scope.mechanism)
+        c3 = fixture.session(2, 'every_match', proof)
+        consumed = c3.report()['live_c2_proof']['consumed']
+        self.assertEqual(consumed['object_binding']['python_object_id'], id(proof))
+        self.assertEqual(consumed['proof_sha256'], _sha(proof.report()))
+        self.assertEqual(consumed['consumer']['generation'], 2)
+        self.assertEqual(consumed['consumer']['owner'], proof.owner)
+        self.assertFalse(consumed['serializable_authority'])
+        self.assertFalse(consumed['qualification_granted'])
+        fixture.call(c3)
+        self.assertTrue(fixture.close(c3)['contract_satisfied'])
+
     def assert_unissued(self, fixture, proof, *, scope=None):
         with self.assertRaisesRegex(UnsupportedCall, 'MATCHING_C2_PROOF_REQUIRED'):
             fixture.session(2, 'every_match', proof, scope=scope)

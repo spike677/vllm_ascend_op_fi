@@ -1,4 +1,5 @@
 """Standard-Worker fused RoPE requests, independent coverage and live recovery."""
+import sys
 import uuid
 
 from demoncat.runtime.vllm_ascend.worker_extension.serving_tensor import ServingTensorGroup
@@ -12,11 +13,14 @@ from .tensor_observer import NaturalTensorObserver
 
 
 class ServingRoPEGroup(ServingTensorGroup):
-    def __init__(self,worker,*,_trace_factory=None,**kwargs):
+    def __init__(self,worker,*,_trace_factory=None,_defer_to_forward=False,**kwargs):
         require(_trace_factory is None or kwargs.get('_simulation') is True,'ROPE_TRACE_OVERRIDE_CPU_ONLY')
         self.trace_factory=_trace_factory or NaturalRoPETrace.from_runtime
         self.template=self.trace_factory(worker.model_runner.model)
         self.trace_source_sha=_sha(self.template.sources);self.trace=None
+        self.defer_to_forward=_defer_to_forward
+        self.deferred_request=None;self.completion_handle=None;self.request_error=None
+        self.request_entry_error=None
         super().__init__(worker,_mechanism='22.wrong_row',**kwargs)
         previous=self.provider
         self.provider=RoPEGroupProvider(self.model,template=self.template,replay=previous.replay,
@@ -31,8 +35,12 @@ class ServingRoPEGroup(ServingTensorGroup):
 
     def _context(self,*,verify_targets=True):
         super()._context(verify_targets=False)
+        if self.completion_handle is not None:
+            hooks=self.completion_handle.hooks_dict_ref()
+            require(hooks is not None and hooks.get(self.completion_handle.id) is
+                    self._callbacks.get(self.completion_handle.id),'ROPE_COMPLETION_HOOK_OWNERSHIP_CHANGED')
         if not verify_targets:return
-        identity=self.worker.demoncat_worker_identity()
+        identity=self._read_worker_identity()
         require(identity['status']=='WORKER_IDENTIFIED' and not identity.get('quarantined')
             and identity.get('worker')==self.worker_identity,'SERVING_TENSOR_WORKER_IDENTITY_CHANGED')
         require(not self.model.training,'INFERENCE_MODEL_REQUIRED')
@@ -42,6 +50,19 @@ class ServingRoPEGroup(ServingTensorGroup):
                     'ROPE_TARGET_OR_CACHE_LIFETIME_CHANGED')
 
     def expect(self,request_id,phase,arm=None):
+        if self.defer_to_forward:
+            self._context()
+            require(self.deferred_request is None and self.expected is None and self.current is None
+                    and self.trace is None,'PREVIOUS_ROPE_REQUEST_NOT_COLLECTED')
+            require(isinstance(request_id,str) and request_id and request_id not in self.seen,
+                    'FRESH_REAL_ENQUEUED_REQUEST_REQUIRED')
+            require(arm in (None,'baseline','fault'),'EXPLICIT_ROPE_ARM_REQUIRED')
+            if not self.handles:self._install_context()
+            self.deferred_request=(request_id,phase,arm)
+            return dict(expected=request_id,phase=phase,arm=arm,deferred_until_actual_forward=True)
+        return self._begin_request(request_id,phase,arm)
+
+    def _begin_request(self,request_id,phase,arm):
         self._context()
         require(self.expected is None and self.current is None and self.adapter is None and self.trace is None,
                 'PREVIOUS_ROPE_REQUEST_NOT_COLLECTED')
@@ -73,6 +94,36 @@ class ServingRoPEGroup(ServingTensorGroup):
         return dict(expected=request_id,phase=phase,arm=arm)
 
     def _pre(self,module,args,kwargs):
+        if not self.defer_to_forward:
+            return self._bind_request(module,args,kwargs)
+        try:
+            require(self.deferred_request is not None,'UNSCHEDULED_OR_CONCURRENT_ROPE_FORWARD')
+            self.request_entry_error=sys.exc_info()[1]
+            # torch snapshots pre hooks before invoking this hook. Newly
+            # installed owned hooks do not run for this root unless explicitly
+            # entered once. Refuse foreign root pre hooks whose ordering or
+            # argument rewriting this reviewed seam cannot establish.
+            before=dict(module._forward_pre_hooks)
+            own=[key for key,value in before.items() if value==self._pre]
+            require(module is self.model and len(own)==1 and set(before)==set(own),
+                    'ROPE_ROOT_PRE_HOOK_ORDER_UNREVIEWED')
+            request=self.deferred_request;self.deferred_request=None
+            self._begin_request(*request)
+            for key,callback in tuple(module._forward_pre_hooks.items()):
+                if key==own[0]:
+                    self._bind_request(module,args,kwargs)
+                elif key not in before:
+                    result=(callback(module,args,kwargs) if key in module._forward_pre_hooks_with_kwargs
+                            else callback(module,args))
+                    require(result is None,'ROPE_OWNED_PRE_HOOK_CHANGED_ARGUMENTS')
+            callback=self._collect_returned_request
+            self.completion_handle=self.processor.register_forward_hook(callback,with_kwargs=True,always_call=True)
+            self._callbacks[self.completion_handle.id]=callback
+        except BaseException as error:
+            self.request_error=type(error).__name__+': '+str(error)
+            raise
+
+    def _bind_request(self,module,args,kwargs):
         super()._pre(module,args,kwargs)
         actual=self.binding.bind(module,args,kwargs)
         scheduler=self.current['scheduler']
@@ -82,6 +133,28 @@ class ServingRoPEGroup(ServingTensorGroup):
         require(isinstance(positions,list),'ACTUAL_SCHEDULER_POSITIONS_REQUIRED')
         self.trace.set_request(self.expected,actual['positions'],positions,scheduler)
         if self.adapter:self.adapter.bind_request(self.expected,actual['positions'],positions)
+
+    def _post(self,module,args,kwargs,output):
+        try:
+            if self.defer_to_forward:
+                require(sys.exc_info()[1] is self.request_entry_error
+                        and next(reversed(module._forward_hooks))==self.root_post_handle.id,
+                        'ROPE_ROOT_RETURN_NOT_CONFIRMED')
+            return super()._post(module,args,kwargs,output)
+        except BaseException as error:
+            self.request_error=type(error).__name__+': '+str(error)
+            raise
+
+    def _collect_returned_request(self,module,args,kwargs,output):
+        try:
+            require(output is not None and sys.exc_info()[1] is self.request_entry_error
+                    and next(reversed(module._forward_hooks))==self.completion_handle.id,
+                    'ACTUAL_ROPE_LOGITS_RETURN_REQUIRED')
+            self._remove_hook(self.completion_handle);self.completion_handle=None
+            self.collect()
+        except BaseException as error:
+            self.request_error=type(error).__name__+': '+str(error)
+            raise
 
     def collect(self):
         require(self.current is not None and self.current['logits_returned'],'ROPE_REQUEST_NOT_COMPLETED')
@@ -115,10 +188,12 @@ class ServingRoPEGroup(ServingTensorGroup):
         self.provider.active_adapter=None;self.provider._running=False
         return row
 
-    def abort(self):
+    def abort(self,*,retain_recovery=False):
         from .coverage import Outcome
         self._context(verify_targets=False)
-        failure=dict(phase=getattr(self,'phase',None),request_id=self.expected)
+        failure=dict(phase=getattr(self,'phase',None),request_id=self.expected,error=self.request_error)
+        if self.completion_handle is not None:
+            self._remove_hook(self.completion_handle);self.completion_handle=None
         if self.root_post_handle is not None:
             self._remove_hook(self.root_post_handle);self.root_post_handle=None
         if self.observer is not None:
@@ -134,13 +209,16 @@ class ServingRoPEGroup(ServingTensorGroup):
                 if 'decision' in call:
                     try:self.provider.group.finish(call['decision'],Outcome.FAILED,original_calls=0)
                     except BaseException:pass
-        self.expected=self.current=None
-        result=self.close();result.update(failed_phase=failure,failed_request_recovery_claimed=False,
+        self.expected=self.current=self.deferred_request=None
+        result=(super().close() if retain_recovery else self.close())
+        result.update(failed_phase=failure,failed_request_recovery_claimed=False,
             group_recovery=self.provider.group.report() if self.provider.group else None)
         return result
 
     def close(self):
-        require(self.trace is None,'ROPE_TRACE_STILL_OWNED')
+        require(self.trace is None and self.completion_handle is None and self.deferred_request is None,
+                'ROPE_TRACE_STILL_OWNED')
         result=super().close()
-        self.provider.rope_references=None;self.provider.cache_refs.clear()
+        self.provider.rope_references=None
+        getattr(self.provider,'cache_refs',{}).clear()
         return result
