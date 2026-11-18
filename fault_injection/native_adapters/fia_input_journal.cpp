@@ -195,6 +195,7 @@ extern "C" int dcat_fia_input_journal_sizes_v1(dcat_fij::Sizes* p){if(!valid(p))
 extern "C" int dcat_fia_input_journal_begin_v1(const Config* c,const dcat_fij::Limits* limits) try {
     if(!fready() || !valid(limits) || !limits->max_calls || limits->max_calls>dcat_fij::MaxCalls
         || !limits->max_pairs || limits->max_pairs>dcat_fij::MaxPairs || limits->max_bytes>dcat_fij::MaxBytes
+        || !limits->max_windows || limits->max_windows>dcat_fij::MaxCalls
         || limits->max_calls*2*sizeof(dcat_fij::Event)>limits->max_bytes)return 1;
     std::lock_guard<std::mutex> lock(mutex);
     if(!owner(c) || fs.installed || fs.retired || scope.token)return 2;
@@ -207,9 +208,10 @@ extern "C" int dcat_fia_input_journal_scope_begin_v1(const Config* c,const dcat_
             || fs.untracked_executors || s->pid!=fs.pid || !s->worker || !s->model || !s->module
             || s->scope.thread!=tid() || s->scope.stage!=3 || s->call_id[32]!='\0'
             || std::any_of(s->call_id,s->call_id+32,[](char x){return !((x>='0'&&x<='9')||(x>='a'&&x<='f'));})
-            || ftokens.count(s->call_id))return 1;}
+            || ftokens.count(s->call_id))return 1;
+        if(ftokens.size()>=flimits.max_windows){ferr(dcat_fij::Budget);return 1;}}
     if(dcat_qct_scope_begin_v1(c,&s->scope))return 2;
-    std::lock_guard<std::mutex> lock(mutex);fscope=*s;ftokens.insert(s->call_id);return 0;
+    std::lock_guard<std::mutex> lock(mutex);fscope=*s;ftokens.insert(s->call_id);++fs.accepted_windows;return 0;
 }catch(...){fpoison();return 3;}
 extern "C" int dcat_fia_input_journal_scope_end_v1(const Config* c,uint64_t token) try {
     {std::lock_guard<std::mutex> lock(mutex);if(!fowner(c) || fs.active_calls || fs.pending_executors || fs.untracked_executors)return 1;}
@@ -221,7 +223,9 @@ extern "C" int dcat_fia_input_journal_state_v1(dcat_fij::State* p) try {
     p->exceptions=fexceptions.load();p->retained_events=fevents.size();p->record_capacity_bytes=fevents.capacity()*sizeof(dcat_fij::Event);
     p->resolver_ready=fapi.ready;p->prepare_function=reinterpret_cast<uint64_t>(fapi.prepare);p->execute_function=reinterpret_cast<uint64_t>(fapi.execute);
     p->device_function=reinterpret_cast<uint64_t>(fapi.device);p->list_size_function=reinterpret_cast<uint64_t>(fapi.list_size);
-    p->int_size_function=reinterpret_cast<uint64_t>(fapi.int_size);p->observer_scope_function=reinterpret_cast<uint64_t>(fapi.scope_matches);return 0;
+    p->int_size_function=reinterpret_cast<uint64_t>(fapi.int_size);p->observer_scope_function=reinterpret_cast<uint64_t>(fapi.scope_matches);
+    p->window_limit=flimits.max_windows;p->retained_scope_tokens=ftokens.size();
+    p->retained_scope_token_characters=0;for(const auto& token:ftokens)p->retained_scope_token_characters+=token.size();return 0;
 }catch(...){fpoison();return 3;}
 extern "C" int dcat_fia_input_journal_event_v1(uint64_t i,dcat_fij::Event* p) try {
     if(!valid(p))return 1;std::lock_guard<std::mutex> lock(mutex);if(i>=fevents.size())return 2;*p=fevents[i];return 0;

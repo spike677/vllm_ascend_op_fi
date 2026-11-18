@@ -21,12 +21,14 @@
 
 1. 独立 DSO 预加载，先进行 NOLOAD 原函数解析、文件/可执行段 owner 检查，再允许创建 LLM。解析失败应在启动门禁拒绝；**不能称所有启动失败仍会透传**。
 2. 同一进程/线程的显式 owner 开始后，每个窗口沿用已有 launch observer 的真实 32 位十六进制 `call_id`，记录 Worker/model/module 对象、forward、operator/boundary sequence 和逻辑设备。它不是新建的同名 token。
-3. 观察期间原 GWS/execute 恰好调用一次。参数、返回码和原异常不替换。观察器 owner、getter、预算、线程等失败记录下来，仍执行原函数，不能把这些调用写成完整观察。
+3. 新增的 FIA GWS/execute 包装器对原函数恰好调用一次，参数、返回码和原异常不替换。观察器 owner、getter、预算、线程等失败记录下来，仍执行原函数，不能把这些调用写成完整观察。这个异常透明结论只针对新增两函数；复用的旧四容器 TU 原有 creator/destroy 异常 catch 会转为 `nullptr`/`161001` 并记错，本补丁没有更改或掩盖它，不能泛称整个 DSO 对 C++ 异常透明。
 4. K/V 成员来自实际 creator entry 的指针数组，带完整 descriptor 元信息；GWS 时用当前 live registration、size getter、同窗口/线程和 destroy 寿命连接。不会在 execute 时重新解引用已经可能销毁的 descriptor。容器地址重用必须有新 registration。
 5. 成功 GWS 产生的 executor 保留到同窗口/线程/设备、足够 workspace 的一次成功 execute。重复 executor、无配对、执行失败或未知状态不丢弃。GWS 失败/抛异常时不读 SDK 未保证初始化的输出参数，记录 `failed_prepare_outputs_unknown` 和未知 pending；保留 owner 到独立进程退出，不能假称已释放。
 6. stop/release 必须无活动调用、scope、pending/untracked executor、live container。读取原快照后另存 release 回执，核对同 owner 和计数、getter 数组平衡、两个 journal 缓冲区归零。全局 wrapper 和持有的 DSO 保留至进程退出，未宣称全局卸载。
+7. Python 控制器逐阶段保存真实 return code、操作前后两组件状态及首个错误。base 已安装而 FIA begin 失败时，只在实时查询证明 FIA 从未安装、无 pending/缓冲/token，且 base 无 scope/active/live 时才可单独撤 base。查询不可用不能当零状态；FIA 已成功释放而 base 暂时失败时，重试核对本次原生 release 回执及同 owner 的 retired/零资源状态，只继续 base。失败原件不覆盖，未知资源不 reset，实例不重新安装。
+8. `max_windows` 独立于原生调用预算，1–256、默认 Python 64；空窗口也占用一个 token。Native 明确报告 accepted windows、retained token 数及 token 字符数，release 后后两者必须归零。字符数不是 allocator 总字节数；额外 set 节点由窗口数硬限制。Python 同限，每个 scope evidence 最多 64 KiB；生命周期控制和每窗口 leave 最多各 64 次，超限保留 owner，不再追加无界日志。
 
-C++ CPU fixture 直接包含这份生产 TU，替换的只是原数值函数、getter 和 owner 函数指针；不通过生产宏绕开 journal。24 个独立进程用例包含默认未启用、正常非连续视图、getter 返回失败/赋值后抛异常、缺失成员、重用地址、外线程、错误 owner/caller/token、重复 executor、失败/未初始化 GWS 输出、execute 失败/重试/抛异常、workspace 和预算不足、活动中清理拒绝。
+C++ CPU fixture 直接包含这份生产 TU，替换的只是原数值函数、getter 和 owner 函数指针；不通过生产宏绕开 journal。26 个独立进程用例包含默认未启用、正常非连续视图、getter 返回失败/赋值后抛异常、缺失成员、重用地址、外线程、错误 owner/caller/token、重复 executor、失败/未初始化 GWS 输出、execute 失败/重试/抛异常、workspace 和预算不足、活动中清理拒绝，以及无效/空窗口的硬上限和 token 释放归零。
 
 ## Root 可执行的无设备构建
 
@@ -41,7 +43,7 @@ python /source/experiments/worker_core_v11_20261118/fia_input_journal_build.py \
 
 导出闭包由 `fia_input_journal_build.SOURCES` 明确列出：新增 native 三件、Python 配置/独立 reader/build；原容器 native 三件、`quant_container_native.py`、`metadata_arrays.py`；`fault39/native/{runtime_identity,metadata_array_owner,metadata_array_state}.h`；`version_profile.py` 及既有容器构建工具和其工具依赖。root 冻结的完整 source archive 仍是最终源码身份。额外测试为 `tests/test_fia_input_journal.py`。
 
-构建必须成功运行 24 个 production-TU CPU 用例、保留每个日志和 executable/DSO/SHA，再生成 `build.json`。本地 Windows 已运行 25 个 Python 合同，通过；当前交付时尚未在本机编译 C++，不把声明的 C++ 用例数算作已通过。SDK 编译及实际调用均待 root 独立执行。
+构建必须成功运行 26 个 production-TU CPU 用例、保留每个日志和 executable/DSO/SHA，再生成 `build.json`。本地 Windows 已运行 37 个 Python 合同，通过，含实际配置器控制流上的 return-code doubles 和分阶段失败/重试；当前交付时尚未在本机编译 C++，不把声明的 C++ 用例数算作已通过。Limits/State 已新增窗口字段，旧候选二进制不可复用，须 fresh SDK 编译与 layout/NOLOAD 校验。SDK 编译及实际调用均待 root 独立执行。
 
 ## 未来接线位置与原件
 

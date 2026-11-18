@@ -83,6 +83,12 @@ def review(data,profile,released=None):
             'OWNED_GETTER_ARRAYS')
         scopes={x['identity']['scope']['token']:x for x in data['public_scopes']}
         check(len(scopes)==len(data['public_scopes']) and len({x['identity']['call_id'] for x in scopes.values()})==len(scopes),'UNIQUE_PUBLIC_WINDOWS')
+        check(integer(s['window_limit'],1) and s['window_limit']<=256
+            and s['accepted_windows']==s['retained_scope_tokens']==len(scopes)<=s['window_limit']
+            and s['retained_scope_token_characters']==32*len(scopes),'BOUNDED_NATIVE_WINDOW_TOKENS')
+        check(data.get('lifecycle_overflow',0)==0,'BOUNDED_LIFECYCLE_JOURNAL')
+        if data.get('first_lifecycle_error') is not None:
+            native_failures.append(dict(first_lifecycle_error=data['first_lifecycle_error']))
         for row in scopes.values():
             x=row['identity'];check(row['status']=='RETURNED' and row['original_calls']==1 and row['original_error'] is None
                 and x['pid']==worker['pid'] and x['worker']==worker['worker_object_id'] and x['model']==worker['model_object_id']
@@ -213,18 +219,23 @@ def review(data,profile,released=None):
         if released is not None:
             final=released['fia'];container=released['containers']
             check(final['installed']==0 and final['retired']==final['stopped']==1 and not any(final[k] for k in
-                ('active_calls','pending_executors','untracked_executors','record_capacity_bytes','retained_events')),
+                ('active_calls','pending_executors','untracked_executors','record_capacity_bytes','retained_events',
+                 'retained_scope_tokens','retained_scope_token_characters')),
                 'ZERO_OWNED_FIA_RESOURCES')
             check(container['installed']==0 and container['retired']==container['stopped']==1 and not any(container[k] for k in
                 ('active_calls','scope_token','live_registrations','record_capacity_bytes','payload_capacity_bytes','retained_events')),
                 'ZERO_OWNED_CONTAINER_RESOURCES')
             unchanged=('owner_hi','owner_lo','generation','pid','thread','total_calls','total_events','first_error',
-                'prepare_returns','execute_returns','original_prepares','original_executes','paired_execute_returns')
+                'prepare_returns','execute_returns','original_prepares','original_executes','paired_execute_returns',
+                'window_limit','accepted_windows')
             check(all(final[k]==s[k] for k in unchanged),'RELEASE_SAME_FIA_SESSION')
             check(all(container[k]==cs[k] for k in ('owner_hi','owner_lo','generation','owner_thread','total_calls',
                 'total_events','entries','returns','original_calls','first_error','arrays')),'RELEASE_SAME_CONTAINER_SESSION')
             check(released['global_wrappers_unloaded'] is False and released['preloaded_library_remains_until_process_exit'] is True,
                 'NO_GLOBAL_UNLOAD_CLAIM')
+            check(released.get('lifecycle_overflow',0)==0,'RELEASE_LIFECYCLE_BUDGET')
+            if released.get('first_lifecycle_error') is not None:
+                native_failures.append(dict(release_first_lifecycle_error=released['first_lifecycle_error']))
     except (KeyError,TypeError,ValueError,IndexError,OverflowError,AttributeError) as error:
         issues.append('MISSING_OR_INVALID_ORIGINAL:'+repr(error))
     complete=not issues and not native_failures and summary.get('prepare_calls',0)>0

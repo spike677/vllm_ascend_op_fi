@@ -27,7 +27,7 @@ HEADERS = {
 CASES = ('inactive', 'normal', 'getter_throw', 'getter_status', 'size_mismatch', 'wrong_owner', 'wrong_caller',
     'wrong_scope', 'unknown_member', 'reused_container', 'failed_prepare', 'failed_prepare_null', 'failed_prepare_untouched', 'prepare_throw',
     'executor_reused', 'active_guard', 'foreign_thread', 'pair_budget', 'call_budget', 'no_execute',
-    'execute_error', 'execute_retry', 'execute_throw', 'workspace_short')
+    'execute_error', 'execute_retry', 'execute_throw', 'workspace_short', 'window_limit_invalid', 'empty_window_budget')
 NATIVE = 'fault_injection/native_adapters/'
 SOURCES = base.SOURCES + tuple(NATIVE + 'fia_input_journal' + ext for ext in ('.h', '.cpp', '_test.cpp')) + (
     'fault_injection/fia_input_journal.py',

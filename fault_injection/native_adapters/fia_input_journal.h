@@ -10,7 +10,7 @@ constexpr uint32_t TensorCount=24, ContainerCount=5, FormalCount=44;
 enum Operation:uint32_t {Prepare=1, Execute=2};
 enum Error:uint64_t {None=0, Owner=1, Scope=2, Thread=3, Device=4, Budget=5,
     Metadata=6, Container=7, Executor=8, Original=9, Exception=10, Workspace=11};
-struct Limits {uint32_t version{1},size{sizeof(Limits)};uint64_t max_calls{MaxCalls},max_pairs{MaxPairs},max_bytes{MaxBytes};};
+struct Limits {uint32_t version{1},size{sizeof(Limits)};uint64_t max_calls{MaxCalls},max_pairs{MaxPairs},max_bytes{MaxBytes},max_windows{MaxCalls};};
 struct ScopeIdentity {
     uint32_t version{1},size{sizeof(ScopeIdentity)};
     dcat_qct::Scope scope;
@@ -45,7 +45,8 @@ struct State {
         overflow{},first_error{},exceptions{},foreign_thread_calls{},outside_scope_calls{},getter_failures{},
         prepare_returns{},execute_returns{},original_prepares{},original_executes{},paired_execute_returns{},
         failed_prepare_outputs_unknown{},record_capacity_bytes{},resolver_ready{},prepare_function{},execute_function{},
-        device_function{},list_size_function{},int_size_function{},observer_scope_function{};
+        device_function{},list_size_function{},int_size_function{},observer_scope_function{},window_limit{},accepted_windows{},
+        retained_scope_tokens{},retained_scope_token_characters{};
 };
 struct Sizes {uint32_t version{1},size{sizeof(Sizes)};uint64_t limits{sizeof(Limits)},scope{sizeof(ScopeIdentity)},
     slot{sizeof(Slot)},event{sizeof(Event)},state{sizeof(State)};int32_t float16_tag{},int8_tag{},nd_tag{},reserved{};};

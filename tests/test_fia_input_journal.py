@@ -34,7 +34,8 @@ def fixture():
         profile['originals'][key]=dict(file_sha256=str(i)*64,segments=[dict(vaddr=0,size=4096)])
     s=blank(native.State);s.update(installed=1,stopped=1,pid=101,thread=201,owner_hi=3,owner_lo=4,generation=1,
         total_calls=2,total_events=4,retained_events=4,original_prepares=1,original_executes=1,
-        prepare_returns=1,execute_returns=1,paired_execute_returns=1)
+        prepare_returns=1,execute_returns=1,paired_execute_returns=1,window_limit=1,accepted_windows=1,
+        retained_scope_tokens=1,retained_scope_token_characters=32)
     owners={}
     for i,(field,key) in enumerate(dict(prepare_function='opapi',execute_function='opapi',device_function='device_runtime',
             list_size_function='nn',int_size_function='nn',observer_scope_function='observer').items(),1):
@@ -106,7 +107,7 @@ def fixture():
         events=[prep,returned,execute,executed],sdk_tags=dict(float16_tag=1,int8_tag=2,nd_tag=2),
         public_scopes=[dict(identity=scope,status='RETURNED',original_calls=1,original_error=None,
             evidence=dict(actual_input_addresses=actual))])
-    final=copy.deepcopy(s);final.update(installed=0,retired=1,retained_events=0)
+    final=copy.deepcopy(s);final.update(installed=0,retired=1,retained_events=0,retained_scope_tokens=0,retained_scope_token_characters=0)
     fc=copy.deepcopy(cs);fc.update(installed=0,retired=1,retained_events=0)
     released=dict(fia=final,containers=fc,global_wrappers_unloaded=False,preloaded_library_remains_until_process_exit=True)
     return data,profile,released
@@ -262,7 +263,7 @@ class AdapterContracts(unittest.TestCase):
         class Containers:
             config=qct.instance(qct.Config)
             def query(self):return {'scope_token':1}
-        x.containers=Containers();x.functions={};x.started=True;x.active=None;x.scopes=[]
+        x.containers=Containers();x.functions={};x.started=True;x.active=None;x.scopes=[];x.window_limit=2
         identity=dict(pid=101,native_tid=201,process_start_identity='proc:cpu-fixture:101:1')
         x.startup=dict(identity=identity);x.bound_worker=dict(worker_object_id=1001,model_object_id=1002)
         return x,identity
@@ -296,9 +297,179 @@ class AdapterContracts(unittest.TestCase):
         self.assertEqual(tuple(native.CONTAINER_INDICES),reader.CONTAINER_INDICES)
         self.assertEqual(builder.HEADERS['include/aclnnop/aclnn_fused_infer_attention_score_v3.h'],
             'bf73aea4146a9b12f91eda466927c23c5d43e56f78aa5039bd9644732f521550')
-        self.assertEqual(len(builder.CASES),24)
+        self.assertEqual(len(builder.CASES),26)
         self.assertEqual(len(builder.CASES),len(set(builder.CASES)))
         self.assertTrue({'failed_prepare_untouched','foreign_thread','unknown_member','executor_reused','inactive'}<=set(builder.CASES))
+
+    def test_empty_public_windows_are_bounded_before_native_call(self):
+        x,identity=self.adapter();x.window_limit=1;calls=[]
+        x.functions['scope_begin']=lambda *_:calls.append('begin') or 0
+        x.functions['scope_end']=lambda *_:calls.append('end') or 0
+        with patch.object(native,'process_identity',return_value=identity),patch.object(native.os,'getpid',return_value=101),patch.object(native.threading,'get_native_id',return_value=201):
+            x.enter(call_id='a'*32,module_object_id=1003,forward=1,sequence=1,boundary=1,evidence={})
+            x.leave(original_calls=1)
+            with self.assertRaisesRegex(RuntimeError,'PUBLIC_WINDOW_BUDGET'):
+                x.enter(call_id='b'*32,module_object_id=1003,forward=1,sequence=2,boundary=2,evidence={})
+        self.assertEqual(calls,['begin','end']);self.assertEqual(len(x.scopes),1)
+
+    def test_retained_public_evidence_has_byte_bound(self):
+        x,identity=self.adapter();calls=[];x.functions['scope_begin']=lambda *_:calls.append('begin') or 0
+        with patch.object(native,'process_identity',return_value=identity):
+            with self.assertRaisesRegex(RuntimeError,'PUBLIC_SCOPE_EVIDENCE_BUDGET'):
+                x.enter(call_id='a'*32,module_object_id=1003,forward=1,sequence=1,boundary=1,
+                    evidence={'too_large':'x'*(x.MAX_SCOPE_EVIDENCE_BYTES+1)})
+        self.assertEqual(calls,[]);self.assertEqual(x.scopes,[])
+
+
+class LifecycleDoubles:
+    """Actual Python adapter control flow, SDK controls replaced by return codes."""
+    def __init__(self):
+        self.fia=blank(native.State);self.base=blank(qct.State);self.calls=[];self.failures={};self.failure_mutations={}
+        self.config=qct.instance(qct.Config);self.config.owner_hi=3;self.config.owner_lo=4;self.config.generation=1;self.config.thread=201
+        fixture=self
+        class Containers:
+            def __init__(self):
+                self.config=fixture.config;self.started=False
+                self.functions={op:fixture.function('containers',op) for op in ('begin','stop','release')}
+            def current(self):pass
+            def query(self):return copy.deepcopy(fixture.base)
+        self.adapter=native.NativeFiaInputJournal.__new__(native.NativeFiaInputJournal)
+        x=self.adapter;x.containers=Containers();x.functions={op:self.function('fia',op) for op in ('begin','stop','release')}
+        x.query=lambda:copy.deepcopy(self.fia)
+        x.started=False;x.active=None;x.scopes=[];x.window_limit=0;x.limits=None;x.installation_attempted=False
+        x.lifecycle=[];x.first_lifecycle_error=None;x.lifecycle_overflow=0
+        self.identity=dict(pid=101,native_tid=201,process_start_identity='proc:cpu-fixture:101:1')
+        x.startup=dict(identity=self.identity);x.bound_worker=dict(pid=101,worker_object_id=1001,model_object_id=1002)
+
+    def function(self,component,operation):
+        def control(*args):
+            self.calls.append((component,operation));value=self.fia if component=='fia' else self.base
+            codes=self.failures.get((component,operation),[]);status=codes.pop(0) if codes else 0
+            if status:
+                mutate=self.failure_mutations.get((component,operation))
+                if mutate:mutate(value)
+                return status
+            if operation=='begin':
+                if value['installed'] or value['retired']:return 2
+                value.update(installed=1,stopped=0,owner_hi=3,owner_lo=4,generation=1,record_capacity_bytes=128)
+                if component=='fia':
+                    value.update(pid=101,thread=201,window_limit=C.cast(args[1],C.POINTER(native.Limits)).contents.max_windows)
+                else:value.update(owner_thread=201,payload_capacity_bytes=64)
+            else:
+                if not value['installed']:return 3
+                if component=='fia' and (not self.base['installed'] or any(value[k] for k in ('active_calls','pending_executors','untracked_executors'))):return 4
+                if self.base['scope_token'] or self.base['active_calls']:return 5
+                if operation=='stop':value['stopped']=1
+                elif operation=='release':
+                    if not value['stopped'] or self.base['live_registrations']:return 6
+                    value.update(installed=0,retired=1,record_capacity_bytes=0,retained_events=0)
+                    if component=='fia':value.update(retained_scope_tokens=0,retained_scope_token_characters=0)
+                    else:value['payload_capacity_bytes']=0
+            return 0
+        return control
+
+    def begin(self):
+        with patch.object(native,'process_identity',return_value=self.identity):self.adapter.begin()
+
+
+class StagedCleanupTests(unittest.TestCase):
+    def test_base_can_be_cleaned_after_fia_begin_failed_before_install(self):
+        f=LifecycleDoubles();f.failures[('fia','begin')]=[7]
+        with self.assertRaisesRegex(RuntimeError,'LIFECYCLE_FIA_BEGIN_FAILED:7'):f.begin()
+        self.assertFalse(f.adapter.started);self.assertEqual(f.base['installed'],1);self.assertEqual(f.fia['installed'],0)
+        original=copy.deepcopy(f.adapter.first_lifecycle_error)
+        self.assertEqual(f.adapter.lifecycle[-1]['after']['containers']['installed'],1)
+        f.adapter.stop();result=f.adapter.release()
+        self.assertEqual(f.base['installed'],0);self.assertEqual(f.base['retired'],1)
+        self.assertEqual(result['first_lifecycle_error'],original)
+        self.assertNotIn(('fia','stop'),f.calls);self.assertNotIn(('fia','release'),f.calls)
+        with self.assertRaisesRegex(RuntimeError,'CURRENT_WORKER_REQUIRED'):f.begin()
+
+    def test_partial_unknown_fia_pending_never_resets(self):
+        f=LifecycleDoubles();f.failures[('fia','begin')]=[7]
+        f.failure_mutations[('fia','begin')]=lambda s:s.update(installed=1,pending_executors=1,pid=101,thread=201,
+            owner_hi=3,owner_lo=4,generation=1,record_capacity_bytes=128)
+        with self.assertRaises(RuntimeError):f.begin()
+        for action in (f.adapter.stop,f.adapter.release):
+            with self.assertRaises(RuntimeError):action()
+        self.assertEqual(f.fia['pending_executors'],1);self.assertEqual(f.base['installed'],1)
+        self.assertNotIn(('containers','stop'),f.calls);self.assertNotIn(('containers','release'),f.calls)
+        self.assertEqual(f.adapter.first_lifecycle_error['operation'],'begin')
+
+    def test_failed_begin_with_live_base_cannot_skip_cleanup_guard(self):
+        for field in ('live_registrations','active_calls','scope_token'):
+            with self.subTest(field=field):
+                f=LifecycleDoubles();f.failures[('fia','begin')]=[7]
+                with self.assertRaises(RuntimeError):f.begin()
+                f.base[field]=1
+                with self.assertRaisesRegex(RuntimeError,'BASE_NOT_IDLE'):f.adapter.stop()
+                self.assertNotIn(('containers','stop'),f.calls)
+
+    def test_absent_fia_with_unaccounted_buffer_blocks_base_teardown(self):
+        f=LifecycleDoubles();f.failures[('fia','begin')]=[7]
+        with self.assertRaises(RuntimeError):f.begin()
+        f.fia['record_capacity_bytes']=128
+        with self.assertRaisesRegex(RuntimeError,'FIA_ABSENCE_NOT_PROVEN'):f.adapter.stop()
+        self.assertNotIn(('containers','stop'),f.calls)
+
+    def test_unavailable_fia_state_never_becomes_default_zero_cleanup(self):
+        f=LifecycleDoubles();f.failures[('fia','begin')]=[7]
+        with self.assertRaises(RuntimeError):f.begin()
+        original=copy.deepcopy(f.adapter.first_lifecycle_error)
+        def unavailable():raise RuntimeError('actual state query unavailable')
+        f.adapter.query=unavailable
+        for action in (f.adapter.stop,f.adapter.release):
+            with self.assertRaisesRegex(RuntimeError,'actual state query unavailable'):action()
+        self.assertEqual(f.base['installed'],1)
+        self.assertNotIn(('containers','stop'),f.calls);self.assertNotIn(('containers','release'),f.calls)
+        self.assertEqual(f.adapter.first_lifecycle_error,original)
+        self.assertIn('after_query_error',f.adapter.lifecycle[-1])
+
+    def test_release_retry_continues_base_without_releasing_retired_fia(self):
+        f=LifecycleDoubles();f.begin();f.adapter.stop();f.failures[('containers','release')]=[9,0]
+        with self.assertRaisesRegex(RuntimeError,'LIFECYCLE_CONTAINERS_RELEASE_FAILED:9'):f.adapter.release()
+        self.assertEqual(f.fia['retired'],1);self.assertEqual(f.base['installed'],1)
+        original=copy.deepcopy(f.adapter.first_lifecycle_error);result=f.adapter.release()
+        self.assertEqual(f.calls.count(('fia','release')),1);self.assertEqual(f.calls.count(('containers','release')),2)
+        self.assertEqual(result['first_lifecycle_error'],original)
+        self.assertEqual(result['fia']['retired'],1);self.assertEqual(result['containers']['retired'],1)
+        f.adapter.release()
+        self.assertEqual(f.calls.count(('fia','release')),1);self.assertEqual(f.calls.count(('containers','release')),2)
+
+    def test_external_retirement_without_our_control_receipt_is_rejected(self):
+        f=LifecycleDoubles();f.begin();f.adapter.stop()
+        f.fia.update(installed=0,retired=1,record_capacity_bytes=0)
+        with self.assertRaisesRegex(RuntimeError,'RETIREMENT_WITHOUT_OWN_RELEASE'):f.adapter.release()
+        self.assertNotIn(('containers','release'),f.calls)
+
+    def test_release_return_zero_but_readback_fails_is_retained_then_rechecked(self):
+        f=LifecycleDoubles();f.begin();f.adapter.stop();original_query=f.adapter.query
+        remaining=[2]
+        def query():
+            if f.fia['retired'] and remaining[0]:
+                remaining[0]-=1;raise RuntimeError('post release readback unavailable')
+            return original_query()
+        f.adapter.query=query
+        with self.assertRaisesRegex(RuntimeError,'post release readback unavailable'):f.adapter.release()
+        self.assertEqual(f.base['installed'],1);self.assertEqual(f.fia['retired'],1)
+        self.assertEqual(f.adapter.lifecycle[-1]['native_status'],0)
+        self.assertNotIn(('containers','release'),f.calls)
+        result=f.adapter.release()
+        self.assertEqual(f.calls.count(('fia','release')),1);self.assertEqual(f.calls.count(('containers','release')),1)
+        self.assertEqual(result['first_lifecycle_error']['operation'],'release')
+
+    def test_cleanup_rejects_changed_owner(self):
+        f=LifecycleDoubles();f.begin();f.base['owner_lo']=99
+        with self.assertRaisesRegex(RuntimeError,'CLEANUP_OWNER_CHANGED'):f.adapter.stop()
+        self.assertNotIn(('fia','stop'),f.calls);self.assertEqual(f.base['installed'],1)
+
+    def test_full_normal_cleanup_and_returned_ledger_are_independent(self):
+        f=LifecycleDoubles();f.begin();f.adapter.stop();result=f.adapter.release()
+        self.assertEqual([call for call in f.calls],[('containers','begin'),('fia','begin'),('fia','stop'),
+            ('containers','stop'),('fia','release'),('containers','release')])
+        self.assertIsNone(result['first_lifecycle_error'])
+        result['lifecycle'][0]['before']['fia']['installed']=99
+        self.assertEqual(f.adapter.lifecycle[0]['before']['fia']['installed'],0)
 
 
 if __name__=='__main__':unittest.main()

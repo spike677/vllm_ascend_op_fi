@@ -80,9 +80,12 @@ struct Case {
         if(lengths){assert(!aclDestroyIntArray(lengths));lengths=nullptr;}if(lengths_kv){assert(!aclDestroyIntArray(lengths_kv));lengths_kv=nullptr;}}
     void arrays(){auto a=cq().arrays;assert(a.acquired_arrays==a.released_arrays && !a.live_arrays
         && !a.active_captures && !a.active_getters && !a.ownership_errors);}
-    void finish(){assert(!dcat_fia_input_journal_scope_end_v1(&c,1));assert(!dcat_fia_input_journal_stop_v1(&c));assert(!dcat_qct_stop_v1(&c));
+    void finish(bool close=true){if(close)assert(!dcat_fia_input_journal_scope_end_v1(&c,1));
+        assert(fq().accepted_windows==1 && fq().retained_scope_tokens==1 && fq().retained_scope_token_characters==32);
+        assert(!dcat_fia_input_journal_stop_v1(&c));assert(!dcat_qct_stop_v1(&c));
         assert(!dcat_fia_input_journal_release_v1(&c));assert(!dcat_qct_release_v1(&c));
         auto f=fq();auto q=cq();assert(f.retired && !f.installed && !f.record_capacity_bytes && !f.pending_executors
+            && !f.retained_scope_tokens && !f.retained_scope_token_characters && f.accepted_windows==1
             && !q.installed && !q.live_registrations && !q.record_capacity_bytes && !q.payload_capacity_bytes);arrays();}
     void retained(){assert(dcat_fia_input_journal_scope_end_v1(&c,1));assert(dcat_fia_input_journal_stop_v1(&c));
         assert(dcat_fia_input_journal_release_v1(&c));assert(fq().installed && fq().record_capacity_bytes);arrays();}
@@ -90,6 +93,16 @@ struct Case {
 void test(const std::string& name){
     Case c;
     if(name=="inactive"){c.members();assert(!c.prepare() && !c.run());c.destroy();assert(!fq().total_calls && !devices);return;}
+    if(name=="window_limit_invalid"){
+        c.limits.max_windows=0;assert(!dcat_qct_begin_v1(&c.c));
+        assert(dcat_fia_input_journal_begin_v1(&c.c,&c.limits));assert(!fq().installed && !fq().record_capacity_bytes);
+        assert(!dcat_qct_stop_v1(&c.c));assert(!dcat_qct_release_v1(&c.c));c.arrays();return;}
+    if(name=="empty_window_budget"){
+        c.limits.max_windows=1;c.start();assert(!dcat_fia_input_journal_scope_end_v1(&c.c,1));
+        c.s.scope.token=2;std::memset(c.s.call_id,'b',32);
+        assert(dcat_fia_input_journal_scope_begin_v1(&c.c,&c.s));
+        assert(!fq().total_calls && fq().first_error==dcat_fij::Budget && !cq().scope_token);
+        assert(!devices && !prepares && !executes);c.finish(false);return;}
     if(name=="call_budget")c.limits.max_calls=1;
     if(name=="pair_budget")c.limits.max_pairs=1;
     c.start();c.members();
