@@ -11,9 +11,13 @@ import importlib.util
 import json
 from pathlib import Path, PurePosixPath
 
+HELPER_SHA256='8151f93dca35ead3b32b98d66881e5bc23432884bf5af8c1c6694f1b59fb8b5d'
+
 
 def helper():
     path = Path(__file__).parents[1]/'c2c3_closure_20261117/review_native26_single_source54.py'
+    if hashlib.sha256(path.read_bytes()).hexdigest()!=HELPER_SHA256:
+        raise ValueError('PINNED_ATOMIC_REVIEWER_CHANGED')
     spec = importlib.util.spec_from_file_location('_allocator26_reader', path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -55,12 +59,37 @@ def geometry(snapshot, call):
 
 
 def compare_sets(matrix, indices):
+    if not indices:
+        return dict(request_indices=[],alignment_verified=False,alignment_errors=[dict(reason='NO_OBSERVED_REQUESTS')],
+            union=None,intersection=None,variable=None,counts=[])
+    if (len(set(indices))!=len(indices) or
+            any(type(i) is not int or not 0<=i<len(matrix) for i in indices)):
+        raise ValueError('UNIQUE_OBSERVED_REQUEST_INDICES_REQUIRED')
+    identity=[];errors=[]
+    for row in indices:
+        calls=matrix[row]['calls']
+        keys=[(item.get('target_key'),item.get('stable_formal_sha256')) for item in calls]
+        if (not calls or any(type(item.get('ordinal')) is not int or item['ordinal']!=i for i,item in enumerate(calls)) or
+                any(not B.valid_sha(key) or not B.valid_sha(formals) for key,formals in keys) or len(set(keys))!=len(keys)):
+            errors.append(dict(request_index=row,reason='COMPLETE_UNIQUE_SITE_IDENTITY_UNVERIFIED'))
+        identity.append(keys)
+    if any(keys!=identity[0] for keys in identity[1:]):
+        errors.append(dict(reason='SITE_ORDER_OR_NATIVE_FORMALS_CHANGED'))
     sets = [{index for index, call in enumerate(matrix[row]['calls'])
              if call['geometry']['status']=='ELIGIBLE_GEOMETRY'} for row in indices]
-    union = set.union(*sets) if sets else set()
-    intersection = set.intersection(*sets) if sets else set()
-    return dict(request_indices=indices, union=sorted(union), intersection=sorted(intersection),
-        variable=sorted(union-intersection), counts=[len(items) for items in sets])
+    union = set.union(*sets);intersection = set.intersection(*sets)
+    return dict(request_indices=indices, alignment_verified=not errors,alignment_errors=errors,
+        union=sorted(union) if not errors else None,intersection=sorted(intersection) if not errors else None,
+        variable=sorted(union-intersection) if not errors else None,counts=[len(items) for items in sets])
+
+
+def phase_contract(row, index):
+    valid=(0<=index<len(B.PHASES) and row['phase']==B.PHASES[index] and
+        row['plan']['phase']==B.PHASES[index] and row['plan']['mode']==B.MODES[index])
+    # A mislabeled known F position or any declared F cannot become a healthy
+    # control. Its matrix row remains visible even when the contract fails.
+    fault=(index==B.MODES.index('fault') or row['plan']['mode']=='fault')
+    return valid,fault
 
 
 def review(root, result_sha, final_sha, expected_count):
@@ -79,6 +108,8 @@ def review(root, result_sha, final_sha, expected_count):
         [row['phase'] for row in rows]==list(B.PHASES), 'ORIGINAL_SINGLE_SITE_PHASES')
     matrix=[]; artifacts=set(); first=rows[0]['candidates']
     for request_index, row in enumerate(rows):
+        phase_valid,fault_request=phase_contract(row,request_index)
+        audit.check(phase_valid,'FIXED_PHASE_AND_MODE_CONTRACT',request_index)
         B.trace(audit,row,inv['lifetime'],row['phase'],mechanism=1)
         audit.check(len(row['candidates'])==expected_count and B.correlate(row,mechanism=1)==row['candidates'],
                     'FULL_NATIVE_DENOMINATOR_RECONCILED',request_index)
@@ -107,13 +138,15 @@ def review(root, result_sha, final_sha, expected_count):
                 artifacts.add(str(artifact))
             calls.append(entry)
         matrix.append(dict(index=request_index,request_id=row['request_id'],phase=row['phase'],
-            mode=row['plan']['mode'],fault_request=row['plan']['mode']=='fault',calls=calls,
+            mode=row['plan']['mode'],fault_request=fault_request,phase_mode_matches=phase_valid,calls=calls,
             geometry_counts=dict(Counter(item['geometry']['status'] for item in calls))))
     controls=[row['index'] for row in matrix if not row['fault_request'] and
         any(item['geometry']['status']!='NO_ALLOCATOR_OBSERVATION' for item in row['calls'])]
     stock=compare_sets(matrix,[0,1]); control=compare_sets(matrix,controls)
+    audit.check(stock['alignment_verified'],'STOCK_SITE_IDENTITIES_ALIGN_BEFORE_SET_COMPARISON')
+    audit.check(control['alignment_verified'],'CONTROL_SITE_IDENTITIES_ALIGN_BEFORE_SET_COMPARISON')
     changes=[]
-    for index in stock['variable']:
+    for index in stock['variable'] or []:
         before,after=(matrix[i]['calls'][index] for i in (0,1))
         changes.append(dict(ordinal=index,target_key=before['target_key'],
             target_key_unchanged=before['target_key']==after['target_key'],
@@ -123,12 +156,14 @@ def review(root, result_sha, final_sha, expected_count):
             signed_block_gaps=[before['geometry']['signed_block_gap'],after['geometry']['signed_block_gap']]))
     return dict(schema='demoncat.writer26.allocator_availability_review.v1',**audit.summary(),
         result_sha256=result_sha,final_original_sha256=final_sha,expected_writers=expected_count,
+        reader_sha256=B.file_sha(__file__),atomic_helper_sha256=HELPER_SHA256,
         allocator_files_rehashed=len(artifacts),stock_geometry=stock,nonfault_observed_controls=control,
-        stock_transitions=changes,matrix=matrix,read_only=True,actual_npu_calls=0,c2=False,c3=False,e5=False,
+        stock_transitions=changes,matrix=matrix,read_only=True,actual_npu_calls=0,c2=False,c3=False,e5=False,public_qualification_granted=False,
         limits=['Geometry availability is not lossless qualification or a live admission capability.',
             'All original calls and missing allocator observations remain in the matrix.',
             'The fault request is retained separately and excluded from healthy/control intersections.',
             'Only saved relevant segment bytes are rehashed; full allocator snapshot digest is a runtime receipt.',
+            'Unaligned or ambiguous site identities suppress set conclusions, without discarding matrix rows.',
             'Existing C1 review, not this geometric report, covers complete source/consumer/recovery provenance.'])
 
 

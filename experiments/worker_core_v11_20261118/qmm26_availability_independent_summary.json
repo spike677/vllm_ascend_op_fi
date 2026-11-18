@@ -1,0 +1,212 @@
+{
+  "schema": "demoncat.writer26.allocator_availability.agent7_review.v1",
+  "review_scope": "LOCAL_UPSTREAM_REPORT_RECOMPUTATION_AND_READER_SOURCE_REVIEW_ONLY",
+  "integration_base": "73d5f45f7e6d769dbfe97f21848cc1714e4bc10c",
+  "reader_origin_commit": "55f70b14ed7ad5a40c79a69cf07dba9bae145903",
+  "upstream_report_sha256": "d921b2e5c28ffe317b76f4ada0cb6285173214f62b73aac4e6785bb22003f8ad",
+  "upstream_report_bytes": 2121520,
+  "original_result_sha256": "6053a58c64e15f645c66796fefbeb931e8d7491483ae935108b5ec353f0bd5bd",
+  "original_final_sha256": "3ea2fde82dda7f962b9ec0aa63e3826768152da1f2b728ce0df30c10470b6857",
+  "upstream_declared": {
+    "consistent": true,
+    "checks": 4445,
+    "allocator_files_rehashed": 924
+  },
+  "complete_originals_reread": false,
+  "new_raw_allocator_files_rehashed": 0,
+  "local_report_recomputation_consistent": true,
+  "full_matrix_calls": 1080,
+  "calls_per_request": 135,
+  "requests": 8,
+  "allocator_observation_entries": 924,
+  "stage_counts": [
+    {
+      "index": 0,
+      "phase": "inventory_1",
+      "fault_request": false,
+      "geometry_counts": {
+        "NO_ALLOCATOR_OBSERVATION": 3,
+        "ELIGIBLE_GEOMETRY": 20,
+        "PROVEN_NONADJACENT": 112
+      }
+    },
+    {
+      "index": 1,
+      "phase": "inventory_2",
+      "fault_request": false,
+      "geometry_counts": {
+        "NO_ALLOCATOR_OBSERVATION": 3,
+        "PROVEN_NONADJACENT": 124,
+        "ELIGIBLE_GEOMETRY": 8
+      }
+    },
+    {
+      "index": 2,
+      "phase": "single_site_reference",
+      "fault_request": false,
+      "geometry_counts": {
+        "NO_ALLOCATOR_OBSERVATION": 3,
+        "PROVEN_NONADJACENT": 117,
+        "ELIGIBLE_GEOMETRY": 15
+      }
+    },
+    {
+      "index": 3,
+      "phase": "single_site_lossless",
+      "fault_request": false,
+      "geometry_counts": {
+        "NO_ALLOCATOR_OBSERVATION": 3,
+        "ELIGIBLE_GEOMETRY": 20,
+        "PROVEN_NONADJACENT": 112
+      }
+    },
+    {
+      "index": 4,
+      "phase": "single_site_qualification_off",
+      "fault_request": false,
+      "geometry_counts": {
+        "NO_ALLOCATOR_OBSERVATION": 3,
+        "PROVEN_NONADJACENT": 124,
+        "ELIGIBLE_GEOMETRY": 8
+      }
+    },
+    {
+      "index": 5,
+      "phase": "single_site_fault",
+      "fault_request": true,
+      "geometry_counts": {
+        "NO_ALLOCATOR_OBSERVATION": 3,
+        "PROVEN_NONADJACENT": 117,
+        "ELIGIBLE_GEOMETRY": 15
+      }
+    },
+    {
+      "index": 6,
+      "phase": "single_site_recovery_off",
+      "fault_request": false,
+      "geometry_counts": {
+        "NO_ALLOCATOR_OBSERVATION": 3,
+        "ELIGIBLE_GEOMETRY": 20,
+        "PROVEN_NONADJACENT": 112
+      }
+    },
+    {
+      "index": 7,
+      "phase": "health",
+      "fault_request": false,
+      "geometry_counts": {
+        "NO_ALLOCATOR_OBSERVATION": 135
+      }
+    }
+  ],
+  "stock": {
+    "request_indices": [
+      0,
+      1
+    ],
+    "counts": [
+      20,
+      8
+    ],
+    "union_count": 26,
+    "intersection_ordinals": [
+      83,
+      103
+    ],
+    "variable_count": 24,
+    "stable_proven_nonadjacent": 106,
+    "always_unobserved": 3,
+    "identity_alignment_verified_from_report": true
+  },
+  "nonfault_controls": {
+    "request_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6
+    ],
+    "counts": [
+      20,
+      8,
+      15,
+      20,
+      8,
+      20
+    ],
+    "union_count": 30,
+    "intersection_ordinals": [
+      83,
+      103
+    ],
+    "variable_count": 28,
+    "stable_proven_nonadjacent": 102,
+    "always_unobserved": 3,
+    "identity_alignment_verified_from_report": true
+  },
+  "control_only_new_eligible_ordinals": [
+    30,
+    53,
+    73,
+    113
+  ],
+  "stock_transitions": [
+    {
+      "before": "ELIGIBLE_GEOMETRY",
+      "after": "PROVEN_NONADJACENT",
+      "count": 18
+    },
+    {
+      "before": "PROVEN_NONADJACENT",
+      "after": "ELIGIBLE_GEOMETRY",
+      "count": 6
+    }
+  ],
+  "stock_relation_transitions": [
+    {
+      "before": "ADJACENT",
+      "after": "INTERVENING_BLOCKS",
+      "count": 6
+    },
+    {
+      "before": "ADJACENT",
+      "after": "OUTPUT_BEFORE_RESIDUAL",
+      "count": 12
+    },
+    {
+      "before": "INTERVENING_BLOCKS",
+      "after": "ADJACENT",
+      "count": 2
+    },
+    {
+      "before": "OUTPUT_BEFORE_RESIDUAL",
+      "after": "ADJACENT",
+      "count": 4
+    }
+  ],
+  "reader_fixes": [
+    "REQUIRE_COMPLETE_UNIQUE_STABLE_SITE_IDENTITIES_BEFORE_AGGREGATING_ORDINALS",
+    "VALIDATE_FIXED_PHASE_MODES_AND_NEVER_INCLUDE_KNOWN_OR_DECLARED_F_AS_CONTROL",
+    "PIN_EXISTING_ATOMIC_HELPER_SHA"
+  ],
+  "changed_reader_sha256": "dd1b5e79d234a43f1d9eba5cf8803c39615d420a4efafe5dceb485b89b86c985",
+  "atomic_helper_sha256": "8151f93dca35ead3b32b98d66881e5bc23432884bf5af8c1c6694f1b59fb8b5d",
+  "cpu_tests": {
+    "suite": "test_allocator26_availability",
+    "passed": 9
+  },
+  "new_npu_calls": 0,
+  "new_native_qualification": false,
+  "c2": false,
+  "c3": false,
+  "e5": false,
+  "limits": [
+    "Upstream 924 raw-file rehashes are reported by the original root run, not repeated locally.",
+    "The full 135-site universe and 24 stock-varying sites remain required; the two-site intersection does not authorize selection.",
+    "Six non-F controls expose four additional available ordinals; no fixed two-site filter is justified.",
+    "The final health request has 135 Native calls but no allocator observations or retained callback target keys.",
+    "Full allocator snapshot digests and prior C1 source/consumer/recovery review remain separate original receipts.",
+    "The amended reader must be rerun on 124 originals to obtain an amended complete-original report."
+  ]
+}
