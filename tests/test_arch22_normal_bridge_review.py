@@ -12,6 +12,7 @@ import sys
 import tempfile
 from types import SimpleNamespace as NS
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENT = ROOT/'experiments/c2c3_closure_20261117'
@@ -23,6 +24,12 @@ import test_attention33_first_boundary_review as boundary_fixtures
 
 
 def hash_bytes(raw): return hashlib.sha256(raw).hexdigest()
+
+
+# Test-only file identities. The actual parser is not copied into a synthetic
+# build or represented as compiled by these CPU fixtures.
+TOKEN_SOURCE_FIXTURES={name:('explicit CPU source fixture: '+name).encode()
+                       for name in evidence.CANONICAL_TOKEN_SOURCE_SHA256}
 
 
 def write(path, value):
@@ -61,11 +68,11 @@ def pod_fixture(helper):
     # Synthetic field layout: exercises the source-derived decoder and every
     # array element. It is explicitly not an actual compiled ABI receipt.
     expected = {'baseParams.bSize':1,'baseParams.n2Size':8,'baseParams.gSize':2,
-        'baseParams.headDim':128,'baseParams.headDimRope':0,'baseParams.softmaxLseFlag':0,
+        'baseParams.headDim':128,'baseParams.headDimRope':0,'baseParams.softmaxLseFlag':0,'baseParams.isLegacyIfa':0,
         'baseParams.actualSeqS1Dims':1,'baseParams.actualSeqS2Dims':1,'baseParams.s1Size':1,
         'baseParams.s2Size':2048,'innerSplitParams.s2BaseSize':512,'pageAttenParams.blockSize':16,
         'pageAttenParams.maxBlockNumPerBatch':80,'maskParams.attenMaskFlag':1,'maskParams.sparseMode':3,
-        'maskParams.preToken':2147483647,'maskParams.nextToken':2147483647,
+        'maskParams.preToken':2147483647,'maskParams.nextToken':0,
         'leftPaddingParams.qPaddingFlag':0,'leftPaddingParams.kvPaddingFlag':0,
         'prefixParams.prefixFlag':0,'pseParams.pseShiftFlag':0}
     fields = []; raw = bytearray(1576)
@@ -111,6 +118,8 @@ def bundle_fixture(root, frozen, helper):
     projection.write_bytes(b'CPU test public projection')
     public=build/'source/attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling.h'
     public.parent.mkdir(parents=True);public.write_bytes(b'CPU test public header')
+    for name,raw in TOKEN_SOURCE_FIXTURES.items():
+        path=build/'source'/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
     decoder=schema_path.with_name('fia_abi_decoder');decoder.write_bytes(b'CPU fixture never executed')
     schema.update(projection_sha256=evidence.sha(projection),public_source_sha256=evidence.sha(public))
     write(schema_path,schema)
@@ -286,6 +295,8 @@ class NormalBridgeReaderContracts(unittest.TestCase):
         temporary=tempfile.TemporaryDirectory()
         if os.name == 'nt': temporary.name='\\\\?\\'+str(Path(temporary.name).resolve())
         self.folder=Path(self.enterContext(temporary))
+        self.enterContext(patch.dict(evidence.CANONICAL_TOKEN_SOURCE_SHA256,
+            {name:hash_bytes(raw) for name,raw in TOKEN_SOURCE_FIXTURES.items()},clear=True))
 
     def test_bounded_normal_build_uses_actual_entry_source_and_full_artifact_bytes(self):
         root,data=bundle_fixture(self.folder,self.frozen,self.helper)
@@ -302,6 +313,18 @@ class NormalBridgeReaderContracts(unittest.TestCase):
             with self.subTest(key=key):
                 changed=deepcopy(data);changed[key]=value;write(root/'evidence/completion.json',changed)
                 with self.assertRaisesRegex(ValueError,'SEPARATE_NORMAL_ONLY'):evidence.build_bundle(root,self.frozen,self.helper)
+
+    def test_changed_parser_or_header_and_experimental_only_source_cannot_supply_canonical_rule(self):
+        root,_=bundle_fixture(self.folder,self.frozen,self.helper)
+        for name,raw in TOKEN_SOURCE_FIXTURES.items():
+            path=root/'source'/name;path.write_bytes(raw+b'changed')
+            with self.subTest(source=name),self.assertRaisesRegex(ValueError,'CAUSAL_TOKEN_PARSER_DIFFERS'):
+                evidence.build_bundle(root,self.frozen,self.helper)
+            path.write_bytes(raw)
+        name=next(iter(TOKEN_SOURCE_FIXTURES));path=root/'source'/name
+        experimental=root/'source/experimental'/name;experimental.parent.mkdir(parents=True)
+        path.rename(experimental)
+        with self.assertRaises(FileNotFoundError):evidence.build_bundle(root,self.frozen,self.helper)
 
     def test_missing_controller_cleanup_or_extra_artifact_is_not_a_valid_build(self):
         root,data=bundle_fixture(self.folder,self.frozen,self.helper)
@@ -379,6 +402,18 @@ class NormalBridgeReaderContracts(unittest.TestCase):
                 else: h['mode']='s2_256'
                 with self.assertRaises(ValueError):review.final_private_pod(e,r,h,bundle,self.helper.abi)
 
+    def test_matching_host_and_final_raw_cannot_substitute_python_default_for_canonical_tokens(self):
+        event,resolved,host,bundle=pod_fixture(self.helper)
+        for name,value in (('maskParams.nextToken',2147483647),('maskParams.nextToken',1),
+                ('maskParams.preToken',0),('maskParams.sparseMode',0),('baseParams.isLegacyIfa',1)):
+            e,h=deepcopy(event),deepcopy(host);raw=bytearray.fromhex(h['raw_hex'])
+            field=next(item for item in bundle['schema']['fields'] if item['name']==name)
+            struct.pack_into('<Q',raw,field['offset'],value)
+            args=bytearray.fromhex(e['args_hex']);args[64:64+len(raw)]=raw;e['args_hex']=args.hex()
+            h['raw_hex']=raw.hex();h['typed'][name]=value
+            with self.subTest(field=name,value=value),self.assertRaisesRegex(ValueError,'NORMAL_GEOMETRY_DIFFERS'):
+                review.final_private_pod(e,resolved,h,bundle,self.helper.abi)
+
     def test_raw_runtime_normal_key_joins_current_scope_and_rejects_old_fd_or_owner_conflict(self):
         fixture=boundary_fixtures.RuntimeResolutionTests('test_current_scope_resolves_29_identical_bindings_without_rewriting_gap')
         fixture.setUp();self.addCleanup(fixture.doCleanups)
@@ -421,14 +456,29 @@ class NormalBridgeReaderContracts(unittest.TestCase):
             sparse_mode=3,num_heads=16,num_key_value_heads=8,scale=1/math.sqrt(128),
             actual_seq_lengths=[1],actual_seq_lengths_kv=[1025]).items()}
         inputs.update(atten_mask={'snapshot':{'metadata':dict(dtype='torch.int8',shape=[2048,2048],stride=[2048,1])}},
-            block_table={'snapshot':{'metadata':dict(dtype='torch.int32',shape=[1,80],stride=[80,1])}})
+            block_table={'snapshot':{'metadata':dict(dtype='torch.int32',shape=[1,80],stride=[80,1])}},
+            query={'snapshot':{'metadata':{'dtype':'torch.float16'}}},
+            key={'metadata':{'dtype':'torch.float16'}},value={'metadata':{'dtype':'torch.float16'}})
         value=dict(inputs=inputs,omitted_argument_defaults=dict(pre_tokens=2147483647,next_tokens=2147483647,softmax_lse_flag=False),
             return_container_type='tuple',outputs=[{}, {'metadata':{'shape':[0],'dtype':'torch.float32'}}])
-        review.check_actual_inputs(value)
+        tokens=review.check_actual_inputs(value)
+        self.assertEqual(tokens['omitted_python_token_defaults'],dict(pre_tokens=2147483647,next_tokens=2147483647))
+        self.assertFalse(tokens['declaration_is_native_observation'])
         inputs['scale']['value']=.125
         with self.assertRaisesRegex(ValueError,'ACTUAL_SCALAR_DIFFERS:scale'):review.check_actual_inputs(value)
         inputs['scale']['value']=128**-.5;inputs['block_size']['value']=128
         with self.assertRaisesRegex(ValueError,'ACTUAL_SCALAR_DIFFERS:block_size'):review.check_actual_inputs(value)
+        inputs['block_size']['value']=16
+        for name in ('query','key','value'):
+            metadata=inputs[name].get('snapshot',inputs[name])['metadata']
+            metadata['dtype']='torch.int8'
+            with self.subTest(tensor=name),self.assertRaisesRegex(ValueError,'ACTUAL_NONQUANT_QKV_REQUIRED'):
+                review.check_actual_inputs(value)
+            metadata['dtype']='torch.float16'
+        for name in ('antiquant_scale','query_padding_size','query_quant_mode'):
+            changed=deepcopy(value);changed['inputs'][name]=dict(kind='scalar',value=1)
+            with self.subTest(argument=name),self.assertRaisesRegex(ValueError,'ACTUAL_OPTIONAL_DIFFERS'):
+                review.check_actual_inputs(changed)
 
     def test_all_87_payloads_are_compared_when_first_boundary_is_incomplete(self):
         left=self.folder/'left.bin';right=self.folder/'right.bin'
@@ -498,6 +548,12 @@ class NormalBridgeReaderContracts(unittest.TestCase):
             arms[kind]=review.review_arm(run,evidence.sha(run/'result.json'),kind,self.frozen,self.helper,bundle,observer,checks,symbols)
         self.assertEqual(checks.issues,[])
         self.assertEqual(arms['baseline']['summary']['private_native_replayed'],112)
+        for phase in arms['baseline']['summary']['phase_summaries']:
+            self.assertEqual(phase['python_token_attributes']['omitted_python_token_defaults'],
+                             dict(pre_tokens=2147483647,next_tokens=2147483647))
+            if 'native_replay' in phase:
+                for call in phase['native_replay']['calls']:
+                    self.assertEqual(call['effective_native_tokens'],dict(pre=2147483647,next=0))
         self.assertEqual(len(arms['stock']['summary']['within_run']),4)
         total=0
         for name in review.PHASES:

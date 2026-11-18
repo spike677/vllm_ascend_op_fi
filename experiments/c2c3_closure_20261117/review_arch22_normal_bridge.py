@@ -168,12 +168,19 @@ def check_actual_inputs(saved):
     need(all(name in inputs or name in defaults for name in ('pre_tokens','next_tokens','softmax_lse_flag')),
          'REQUIRED_OMITTED_ARGUMENT_DEFAULTS_NOT_RECORDED')
     mask = inputs['atten_mask']['snapshot']['metadata']; table = inputs['block_table']['snapshot']['metadata']
+    need(inputs['query']['snapshot']['metadata']['dtype'] == inputs['key']['metadata']['dtype']
+        == inputs['value']['metadata']['dtype'] == 'torch.float16', 'ACTUAL_NONQUANT_QKV_REQUIRED')
     need(mask['dtype'] == 'torch.int8' and mask['shape'] == [2048,2048] and mask['stride'] == [2048,1]
         and table['dtype'] == 'torch.int32' and table['shape'] == [1,80] and table['stride'] == [80,1],
          'ACTUAL_MASK_OR_TABLE_GEOMETRY_DIFFERS')
     need(saved['return_container_type'] == 'tuple' and len(saved['outputs']) == 2
         and saved['outputs'][1]['metadata']['shape'] == [0]
         and saved['outputs'][1]['metadata']['dtype'] == 'torch.float32', 'ACTUAL_COMPLETE_API_RETURN_STRUCTURE_DIFFERS')
+    return dict(supplied_python_token_attributes={name:inputs[name]['value'] for name in
+                    ('pre_tokens','next_tokens') if name in inputs},
+                omitted_python_token_defaults={name:defaults[name] for name in
+                    ('pre_tokens','next_tokens') if name not in inputs},
+                declaration_is_native_observation=False)
 
 
 def one_launch(run, rows, token, pid, helper, *, kernel_sha=None, symbols=None):
@@ -236,11 +243,15 @@ def final_private_pod(raw_event, resolved, host, bundle, abi_helper):
     padding = abi_helper.verify_public_values(typed, schema, host['typed'])
     need(set(host['typed']) == set(typed)-set(padding), 'HOST_TYPED_FIELD_SET_NOT_COMPLETE')
     expected = {'baseParams.bSize':1, 'baseParams.n2Size':8, 'baseParams.gSize':2, 'baseParams.headDim':128,
-        'baseParams.headDimRope':0, 'baseParams.softmaxLseFlag':0, 'baseParams.actualSeqS1Dims':1,
+        'baseParams.headDimRope':0, 'baseParams.softmaxLseFlag':0, 'baseParams.isLegacyIfa':0, 'baseParams.actualSeqS1Dims':1,
         'baseParams.actualSeqS2Dims':1, 'baseParams.s1Size':1, 'innerSplitParams.s2BaseSize':512,
         'pageAttenParams.blockSize':16, 'pageAttenParams.maxBlockNumPerBatch':80,
         'maskParams.attenMaskFlag':1, 'maskParams.sparseMode':3, 'maskParams.preToken':2147483647,
-        'maskParams.nextToken':2147483647, 'leftPaddingParams.qPaddingFlag':0,
+        # The exact built attention parser (checked by build_bundle) converts
+        # nonquant RIGHT_DOWN sparse mode to INT_MAX/0 before serialization.
+        # Python's omitted next_tokens default remains INT_MAX in the input
+        # signature; do not equate that declaration to the effective POD.
+        'maskParams.nextToken':0, 'leftPaddingParams.qPaddingFlag':0,
         'leftPaddingParams.kvPaddingFlag':0, 'prefixParams.prefixFlag':0, 'pseParams.pseShiftFlag':0,
         'baseParams.scaleValue':struct.unpack('<f',struct.pack('<f',128**-.5))[0]}
     need(all(typed.get(key) == value for key,value in expected.items()) and 1025 <= typed['baseParams.s2Size'] <= 2048,
@@ -275,6 +286,8 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
             and call['phase'] == ('baseline' if name == 'measured' else 'off')
             and all(call[key] is False for key in ('selection_applied','cache_repacked','api_arguments_changed','output_mutated')),
              'ACTUAL_NATIVE_TO_PUBLIC_REQUEST_ORIGINAL_ONCE_JOIN_DIFFERS')
+        need(all(row[name]['dtype'] == 'torch.float16' for name in ('query','key','value')),
+             'NATIVE_BOUNDARY_NONQUANT_QKV_REQUIRED')
         if path == FIRST: need(token == saved['native_call_id'], 'FIRST_BOUNDARY_NATIVE_TOKEN_DIFFERS')
         resolution = one_launch(run,runtime,token,saved['pid'],helper,
             kernel_sha=bundle['completion']['kernel_binary_sha256'],symbols=symbols)
@@ -288,6 +301,7 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
             and recorded['kernel_sha256'] == launch['registered_binary']['sha256'], 'STORED_NATIVE_RECEIPT_DIFFERS_FROM_RAW_REPLAY')
         return dict(module_path=path, call_id=token, original_calls=1, request_ids=row['scheduler']['request_ids'],
             raw_tiling_sha256=decoded['raw_sha256'], all_typed_fields_sha256=evidence.digest(decoded['typed']),
+            effective_native_tokens=dict(pre=decoded['typed']['maskParams.preToken'],next=decoded['typed']['maskParams.nextToken']),
             typed_field_count=len(decoded['typed']), public_alignment_fields=sorted(decoded['verified_public_serializer_padding']),
             launch=launch, original_receipt_sha256=evidence.sha(folder/(token+'.json')))
     for call in calls:
@@ -395,7 +409,7 @@ def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks
         saved = capture.get('first_decode_boundary')
         if saved is None or audit is None:
             checks.require(path+'.first_boundary',False,'COMPLETE_FIRST_BOUNDARY_OR_NATURAL_CENSUS_MISSING'); continue
-        checks.run(path+'.actual_inputs',lambda:check_actual_inputs(saved))
+        phase_summary['python_token_attributes'] = checks.run(path+'.actual_inputs',lambda:check_actual_inputs(saved))
         boundary = checks.run(path+'.first_boundary',lambda:helper.boundary.first_boundary(run,phase,audit[FIRST],difference_reader=helper.differences))
         if boundary is not None: phase_summary['first_boundary'] = boundary['summary']
         if payloads is not None: values[name]['boundary'] = boundary

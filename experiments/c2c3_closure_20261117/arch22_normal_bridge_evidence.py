@@ -26,6 +26,14 @@ KEY = 103000000010300003
 KEYS = {103000000010200003, KEY, 104000000010200003, 104000000010300003,
         5000000000000200100, 5000000000000200103, 5000000000010200100,
         5000000000010200103, 5100000000010200100, 5100000000010200103}
+CANONICAL_TOKEN_SOURCE_SHA256 = {
+    'attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling_info_parser.cpp':
+        '380248471fef863d9c7ae5f77f00aafb71185330d350388652c6f01557a9f271',
+    'attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling_info_parser.h':
+        '54753b541981eb176636bc0243c728830f5076a39d4e69721816d0d4eb6d44f0',
+    'attention/common/op_host/fia_tiling_info.h':
+        'd201e4ed6ca93fb90a7a60c9da5fbfbb5727810768ffd6cd74e8c67115febda4',
+}
 REQUIRED = tuple(EXPERIMENT+name+'.py' for name in (
     'arch22_normal_bridge_evidence', 'prepare_arch22_normal_bridge_cases',
     'review_arch22_normal_bridge', 'attention33_worker_probe', 'attention33_contract',
@@ -150,6 +158,11 @@ def build_bundle(root, source, helper, expected_completion=None):
     need(data.get('normal_bridge_recipe_sha256') == source['pins'][NATIVE+'fia/apply_tnd33_arch22_bridge.py']
         and data.get('normal_bridge_header_sha256') == source['pins'][NATIVE+'fia/paged33_arch22_bridge.h']
         and data.get('contract_sha256') == source['pins'][NATIVE+'fia/build_contract.json'], 'FRESH_BUILD_SOURCE_BINDING_DIFFERS')
+    for relative, expected in CANONICAL_TOKEN_SOURCE_SHA256.items():
+        path=child(root/'source',relative)
+        need(not path.is_symlink() and path.resolve(strict=True) == path
+             and path.stat().st_size <= 256*1024 and sha(path) == expected,
+             'FRESH_NORMAL_CAUSAL_TOKEN_PARSER_DIFFERS:'+relative)
     patch_path=root.parents[1]/'patch/policy_source_manifest.json'; patch=read(patch_path)
     need(sha(patch_path) == data['patch_receipt_sha256'] and patch['source_commit'] == COMMIT
         and patch['variant'] == VARIANT and patch['recipe_sha256'] == data['normal_bridge_recipe_sha256']
@@ -230,7 +243,8 @@ def build_bundle(root, source, helper, expected_completion=None):
             controller_sha256=sha(controller_path), schema_sha256=sha(schema_path),
             compile_receipt_sha256=sha(compile_path), schema_sentinel_sha256=sha(schema_path.with_name('fia_abi_selftest.json')),
             patch_receipt_sha256=sha(patch_path), artifacts=len(files), artifact_bytes=total,
-            kernel_sha256=data['kernel_binary_sha256'], variant=VARIANT, compiled_keys=sorted(KEYS)))
+            kernel_sha256=data['kernel_binary_sha256'], variant=VARIANT, compiled_keys=sorted(KEYS),
+            canonical_token_source_sha256=dict(CANONICAL_TOKEN_SOURCE_SHA256)))
 
 
 def observer_bundle(root, source, expected_sha=None):

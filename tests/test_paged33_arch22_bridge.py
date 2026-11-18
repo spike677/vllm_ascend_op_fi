@@ -1,5 +1,6 @@
 """CPU contracts for the separate normal-only route; no native qualification."""
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -12,6 +13,7 @@ from unittest.mock import patch
 import torch
 from demoncat.runtime.vllm_ascend.worker_extension import paged33_arch22_bridge as bridge
 from demoncat.runtime.vllm_ascend.worker_extension.attention_native import OwnedLaunchScope
+from demoncat.runtime.vllm_ascend.worker_extension.paged33_audit import _meta
 from fault_injection.native_adapters.attention28.launch import LaunchObserver
 from fault_injection.native_adapters.attention28.fia import apply_tnd33_arch22_bridge as recipe
 from fault_injection.native_adapters.attention28.fia import binary_registration, build_fresh
@@ -111,13 +113,42 @@ class Arch22NormalContracts(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     bridge.validate_normal_call(modified,boundary,allow_cpu_test=change!='cpu_on_native')
 
+    def test_actual_nonquant_qkv_required_even_when_audit_identity_matches(self):
+        actual,boundary=fixture()
+        for name in ('key','value'):
+            changed=dict(actual);changed[name]=actual[name].to(torch.int8)
+            audited=dict(boundary);audited[name]=_meta(changed[name])
+            with self.subTest(name=name),self.assertRaisesRegex(RuntimeError,'NONQUANT_CAUSAL_TOKEN_SCOPE'):
+                bridge.validate_normal_call(changed,audited,allow_cpu_test=True)
+
+    def test_actual_attention_parser_and_both_headers_are_pinned_without_experimental_fallback(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder).resolve();completion=root/'evidence/completion.json'
+            completion.parent.mkdir();completion.write_text('{}')
+            sources={name:('explicit CPU source fixture: '+name).encode()
+                     for name in bridge.CANONICAL_TOKEN_SOURCE_SHA256}
+            pins={name:hashlib.sha256(raw).hexdigest() for name,raw in sources.items()}
+            for name,raw in sources.items():
+                path=root/'source'/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+            with patch.dict(bridge.CANONICAL_TOKEN_SOURCE_SHA256,pins,clear=True):
+                self.assertEqual(bridge.verify_normal_token_sources(completion),pins)
+                for name,raw in sources.items():
+                    path=root/'source'/name;path.write_bytes(raw+b'changed')
+                    with self.subTest(source=name),self.assertRaisesRegex(RuntimeError,'PARSER_SOURCE_DIFFERS'):
+                        bridge.verify_normal_token_sources(completion)
+                    path.write_bytes(raw)
+                name=next(iter(sources));path=root/'source'/name
+                experimental=root/'source/experimental'/name
+                experimental.parent.mkdir(parents=True);path.rename(experimental)
+                with self.assertRaises(FileNotFoundError):bridge.verify_normal_token_sources(completion)
+
     def native_fixture(self):
         actual,boundary=fixture()
         typed={'baseParams.bSize':1,'baseParams.n2Size':8,'baseParams.gSize':2,'baseParams.headDim':128,
-            'baseParams.headDimRope':0,'baseParams.softmaxLseFlag':0,'baseParams.actualSeqS1Dims':1,
+            'baseParams.headDimRope':0,'baseParams.softmaxLseFlag':0,'baseParams.isLegacyIfa':0,'baseParams.actualSeqS1Dims':1,
             'baseParams.actualSeqS2Dims':1,'innerSplitParams.s2BaseSize':512,'pageAttenParams.blockSize':16,
             'pageAttenParams.maxBlockNumPerBatch':65,'maskParams.attenMaskFlag':1,'maskParams.sparseMode':3,
-            'maskParams.preToken':2147483647,'maskParams.nextToken':2147483647,
+            'maskParams.preToken':2147483647,'maskParams.nextToken':0,
             'leftPaddingParams.qPaddingFlag':0,'leftPaddingParams.kvPaddingFlag':0,
             'prefixParams.prefixFlag':0,'pseParams.pseShiftFlag':0,'baseParams.s1Size':1,'baseParams.s2Size':1025,
             'baseParams.scaleValue':0.0883883461356163}
@@ -132,15 +163,46 @@ class Arch22NormalContracts(unittest.TestCase):
         receipt=bridge.validate_native(launch,host,actual,boundary)
         self.assertFalse(receipt['stock_abi_decoded'])
         self.assertFalse(receipt['stock_private_exact_proven'])
-        self.assertEqual(receipt['actual_next_tokens'],2147483647)
-        for field in ('baseParams.headDim','innerSplitParams.s2BaseSize','maskParams.nextToken',
-                      'pageAttenParams.maxBlockNumPerBatch','baseParams.scaleValue'):
+        self.assertEqual(receipt['actual_next_tokens'],0)
+        self.assertEqual(receipt['public_to_native_token_window']['omitted_python_defaults'],
+                         dict(pre_tokens=2147483647,next_tokens=2147483647))
+        self.assertEqual(receipt['public_to_native_token_window']['supplied_python_attributes'],{})
+        self.assertNotIn('pre_tokens',actual);self.assertNotIn('next_tokens',actual)
+        for field in set(launch['typed'])-{'baseParams.s2Size'}:
             bad=copy.deepcopy(launch);bad['typed'][field]+=1
             with self.subTest(field=field),self.assertRaises(RuntimeError):
+                bridge.validate_native(bad,host,actual,boundary)
+        for size in (1024,actual['key'].shape[0]*16+1):
+            bad=copy.deepcopy(launch);bad['typed']['baseParams.s2Size']=size
+            with self.assertRaisesRegex(RuntimeError,'SEQUENCE_CAPACITY_DIFFERS'):
                 bridge.validate_native(bad,host,actual,boundary)
         bad=dict(launch,tiling_key=5100000000010200103)
         with self.assertRaisesRegex(RuntimeError,'STOCK_ROUTE_ENTRY_DIFFERS'):
             bridge.validate_native(bad,host,actual,boundary)
+
+    def test_only_canonical_pair_is_accepted_not_a_native_default_or_other_sparse_mode(self):
+        actual,boundary,host,launch=self.native_fixture()
+        for field,value in (('maskParams.nextToken',2147483647),('maskParams.nextToken',-1),
+                ('maskParams.preToken',0),('maskParams.sparseMode',0),('baseParams.isLegacyIfa',1)):
+            bad=copy.deepcopy(launch);bad['typed'][field]=value
+            with self.subTest(field=field,value=value),self.assertRaisesRegex(RuntimeError,'GEOMETRY_DIFFERS'):
+                bridge.validate_native(bad,host,actual,boundary)
+        for name,value in (('sparse_mode',0),('antiquant_scale',object()),('query_quant_mode',1),
+                ('key',NS(dtype='torch.int8')),('value',NS(dtype='torch.int8')),('query',NS(dtype='torch.bfloat16'))):
+            with self.subTest(name=name),self.assertRaisesRegex(RuntimeError,'NONQUANT_CAUSAL_TOKEN_SCOPE'):
+                bridge.validate_native(launch,host,dict(actual,**{name:value}),boundary)
+
+    def test_explicit_python_token_attributes_are_recorded_without_rewriting_them(self):
+        actual,boundary,host,launch=self.native_fixture()
+        actual.update(pre_tokens=17,next_tokens=-3)
+        tokens=bridge.validate_native(launch,host,actual,boundary)['public_to_native_token_window']
+        self.assertEqual(tokens['supplied_python_attributes'],dict(pre_tokens=17,next_tokens=-3))
+        self.assertEqual(tokens['omitted_python_defaults'],{})
+        self.assertEqual((tokens['effective_native_pre_token'],tokens['effective_native_next_token']),(2147483647,0))
+        self.assertEqual((actual['pre_tokens'],actual['next_tokens']),(17,-3))
+        for bad in (True,0.0,None):
+            with self.subTest(bad=bad),self.assertRaisesRegex(RuntimeError,'TOKEN_ATTRIBUTE_TYPE'):
+                bridge.validate_native(launch,host,dict(actual,next_tokens=bad),boundary)
 
     def driver(self, folder):
         native=bridge.Arch22NormalNativeCall.__new__(bridge.Arch22NormalNativeCall)

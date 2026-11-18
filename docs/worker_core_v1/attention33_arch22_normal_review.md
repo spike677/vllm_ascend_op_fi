@@ -95,6 +95,12 @@ The original 67-element normal output discrepancy remains an original fact;
 these fresh cases neither alter it nor claim the new candidate fixed it
 before actual execution and independent review.
 
+The [source79 parameter review](attention33_arch22_source79_geometry_review.md)
+corrects the expected nonquant sparse3 Native token pair to `(INTMAX, 0)`.
+The actual attention parser and both headers are now hash-pinned under the
+same build root. Python omitted defaults remain separately recorded as
+`(INTMAX, INTMAX)`; this change grants no normal bridge or fault authority.
+
 CPU contracts in `tests/test_arch22_normal_bridge_review.py` include a complete
 two-arm file fixture, all five phases/435 payload comparisons/112 Native
 scopes, and negative cases for old FD reuse, extra artifacts, raw array tails,

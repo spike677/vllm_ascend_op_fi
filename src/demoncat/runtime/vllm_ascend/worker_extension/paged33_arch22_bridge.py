@@ -25,6 +25,47 @@ OPTIONAL = ('pse_shift', 'dequant_scale1', 'quant_scale1', 'dequant_scale2', 'qu
 SCALARS = ('input_layout', 'block_size', 'sparse_mode', 'num_heads', 'num_key_value_heads', 'scale',
     'inner_precise', 'pre_tokens', 'next_tokens', 'softmax_lse_flag', 'antiquant_mode',
     'key_antiquant_mode', 'value_antiquant_mode', 'query_quant_mode', 'pse_type')
+CANONICAL_TOKEN_SOURCE_SHA256 = {
+    'attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling_info_parser.cpp':
+        '380248471fef863d9c7ae5f77f00aafb71185330d350388652c6f01557a9f271',
+    'attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling_info_parser.h':
+        '54753b541981eb176636bc0243c728830f5076a39d4e69721816d0d4eb6d44f0',
+    'attention/common/op_host/fia_tiling_info.h':
+        'd201e4ed6ca93fb90a7a60c9da5fbfbb5727810768ffd6cd74e8c67115febda4',
+}
+
+
+def verify_normal_token_sources(completion):
+    """Pin the actual built attention parser; never use experimental/attention."""
+    root = Path(completion).resolve(strict=True).parent.parent/'source'
+    observed = {}
+    for relative, expected in CANONICAL_TOKEN_SOURCE_SHA256.items():
+        path = root/relative
+        require(not path.is_symlink() and path.resolve(strict=True) == path
+            and path.stat().st_size <= 256*1024 and sha(path) == expected,
+            'ARCH22_NORMAL_TOKEN_PARSER_SOURCE_DIFFERS:'+relative)
+        observed[relative] = expected
+    return observed
+
+
+def normal_token_window(actual):
+    # The pinned FiaInfoParser.cpp GetPreNextToken calls
+    # UpdatePreNextTokenBySparseMode before GenerateInfo. RIGHT_DOWN=3 sets
+    # (INT_MAX, 0), irrespective of the supplied pre/next attributes. Its
+    # later ANTI_QUANT + S1=1 override is excluded by the actual FP16 Q/K/V.
+    require(actual.get('sparse_mode') == 3
+        and all(str(actual[name].dtype) == 'torch.float16' for name in ('query','key','value'))
+        and all(actual.get(name) is None for name in OPTIONAL)
+        and all(actual.get(name, 0) == 0 for name in
+                ('antiquant_mode','key_antiquant_mode','value_antiquant_mode','query_quant_mode')),
+        'ARCH22_NONQUANT_CAUSAL_TOKEN_SCOPE_REQUIRED')
+    require(all(type(actual[name]) is int for name in ('pre_tokens','next_tokens') if name in actual),
+            'ARCH22_TOKEN_ATTRIBUTE_TYPE_DIFFERS')
+    return dict(rule='PINNED_FIA_RIGHT_DOWN_NONQUANT',
+        supplied_python_attributes={name:actual[name] for name in ('pre_tokens','next_tokens') if name in actual},
+        omitted_python_defaults={name:2147483647 for name in ('pre_tokens','next_tokens') if name not in actual},
+        effective_native_pre_token=2147483647, effective_native_next_token=0,
+        parser_source_sha256=dict(CANONICAL_TOKEN_SOURCE_SHA256))
 
 
 def verify_bundle(completion, completion_sha256, vendor):
@@ -44,6 +85,7 @@ def verify_bundle(completion, completion_sha256, vendor):
         and compiled.get('schema_sha256') == data['arch22_public_schema_sha256']
         and compiled.get('npu_executed') is False and compiled.get('loading_allowed') is False,
         'ARCH22_SCHEMA_IS_NOT_A_NATIVE_QUALIFICATION')
+    bundle['canonical_token_sources'] = verify_normal_token_sources(completion)
     return bundle
 
 
@@ -69,6 +111,7 @@ def validate_normal_call(actual, boundary, *, allow_cpu_test=False):
     defaults = {name: 2147483647 for name in ('pre_tokens', 'next_tokens') if name not in actual}
     for name in ('pre_tokens', 'next_tokens'):
         require(type(actual.get(name, 2147483647)) is int, 'ARCH22_TOKEN_ATTRIBUTE_TYPE_DIFFERS')
+    normal_token_window(actual)
     return dict(shape, native_route='FiaTilingNonQuant', fault_s2=None,
                 normal_only=True, omitted_argument_defaults=defaults)
 
@@ -82,14 +125,16 @@ def validate_native(launch, host, actual, boundary):
     require(launch['tiling_key'] == 103000000010300003 and launch['block_dim'] == 16
         and launch['schedule_mode'] == 1, 'ARCH22_OBSERVED_STOCK_ROUTE_ENTRY_DIFFERS')
     typed = launch['typed']
+    tokens = normal_token_window(actual)
     expected = {'baseParams.bSize': 1, 'baseParams.n2Size': 8, 'baseParams.gSize': 2,
         'baseParams.headDim': 128, 'baseParams.headDimRope': 0, 'baseParams.softmaxLseFlag': 0,
+        'baseParams.isLegacyIfa': 0,
         'baseParams.actualSeqS1Dims': 1, 'baseParams.actualSeqS2Dims': 1,
         'innerSplitParams.s2BaseSize': 512, 'pageAttenParams.blockSize': 16,
         'pageAttenParams.maxBlockNumPerBatch': int(actual['block_table'].shape[1]),
         'maskParams.attenMaskFlag': 1, 'maskParams.sparseMode': 3,
-        'maskParams.preToken': actual.get('pre_tokens', 2147483647),
-        'maskParams.nextToken': actual.get('next_tokens', 2147483647),
+        'maskParams.preToken': tokens['effective_native_pre_token'],
+        'maskParams.nextToken': tokens['effective_native_next_token'],
         'leftPaddingParams.qPaddingFlag': 0, 'leftPaddingParams.kvPaddingFlag': 0,
         'prefixParams.prefixFlag': 0, 'pseParams.pseShiftFlag': 0}
     require(all(typed.get(name) == value for name, value in expected.items()),
@@ -102,6 +147,7 @@ def validate_native(launch, host, actual, boundary):
         'ARCH22_FINAL_SEQUENCE_CAPACITY_DIFFERS')
     return dict(route='FiaTilingNonQuant', selected_s2=512, normal_only=True,
         actual_pre_tokens=typed['maskParams.preToken'], actual_next_tokens=typed['maskParams.nextToken'],
+        public_to_native_token_window=tokens,
         scalar_source='INDEPENDENT_FINAL_ARGUMENT_POD_MATCHED_TO_PUBLIC_HOST_SERIALIZER',
         stock_route_entry_matches=True, stock_abi_decoded=False, stock_private_exact_proven=False)
 
@@ -132,7 +178,8 @@ class Arch22NormalNativeCall(_NativeCall):
             and all(sha(Path(receipt['sdk'])/row['path']) == row['sha256'] for row in interfaces),
             'ARCH22_FRESH_RUNTIME_SDK_ABI_DIFFERS')
         self.fingerprint = dict(completion_sha256=completion_sha256, kernel_sha256=data['kernel_binary_sha256'],
-            mechanism=self.mechanism, normal_only=True, stock_private_exact_proven=False)
+            mechanism=self.mechanism, normal_only=True, stock_private_exact_proven=False,
+            canonical_token_sources=dict(self.build['canonical_token_sources']))
         self._initialize(self.mechanism, observer_receipt, observer_receipt_sha256, evidence_dir)
         self.policy_prefix = 'DCAT33_TND_'
 
