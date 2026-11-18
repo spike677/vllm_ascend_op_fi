@@ -137,6 +137,10 @@ class Paged33S2ServingProvider(AttentionServingProvider):
 def resolve_paged_decode_provider(worker,model,identity):
     """Registry mapping keeps stock census available, selects only exact driver."""
     table=getattr(worker,ATTRIBUTE,None);binding=table.get('33.paged_decode') if type(table) is dict else None
+    from ..paged33_group_native import GroupEffectsNativeCall
+    if binding is not None and type(binding.native) is GroupEffectsNativeCall:
+        from .paged33_group import Paged33GroupServingProvider
+        return Paged33GroupServingProvider(worker,model,identity)
     if binding is not None and type(binding.native) is Arch22S2EffectsNativeCall:
         return Paged33S2ServingProvider(worker,model,identity)
     return PagedDecodeServingProvider(worker,model,identity)

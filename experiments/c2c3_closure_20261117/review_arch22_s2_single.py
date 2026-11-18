@@ -62,12 +62,16 @@ def cleanup(state):
         and resource['needs_off'] is False,'S2_PENDING_OR_FAILED_REQUEST_NOT_CLEAN')
 
 
-def protocol(run,data,*,allow_cpu_contract=False):
+def protocol(run,data,*,allow_cpu_contract=False,group_phases=None):
+    phases=tuple(group_phases) if group_phases is not None else PHASES
+    count=len(phases);group=group_phases is not None
+    actions=['attach','prepare','register','check','enable']+['advance','query','advance']*count+['finish','disable','unregister','detach']
+    last=4+3*count
     host=artifact(run,data['host_receipt']);history=host['history'];refs=data['worker_core']['receipts']
-    need(host['schema']=='demoncat.worker_core.host_receipt.v1' and [r['action'] for r in history]==ACTIONS
-        and len(refs)==len(ACTIONS),'S2_COMPLETE_ORIGINAL_PUBLIC_PROTOCOL_REQUIRED')
+    need(host['schema']=='demoncat.worker_core.host_receipt.v1' and [r['action'] for r in history]==actions
+        and len(refs)==len(actions),'S2_COMPLETE_ORIGINAL_PUBLIC_PROTOCOL_REQUIRED')
     for ref,row in zip(refs,history):need(ref['action']==row['action'] and artifact(run,ref)==row,'S2_RAW_RPC_HISTORY_DIFFERS')
-    requests=data['requests'];need([r['phase'] for r in requests]==list(PHASES),'S2_FIVE_ACTUAL_REQUESTS_REQUIRED')
+    requests=data['requests'];need([r['phase'] for r in requests]==list(phases),'S2_FIVE_ACTUAL_REQUESTS_REQUIRED')
     ticket=history[1]['response']['ticket'];owner=history[1]['response']['provider_state']['owner'];generation=ticket['generation']
     need(host['worker']==data['setup']['worker']==ticket['worker'] and host['owner']==ticket['owner']
         and host['tenant_id']==ticket['tenant_id'] and ticket['mechanism']=='33.paged_decode'
@@ -79,12 +83,12 @@ def protocol(run,data,*,allow_cpu_contract=False):
     simulation=installed['simulation'];need(type(simulation) is bool and (not simulation or allow_cpu_contract),
         'CPU_CONTRACT_IS_NOT_NATIVE_QUALIFICATION')
     for index,item in enumerate(history[1:-1],1):
-        response=item['response'];state=response['provider_state'];active=4<=index<=19;reserved=2<=index<=21
-        complete=max(0,min(5,(index-4)//3));pending=None
-        if 5<=index<=19 and (index-5)%3 in (0,1):
-            n=(index-5)//3;pending=[requests[n]['mapping']['internal_request_id'],PHASES[n]]
+        response=item['response'];state=response['provider_state'];active=4<=index<=last;reserved=2<=index<=last+2
+        complete=max(0,min(count,(index-4)//3));pending=None
+        if 5<=index<=last and (index-5)%3 in (0,1):
+            n=(index-5)//3;pending=[requests[n]['mapping']['internal_request_id'],phases[n]]
         phase='PREPARED' if index==1 else 'REGISTERED' if index==2 else 'CHECKED' if index==3 else (
-            'ATTEMPTED' if index<=19 else 'FINISHED' if index==20 else 'STOPPED' if index==21 else 'UNREGISTERED')
+            'ATTEMPTED' if index<=last else 'FINISHED' if index==last+1 else 'STOPPED' if index==last+2 else 'UNREGISTERED')
         need(response['ticket']==ticket and response['phase']==phase and response['recovery_required'] is False
             and response['status']==('QUERY_OK' if item['action']=='query' else 'ACTION_COMPLETED')
             and state['owner']==owner and state['generation']==generation and state['simulation'] is simulation
@@ -94,9 +98,9 @@ def protocol(run,data,*,allow_cpu_contract=False):
             and state['registered'] is reserved and state['binding_reserved'] is reserved
             and state['replay_pending'] is active and state['native_registered'] is active and state['replay_failed'] is False
             and state['enabled'] is False and state['inflight']==state['leases']==0
-            and state['C2'] is state['C3'] is False,'S2_PROVIDER_RESOURCE_LIFECYCLE_DIFFERS:'+str(index))
+            and state['C3'] is False and (group or state['C2'] is False),'S2_PROVIDER_RESOURCE_LIFECYCLE_DIFFERS:'+str(index))
         resource=state['serving']['resource_state'];native=state['native_state']
-        actual_calls=max(0,min(5,(index-3)//3));held=actual_calls if active else 0
+        actual_calls=max(0,min(count,(index-3)//3))*(28 if group else 1);held=actual_calls if active else 0
         need(all(state[k]==resource[k] and (state[k]==installed[k]>0 if active else state[k]==0)
                  for k in ('owned_hooks','owned_api_wrappers'))
             and native['scope_active'] is native['scope_owned'] is False and native['environment_owned']==0
@@ -104,13 +108,13 @@ def protocol(run,data,*,allow_cpu_contract=False):
             and native['calls']==actual_calls and native['retained_input_objects']==resource.get('owned_input_references',0)==held,
             'S2_ACTUAL_IDLE_SCOPE_OR_HOOKS_DIFFERS')
         need(state['serving']['pending_request']==resource['pending_request']==pending
-            and state['serving']['next_phase']==('complete' if complete==5 else PHASES[complete])
+            and state['serving']['next_phase']==('complete' if complete==count else phases[complete])
             and resource['completed_requests']==complete
             and state['evidence']['requests']==[r['worker'] for r in requests[:complete]],
             'S2_QUERY_PURITY_OR_ACTUAL_ROW_COLLECTION_DIFFERS:'+str(index))
         if item['action']=='query':need(response['quarantined'] is False,'S2_QUERY_QUARANTINED')
         counts.append(dict(action=item['action'],completed=complete,pending=pending))
-    final=history[20]['response']['provider_state'];need(final==data['final_cleanup'],'S2_ORIGINAL_FINISH_CHANGED');cleanup(final)
+    final=history[last+1]['response']['provider_state'];need(final==data['final_cleanup'],'S2_ORIGINAL_FINISH_CHANGED');cleanup(final)
     unregistered=history[-2]['response']['provider_state'];cleanup(unregistered)
     need(not unregistered['registered'] and not unregistered['binding_reserved'] and history[-1]['response']['status']=='DETACHED'
         and host['ticket'] is host['attachment'] is host['census_ticket'] is None and host['ownership_retained'] is False
@@ -121,7 +125,7 @@ def protocol(run,data,*,allow_cpu_contract=False):
     health=data['post_unregister_health'];need(health['scope']=='TOKENS_TEXT_ONLY_NO_POST_UNREGISTER_HIDDEN_OR_LOGITS_OBSERVER'
         and health['response']['outputs']==data['warm_healthy']['outputs'],'S2_POST_UNREGISTER_TOKEN_HEALTH_DIFFERS')
     ids=[r['mapping']['internal_request_id'] for r in requests]+[health['mapping']['internal_request_id']]
-    need(len(set(ids))==6 and all(type(x) is str and x for x in ids),'S2_FRESH_ACTUAL_REQUEST_IDS_REQUIRED')
+    need(len(set(ids))==count+1 and all(type(x) is str and x for x in ids),'S2_FRESH_ACTUAL_REQUEST_IDS_REQUIRED')
     return dict(worker=host['worker'],provider_owner=owner,host_owner=host['owner'],generation=generation,
                 actions=counts,simulation=simulation,qualification_flags_used_as_proof=False)
 

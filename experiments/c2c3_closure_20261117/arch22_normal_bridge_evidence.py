@@ -67,10 +67,14 @@ ALL_REQUIRED=(EXPERIMENT+'prepare_arch22_all_normal_cases.py',EXPERIMENT+'review
     WORKER+'paged33_all_normal.py',WORKER+'paged33_normal_targets.py',
     NATIVE+'fia/apply_tnd33_arch22_all_normal.py',NATIVE+'fia/paged33_arch22_all_normal.h')
 
-GROUP_REQUIRED=tuple(EXPERIMENT+n+'.py' for n in ('prepare_arch22_group_normal_cases','review_arch22_group_normal')) + (
+GROUP_REQUIRED=tuple(EXPERIMENT+n+'.py' for n in ('prepare_arch22_group_normal_cases','review_arch22_group_normal',
+    'prepare_arch22_group_c2_cases','natural33_arch22_group_worker_core_probe','review_arch22_group_c2')) + (
     WORKER+'paged33_group_normal.py',NATIVE+'fia/apply_tnd33_arch22_group_s2.py',
     NATIVE+'fia/paged33_arch22_group_s2.h',NATIVE+'runtime_log_index.py',
-    NATIVE+'group_resource_budget.py',WORKER+'paged33_group_evidence.py')
+    NATIVE+'group_resource_budget.py',WORKER+'paged33_group_evidence.py',
+    WORKER+'paged33_group_native.py',WORKER+'paged33_group_execution.py',WORKER+'paged33_group_control.py',
+    WORKER+'providers/paged33_group.py','fault_injection/coverage.py','fault_injection/coverage_session.py',
+    'fault_injection/coverage_audit.py')
 
 def variant(source):return source.get('variant',VARIANT)
 def vendor_name(source):return GROUP_VENDOR if variant(source)==GROUP_VARIANT else ALL_VENDOR if variant(source)==ALL_VARIANT else S2_VENDOR if variant(source)==S2_VARIANT else VENDOR

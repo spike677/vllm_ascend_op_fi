@@ -60,10 +60,11 @@ reported as Python observation, never a loaded Native provider or qualification.
     require(not model.training and all(name not in vars(obj) for obj in (worker, runner)
             for name in ('execute_model', '_prepare_inputs')), 'ATTENTION_ORIGINAL_INFERENCE_WORKER_REQUIRED')
     if not _simulation:
+        from .paged33_group_native import GroupEffectsNativeCall
         require_serial_eager(runner, expected_max_seqs=1)
         require(_test_context is None, 'ATTENTION_CPU_SEAM_ON_REAL_WORKER')
         require(native is None or type(native) in (FaNativeCall, FiaNativeCall, PagedNativeCall,
-                Arch22NormalNativeCall, Arch22S2EffectsNativeCall, StockTndPrefillCensus),
+                Arch22NormalNativeCall, Arch22S2EffectsNativeCall, GroupEffectsNativeCall, StockTndPrefillCensus),
                 'ATTENTION_REVIEWED_NATIVE_ADAPTER_REQUIRED')
     else:
         require(type(_test_context) is dict, 'ATTENTION_EXPLICIT_CPU_CONTEXT_REQUIRED')

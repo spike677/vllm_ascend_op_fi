@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 import sys
 import traceback
+import time
 
 from attention33_contract import RUNNER,execution_contract,require,sha
 from attention33_worker_probe import PROMPT,response,worker_object
@@ -40,7 +41,7 @@ def remove(worker,expected,mechanism):
     return remove_attention_serving_binding(worker,mechanism)
 
 
-def setup(worker,expected,prompt,proof_args,native_args,execution):
+def setup(worker,expected,prompt,proof_args,native_args,execution,*,group=False):
     import inspect
     # Written by the Worker before crossing collective_rpc, which may retain
     # only an exception type. This is diagnostics, never a qualification token.
@@ -51,6 +52,10 @@ def setup(worker,expected,prompt,proof_args,native_args,execution):
         from demoncat.runtime.vllm_ascend.worker_extension.paged33_s2_evidence import load_verified_normal_evidence
         from demoncat.runtime.vllm_ascend.worker_extension.paged33_arch22_s2_effects import Arch22S2EffectsNativeCall
         from demoncat.runtime.vllm_ascend.worker_extension.serving_attention import install_attention_serving_binding
+        if group:
+            from demoncat.runtime.vllm_ascend.worker_extension.paged33_group_evidence import load_group_normal_evidence as load_verified_normal_evidence
+            from demoncat.runtime.vllm_ascend.worker_extension.paged33_group_native import GroupEffectsNativeCall as Arch22S2EffectsNativeCall
+            native_args=dict(native_args,worker_identity=expected)
         worker=worker_object(worker)
         require(Path(inspect.getfile(Arch22S2EffectsNativeCall)).resolve().is_relative_to('/installed'),
                 'S2_INSTALLED_WHEEL_REQUIRED')
@@ -85,7 +90,7 @@ def setup(worker,expected,prompt,proof_args,native_args,execution):
         raise
 
 
-def drive(llm,client,*,prompt,params,out,report):
+def drive(llm,client,*,prompt,params,out,report,phases=PHASES,group=False):
     from demoncat.runtime.vllm_ascend.worker_extension.serving_context import read_enqueued_identity
     folder=out/'worker_core_rpc';folder.mkdir(exist_ok=False)
     core=report.setdefault('worker_core',dict(receipts=[]));report['requests']=[]
@@ -124,7 +129,7 @@ def drive(llm,client,*,prompt,params,out,report):
         pending=[];save(out/'result.json',report)
     try:
         for name in ('prepare','register','check','enable'):action(name)
-        for phase in PHASES:request(phase)
+        for phase in phases:request(phase)
     except BaseException as error:
         failure=repr(error);report.update(error=failure,traceback=traceback.format_exc())
         if pending:
@@ -136,8 +141,9 @@ def drive(llm,client,*,prompt,params,out,report):
         try:
             state=action('query',expected='QUERY_OK')
             native=state['native_state'];resource=state['serving']['resource_state']
-            if native.get('effect_attempted') and not native.get('off_confirmed') and resource['needs_off']:
+            if resource['needs_off'] and (group or native.get('effect_attempted') and not native.get('off_confirmed')):
                 action('recover');request('recovery_off')
+                if group:request('recovery_health')
         except BaseException as error:report['recovery_error']=repr(error)
     try:
         if failure is not None and client.snapshot()['ticket'] is None:
@@ -152,7 +158,7 @@ def drive(llm,client,*,prompt,params,out,report):
             return
         if failure is None:
             final=action('finish')
-            require(final['C1'] is True and final['C2'] is False and final['C3'] is False
+            require((final['C2'] is True and final['C1'] is False if group else final['C1'] is True and final['C2'] is False) and final['C3'] is False
                 and not any(final[key] for key in ('leases','inflight','owned_hooks','owned_api_wrappers'))
                 and final['native_state']['retained_input_objects']==0
                 and final['serving']['resource_state']['owned_input_references']==0,
@@ -174,10 +180,10 @@ def drive(llm,client,*,prompt,params,out,report):
         require(values[0].outputs and report['post_unregister_health']['response']['outputs']==report['warm_healthy']['outputs'],
                 'S2_POST_UNREGISTER_HEALTH_DIFFERS')
         for row in report['requests']:
-            if row['phase']!='fault' and row.get('completed'):
+            if not row['phase'].startswith('fault') and row.get('completed'):
                 require(row['response']['outputs']==report['warm_healthy']['outputs'],'S2_CONTROL_TOKEN_HEALTH_DIFFERS')
         pending=[]
-        report['status']=SUCCESS if failure is None else 'FAILED_WITH_ORIGINAL_ERROR_AND_RECOVERED_OFF'
+        report['status']=('PUBLIC_ALL_TARGET_S2_C2_RECORDED_PENDING_INDEPENDENT_REVIEW' if group else SUCCESS) if failure is None else 'FAILED_WITH_ORIGINAL_ERROR_AND_RECOVERED_OFF'
     except BaseException as error:
         report.setdefault('error',repr(error));report['cleanup_error']=repr(error)
         report['status']='FAILED_WITH_OWNER_OR_RECOVERY_EVIDENCE'
@@ -196,13 +202,15 @@ def normal_arguments(args):
         report_sha256=args.normal_report_sha256)
 
 
-def run(args,bundle):
+def run(args,bundle,*,protocol=None):
+    entry=protocol.__file__ if protocol else __file__
+    case_started=time.monotonic()
     from demoncat.runtime.vllm_ascend.worker_extension.paged33_loading import bootstrap
-    report=dict(schema='demoncat.paged33.public_s2_single.v1',status='STARTED',probe_sha256=sha(__file__),
+    report=dict(schema='demoncat.paged33.public_group_s2.v1' if protocol else 'demoncat.paged33.public_s2_single.v1',status='STARTED',probe_sha256=sha(entry),
         C1=False,C2=False,C3=False,E5='NOT_ASSESSED',source_manifest_sha256=args.source_manifest_sha256,
         normal_inputs={k:str(v) if isinstance(v,Path) else v for k,v in normal_arguments(args).items()},
-        execution_contract=execution_contract(args.model,'/installed',__file__,.35,os.environ),
-        scope='ONE_SOURCE_BOUND_FIRST_LAYER_TND_Q1_KV1025_PAGE16_FP16',all_model_eligible_qualified=False)
+        execution_contract=execution_contract(args.model,'/installed',entry,.35,os.environ),
+        scope='ALL_28_ACTUAL_DECODE_TARGETS_ISOLATED_C2' if protocol else 'ONE_SOURCE_BOUND_FIRST_LAYER_TND_Q1_KV1025_PAGE16_FP16',all_model_eligible_qualified=False)
     save(args.out/'result.json',report)
     client=None;llm=None
     try:
@@ -224,14 +232,16 @@ def run(args,bundle):
             vendor=bundle['vendor'],schema=args.build_root/'evidence/arch22_schema/fia_abi_schema.json',
             schema_sha256=bundle['completion']['arch22_public_schema_sha256'],observer_receipt=args.observer,
             observer_receipt_sha256=args.observer_receipt_sha256,evidence_dir=args.out/'native')
+        if protocol:native.update(case_budget_seconds=args.case_budget_seconds,case_started_monotonic=case_started)
         def deploy(expected,config):
             try:
-                rows=llm.collective_rpc(setup,args=(expected,tokens,normal_arguments(args),native,report['execution_contract']),timeout=600)
+                rows=llm.collective_rpc(protocol.setup if protocol else setup,args=(expected,tokens,normal_arguments(args),native,report['execution_contract']),timeout=600)
             finally:record_setup_diagnostic(args.out,report)
             require(len(rows)==1 and rows[0]['worker']==expected,'S2_TP1_DEPLOYMENT_CHANGED')
             report['setup']=rows[0];return {}
         client=WorkerFaultClient(HostAdapter(llm,prepare_binding=deploy,timeout=600),FaultConfig(33,'paged_decode'))
-        drive(llm,client,prompt=prompt,params=params,out=args.out,report=report)
+        drive(llm,client,prompt=prompt,params=params,out=args.out,report=report,
+              phases=protocol.PHASES if protocol else PHASES,group=protocol is not None)
         setup_receipt=report.get('deployment_setup',{}).get('receipt',{})
         if (report.get('setup') or setup_receipt.get('binding_installed') is True) and not client.snapshot()['ownership_retained']:
             report['library_coexistence_after_owned_cleanup']=loader.verify()
@@ -244,22 +254,26 @@ def run(args,bundle):
         else:report.update(error=repr(error),traceback=traceback.format_exc())
     finally:save(args.out/'result.json',report)
     print(json.dumps({key:report[key] for key in ('status','error','C2','C3','E5') if key in report}))
-    return 0 if report['status']==SUCCESS else 2
+    return 0 if report['status']==('PUBLIC_ALL_TARGET_S2_C2_RECORDED_PENDING_INDEPENDENT_REVIEW' if protocol else SUCCESS) else 2
 
 
-def main():
+def main(*,protocol=None):
+    entry=protocol.__file__ if protocol else __file__
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ('source','build-root','observer','stock-run','baseline-run','normal-report','model','out'):
         parser.add_argument('--'+key,type=Path,required=True)
     for key in ('source-manifest-sha256','completion-sha256','observer-receipt-sha256','stock-sha256',
                 'baseline-sha256','normal-report-sha256'):parser.add_argument('--'+key,required=True)
+    if protocol:parser.add_argument('--case-budget-seconds',type=int,required=True)
     parser.add_argument('--child',action='store_true',help=argparse.SUPPRESS);args=parser.parse_args()
     require(args.out.resolve().is_relative_to('/evidence'),'S2_PRIVATE_EVIDENCE_DIRECTORY_REQUIRED')
     from demoncat.runtime.vllm_ascend.worker_extension.paged33_arch22_s2_normal import verify_bundle
     # Keep the exact same loader/vendor alias as the preceding normal pair.
     # The original build-root alias additionally exposes its patch receipt to
     # the independent raw reviewer; both mounts are read-only identical bytes.
-    vendor=Path('/native/stage/vendors/dcat_f33_arch22_s2_transformer')
+    if protocol:
+        from demoncat.runtime.vllm_ascend.worker_extension.paged33_group_native import verify_bundle
+    vendor=Path('/native/stage/vendors/'+('dcat_f33_arch22_group_s2_transformer' if protocol else 'dcat_f33_arch22_s2_transformer'))
     bundle=verify_bundle(args.build_root/'evidence/completion.json',args.completion_sha256,vendor)
     require(sha(args.observer)==args.observer_receipt_sha256,'S2_OBSERVER_RECEIPT_CHANGED')
     observer=json.loads(args.observer.read_bytes());library=observer['observer_library']
@@ -274,8 +288,8 @@ def main():
         runtime=args.out/'runtime';runtime.mkdir()
         environment=dict(os.environ,LD_PRELOAD=library['path'],DCAT_ATTN_OBSERVER_DIR=str(runtime),
             ASCEND_CUSTOM_OPP_PATH=str(vendor),ACLNN_CACHE_LIMIT='0',TASK_QUEUE_ENABLE='0',VLLM_ENABLE_V1_MULTIPROCESSING='0')
-        os.execve(sys.executable,[sys.executable,'-B',str(Path(__file__).resolve()),*sys.argv[1:],'--child'],environment)
-    return run(args,bundle)
+        os.execve(sys.executable,[sys.executable,'-B',str(Path(entry).resolve()),*sys.argv[1:],'--child'],environment)
+    return run(args,bundle,protocol=protocol)
 
 
 if __name__=='__main__':raise SystemExit(main())
