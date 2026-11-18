@@ -4,9 +4,16 @@ import inspect
 from pathlib import Path
 
 
+IDLE_PHASES = frozenset((
+    'healthy_0', 'healthy_1', 'native_baseline', 'baseline', 'baseline_repeat',
+    'lossless', 'c2_fault', 'c2_off', 'c3_fault_0', 'c3_fault_1', 'c3_off',
+    'cleanup_healthy', 'recovery_off', 'recovery_health',
+))
+
+
 def reset_idle_mm_cache(llm, phase):
-    if phase not in ('healthy_0', 'healthy_1') or llm.llm_engine.has_unfinished_requests():
-        raise RuntimeError('MM_CACHE_RESET_REQUIRES_IDLE_HEALTHY_PHASE')
+    if phase not in IDLE_PHASES or llm.llm_engine.has_unfinished_requests():
+        raise RuntimeError('MM_CACHE_RESET_REQUIRES_IDLE_DECLARED_PHASE')
     method = getattr(llm, 'reset_mm_cache', None)
     function = getattr(method, '__func__', None)
     if not callable(method) or function is None or getattr(method, '__self__', None) is not llm:
