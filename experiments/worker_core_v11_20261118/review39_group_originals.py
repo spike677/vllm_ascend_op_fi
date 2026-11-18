@@ -54,16 +54,46 @@ def process_start_matches(target_start, worker, *, natural):
     return valid_linux and target_start in (worker_start,linux[3])
 
 
-def provenance(d, host, final, source_root, manifest_sha, commit, native_library, *, profile):
+def native_identity_guards(a, d, host, expected):
+    """An explicit external pin extends the group reader, not the old C1 oracle."""
+    a.check(C.sha(expected) and d.get('native_sha256') == expected, 'EXPLICIT_NATIVE_LIBRARY_PIN')
+    a.check(d.get('schema') == 'demoncat.output39.worker_core_probe.v1' and
+        d.get('mechanism') == '39.output_proxy' and d.get('standard_worker') is True and
+        d.get('stage') in ('c2_once','c2_c3') and d.get('status') in
+            ('STANDARD_WORKER_OUTPUT39_GROUP_EVIDENCE_READY_FOR_REVIEW','REFUSED_OR_FAILED'),
+        'ACTUAL_GROUP_ENTRY_SCHEMA_STAGE_AND_STATUS')
+    binding = d.get('binding')
+    a.check(isinstance(binding, dict), 'ORIGINAL_GROUP_DEPLOYMENT_REQUIRED')
+    if not isinstance(binding, dict):
+        return
+    value = binding['binding']; native = value['native']
+    a.check(binding['worker'] == host['worker'] and value['mechanism'] == '39.output_proxy' and
+        value['status'] == 'SERVING_DEPLOYMENT_BOUND_NOT_QUALIFIED' and all(
+            type(value[k]) is int and value[k] == 0 for k in ('workers_created','hooks_installed','native_leases_opened')) and
+        all(value[k] is False for k in ('qualification_granted','c2','c3')),
+        'TYPED_INERT_GROUP_DEPLOYMENT_NOT_ACCEPTANCE')
+    a.check(type(native['abi']) is int and native['abi'] == 1 and native['sha256'] == expected and
+        native['loaded_mapping_verified'] is True and native['read_span_available'] is True and
+        native['simulation'] is False and native['qualification_granted'] is False,
+        'EXACT_PINNED_NONSIMULATED_NATIVE_ABI_AND_MAPPING')
+
+
+def provenance(d, host, final, source_root, manifest_sha, commit, native_library, *, profile,
+               native_sha256=None):
     c, p = OLD.helpers(profile)
-    saved_modules, saved_sources = OLD.MODULES, OLD.SOURCES
+    saved_modules, saved_sources, saved_native_sha = OLD.MODULES, OLD.SOURCES, OLD.NATIVE_SHA
+    expected_native = saved_native_sha if native_sha256 is None else native_sha256
+    guard = C.Audit(); native_identity_guards(guard, d, host, expected_native)
     # Extend the *reviewer's expected file set*, never alter source or receipts.
+    # Preserve every legacy source/file/loaded-mapping comparison. The new
+    # expected DSO comes only from an explicit caller pin, never the probe field.
     try:
         OLD.MODULES = saved_modules + EXTRA_MODULES
         OLD.SOURCES = saved_sources + EXTRA_MODULES
+        OLD.NATIVE_SHA = expected_native
         result = OLD.provenance(c, d, host, source_root, manifest_sha, commit, native_library, profile=profile)
     finally:
-        OLD.MODULES, OLD.SOURCES = saved_modules, saved_sources
+        OLD.MODULES, OLD.SOURCES, OLD.NATIVE_SHA = saved_modules, saved_sources, saved_native_sha
     a = C.Audit(); names = {Path(name).name: name for name in d['sources']}
     pins = [OLD.CORE+n+'.py' for n in ('serving39_output_group', 'providers/fault39_output_group',
         'serving39_output', 'serving39_output_discovery', 'providers/fault39_output', 'gemm_lineage', 'call_binding', 'identity')] + [
@@ -76,7 +106,9 @@ def provenance(d, host, final, source_root, manifest_sha, commit, native_library
         for row in group['coverage']['recovery']['targets']:
             a.check(dict(row['lease']['target']['provider_proof'])['native_library_sha256'] == d['native_sha256'],
                     'GROUP_TARGET_BINDS_REHASHED_NATIVE_DSO', label)
-    return dict(consistent=result['consistent'] and not a.issues, loaded_source_review=result,
+    return dict(consistent=result['consistent'] and not a.issues and not guard.issues, loaded_source_review=result,
+                native_identity_review=guard.report(), expected_native_sha256=expected_native,
+                native_pin_basis='EXPLICIT_REVIEW_ARGUMENT' if native_sha256 is not None else 'LEGACY_C1_DEFAULT_PIN',
                 group_source_review=a.report(), source_manifest_sha256=manifest_sha,
                 limits=['External installed model and weight files remain original runtime SHA receipts; not rehashed by this audit.',
                         'A build fingerprint string is not an independently rehashed compiler/build receipt.'])
@@ -575,6 +607,7 @@ def main(argv=None):
     parser.add_argument('--result', default='probe/result.json'); parser.add_argument('--profile', default=OLD.CUSTOM_PROFILE,
                         choices=(OLD.LEGACY_PROFILE, OLD.CUSTOM_PROFILE))
     for name in ('source-root', 'native-library'): parser.add_argument('--'+name, type=Path, required=True)
+    parser.add_argument('--native-sha256', help='Explicit reviewed DSO byte pin; omission retains the fixed legacy C1 pin')
     for name in ('source-manifest-sha256', 'source-commit'): parser.add_argument('--'+name, required=True)
     args = parser.parse_args(argv); sys.addaudithook(C.deny_runtime)
     a = C.Audit()
@@ -590,7 +623,7 @@ def main(argv=None):
         if refs:
             final = originals.load(refs[-1], mounted=True)
             result['provenance'] = provenance(document,host,final,args.source_root,args.source_manifest_sha256,
-                args.source_commit,args.native_library,profile=args.profile)
+                args.source_commit,args.native_library,profile=args.profile,native_sha256=args.native_sha256)
             result['consistent'] = result['consistent'] and result['provenance']['consistent']
             if 'completed_stage_originals_reconciled' in result:
                 result['completed_stage_originals_reconciled'] = {name:bool(ok and result['consistent'])

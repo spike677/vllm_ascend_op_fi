@@ -55,10 +55,11 @@ TORCH_DEVICE_BACKEND_AUTOLOAD=0
 python -B -m unittest test_worker_core39_direct_original_review test_worker_core_group_original_review -q
 ```
 
-All **47 tests passed** in 16.975 seconds on the local CPU environment after
-adding the rejected-Native-apply joins. This replaces, and is not added to, the
-earlier overlapping 44-test run. The exception-path hook warning is expected by
-the failed-C3 fixture.
+All **57 tests passed** in 22.406 seconds on the local CPU environment after
+adding rejected-Native-apply joins and explicit Native byte-pin provenance.
+The final command also includes `test_output39_group_native_provenance`.
+This replaces, and is not added to, the earlier overlapping 44/47-test runs.
+The exception-path hook warning is expected by the failed-C3 fixture.
 
 For a rejected Native apply, the partial reviewer separately joins the original
 failed enqueue/abort, target and actual partial projection, exact owner,
@@ -69,6 +70,45 @@ not a hit. The report records successful release when observed but does not
 infer the selected original tensor value or compiler provenance from an error
 number. The extra failure-schema unit fixture is explicitly CPU-only; the
 actual NPU result still requires running the CLI over full pinned originals.
+
+## Explicit Native identity for the group audit
+
+The first source84 original review retained 106,972 checks with no top-level
+original-consistency issues, but its provenance correctly remained false. The
+legacy C1 helper expected the old fixed DSO SHA
+`8876f2b99e70a9df8201b6ae0ace2cc4be8702afcf6703f9b72d1dda3bc26622`.
+Both the new probe and the inert deployment readback instead identified
+`2e7f1bb9b957afa9ab1ef14da4aa802608d51234d736cefa93ecc765dde461d7`.
+Consequently `NEW_WORKER_ENTRY_AND_EXACT_NATIVE_DSO` and
+`INERT_TRUSTED_NATIVE_DEPLOYMENT` failed; the 32 source-file and 58 group-source
+checks did not fail. The retained first report SHA is
+`95e04af081e1626638fc1ab898e060582ae4b104251f4bc8f7d1768dfce6e7c1`.
+
+The group CLI now accepts an explicit external byte pin:
+
+```text
+--native-sha256 2e7f1bb9b957afa9ab1ef14da4aa802608d51234d736cefa93ecc765dde461d7
+```
+
+It never selects that expected value from the probe. The actual library bytes,
+the external pin, probe field and deployment readback must all agree. Omitting
+the argument retains the fixed legacy C1 pin and rejects this newer library.
+The legacy C1 file remains unchanged, and its in-memory defaults are restored
+after each group review, including exceptions. All original source-file,
+loaded-source and worker joins still execute.
+
+Additional guards require the actual group schema, mechanism, `c2_once/c2_c3`
+stage, standard-Worker boolean, recognized complete/failed result status,
+inert deployment status, integer-zero startup counts, false qualification
+flags, integer ABI 1, actual mapping/read-span availability and
+`simulation=false`. A failure status is admissible provenance for a failure
+record, not an acceptance oracle. Negative CPU tests reject a wrong/omitted
+pin, changed library/source bytes, altered loaded source or Worker identity,
+nonzero or boolean startup counters, incorrect ABI/schema/stage and simulated
+or unmapped Native state. The new pin still does not rehash a compiler receipt
+or extend any model, CANN or hardware qualification. Source84's C3 failure
+remains unchanged; the root must rerun this reader over the same originals to
+obtain an updated provenance result.
 
 This commit is an audit/CPU adaptation. It does not claim that source84's NPU
 C3 succeeded or that E5 was collected. The actual source84 `POSTWRITE_APPLY_4`
