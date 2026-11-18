@@ -11,6 +11,7 @@ import threading
 import uuid
 
 from .config import FaultConfig
+from .host_receipt_ledger import ReceiptLedger, ReceiptLedgerError
 
 
 HOST_API = 'demoncat.worker_core.host_adapter.v1'
@@ -146,7 +147,9 @@ class WorkerFaultClient:
     and detach. No context manager performs hidden cleanup or retries.
     """
 
-    def __init__(self, host, config):
+    def __init__(self, host, config, *, receipt_mode='full'):
+        if type(receipt_mode) is not str or receipt_mode not in ('full', 'cursor'):
+            raise ValueError('receipt_mode must be full or cursor')
         if getattr(host, 'api', None) != HOST_API or not all(
                 callable(getattr(host, name, None))
                 for name in ('route', 'capabilities', 'prepare_binding', 'invoke')):
@@ -167,10 +170,26 @@ class WorkerFaultClient:
         self._check_completed = False
         self._history = []
         self._lock = threading.RLock()
+        self._receipt_mode = receipt_mode
+        self._receipt_ledger = ReceiptLedger(self.owner, self.tenant_id) if receipt_mode == 'cursor' else None
+        self._receipt_streaming = False
+
+    def _receipt_idle(self):
+        if self._receipt_streaming:
+            raise ReceiptLedgerError('RECEIPT_EXPORT_IN_PROGRESS')
 
     def _record(self, action, reply):
+        self._receipt_idle()
         self._history.append({'action': action, 'response': _copy(reply)})
-        return self._snapshot()
+        if self._receipt_ledger is not None:
+            self._receipt_ledger.append(self._history[-1])
+        return self._action_snapshot()
+
+    def _action_snapshot(self):
+        if self._receipt_mode == 'full':
+            return self._snapshot()
+        ledger = self._receipt_index()
+        return ledger.control(self._snapshot_fields(), record_error=True)
 
     def _reject(self, action, reason):
         return self._record(action, {'status': 'HOST_REJECTED', 'reason': reason})
@@ -209,6 +228,7 @@ class WorkerFaultClient:
                 and (self._lease is None or _canonical(ticket) == _canonical(self._lease)))
 
     def _attach(self):
+        self._receipt_idle()
         if self._attachment is not None:
             return None
         if self._attach_started:
@@ -236,10 +256,11 @@ class WorkerFaultClient:
     def attach(self):
         with self._lock:
             result = self._attach()
-            return self._snapshot() if result is None else result
+            return self._action_snapshot() if result is None else result
 
     def prepare(self):
         with self._lock:
+            self._receipt_idle()
             if self._census is not None:
                 return self._reject('prepare', 'CENSUS_CLEANUP_REQUIRED')
             if self._prepare_started or self._uncertain:
@@ -297,6 +318,7 @@ class WorkerFaultClient:
                              or state.get('recovery_validation_pending') is True)
 
     def _dispatch(self, action, payload=None, settings=None):
+        self._receipt_idle()
         if action != 'prepare':
             if self._lease is None:
                 return self._reject(action, 'LEASE_TICKET_REQUIRED_USE_DETACH_FOR_UNCERTAIN_PREPARE')
@@ -382,6 +404,7 @@ class WorkerFaultClient:
     def discover(self):
         """Read-only C0 inventory from extensions implementing discovery."""
         with self._lock:
+            self._receipt_idle()
             if self._uncertain:
                 return self._reject('discover', 'RECOVERY_REQUIRED')
             result = self._attach()
@@ -408,6 +431,7 @@ class WorkerFaultClient:
     def detach(self):
         """Explicit same-tenant cleanup, including a lost prepare response."""
         with self._lock:
+            self._receipt_idle()
             if self._attachment is None:
                 return self._reject('detach', 'ATTACHMENT_TICKET_REQUIRED')
             reply = None
@@ -453,11 +477,11 @@ class WorkerFaultClient:
             except BaseException as error:
                 return self._failure('detach', error, uncertain=True, response=reply)
 
-    def _snapshot(self):
+    def _snapshot_fields(self):
         recovery = ('REQUIRED' if self._uncertain else 'LEASE_RELEASE_CONFIRMED' if self._released
                     else 'PENDING' if self._pending else 'NOT_ASSESSED')
         response = self._history[-1]['response'] if self._history else {'status': 'NEW'}
-        return _copy(dict(
+        return dict(
             schema='demoncat.worker_core.host_receipt.v1', status=response['status'],
             config=self.config.as_dict(), mechanism=self.config.mechanism,
             worker=self._worker, owner=self.owner, tenant_id=self.tenant_id,
@@ -469,12 +493,60 @@ class WorkerFaultClient:
                          'Recovery': {'status': recovery, 'healthy_output': 'NOT_ASSESSED'}},
             response=response, history=self._history,
             inner_framework_integration_verified=False,
-        ))
+        )
+
+    def _snapshot(self):
+        return _copy(self._snapshot_fields())
 
     def snapshot(self):
         """Copy the receipt ledger; this is not a fresh Worker readback."""
         with self._lock:
             return self._snapshot()
+
+    def _receipt_index(self):
+        if self._receipt_mode != 'cursor' or self._receipt_ledger is None:
+            raise ReceiptLedgerError('RECEIPT_CURSOR_MODE_REQUIRED')
+        self._receipt_ledger.check_scope(self.owner, self.tenant_id, self._history)
+        return self._receipt_ledger
+
+    def receipt_cursor(self):
+        """Return a live ledger position, not permission to issue a Worker action."""
+        with self._lock:
+            return self._receipt_index().cursor()
+
+    def status_receipt(self):
+        """Read bounded Host control state without copying history or making RPCs."""
+        with self._lock:
+            return self._receipt_index().control(self._snapshot_fields())
+
+    def receipt_batch(self, cursor, *, limit=4):
+        """Copy at most four complete records / 8 MiB; never skip an oversized row."""
+        with self._lock:
+            return self._receipt_index().batch(cursor, self._history, limit)
+
+    def stream_receipt(self, cursor, sink):
+        """Export one original record to a fresh binary sink, in <=64 KiB writes."""
+        with self._lock:
+            self._receipt_idle()
+            ledger = self._receipt_index()
+            parts, size, metadata = ledger.record_parts(cursor, self._history)
+            self._receipt_streaming = True
+            try:
+                return ledger.write(sink, parts, size, metadata)
+            finally:
+                self._receipt_streaming = False
+
+    def stream_snapshot(self, sink, *, cursor):
+        """Export the full legacy v1 receipt once, without cloning all history."""
+        with self._lock:
+            self._receipt_idle()
+            ledger = self._receipt_index()
+            parts, size, metadata = ledger.snapshot_parts(cursor, self._snapshot_fields(), self._history)
+            self._receipt_streaming = True
+            try:
+                return ledger.write(sink, parts, size, metadata)
+            finally:
+                self._receipt_streaming = False
 
     def _accept_census(self, action, reply):
         status = reply.get('status')
@@ -508,6 +580,7 @@ class WorkerFaultClient:
     def census_start(self, *, phase, expected, expected_max_seqs=1, max_events=10000):
         """Observe one naturally enqueued request; never run a model here."""
         with self._lock:
+            self._receipt_idle()
             if self._census is not None or self._lease is not None or self._uncertain:
                 return self._reject('census_start', 'IDLE_OWNERSHIP_REQUIRED')
             result = self._attach()
@@ -518,6 +591,7 @@ class WorkerFaultClient:
             return self._census_action('start', dict(self._attachment, owner=self.owner, settings=settings))
 
     def _census_action(self, action, payload=None):
+        self._receipt_idle()
         if payload is None:
             if self._census is None:
                 return self._reject('census_' + action, 'CENSUS_TICKET_REQUIRED')
