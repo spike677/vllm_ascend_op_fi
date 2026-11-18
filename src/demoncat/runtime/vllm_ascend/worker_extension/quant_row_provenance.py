@@ -6,6 +6,7 @@ writes invalidate storage aliases through an independent observed-write epoch.
 """
 import hashlib
 import json
+import sys
 import threading
 import time
 import weakref
@@ -178,9 +179,9 @@ class RequestRowProvenance(TorchDispatchMode):
             and meta == record['metadata'] and self.epochs.get(self.storage_key(meta), 0) == record['write_epoch']
             and (tensor.ndim < len(output_shape) or tensor.ndim == len(output_shape) and tensor.shape[0] == 1))
 
-    def query(self, tensor):
+    def _query(self, tensor, *, visible):
         healthy = self.boundaries is None or not self.boundaries.errors
-        record = self._lookup(tensor) if self.active and not self.ending and healthy and self._visible_context() and not self.errors and not self.overflow else None
+        record = self._lookup(tensor) if self.active and not self.ending and healthy and visible and not self.errors and not self.overflow else None
         if record is None or record['node']['row_axis'] != 0:
             return dict(verified=False, reason='NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN',
                 shape_is_not_request_row_proof=True, tensor=metadata(tensor))
@@ -192,6 +193,111 @@ class RequestRowProvenance(TorchDispatchMode):
                 missing_calls=self.overflow, errors=len(self.errors),
                 source_errors=0 if self.boundaries is None else len(self.boundaries.errors),
                 parent_source_sequences=[row['sequence'] for row in getattr(self.boundaries, 'stack', ())])))
+
+    def query(self, tensor):
+        return self._query(tensor, visible=self._visible_context())
+
+    def _native_query_health(self):
+        require(self.active and not self.ending and not self.mode_released
+                and threading.get_ident() == self.thread and not self.errors and not self.overflow
+                and self.total == len(self.events) <= self.max_calls, 'NATIVE_ROW_OBSERVER_NOT_CURRENT_AND_HEALTHY')
+        source = self.boundaries
+        if source is not None:
+            require(source.graph is self and source.active and not source.ending and not source.errors
+                    and source.thread == self.thread and not source.profile_released
+                    and sys.getprofile() is source.callback, 'NATIVE_ROW_SOURCE_OWNER_OR_HEALTH_CHANGED')
+            source._verify_bindings()
+
+    def capture_native_input_context(self):
+        """Hold actual outer frames; this is not a reusable row authorization."""
+        self._native_query_health()
+        require(self._visible_context(), 'NATIVE_ROW_PUBLIC_CONTEXT_NOT_VISIBLE')
+        modes = tuple(_get_current_dispatch_mode_stack())
+        source = self.boundaries
+        frames = tuple(getattr(source, 'operator_stack', ()))
+        require(len(frames) == len(self.call_stack)
+                and all(frame['func'] is func for frame, func in zip(frames, self.call_stack)),
+                'NATIVE_ROW_PUBLIC_SOURCE_FRAME_CONTEXT_CHANGED')
+        require(modes and (modes[-1] is self or source is not None
+                and any(modes[-1] is mode for mode in source.owned_modes)), 'NATIVE_ROW_DISPATCH_OWNER_CHANGED')
+        return dict(observer=self, forward_id=self.forward_id, operators=tuple(self.call_stack), modes=modes,
+            source=source, source_operators=frames,
+            source_parents=tuple(getattr(source, 'stack', ())))
+
+    def query_native_input(self, tensor, *, public_proof, context, operator, schema):
+        """Recheck the proof inside one actual, read-only Native input dispatch.
+
+        The caller resolves the exact supported OpOverload, never a name alias.
+        Its pending dispatcher frame may be the sole addition to the captured
+        public stack. No errors or opaque frames are hidden to obtain a proof.
+        """
+        self._native_query_health()
+        source = self.boundaries
+        require(context['observer'] is self and context['forward_id'] == self.forward_id
+                and context['source'] is source, 'NATIVE_ROW_OBSERVER_FORWARD_OR_SOURCE_CHANGED')
+        outer = context['operators']
+        require(len(self.call_stack) in (len(outer), len(outer) + 1)
+                and all(actual is old for actual, old in zip(self.call_stack, outer)),
+                'NATIVE_ROW_OUTER_DISPATCH_CONTEXT_CHANGED')
+        frames = tuple(getattr(source, 'operator_stack', ()))
+        parents = tuple(getattr(source, 'stack', ()))
+        require(len(frames) == len(self.call_stack) and len(parents) == len(context['source_parents'])
+                and all(actual is old for actual, old in zip(frames, context['source_operators']))
+                and all(actual is old and actual['status'] == 'INFLIGHT'
+                        for actual, old in zip(parents, context['source_parents']))
+                and all(frame['func'] is func for frame, func in zip(frames, self.call_stack)),
+                'NATIVE_ROW_SOURCE_FRAME_CONTEXT_CHANGED')
+        opaque = [func for func in outer if not str(func).startswith(('aten.', 'prims.'))]
+        require(not opaque or source is not None and source.permits_public_rows(opaque),
+                'NATIVE_ROW_OUTER_OPAQUE_CONTEXT_NOT_VISIBLE')
+        added = len(self.call_stack) != len(outer)
+        expected_modes = context['modes'][:-1] if added else context['modes']
+        require(same_mode_stack(expected_modes), 'NATIVE_ROW_CURRENT_DISPATCH_OWNER_CHANGED')
+        dispatch = None
+        if added:
+            require(isinstance(operator, torch._ops.OpOverload) and self.call_stack[-1] is operator
+                    and str(operator._schema) == schema, 'NATIVE_ROW_UNREVIEWED_ADDITIONAL_DISPATCH')
+            actual_schema = operator._schema
+            formals = actual_schema.arguments
+            frame, event = frames[-1], frames[-1]['event']
+            require(not actual_schema.is_mutable and len(formals) > 0 and str(formals[0].type) == 'Tensor'
+                    and all(arg.alias_info is None for arg in formals)
+                    and len(actual_schema.returns) == 2
+                    and all(str(arg.type) == 'Tensor' and arg.alias_info is None for arg in actual_schema.returns),
+                    'NATIVE_ROW_INPUT_OPERATOR_SCHEMA_CHANGED')
+            names = [arg.name for arg in formals]
+            args, kwargs = frame['args'], frame['kwargs']
+            require(len(args) <= len(formals) and not any(arg.kwarg_only for arg in formals[:len(args)])
+                    and not set(kwargs).difference(names) and not set(names[:len(args)]).intersection(kwargs),
+                    'NATIVE_ROW_INPUT_OPERATOR_ARGUMENTS_CHANGED')
+            bound = {arg.name: arg.default_value for arg in formals if arg.has_default_value()}
+            bound.update(zip(names, args))
+            bound.update(kwargs)
+            require(set(bound) == set(names) and bound[names[0]] is tensor
+                    and all(arg.has_default_value() and not isinstance(bound[arg.name], torch.Tensor)
+                        and bound[arg.name] == arg.default_value for arg in formals[1:]),
+                    'NATIVE_ROW_INPUT_OPERATOR_ARGUMENTS_CHANGED')
+            require(event['status'] == 'PENDING' and event['original_calls'] == 1 and not event['mutable']
+                    and 0 < event['sequence'] <= len(self.events) and self.events[event['sequence']-1] is event
+                    and event['sequence'] > public_proof['observation_prefix']['actual_calls']
+                    and event['schema'] == schema and event['inputs'] == [metadata(tensor)],
+                    'NATIVE_ROW_CURRENT_DISPATCH_FRAME_UNPROVEN')
+            dispatch = dict(sequence=event['sequence'], operator=str(operator), schema_sha256=digest(schema),
+                            actual_input=metadata(tensor))
+        fresh = self._query(tensor, visible=True)  # Visibility was checked above, including the sole Native frame.
+        require(fresh.get('verified') is True and public_proof.get('verified') is True
+                and all(fresh[name] == public_proof[name] for name in
+                        ('forward_id', 'node_id', 'actual_rows', 'tensor', 'observed_write_epoch'))
+                and fresh['observation_prefix']['observer_id'] == public_proof['observation_prefix']['observer_id']
+                and fresh['observation_prefix']['forward_id'] == public_proof['observation_prefix']['forward_id'] == self.forward_id
+                and fresh['observation_prefix']['parent_source_sequences'] == public_proof['observation_prefix']['parent_source_sequences']
+                and public_proof['observation_prefix']['actual_calls'] == public_proof['observation_prefix']['retained_calls']
+                and not any(public_proof['observation_prefix'][key] for key in ('missing_calls', 'errors', 'source_errors'))
+                and fresh['observation_prefix']['observed_at_monotonic_ns'] >= public_proof['observation_prefix']['observed_at_monotonic_ns']
+                and fresh['observation_prefix']['actual_calls'] >= public_proof['observation_prefix']['actual_calls'],
+                'NATIVE_ROW_PROOF_CHANGED_AFTER_PUBLIC_QUERY')
+        fresh['native_input_dispatch'] = dispatch
+        return fresh
 
     def projection(self, tensor, output, *, evidence):
         """Only called after exact Native-DQ and public owned-QMM chain checks."""

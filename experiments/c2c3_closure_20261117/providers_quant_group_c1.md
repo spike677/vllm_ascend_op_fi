@@ -66,7 +66,7 @@ not validate CANN arithmetic or natural NPU row mapping. E5 is not assessed by
 this entry; C2/C3 remain false. The real NPU result is still pending root's
 queue and review.
 
-The focused suite passes 127 CPU tests with no skips when the real Core source
+The focused suite passes 140 CPU tests with no skips when the real Core source
 is present (or supplied as the explicit local overlay below). The new cases
 cover the complete seven-phase route, retained unknown candidates, missing or
 relabelled child receipts, current-device mismatch, busy Native leases, a lost
@@ -76,6 +76,24 @@ exact finite OFF recovery. `py_compile` and `git diff --check` also pass.
 The additional prefix contracts cover an independent later refusal, an error
 before the target or its real consumer, changed query order/request identity,
 and detached report snapshots that cannot rewrite the internal proof.
+
+Native admission rechecks the current graph and source observer health,
+thread/profile ownership, forward/request identity, immutable input proof and
+write epoch after the public query. The actual outer dispatcher/source frames
+must still be the same objects. The sole permitted extra frame is the actual
+DynamicQuant OpOverload with a read-only schema, the same input object and
+default remaining arguments; its pending independent event and actual mode
+stack must agree. This does not grant row provenance to the quantized output.
+The fresh admission snapshot is retained in the raw callback and receipt and
+bound into the Native lease digest.
+
+Thirteen additional CPU contracts cover current graph/source errors,
+overflow, inactive/ending state, changed request/forward/observer/profile,
+unknown opaque dispatch and nondefault input options before admission. They
+assert no F lease, attempt or effect receipt, retained Core ownership, failed
+drain retention and explicit successful cleanup retry. Positive contracts use
+real CPU OpOverloads, including a source-checked outer MLA fixture, through
+the real Runtime/Host lifecycle. They do not prove the NPU dispatch path.
 
 ```powershell
 $env:PYTHONPATH='src;fault39/src;.;tests;tests/worker_extension;fault39/tests'

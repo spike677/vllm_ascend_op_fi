@@ -64,7 +64,7 @@ class C1Inventory(SharedScaleGroupInventory):
         public_views_match(done['call'], x, q, scale, self.native.device)
         proof = verify_completion(done, events, lease, released=True)
         packet = dict(phase=self.phase, lease=native_snapshot(lease), completion=done, raw_events=events,
-            row_proof=self.native_call['row_proof'], binding=proof)
+            row_proof=self.native_call['row_proof'], admission_row_proof=self.native_call['admission_row_proof'], binding=proof)
         packet['artifact_sha256'] = digest(packet)
         self.session.receipts.append(snapshot(packet))
         return proof
@@ -79,6 +79,14 @@ def row_signature(proof):
     require(proof.get('verified') is True and isinstance(proof.get('actual_rows'), dict),
             'CURRENT_ACTUAL_REQUEST_ROW_PROOF_REQUIRED')
     return QuantServingSession.row_signature(proof['actual_rows'])
+
+
+def dynamic_quant_operator():
+    import torch
+    try:
+        return torch.ops.npu.npu_dynamic_quant.default
+    except AttributeError:
+        return None  # A direct public C entry has no additional dispatcher frame.
 
 
 def closed_projection_prefix(public, projection, forward):
@@ -304,14 +312,18 @@ class QuantGroupC1ServingSession(SharedScaleGroupInventorySession):
         if phase not in MODES:
             return original(*args, **kwargs)
         require(self.current_call is None and phase not in self.phase_attempts, 'ONE_C1_ATTEMPT_PER_PHASE')
-        context = dict(input=x, phase=phase, row_proof=proof, completions=[])
+        operator = dynamic_quant_operator()
+        context = dict(input=x, phase=phase, row_proof=proof, completions=[],
+            row_context=self.row_observer.capture_native_input_context(), operator=operator,
+            operator_schema=None if operator is None else str(operator._schema))
         self.current_call = context
         self.current_lease = None
         try:
             output, done = self.runtime.binding.invoke(x, lambda: original(*args, **kwargs))
             require(len(context['completions']) == 1 and context['completions'][0]['call'] == done['call'],
                     'ONE_REAL_SELECTED_COMPLETION_REQUIRED')
-            inventory.native_call.update(completion=done, phase=phase, row_proof=proof)
+            inventory.native_call.update(completion=done, phase=phase, row_proof=proof,
+                                         admission_row_proof=context['admission_row_proof'])
             return output
         except BaseException as error:
             self.error = repr(error)
@@ -337,18 +349,21 @@ class QuantGroupC1ServingSession(SharedScaleGroupInventorySession):
                 and call.thread == threading.get_native_id() and call.device == self.native_reader.device
                 and call.lifetime_token > 0 and not call.reserved, 'C1_ACTUAL_CURRENT_CALL_LIFETIME_REQUIRED')
         actual = native_snapshot(QuantGroupNative.tensor_view(context['input'], 'input', call.device))
-        current_proof = self.row_observer._lookup(context['input'])
-        require(current_proof is not None and current_proof['node']['node_id'] == context['row_proof']['node_id']
-                and current_proof['metadata'] == context['row_proof']['tensor']
-                and current_proof['rows'] == context['row_proof']['actual_rows'],
+        require(dynamic_quant_operator() is context['operator'], 'C1_CURRENT_DYNAMIC_QUANT_OPERATOR_CHANGED')
+        current_proof = self.row_observer.query_native_input(context['input'], public_proof=context['row_proof'],
+            context=context['row_context'], operator=context['operator'], schema=context['operator_schema'])
+        require(current_proof['forward_id'] == self.inventory.current['forward_id']
+                and current_proof['actual_rows']['request_ids'] == self.active['decode']['request_ids'],
                 'C1_ROW_PROOF_CHANGED_BETWEEN_PUBLIC_CALL_AND_NATIVE_ADMISSION')
+        context['admission_row_proof'] = snapshot(current_proof)
+        row['admission_row_proof'] = snapshot(current_proof)
         require(all(native_snapshot(call.input)[name] == value for name, value in actual.items() if name != 'descriptor')
                 and all(stable_geometry(native_snapshot(getattr(call, name))) == self.target['identity']['geometry'][name]
                         for name in ('input', 'quant', 'scale')), 'C1_NATIVE_CURRENT_CALL_FORMALS_CHANGED')
         config = binding.config
         lease = Lease(mode=MODES[phase], owner_hi=config.owner_hi, owner_lo=config.owner_lo,
             generation=self.generation, thread=call.thread, target=key(self.target['sha256']),
-            actual_row_proof=key(digest(dict(proof=context['row_proof'], actual_call=native_snapshot(call),
+            actual_row_proof=key(digest(dict(proof=current_proof, public_proof=context['row_proof'], actual_call=native_snapshot(call),
                 target=self.target['sha256'], owner=self.owner, generation=self.generation))), expected=call)
         self.phase_attempts.add(phase)  # A rejected attempt cannot silently retry.
         self.current_lease = lease

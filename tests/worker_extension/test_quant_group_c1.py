@@ -1,6 +1,7 @@
 """Actual CPU serving/provider hooks with explicit non-CANN Native doubles."""
 import copy
 import ctypes
+import hashlib
 import importlib
 import importlib.util
 import os
@@ -19,11 +20,38 @@ from fault_injection.deployments.quant_group_c1 import verify_completion
 from demoncat.runtime.vllm_ascend.worker_extension import serving_quant as serving
 from demoncat.runtime.vllm_ascend.worker_extension import serving_quant_group_c1 as c1
 from demoncat.runtime.vllm_ascend.worker_extension.providers.quant import QuantProvider
-from demoncat.runtime.vllm_ascend.worker_extension.quant_source_rows import SourceBoundRows
+from demoncat.runtime.vllm_ascend.worker_extension.quant_source_rows import SourceBoundRows, source_bindings
 from demoncat.runtime.vllm_ascend.worker_extension.quant_mla_metadata_rows import MlaMetadataRows
 from test_quant_group_inventory import CpuJournal, cpu_view
 from test_quant_inventory import TwoQuantProjections
 from test_serving_session_lifecycle import CpuProcessor
+
+
+_CPU_DISPATCH = torch.library.Library('cpu_quant_group_c1', 'DEF')
+_CPU_DISPATCH.define('quant(Tensor input, *, Tensor? smooth=None) -> (Tensor, Tensor)')
+_CPU_DISPATCH.define('unknown(Tensor input) -> (Tensor, Tensor)')
+_CPU_DISPATCH.define('mla(Tensor hidden_states, bool need_gather_q_kv, Tensor(a!) output, str layer_name) -> ()')
+_CPU_BINDING = threading.local()
+
+
+def cpu_native_quant(input, *, smooth=None):
+    return _CPU_BINDING.current._quant(input)
+
+
+def cpu_unknown_quant(input):
+    return torch.ops.cpu_quant_group_c1.quant(input)
+
+
+def cpu_mla_quant(hidden_states, need_gather_q_kv, output, layer_name):
+    self = _CPU_BINDING.model
+    forward_context = NS(no_compile_layers={layer_name: self})
+    kv_cache = self.mla_attn.kv_cache[0]
+    output.copy_(self.first(hidden_states))
+
+
+_CPU_DISPATCH.impl('quant', cpu_native_quant, 'CPU')
+_CPU_DISPATCH.impl('unknown', cpu_unknown_quant, 'CPU')
+_CPU_DISPATCH.impl('mla', cpu_mla_quant, 'CPU')
 
 
 class CpuGroupBinding:
@@ -40,6 +68,8 @@ class CpuGroupBinding:
         self.corrupt_role = False
         self.no_effect = False
         self.omit_selected_completion = False
+        self.dispatch_quant = self.unknown_dispatch = False
+        self.dispatch_smooth = None
 
     def query(self):
         return copy.deepcopy(self.journal.state_value)
@@ -82,6 +112,17 @@ class CpuGroupBinding:
         census['total'] = self.journal.state_value['last_sequence'] = len(self.journal.rows)
 
     def quant(self, x):
+        if not self.dispatch_quant:
+            return self._quant(x)
+        _CPU_BINDING.current = self
+        try:
+            if self.unknown_dispatch:
+                return torch.ops.cpu_quant_group_c1.unknown(x)
+            return torch.ops.cpu_quant_group_c1.quant(x, smooth=self.dispatch_smooth)
+        finally:
+            del _CPU_BINDING.current
+
+    def _quant(self, x):
         # Fixed CPU fixtures exercise ownership, publication and byte checks.
         # They do not simulate the Ascend quantization rounding formula.
         q, scale = x.to(torch.int8), torch.ones(x.shape[0], dtype=torch.float32)
@@ -250,13 +291,14 @@ class QuantGroupC1Tests(unittest.TestCase):
                 self.unknown_first = False
                 self.fault_nonfinite = False
                 self.before_first = self.after_first = None
+                self.first_call = None
             def forward(self, input_ids, positions, inputs_embeds=None, intermediate_tensors=None):
                 x = self.norm(self.embed(input_ids))
                 if self.unknown_first:
                     x = torch.roll(x, 1, dims=0)
                 if self.before_first is not None:
                     self.before_first()
-                first = self.first(x)
+                first = self.first(x) if self.first_call is None else self.first_call(x)
                 if self.after_first is not None:
                     self.after_first()
                 output = self.second(torch.roll(first, 1, dims=0))
@@ -511,6 +553,147 @@ class QuantGroupC1Tests(unittest.TestCase):
         self.assertEqual(client.detach()['status'], 'DETACHED')
         self.assertFalse(client.snapshot()['ownership_retained'])
         self.assertFalse(self.core._leases)
+
+    def test_actual_dispatcher_native_frame_keeps_fresh_proof_through_runtime_and_host(self):
+        self.binding.dispatch_quant = True
+        self.enterContext(patch.object(c1, 'dynamic_quant_operator', return_value=torch.ops.cpu_quant_group_c1.quant.default))
+        client = self.host_client()
+        for _ in range(7):
+            self.phase(collect=False)
+            self.dispatch('query')
+        result = self.dispatch('finish')['serving']
+        self.assertTrue(result['c1'])
+        for packet in result['receipts']:
+            fresh, public = packet['admission_row_proof'], packet['row_proof']
+            self.assertEqual(fresh['native_input_dispatch']['operator'], 'cpu_quant_group_c1.quant.default')
+            self.assertGreater(fresh['native_input_dispatch']['sequence'], public['observation_prefix']['actual_calls'])
+            self.assertGreaterEqual(fresh['observation_prefix']['actual_calls'], public['observation_prefix']['actual_calls'])
+            expected = native.key(c1.digest(dict(proof=fresh, public_proof=public,
+                actual_call=packet['completion']['call'], target=result['selected_site']['sha256'],
+                owner=result['owner'], generation=result['generation'])))
+            self.assertEqual(native.snapshot(expected), packet['lease']['actual_row_proof'])
+        self.dispatch('unregister')
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+
+    def test_reviewed_outer_opaque_source_and_current_native_frame_both_remain_visible(self):
+        self.model.mla_attn = NS(kv_cache=[object()])
+        def first_call(x):
+            _CPU_BINDING.model = self.model
+            try:
+                output = torch.empty_like(x)
+                torch.ops.cpu_quant_group_c1.mla(x, False, output, 'cpu-layer')
+                return output
+            finally:
+                del _CPU_BINDING.model
+        self.model.first_call = first_call
+        pin = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+        bindings, sources = source_bindings({__name__: (pin, {'cpu_mla_quant': 'mla_opaque'})})
+        self.enterContext(patch.object(SourceBoundRows, 'from_runtime', side_effect=lambda graph, model:
+            SourceBoundRows(graph, model, bindings, sources, simulation=True,
+                operator_aliases={torch.ops.cpu_quant_group_c1.mla.default: 'vllm.mla_forward.default'})))
+        self.binding.dispatch_quant = True
+        self.enterContext(patch.object(c1, 'dynamic_quant_operator', return_value=torch.ops.cpu_quant_group_c1.quant.default))
+        client = self.host_client()
+        for _ in range(7):
+            self.phase(collect=False)
+            self.dispatch('query')
+        result = self.dispatch('finish')['serving']
+        self.assertTrue(result['c1'])
+        self.assertTrue(all(row['admission_row_proof']['observation_prefix']['parent_source_sequences']
+                            for row in result['receipts']))
+        self.assertTrue(all(row['admission_row_proof']['native_input_dispatch'] is not None
+                            for row in result['receipts']))
+        self.dispatch('unregister')
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+
+    def assert_native_admission_refused(self, mutation, *, dispatcher=False, unknown=False, smooth=None, restore=None):
+        """Invalidate after public query; exercise the actual Core recovery route."""
+        client = self.host_client()
+        for _ in range(5):
+            self.phase(collect=False)
+            self.dispatch('query')
+        if dispatcher:
+            self.binding.dispatch_quant = True
+            self.binding.unknown_dispatch = unknown
+            self.binding.dispatch_smooth = smooth
+            self.enterContext(patch.object(c1, 'dynamic_quant_operator', return_value=torch.ops.cpu_quant_group_c1.quant.default))
+        observed = self.binding.observed
+        def changed(call):
+            selected = self.session.current_call is not None
+            if selected:
+                mutation()
+            try:
+                return observed(call)
+            finally:
+                if selected and restore is not None:
+                    restore()  # Only undo the explicit fixture perturbation, never production cleanup.
+        self.binding.observed = changed
+        with self.assertRaisesRegex(RuntimeError, 'NATIVE_ROW_|C1_ROW_PROOF_CHANGED'):
+            self.phase(collect=False)
+        self.assertEqual(self.binding.selected_modes, [1, 2, 4])
+        self.assertNotIn('fault', self.session.phase_attempts)
+        self.assertEqual(self.binding.query()['core']['admitted_model_calls'], 3)
+        self.assertFalse(any(row['phase'] == 'fault' for row in self.session.receipts))
+        raw = self.session.callbacks[-1]
+        self.assertTrue(raw['selected'])
+        self.assertFalse(raw['completed'])
+        self.assertNotIn('lease', raw)
+        self.assertEqual(self.binding.raw(raw['call']['token'])['parent'], raw['call'])
+        result = client.query()
+        self.assertTrue(result['response']['recovery_required'] and result['ownership_retained'])
+        self.assertTrue(self.session.installed and self.session.handles)
+        self.assertIsNotNone(self.binding.config)
+        self.assertFalse(self.session.report()['c1'])
+        self.assertEqual(client.begin_decode_capture()['status'], 'HOST_REJECTED')
+        # A failed device drain still retains the Native owner and every hook.
+        self.binding.drain_result = False
+        failed = client.disable()
+        self.assertTrue(failed['ownership_retained'])
+        self.assertIsNotNone(self.binding.config)
+        self.assertTrue(self.session.installed and self.session.handles)
+        self.binding.drain_result = True
+        self.dispatch('disable')
+        self.dispatch('unregister')
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+        self.assertIsNone(self.binding.config)
+        self.assertFalse(self.session.installed or self.session.row_observer.active)
+        self.assertIsNone(sys.getprofile())
+
+    def test_current_graph_error_between_public_query_and_native_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: self.session.row_observer.errors.append('EXPLICIT_CPU_AFTER_PUBLIC_QUERY'))
+
+    def test_current_source_error_between_public_query_and_native_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: self.session.source_rows.errors.append('EXPLICIT_CPU_AFTER_PUBLIC_QUERY'))
+
+    def test_current_overflow_between_public_query_and_native_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: setattr(self.session.row_observer, 'overflow', 1))
+
+    def test_current_ending_between_public_query_and_native_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: setattr(self.session.row_observer, 'ending', True))
+
+    def test_current_inactive_between_public_query_and_native_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: setattr(self.session.row_observer, 'active', False),
+            restore=lambda: setattr(self.session.row_observer, 'active', True))
+
+    def test_current_request_changed_between_public_query_and_native_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: self.session.active['decode']['request_ids'].reverse())
+
+    def test_current_forward_changed_between_public_query_and_native_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: setattr(self.session.row_observer, 'forward_id', 'foreign-forward'))
+
+    def test_current_observer_changed_between_public_query_and_native_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: self.session.current_call['row_proof']['observation_prefix'].update(observer_id=0))
+
+    def test_current_source_owner_changed_between_public_query_and_native_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: sys.setprofile(None),
+            restore=lambda: sys.setprofile(self.session.source_rows.callback))
+
+    def test_unknown_actual_opaque_dispatch_refuses_before_fault(self):
+        # Installed after qualification; the raw Native parent still records this refused call.
+        self.assert_native_admission_refused(lambda: None, dispatcher=True, unknown=True)
+
+    def test_nondefault_actual_native_dispatch_input_refuses_before_fault(self):
+        self.assert_native_admission_refused(lambda: None, dispatcher=True, smooth=torch.ones(8))
 
     def test_actual_runtime_rejects_busy_native_call_and_retains_owner_until_cleanup(self):
         client = self.host_client()
