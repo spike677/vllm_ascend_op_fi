@@ -186,7 +186,17 @@ class FiaPublicOutputObserver:
                  if tensor_matches_native(tensor, start) and str(tensor.dtype) == dtype}
         require(len(found) == 1, 'PUBLIC_FIA_RETURN_FULL_NATIVE_FORMAL_REQUIRED')
         tensor = next(iter(found.values()))
-        require(binding['namespace'].get_npu_format(tensor) == call['format'], 'PUBLIC_FIA_RETURN_NATIVE_FORMAT_CHANGED')
+        public_format = binding['namespace'].get_npu_format(tensor)
+        # Preserve the actual public/native discrepancy before refusing. A
+        # format failure is not a same-format observation or proof that two
+        # differently labelled layouts can safely share a native descriptor.
+        frame['record']['format_observation'] = dict(
+            public_format=int(public_format), native_format=int(call['format']),
+            shape=list(tensor.shape), stride=list(tensor.stride()),
+            dtype=str(tensor.dtype), storage_offset=tensor.storage_offset(),
+            contiguous=tensor.is_contiguous(), full_native_formal_matched=True,
+            exact_format_match=public_format == call['format'])
+        require(public_format == call['format'], 'PUBLIC_FIA_RETURN_NATIVE_FORMAT_CHANGED')
         experiment.output_refs[call['token']] = tensor
         row['writer_output_retained'] = dict(evidence='ACTUAL_PUBLIC_FIA_RETURN',
             tensor_object_identity=id(tensor), storage_identity=int(tensor.untyped_storage()._cdata),

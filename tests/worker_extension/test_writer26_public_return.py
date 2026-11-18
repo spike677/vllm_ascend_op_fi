@@ -209,6 +209,10 @@ class WriterPublicReturnTests(unittest.TestCase):
         self.assertFalse(self.experiment.targets or self.native.executes)
         self.assertTrue(any('NATIVE_FORMAT_CHANGED' in error
             for call in self.experiment.public_output.calls for error in call['errors']))
+        rows=[call['format_observation'] for call in self.experiment.public_output.calls]
+        self.assertTrue(rows)
+        self.assertTrue(all(row['public_format']==2 and row['native_format']==47
+                            and row['full_native_formal_matched'] and not row['exact_format_match'] for row in rows))
 
     def test_actual_consumer_view_has_same_retained_storage_identity(self):
         self.model.consumer_view = True
