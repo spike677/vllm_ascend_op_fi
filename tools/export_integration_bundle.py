@@ -85,6 +85,19 @@ _WRITER26_CONTRACTS = {'tests/worker_extension/'+name+'.py' for name in (
     'test_serving_session_lifecycle', 'test_call_binding', 'metadata_fixture')} | {
     'docs/worker_core_v1/writer26_host_contract.md', 'docs/worker_core_v1/route_boundary_audit_37bbeb4f.md',
     'experiments/c2c3_closure_20261117/providers26_build_group.py'}
+_V11_ENDPOINTS = 'src/demoncat/runtime/vllm_ascend/worker_extension/endpoints.py'
+_V11_CONTRACTS = {'docs/contracts/execution_adapter_contract.md',
+    'docs/worker_extension/worker_endpoints.md', 'docs/worker_core_v1/attention_v11.md',
+    'docs/worker_core_v1/writer26_complete_set_contract.md',
+    'tests/worker_extension/test_core_endpoints.py',
+    'tests/worker_extension/test_core_attention_serving.py',
+    'tests/worker_extension/test_core_writer26_coverage.py',
+    'tests/test_writer26_core_coverage_probe.py', 'tests/test_writer26_worker_core_probe.py',
+    'experiments/c2c3_closure_20261117/providers26_worker_core_probe.py',
+    'experiments/c2c3_closure_20261117/natural_attention_worker_core_probe.py',
+} | {'tests/worker_extension/'+name+'.py' for name in (
+    'test_quant_mla_view_rows', 'test_quant_mla_decode_rows', 'test_quant_source_rows',
+    'test_quant_row_provenance', 'test_quant_group_c1', 'test_quant_group_inventory')}
 # Current build inputs only: no whole legacy source tree or experiment history.
 _SUPPORT = {
     _LEGACY + 'l4_buffer_substitute_allhit_v1/' + name for name in (
@@ -101,7 +114,7 @@ _SUPPORT = {
 } | {
     _LEGACY + 'fault26_fia_writer_proxy_v1/' + name for name in ('fault26_fia_writer_lossless.cpp', 'build.sh')
 }
-_EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | _KV41_CONTRACTS | _OUTPUT39_CONTRACTS | _TENSOR_SERVING_CONTRACTS | _WRITER26_CONTRACTS | {
+_EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | _KV41_CONTRACTS | _OUTPUT39_CONTRACTS | _TENSOR_SERVING_CONTRACTS | _WRITER26_CONTRACTS | _V11_CONTRACTS | {
     'fault39/tools/version_profile.py', 'fault39/tools/deployment_profile.py',
     'native_execution_strategy/native/build_requirements.txt',
     'fault39/tests/test_contracts.py', 'tests/test_integration_contract.py',
@@ -113,7 +126,7 @@ _EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | _KV41_CONTRA
     'docs/worker_core_v1/host_contract.md', 'docs/worker_core_v1/integration_bundle.md',
     'docs/worker_core_v1/rope22_host_contract.md',
 }
-_REQUIRED = (_EXACT - _CORE_DOCS - _ROPE_CONTRACTS - _KV41_CONTRACTS - _OUTPUT39_CONTRACTS - _TENSOR_SERVING_CONTRACTS - _WRITER26_CONTRACTS) | {
+_REQUIRED = (_EXACT - _CORE_DOCS - _ROPE_CONTRACTS - _KV41_CONTRACTS - _OUTPUT39_CONTRACTS - _TENSOR_SERVING_CONTRACTS - _WRITER26_CONTRACTS - _V11_CONTRACTS) | {
     'fault_injection/integration.py', 'fault_injection/lifecycle.py',
     'fault_injection/native_build/manager.py', 'fault_injection/native_build/recipes.py',
     'fault_injection/native_adapters/build_qmm.sh',
@@ -131,6 +144,7 @@ def _required(names):
     # Older reviewed snapshots may lack census entirely. A snapshot that ships
     # it must also ship the actual observer package, fixture and its contracts.
     return (_REQUIRED | (_CORE_DOCS if _CENSUS in names else set())
+            | (_V11_CONTRACTS if _V11_ENDPOINTS in names else set())
             | (_ROPE_CONTRACTS | {'tests/worker_extension/test_core_rope22.py'}
                if _ROPE_PROVIDER in names else set())
             | (_KV41_CONTRACTS | {'tests/worker_extension/test_core_kv41.py'}

@@ -32,6 +32,12 @@ _SEPARATE = {
     '28.fia.denominator_replay': 'fault_injection.fia',
     '33.paged_decode': 'demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd',
 }
+_ATTENTION = (
+    ('28.fa.legal_tiling', 'FaLegalTilingServingProvider', ['torch_npu.npu_fusion_attention_v3']),
+    ('28.fia.legal_tiling', 'FiaLegalTilingServingProvider', ['torch_npu.npu_fused_infer_attention_score']),
+    ('28.fia.denominator_replay', 'FiaDenominatorReplayServingProvider', ['torch_npu.npu_fused_infer_attention_score']),
+    ('33.paged_decode', 'PagedDecodeServingProvider', ['torch_npu.npu_fused_infer_attention_score']),
+)
 
 def rpc_provider_capabilities():
     """Preserve the v1 callable-provider list; no import or native load occurs."""
@@ -47,6 +53,13 @@ def rpc_provider_capabilities():
                        variant_selection='actual_source_bound_fused_calls', legacy_lookup_fallback=False)
     rows += [dict(mechanism=name, implementation_version='1', operators=ops,
         attachment=attachment, execution=execution) for name, _, _, ops, attachment, execution in _NATIVE]
+    rows += [dict(mechanism=name, implementation_version='1', operators=ops,
+        attachment='owner_scoped_actual_model_module_api',
+        execution='trusted_actual_attention_census_and_matched_native_baseline',
+        natural_model_verified=False, fault_execution_ready=False,
+        fault_admission='new_actual_stock_private_bridge_required',
+        executable_stages=['actual_call_observation', 'matched_native_baseline'])
+        for name, _, ops in _ATTENTION]
     return deepcopy(rows)
 
 def describe_worker_provider(mechanism):
@@ -89,5 +102,9 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     for name, module_name, class_name, *_ in _NATIVE:
         if name == mechanism:
             module = importlib.import_module(__package__ + '.providers.' + module_name)
+            return getattr(module, class_name)(worker, model, identity)
+    for name, class_name, _ in _ATTENTION:
+        if name == mechanism:
+            module = importlib.import_module(__package__ + '.providers.attention_serving')
             return getattr(module, class_name)(worker, model, identity)
     raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')

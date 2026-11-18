@@ -192,8 +192,9 @@ class CoreHostTests(unittest.TestCase):
         self.resolver.assert_not_called()
         self.assertEqual(client.detach()['status'], 'DETACHED')
 
-    def test_catalog_only_provider_refuses_without_native_resolution(self):
-        client = self.client(28, 'fa.legal_tiling')
+    def test_unadapted_provider_version_refuses_without_native_resolution(self):
+        client = WorkerFaultClient(HostAdapter(self.executor),
+                                   FaultConfig(28, 'fa.legal_tiling', 'unsupported'))
         row = client.prepare()
         self.assertEqual(row['response']['reason'], 'WORKER_PROVIDER_NOT_ADAPTED')
         self.resolver.assert_not_called()

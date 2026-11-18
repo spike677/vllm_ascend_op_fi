@@ -280,6 +280,29 @@ class BundleTests(unittest.TestCase):
         with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
             bundle.create_review(self.source, 'missing-typed-fia-public-observer-fixture')
 
+    def test_v11_export_requires_endpoint_attention_writer_and_row_contracts(self):
+        path = self.source / bundle._V11_ENDPOINTS
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b'# V1.1 endpoint routing\n')
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'missing-v11-contracts')
+        for name in bundle._V11_CONTRACTS:
+            target = self.source / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / name).read_bytes())
+        review, _ = self.export()
+        self.assertTrue(bundle._V11_CONTRACTS <= {row['source_path'] for row in review['files']})
+        for name in ('docs/contracts/execution_adapter_contract.md',
+                     'tests/worker_extension/test_core_attention_serving.py',
+                     'tests/test_writer26_core_coverage_probe.py',
+                     'tests/worker_extension/test_quant_mla_view_rows.py'):
+            path = self.source / name
+            saved = path.read_bytes()
+            path.unlink()
+            with self.subTest(missing=name), self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+                bundle.create_review(self.source, 'incomplete-v11-contract-set')
+            path.write_bytes(saved)
+
     def test_changed_source_and_contract_payload_are_detected(self):
         review, _ = self.export()
         for suffix, error in (('/sources/fault_injection/integration.py', 'SOURCE_HASH_MISMATCH'),
