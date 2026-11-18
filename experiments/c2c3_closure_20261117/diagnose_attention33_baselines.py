@@ -7,6 +7,8 @@ import argparse
 from collections import Counter
 import hashlib
 import importlib
+from importlib.machinery import ModuleSpec
+from importlib.util import module_from_spec
 import json
 import math
 from pathlib import Path
@@ -42,6 +44,30 @@ def attempt(function):
         return dict(status='FAILED', error=type(error).__name__ + ': ' + str(error)[:320])
 
 
+def bind_frozen_worker_namespaces(source):
+    """Pin PEP 420 parents; an installed regular package beats sys.path order.
+
+    This standalone CPU reader must not repair or reuse an already imported
+    deployment. Only empty namespace parents are installed; the actual frozen
+    worker_extension package and its validators execute their original code.
+    """
+    names = ('demoncat', 'demoncat.runtime', 'demoncat.runtime.vllm_ascend')
+    need(not any(name == 'demoncat' or name.startswith('demoncat.') for name in sys.modules),
+         'PRELOADED_DEMONCAT_REFUSED_USE_FRESH_CPU_PROCESS')
+    paths = {name: (Path(source)/'src'/Path(*name.split('.'))).resolve(strict=True) for name in names}
+    need(all(path.is_dir() and not (path/'__init__.py').exists() for path in paths.values()),
+         'FROZEN_NAMESPACE_LAYOUT_CHANGED')
+    for name, path in paths.items():
+        spec = ModuleSpec(name, loader=None, is_package=True)
+        spec.submodule_search_locations = [str(path)]
+        module = module_from_spec(spec)
+        sys.modules[name] = module
+        if '.' in name:
+            parent, child = name.rsplit('.', 1)
+            setattr(sys.modules[parent], child, module)
+    return {name: str(path) for name, path in paths.items()}
+
+
 def load_frozen(source):
     source = Path(source).resolve(strict=True)
     # Load only the explicitly supplied frozen source, never a deployment or
@@ -55,6 +81,9 @@ def load_frozen(source):
     required = ('experiments/c2c3_closure_20261117/attention33_contract.py',
         'experiments/c2c3_closure_20261117/attention33_bridge.py',
         'experiments/c2c3_closure_20261117/attention33_worker_probe.py',
+        'src/demoncat/runtime/vllm_ascend/worker_extension/__init__.py',
+        'src/demoncat/runtime/vllm_ascend/worker_extension/config.py',
+        'src/demoncat/runtime/vllm_ascend/worker_extension/host.py',
         'src/demoncat/runtime/vllm_ascend/worker_extension/paged33_tnd.py',
         'src/demoncat/runtime/vllm_ascend/worker_extension/paged33_loading.py',
         'src/demoncat/runtime/vllm_ascend/worker_extension/paged33_audit.py',
@@ -63,11 +92,13 @@ def load_frozen(source):
         'fault_injection/native_adapters/attention28/fia/fai_fd_geometry.py')
     pins = {name: file_sha(source/name) for name in required}
     need(all(recorded.get(name) == value for name, value in pins.items()), 'SOURCE48_VALIDATOR_BYTES_DIFFER')
+    namespaces = bind_frozen_worker_namespaces(source)
     bridge = importlib.import_module('attention33_bridge')
     need(Path(bridge.__file__).resolve() == source/required[1]
          and Path(contract.__file__).resolve() == source/required[0], 'AMBIENT_REVIEW_MODULE_REFUSED')
     return bridge, contract, dict(base_commit=manifest['base_commit'],
-        manifest_sha256=file_sha(source/'source_manifest.json'), helper_sha256=pins)
+        manifest_sha256=file_sha(source/'source_manifest.json'), helper_sha256=pins,
+        worker_namespace_paths=namespaces)
 
 
 def prohibit_runtime(event, args):

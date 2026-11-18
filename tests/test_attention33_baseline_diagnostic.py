@@ -142,6 +142,51 @@ print('CPU_ONLY_IMPORT_GUARD_PASS')
         self.assertFalse(result['bridge_pass'] or result['fault_authorized'] or result['c2'] or result['c3'])
         json.dumps(result, allow_nan=False)
 
+    def test_frozen_namespaces_defeat_ambient_regular_package_without_loading_it(self):
+        ambient = self.folder/'ambient'; package = ambient/'demoncat'; package.mkdir(parents=True)
+        (package/'__init__.py').write_text("raise AssertionError('AMBIENT_PACKAGE_EXECUTED')\n")
+        code = '''import sys, ctypes, numpy, importlib.util
+from pathlib import Path
+root, ambient = Path(sys.argv[1]), Path(sys.argv[2])
+sys.path[:0] = [str(root/'experiments/c2c3_closure_20261117'), str(root/'src'), str(ambient), str(root)]
+from diagnose_attention33_baselines import bind_frozen_worker_namespaces, prohibit_runtime
+# Reproduce why prepending source/src alone selected the wrong regular package.
+assert Path(importlib.util.find_spec('demoncat').origin) == ambient/'demoncat/__init__.py'
+sys.addaudithook(prohibit_runtime)
+paths = bind_frozen_worker_namespaces(root)
+from demoncat.runtime.vllm_ascend.worker_extension import paged33_tnd, paged33_loading
+for module in (paged33_tnd, paged33_loading):
+    assert Path(module.__file__).resolve().is_relative_to(root/'src')
+assert len(paths) == 3 and 'torch' not in sys.modules
+try: bind_frozen_worker_namespaces(root)
+except ValueError as error: assert 'PRELOADED_DEMONCAT_REFUSED' in str(error)
+else: raise AssertionError('existing package ownership was overwritten')
+print('FROZEN_NATIVE_READER_IMPORT_PASS')
+'''
+        result = subprocess.run([sys.executable, '-B', '-c', code, str(ROOT), str(ambient)],
+                                cwd=self.folder, capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn('FROZEN_NATIVE_READER_IMPORT_PASS', result.stdout)
+
+    def test_preloaded_ambient_package_is_refused_without_overwriting_it(self):
+        ambient = self.folder/'ambient'; package = ambient/'demoncat'; package.mkdir(parents=True)
+        (package/'__init__.py').write_text('identity = object()\n')
+        code = '''import sys
+from pathlib import Path
+root, ambient = Path(sys.argv[1]), Path(sys.argv[2])
+sys.path[:0] = [str(root/'experiments/c2c3_closure_20261117'), str(ambient)]
+from diagnose_attention33_baselines import bind_frozen_worker_namespaces
+import demoncat
+identity = demoncat.identity
+try: bind_frozen_worker_namespaces(root)
+except ValueError as error: assert 'PRELOADED_DEMONCAT_REFUSED' in str(error)
+else: raise AssertionError('preloaded ambient package accepted')
+assert sys.modules['demoncat'] is demoncat and demoncat.identity is identity
+'''
+        result = subprocess.run([sys.executable, '-B', '-c', code, str(ROOT), str(ambient)],
+                                cwd=self.folder, capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
 
 if __name__ == '__main__':
     unittest.main()
