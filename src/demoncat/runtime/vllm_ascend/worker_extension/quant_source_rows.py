@@ -546,6 +546,98 @@ class SourceBoundRows:
             capture['errors'].append(str(error))
             row['row_refusal'] = list(capture['errors'])
 
+    def _row_diagnostic(self, tensor):
+        """Describe the existing lookup predicate without deleting stale rows."""
+        if not isinstance(tensor, torch.Tensor):
+            return dict(current=False, tensor=False, reason='NOT_A_TENSOR')
+        actual = metadata(tensor)
+        record = self.graph.proofs.get(id(tensor))
+        result = dict(tensor=True, actual_metadata=actual, record_present=record is not None,
+            actual_write_epoch=self.graph.epochs.get(self.graph.storage_key(actual), 0))
+        checks = dict(record_present=record is not None)
+        if record is not None:
+            checks.update(same_tensor_object=record['tensor']() is tensor,
+                rows_digest_matches=digest(record['rows']) == record['node']['rows_sha256'],
+                node_digest_matches=digest(record['node']) == record['node_sha256'],
+                metadata_matches=actual == record['metadata'],
+                write_epoch_matches=result['actual_write_epoch'] == record['write_epoch'])
+            result.update(recorded_metadata=record['metadata'], recorded_write_epoch=record['write_epoch'],
+                metadata_changed_fields=[key for key in actual if actual[key] != record['metadata'].get(key)],
+                node_id=record['node']['node_id'], row_axis=record['node']['row_axis'],
+                rows_sha256=record['node']['rows_sha256'])
+        result.update(checks=checks, current=all(checks.values()),
+            failures=[name for name, ok in checks.items() if not ok])
+        return snapshot(result)
+
+    def _parameter_diagnostic(self, tensor, output_shape):
+        """Read the frozen-parameter predicate; never register a missed owner."""
+        if not isinstance(tensor, torch.Tensor):
+            return dict(broadcast_proven=False, tensor=False, reason='NOT_A_TENSOR')
+        actual = metadata(tensor)
+        record = self.graph.parameters.get(id(tensor))
+        result = dict(tensor=True, actual_metadata=actual, requires_grad=bool(tensor.requires_grad),
+            parameter_type=type(tensor).__module__ + '.' + type(tensor).__name__,
+            registered=record is not None,
+            actual_write_epoch=self.graph.epochs.get(self.graph.storage_key(actual), 0))
+        result['observed_model_parameter_owners'] = [dict(module_object_id=id(owner), model_path=path or '<root>',
+            parameter_name=name) for path, owner in self.model.named_modules()
+            for name, value in owner._parameters.items() if value is tensor]
+        checks = dict(registered=record is not None)
+        if record is not None:
+            owner = record['owner']()
+            checks.update(same_tensor_object=record['tensor']() is tensor, owner_alive=owner is not None,
+                owner_parameter_same_object=owner is not None and
+                    getattr(owner, record['kind']).get(record['name']) is tensor,
+                metadata_matches=actual == record['metadata'],
+                write_epoch_matches=result['actual_write_epoch'] == record['write_epoch'],
+                no_request_dimension=tensor.ndim < len(output_shape) or
+                    tensor.ndim == len(output_shape) and tensor.shape[0] == 1)
+            result.update(owner_object_id=id(owner) if owner is not None else None,
+                owner_model_path=self.model_paths.get(id(owner)), parameter_name=record['name'], kind=record['kind'],
+                recorded_metadata=record['metadata'], recorded_write_epoch=record['write_epoch'],
+                metadata_changed_fields=[key for key in actual if actual[key] != record['metadata'].get(key)])
+        result.update(checks=checks, broadcast_proven=all(checks.values()),
+            failures=[name for name, ok in checks.items() if not ok])
+        return snapshot(result)
+
+    def _add_rms_diagnostic(self, state, output=None, *, phase):
+        """Bounded event metadata only; the existing admission rule is unchanged."""
+        try:
+            func, args, kwargs = state['func'], state['args'], state['kwargs']
+            bound = _arguments(func, args, kwargs)
+            inputs, outputs = tensor_values((args, kwargs)), tensor_values(output)
+            first = inputs[0] if inputs else None
+            shape = tuple(first.shape) if first is not None else ()
+            left, right = self._row_diagnostic(first), self._row_diagnostic(bound.get('x2'))
+            gamma = self._parameter_diagnostic(bound.get('gamma'), shape)
+            beta = self._parameter_diagnostic(bound.get('beta'), shape) if bound.get('beta') is not None else None
+            # Compute the identical existing gates. This deliberately does not
+            # call _lookup (which evicts stale records), bind or mutate epochs.
+            lrecord = self.graph.proofs.get(id(first))
+            rrecord = self.graph.proofs.get(id(bound.get('x2')))
+            checks = dict(has_input=bool(inputs), readonly_schema=not func._schema.is_mutable,
+                first_row_proof_current=left['current'], first_row_axis_zero=left.get('row_axis') == 0,
+                argument_names_exact=set(bound) == {'x1', 'x2', 'gamma', 'beta', 'epsilon'},
+                second_row_proof_current=right['current'], second_row_axis_zero=right.get('row_axis') == 0,
+                actual_request_rows_equal=bool(lrecord is not None and rrecord is not None and
+                    lrecord['rows'] == rrecord['rows']),
+                input_shapes_equal=isinstance(bound.get('x2'), torch.Tensor) and tuple(bound['x2'].shape) == shape,
+                gamma_broadcast_proven=gamma['broadcast_proven'],
+                beta_absent_or_broadcast_proven=beta is None or beta['broadcast_proven'])
+            if phase == 'after':
+                checks.update(output_count_three=len(outputs) == 3,
+                    output_shapes_match=len(outputs) == 3 and tuple(outputs[0].shape) == tuple(outputs[2].shape) == shape)
+            state['event'].setdefault('add_rms_row_diagnostic', {})[phase] = snapshot(dict(
+                schema='demoncat.quant.add_rms_row_diagnostic.v1', actual_operator=str(func),
+                actual_schema=str(func._schema), argument_names=list(bound), observer_id=id(self.graph),
+                forward_id=self.graph.forward_id, actual_dispatch_sequence=state['event']['sequence'],
+                first_input=left, second_input=right, gamma=gamma, beta=beta,
+                outputs=[metadata(tensor) for tensor in outputs], checks=checks,
+                failures=[name for name, ok in checks.items() if not ok], complete=True))
+        except BaseException as error:
+            state['event'].setdefault('add_rms_row_diagnostic', {})[phase] = dict(
+                complete=False, diagnostic_error=type(error).__name__ + ':' + str(error))
+
     def before_operator(self, func, args, kwargs, event):
         try:
             return self._before_operator(func, args, kwargs, event)
@@ -569,6 +661,8 @@ class SourceBoundRows:
         if schema is None:
             return state
         name = self.operator_aliases.get(func, str(func))
+        if name == '_C_ascend.npu_add_rms_norm_bias.default':
+            self._add_rms_diagnostic(state, phase='before')
         expected = {'vllm.mla_forward.default': 'mla_opaque',
             'vllm.maybe_all_gather_and_maybe_unpad.default': 'no_gather',
             'vllm.maybe_chunk_residual.default': 'no_chunk'}.get(name)
@@ -631,7 +725,12 @@ class SourceBoundRows:
                 self.alias_parents[id(output)] = (weakref.ref(output), weakref.ref(state['args'][0]))
             accepted = set(state['certified'])
             self._embedding_operator(state, output)
+            add_rms = self.operator_aliases.get(state['func'], str(state['func'])) == '_C_ascend.npu_add_rms_norm_bias.default'
+            if add_rms:
+                self._add_rms_diagnostic(state, output, phase='after')
             accepted.update(self._operator_rule(state, output))
+            if add_rms:
+                state['event']['add_rms_row_diagnostic']['actual_rule_accepted_outputs'] = len(accepted)
             return accepted
         except BaseException as error:
             state['event']['boundary_refusal'] = str(error)
