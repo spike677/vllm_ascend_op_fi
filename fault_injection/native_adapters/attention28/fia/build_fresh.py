@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 import platform
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -41,6 +42,50 @@ TND28_NORMAL_KEYS = [103000000030000003, 5000000000000200100, 500000000000020010
 TND28_SDK_INTERFACE_SHA256 = '1a9c9159e9d1d84b82b754b2db806be1b878e05d06d45d3df07295c1280878e2'
 TND28_DENIED = ('loading_allowed', 'fault_execution_ready', 'stock_private_exact_proven',
                'public_prepared_pointer_stride_join', 'c1', 'c2', 'c3')
+
+TND28_PROJECTION_SHA256 = 'c9a53d6c036c1db25432f568340fbf117f7610931f6e7fdeec198c4042f3451b'
+TND28_MACRO_HEADER_SHA256 = 'b2f7c0b08c95e4559b899bababf67cd4d3740780762c889450b089bfe09478a8'
+TND28_PADDING = [
+    dict(name='baseParams.FusedInferAttentionBaseParamsPH',offset=81,width=1,count=7,dtype='uint8_t'),
+    dict(name='prefixParams.FusedInferAttentionPrefixParamsPH',offset=1537,width=1,count=7,dtype='uint8_t')]
+
+
+def tnd28_serializer_layout(projection, semantic):
+    """Reconstruct only the pinned 8.5.1/c77 serializer, including its two PH fields.
+
+    The actual b2f7... macro aligns scalar/array members to sizeof(type),
+    struct members to 8, and appends <class>PH in each constructor to align
+    the completed struct to 8. The actual SDK selftest independently confirms
+    every offset/width/count; these bytes are not model data or a kernel ABI.
+    """
+    require(hashlib.sha256(projection).hexdigest()==TND28_PROJECTION_SHA256,
+            'TND28_PINNED_SERIALIZER_PROJECTION_REQUIRED')
+    base=tnd28_recipe().base
+    text=projection.decode('utf-8');_,_,derived=base.typed_materials(text)
+    require(semantic==derived and len(semantic)==63,'TND28_PINNED_SEMANTIC_FIELD_SET_REQUIRED')
+    classes=dict(re.findall(r'BEGIN_TILING_DATA_DEF\((\w+)\)(.*?)END_TILING_DATA_DEF',text,re.S))
+    groups=re.findall(r'TILING_DATA_FIELD_DEF_STRUCT\((\w+),\s*(\w+)\)',classes['FusedInferAttentionScoreTilingData'])
+    widths={'bool':1,'uint8_t':1,'int8_t':1,'uint16_t':2,'int16_t':2,
+            'uint32_t':4,'int32_t':4,'uint64_t':8,'int64_t':8,'float':4,'double':8}
+    rows=[];padding=[];offset=0
+    for typename,group in groups:
+        require(offset%8==0,'TND28_UNEXPECTED_STRUCT_ALIGNMENT')
+        local=0
+        for field in (f for f in semantic if f['group']==group):
+            width=widths[field['dtype']]
+            # This exact projection has no inter-member alignment gaps.
+            require(local%width==0,'TND28_UNREVIEWED_MEMBER_PADDING')
+            rows.append(dict(name=field['name'],offset=offset+local,width=width,
+                             count=field['count'],dtype=field['dtype']))
+            local+=width*field['count']
+        count=(-local)%8
+        if count:
+            pad=dict(name=group+'.'+typename+'PH',offset=offset+local,width=1,count=count,dtype='uint8_t')
+            rows.append(pad);padding.append(pad);local+=count
+        offset+=local
+    require(padding==TND28_PADDING and offset==1576 and len(rows)==65,
+            'TND28_EXACT_SOURCE_DERIVED_PADDING_REQUIRED')
+    return sorted(rows,key=lambda row:row['name'])
 
 
 def tnd28_recipe():
@@ -571,19 +616,10 @@ class Builder:
         candidates = [e for e in entries if Path(e['file']).name == 'fia_tiling_nonquant.cpp'
                       and '/arch22/' in e['file']]
         fields = schema.get('fields',[])
-        expected = {f['name']: (f['dtype'],f['count']) for f in self.report['tnd28_typed_fields']}
-        widths = {'bool':1,'uint8_t':1,'int8_t':1,'uint16_t':2,'int16_t':2,
-                  'uint32_t':4,'int32_t':4,'uint64_t':8,'int64_t':8,'float':4,'double':8}
-        require(len(fields) == len(expected) and {f['name'] for f in fields} == set(expected)
-            and all((f.get('dtype'),f.get('count')) == expected[f['name']]
-                and type(f.get('width')) is int and f['width'] == widths.get(f['dtype'])
-                and type(f.get('count')) is int and f['count'] > 0
-                and type(f.get('offset')) is int and f['offset'] >= 0
-                and f['offset']+f['width']*f['count'] <= 1576 for f in fields),
-            'TND28_ACTUAL_SDK_TYPED_FIELDS_DIFFER')
-        spans = sorted((f['offset'],f['offset']+f['width']*f['count']) for f in fields)
-        require(all(a[1] <= b[0] for a,b in zip(spans,spans[1:])),
-                'TND28_ACTUAL_SDK_TYPED_FIELDS_OVERLAP')
+        projection=(folder/'fia_schema_projection.h').read_bytes()
+        expected=tnd28_serializer_layout(projection,self.report['tnd28_typed_fields'])
+        require(fields==expected and all(type(f[k]) is int for f in fields for k in ('offset','width','count')),
+                'TND28_ACTUAL_SDK_TYPED_FIELDS_DIFFER')
         actual_fields = {f['name']:{k:v for k,v in f.items() if k != 'name'} for f in fields}
         require(len(candidates) == 1 and compiled.get('actual_new_fia_compile_entry') == candidates[0]
             and compiled.get('compiler_source_sha256') == sha(HERE/'fia_abi_decoder.cpp')
@@ -600,19 +636,53 @@ class Builder:
                 'attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling.h')
             and schema.get('schema') == 'fault28.fia_graph.public_serializer_layout.v1'
             and schema.get('type') == 'FusedInferAttentionScoreTilingData'
-            and schema.get('size') == 1576 and len(schema.get('fields',[])) == self.report['tnd28_typed_field_count']
+            and schema.get('size') == 1576 and len(fields) == self.report['tnd28_typed_field_count']+len(TND28_PADDING)
             and schema.get('kernel_argument_raw_observed') is False
             and schema.get('projection_sha256') == compiled['projection_sha256']
             and schema.get('public_source_sha256') == compiled['public_source_sha256']
             and schema.get('layout_kind') == 'public_host_serializer_projection',
             'TND28_ACTUAL_SDK_PUBLIC_SCHEMA_DIFFERS')
+        self.tnd28_macro_dependency(compiled,folder)
         self.report.update(tnd28_public_schema_sha256=sha(folder/'fia_abi_schema.json'),
+            tnd28_schema_semantic_fields=63,tnd28_schema_total_fields=65,
+            tnd28_schema_padding_fields=[dict(row) for row in TND28_PADDING],
             tnd28_schema_compile_sha256=sha(folder/'compile_receipt.json'),
             tnd28_schema_compiler_sha256=sha(HERE/'compile_public_schema.py'),
             tnd28_schema_selftest_sha256=sha(folder/'fia_abi_selftest.json'),
             tnd28_schema_decoder_sha256=sha(folder/'fia_abi_decoder'),
             tnd28_actual_host_compile_commands_sha256=sha(self.source/'build/compile_commands.json'),
             tnd28_host_header_compiled_with_actual_sdk=True)
+
+    def tnd28_macro_dependency(self, compiled, folder):
+        # Resolve the real macro owner with the exact freshly used flags; a
+        # same-named opbase/stub header must not satisfy this SDK proof.
+        argv=compiled['compiler_argv'];decoder=folder/'fia_abi_decoder'
+        require(type(argv) is list and argv[-2:]==['-o',str(decoder)],
+                'TND28_ACTUAL_SCHEMA_COMPILER_ARGV_REQUIRED')
+        dep=folder/'fia_schema_dependencies.d'
+        self.run('actual_tnd28_schema_dependencies',argv[:-2]+[
+            '-M','-MT','tnd28_serializer','-MF',str(dep)],
+            cwd=compiled['actual_new_fia_compile_entry']['directory'],env=self.env,timeout=180)
+        require(dep.is_file() and not dep.is_symlink() and 0<dep.stat().st_size<=2*1024**2,
+                'TND28_SCHEMA_DEPENDENCY_BOUND')
+        data=dep.read_text().replace('\\\n',' ')
+        need_prefix='tnd28_serializer:'
+        require(data.startswith(need_prefix),'TND28_SCHEMA_DEPENDENCY_TARGET_CHANGED')
+        files=shlex.split(data[len(need_prefix):])
+        headers=[Path(name) for name in files if name.endswith('/register/tilingdata_base.h')]
+        expected=(self.sdk/'include/register/tilingdata_base.h').resolve(strict=True)
+        require(len(headers)==1 and headers[0].is_absolute()
+            and headers[0].resolve(strict=True)==expected and sha(expected)==TND28_MACRO_HEADER_SHA256,
+            'TND28_ACTUAL_SDK_PADDING_MACRO_OWNER_DIFFERS')
+        proof=dict(schema='demoncat.tnd28.actual_serializer_macro.v1',
+            recorded_path=str(headers[0]),canonical_path=str(expected),sha256=sha(expected),
+            dependency_sha256=sha(dep),compiler_receipt_sha256=sha(folder/'compile_receipt.json'),
+            projection_sha256=sha(folder/'fia_schema_projection.h'),padding_fields=[dict(row) for row in TND28_PADDING],
+            semantic_fields=63,total_fields=65,npu_executed=False,loading_allowed=False)
+        save(folder/'macro_dependency.json',proof)
+        self.report.update(tnd28_macro_dependency_sha256=sha(folder/'macro_dependency.json'),
+            tnd28_schema_dependencies_sha256=sha(dep),tnd28_macro_header_path=str(expected),
+            tnd28_macro_header_sha256=sha(expected))
 
     def kernel(self):
         params = list((self.source / 'build').rglob(EXPECTED_BIN + '_param.json'))
@@ -690,7 +760,11 @@ class Builder:
                 and self.report.get('tnd28_public_schema_sha256') == sha(self.ev/'tnd28_schema/fia_abi_schema.json')
                 and self.report.get('tnd28_schema_compile_sha256') == sha(self.ev/'tnd28_schema/compile_receipt.json')
                 and self.report.get('tnd28_schema_selftest_sha256') == sha(self.ev/'tnd28_schema/fia_abi_selftest.json')
-                and self.report.get('tnd28_schema_decoder_sha256') == sha(self.ev/'tnd28_schema/fia_abi_decoder'),
+                and self.report.get('tnd28_schema_decoder_sha256') == sha(self.ev/'tnd28_schema/fia_abi_decoder')
+                and self.report.get('tnd28_macro_dependency_sha256') == sha(self.ev/'tnd28_schema/macro_dependency.json')
+                and self.report.get('tnd28_schema_dependencies_sha256') == sha(self.ev/'tnd28_schema/fia_schema_dependencies.d')
+                and self.report.get('tnd28_macro_header_sha256') == TND28_MACRO_HEADER_SHA256
+                and sha(self.report['tnd28_macro_header_path']) == TND28_MACRO_HEADER_SHA256,
                 'TND28_NORMAL_COMPLETION_EVIDENCE_REQUIRED')
             self.report.update(qualification_missing=['new private package loaded-function identity',
                 'actual public V view and prepared pointer/copy/stride lineage', 'actual int8 mask contents',

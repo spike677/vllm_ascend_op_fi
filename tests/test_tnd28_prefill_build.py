@@ -28,18 +28,9 @@ def json_file(path, value):
     write(path, (json.dumps(value, sort_keys=True)+'\n').encode())
 
 
-SERIALIZER = '''const uint32_t FIA_MAX_AIC_CORE_NUM = 26;
-BEGIN_TILING_DATA_DEF(Base)
-TILING_DATA_FIELD_DEF(uint32_t, a);
-END_TILING_DATA_DEF;
-BEGIN_TILING_DATA_DEF(Inner)
-TILING_DATA_FIELD_DEF(uint64_t, b);
-END_TILING_DATA_DEF;
-BEGIN_TILING_DATA_DEF(FusedInferAttentionScoreTilingData)
-TILING_DATA_FIELD_DEF_STRUCT(Base, baseParams);
-TILING_DATA_FIELD_DEF_STRUCT(Inner, innerSplitParams);
-END_TILING_DATA_DEF;
-'''
+ACTUAL = json.loads((Path(__file__).parent/'fixtures/tnd28_source109_public_layout.json').read_bytes())
+SERIALIZER = ACTUAL['projection']
+
 
 
 class Tnd28BuildContracts(unittest.TestCase):
@@ -52,13 +43,16 @@ class Tnd28BuildContracts(unittest.TestCase):
         self.sdk.mkdir()
         self.interfaces = self.root/'interfaces.json'
         self.interfaces.write_bytes(b'EXPLICIT_CPU_INTERFACE_FIXTURE_NOT_ACTUAL_SDK')
+        self.macro=self.sdk/'include/register/tilingdata_base.h'
+        write(self.macro,b'EXPLICIT_CPU_HEADER_OWNER_FIXTURE_NOT_SDK_BYTES')
         self.raw = {p: ('UNCHANGED_CPU_SOURCE:'+p).encode() for p in (*recipe.SOURCE_SHA,*recipe.EXTRA_UNCHANGED)}
         self.raw.update({p: s.encode() for p,s in source_fixture().items()})
         self.raw[recipe.EXTRA_UNCHANGED[0]] = SERIALIZER.encode()
         pins = {p: digest(self.raw[p]) for p in recipe.SOURCE_SHA}
         for owner,name,value in ((recipe,'SOURCE_SHA',pins),(build,'tnd28_recipe',lambda:recipe),
                 (build,'git_blob',lambda source,name:self.raw[name]),
-                (build,'TND28_SDK_INTERFACE_SHA256',build.sha(self.interfaces))):
+                (build,'TND28_SDK_INTERFACE_SHA256',build.sha(self.interfaces)),
+                (build,'TND28_MACRO_HEADER_SHA256',build.sha(self.macro))):
             patcher = patch.object(owner,name,value)
             patcher.start(); self.addCleanup(patcher.stop)
         updated = recipe.patched({p: self.raw[p].decode() for p in recipe.PATHS})
@@ -116,8 +110,7 @@ class Tnd28BuildContracts(unittest.TestCase):
         entries=[dict(file='/fresh/attention/common/op_host/arch22/fia_tiling_nonquant.cpp',
                       directory='/fresh/build',arguments=['g++','-c','fresh-source.cpp'])]
         json_file(self.source/'build/compile_commands.json',entries)
-        fields=[dict(name='baseParams.a',dtype='uint32_t',count=1,width=4,offset=0),
-                dict(name='innerSplitParams.b',dtype='uint64_t',count=1,width=8,offset=8)]
+        fields=copy.deepcopy(ACTUAL['actual_schema']['fields'])
         schema=dict(schema='fault28.fia_graph.public_serializer_layout.v1',
             type='FusedInferAttentionScoreTilingData',size=1576,fields=fields,
             projection_sha256=build.sha(folder/'fia_schema_projection.h'),public_source_sha256=build.sha(public),
@@ -130,7 +123,10 @@ class Tnd28BuildContracts(unittest.TestCase):
             schema_sha256=build.sha(folder/'fia_abi_schema.json'),projection_sha256=schema['projection_sha256'],
             public_source_sha256=build.sha(public),actual_new_fia_compile_entry=entries[0],
             compiler_source_sha256=build.sha(build.HERE/'fia_abi_decoder.cpp'),
-            decoder_sha256=build.sha(folder/'fia_abi_decoder'))
+            decoder_sha256=build.sha(folder/'fia_abi_decoder'),
+            compiler_argv=['g++','-I'+str(self.sdk/'include'),str(build.HERE/'fia_abi_decoder.cpp'),
+                           '-o',str(folder/'fia_abi_decoder')])
+        write(folder/'fia_schema_dependencies.d',('tnd28_serializer: '+self.macro.as_posix()+'\n').encode())
         json_file(folder/'compile_receipt.json',compiled)
         return folder,schema,compiled,selftest
 
@@ -251,7 +247,9 @@ class Tnd28BuildContracts(unittest.TestCase):
     def test_schema_is_actual_compile_entry_and_selftest_bound(self):
         self.configure();self.schema_fixture()
         with patch.object(self.b,'run') as run:self.b.tnd28_public_schema()
-        self.assertIn('--source',run.call_args.args[1])
+        self.assertIn('--source',run.call_args_list[0].args[1])
+        self.assertIn('-M',run.call_args_list[1].args[1])
+        self.assertIn('-MF',run.call_args_list[1].args[1])
         self.assertTrue(self.b.report['tnd28_host_header_compiled_with_actual_sdk'])
         self.assertFalse(self.b.report['loading_allowed'])
 
@@ -279,7 +277,7 @@ class Tnd28BuildContracts(unittest.TestCase):
             elif changed=='source':compiled['public_source_sha256']='0'*64
             elif changed=='projection':schema['projection_sha256']='0'*64
             elif changed=='layout':schema['layout_kind']='kernel_native_pointer'
-            else:selftest['fields']['baseParams.a']['offset']=64
+            else:selftest['fields'][schema['fields'][0]['name']]['offset']=64
             json_file(folder/'fia_abi_schema.json',schema);json_file(folder/'fia_abi_selftest.json',selftest)
             compiled['schema_sha256']=build.sha(folder/'fia_abi_schema.json')
             json_file(folder/'compile_receipt.json',compiled)
@@ -308,11 +306,66 @@ class Tnd28BuildContracts(unittest.TestCase):
         self.ready_to_finish()
         for relative in ('tnd28_normal_cpu_contract.json','tnd28_schema/fia_abi_schema.json',
                          'tnd28_schema/compile_receipt.json','tnd28_schema/fia_abi_selftest.json',
-                         'tnd28_schema/fia_abi_decoder'):
+                         'tnd28_schema/fia_abi_decoder','tnd28_schema/macro_dependency.json',
+                         'tnd28_schema/fia_schema_dependencies.d'):
             path=self.b.ev/relative;before=path.read_bytes();path.write_bytes(before+b'changed')
             with self.subTest(path=relative),self.assertRaisesRegex(RuntimeError,'COMPLETION_EVIDENCE'):
                 self.b.finish()
             path.write_bytes(before)
+        self.assertFalse((self.b.ev/'completion.json').exists())
+
+    def test_both_actual_sdk_padding_fields_are_exact_not_ignored(self):
+        self.configure()
+        for index in (0,1):
+            for mutation in ('name','offset','width','count','dtype','missing','extra'):
+                folder,schema,compiled,selftest=self.schema_fixture()
+                pad=next(f for f in schema['fields'] if f['name']==build.TND28_PADDING[index]['name'])
+                if mutation=='missing':schema['fields'].remove(pad)
+                elif mutation=='extra':schema['fields'].append(dict(pad,name=pad['name']+'UNKNOWN'))
+                elif mutation=='name':pad['name']=pad['name'].replace('PH','UnknownPH')
+                elif mutation=='dtype':pad['dtype']='int8_t'
+                else:pad[mutation]+=1
+                selftest['fields']={f['name']:{k:v for k,v in f.items() if k!='name'} for f in schema['fields']}
+                json_file(folder/'fia_abi_schema.json',schema);json_file(folder/'fia_abi_selftest.json',selftest)
+                compiled['schema_sha256']=build.sha(folder/'fia_abi_schema.json')
+                json_file(folder/'compile_receipt.json',compiled)
+                with self.subTest(index=index,mutation=mutation),patch.object(self.b,'run'):
+                    with self.assertRaisesRegex(RuntimeError,'ACTUAL_SDK_TYPED_FIELDS_DIFFER'):
+                        self.b.tnd28_public_schema()
+                self.assertNotIn('tnd28_host_header_compiled_with_actual_sdk',self.b.report)
+
+    def test_actual_macro_resolver_rejects_shadowed_missing_duplicate_or_changed_header(self):
+        self.configure()
+        for mutation in ('shadowed','missing','duplicate','changed_bytes','target'):
+            folder,_,_,_=self.schema_fixture();path=folder/'fia_schema_dependencies.d'
+            before=self.macro.read_bytes()
+            if mutation=='shadowed':
+                foreign=self.root/'opbase/include/register/tilingdata_base.h';write(foreign,before)
+                path.write_text('tnd28_serializer: '+foreign.as_posix())
+            elif mutation=='missing':path.write_text('tnd28_serializer: /unrelated.h')
+            elif mutation=='duplicate':path.write_text('tnd28_serializer: '+self.macro.as_posix()+' '+self.macro.as_posix())
+            elif mutation=='changed_bytes':self.macro.write_bytes(before+b'changed')
+            else:path.write_text('other_target: '+self.macro.as_posix())
+            with self.subTest(mutation=mutation),patch.object(self.b,'run'):
+                with self.assertRaisesRegex(RuntimeError,'MACRO_OWNER_DIFFERS|DEPENDENCY_TARGET_CHANGED'):
+                    self.b.tnd28_public_schema()
+            self.macro.write_bytes(before)
+            self.assertNotIn('tnd28_host_header_compiled_with_actual_sdk',self.b.report)
+
+    def test_macro_preprocessor_failure_cannot_issue_a_completion_proof(self):
+        self.configure();self.schema_fixture()
+        def failed(label,argv,**kwargs):
+            if label=='actual_tnd28_schema_dependencies':raise RuntimeError('PREPROCESSOR_FAILED')
+        with patch.object(self.b,'run',failed),self.assertRaisesRegex(RuntimeError,'PREPROCESSOR_FAILED'):
+            self.b.tnd28_public_schema()
+        self.assertNotIn('tnd28_macro_dependency_sha256',self.b.report)
+        self.assertNotIn('tnd28_host_header_compiled_with_actual_sdk',self.b.report)
+        self.assertFalse(self.b.report['loading_allowed'])
+
+    def test_macro_source_is_rehashed_at_completion(self):
+        self.ready_to_finish();self.macro.write_bytes(b'changed after the actual compile')
+        with self.assertRaisesRegex(RuntimeError,'COMPLETION_EVIDENCE'):
+            self.b.finish()
         self.assertFalse((self.b.ev/'completion.json').exists())
 
     def test_exact_normal_binary_registration_cannot_borrow_33_or_fault_key(self):
@@ -332,6 +385,30 @@ class Tnd28BuildContracts(unittest.TestCase):
             else:bad['sha256']='0'*64
             with self.subTest(changed=changed),self.assertRaises(RuntimeError):
                 registration.validate_metadata(bad,binary,recipe.VARIANT)
+
+
+class ActualSdkPaddingContracts(unittest.TestCase):
+    def test_real_65_field_layout_is_reconstructed_from_63_source_fields(self):
+        projection=ACTUAL['projection'].encode()
+        self.assertEqual(digest(projection),build.TND28_PROJECTION_SHA256)
+        self.assertEqual(ACTUAL['sdk_macro_header_sha256'],build.TND28_MACRO_HEADER_SHA256)
+        _,_,semantic=recipe.base.typed_materials(ACTUAL['projection'])
+        self.assertEqual(len(semantic),63)
+        rows=build.tnd28_serializer_layout(projection,semantic)
+        self.assertEqual(rows,ACTUAL['actual_schema']['fields'])
+        self.assertEqual(len(rows),65)
+        spans=sorted((r['offset'],r['offset']+r['width']*r['count']) for r in rows)
+        self.assertEqual(spans[0][0],0);self.assertEqual(spans[-1][1],1576)
+        self.assertTrue(all(a[1]==b[0] for a,b in zip(spans,spans[1:])))
+        self.assertEqual([r for r in rows if r['name'].endswith('PH')],build.TND28_PADDING)
+
+    def test_changed_projection_or_semantic_table_cannot_reuse_real_padding(self):
+        projection=ACTUAL['projection'].encode();_,_,semantic=recipe.base.typed_materials(ACTUAL['projection'])
+        with self.assertRaisesRegex(RuntimeError,'PINNED_SERIALIZER_PROJECTION'):
+            build.tnd28_serializer_layout(projection+b'changed',semantic)
+        semantic[0]['dtype']='int32_t'
+        with self.assertRaisesRegex(RuntimeError,'PINNED_SEMANTIC_FIELD_SET'):
+            build.tnd28_serializer_layout(projection,semantic)
 
 
 if __name__=='__main__':

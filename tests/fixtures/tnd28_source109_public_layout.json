@@ -1,0 +1,474 @@
+{
+  "schema": "demoncat.tnd28.source109_public_layout_cpu_fixture.v1",
+  "scope": "ACTUAL_SDK_PUBLIC_SERIALIZER_METADATA_ONLY_NO_NPU_QUALIFICATION",
+  "archive_sha256": "18dd5eb1048518758f4d453b8d60d7e276a6393d713b8cef23e8ce590d10a01b",
+  "original_schema_sha256": "20dd6a361142aa9acd73f0787673e24660daef46846e5b362eb9306b15fe035c",
+  "sdk_macro_header_sha256": "b2f7c0b08c95e4559b899bababf67cd4d3740780762c889450b089bfe09478a8",
+  "projection": "#pragma once\n#include \"register/tilingdata_base.h\"\nnamespace optiling {\nconst uint32_t FIA_MAX_AIC_CORE_NUM = 26; // 25 + 1 保证数组8字节对齐\n// 基础参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionBaseParams)\nTILING_DATA_FIELD_DEF(uint32_t, bSize)\nTILING_DATA_FIELD_DEF(uint32_t, n2Size)\nTILING_DATA_FIELD_DEF(uint32_t, gSize)\nTILING_DATA_FIELD_DEF(uint32_t, s1Size)\nTILING_DATA_FIELD_DEF(uint32_t, s2Size)\nTILING_DATA_FIELD_DEF(uint32_t, headDim)\nTILING_DATA_FIELD_DEF(uint32_t, headDimRope)\nTILING_DATA_FIELD_DEF(uint32_t, actualSeqS1Dims)\nTILING_DATA_FIELD_DEF(uint32_t, actualSeqS2Dims)\nTILING_DATA_FIELD_DEF(uint32_t, accumQSeqFlag)\nTILING_DATA_FIELD_DEF(uint32_t, accumKVSeqFlag)\nTILING_DATA_FIELD_DEF(float, scaleValue)\nTILING_DATA_FIELD_DEF(uint32_t, usedCoreNum)\nTILING_DATA_FIELD_DEF(uint32_t, outputLayout)\nTILING_DATA_FIELD_DEF(uint32_t, batchContinuous)\nTILING_DATA_FIELD_DEF(uint32_t, softmaxLseFlag)\nTILING_DATA_FIELD_DEF(uint32_t, needInit)\nTILING_DATA_FIELD_DEF(uint32_t, slidingFlag)\nTILING_DATA_FIELD_DEF(uint32_t, l2CacheOffFlag)\nTILING_DATA_FIELD_DEF(uint32_t, isLegacyIfa)\nTILING_DATA_FIELD_DEF(bool, isEmptyBatchOverHalf)   // 临时变量，用于检查是否超过一半的batch为空batch\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionBaseParamsOp, FusedInferAttentionBaseParams)\n\n// PageAttention 参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionPageAttentionParams)\nTILING_DATA_FIELD_DEF(uint32_t, blockSize)\nTILING_DATA_FIELD_DEF(uint32_t, maxBlockNumPerBatch)\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionPageAttentionParamsOp, FusedInferAttentionPageAttentionParams)\n\n// AttenMask 参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionMaskParams)\nTILING_DATA_FIELD_DEF(uint32_t, attenMaskFlag)\nTILING_DATA_FIELD_DEF(uint32_t, attenMaskBatchStride)\nTILING_DATA_FIELD_DEF(uint32_t, attenMaskStride)\nTILING_DATA_FIELD_DEF(int32_t, preToken)\nTILING_DATA_FIELD_DEF(int32_t, nextToken)\nTILING_DATA_FIELD_DEF(uint32_t, isRowInvalid)\nTILING_DATA_FIELD_DEF(uint32_t, isExistRowInvalid)\nTILING_DATA_FIELD_DEF(uint32_t, sparseMode)\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionMaskParamsOp, FusedInferAttentionMaskParams)\n\n// 内切基本块参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionInnerSplitParams)\nTILING_DATA_FIELD_DEF(uint32_t, mBaseSize)\nTILING_DATA_FIELD_DEF(uint32_t, s2BaseSize)\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionInnerSplitParamsOp, FusedInferAttentionInnerSplitParams)\n\n// workspace参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionWorkspaceParams)\nTILING_DATA_FIELD_DEF(uint32_t, mm1ResSize)\nTILING_DATA_FIELD_DEF(uint32_t, mm2ResSize)\nTILING_DATA_FIELD_DEF(uint32_t, fdAccumOutSize)\nTILING_DATA_FIELD_DEF(uint32_t, fdLogSumExpSize)\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionWorkspaceParamsOp, FusedInferAttentionWorkspaceParams)\n\n// 外切分核参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionOuterSplitParams)\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM, bN2End)\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM, gS1End)\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM, s2End)\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionOuterSplitParamsOp, FusedInferAttentionOuterSplitParams)\n\n// FlashDecode规约参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionFlashDecodeParams)\nTILING_DATA_FIELD_DEF(uint32_t, numOfFdHead)\nTILING_DATA_FIELD_DEF(uint32_t, reserved)\nTILING_DATA_FIELD_DEF(uint32_t, gS1BaseSizeOfFd)                                    // FD负载均衡中，每个FD任务按gS1切分的基本size\nTILING_DATA_FIELD_DEF(uint32_t, usedVecNumOfFd)                                     // FD负载均衡中，用到的vector数\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM, bN2IdxOfFdHead)\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM, gS1IdxOfFdHead)\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM, s2SplitNumOfFdHead)\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM, s2SplitStartIdxOfCore)\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM, gS1SplitNumOfFdHead)          // FD负载均衡中，每个FD任务按gS1基本size切分后的份数\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM, gS1LastPartSizeOfFdHead)      // FD负载均衡中，每个FD任务按gS1基本size切分后，最后一份的gS1大小，即尾块大小\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM * 2, gS1IdxEndOfFdHead)        // FD负载均衡中，每个vector核处理的最后一个FD任务的序号\nTILING_DATA_FIELD_DEF_ARR(uint32_t, FIA_MAX_AIC_CORE_NUM * 2, gS1IdxEndOfFdHeadSplit)   // FD负载均衡中，每个vector核处理的最后一个FD任务的子划分的序号\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionFlashDecodeParamsOp, FusedInferAttentionFlashDecodeParams)\n\n// 公共前缀\nBEGIN_TILING_DATA_DEF(FusedInferAttentionPrefixParams)\nTILING_DATA_FIELD_DEF(uint64_t, prefixMaxLen)\nTILING_DATA_FIELD_DEF(uint64_t, prefixLen)\nTILING_DATA_FIELD_DEF(bool, prefixFlag)\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionPrefixParamsOp, FusedInferAttentionPrefixParams)\n// Pse 注册参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionPseParams)\nTILING_DATA_FIELD_DEF(uint32_t, pseShiftFlag)\nTILING_DATA_FIELD_DEF(uint32_t, pseShiftByBatch)\nTILING_DATA_FIELD_DEF(uint32_t, pseShiftS1)\nTILING_DATA_FIELD_DEF(uint32_t, pseShiftS2)\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionPseParamsOp, FusedInferAttentionPseParams)\n\n// Left Padding 参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionLeftPaddingParams)\nTILING_DATA_FIELD_DEF(uint32_t, qPaddingFlag)\nTILING_DATA_FIELD_DEF(uint32_t, kvPaddingFlag)\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionLeftPaddingParamsOp, FusedInferAttentionLeftPaddingParams)\n// 后量化 参数\nBEGIN_TILING_DATA_DEF(FusedInferAttentionPostQuantParams)\nTILING_DATA_FIELD_DEF(uint32_t, isPerChnOut)\nTILING_DATA_FIELD_DEF(uint32_t, isOutQuantTypeBf16)\nEND_TILING_DATA_DEF\nREGISTER_TILING_DATA_CLASS(FusedInferAttentionPostQuantParamsOp, FusedInferAttentionPostQuantParams)\n\n//MLA非量化模板TilingData\nBEGIN_TILING_DATA_DEF(FusedInferAttentionScoreTilingData)\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionBaseParams, baseParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionPageAttentionParams, pageAttenParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionMaskParams, maskParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionWorkspaceParams, workspaceParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionInnerSplitParams, innerSplitParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionOuterSplitParams, outerSplitParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionFlashDecodeParams, fdParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionPrefixParams, prefixParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionPseParams, pseParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionLeftPaddingParams, leftPaddingParams);\nTILING_DATA_FIELD_DEF_STRUCT(FusedInferAttentionPostQuantParams, postquantParams);\nEND_TILING_DATA_DEF\n}\n",
+  "actual_schema": {
+    "schema": "fault28.fia_graph.public_serializer_layout.v1",
+    "type": "FusedInferAttentionScoreTilingData",
+    "size": 1576,
+    "fields": [
+      {
+        "name": "baseParams.FusedInferAttentionBaseParamsPH",
+        "offset": 81,
+        "width": 1,
+        "count": 7,
+        "dtype": "uint8_t"
+      },
+      {
+        "name": "baseParams.accumKVSeqFlag",
+        "offset": 40,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.accumQSeqFlag",
+        "offset": 36,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.actualSeqS1Dims",
+        "offset": 28,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.actualSeqS2Dims",
+        "offset": 32,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.bSize",
+        "offset": 0,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.batchContinuous",
+        "offset": 56,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.gSize",
+        "offset": 8,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.headDim",
+        "offset": 20,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.headDimRope",
+        "offset": 24,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.isEmptyBatchOverHalf",
+        "offset": 80,
+        "width": 1,
+        "count": 1,
+        "dtype": "bool"
+      },
+      {
+        "name": "baseParams.isLegacyIfa",
+        "offset": 76,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.l2CacheOffFlag",
+        "offset": 72,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.n2Size",
+        "offset": 4,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.needInit",
+        "offset": 64,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.outputLayout",
+        "offset": 52,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.s1Size",
+        "offset": 12,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.s2Size",
+        "offset": 16,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.scaleValue",
+        "offset": 44,
+        "width": 4,
+        "count": 1,
+        "dtype": "float"
+      },
+      {
+        "name": "baseParams.slidingFlag",
+        "offset": 68,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.softmaxLseFlag",
+        "offset": 60,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "baseParams.usedCoreNum",
+        "offset": 48,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.bN2IdxOfFdHead",
+        "offset": 480,
+        "width": 4,
+        "count": 26,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.gS1BaseSizeOfFd",
+        "offset": 472,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.gS1IdxEndOfFdHead",
+        "offset": 1104,
+        "width": 4,
+        "count": 52,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.gS1IdxEndOfFdHeadSplit",
+        "offset": 1312,
+        "width": 4,
+        "count": 52,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.gS1IdxOfFdHead",
+        "offset": 584,
+        "width": 4,
+        "count": 26,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.gS1LastPartSizeOfFdHead",
+        "offset": 1000,
+        "width": 4,
+        "count": 26,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.gS1SplitNumOfFdHead",
+        "offset": 896,
+        "width": 4,
+        "count": 26,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.numOfFdHead",
+        "offset": 464,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.reserved",
+        "offset": 468,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.s2SplitNumOfFdHead",
+        "offset": 688,
+        "width": 4,
+        "count": 26,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.s2SplitStartIdxOfCore",
+        "offset": 792,
+        "width": 4,
+        "count": 26,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "fdParams.usedVecNumOfFd",
+        "offset": 476,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "innerSplitParams.mBaseSize",
+        "offset": 144,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "innerSplitParams.s2BaseSize",
+        "offset": 148,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "leftPaddingParams.kvPaddingFlag",
+        "offset": 1564,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "leftPaddingParams.qPaddingFlag",
+        "offset": 1560,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "maskParams.attenMaskBatchStride",
+        "offset": 100,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "maskParams.attenMaskFlag",
+        "offset": 96,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "maskParams.attenMaskStride",
+        "offset": 104,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "maskParams.isExistRowInvalid",
+        "offset": 120,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "maskParams.isRowInvalid",
+        "offset": 116,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "maskParams.nextToken",
+        "offset": 112,
+        "width": 4,
+        "count": 1,
+        "dtype": "int32_t"
+      },
+      {
+        "name": "maskParams.preToken",
+        "offset": 108,
+        "width": 4,
+        "count": 1,
+        "dtype": "int32_t"
+      },
+      {
+        "name": "maskParams.sparseMode",
+        "offset": 124,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "outerSplitParams.bN2End",
+        "offset": 152,
+        "width": 4,
+        "count": 26,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "outerSplitParams.gS1End",
+        "offset": 256,
+        "width": 4,
+        "count": 26,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "outerSplitParams.s2End",
+        "offset": 360,
+        "width": 4,
+        "count": 26,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "pageAttenParams.blockSize",
+        "offset": 88,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "pageAttenParams.maxBlockNumPerBatch",
+        "offset": 92,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "postquantParams.isOutQuantTypeBf16",
+        "offset": 1572,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "postquantParams.isPerChnOut",
+        "offset": 1568,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "prefixParams.FusedInferAttentionPrefixParamsPH",
+        "offset": 1537,
+        "width": 1,
+        "count": 7,
+        "dtype": "uint8_t"
+      },
+      {
+        "name": "prefixParams.prefixFlag",
+        "offset": 1536,
+        "width": 1,
+        "count": 1,
+        "dtype": "bool"
+      },
+      {
+        "name": "prefixParams.prefixLen",
+        "offset": 1528,
+        "width": 8,
+        "count": 1,
+        "dtype": "uint64_t"
+      },
+      {
+        "name": "prefixParams.prefixMaxLen",
+        "offset": 1520,
+        "width": 8,
+        "count": 1,
+        "dtype": "uint64_t"
+      },
+      {
+        "name": "pseParams.pseShiftByBatch",
+        "offset": 1548,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "pseParams.pseShiftFlag",
+        "offset": 1544,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "pseParams.pseShiftS1",
+        "offset": 1552,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "pseParams.pseShiftS2",
+        "offset": 1556,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "workspaceParams.fdAccumOutSize",
+        "offset": 136,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "workspaceParams.fdLogSumExpSize",
+        "offset": 140,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "workspaceParams.mm1ResSize",
+        "offset": 128,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      },
+      {
+        "name": "workspaceParams.mm2ResSize",
+        "offset": 132,
+        "width": 4,
+        "count": 1,
+        "dtype": "uint32_t"
+      }
+    ],
+    "projection_sha256": "c9a53d6c036c1db25432f568340fbf117f7610931f6e7fdeec198c4042f3451b",
+    "public_source_sha256": "47458a0c04c8f66cad53e866de695da0f5c129f9d65500da435f9f51e4619db5",
+    "layout_kind": "public_host_serializer_projection",
+    "kernel_argument_raw_observed": false
+  }
+}
