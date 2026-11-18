@@ -51,8 +51,22 @@ def indexed_cost(capture,phase,runtime,run):
         and cost['raw_log_kept_complete'] is cost['all_prior_registration_conflicts_retained'] is True
         and type(index['refreshes']) is int and index['refreshes']>=28
         and all(type(n) in (int,float) and math.isfinite(n) and n>0 for n in (elapsed,seconds,index['validation_seconds']))
-        and index['validation_seconds']<=seconds<=elapsed,'GROUP_ACTUAL_INDEX_PREFIX_OR_COST_DIFFERS')
-    return dict(elapsed_seconds=elapsed,indexed_history_validation_seconds=seconds,prefix_bytes=size)
+        and index['validation_seconds']==seconds<=elapsed,'GROUP_ACTUAL_INDEX_PREFIX_OR_COST_DIFFERS')
+    start=cost['initial_runtime_prefix_bytes']
+    E.need(type(start) is int and 0<=start<size,'GROUP_INITIAL_RUNTIME_PREFIX_BOUND')
+    with path.open('rb') as stream:initial=stream.read(start)
+    E.need(hashlib.sha256(initial).hexdigest()==cost['initial_runtime_prefix_sha256']
+        and (not initial or initial.endswith(b'\n')),'GROUP_INITIAL_RUNTIME_PREFIX_CHANGED')
+    folder=E.child(run,phase['phase']);files=[]
+    for file in sorted(folder.rglob('*')):
+        E.need(not file.is_symlink() and file.resolve().is_relative_to(folder),'GROUP_RESOURCE_ARTIFACT_PATH_CHANGED')
+        if file.is_file() and file!=folder/'runtime_result.json':files.append(dict(path=file.relative_to(folder).as_posix(),bytes=file.stat().st_size))
+    E.need(files==cost['owned_files_excluding_capture'] and len(files)<=1024
+        and sum(r['bytes'] for r in files)<=512*1024**2,'GROUP_RESOURCE_ARTIFACT_INVENTORY_DIFFERS')
+    capture_bytes=(folder/'runtime_result.json').stat().st_size
+    return dict(elapsed_seconds=elapsed,indexed_history_validation_seconds=seconds,prefix_bytes=size,
+        runtime_start_bytes=start,runtime_end_bytes=size,indexed_history_seconds=seconds,
+        artifact_bytes=sum(r['bytes'] for r in files)+capture_bytes,capture_json_bytes=capture_bytes)
 
 
 def target_set(capture,audit,*,expected_generation=1):
@@ -184,10 +198,23 @@ def arm(run,expected,kind,source,helper,bundle,observer,checks,symbols):
     E.need(data['healthy_after_owned_observers_removed']['outputs']==data['warm_healthy']['outputs']
         and data['healthy_after_owned_observers_removed']['prompt_token_ids']==tokens,'ALL_NORMAL_POST_CLEAN_TOKEN_HEALTH_DIFFERS')
     E.need(E.sha(run/'result.json')==expected and E.sha(run/'runtime/runtime.jsonl')==raw['sha256'],'ALL_NORMAL_ORIGINAL_CHANGED_DURING_REVIEW')
+    resource_observations=None
+    if group:
+        binaries={r['binary_file'] for r in runtime if r['event']=='register' and r['result']==0}
+        E.need(0<len(binaries)<=4096,'GROUP_REGISTERED_BINARY_RESOURCE_COUNT')
+        binary_bytes=0
+        for name in binaries:
+            E.need(__import__('re').fullmatch(r'registered-\d+-\d+\.bin',name),'GROUP_REGISTERED_BINARY_RESOURCE_PATH')
+            file=E.child(run,'runtime/'+name);E.need(file.stat().st_size<=128*1024**2,'GROUP_REGISTERED_BINARY_RESOURCE_BOUND')
+            binary_bytes+=file.stat().st_size
+        E.need(binary_bytes<=16*1024**3,'GROUP_REGISTERED_BINARY_TOTAL_RESOURCE_BOUND')
+        resource_observations=dict(phases=[s['runtime_cost'] for s in summary],runtime_final_bytes=raw['bytes'],
+            registered_binary_bytes=binary_bytes,normal_result_bytes=(run/'result.json').stat().st_size,
+            **data['monotonic_costs'])
     return dict(data=data,values=values,summary=dict(result_path=str(run/'result.json'),result_sha256=expected,
         original_failures=failures,phases=summary,within_run=repeats,runtime=raw,library_coexistence=library,
         actual_calls=280,decode_calls=140,private_normal_calls=112 if kind=='baseline' else 0,
-        post_clean_scope='ORDINARY_REQUEST_TOKENS_TEXT_ONLY'))
+        post_clean_scope='ORDINARY_REQUEST_TOKENS_TEXT_ONLY',resource_observations=resource_observations))
 
 
 def review(args,*,build_variant=E.ALL_VARIANT):

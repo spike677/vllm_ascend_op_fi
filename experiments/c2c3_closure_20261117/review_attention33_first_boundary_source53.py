@@ -66,8 +66,9 @@ def read(path):
     return json.loads(Path(path).read_bytes(), object_pairs_hook=unique, parse_constant=invalid)
 
 
-def safe_path(run, recorded):
-    value = PurePosixPath(recorded); prefix = PurePosixPath('/evidence/run')
+def safe_path(run, recorded, *, evidence_prefix='/evidence/run'):
+    need(evidence_prefix in ('/evidence/run','/evidence/probe'),'REVIEWED_EVIDENCE_PREFIX_REQUIRED')
+    value = PurePosixPath(recorded); prefix = PurePosixPath(evidence_prefix)
     need('..' not in value.parts and value.is_relative_to(prefix), 'EVIDENCE_PATH_INVALID')
     root = Path(run).resolve(strict=True); target = root/Path(*value.relative_to(prefix).parts)
     need(not target.is_symlink() and target.resolve(strict=True).is_relative_to(root), 'EVIDENCE_PATH_ESCAPES_RUN')
@@ -96,9 +97,10 @@ def load_frozen(root):
         source_files_sha256=digest(pins), pins=pins))
 
 
-def read_runtime(run):
+def read_runtime(run,*,maximum_bytes=128*1024**2):
     path = Path(run)/'runtime/runtime.jsonl'; before = path.stat()
-    need(0 < before.st_size <= 128*1024**2, 'RUNTIME_FILE_BOUND')
+    need(type(maximum_bytes) is int and maximum_bytes in (128*1024**2,512*1024**2)
+        and 0 < before.st_size <= maximum_bytes, 'RUNTIME_FILE_BOUND')
     raw = path.read_bytes(); after = path.stat()
     need((before.st_size,before.st_mtime_ns) == (after.st_size,after.st_mtime_ns)
         and raw.endswith(b'\n'), 'RUNTIME_NOT_A_STABLE_COMPLETE_FILE')
@@ -208,9 +210,9 @@ def validate_snapshot(snapshot):
         need(last*FORMATS[dtype][1] <= meta['storage_nbytes'], 'SNAPSHOT_VIEW_OUTSIDE_STORAGE')
 
 
-def raw_snapshot(run, snapshot):
+def raw_snapshot(run, snapshot, *, evidence_prefix='/evidence/run'):
     validate_snapshot(snapshot)
-    path = safe_path(run, snapshot['path']); need(path.stat().st_size == snapshot['bytes'], 'RAW_SNAPSHOT_SIZE_CHANGED')
+    path = safe_path(run, snapshot['path'],evidence_prefix=evidence_prefix); need(path.stat().st_size == snapshot['bytes'], 'RAW_SNAPSHOT_SIZE_CHANGED')
     import numpy as np
     formats = {'torch.float16':'<f2','torch.float32':'<f4','torch.float64':'<f8','torch.bfloat16':'<u2'}
     need(snapshot['metadata']['dtype'] in formats, 'RAW_FLOAT_SNAPSHOT_TYPE_UNADAPTED')
@@ -229,11 +231,11 @@ def same_snapshot(left, right):
     return all(left.get(k) == right.get(k) for k in ('metadata','version','bytes','sha256','finite'))
 
 
-def first_boundary(run, phase, frozen_row, *, difference_reader, target_path=FIRST, relative_folder='first_boundary'):
+def first_boundary(run, phase, frozen_row, *, difference_reader, target_path=FIRST, relative_folder='first_boundary',evidence_prefix='/evidence/run'):
     capture = phase['finish']['capture']
     value=(capture['first_decode_boundary'] if target_path==FIRST and relative_folder=='first_boundary'
            else capture['all_decode_boundaries'][target_path]); bound = value['boundary']
-    name = phase['phase']; prefix = '/evidence/run/'+name+'/'+relative_folder+'/'
+    name = phase['phase']; prefix = evidence_prefix+'/'+name+'/'+relative_folder+'/'
     need(not Path(relative_folder).is_absolute() and '..' not in Path(relative_folder).parts,'BOUNDARY_FOLDER_INVALID')
     need(read(Path(run)/name/relative_folder/'boundary.json') == value, 'BOUNDARY_FILE_DIFFERS_FROM_RESULT')
     need(value['schema'] == 'demoncat.paged33.first_decode_boundary.v1' and value['state'] == 'FINALIZED'
@@ -271,7 +273,7 @@ def first_boundary(run, phase, frozen_row, *, difference_reader, target_path=FIR
     need(inputs['query']['snapshot']['metadata'] == bound['query']
         and inputs['block_table']['snapshot']['metadata'] == bound['page_table'], 'Q_TABLE_ACTUAL_OBJECT_BINDING')
     query = inputs['query']['snapshot']; need(query['path'] == prefix+'query.bin', 'QUERY_BIN_PATH_CHANGED')
-    query_raw = raw_snapshot(run, query)
+    query_raw = raw_snapshot(run, query,evidence_prefix=evidence_prefix)
     need(query_raw['shape'] == [1,16,128] and query_raw['dtype'] == 'torch.float16'
         and query['metadata']['device'].split(':')[0] == 'npu', 'ACTUAL_QUERY_GEOMETRY')
     table = inputs['block_table']['snapshot']; dtype = table['metadata']['dtype']; values = value['block_table_values']
@@ -292,7 +294,7 @@ def first_boundary(run, phase, frozen_row, *, difference_reader, target_path=FIR
             and before['operator_input_repacked'] is after['operator_input_repacked'] is False
             and all(before[k] == post[k] for k in ('shape','bytes','sha256'))
             and live['dtype'] == post['dtype'] == inputs[kind]['metadata']['dtype'], 'PRE_POST_LOGICAL_KV_LIFETIME_OR_HASH:'+kind)
-        post_path = safe_path(run, post['path'])
+        post_path = safe_path(run, post['path'],evidence_prefix=evidence_prefix)
         need(sha(post_path) == before['sha256'] and post_path.stat().st_size == before['bytes'], 'LOGICAL_KV_POST_FILE_HASH:'+kind)
         kv[kind] = dict(shape=before['shape'], dtype=live['dtype'], bytes=before['bytes'], sha256=before['sha256'],
             post_consumer_file=str(post_path), pre_boundary_file_preserved=False, matching_post_file_rehashed=True)
@@ -301,7 +303,7 @@ def first_boundary(run, phase, frozen_row, *, difference_reader, target_path=FIR
     output_raw = []
     for index, (before,after) in enumerate(zip(outputs,value['outputs_after'])):
         need(before['path'] == prefix+'output-'+str(index)+'.bin' and same_snapshot(before,after), 'IMMEDIATE_OUTPUT_CHECKPOINT_CHANGED')
-        output_raw.append(raw_snapshot(run,before))
+        output_raw.append(raw_snapshot(run,before,evidence_prefix=evidence_prefix))
     first_output = capture['attention'][target_path]['output']
     need(all(output_raw[0][k] == first_output[k] for k in ('shape','dtype','bytes','sha256')), 'IMMEDIATE_OUTPUT_DIFFERS_FROM_LATER_RETAINED_OUTPUT')
     expected_checks = set(inputs) | {'logical_key','logical_value','impl_key_same_object','impl_value_same_object'} | {'output_'+str(i) for i in range(len(outputs))}

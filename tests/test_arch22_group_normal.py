@@ -93,17 +93,20 @@ class GroupNormalContracts(unittest.TestCase):
 
     def test_index_cost_receipt_must_match_original_prefix_owner_and_real_phase_time(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root=Path(tmp);(root/'runtime').mkdir();rows=[dict(event='begin',call_id='a'*32),dict(event='end',call_id='a'*32)]
+            root=Path(tmp);(root/'runtime').mkdir();(root/'baseline_before').mkdir();(root/'baseline_before/runtime_result.json').write_text('{}')
+            rows=[dict(event='begin',call_id='a'*32),dict(event='end',call_id='a'*32)]
             raw=b''.join((json.dumps(row)+'\n').encode() for row in rows);(root/'runtime/runtime.jsonl').write_bytes(raw)
             index=dict(schema='demoncat.attention.owned_runtime_index.v1',owner=[1,2,3],prefix_bytes=len(raw),
-                prefix_sha256=hashlib.sha256(raw).hexdigest(),parsed_events=2,refreshes=28,validation_seconds=.2,
+                prefix_sha256=hashlib.sha256(raw).hexdigest(),parsed_events=2,refreshes=28,validation_seconds=.5,
                 complete_old_prefix_rehashed=True,raw_log_modified=False,qualification_granted=False)
             value=dict(target_scope=dict(pid=1,python_thread_ident=2,native_tid=3),runtime_validation_cost=dict(index=index,
+                initial_runtime_prefix_bytes=0,initial_runtime_prefix_sha256=hashlib.sha256(b'').hexdigest(),owned_files_excluding_capture=[],
                 indexed_history_validation_seconds=.5,raw_log_kept_complete=True,all_prior_registration_conflicts_retained=True))
-            self.assertEqual(reader.indexed_cost(value,dict(elapsed_seconds=2.),rows,root)['prefix_bytes'],len(raw))
+            phase=dict(phase='baseline_before',elapsed_seconds=2.)
+            self.assertEqual(reader.indexed_cost(value,phase,rows,root)['prefix_bytes'],len(raw))
             for key,item in (('owner',[1,3,2]),('prefix_sha256','b'*64),('parsed_events',1),('validation_seconds',3.)):
                 bad=deepcopy(value);bad['runtime_validation_cost']['index'][key]=item
-                with self.subTest(key=key),self.assertRaises(ValueError):reader.indexed_cost(bad,dict(elapsed_seconds=2.),rows,root)
+                with self.subTest(key=key),self.assertRaises(ValueError):reader.indexed_cost(bad,phase,rows,root)
 
     def test_preparer_only_queues_same_new_package_stock_and_private_normal(self):
         source=files.source();source['variant']=E.GROUP_VARIANT

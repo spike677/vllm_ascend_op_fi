@@ -107,6 +107,7 @@ class GroupNormalWorkerSession(AllNormalWorkerSession):
         super().__init__(*args,**kwargs)
         from fault_injection.native_adapters.attention28.runtime_log_index import RuntimeLogIndex
         self.runtime_index=self.driver.runtime_index if self.private else RuntimeLogIndex(self.driver.runtime_dir)
+        self.initial_runtime=self.runtime_index.scope(self.driver.runtime_dir,'0'*32)
         self.capture_validation_seconds=0.
 
     def _runtime_observation(self,token,capture):
@@ -117,8 +118,17 @@ class GroupNormalWorkerSession(AllNormalWorkerSession):
 
     def collect(self):
         result=super().collect()
+        self.runtime_index.scope(self.driver.runtime_dir,'0'*32)
+        files=[]
+        for path in sorted(self.folder.rglob('*')):
+            require(not path.is_symlink() and path.resolve().is_relative_to(self.folder.resolve()),'GROUP_OWNED_ARTIFACT_PATH_CHANGED')
+            if path.is_file() and path!=self.folder/'runtime_result.json':files.append(dict(path=path.relative_to(self.folder).as_posix(),bytes=path.stat().st_size))
+        require(len(files)<=1024 and sum(r['bytes'] for r in files)<=512*1024**2,'GROUP_PHASE_ARTIFACT_RESOURCE_BOUND')
         result['runtime_validation_cost']=dict(index=self.runtime_index.report(),
-            indexed_history_validation_seconds=self.capture_validation_seconds+getattr(self.driver,'validation_seconds',0.),
+            initial_runtime_prefix_bytes=self.initial_runtime['prefix_bytes'],initial_runtime_prefix_sha256=self.initial_runtime['prefix_sha256'],
+            indexed_history_validation_seconds=self.runtime_index.validation_seconds,
+            complete_launch_validation_seconds=self.capture_validation_seconds+getattr(self.driver,'validation_seconds',0.),
+            owned_files_excluding_capture=files,
             raw_log_kept_complete=True,all_prior_registration_conflicts_retained=True)
         (self.folder/'runtime_result.json').write_text(json.dumps(result,indent=2,allow_nan=False)+'\n')
         return result

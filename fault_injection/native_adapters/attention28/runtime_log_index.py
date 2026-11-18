@@ -32,12 +32,22 @@ def invalid(value):raise RuntimeError('INDEX_NONFINITE_JSON:'+value)
 
 
 class RuntimeLogIndex:
-    def __init__(self,directory):
+    def __init__(self,directory,*,group_scope=None):
         self.root=Path(directory).resolve(strict=True);self.path=self.root/'runtime.jsonl'
+        self.group_scope=group_scope
+        self.maximum_bytes  # Validate the exact private capacity object before use.
         self.owner=(os.getpid(),threading.get_ident(),threading.get_native_id())
         self.file_identity=None;self.size=0;self.prefix_sha256=hashlib.sha256(b'').hexdigest()
         self._rows=[];self._calls={};self._registers={};self._functions={};self._overflow=[]
         self.parsed_events=0;self.refreshes=0;self.validation_seconds=0.
+
+    @property
+    def maximum_bytes(self):
+        if self.group_scope is None:return MAX_BYTES
+        from .group_resource_budget import GroupRuntimeLogScope,GROUP_LOG_BYTES
+        need(type(self.group_scope) is GroupRuntimeLogScope,'INDEX_EXACT_GROUP_CAPACITY_SCOPE_REQUIRED')
+        self.group_scope.check(self.root)
+        return GROUP_LOG_BYTES
 
     def _owned(self,directory):
         need(self.owner==(os.getpid(),threading.get_ident(),threading.get_native_id())
@@ -48,7 +58,7 @@ class RuntimeLogIndex:
         with self.path.open('rb') as stream:
             before=os.fstat(stream.fileno());identity=(before.st_dev,before.st_ino)
             need(self.file_identity is None or identity==self.file_identity,'INDEX_RUNTIME_REPLACED')
-            need(self.size<=before.st_size<=MAX_BYTES,'INDEX_RUNTIME_TRUNCATED_OR_OVERFLOW')
+            need(self.size<=before.st_size<=self.maximum_bytes,'INDEX_RUNTIME_TRUNCATED_OR_OVERFLOW')
             prefix=hashlib.sha256();remaining=self.size
             while remaining:
                 block=stream.read(min(remaining,1024**2));need(block,'INDEX_OLD_PREFIX_SHORT_READ')
@@ -105,4 +115,5 @@ class RuntimeLogIndex:
             file_identity=list(self.file_identity) if self.file_identity else None,prefix_bytes=self.size,
             prefix_sha256=self.prefix_sha256,parsed_events=self.parsed_events,refreshes=self.refreshes,
             validation_seconds=self.validation_seconds,complete_old_prefix_rehashed=True,
-            raw_log_modified=False,qualification_granted=False)
+            raw_log_modified=False,qualification_granted=False,maximum_runtime_bytes=self.maximum_bytes,
+            group_resource_scope=self.group_scope.check(self.root) if self.group_scope else None)

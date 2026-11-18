@@ -95,12 +95,13 @@ def same_tensor(before, after):
 def read_scoped_launches(directory, token, *, expected_pid=None, expected_native_tid=None,runtime_index=None):
     """Join raw registration/launch facts, without decoding a guessed stock ABI."""
     root = Path(directory).resolve(strict=True); raw = root/'runtime.jsonl'
-    require(raw.stat().st_size <= 128 * 1024**2 and re.fullmatch('[0-9a-f]{32}', token),
-            'BOUNDARY_RAW_LAUNCH_LIMIT')
     indexed=None
     if runtime_index is not None:
         from fault_injection.native_adapters.attention28.runtime_log_index import RuntimeLogIndex
         require(type(runtime_index) is RuntimeLogIndex,'BOUNDARY_EXACT_OWNED_RUNTIME_INDEX_REQUIRED')
+    limit=runtime_index.maximum_bytes if runtime_index is not None else 128*1024**2
+    require(raw.stat().st_size<=limit and re.fullmatch('[0-9a-f]{32}',token),'BOUNDARY_RAW_LAUNCH_LIMIT')
+    if runtime_index is not None:
         indexed=runtime_index.scope(root,token)
     snapshot = raw.read_bytes() if indexed is None else None
     if indexed is None:require(len(snapshot) <= 128 * 1024**2, 'BOUNDARY_RAW_LAUNCH_LIMIT')

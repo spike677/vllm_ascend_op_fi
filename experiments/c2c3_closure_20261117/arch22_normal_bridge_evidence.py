@@ -69,7 +69,8 @@ ALL_REQUIRED=(EXPERIMENT+'prepare_arch22_all_normal_cases.py',EXPERIMENT+'review
 
 GROUP_REQUIRED=tuple(EXPERIMENT+n+'.py' for n in ('prepare_arch22_group_normal_cases','review_arch22_group_normal')) + (
     WORKER+'paged33_group_normal.py',NATIVE+'fia/apply_tnd33_arch22_group_s2.py',
-    NATIVE+'fia/paged33_arch22_group_s2.h',NATIVE+'runtime_log_index.py')
+    NATIVE+'fia/paged33_arch22_group_s2.h',NATIVE+'runtime_log_index.py',
+    NATIVE+'group_resource_budget.py',WORKER+'paged33_group_evidence.py')
 
 def variant(source):return source.get('variant',VARIANT)
 def vendor_name(source):return GROUP_VENDOR if variant(source)==GROUP_VARIANT else ALL_VENDOR if variant(source)==ALL_VARIANT else S2_VENDOR if variant(source)==S2_VARIANT else VENDOR
