@@ -41,7 +41,8 @@ exec python3 -B /source/experiments/c2c3_closure_20261117/attention_cpu_prefligh
     command=['docker','create','--name','dcat-core-build-'+owner,
         '--label','dcat.cpu-build-owner='+owner,'--runtime=runc','--network=none',
         '--cpus=4','--memory=8g','-e','ASCEND_VISIBLE_DEVICES=void',
-        '-e','PYTHONDONTWRITEBYTECODE=1','-e','LD_PRELOAD=','-e','ASCEND_CUSTOM_OPP_PATH=',
+        '-e','PYTHONDONTWRITEBYTECODE=1','-e','TORCH_DEVICE_BACKEND_AUTOLOAD=0',
+        '-e','LD_PRELOAD=','-e','ASCEND_CUSTOM_OPP_PATH=',
         '--mount','type=bind,src='+str(source)+',dst=/source,readonly',
         '--mount','type=bind,src='+str(out)+',dst=/output','--entrypoint','bash',IMAGE,'-c',script]
     receipt=dict(schema='demoncat.worker_core.device_free_build.v1',status='BUILDING',
