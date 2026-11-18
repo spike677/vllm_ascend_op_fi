@@ -23,7 +23,13 @@ class Fault39OutputServingProvider(Scope):
     def __init__(self, worker, model, identity):
         super().__init__(worker, model, identity)
         self.runner, self.thread = worker.model_runner, threading.get_ident()
-        self.binding = self.session = self.p = None
+        self.binding = getattr(worker, _ATTRIBUTE, None)
+        # Resolver admission is read-only and precedes Runtime ownership. A
+        # missing Native deployment cannot supply the ABI readback needed to
+        # release even an otherwise empty Runtime lease.
+        require(type(self.binding) is Output39ServingBinding, 'REVIEWED_OUTPUT39_SERVING_BINDING_REQUIRED')
+        self.session = self.p = None
+        self.binding_reserved = False
         self.checked = self.attempted = self.complete = self.recovered = False
         self.recovering = False
         self.stopped = True
@@ -33,6 +39,8 @@ class Fault39OutputServingProvider(Scope):
         self.requests = set()
         self.actual_identity = self.input_hash = None
         self.selection = None
+        self._context()
+        read_native_binding(self.binding)
 
     @property
     def phase(self):
@@ -59,8 +67,9 @@ class Fault39OutputServingProvider(Scope):
                 and self.binding.worker is self.worker and self.binding.runner is self.runner
                 and self.binding.model is self.model and self.binding.pid == os.getpid()
                 and self.binding.thread == self.thread, 'OUTPUT39_DEPLOYMENT_BINDING_CHANGED')
-            if self._registered:
-                require(self.binding.leases == {self._ticket}, 'OUTPUT39_DEPLOYMENT_OWNER_CHANGED')
+            if self.binding_reserved or self.binding.leases:
+                require(self.binding_reserved and self.binding.leases == {self._ticket},
+                        'OUTPUT39_DEPLOYMENT_OWNER_CHANGED')
         if self.p is not None:
             require(self.p.owner == self.native_owner and self.p.model is self.model
                 and self.p.generation == self.native_generation
@@ -73,15 +82,12 @@ class Fault39OutputServingProvider(Scope):
         reject_unknown(settings, ('request_id',) if action == 'advance' else ())
         self._context()
         if action == 'prepare':
-            binding = getattr(self.worker, _ATTRIBUTE, None)
-            require(type(binding) is Output39ServingBinding, 'REVIEWED_OUTPUT39_SERVING_BINDING_REQUIRED')
-            self.binding = binding
-            self._context()
-            require(not binding.leases, 'OUTPUT39_DEPLOYMENT_ALREADY_OWNED')
-            read_native_binding(binding)
+            require(not self.binding.leases, 'OUTPUT39_DEPLOYMENT_ALREADY_OWNED')
+            read_native_binding(self.binding)
         elif action == 'register':
             require(self.binding is not None and not self.binding.leases, 'OUTPUT39_DEPLOYMENT_ALREADY_OWNED')
             self.binding.leases.add(self._ticket)
+            self.binding_reserved = True
             self._registered = True
             from fault_injection.deployments.postwrite import Fault39OutputProxyProvider
             self.p = Fault39OutputProxyProvider(self.model, self.binding.transport)
@@ -117,8 +123,12 @@ class Fault39OutputServingProvider(Scope):
                 require(self.complete and self.recovered and not self.failure, 'OUTPUT39_REAL_OFF_AND_HEALTH_REQUIRED')
             self._cleanup()
             if action in ('clean', 'unregister'):
-                self.binding.leases.remove(self._ticket)
                 self._registered = False
+            if action == 'unregister' and self.binding_reserved:
+                # clean is inert but still owned. Only unregister releases the
+                # exact reservation checked above; absence/foreign is not idle.
+                self.binding.leases.remove(self._ticket)
+                self.binding_reserved = False
         else:
             raise ProviderError('UNSUPPORTED_PROVIDER_ACTION')
         return self.query(owner=owner, generation=generation)
@@ -255,6 +265,7 @@ class Fault39OutputServingProvider(Scope):
                     retained=True, release_readback_error=getattr(lease, 'release_readback_error', None)))
         return dict(execution_boundary='native', native_loaded=native is not None, native_registered=False,
             native_registration='NOT_APPLICABLE_DIRECT_ABI_LEASES', registered=self._registered,
+            binding_reserved=self.binding_reserved,
             native_global_owner_table_observed=False,
             owner=owner, generation=generation, enabled=any(row['native_live'] for row in leases),
             inflight=0 if serving is None else serving['inflight'], leases=len(leases),

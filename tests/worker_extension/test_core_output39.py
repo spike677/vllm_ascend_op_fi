@@ -157,9 +157,82 @@ class CoreOutput39Tests(unittest.TestCase):
     def test_missing_deployment_is_refused_without_model_or_native(self):
         client = WorkerFaultClient(HostAdapter(self.executor), FaultConfig(39, 'output_proxy'))
         reply = client.prepare()
-        self.assertEqual(reply['status'], 'PROVIDER_ACTION_FAILED', reply)
+        self.assertEqual(reply['status'], 'PROVIDER_UNAVAILABLE', reply)
+        self.assertFalse(self.worker._demoncat_worker_fault_runtime._leases)
+        self.assertEqual(client.unregister()['status'], 'HOST_REJECTED')
+        detached = client.detach()
+        self.assertEqual(detached['status'], 'DETACHED', detached)
+        self.assertFalse(detached['ownership_retained'])
         self.assertEqual(self.model.forward_calls, 0)
         self.assertFalse(self.transport.opened)
+
+    def test_clean_keeps_exact_binding_reservation_until_unregister_and_detach(self):
+        self.start()
+        self.enqueue(0)
+        binding, ticket = self.provider.binding, self.provider._ticket
+        for _ in range(2):
+            state = self.ok(self.client.clean())
+            self.assertFalse(state['registered'])
+            self.assertEqual((state['owned_hooks'], state['leases'], state['inflight']), (0, 0, 0))
+            self.assertTrue(state['binding_reserved'])
+            self.assertEqual(binding.leases, {ticket})
+        self.assertTrue(self.client.snapshot()['ownership_retained'])
+        self.assertEqual(self.client.query()['status'], 'QUERY_OK')
+        state = self.ok(self.client.unregister())
+        self.assertFalse(state['binding_reserved'] or binding.leases)
+        detached = self.client.detach()
+        self.assertEqual(detached['status'], 'DETACHED', detached)
+        self.assertFalse(detached['ownership_retained'])
+        serving39_output.remove_fault39_output_serving_binding(self.worker)
+
+    def test_zero_resource_prepare_failure_with_valid_binding_can_unregister(self):
+        original = self.client.host._binding
+        def invalid_settings(worker, config):
+            original(worker, config)
+            return {'prepare': {'layer_name': 'forbidden'}}
+        self.client.host._binding = invalid_settings
+        failed = self.client.prepare()
+        self.assertEqual(failed['status'], 'PROVIDER_ACTION_FAILED', failed)
+        self.provider = self.worker._demoncat_worker_fault_runtime._leases['39.output_proxy'].provider
+        self.assertFalse(self.provider.binding_reserved or self.provider.binding.leases)
+        self.assertIsNone(self.provider.session)
+        self.assertIsNone(self.provider.p)
+        self.assertEqual(self.model.forward_calls, 0)
+        self.assertFalse(self.transport.opened)
+        state = self.ok(self.client.unregister())
+        self.assertFalse(state['registered'] or state['binding_reserved'])
+        self.assertEqual(self.client.detach()['status'], 'DETACHED')
+
+    def test_cleaned_missing_or_foreign_ticket_or_binding_preserves_owner_until_repaired(self):
+        self.start()
+        self.ok(self.client.clean())
+        binding, ticket = self.provider.binding, self.provider._ticket
+        before = self.transport.restores
+        for changed in (set(), {(ticket[0], ticket[1]+1)}, {ticket, ('foreign', ticket[1])}):
+            with self.subTest(tickets=changed):
+                binding.leases.clear()
+                binding.leases.update(changed)
+                failed = self.client.unregister()
+                self.assertEqual(failed['status'], 'PROVIDER_ACTION_FAILED', failed)
+                self.assertTrue(failed['ownership_retained'] and self.provider.binding_reserved)
+                self.assertEqual(binding.leases, changed)
+                self.assertEqual(self.transport.restores, before)
+                self.assertEqual(self.client.query()['status'], 'NATIVE_STATE_UNAVAILABLE')
+                detached = self.client.detach()
+                self.assertEqual(detached['status'], 'RECOVERY_REQUIRED', detached)
+                self.assertTrue(detached['ownership_retained'])
+        binding.leases.clear()
+        binding.leases.add(ticket)
+        setattr(self.worker, serving39_output._ATTRIBUTE, object())
+        try:
+            failed = self.client.unregister()
+            self.assertEqual(failed['status'], 'PROVIDER_ACTION_FAILED', failed)
+            self.assertTrue(failed['ownership_retained'])
+            self.assertEqual(binding.leases, {ticket})
+        finally:
+            setattr(self.worker, serving39_output._ATTRIBUTE, binding)
+        self.ok(self.client.unregister())
+        self.assertEqual(self.client.detach()['status'], 'DETACHED')
 
     def test_foreign_owner_generation_and_unknown_user_layer_are_refused(self):
         self.start()

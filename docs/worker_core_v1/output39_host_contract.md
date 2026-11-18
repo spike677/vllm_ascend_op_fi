@@ -82,6 +82,15 @@ changed storage or incomplete real OFF retains the Runtime owner. Before/after
 hook-removal and dispatch-pop failures support explicit cleanup retry after
 actual resource readback. The first failure and partial inventory remain.
 
+`clean` makes the provider inert (`registered=false`) while retaining its exact
+deployment reservation until `unregister`. Repeated clean and later unregister
+must preserve that owner relationship; a missing/foreign ticket or replaced
+binding refuses without writing Native state. Missing deployment/Native
+dependencies refuse during read-only resolver admission, before Runtime creates
+an owner. An existing verified binding with a rejected prepare argument can
+still unregister its zero-resource Runtime ticket. No fabricated Native-loaded
+state or relaxation of Runtime's inert-state check is used for either path.
+
 After a failed F, `recover` can restore only still-current owned storage, then
 arms actual OFF and health requests. It never replays F. Resource release alone
 does not turn the failed attempt into C1 success. C2/C3 and E5 remain false or
