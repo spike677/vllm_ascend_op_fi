@@ -61,6 +61,15 @@ not presented as a local binary rehash. Running the same reader against the
 complete SDK directory on 124 additionally verifies available binary bytes.
 CPU build results remain separate from the actual observation.
 
+Root then ran the same four review files against the original archive,
+frozen source106/source107 and the complete SDK directory on124. All12
+sections remain consistent with zero issues. This second review additionally
+rehashes the actual observer DSO, both CPU test executables and all47 CPU logs;
+see [the full-build summary](quant_gmm2_source107_full_build_review.json), SHA256
+`d07ad0e7173fc7a9fead3d6929f9fceb61b64aa3a1640778db426ad841ece483`.
+The earlier metadata-only summary is preserved unchanged. Neither review
+grants new request-row or fault qualification.
+
 The review also rehashes 20 runtime/support modules and the frozen probe.
 The read-only `/probe_quant_containers.py` support mount must have the exact
 runtime bytes. No private tensors, original metadata, binaries or process
@@ -80,6 +89,17 @@ logits or full numerical outputs. Execute returning is not device drain.
 Release covers owned host journals and observed bookkeeping; the preloaded
 original library mappings remain resident until process exit. There is no
 statistics/mix capture or fault in this run.
+
+## Next semantic boundary
+
+The current capture intentionally has no `integer_routes` or
+`routed_call_frames` payload. Earlier source87/source93 integer snapshots cannot
+be attached to this forward. Completing row lineage requires current routing
+indices/counts and cross-stage live-object/write-epoch evidence joined to these
+actual GMM2 registrations, plus the actual routing/GMM1/unpermute implementations
+and their ordering semantics. Matching current descriptors or public operator
+names is insufficient. Do not repeat this successful GMM2 observation merely
+to accumulate another set of the same52 calls.
 
 ## Re-running the independent review
 

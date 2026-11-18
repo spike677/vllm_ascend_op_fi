@@ -56,12 +56,17 @@ observed1241 actual container API calls in one healthy B8 first-decode request,
 with104 source windows, exact token/text health recovery and no cleanup errors.
 The [independent original-file review](QUANT_SOURCE102_CONTAINER_REVIEW.md)
 reconciles607 complete lifetimes and130 current GMM2 member descriptors.
-Request-row proof remains10/135: actual named GWS slots and executor joins are
-not yet established. The fixed production wheel's actual GMM2 branch is
-WeightNz, not V5. Its [new bounded journal build](QUANT_GMM2_SOURCE106_BUILD_REVIEW.md)
-passes47 actual SDK-typed CPU contracts and startup original resolution; Python
-admission and real paired observation remain pending. Observation alone grants
-no new C2/C3 qualification.
+Source107 now observes the fixed wheel's actual WeightNz GMM2 branch:26 current
+GWS/execute pairs,390 named non-null container slots and639 released getter
+arrays. The independent nine-original review verifies the full135 projection
+census, current public arguments/returns, startup/Worker identity and cleanup.
+Before/captured/after tokens match for8 requests with2 tokens each. Root's
+124 rerun also rehashes the real observer and CPU test binaries; see the
+[actual observation and limits](QUANT_GMM2_SOURCE107_INDEPENDENT_REVIEW.md).
+The [SDK build](QUANT_GMM2_SOURCE106_BUILD_REVIEW.md) remains a separate source106
+artifact. Request-row proof stays10/135: current routing integers, cross-stage
+lifetimes and routing/GMM1/unpermute implementation semantics are still missing.
+No fault, new C2/C3 qualification or statistics E5 is claimed by this observation.
 
 ## Ownership and execution
 
