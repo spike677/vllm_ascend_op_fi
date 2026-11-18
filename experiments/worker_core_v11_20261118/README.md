@@ -17,6 +17,18 @@ The independent reader reconciles81,345 checks with zero issues; see the
 E5 remains separate. See the [26 review](AGENT7_NATIVE26_SOURCE82_ISOLATED_REVIEW.md)
 and [39 original-file summary](output39_source84_independent_summary.json).
 
+Source93 adds a zero-fault DeepSeek observation: all52 routed Python chains
+across two B8 healthy first-decode requests independently reconcile, with270
+actual quant parents/prepares/executes. Request-row authority remains10/135 per
+request. Native GMM/routing/unpermute implementation ownership and row semantics
+are still unproved; see the [source93 review](QUANT_SOURCE93_ROUTED_FRAMES_REVIEW.md).
+The source-bound reader and root rerun produce the identical summary hash.
+
+The independent source94 Fault33 S2 candidate has passed the real pinned
+SplitCore22,528-case CPU geometry matrix. Its new host/kernel build and its own
+normal bridge remain separate device acceptance work; no F gate is opened.
+The original source88 normal package and evidence remain unchanged.
+
 ## Ownership and execution
 
 Root owns shared contracts, registry integration, device queue and qualification
