@@ -23,6 +23,8 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
         self.originals = []
         self.capture_attempts = 0
         self.group_failure = None
+        self.first_collection_failure = None
+        self.pending_collection_failure = None
         self.cleanup_requested = False
         self.cleanup_failures = []
         super().__init__(worker, model, identity)
@@ -59,8 +61,24 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
                 try:
                     self._collect()
                 except BaseException as error:
-                    self.cleanup_failures.append(dict(action='collect', reason=str(error),
-                        group_recovery=self.group.session.recovery_report() if self.group and self.group.session else None))
+                    failure = dict(action='collect', reason=str(error), error_type=type(error).__name__,
+                        completed_requests=len(self.rows), collected_requests=self.collected_requests,
+                        group_recovery=self.group.session.recovery_report() if self.group and self.group.session else None)
+                    if self.first_collection_failure is None:
+                        self.first_collection_failure = deepcopy(failure)
+                    self.cleanup_failures.append(failure)
+                    self.pending_collection_failure = deepcopy(failure)
+                    # prepare_coverage can reject after the independent
+                    # discovery report exists but before the normal capture.
+                    # Preserve that report before cleanup clears observations.
+                    try:
+                        self._capture('collect_failed', collection_failure=failure)
+                        self.pending_collection_failure = None
+                    except BaseException as capture_error:
+                        self.cleanup_failures.append(dict(action='collect_failed_capture', reason=str(capture_error),
+                            error_type=type(capture_error).__name__, original_failure=str(error)))
+                    # A secondary evidence-write error must not replace the
+                    # actual collection refusal returned by the Runtime.
                     raise
             else:
                 require(set(settings) == {'request_id'} and self.collected_requests == len(self.rows),
@@ -169,7 +187,11 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
             self.plan.extend(['c2_lossless']+['c2_fault']*len(self.group.eligible)+['c2_off', 'c2_health'])
             if self.binding.stage == 'c2_c3':
                 self.plan.extend(['c3_lossless', 'c3_fault', 'c3_fault', 'c3_off', 'c3_health'])
-            self.group.prepare_coverage('once')
+            try:
+                self.group.prepare_coverage('once')
+            except BaseException as error:
+                self.fail(error)
+                raise
         elif last in ('c2_health', 'c3_health', 'group_recovery_health'):
             # The actual health return is complete before removing root hooks.
             self.session.close()
@@ -201,13 +223,20 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
                 recovery = self.group.session.recovery_report() if self.group.session is not None else None
                 require(not recovery or recovery['complete'], 'OUTPUT39_GROUP_LOGICAL_OWNER_RECOVERY_REQUIRED')
             super()._cleanup()
+            if self.pending_collection_failure is not None:
+                # Restore Native resources first. Group discovery and actual
+                # request records survive teardown, so an artifact retry does
+                # not require re-running a model or retaining device storage.
+                # Keep the Runtime reservation until the capture succeeds.
+                self._capture('collect_failed', collection_failure=self.pending_collection_failure)
+                self.pending_collection_failure = None
         except BaseException as error:
             self.cleanup_failures.append(dict(reason=str(error), native_owner=self.native_owner,
                 native_generation=self.native_generation,
                 group_recovery=self.group.session.recovery_report() if self.group and self.group.session else None))
             raise
 
-    def _capture(self, action):
+    def _capture(self, action, *, collection_failure=None):
         from ..serving39_output_group import STRUCTURED_OUTPUT_DIGEST, LOGITS_OUTPUT_DIGEST
         folder = self.binding.folder/self._ticket[0]/'group-originals'
         folder.mkdir(exist_ok=True)
@@ -217,14 +246,38 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
             rpc_owner=self._ticket[0], rpc_generation=self._ticket[1], worker=deepcopy(self.identity),
             actual_requests=deepcopy(self.rows), module_aliases=super().evidence()['module_aliases'],
             group=self.group.report() if self.group else None, finished_groups=deepcopy(self.group_reports),
-            failure=self.group_failure, failures=deepcopy(self.failures), qualification_granted=False)
+            failure=self.group_failure, failures=deepcopy(self.failures), qualification_granted=False,
+            collection_failure=deepcopy(collection_failure), first_collection_failure=deepcopy(self.first_collection_failure),
+            cleanup_failures=deepcopy(self.cleanup_failures))
         value['digest_scopes'] = dict(actual_requests=deepcopy(LOGITS_OUTPUT_DIGEST),
             forward_artifacts=deepcopy(STRUCTURED_OUTPUT_DIGEST), actual_health=deepcopy(STRUCTURED_OUTPUT_DIGEST))
         raw = (json.dumps(value, sort_keys=True, allow_nan=False)+'\n').encode('utf-8')
         with path.open('xb') as stream:
             stream.write(raw)
+        discovery = value['group']['discovery'] if value['group'] else None
         self.originals.append(dict(path=str(path), sha256=hashlib.sha256(raw).hexdigest(), bytes=len(raw),
-            actual_requests=len(self.rows), action=action))
+            actual_requests=len(self.rows), action=action,
+            group_discovery_sha256=digest(discovery) if discovery is not None else None))
+
+    def _discovery_readback(self):
+        discovery = self.group.discovery_diagnostics if self.group is not None else None
+        if discovery is None:
+            return None
+        candidates = discovery['candidates']
+        fingerprint = digest(discovery)
+        # Keep RPC readback small: full independent forward/candidate/parameter
+        # originals live in the referenced immutable capture. Do not reclassify
+        # unseen modules or infer completeness from the projection count.
+        return dict(diagnostic_sha256=fingerprint, discovery_complete=candidates['discovery_complete'],
+            eligibility_counts=deepcopy(candidates['eligibility_counts']),
+            unresolved_candidates=[deepcopy(row) for row in candidates['candidates']
+                if row['eligibility']['status'] not in ('SUPPORTED', 'UNSUPPORTED')],
+            structural_modules=discovery['structural_modules'],
+            actual_module_calls=deepcopy(discovery['actual_module_calls']),
+            structural_noncall_inventory=deepcopy(discovery['structural_noncall_inventory']),
+            independent_forward_projection_counts=[len(row['calls']) for row in discovery['independent_forwards']],
+            originals=[deepcopy(row) for row in self.originals if row['group_discovery_sha256'] == fingerprint],
+            qualification_granted=False)
 
     def evidence(self):
         evidence = super().evidence()
@@ -235,6 +288,8 @@ class Fault39OutputGroupProvider(Fault39OutputServingProvider):
         evidence.update(scope='INITIALIZED_WORKER_COMPLETE_PROJECTION_SET_FIXED_FRESH_PREFILL',
             stage=self.binding.stage, next_plan=list(self.plan[self.index:]), collection_pending=len(self.rows)!=self.collected_requests,
             group_originals=deepcopy(self.originals), group_failure=self.group_failure,
+            group_discovery=self._discovery_readback(), first_collection_failure=deepcopy(self.first_collection_failure),
+            collection_failure_capture_pending=self.pending_collection_failure is not None,
             group_summary={key: dict(coverage=report['coverage'], eligible_target_count=report['eligible_target_count'],
                 all_projection_count=report['all_projection_count'], execution_scope=report['execution_scope'],
                 original_report_sha256=digest(report)) for key, report in self.group_reports.items()})
