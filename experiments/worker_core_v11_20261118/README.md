@@ -146,6 +146,21 @@ and26 real-SDK production-TU C++ contracts. Root independently rehashed the
 originals; see [the SDK/CPU result](FIA_INPUT_JOURNAL_SOURCE111_SDK_REVIEW.md).
 Real input observation is still required; this grants no normal bridge or C2/C3/E5.
 
+The subsequent [natural FIA input-journal wiring](../../docs/worker_core_v1/natural_fia_input_journal_wiring.md)
+adds an explicit optional journal to the existing stock census. Default calls
+remain unchanged. A new probe binds the pre-LLM held instance to the actual
+same-process Worker and preserves the original56 public windows and strided V.
+It performs public detach before journal stop/snapshot/release and ordinary
+health. Independent review found and repaired three failure-evidence gaps:
+retained owners now permit only a quiescent read-only failure snapshot or an
+explicit refusal; failed enqueue mappings are saved early; secondary I/O errors
+cannot replace the first error. The implementation's79-contract CPU run passed,
+and independent review passed19 focused contracts after the repair. These
+overlapping counts are not added together. The17 source111 compiled/bound
+sources remain byte-identical; no Native ABI or shared Core rewrite occurred.
+Production runtime, actual GWS/execute observation, and internal prepared/Slice
+lineage are still pending. No F, new C1/C2/C3 or E5 follows from this wiring.
+
 ## Ownership and execution
 
 Root owns shared contracts, registry integration, device queue and qualification
