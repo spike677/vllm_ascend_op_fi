@@ -21,9 +21,9 @@ def actual(worker):
 def setup(worker, tokens, mechanism, manifest_sha256, stage, max_targets, statistics,
           evidence_dir='/evidence/writer-v2', trigger='once'):
     from demoncat.runtime.vllm_ascend.worker_extension import serving26_group
-    from fault_injection.deployments import writer26_group, writer26_experiment
+    from fault_injection.deployments import writer26_group, writer26_experiment, writer26_public
     sources = []
-    modules = [serving26_group, writer26_group, writer26_experiment]
+    modules = [serving26_group, writer26_group, writer26_experiment, writer26_public]
     if stage == 'coverage':
         from fault_injection.deployments import writer26_coverage
         modules.append(writer26_coverage)

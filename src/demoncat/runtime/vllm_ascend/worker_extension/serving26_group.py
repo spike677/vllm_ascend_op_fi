@@ -7,6 +7,16 @@ from .serving_context import require
 
 
 class Serving26GroupExperiment(Serving26InventorySession):
+    def collect(self, *, force=False):
+        self._same_worker()
+        observer = self.backend.public_output
+        if (self.needs_collect or force) and observer is not None and observer.owned:
+            # Failure paths also remove our outer aliases before collector.stop
+            # restores the collector's own wrappers. Retained tensors stay owned.
+            require(not self.backend.active, 'ACTIVE_FIA_OBSERVER_CANNOT_STOP_COLLECTOR')
+            observer.close()
+        super().collect(force=force)
+
     def install(self):
         super().install()
         if hasattr(self.backend, 'root_hooks'):
@@ -49,6 +59,7 @@ class Serving26GroupExperiment(Serving26InventorySession):
         value = self.backend.report()
         return dict(phase=self.backend.phase, stage=value['stage'], completed_requests=len(self.rows),
             installed=self.installed, owned_root_logits_hooks=len(self.handles), owned_module_hooks=value['owned_hooks'],
+            owned_public_api_wrappers=value['owned_public_api_wrappers'],
             resolved_candidate_count=value['resolved_candidate_count'], qualified_candidate_count=value['qualified_candidate_count'],
             candidate_status_counts={status: sum(row['status'] == status for row in value['candidates'])
                 for status in ('UNSUPPORTED', 'UNVERIFIED', 'OBSERVED_NOT_QUALIFIED')},
@@ -116,6 +127,7 @@ def remove_writer26_group_experiment(worker):
     session.close()
     result = session.report()
     require(not result['owned_root_logits_hooks'] and not result['owned_module_hooks']
+            and not result['owned_public_api_wrappers']
             and not session.backend.output_refs and not session.backend.retained, 'WRITER_EXPERIMENT_HOST_RESOURCES_NOT_RELEASED')
     del worker._demoncat_writer26_group_experiment
     return dict(status='WRITER_EXPERIMENT_REMOVED', report=result)

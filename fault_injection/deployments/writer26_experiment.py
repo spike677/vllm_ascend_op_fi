@@ -102,6 +102,8 @@ class Writer26Experiment(WriterLifetimeInventory):
         from ..metadata_arrays import MetadataArraySession
         self.metadata = MetadataArraySession(getattr(self.runtime, 'metadata_arrays', None), self.runtime.build_identity)
         self.metadata_initial = None
+        from .writer26_public import FiaPublicOutputObserver
+        self.public_output = FiaPublicOutputObserver(self) if self.runtime.fia else None
 
     @property
     def phase(self):
@@ -171,6 +173,9 @@ class Writer26Experiment(WriterLifetimeInventory):
         self.current.update(plan=dict(self.entry), admissions=0, completed=0)
         if self.entry['mode'] == 'fault':
             self.fault_started = True
+        if self.public_output is not None and not self.native_removed:
+            # The serving host has already started its optional collector.
+            self.public_output.install()
 
     def _before_health(self):
         self.runtime.close()
@@ -199,6 +204,10 @@ class Writer26Experiment(WriterLifetimeInventory):
             for row in self.callbacks[self.current['callback_start']:]:
                 if row.get('module_object_identity') != id(module) or row.get('writer_output_retained'):
                     continue
+                if row.get('public_output_scope'):
+                    # A refused real API return cannot be repaired by guessing
+                    # that a later same-address module result is its output.
+                    continue
                 call = row['native_packet']
                 found = {id(t): t for t in tensors(output) if full_storage(t, call['output'], call['output_bytes'])}
                 if len(found) == 1:
@@ -225,8 +234,15 @@ class Writer26Experiment(WriterLifetimeInventory):
             valid = (len({id(t) for t in consumed}) == 1 and retained is not None
                 and retained['sequence'] == call['producer_sequence']
                 and full_storage(retained['tensor'], call['residual'], call['residual_bytes'])
+                and consumed[0].untyped_storage()._cdata == retained['tensor'].untyped_storage()._cdata
                 and writer is not None and full_storage(writer, call['output'], call['output_bytes']))
             row['public_consumer_lifetime'] = bool(valid)
+            if valid:
+                row['public_consumer_binding'] = dict(producer_tensor_object_identity=id(retained['tensor']),
+                    consumer_tensor_object_identity=id(consumed[0]),
+                    residual_storage_identity=int(consumed[0].untyped_storage()._cdata),
+                    writer_tensor_object_identity=id(writer),
+                    same_residual_storage=True, writer_retained_through_actual_consumer=True)
             if call['token'] in self.pending:
                 require(valid, 'QUALIFIED_WRITER_OR_RESIDUAL_PUBLIC_LIFETIME_CHANGED_BEFORE_CONSUMER')
             live.append(row)
@@ -301,6 +317,8 @@ class Writer26Experiment(WriterLifetimeInventory):
             module = self.stack[-1]
             row.update(module_object_identity=id(module), module_path=self.modules[id(module)][0], method=actual_method(module),
                 actual_request_id=self.current['request_id'], token=call.token)
+            if self.public_output is not None and self.public_output.frames:
+                row['public_output_scope'] = self.public_output.frames[-1]['record']['api']
             state = self.reader.state()
             event = self.reader.read(state['stored_events'] - 1)
             require(event['kind_name'] == ('fia_before' if self.runtime.fia else 'qmm_enter')
@@ -326,6 +344,10 @@ class Writer26Experiment(WriterLifetimeInventory):
             if mode is not None and row['target_key'] == selected:
                 require(self.current['admissions'] < self._expected_admissions() and selected in self.targets,
                         'ONE_QUALIFIED_WRITER_OCCURRENCE_PER_FIXED_REQUEST_REQUIRED')
+                retained_by = self.targets[selected]['callback'].get('writer_output_retained', {})
+                if retained_by.get('evidence') == 'ACTUAL_PUBLIC_FIA_RETURN':
+                    require(self.public_output is not None and self.public_output.matches_callback(row),
+                            'QUALIFIED_PUBLIC_FIA_CALL_SCOPE_CHANGED_BEFORE_ADMISSION')
                 from demoncat.runtime.vllm_ascend.worker_extension.serving import complete_tensor
                 _, residual_sha, _ = complete_tensor(retained['tensor'])
                 self.pending[call.token] = dict(mode=mode, target=selected, native_call=packet(call),
@@ -456,6 +478,8 @@ class Writer26Experiment(WriterLifetimeInventory):
             if row['phase'] == 'health':
                 require(output_sha256 == self.baseline and self.native_removed, 'SAME_WORKER_FULL_VOCAB_AFTER_NATIVE_RELEASE_CHANGED')
         self._idle(not self.native_removed)
+        if self.public_output is not None:
+            self.public_output.close()
         self.output_refs.clear()
         row['metadata_arrays'] = self.metadata.latest
         self.retained.clear()
@@ -498,12 +522,16 @@ class Writer26Experiment(WriterLifetimeInventory):
             if not self.native_removed:
                 self.runtime.close()
                 self.native_removed = True
+            if self.public_output is not None:
+                self.public_output.close()
             import torch
             require(torch.ops._C_ascend.npu_add_rms_norm_bias is self.producer_observer, 'PUBLIC_PRODUCER_OWNER_CHANGED')
-            torch.ops._C_ascend.npu_add_rms_norm_bias = self.original_producer
             for handle in reversed(self.handles):
                 handle.remove()
+                hooks = handle.hooks_dict_ref()
+                require(hooks is None or handle.id not in hooks, 'WRITER_MODULE_HOOK_REMOVAL_UNCONFIRMED')
             self.handles.clear()
+            torch.ops._C_ascend.npu_add_rms_norm_bias = self.original_producer
             self.installed = False
         self.output_refs.clear()
         self.retained.clear()
@@ -520,6 +548,8 @@ class Writer26Experiment(WriterLifetimeInventory):
             outcomes=self.outcomes, native_state=self.runtime.state(), owned_hooks=len(self.handles),
             pending_output_tensors=len(self.output_refs), pending_residual_tensors=len(self.retained),
             pending_per_call_leases=list(self.pending),
+            public_output_observer=self.public_output.report() if self.public_output is not None else None,
+            owned_public_api_wrappers=len(self.public_output.owned) if self.public_output is not None else 0,
             healthy_repeated=len(self.rows) >= 2 and self.rows[0]['output_sha256'] == self.rows[1]['output_sha256'],
             recovered=self.recovered, installed=self.installed, native_removed=self.native_removed,
             native_qualified_targets=0, c1=False, c2=False, c3=False,

@@ -30,6 +30,7 @@ class Writer26Coverage(Writer26Experiment):
         self.actual_environment_sha = None
         self.implementation_sha = digest([hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             hashlib.sha256(Path(__file__).with_name('writer26_experiment.py').read_bytes()).hexdigest(), self.runtime.build_identity,
+            hashlib.sha256(Path(__file__).with_name('writer26_public.py').read_bytes()).hexdigest(),
             self.metadata.implementation_sha256])
 
     def artifact(self, name, value):
