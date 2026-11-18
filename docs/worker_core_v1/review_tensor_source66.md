@@ -32,6 +32,20 @@ manifest and the public implementation scope is recomputed. A later source
 or implementation needs a separate review; neither the older natural-group
 qualification nor this reader supplies new live authority.
 
+The a2 reader corrects one a1 formula error: `_open_session` replaces
+`group.source_sha` with the complete public binding aggregate before creating
+targets and observers. Their recorded implementation hashes must therefore
+equal that recomputed aggregate, as the scope does. The pre-binding common
+component is insufficient and remains rejected, as does any foreign digest.
+The real CPU Host/Runtime regression now exercises the full source-aware
+review for eager RMS, both Native RMS CPU schemas, and MoE.
+
+Keep the a1 reports unchanged: 18
+`a03a6e241fe9f7403e62c0c47f13fe4898838173ce9ad1851fc20a98f0ff8e78`
+and 8 `2d1a142940960c4d1c907a8e3c44ecd5f8bb2698b4fa5f6541839c4db612feeb`.
+Both recorded only `FROZEN_GROUP_OBSERVER_AND_TARGET_PROVIDER_SOURCE`; a2
+must be run on the same original result/Host/RPC files into new report paths.
+
 Keep these two frozen helper files beside the reader:
 
 - `review_native26_single_source54.py`

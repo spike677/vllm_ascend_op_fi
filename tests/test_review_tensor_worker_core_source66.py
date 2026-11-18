@@ -238,6 +238,44 @@ class PublicTensorOriginalReviewTests(unittest.TestCase):
                 a = review.Review(); review.source_review(a, root)
                 self.assertIn('FROZEN_SOURCE_REHASH', a.errors)
 
+    def test_actual_public_group_and_targets_use_complete_binding_source_aggregate(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); files = []
+            for name in review.SOURCES:
+                target = root/name; target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((ROOT/name).read_bytes())
+                files.append(dict(path=name, sha256=review.file_sha(target)))
+            manifest = root/'source_manifest.json'
+            manifest.write_text(json.dumps(dict(base_commit=review.SOURCE_COMMIT, files=files)))
+            with patch.object(review, 'SOURCE_MANIFEST', review.file_sha(manifest)):
+                a = review.Review(); source, auditor = review.source_review(a, root)
+            self.assertFalse(a.errors)
+            self.assertNotEqual(source['implementation_sha256'], source['common_implementation_sha256'])
+            for original, host in ((self.rms, self.rms_host), (self.native, self.native_host), (self.moe, self.moe_host)):
+                d = copy.deepcopy(original)
+                # drive() fixture bypasses main(); bind the actual probe bytes
+                # independently here, without synthesizing runtime proof data.
+                d['probe_sha256'] = review.file_sha(ROOT/review.SOURCES[-1])
+                for group in ('c2', 'c3'):
+                    self.assertEqual(d[group]['discovery']['implementation_sha256'], source['implementation_sha256'])
+                self.assertTrue(all(dict(c['identity']['provider_proof']) ==
+                    {'implementation_sha256':source['implementation_sha256']}
+                    for c in d['qualification']['candidate_set']['candidates'] if c['identity']))
+                checked = review.review(d, host, auditor, source, natural=False)
+                self.assertTrue(checked['consistent'], checked['issues'])
+                for field in ('discovery', 'target'):
+                    for digest in (source['common_implementation_sha256'], '0'*64):
+                        altered = copy.deepcopy(d)
+                        if field == 'discovery':
+                            altered['c2']['discovery']['implementation_sha256'] = digest
+                        else:
+                            candidate = next(c for c in altered['qualification']['candidate_set']['candidates'] if c['identity'])
+                            candidate['identity']['provider_proof'] = [['implementation_sha256', digest]]
+                        checked = review.review(altered, host, auditor, source, natural=False)
+                        with self.subTest(mechanism=d['mechanism'], field=field, digest=digest):
+                            self.assertFalse(checked['consistent'])
+                            self.assertIn('FROZEN_GROUP_OBSERVER_AND_TARGET_PROVIDER_SOURCE', {r['code'] for r in checked['issues']})
+
     def test_import_and_moe_helpers_use_only_standard_library(self):
         program = """import importlib.util,sys
 s=importlib.util.spec_from_file_location('reader',sys.argv[1]);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);m.moe_checks()

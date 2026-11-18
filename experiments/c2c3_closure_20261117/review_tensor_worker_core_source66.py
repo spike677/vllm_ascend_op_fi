@@ -510,8 +510,11 @@ def review(d, host, auditor, source=None, *, natural=True):
     if source:
         a.check(scope['implementation_sha256'] == source['implementation_sha256']
             and d['probe_sha256'] == source['probe_sha256'], 'FROZEN_NEW_ENTRY_IMPLEMENTATION_SCOPE')
-        a.check(all(g['discovery']['implementation_sha256'] == source['common_implementation_sha256'] for g in (d['c2'], d['c3']))
-            and all(dict(t['provider_proof']) == {'implementation_sha256':source['common_implementation_sha256']}
+        # _open_session replaces group.source_sha before qualification and
+        # observer creation. Both record the full public binding aggregate,
+        # exactly as scope does, rather than its pre-binding common component.
+        a.check(all(g['discovery']['implementation_sha256'] == source['implementation_sha256'] for g in (d['c2'], d['c3']))
+            and all(dict(t['provider_proof']) == {'implementation_sha256':source['implementation_sha256']}
                 for t in candidates.values()), 'FROZEN_GROUP_OBSERVER_AND_TARGET_PROVIDER_SOURCE')
     return dict(**a.summary(), source_bound_public_c2_c3_receipts_reconciled=not a.errors,
         mechanism=mechanism, actual_requests=10, eligible_targets=len(candidates),
