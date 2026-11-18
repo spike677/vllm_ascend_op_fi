@@ -117,10 +117,13 @@ def reads_indices(view, producer, indices):
     return bool(indices)
 
 
-def consumers(review, observations, producer, indices, names, where, device):
+def consumers(review, observations, producer, indices, names, where, device, *, operators=None):
+    # The historical source51 caller keeps its frozen aten-only default. A
+    # separate, pinned public-Core profile supplies and audits any extension.
+    operators = CONSUMERS if operators is None else operators
     review.check(bool(observations) and [row['operator'] for row in observations] == names, 'CONSUMER_CENSUS', where)
     for row in observations:
-        review.check(row['operator'] in CONSUMERS and row['original_returned'] is True
+        review.check(row['operator'] in operators and row['original_returned'] is True
             and row['selected_elements_read'] == indices and isinstance(row['module_path'], str) and bool(row['operand_views']),
             'ACTUAL_VALUE_CONSUMER', where)
         for view in row['operand_views']:
@@ -128,7 +131,9 @@ def consumers(review, observations, producer, indices, names, where, device):
                          'SELECTED_PRODUCER_ELEMENTS_NOT_READ_BY_CONSUMER_VIEW', where)
 
 
-def inventory(review, item, where, device):
+def inventory(review, item, where, device, *, producers=None, consumers=None):
+    producers = PRODUCERS if producers is None else producers
+    consumers = CONSUMERS if consumers is None else consumers
     review.check(item['admission_independent'] is True and item['dropped_calls'] == 0, 'INDEPENDENT_INVENTORY_INCOMPLETE', where)
     rows = item['calls']; keys = [key(row) for row in rows]
     modules = item['modules']; module_ids = {row['object_identity'] for row in modules}
@@ -137,17 +142,17 @@ def inventory(review, item, where, device):
         and type(row['calls']) is int and row['calls'] > 0 and isinstance(row['path'], str) for row in modules)
         and all(type(count) is int and count > 0 for count in item['operator_counts'].values()), 'ACTUAL_MODULE_AND_OPERATOR_COUNTS', where)
     counts = Counter(row['operator'] for row in rows)
-    review.check(all(item['operator_counts'].get(op, 0) == counts[op] for op in PRODUCERS), 'PROJECTION_OPERATOR_DENOMINATOR', where)
+    review.check(all(item['operator_counts'].get(op, 0) == counts[op] for op in producers), 'PROJECTION_OPERATOR_DENOMINATOR', where)
     ordinals = Counter()
     for row in rows:
         signature = (row['module_object_identity'], row['operator'])
-        review.check(row['operator'] in PRODUCERS and row['original_calls'] == 1 and key(row) == (*signature, ordinals[signature])
+        review.check(row['operator'] in producers and row['original_calls'] == 1 and key(row) == (*signature, ordinals[signature])
             and signature[0] in module_ids and any(m['object_identity'] == signature[0] and m['path'] == row['module_path'] for m in modules),
             'ACTUAL_PROJECTION_IDENTITY_OR_ORDINAL', where)
         ordinals[signature] += 1
         if row['eligible']:
             review.check(row['selected_indices'] == [0] and bool(row['consumers']) and not row['rejection']
-                and all(name in CONSUMERS for name in row['consumers'])
+                and all(name in consumers for name in row['consumers'])
                 and geometry_valid(row['output_geometry'], exclusive=True, device=device), 'ELIGIBLE_PROJECTION_GEOMETRY_OR_CONSUMER', where)
     return keys
 

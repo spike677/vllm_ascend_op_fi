@@ -12,6 +12,12 @@ Keep these three Python files together in a new review directory:
 - `review39_output_source51.py`
 - `review41_worker_core_result.py`
 
+Copy matching files from the same reviewer commit. The default profile is
+`source65-aten-v1`; its accepted operators and historical scope are unchanged.
+The source51 helper now takes optional operator sets only when the separate
+public custom profile explicitly supplies them. Its MODEL_LOCAL entry point
+still uses the original aten-only sets, source pins and coverage requirements.
+
 Run only on the original evidence host, using the new frozen source65 files and
 the reviewed Native library. The manifest and commit arguments refer to the
 source that produced the evidence, not to the later reviewer checkout.
@@ -89,3 +95,60 @@ foreign request/owner, altered RPC/Native receipts, cloned storage and retained 
 They establish no new NPU result. Independent review also reproduced and closed
 the clean/unregister reservation and missing-deployment resolver defects in
 `9c8d7ee6` (root integration `37bbeb4f`) before this source65 review.
+
+## Explicit reviewed custom GEMM profile
+
+For a newly frozen Worker run containing the reviewed custom adapter, current
+dispatcher guard and per-lease receipts, also copy `review39_custom_gemm.py`.
+Add `--projection-profile reviewed-custom-gemm-v1` to the command above and
+replace every result, source-root, manifest, commit and serving hash with the
+actual new run's pinned inputs. Source67 was scheduled for Core26 only; neither
+its name nor an anticipated source68 label establishes a public39 result.
+
+This profile requires the exact reviewed
+`vllm::unquantized_gemm(Tensor x, Tensor weight, Tensor? bias=None) -> Tensor`
+schema, three pinned Python sources and the original module's weight object
+with no bias. It checks the complete current dispatcher dump, one active
+PrivateUse1 registration with no inactive/shadowed entry, the definition's same
+origin, and the inspected `vllm_lib` construction at line 789 of the pinned
+`vllm.utils.torch_utils` file. A stale Library ownership set or a boolean
+`verified` field alone is insufficient. The guard is scoped to Torch
+`2.9.0+cpu`; the separate Torch 2.9 no-device override experiment establishes
+dispatcher behavior, not the actual Worker's current registration.
+
+Both `postwrite_npu_consumers.py` and `gemm_lineage.py` must appear in the frozen
+source manifest and the original Worker's loaded-source hash receipt. A file
+present on disk is not accepted as proof that the Worker loaded it. No helper
+imports either module while reviewing.
+
+For every eligible actual inventory row, the reviewer joins the original
+producer geometry and consumer metadata. The selected custom pair must reach
+an actual reviewed `npu_rms_norm` or `npu_swiglu` input view containing selected
+element zero. Exact no-write/no-alias schemas, the pinned torch_npu build/meta
+source/current registration, actual BF16 inputs/outputs, RMS FP32 rstd, gamma,
+scalars, ND formats and disjoint storages are checked. Meta functions and the
+source65 schema export supply no actual shapes; geometry is derived only from
+each new recorded operation's operands and returns.
+
+Earlier refused calls retain their raw ordinal and remain in the complete
+inventory. The selected key and every phase's full module/call denominator are
+joined across two healthy observations, lossless, F and OFF; weight and library
+object identities must remain the same. The sixth protocol request and the
+ordinary post-unregister request remain separate health checks. No fixed
+140-site MODEL_LOCAL count or qualification is imported.
+
+Lossless and F also require the actual per-lease original geometry,
+pointer/byte/device span, handle, owner and generation; successful open/apply,
+restore/release returns; ordered original events; and the existing exact-ticket
+post-recovery live readback. OFF opens no lease. These are saved ABI receipts,
+not an offline memory read or fresh Native invocation. Historical reports that
+lack this new audit field retain their historical evidence scope; absence does
+not prove that a past Native operation failed.
+
+The custom profile remains C1-only and source-bound. It never grants C2/C3,
+E5, another custom operator, CANN 9.x, A3 or portable device qualification.
+Its additional stdlib-only tests use explicitly constructed metadata doubles
+for joins and negative cases, including override shadowing, wrong weight or
+bias, hidden raw ordinals, disjoint consumer views, altered actual return
+geometry, Native span/owner/release discrepancies and missing loaded sources.
+Those metadata fixtures are not natural execution evidence.

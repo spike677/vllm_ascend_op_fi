@@ -214,6 +214,11 @@ class WorkerOutput39ReviewTests(unittest.TestCase):
         self.assertFalse(result['source_bound_c1_receipts_reconciled'])
         self.assertIn('ORIGINAL_SERVING_RECEIPT_COMPLETE',[v['code'] for v in result['issues']])
 
+    def test_explicit_custom_profile_cannot_inherit_legacy_worker_receipts(self):
+        result=review.review_evidence(*self.saved['full'],natural=False,profile=review.CUSTOM_PROFILE)
+        self.assertFalse(result['consistent'] or result['source_bound_c1_receipts_reconciled'])
+        self.assertFalse(result['public_qualification_granted'] or result['c2'] or result['c3'] or result['e5'])
+
 
 class OfflineOnlyTests(unittest.TestCase):
     def test_import_has_no_framework_or_native_loading(self):

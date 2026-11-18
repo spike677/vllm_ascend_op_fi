@@ -16,11 +16,14 @@ import sys
 
 NATIVE_SHA = '8876f2b99e70a9df8201b6ae0ace2cc4be8702afcf6703f9b72d1dda3bc26622'
 HELPERS = {
-    'projection': ('review39_output_source51.py', '02a7a4f55edd64b8040fa5a19c3f4967b556ca8caf972111a94bdaa9d03ff19a'),
+    'projection': ('review39_output_source51.py', 'fcd233febaab54f5cc209f7af3b05beb33e7a36a327d5121bb3bbc06df384372'),
     'core': ('review41_worker_core_result.py', '4801d84dadc0ac8fc195a409cc80f2584554fa1c62ebbbac4af250c56dc50c58')}
 PHASES = ['observe', 'observe_repeat', 'baseline', 'fault', 'off', 'health']
 ACTIONS = ['attach', 'prepare', 'register', 'check', 'enable'] + ['advance', 'query']*6 + ['finish', 'disable', 'unregister', 'detach']
 CONFIG = dict(fault_id=39, variant='output_proxy', implementation_version='1')
+LEGACY_PROFILE = 'source65-aten-v1'
+CUSTOM_PROFILE = 'reviewed-custom-gemm-v1'
+CUSTOM_HELPER = ('review39_custom_gemm.py', 'd82143ac7c3e99f10f700064fd6fd40e7a573251e97e7f4f7f186356e24fa156')
 CORE = 'src/demoncat/runtime/vllm_ascend/worker_extension/'
 MODULES = ['fault_injection/deployments/'+name+'.py' for name in
     ('postwrite', 'postwrite_boundaries', 'postwrite_inventory', 'postwrite_observed')] + [CORE+name+'.py' for name in
@@ -30,7 +33,8 @@ SOURCES = MODULES + ['experiments/c2c3_postwrite_20261117/'+name+'.py' for name 
     ('natural39_worker_core_probe', 'prepare39_worker_core', 'natural41_probe', 'natural41_coverage_probe', 'model_identity')]
 
 
-def helpers():
+def helpers(profile=LEGACY_PROFILE):
+    if profile not in (LEGACY_PROFILE, CUSTOM_PROFILE): raise ValueError('UNKNOWN_PROJECTION_PROFILE')
     result = {}
     for key, (name, expected) in HELPERS.items():
         path = Path(__file__).with_name(name)
@@ -39,7 +43,16 @@ def helpers():
         spec = importlib.util.spec_from_file_location('_independent_output39_' + key, path)
         module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
         result[key] = module
-    return result['core'], result['projection']
+    projection = result['projection']
+    if profile == CUSTOM_PROFILE:
+        name, expected = CUSTOM_HELPER; path = Path(__file__).with_name(name)
+        if hashlib.sha256(path.read_bytes()).hexdigest() != expected:
+            raise ValueError('REVIEWED_HELPER_CHANGED:' + name)
+        spec = importlib.util.spec_from_file_location('_independent_output39_custom', path)
+        module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+        projection = module.ProjectionProfile(projection)
+        projection.custom = module
+    return result['core'], projection
 
 
 def action(record):
@@ -337,8 +350,8 @@ def cleanup(c, a, document, host, context, natural):
     return dict(post_unregister_health_observed=health is not None, process_global_native_owner_table_observed=False)
 
 
-def review_evidence(document, host, records, serving=None, *, natural=True):
-    c,p = helpers(); a = c.Audit(); sections = {}; results = {}
+def review_evidence(document, host, records, serving=None, *, natural=True, profile=LEGACY_PROFILE):
+    c,p = helpers(profile); a = c.Audit(); sections = {}; results = {}
     def run(name, function, *args):
         checks, failures, issues = a.checks, a.failures, len(a.issues)
         result = a.section(name, function, *args)
@@ -354,6 +367,9 @@ def review_evidence(document, host, records, serving=None, *, natural=True):
         and not document.get('error') and not document.get('recovery_requests'))
     if candidate:
         results['c1'] = run('c1', c1,c,p,a,document,host,context,details,natural)
+        if profile == CUSTOM_PROFILE:
+            results['custom_deployment'] = run('custom_deployment', p.custom.deployment, a,document,host,records)
+            results['custom_c1'] = run('custom_c1', p.custom.completed_c1, a,p,details)
         a.check(results['cleanup'] and results['cleanup']['post_unregister_health_observed'], 'ORDINARY_POST_UNREGISTER_HEALTH_REQUIRED_FOR_C1')
     if details:
         results['observations'] = dict(completed_requests=details['completed'], partial_failures=details['partial'],
@@ -363,7 +379,7 @@ def review_evidence(document, host, records, serving=None, *, natural=True):
     good = not a.failures; c1_good = good and candidate
     no_eligible = bool(details and details['partial'] and any('NO_ELIGIBLE_WRITER_WITH_OBSERVED_VALUE_CONSUMER' in r['error']
         and r['eligible'] == 0 for r in details['partial']) and not details['selection'])
-    return dict(**a.report(), sections=sections, details=results,
+    return dict(**a.report(), sections=sections, details=results, projection_profile=profile,
         source_bound_c1_receipts_reconciled=c1_good, cleanup_reconciled=sections.get('cleanup',{}).get('consistent',False),
         classification='SOURCE_BOUND_SINGLE_C1_RECEIPTS' if c1_good else 'NO_ELIGIBLE_OBSERVED_PAIR' if no_eligible else (
             'PRE_C1_REFUSAL' if details and details['completed'] == 0 else 'REFUSED_OR_INCOMPLETE'),
@@ -371,16 +387,20 @@ def review_evidence(document, host, records, serving=None, *, natural=True):
         public_qualification_granted=False, c2=False, c3=False, e5=False,
         limits=['Complete logits hashes, literal producer/consumer metadata and Native readback/recovery are saved source-bound receipts, not newly observed device execution.',
             'Complete hidden+logits lossless/OFF equality is a frozen runtime gate; full hidden hashes and raw tensor bins are absent and are not independently rehashed.',
-            'The denominator contains every observed supported projection and all operator counts; opaque custom GEMM entries remain unqualified.',
+            ('The explicit custom profile checks actual registered GEMM and RMS/Swi receipts; schema examples do not establish runtime geometry.'
+             if profile == CUSTOM_PROFILE else 'The denominator contains every observed supported projection and all operator counts; opaque custom GEMM entries remain unqualified.'),
             'The seventh ordinary request proves same Worker tokens/text only; no post-unregister full tensor is captured.',
             'No process-global Native owner table, MODEL_LOCAL inheritance, matmul_range, C2/C3, E5 or portable device qualification is granted.'])
 
 
-def provenance(c, document, host, source_root, manifest_sha, commit, native_library):
+def provenance(c, document, host, source_root, manifest_sha, commit, native_library, *, profile=LEGACY_PROFILE):
+    _,projection = helpers(profile)
+    modules = MODULES + (projection.custom.EXTRA_MODULES if profile == CUSTOM_PROFILE else [])
+    sources = SOURCES + (projection.custom.EXTRA_MODULES if profile == CUSTOM_PROFILE else [])
     a = c.Audit(); path = c.under(source_root, 'source_manifest.json'); manifest = c.read(path)
     a.check(c.valid_sha(manifest_sha) and c.file_sha(path) == manifest_sha and manifest['base_commit'] == commit, 'FROZEN_SOURCE_IDENTITY')
     files = {r['path']:r for r in manifest['files']}; hashes = document['sources']
-    a.check(len(files) == len(manifest['files']) and set(hashes) == set(SOURCES), 'COMPLETE_SOURCE_AND_MANIFEST_SET')
+    a.check(len(files) == len(manifest['files']) and set(hashes) == set(sources), 'COMPLETE_SOURCE_AND_MANIFEST_SET')
     for name, expected in hashes.items():
         path = c.under(source_root,name)
         a.check(c.file_sha(path) == expected == files[name]['sha256'] and path.stat().st_size == files[name]['bytes'], 'SOURCE_FILE_BYTES', name)
@@ -388,8 +408,10 @@ def provenance(c, document, host, source_root, manifest_sha, commit, native_libr
         and document['standard_worker'] is True and c.file_sha(native_library) == document['native_sha256'] == NATIVE_SHA
         and c.valid_sha(document['build_fingerprint']), 'NEW_WORKER_ENTRY_AND_EXACT_NATIVE_DSO')
     binding = document.get('binding')
+    if profile == CUSTOM_PROFILE:
+        a.check(binding is not None or not document.get('requests'), 'CUSTOM_REQUESTS_REQUIRE_ORIGINAL_DEPLOYMENT')
     if binding:
-        a.check(binding['worker'] == host['worker'] and set(binding['loaded_sources']) == set(MODULES), 'LOADED_SOURCE_AND_WORKER_SET')
+        a.check(binding['worker'] == host['worker'] and set(binding['loaded_sources']) == set(modules), 'LOADED_SOURCE_AND_WORKER_SET')
         for name, row in binding['loaded_sources'].items():
             allowed = {'/source/'+name, '/installed/'+(name[4:] if name.startswith('src/') else name)}
             a.check(row['sha256'] == hashes[name] and row['path'] in allowed, 'ACTUAL_FROZEN_LOADED_MODULE_HASH', name)
@@ -408,7 +430,8 @@ def provenance(c, document, host, source_root, manifest_sha, commit, native_libr
 
 def deny_runtime(event, args):
     if event in ('ctypes.dlopen', 'subprocess.Popen', 'socket.connect', 'os.system') or (
-            event == 'import' and args[0].split('.')[0] in ('torch','torch_npu','vllm','vllm_ascend')):
+            event == 'import' and args[0].split('.')[0] in ('torch','torch_npu','vllm','vllm_ascend',
+                'fault_injection','fault39','demoncat')):
         raise RuntimeError('OFFLINE_REVIEW_FORBIDS_RUNTIME:' + event)
 
 
@@ -417,11 +440,13 @@ def main(argv=None):
     for name in ('result','source-root','native-library'): parser.add_argument('--'+name,type=Path,required=True)
     for name in ('result-sha256','source-manifest-sha256','source-commit'): parser.add_argument('--'+name,required=True)
     parser.add_argument('--serving-receipt',type=Path); parser.add_argument('--serving-sha256')
+    parser.add_argument('--projection-profile', choices=(LEGACY_PROFILE,CUSTOM_PROFILE), default=LEGACY_PROFILE)
     args = parser.parse_args(argv); sys.addaudithook(deny_runtime)
     report = dict(schema='demoncat.output39.public_core.independent_review.v1', read_only=True,
-        public_qualification_granted=False, c2=False,c3=False,e5=False, source_bound_c1_receipts_reconciled=False)
+        projection_profile=args.projection_profile, public_qualification_granted=False,
+        c2=False,c3=False,e5=False, source_bound_c1_receipts_reconciled=False)
     try:
-        c,_ = helpers()
+        c,_ = helpers(args.projection_profile)
         if not c.valid_sha(args.result_sha256) or c.file_sha(args.result) != args.result_sha256: raise ValueError('ORIGINAL_RESULT_SHA_MISMATCH')
         document = c.read(args.result); host, records, report['artifacts'] = load_artifacts(c,args.result.parent,document)
         serving = None
@@ -430,8 +455,9 @@ def main(argv=None):
             serving = c.read(args.serving_receipt)
             report['serving_original'] = dict(path=str(args.serving_receipt),sha256=args.serving_sha256,bytes=args.serving_receipt.stat().st_size)
         report['original'] = dict(path=str(args.result),sha256=args.result_sha256,bytes=args.result.stat().st_size)
-        report['provenance'] = provenance(c,document,host,args.source_root,args.source_manifest_sha256,args.source_commit,args.native_library)
-        report['evidence'] = review_evidence(document,host,records,serving)
+        report['provenance'] = provenance(c,document,host,args.source_root,args.source_manifest_sha256,args.source_commit,args.native_library,
+            profile=args.projection_profile)
+        report['evidence'] = review_evidence(document,host,records,serving,profile=args.projection_profile)
         good = all(report[k]['consistent'] for k in ('artifacts','provenance','evidence'))
         report.update(review_consistent=good, source_bound_c1_receipts_reconciled=good and report['evidence']['source_bound_c1_receipts_reconciled'],
             status=report['evidence']['classification'] if good else 'EVIDENCE_GAP_OR_CLEANUP_UNCONFIRMED')
