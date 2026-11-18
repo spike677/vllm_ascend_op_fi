@@ -1,0 +1,54 @@
+{
+  "schema": "demoncat.paged33.fd_preparation_review.v1",
+  "status": "PASS_CPU_PREPARATION_ONLY",
+  "local_contracts": {
+    "tests": 48,
+    "passed": true,
+    "modules": [
+      "tests.test_attention33_bridge",
+      "tests.test_paged33_fai_fd",
+      "tests.test_paged33_tnd",
+      "tests.test_paged33_tnd_probe",
+      "tests.test_paged33_loading",
+      "tests.test_attention28_fresh_build",
+      "tests.test_attention_launch_observer",
+      "tests.test_fia_binary_registration"
+    ]
+  },
+  "fresh_build_review": {
+    "root": "/home/17-fault-c2c3-20261117/tnd33-fai-fd-build-a1/build/run",
+    "completion_sha256": "bdc2183ef5395844c9fc69dbb30b618b2200d9c3cbc85a39be8ebd35acaae472",
+    "kernel_sha256": "1e8604d4e453f4d6ba4d1cb9c821935b8d6ddfb2e0aad3c21f0eea692c84b7d8",
+    "artifacts_checked": 1163,
+    "artifact_bytes": 50574274,
+    "unique_entries": 8,
+    "mix_task_ratio": "1:2",
+    "public_pod_bytes": 2488,
+    "cpu_matrix_rows_revalidated": 24576,
+    "cpu_matrix_sha256": "5a535ad7967094093e485828dc03de289a7c4e843a9e0af6e8a57584cb10f5d6",
+    "actual_worker_aic": null,
+    "npu_executed": false
+  },
+  "old_stock_reader_regression": {
+    "result_sha256": "cfe31bd94721db16996e326d13fb3725cbced95d536a446addefa4fda12a1d17",
+    "status": "PASS_OLD_STOCK_RAW_FORMAT_REPLAY_ONLY",
+    "file_checks": 435,
+    "bytes_compared": 589889280,
+    "old_source_reused_for_new_qualification": false
+  },
+  "new_stock_private_bridge": "PENDING_ROOT_NPU_QUEUE",
+  "new_fd_actual_launch": "PENDING_ROOT_NPU_QUEUE",
+  "c1_actual_effect": false,
+  "c2": false,
+  "c3": false,
+  "independent_e5": "PENDING_NEW_RAW_B_F",
+  "actual_npu_calls_by_agent": 0,
+  "container_starts_by_agent": 0,
+  "device_queries_by_agent": 0,
+  "source_files": {
+    "attention33_worker_probe.py": "59988e68acaced8abe88a9df0343fb2f6c60eafca89beba2f8c799fc5027c861",
+    "attention33_contract.py": "4152509171d373a7d7cd300eaf830c9e04d5439fad9405282cc4b25867b9fd5b",
+    "attention33_bridge.py": "57de31fd19d7803cd004ff2150e7d6cef11458d4b6b546ae5c26dd4f3a4dae64",
+    "prepare_attention33_cases.py": "d17cd7abcd466edf28797b26d5ed3d2dd59f903e872b724acc0e053f7cec76a5"
+  }
+}

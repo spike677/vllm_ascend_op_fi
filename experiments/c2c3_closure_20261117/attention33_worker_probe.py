@@ -12,10 +12,10 @@ import os
 from pathlib import Path
 import sys
 import traceback
+from attention33_contract import PHASES, RUNNER, execution_contract, verify_bridge_header
 
 OWNER = '_demoncat_tnd33_actual_fai_probe'
 PROMPT = 'A clear explanation uses definitions, a concrete example, and a careful check of the result. '
-PHASES = ('baseline_before', 'baseline_repeat', 'measured', 'off_after', 'healthy_after')
 
 
 def require(value, message):
@@ -111,6 +111,12 @@ def run(args, bundle):
     save()
     llm, installed, seen = None, False, []
     try:
+        report['execution_contract'] = execution_contract(args.model, '/installed', __file__, args.memory, os.environ)
+        if args.phase == 'fault':
+            verify_bridge_header(args.bridge, args.bridge_sha256, report['execution_contract'],
+                args.completion_sha256, Path(__file__).with_name('attention33_bridge.py'))
+            report['baseline_bridge_sha256'] = args.bridge_sha256
+        save()
         coexistence = None
         if bundle is not None:
             from demoncat.runtime.vllm_ascend.worker_extension.paged33_loading import bootstrap
@@ -120,12 +126,7 @@ def run(args, bundle):
         if coexistence is not None:
             from vllm.platforms import current_platform
             report['library_coexistence'] = coexistence.prepare_platform(current_platform);save()
-        llm = LLM(model=args.model, dtype='float16', tensor_parallel_size=1, enforce_eager=True,
-            max_model_len=1280, max_num_seqs=1, max_num_batched_tokens=1280, block_size=16,
-            num_gpu_blocks_override=128, enable_prefix_caching=False, enable_chunked_prefill=False,
-            async_scheduling=False, gpu_memory_utilization=args.memory, seed=42,
-            worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension',
-            disable_log_stats=True)
+        llm = LLM(model=args.model, gpu_memory_utilization=args.memory, **RUNNER)
         if coexistence is not None:
             report['library_coexistence_after_standard_worker_initialization'] = coexistence.verify();save()
         require_host_driven_core(llm)
@@ -213,6 +214,8 @@ def main():
     parser.add_argument('--schema-sha256')
     parser.add_argument('--observer-receipt', type=Path)
     parser.add_argument('--observer-receipt-sha256')
+    parser.add_argument('--bridge', type=Path)
+    parser.add_argument('--bridge-sha256')
     parser.add_argument('--out', type=Path, default=Path('/evidence/run'))
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--experimental-qualification', action='store_true')
