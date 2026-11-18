@@ -100,9 +100,12 @@ class StockNormalScopes:
 
 
 class AllNormalWorkerSession(AttentionExecutionAdapter):
+    native_type=AllNormalNativeCall
+    capture_flag='arch22_all_normal'
+    generation=1
     def __init__(self,worker,*,native_args,evidence_dir,statistics=False,boundary_args):
-        require(not statistics and boundary_args.get('arch22_all_normal') is True
-            and (native_args is None or (native_args.get('arch22_all_normal') is True
+        require(not statistics and boundary_args.get(self.capture_flag) is True
+            and (native_args is None or (native_args.get(self.capture_flag) is True
                 and native_args.get('experimental_qualification') is True
                 and type(native_args.get('max_calls')) is int and native_args.get('max_calls')==28
                 and not native_args.get('normal_bridge') and not native_args.get('arch22_s2_normal'))),
@@ -119,14 +122,14 @@ class AllNormalWorkerSession(AttentionExecutionAdapter):
         native=dict(native_args or {})
         self.native_phase=native.pop('arm','off')
         require(self.native_phase in ('baseline','off'),'ALL_NORMAL_NEVER_AUTHORIZES_FAULT')
-        for key in ('arch22_all_normal','experimental_qualification','max_calls'):native.pop(key,None)
-        self.driver=(AllNormalNativeCall(**native,evidence_dir=self.folder/'native') if self.private else
+        for key in (self.capture_flag,'experimental_qualification','max_calls'):native.pop(key,None)
+        self.driver=(self.native_type(**native,evidence_dir=self.folder/'native') if self.private else
                      StockNormalScopes(boundary_args['path'],boundary_args['expected_sha256']))
         self.owner_token=uuid.uuid4().hex;self.driver.owner_token=self.owner_token
         deployment=AttentionDeployment(worker,worker.model_runner,worker.model_runner.model,'33.paged_decode',tuple(boundary_args['prompt_token_ids']),
             self.driver,'{}',os.getpid(),threading.get_ident(),28,leases={(self.owner_token,1)})
         super().__init__(deployment,self._guard)
-        self.targets=NormalTargetScope(worker,self.candidates,owner=self,generation=1)
+        self.targets=NormalTargetScope(worker,self.candidates,owner=self,generation=self.generation)
         self.logits_binding=ForwardBinding(self.processor)
         self.records={};self.payload_refs={};self.original=None;self.first_cleanup_error=None
         self.source=dict(self.source)
@@ -148,14 +151,14 @@ class AllNormalWorkerSession(AttentionExecutionAdapter):
     def _selected_phase(self,phase):return True
 
     def _execute_selected(self,actual,row,phase,once):
-        path,module=self.stack[-1];ordinal=self.targets.check(self.worker,path,module,self,1)
+        path,module=self.stack[-1];ordinal=self.targets.check(self.worker,path,module,self,self.generation)
         require(path not in self.records and row['occurrence']==0 and ordinal==len(self.records),
                 'ALL_NORMAL_COMPLETE_UNIQUE_NATURAL_TARGET_ORDER_REQUIRED')
         row['impl_object_id']=id(module.impl);row['consumer_returned']=False
         context=self._context();record={};self.records[path]=record
         binding=LogicalPagedInput(worker=self.worker,module=module,module_path=path,forward_context=context,
             metadata=context.attn_metadata[module.layer_name],actual=actual,scheduler=self.current['scheduler'],
-            writer=self.writers[id(module)],owner=self,generation=1,target_scope=self.targets,
+            writer=self.writers[id(module)],owner=self,generation=self.generation,target_scope=self.targets,
             allow_cpu_test=self.deployment.simulation)
         record['binding']=binding
         import torch
@@ -167,20 +170,27 @@ class AllNormalWorkerSession(AttentionExecutionAdapter):
         capture.start(name,original,args,kwargs,row,module,ordinal)
         def invoke():return capture.invoke_original(original,args,kwargs,call_once=once)
         if self.private:
-            result,receipt=self.driver.execute(actual,row,self.native_phase,invoke,binding=binding,scope=self.targets,
-                                               owner=self,generation=1)
+            result,receipt=self._native_execute(actual,row,invoke,binding)
             token=receipt['call_id']
         else:
-            result,token=self.driver.invoke(lambda:binding.execute(invoke,owner=self,generation=1));receipt=None
+            result,token=self.driver.invoke(lambda:binding.execute(invoke,owner=self,generation=self.generation));receipt=None
         capture.data['logical_input_binding']=binding.report();capture.data['native_call_id']=token
-        for key,observe in (('runtime_observation',lambda:read_scoped_launches(self.driver.runtime_dir,token,
-                expected_pid=capture.pid,expected_native_tid=capture.native_tid)),('mapped_api_libraries',mapped_api_libraries)):
+        for key,observe in (('runtime_observation',lambda:self._runtime_observation(token,capture)),('mapped_api_libraries',mapped_api_libraries)):
             try:capture.data[key]=observe()
             except Exception as error:
                 capture.data[key]=dict(status='UNOBSERVED_OR_INCOMPLETE',error=repr(error))
                 if isinstance(error,MappedLibraryObservationError):capture.data[key]['diagnostic']=error.evidence
         capture.write()
         return result,receipt
+
+    def _runtime_observation(self,token,capture):
+        return read_scoped_launches(self.driver.runtime_dir,token,expected_pid=capture.pid,expected_native_tid=capture.native_tid)
+
+    def _native_execute(self,actual,row,invoke,binding):
+        return self.driver.execute(actual,row,self.native_phase,invoke,binding=binding,scope=self.targets,
+                                   owner=self,generation=self.generation)
+
+    def _native_calls(self):return self.driver.calls
 
     def _invoke(self,name,original,args,kwargs):
         require(self.original is None,'ALL_NORMAL_API_REENTRY')
@@ -226,7 +236,7 @@ class AllNormalWorkerSession(AttentionExecutionAdapter):
             complete_tensor_readback_during_statistics=False,
             audit=dict(source=self.source,candidate_count=28,prefill_forwards=1,decode_forwards=1,core_methods_replaced=False,
                 rows=deepcopy(row['forwards'][1]['calls']),errors=self.failures),
-            native_calls=deepcopy(self.driver.calls),attention={},c2=False,c3=False,public_worker_qualified=False)
+            native_calls=deepcopy(self._native_calls()),attention={},c2=False,c3=False,public_worker_qualified=False)
         for name in ('hidden','logits_hidden','logits'):report[name]=tensor_file(refs[name],folder/(name.replace('_','-')+'.bin'))
         require(all(all(report[name][key]==row['forwards'][1][name][key] for key in ('shape','dtype','sha256','finite'))
                     for name in ('hidden','logits')),'ALL_NORMAL_ACTUAL_MODEL_OUTPUT_CHANGED_AFTER_RETURN')
@@ -252,7 +262,7 @@ class AllNormalWorkerSession(AttentionExecutionAdapter):
             state=self.driver.stop()
             for record in self.records.values():
                 if 'capture' in record:record['capture'].release()
-                if 'binding' in record and not record['binding'].closed:record['binding'].release(owner=self,generation=1)
+                if 'binding' in record and not record['binding'].closed:record['binding'].release(owner=self,generation=self.generation)
         except BaseException as error:
             if self.first_cleanup_error is None:self.first_cleanup_error=repr(error)
             raise

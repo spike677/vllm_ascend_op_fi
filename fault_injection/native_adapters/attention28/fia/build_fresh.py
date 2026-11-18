@@ -258,7 +258,7 @@ class Builder:
             require(self.sdk.name == 'cann-8.5.1' and args.sdk_interface_manifest
                     and self.variant in ('tnd_page16_s2_256', 'tnd_page16_fai_s2_256',
                                          'tnd_page16_fai_fd_s2_256', 'tnd_page16_arch22_normal_bridge',
-                                         'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal'),
+                                         'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256'),
                     'EXACT_TND33_CANN851_BUILD_REQUIRED')
             from opdef_compat import adapt
             compatibility = adapt(self.source)
@@ -311,14 +311,15 @@ class Builder:
                         else self.receipt['mechanism'].removeprefix('28.fia.'))
         require(self.variant in ('legal_tiling', 'denominator_replay', 'tnd_page16_s2_256',
                                 'tnd_page16_fai_s2_256', 'tnd_page16_fai_fd_s2_256',
-                                'tnd_page16_arch22_normal_bridge', 'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal'), 'UNREVIEWED_VARIANT')
+                                'tnd_page16_arch22_normal_bridge', 'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256'), 'UNREVIEWED_VARIANT')
         self.vendor_name = {'legal_tiling': 'dcat_f28_legal', 'denominator_replay': 'dcat_f28_replay',
                             'tnd_page16_s2_256': 'dcat_f33_tnd',
                             'tnd_page16_fai_s2_256': 'dcat_f33_fai',
                             'tnd_page16_fai_fd_s2_256': 'dcat_f33_fai_fd',
                             'tnd_page16_arch22_normal_bridge': 'dcat_f33_arch22_normal',
                             'tnd_page16_arch22_s2_256': 'dcat_f33_arch22_s2',
-                            'tnd_page16_arch22_all_normal': 'dcat_f33_arch22_all_normal'}[self.variant]
+                            'tnd_page16_arch22_all_normal': 'dcat_f33_arch22_all_normal',
+                            'tnd_page16_arch22_group_s2_256': 'dcat_f33_arch22_group_s2'}[self.variant]
         if self.variant == 'tnd_page16_arch22_normal_bridge':
             require(self.receipt.get('recipe_sha256') == sha(HERE/'apply_tnd33_arch22_bridge.py')
                 and self.receipt.get('normal_route_preference_changed') is True
@@ -331,9 +332,10 @@ class Builder:
                 and row['after_sha256'] == self.report['normal_bridge_header_sha256']
                 for row in self.receipt['files']), 'ARCH22_NORMAL_HEADER_NOT_IN_SOURCE_RECEIPT')
             self.report.update(fault_execution_ready=False, stock_private_exact_proven=False)
-        if self.variant in ('tnd_page16_arch22_s2_256','tnd_page16_arch22_all_normal'):
+        if self.variant in ('tnd_page16_arch22_s2_256','tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256'):
             normal_all=self.variant=='tnd_page16_arch22_all_normal'
-            recipe_name='apply_tnd33_arch22_all_normal.py' if normal_all else 'apply_tnd33_arch22_s2.py'
+            group=self.variant=='tnd_page16_arch22_group_s2_256'
+            recipe_name='apply_tnd33_arch22_group_s2.py' if group else 'apply_tnd33_arch22_all_normal.py' if normal_all else 'apply_tnd33_arch22_s2.py'
             require(self.receipt.get('recipe_sha256') == sha(HERE/recipe_name)
                 and self.receipt.get('normal_route_recipe_sha256') == sha(HERE/'apply_tnd33_arch22_bridge.py')
                 and self.receipt.get('normal_route_preference_changed') is True
@@ -345,7 +347,7 @@ class Builder:
             self.report['arch22_s2_recipe_sha256'] = self.receipt['recipe_sha256']
             self.report['arch22_s2_normal_route_recipe_sha256'] = self.receipt['normal_route_recipe_sha256']
             self.report['arch22_s2_headers'] = {}
-            for name in (('paged33_arch22_all_normal.h' if normal_all else 'paged33_arch22_s2.h'), 'paged33_arch22_bridge.h'):
+            for name in (('paged33_arch22_group_s2.h' if group else 'paged33_arch22_all_normal.h' if normal_all else 'paged33_arch22_s2.h'), 'paged33_arch22_bridge.h'):
                 digest = sha(HERE/name)
                 require(any(row['path'] == 'attention/common/op_host/arch22/'+name
                     and row['after_sha256'] == digest for row in self.receipt['files']),
@@ -358,7 +360,7 @@ class Builder:
         self.run('geometry_compile', ['g++', '-std=c++17', '-I', HERE, HERE / 'geometry_check.cpp',
                                       '-o', self.ev / 'geometry_check'], env=self.env)
         self.run('geometry_check', [self.ev / 'geometry_check'], env=self.env)
-        if self.variant in ('tnd_page16_arch22_s2_256','tnd_page16_arch22_all_normal'):
+        if self.variant in ('tnd_page16_arch22_s2_256','tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256'):
             self.run('actual_arch22_s2_split_matrix', [self.args.python, HERE/'compile_arch22_s2_matrix.py',
                 '--source', self.source, '--out', self.ev/'arch22_s2_matrix'], env=self.env)
             self.report['arch22_s2_cpu_receipt_sha256'] = sha(self.ev/'arch22_s2_matrix/receipt.json')
@@ -432,7 +434,7 @@ class Builder:
         save(self.ev / 'jit_include_sources.json', copied)
         self.report.update(host_package_sha256=sha(package), status='CPU_HOST_BUILT_KERNEL_BUILD_PENDING')
         save(self.ev / 'completion.json', self.report)
-        if self.variant in ('tnd_page16_arch22_normal_bridge', 'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal'):
+        if self.variant in ('tnd_page16_arch22_normal_bridge', 'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256'):
             self.run('actual_arch22_public_schema', [self.args.python, HERE/'compile_public_schema.py',
                 '--source', self.source, '--sdk', self.sdk, '--out', self.ev/'arch22_schema'], env=self.env)
             self.report['arch22_public_schema_sha256'] = sha(self.ev/'arch22_schema/fia_abi_schema.json')
@@ -459,7 +461,7 @@ class Builder:
         require(dynamic.is_file(), 'NEW_PACKAGE_JIT_SOURCE_MISSING')
         opc = self.sdk / 'python/site-packages/opc_tool/opc.py'
         require(opc.is_file(), 'MATCHED_OPC_COMPILER_MISSING')
-        keys = (TND33_ARCH22_KEYS if self.variant in ('tnd_page16_arch22_normal_bridge', 'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal') else
+        keys = (TND33_ARCH22_KEYS if self.variant in ('tnd_page16_arch22_normal_bridge', 'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256') else
                 TND33_FAI_FD_KEYS if self.variant == 'tnd_page16_fai_fd_s2_256' else
                 TND33_FAI_KEYS if self.variant == 'tnd_page16_fai_s2_256' else
                 TND33_KEYS if self.variant == 'tnd_page16_s2_256' else

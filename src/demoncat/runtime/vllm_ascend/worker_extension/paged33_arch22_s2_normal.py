@@ -16,17 +16,20 @@ from fault_injection.native_adapters.attention28.fia import apply_tnd33_arch22_s
 from fault_injection.native_adapters.attention28.fia.arch22_s2_build_evidence import verify_inputs,verify_normal_geometry,PREFIX
 
 
-def verify_bundle(completion,completion_sha256,vendor,*,all_normal=False):
+def verify_bundle(completion,completion_sha256,vendor,*,all_normal=False,group_s2=False):
     selected=recipe
     if all_normal:
         from fault_injection.native_adapters.attention28.fia import apply_tnd33_arch22_all_normal as selected
+    if group_s2:
+        from fault_injection.native_adapters.attention28.fia import apply_tnd33_arch22_group_s2 as selected
     bundle=_verify_bundle_artifacts(completion,completion_sha256,vendor,variant=selected.VARIANT,keys=selected.KEYS)
     data=bundle['completion'];folder=Path(recipe.__file__).parent
     names=('apply_tnd33_arch22_s2.py','apply_tnd33_arch22_bridge.py','paged33_arch22_s2.h',
            'paged33_arch22_bridge.h','arch22_s2_geometry.py','compile_arch22_s2_matrix.py')
     if all_normal:names+=('apply_tnd33_arch22_all_normal.py','paged33_arch22_all_normal.h')
+    if group_s2:names+=('apply_tnd33_arch22_group_s2.py','paged33_arch22_group_s2.h','apply_tnd33_arch22_all_normal.py')
     bundle['s2_cpu_matrix']=verify_inputs(Path(completion).resolve().parent.parent,data,
-                                         {PREFIX+name:sha(folder/name) for name in names},all_normal=all_normal)
+                                         {PREFIX+name:sha(folder/name) for name in names},all_normal=all_normal,group_s2=group_s2)
     schema=Path(completion).resolve().parent/'arch22_schema'
     require(sha(schema/'compile_receipt.json')==data.get('arch22_schema_compile_sha256')
         and sha(schema/'fia_abi_schema.json')==data.get('arch22_public_schema_sha256'),

@@ -338,7 +338,7 @@ def captured_thread_identity(saved):
     return dict(identity)
 
 
-def check_live_input(saved,audit):
+def check_live_input(saved,audit,*,expected_generation=1):
     """Join the new live binding record to independently captured real bytes."""
     report=saved['logical_input_binding'];identity=report['identity'];record=report['evidence']
     thread=captured_thread_identity(saved)
@@ -347,7 +347,7 @@ def check_live_input(saved,audit):
         and report['inflight'] is report['closed'] is report['simulation'] is report['qualification_granted'] is False
         and report['first_error'] is None and report['operator_input_repacked'] is False
         and type(identity['owner_object_id']) is int and identity['owner_object_id']>0
-        and type(identity['generation']) is int and identity['generation']==1
+        and type(identity['generation']) is int and identity['generation']==expected_generation
         and all(identity[key]==thread[key] for key in ('pid','python_thread_ident','native_tid'))
         and all(identity[key]==saved[key] for key in ('worker_object_id','model_object_id'))
         and identity['module_object_id']==audit['module_object_id']
@@ -367,7 +367,7 @@ def check_live_input(saved,audit):
     need(len(record['outputs'])==len(saved['outputs'])==2
         and all(all(left[key]==right[key] for key in ('metadata','version','bytes','sha256','finite'))
             for left,right in zip(record['outputs'],saved['outputs'])), 'S2_IMMEDIATE_ACTUAL_RETURN_JOIN_DIFFERS')
-    return dict(owner_object_id=identity['owner_object_id'],generation=1,
+    return dict(owner_object_id=identity['owner_object_id'],generation=expected_generation,
         actual_request_id=record['request_id'],complete_logical_kv_joined=True,
         original_calls=1,source_bound=True,qualification_granted=False)
 
@@ -405,7 +405,7 @@ def one_launch(run, rows, token, pid, helper, *, native_tid, kernel_sha=None, sy
 def final_private_pod(raw_event, resolved, host, bundle, abi_helper,*,selected_s2=512):
     """Select raw bytes by the fresh entry ABI, never by expected byte search."""
     need(type(selected_s2) is int and selected_s2 in (512,256)
-        and (selected_s2==512 or bundle.get('completion',{}).get('variant')==evidence.S2_VARIANT),
+        and (selected_s2==512 or bundle.get('completion',{}).get('variant') in (evidence.S2_VARIANT,evidence.GROUP_VARIANT)),
         'EXPLICIT_NEW_S2_VARIANT_REQUIRED')
     abi, schema = bundle['abi'], bundle['schema']; size = schema['size']
     args = bytes.fromhex(raw_event['args_hex'])
@@ -453,9 +453,10 @@ def final_private_pod(raw_event, resolved, host, bundle, abi_helper,*,selected_s
          'FINAL_PUBLIC_POD_NORMAL_GEOMETRY_DIFFERS')
     s2=bundle.get('completion',{}).get('variant')==evidence.S2_VARIANT
     normal_all=bundle.get('completion',{}).get('variant')==evidence.ALL_VARIANT
-    need(host['schema'] == ('demoncat.paged33.arch22_all_normal_host.v1' if normal_all else 'demoncat.paged33.arch22_s2_host.v1' if s2 else 'demoncat.paged33.arch22_normal_host.v1')
+    group=bundle.get('completion',{}).get('variant')==evidence.GROUP_VARIANT
+    need(host['schema'] == ('demoncat.paged33.arch22_group_s2_host.v1' if group else 'demoncat.paged33.arch22_all_normal_host.v1' if normal_all else 'demoncat.paged33.arch22_s2_host.v1' if s2 else 'demoncat.paged33.arch22_normal_host.v1')
         and host['route'] == 'FiaTilingNonQuant'
-        and host['mode'] == ('arch22_all_normal' if normal_all else 'arch22_s2_256' if selected_s2==256 else 'arch22_s2_off' if s2 else 'arch22_normal')
+        and host['mode'] == (('arch22_group_s2_256' if selected_s2==256 else 'arch22_group_s2_off') if group else 'arch22_all_normal' if normal_all else 'arch22_s2_256' if selected_s2==256 else 'arch22_s2_off' if s2 else 'arch22_normal')
         and host['normal_route_preference_changed'] is True
         and host['eligible'] is True and host['policy_applied'] is (selected_s2==256)
         and host['native_s2'] == 512 and host['selected_s2']==selected_s2, 'NATIVE_HOST_EXPLICIT_SELECTION_DIFFERS')
@@ -471,7 +472,7 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
     paths={FIRST} if s2 else set(LAYERS)
     need(len(calls) == len(paths) and {row['module_path'] for row in calls} == paths
         and len({row['call_id'] for row in calls}) == len(paths), 'COMPLETE_SCOPED_PRIVATE_NATIVE_CALLS_REQUIRED')
-    if bundle['completion'].get('variant')==evidence.ALL_VARIANT:
+    if bundle['completion'].get('variant') in (evidence.ALL_VARIANT,evidence.GROUP_VARIANT):
         need(len({row['owner'] for row in calls})==1,
              'ALL_NORMAL_NATIVE_OWNER_CHANGED_WITHIN_REQUEST')
     folder = run/name/'native'; log = folder/'host.jsonl'; before = log.stat()
@@ -509,7 +510,7 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
                 and logical==saved['logical_input_binding'],'S2_ACTUAL_HOST_OWNER_PHASE_INPUT_JOIN_DIFFERS')
             helper.arch22_s2_build_evidence.verify_normal_geometry(decoded['typed'],host,
                 bundle['s2_cpu_matrix']['normal_first_decode_rows'][host['aic']])
-        if bundle['completion'].get('variant')==evidence.ALL_VARIANT:
+        if bundle['completion'].get('variant') in (evidence.ALL_VARIANT,evidence.GROUP_VARIANT):
             capture=phase['finish']['capture'];targets=capture['target_scope'];current=capture['all_decode_boundaries'][path]
             index=[r['path'] for r in targets['targets']].index(path);host=host_map[token]
             logical=current['logical_input_binding']
@@ -524,6 +525,8 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
                 and targets['owner_object_id']==logical['identity']['owner_object_id']
                 and token==current['native_call_id'] and call['logical_input_binding']==logical,
                 'ALL_NORMAL_HOST_LIVE_OBJECT_SET_OR_CALL_SCOPE_DIFFERS')
+            if bundle['completion']['variant']==evidence.GROUP_VARIANT:
+                need(host['admission_sha256']=='0'*64 and host['coverage_generation']==0,'GROUP_NORMAL_HAS_FAULT_ADMISSION')
             helper.arch22_s2_build_evidence.verify_normal_geometry(decoded['typed'],host,
                 bundle['s2_cpu_matrix']['normal_first_decode_rows'][host['aic']])
         recorded = call['native']

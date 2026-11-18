@@ -11,12 +11,56 @@ import review_arch22_normal_bridge as N
 from review_arch22_s2_single import request_lineage,decode_cache_rows
 
 
-def target_set(capture,audit):
+def phase_capture(run,phase,*,group=False):
+    if not group:return phase['finish']['capture']
+    name=phase.get('phase','UNKNOWN');finish=phase.get('finish',{})
+    E.need(type(finish) is dict and finish.get('closed') is True
+        and type(finish.get('capture_artifact')) is dict,'GROUP_INCOMPLETE_NORMAL_PHASE:'+str(name)+'.finish.capture_artifact')
+    reference=finish['capture_artifact']
+    E.need({'schema','path','sha256','bytes','payload_identity'}<=set(reference),
+           'GROUP_INCOMPLETE_NORMAL_PHASE:'+str(name)+'.finish.capture_artifact.fields')
+    E.need(name in N.PHASES and finish['closed'] is True and 'capture' not in finish
+        and reference['schema']=='demoncat.paged33.group_normal_capture_ref.v1'
+        and reference['path']=='/evidence/run/'+name+'/runtime_result.json'
+        and type(reference['bytes']) is int and 0<reference['bytes']<=128*1024**2,
+        'GROUP_NORMAL_COMPLETE_BOUNDED_CAPTURE_REFERENCE_REQUIRED')
+    path=E.child(run,name+'/runtime_result.json')
+    E.need(path.stat().st_size==reference['bytes'] and E.sha(path)==reference['sha256'],
+           'GROUP_NORMAL_CAPTURE_ARTIFACT_BYTES_CHANGED')
+    capture=E.read(path)
+    def identity(value):return {key:value[key] for key in ('shape','dtype','bytes','sha256')}
+    payloads={key:identity(capture[key]) for key in ('hidden','logits_hidden','logits')}
+    payloads['attention']={path:{kind:identity(value) for kind,value in rows.items()} for path,rows in capture['attention'].items()}
+    E.need(payloads==reference['payload_identity'],'GROUP_NORMAL_RPC_PAYLOAD_REFERENCE_DIFFERS')
+    return capture
+
+
+def indexed_cost(capture,phase,runtime,run):
+    import math
+    cost=capture['runtime_validation_cost'];index=cost['index'];size=index['prefix_bytes']
+    path=E.child(run,'runtime/runtime.jsonl')
+    E.need(type(size) is int and 0<size<=path.stat().st_size<=128*1024**2,'GROUP_INDEX_PREFIX_BOUND')
+    with path.open('rb') as stream:raw=stream.read(size)
+    rows=[json.loads(line) for line in raw.splitlines()]
+    scope=capture['target_scope'];seconds=cost['indexed_history_validation_seconds'];elapsed=phase['elapsed_seconds']
+    E.need(raw.endswith(b'\n') and hashlib.sha256(raw).hexdigest()==index['prefix_sha256']
+        and rows==runtime[:len(rows)] and index['parsed_events']==len(rows)
+        and index['owner']==[scope['pid'],scope['python_thread_ident'],scope['native_tid']]
+        and index['schema']=='demoncat.attention.owned_runtime_index.v1'
+        and index['complete_old_prefix_rehashed'] is True and index['raw_log_modified'] is index['qualification_granted'] is False
+        and cost['raw_log_kept_complete'] is cost['all_prior_registration_conflicts_retained'] is True
+        and type(index['refreshes']) is int and index['refreshes']>=28
+        and all(type(n) in (int,float) and math.isfinite(n) and n>0 for n in (elapsed,seconds,index['validation_seconds']))
+        and index['validation_seconds']<=seconds<=elapsed,'GROUP_ACTUAL_INDEX_PREFIX_OR_COST_DIFFERS')
+    return dict(elapsed_seconds=elapsed,indexed_history_validation_seconds=seconds,prefix_bytes=size)
+
+
+def target_set(capture,audit,*,expected_generation=1):
     scope=capture['target_scope'];rows=scope['targets'];paths=[r['path'] for r in rows]
     E.need(scope['schema']=='demoncat.paged33.all_normal_targets.v1' and len(rows)==28
         and len(set(paths))==len({r['module_object_id'] for r in rows})==28
         and set(paths)==set(audit)==set(capture['all_decode_boundaries'])
-        and scope['sha256']==E.digest(rows) and type(scope['generation']) is int and scope['generation']==1
+        and scope['sha256']==E.digest(rows) and type(scope['generation']) is int and scope['generation']==expected_generation
         and all(type(scope[key]) is int and scope[key]>0 for key in ('owner_object_id','worker_object_id',
                 'model_object_id','pid','python_thread_ident','native_tid'))
         and all(type(row[key]) is int and row[key]>0 for row in rows for key in ('module_object_id','impl_object_id'))
@@ -63,23 +107,33 @@ def arm(run,expected,kind,source,helper,bundle,observer,checks,symbols):
     data=E.read(run/'result.json');failures=N.original_failures(data)
     checks.require(kind+'.failures',not failures,'ORIGINAL_RUN_FAILURES_PRESERVED')
     N.check_execution(data,kind,source,helper,bundle,observer)
-    E.need(data['native_target_scope']=='ALL_DISCOVERED_OBJECTS_NORMAL_ONLY'
+    E.need(data['native_target_scope']==('ALL_DISCOVERED_OBJECTS_GROUP_PACKAGE_NORMAL_ONLY' if E.variant(source)==E.GROUP_VARIANT else 'ALL_DISCOVERED_OBJECTS_NORMAL_ONLY')
         and [p['phase'] for p in data['phases']]==list(N.PHASES),'ALL_NORMAL_FIVE_PHASE_SCOPE_REQUIRED')
     runtime,raw=helper.boundary.read_runtime(run)
     E.need(not any(r['event']=='capture_overflow' for r in runtime),'ALL_NORMAL_RUNTIME_OVERFLOW')
     tokens=data['warm_healthy']['prompt_token_ids'];values={};summary=[];all_tokens=[];identities=[];owners=[];requests=[]
     E.need(len(tokens)==1024 and hashlib.sha256(json.dumps(tokens,separators=(',',':')).encode()).hexdigest()==data['prompt']['token_sha256'],
            'ALL_NORMAL_ACTUAL_PROMPT_HASH_DIFFERS')
-    for phase in data['phases']:
+    group=E.variant(source)==E.GROUP_VARIANT
+    if group:
+        for p in data['phases']:
+            E.need(p.get('finish',{}).get('closed') is True and
+                type(p.get('finish',{}).get('capture_artifact',{}).get('bytes')) is int,
+                'GROUP_INCOMPLETE_NORMAL_PHASE:'+str(p.get('phase'))+'.finish.capture_artifact')
+        E.need(sum(p['finish']['capture_artifact']['bytes'] for p in data['phases'])<=640*1024**2,
+               'GROUP_NORMAL_TOTAL_CAPTURE_BYTES_BOUND')
+    for original_phase in data['phases']:
+        capture=phase_capture(run,original_phase,group=group)
+        phase=dict(original_phase,finish=dict(original_phase['finish'],capture=capture))
         name=phase['phase'];key=kind+'.'+name;private=kind=='baseline' and name!='healthy_after'
-        capture=phase['finish']['capture'];N.check_cleanup(phase['finish'],private)
+        N.check_cleanup(phase['finish'],private)
         E.need(phase['finish']['cleanup']['logical_bindings_released'] is True
             and phase['finish']['cleanup']['normal_only'] is True
             and E.read(run/name/'runtime_result.json')==capture,'ALL_NORMAL_CAPTURE_OR_OWNED_INPUT_CLEANUP_DIFFERS')
         E.need(phase['setup']['source']==capture['audit']['source'] and phase['setup']['candidate_count']==28
             and phase['setup']['stock_read_only'] is (not private) and phase['setup']['core_methods_replaced'] is False
             and phase['setup']['module_sha256']==source['pins'][E.WORKER+'paged33_tnd_probe.py']
-            and phase['setup']['all_normal_session_sha256']==source['pins'][E.WORKER+'paged33_all_normal.py'],
+            and phase['setup']['all_normal_session_sha256']==source['pins'][E.WORKER+('paged33_group_normal.py' if E.variant(source)==E.GROUP_VARIANT else 'paged33_all_normal.py')],
             'ALL_NORMAL_INSTALLED_SESSION_SOURCE_DIFFERS')
         # A read-only view maps the producer's natural_request into the shared
         # request validator. It supplies no missing scheduler or call fields.
@@ -93,6 +147,7 @@ def arm(run,expected,kind,source,helper,bundle,observer,checks,symbols):
         audit=helper.bridge.boundary_rows(capture,phase,tokens);paths=target_set(capture,audit)
         payloads=N.payloads_for_phase(run,name,capture,helper);actual_output_join(capture)
         current={};phase_summary=dict(phase=name,request=lineage,targets={})
+        if group:phase_summary['runtime_cost']=indexed_cost(capture,phase,runtime,run)
         for ordinal,path in enumerate(paths):
             saved=capture['all_decode_boundaries'][path]
             N.check_actual_inputs(saved);N.check_live_input(saved,audit[path]);thread=N.captured_thread_identity(saved)
@@ -135,7 +190,7 @@ def arm(run,expected,kind,source,helper,bundle,observer,checks,symbols):
         post_clean_scope='ORDINARY_REQUEST_TOKENS_TEXT_ONLY'))
 
 
-def review(args):
+def review(args,*,build_variant=E.ALL_VARIANT):
     checks=N.Checks();report=dict(schema='demoncat.paged33.all_normal_offline_review.v1',
         status='INCOMPLETE_OR_REJECTED_ALL_NORMAL_NO_F',fault_authorized=False,C1=False,C2=False,C3=False,
         E5='NOT_ASSESSED',actual_npu_calls=0,original_results_modified=False,arms={},cross_arm={},registered_elfs={})
@@ -148,7 +203,7 @@ def review(args):
                         original_failures=N.original_failures(data))
         report['arms'][kind]=checks.run(kind+'.original',original)
     def context():
-        source=E.frozen_source(args.source,args.source_manifest_sha256,build_variant=E.ALL_VARIANT)
+        source=E.frozen_source(args.source,args.source_manifest_sha256,build_variant=build_variant)
         E.need(E.sha(Path(__file__))==source['pins'][E.EXPERIMENT+Path(__file__).name],'ALL_NORMAL_REVIEWER_SOURCE_DIFFERS')
         helper=E.helpers(source);bundle=E.build_bundle(args.build_root,source,helper,args.completion_sha256)
         observer=E.observer_bundle(args.observer,source,args.observer_receipt_sha256)
@@ -181,14 +236,14 @@ def review(args):
     return report
 
 
-def main():
+def main(*,build_variant=E.ALL_VARIANT):
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('source','build-root','observer','stock-run','baseline-run','out'):p.add_argument('--'+name,type=Path,required=True)
     for name in ('source-manifest-sha256','completion-sha256','observer-receipt-sha256','stock-sha256','baseline-sha256'):
         p.add_argument('--'+name,required=True)
     args=p.parse_args();sys.dont_write_bytecode=True;E.need(not args.out.exists(),'FRESH_ALL_NORMAL_REVIEW_REQUIRED')
     numeric=N.initialize_cpu_byte_reader();sys.addaudithook(E.prohibit_runtime)
-    result=review(args);result['cpu_byte_reader']=numeric
+    result=review(args,build_variant=build_variant);result['cpu_byte_reader']=numeric
     args.out.parent.mkdir(parents=True,exist_ok=True)
     with args.out.open('x',encoding='utf-8') as stream:json.dump(result,stream,indent=2,allow_nan=False);stream.write('\n')
     print(json.dumps(dict(status=result['status'],checks=result['checks'],issues=len(result['issues']),sha256=E.sha(args.out))))

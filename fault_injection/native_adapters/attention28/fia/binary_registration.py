@@ -112,3 +112,5 @@ def register_index(source,vendor,variant):
         old_index_read=False,old_binaries_used=False,npu_executed=False,
         actual_launch_verified=False,production_loading_allowed=False)
 
+
+KEYS['tnd_page16_arch22_group_s2_256'] = set(KEYS['tnd_page16_arch22_normal_bridge'])

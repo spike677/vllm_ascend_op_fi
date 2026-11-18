@@ -27,13 +27,14 @@ def make_cases(args, source, bundle, observer, contract, installed_pins):
                   'NORMAL_BRIDGE_CASE_BUDGET_INVALID')
     cases = []
     s2=evidence.variant(source)==evidence.S2_VARIANT
-    normal_all=evidence.variant(source)==evidence.ALL_VARIANT
+    group=evidence.variant(source)==evidence.GROUP_VARIANT
+    normal_all=evidence.variant(source) in (evidence.ALL_VARIANT,evidence.GROUP_VARIANT)
     for arm in ('stock', 'baseline'):
-        label = ('attention33-arch22-all-normal-' if normal_all else 'attention33-arch22-s2-normal-' if s2 else 'attention33-arch22-normal-')+arm
+        label = ('attention33-arch22-group-normal-' if group else 'attention33-arch22-all-normal-' if normal_all else 'attention33-arch22-s2-normal-' if s2 else 'attention33-arch22-normal-')+arm
         argv = ['python3', '-B', '/repo/'+evidence.EXPERIMENT+'attention33_worker_probe.py',
             '--phase', arm, '--model', '/model', '--out', '/evidence/run',
             '--experimental-qualification', '--first-boundary-diagnostic',
-            '--arch22-all-normal-bridge' if normal_all else '--arch22-s2-normal-bridge' if s2 else '--arch22-normal-bridge',
+            '--arch22-group-normal-bridge' if group else '--arch22-all-normal-bridge' if normal_all else '--arch22-s2-normal-bridge' if s2 else '--arch22-normal-bridge',
             '--observer-receipt', '/build/attention-preflight/result.json',
             '--observer-receipt-sha256', observer['sha256']]
         mounts = [[str(args.source), '/repo', 'ro'], [str(args.installed), '/installed', 'ro'],

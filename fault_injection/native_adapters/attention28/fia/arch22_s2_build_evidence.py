@@ -51,11 +51,11 @@ def pristine_split_pins(recipe_sha256):
     return {name:declared[name] for name in names}
 
 
-def verify_inputs(root,data,pins,*,all_normal=False):
+def verify_inputs(root,data,pins,*,all_normal=False,group_s2=False):
     root=Path(root).resolve(strict=True)
-    expected_variant='tnd_page16_arch22_all_normal' if all_normal else VARIANT
-    recipe='apply_tnd33_arch22_all_normal.py' if all_normal else 'apply_tnd33_arch22_s2.py'
-    header='paged33_arch22_all_normal.h' if all_normal else 'paged33_arch22_s2.h'
+    expected_variant='tnd_page16_arch22_group_s2_256' if group_s2 else 'tnd_page16_arch22_all_normal' if all_normal else VARIANT
+    recipe='apply_tnd33_arch22_group_s2.py' if group_s2 else 'apply_tnd33_arch22_all_normal.py' if all_normal else 'apply_tnd33_arch22_s2.py'
+    header='paged33_arch22_group_s2.h' if group_s2 else 'paged33_arch22_all_normal.h' if all_normal else 'paged33_arch22_s2.h'
     need(data.get('variant')==expected_variant and data.get('arch22_s2_recipe_sha256')==pins[PREFIX+recipe]
         and data.get('arch22_s2_normal_route_recipe_sha256')==pins[PREFIX+'apply_tnd33_arch22_bridge.py']
         and data.get('arch22_s2_headers')=={name:pins[PREFIX+name] for name in

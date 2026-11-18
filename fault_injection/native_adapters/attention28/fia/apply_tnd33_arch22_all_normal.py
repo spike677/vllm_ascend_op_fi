@@ -12,6 +12,7 @@ import importlib.util
 import json
 from pathlib import Path
 import subprocess
+import sys
 
 HERE=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('_arch22_normal_recipe',HERE/'apply_tnd33_arch22_bridge.py')
@@ -19,6 +20,9 @@ normal=importlib.util.module_from_spec(spec);spec.loader.exec_module(normal)
 base=normal.base
 VARIANT='tnd_page16_arch22_all_normal'
 VENDOR='dcat_f33_arch22_all_normal'
+HEADER='paged33_arch22_all_normal.h'
+SCHEMA='demoncat.paged33.arch22_all_normal_source.v1'
+SELECTED_SCOPE=512
 KEYS=normal.KEYS
 PATHS=normal.PATHS
 SOURCE_SHA=dict(normal.SOURCE_SHA,**{
@@ -55,7 +59,8 @@ def verify_source(raw):
         raise RuntimeError('ARCH22_S2_REVIEWED_PRISTINE_SOURCE_DIFFERS')
 
 
-def main():
+def main(recipe=None):
+    recipe=recipe or sys.modules[__name__]
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source',type=Path,required=True);parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args();source=args.source.resolve(strict=True);out=args.output.resolve()
@@ -63,11 +68,11 @@ def main():
     dirty=subprocess.check_output(['git','-C',str(source),'status','--porcelain','--untracked-files=all'],text=True)
     if head!=base.COMMIT or dirty.strip() or out.exists() or source==out or source in out.parents:
         raise RuntimeError('PRISTINE_PINNED_SOURCE_AND_FRESH_EXTERNAL_RECEIPT_REQUIRED')
-    raw={p:(source/p).read_bytes() for p in SOURCE_SHA};verify_source(raw)
-    original={p:v.decode('utf-8') for p,v in raw.items()};updated=patched(original)
+    raw={p:(source/p).read_bytes() for p in recipe.SOURCE_SHA};recipe.verify_source(raw)
+    original={p:v.decode('utf-8') for p,v in raw.items()};updated=recipe.patched(original)
     typed,projection,fields=base.typed_materials((source/(base.FIA+'op_host/fused_infer_attention_score_tiling.h')).read_text(encoding='utf-8'))
     typed=typed.replace('fault28_fia','paged33_arch22_bridge').replace('DEMONCAT_FAULT28_FIA_TYPED_H','DEMONCAT_PAGED33_ARCH22_TYPED_H')
-    additions={base.HOST+'paged33_arch22_all_normal.h':(HERE/'paged33_arch22_all_normal.h').read_bytes(),
+    additions={base.HOST+recipe.HEADER:(HERE/recipe.HEADER).read_bytes(),
         base.HOST+'paged33_arch22_bridge.h':(HERE/'paged33_arch22_bridge.h').read_bytes(),
         base.HOST+'paged33_arch22_typed.h':typed.encode()}
     if any((source/p).exists() for p in additions):raise RuntimeError('ARCH22_S2_REPEATED_PATCH_REFUSED')
@@ -79,12 +84,12 @@ def main():
     (out/'official_sources.patch').write_text(patch,encoding='utf-8')
     (out/'fia_schema_projection.h').write_text(projection,encoding='utf-8')
     (out/'typed_fields.json').write_text(json.dumps(fields,indent=2)+'\n',encoding='utf-8')
-    receipt=dict(schema='demoncat.paged33.arch22_all_normal_source.v1',mechanism='33.paged_decode',variant=VARIANT,
+    receipt=dict(schema=recipe.SCHEMA,mechanism='33.paged_decode',variant=recipe.VARIANT,
         source_commit=head,status='PATCHED_NOT_BUILT_NOT_NPU_VALIDATED',
-        recipe_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        recipe_sha256=hashlib.sha256(Path(recipe.__file__).read_bytes()).hexdigest(),
         normal_route_recipe_sha256=hashlib.sha256(Path(normal.__file__).read_bytes()).hexdigest(),
         scope=dict(layout='TND',query_tokens=1,heads=16,kv_heads=8,dim=128,page_size=16,
-                   kv_length=[1025,2048],aic=[16,26],cv_ratio=2,native_s2=512,selected_s2=512),
+                   kv_length=[1025,2048],aic=[16,26],cv_ratio=2,native_s2=512,selected_s2=recipe.SELECTED_SCOPE),
         normal_route_preference_changed=True,selection_before_original_split=True,
         kernel_source_modified=False,tensor_payload_mutated=False,m_policy_changed=False,
         old_normal_certificate_reused=False,fault_execution_ready=False,stock_private_exact_proven=False,
