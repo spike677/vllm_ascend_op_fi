@@ -59,15 +59,16 @@ extension, natural CPU dispatch census, RPC failure isolation and cleanup. These
 tests do not grant NPU, model, C1/C2/C3 or E5 qualification. The reference NPU
 entry is `providers20_worker_probe.py --worker-core`; it uses the same frozen
 group qualification and recovery logic, plus public discovery/census/client.
-Its real result must be recorded separately after execution.
+Its real result now passes in the bounded source46 scope; see
+[actual acceptance](../../experiments/c2c3_closure_20261117/WORKER_CORE_V1_ACCEPTANCE_20261118.md).
 
 The existing Native39 source42/package16 run remains frozen. Independent review
 accepted113 C2 targets and226 C3 calls with exact OFF and SDK release. Fault20's
 source44 short preflight observed135 QMM calls twice and released15012 SDK arrays,
 but armed no fault. These are not results for the new Core snapshot.
 
-Strict historical qualification is3/17 for C2 and C3, in bounded Fault18, MoE8
-and repaired Native39 scopes. Keep C0/C1/C2/C3, Recovery and E5 separate. In
+Strict current qualification is4/17 for C2 and C3, in bounded Fault18, MoE8,
+repaired Native39 and repaired Native20 scopes. Keep C0/C1/C2/C3, Recovery and E5 separate. In
 particular, Native39's C2 Inf/NaN statistics and absent C3 raw capture remain
 independent E5 limitations. Do not rerun accepted cases merely to refresh counts.
 

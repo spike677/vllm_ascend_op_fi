@@ -5,17 +5,14 @@ Frozen source: `91decf5efe48dfdf8c5494e52d258ccde788cc5d` (implementation
 the previous engineering reports and all original 124 evidence remain intact.
 
 The frozen starting point was **C2 0/17, C3 0/17**. The current strict result is
-**C2 3/17, C3 3/17**, for the bounded Fault18, MoE8 and newly repaired Native39 standard-Worker scopes. A source
-and actual-build audit found unfreed SDK metadata arrays in the previously
-accepted Fault20 and native Fault39 builds. Their numerical, coverage and OFF
-receipts remain intact. Their old builds remain withdrawn; Native20 still needs
-requalification, while the new Native39 build has passed
-[fresh independent acceptance](NATIVE39_REQUALIFICATION_20261118.md). The separate HF Fault18 scope is
-not counted twice. This is an in-progress checkpoint, not a claim that17 mechanisms or whole
-model/version families are accepted. Existing scoped C1 receipts retain their
-original source, build and workload. CPU contract tests do not grant qualification.
-The [actual-build ownership audit](coverage_frozen_metadata_ownership_review.md)
-binds this correction to the exact executed source and seven library hashes.
+**C2 4/17, C3 4/17**, for bounded Fault18, MoE8, repaired Native39 and repaired
+Native20 standard-Worker scopes. Old builds with unreleased SDK metadata remain
+withdrawn; their numerical receipts are preserved without requalification.
+[Native39 fresh acceptance](NATIVE39_REQUALIFICATION_20261118.md) and
+[Worker Core V1 / Native20 fresh acceptance](WORKER_CORE_V1_ACCEPTANCE_20261118.md)
+bind each restored qualification to its actual new build, source and workload.
+The separately reviewed HF Fault18 result is not counted twice. This is not
+17/17, all-model, all-version or multi-Worker acceptance. E5 gaps remain separate.
 
 The [17-mechanism and27-node matrix](C2_C3_MATRIX.md) lists the accepted scopes,
 natural-path gaps, queued experiments and version/hardware limits individually.
@@ -27,7 +24,7 @@ and subsequent CPU/SDK repairs. None silently increases the strict count.
 | --- | --- | --- | --- |
 |8.restore_offset, standard DeepSeek-V2-Lite-W8A8 Worker, BF16 fixed10-token fresh prefill, TP1|26/26 targets|52/52 calls in two requests|No raw statistics in this group; E5 pending|
 |18.api_half, standard Qwen3-0.6B Worker, BF16 fresh prefill, TP1|113/113 targets|226/226 calls in two requests|Fresh Worker raw first consumer input Max1.734375→0.8671875;102 preceding nulls retained|
-|20.buffer_substitute, standard DeepSeek-V2-Lite-W8A8 Worker, BF16 fixed3-token fresh prefill, TP1|Requalification required;135/135 interventions observed|Requalification required;270/270 calls observed|First QMM output Max16.25→14.0;2 later NaN fields prevent whole-capture E5; host metadata arrays were not released|
+|20.buffer_substitute, repaired build + Worker Core source46, DeepSeek-V2-Lite-W8A8 BF16 fixed3-token fresh prefill TP1|**135/135**|**270/270**|Fresh arrays and OFF pass. First raw QMM output Max16.25→14.0;132 preceding nulls;2 later NaNs prevent whole-capture E5;C3 raw missing. Old leaking build remains withdrawn.|
 |39.matmul_range, new repaired Native build, standard Qwen3-0.6B Worker BF16 fresh prefill TP1|**113/113**|**226/226**, two requests|Fresh SDK ownership/OFF audit passed. C2 first linear output5.1875→Inf with later NaNs; C3 raw capture missing; E5 remains incomplete. Old leaking builds remain withdrawn.|
 |18.api_half, natural HF model, separately reviewed|113/113 targets|226/226 calls|First consumer linear input1.734375→0.8671875; nulls retained|
 

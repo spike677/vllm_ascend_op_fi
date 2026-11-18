@@ -1,5 +1,17 @@
 # Current execution checkpoint
 
+## Current checkpoint — Core V1 real Provider passed; next mechanisms
+
+- Native20 public Core source46/packages19 finished and independent coverage/effect/OFF/SDK audits pass135/270. Strict C2/C3 now4/17 in bounded8/18/repaired20/repaired39 scopes. See WORKER_CORE_V1_ACCEPTANCE_20261118.md for all exact hashes. E5 remains incomparable (first QMM Max16.25→14.0,132 preceding nulls,2 later NaNs); C3 raw missing.
+- Source46 commit11607cda4d30a402b4e69dc4318fd6ff927053a2;744 files; source manifest3d24082a9710bcca0c738012800996e8a5dae3000ebe22b73c00a4c72c800cfe; packages19 receipt76d4f5933d531572039d91d3ebe3aa2e153b2d1ff828ff026d4d4f7a27fe67dd. Frozen source unchanged by developer work.
+- Native26 two fresh source44/package18 runs prove loader and cleanup; coverage blocked before fault by actual public lifetime/complete denominator gaps. Source-bound FIA-return adaptation is in CPU work; QMM single-target effects remains a separate safe next experiment.
+- RoPE zero-injection source46 census passed56 readers/56 Triton launches,28 sites, two requests, exact B-repeat/health and zero hooks. Result9adc0c9c1bc2450c8cb4cee8cb69f9f65a68870a5bde195b94791c02bd4b7e7c. Root group attempt rope22-natural-group-source46-card2-a1/session75449 now active. No raw-device-payload or uint32-overflow claim.
+- Main integrated public Core, source-only integration exporter611b26e4/bb2e7cc3 and quant MLA provenance b364f0a5 plus independently reviewed cleanup repaird6c712b8. Quant new C1 and writer26 public return adapter remain separate agent work. New Python deployment snapshot/package needed after those commits.
+- Root retains one device queue/lock, card2 only. Existing source45 Fault33 stock/B manifest remains prepared; execute after the active RoPE job, then independently bridge before F.
+- CPU Worker regression332 tests/331pass/1platformskip; Core migrated-source and installed-wheel contracts67 each; latest batch host methods31 pass; independent Native20 SDK reviewer4 pass. No CPU count confers NPU qualification.
+- Integration bundle exports code once with eight section indexes and three original distributions. Raw stats/private tensors/binaries remain on124. Git publication still pending final audit; remote79a1e809 is older than local.
+- All following checkpoints are historical.
+
 ## Current checkpoint — Worker Core V1 and Native39 independently accepted
 
 - Strict scoped C2/C3 is now **3/17 each**: Fault18, MoE8, and repaired Native39. See NATIVE39_REQUALIFICATION_20261118.md; old leaking builds remain withdrawn.

@@ -336,6 +336,20 @@ class WorkerFaultClient:
     def finish(self):
         return self._action('finish')
 
+    def advance_batch(self, request_ids):
+        """Forward actual enqueue IDs; the provider validates its batch scope."""
+        if (not isinstance(request_ids, (list, tuple)) or not 1 <= len(request_ids) <= 256
+                or any(not isinstance(value, str) or not value.strip() for value in request_ids)
+                or len(set(request_ids)) != len(request_ids)):
+            raise ValueError('A bounded list of distinct actual request IDs is required')
+        with self._lock:
+            return self._dispatch('advance', settings={'request_ids': list(request_ids)})
+
+    def begin_decode_capture(self):
+        """Observe the host's next decode step; never advance its scheduler."""
+        with self._lock:
+            return self._dispatch('advance', settings={'capture_decode': True})
+
     def disable(self):
         return self._action('disable')
 

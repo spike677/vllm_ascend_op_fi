@@ -70,6 +70,27 @@ class CoreHostTests(unittest.TestCase):
             return replies
         self.executor.after = lose_reply
 
+    def test_batch_and_decode_controls_reuse_existing_owned_advance(self):
+        client = self.client()
+        self.checked(client)
+        self.assertEqual(client.execute()['status'], 'ACTION_COMPLETED')
+        ids = ['actual-' + str(i) for i in range(8)]
+        self.assertEqual(client.advance_batch(ids)['status'], 'ACTION_COMPLETED')
+        self.assertEqual(client.begin_decode_capture()['status'], 'ACTION_COMPLETED')
+        calls = [args[-1]['settings'] for method, args in self.executor.calls
+                 if method == 'demoncat_fault_rpc' and args[0] == 'advance']
+        self.assertEqual(calls, [{'request_ids': ids}, {'capture_decode': True}])
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+
+    def test_invalid_batch_mapping_is_rejected_without_rpc(self):
+        client = self.client()
+        for value in ([], ['same', 'same'], [''], ['x', 1], 'not-a-list', list(map(str, range(257)))):
+            with self.subTest(value=str(value)[:20]), self.assertRaises(ValueError):
+                client.advance_batch(value)
+        self.assertEqual(self.executor.calls, [])
+        self.assertEqual(client.begin_decode_capture()['response']['reason'],
+                         'LEASE_TICKET_REQUIRED_USE_DETACH_FOR_UNCERTAIN_PREPARE')
+
     def test_config_selects_existing_catalog_and_keeps_legacy_fault39_contract(self):
         from fault_injection.catalog import CAPABILITIES
         from fault_injection.lifecycle import FaultConfig as ModelFaultConfig
