@@ -21,7 +21,9 @@ def actual(worker):
     return worker
 
 
-def setup(worker, prompts, build_sha, group_abi=False):
+def setup(worker, prompts, build_sha, group_abi=False, capture_integer_routes=False):
+    if capture_integer_routes and not group_abi:
+        raise RuntimeError('INTEGER_ROUTE_CAPTURE_REQUIRES_READONLY_GROUP_CENSUS')
     from demoncat.runtime.vllm_ascend.worker_extension import serving_shared_scale_inventory, shared_scale_inventory, quant_row_provenance
     from fault_injection.deployments import dynamic_quant_inventory
     modules = (serving_shared_scale_inventory, shared_scale_inventory, dynamic_quant_inventory, quant_row_provenance)
@@ -30,9 +32,9 @@ def setup(worker, prompts, build_sha, group_abi=False):
         from demoncat.runtime.vllm_ascend.worker_extension import serving_shared_scale_group_inventory, shared_scale_group_inventory
         from fault_injection.deployments import quant_group_inventory
         from fault_injection import quant_group_native, quant_native_isolation
-        from demoncat.runtime.vllm_ascend.worker_extension import quant_source_rows, quant_mla_metadata_rows, quant_moe_rows
+        from demoncat.runtime.vllm_ascend.worker_extension import quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes
         modules += (serving_shared_scale_group_inventory, shared_scale_group_inventory, quant_group_inventory,
-                    quant_group_native, quant_native_isolation, quant_source_rows, quant_mla_metadata_rows, quant_moe_rows)
+                    quant_group_native, quant_native_isolation, quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes)
         install = serving_shared_scale_group_inventory.install_shared_scale_group_inventory
     sources = []
     for module in modules:
@@ -41,8 +43,9 @@ def setup(worker, prompts, build_sha, group_abi=False):
             raise RuntimeError('FRESH_INSTALLED_NATIVE_QUANT_OBSERVER_REQUIRED')
         sources.append(dict(path=str(path), sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
     worker = actual(worker)
+    options = dict(capture_integer_routes=capture_integer_routes) if group_abi else {}
     return dict(binding=install(worker, prompts=prompts,
-        root='/quant', build_sha256=build_sha, evidence_dir='/evidence/shared-scale'), sources=sources,
+        root='/quant', build_sha256=build_sha, evidence_dir='/evidence/shared-scale', **options), sources=sources,
         model_class=type(worker.model_runner.model).__module__ + '.' + type(worker.model_runner.model).__name__)
 
 
@@ -80,9 +83,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--build-sha256', required=True)
     parser.add_argument('--group-abi', action='store_true')
+    parser.add_argument('--capture-integer-routes', action='store_true')
     args = parser.parse_args()
+    if args.capture_integer_routes and not args.group_abi:
+        parser.error('--capture-integer-routes requires --group-abi')
     report = dict(status='STARTING', scope='TWO_ACTUAL_B8_FIRST_DECODES_ALL_NATIVE_V2_CALLS', phases=[],
-        c1=False, c2=False, c3=False, native_qualified_targets=0, num_gpu_blocks_override=64, group_abi=args.group_abi)
+        c1=False, c2=False, c3=False, native_qualified_targets=0, num_gpu_blocks_override=64, group_abi=args.group_abi,
+        integer_route_capture=args.capture_integer_routes, statistics=False)
     def save():
         Path('/evidence/result.json').write_text(json.dumps(report, indent=2, allow_nan=False) + '\n')
     llm, installed, seen = None, False, []
@@ -99,7 +106,7 @@ def main():
         prompts = [dict(prompt_token_ids=row) for row in tokens]
         params = SamplingParams(temperature=0, max_tokens=2, ignore_eos=True)
         report['healthy_before'] = [list(row.outputs[0].token_ids) for row in llm.generate(prompts, params, use_tqdm=False)]
-        report['setup'] = rpc(llm, setup, tokens, args.build_sha256, args.group_abi)
+        report['setup'] = rpc(llm, setup, tokens, args.build_sha256, args.group_abi, args.capture_integer_routes)
         report['identity'] = rpc(llm, 'demoncat_worker_identity')
         installed = True
         for index in range(2):

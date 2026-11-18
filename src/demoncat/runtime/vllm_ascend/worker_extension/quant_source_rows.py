@@ -9,6 +9,7 @@ import math
 from pathlib import Path
 import sys
 import threading
+import time
 import types
 import weakref
 
@@ -171,15 +172,23 @@ class SourceBoundRows:
         self.input_ids = self.input_ids_metadata = None
         self.embedding_attempts = 0
         self.moe = None
+        self.routes = None
 
     @classmethod
-    def from_runtime(cls, graph, model):
+    def from_runtime(cls, graph, model, *, capture_integer_routes=False):
         from .quant_moe_rows import SharedMoERows, REVIEWED as MOE_REVIEWED, has_runtime_owner
+        require(type(capture_integer_routes) is bool, 'EXPLICIT_INTEGER_ROUTE_CAPTURE_FLAG_REQUIRED')
         moe_enabled = has_runtime_owner(model)
-        bindings, sources = source_bindings(dict(REVIEWED, **MOE_REVIEWED) if moe_enabled else REVIEWED)
+        reviewed = dict(REVIEWED, **MOE_REVIEWED) if moe_enabled else REVIEWED
+        if capture_integer_routes and moe_enabled:
+            from .quant_token_routes import IntegerRouteObserver, REVIEWED as ROUTE_REVIEWED
+            reviewed = dict(reviewed, **ROUTE_REVIEWED)
+        bindings, sources = source_bindings(reviewed)
         value = cls(graph, model, bindings, sources)
         if moe_enabled:
             value.moe = SharedMoERows(value)
+            if capture_integer_routes:
+                value.routes = IntegerRouteObserver(value)
         # Freeze the actual installed implementation and its derived weights.
         # A later tensor replacement cannot become a new trusted constant.
         for _, module in model.named_modules():
@@ -206,6 +215,8 @@ class SourceBoundRows:
         self.scope = snapshot(scope)
         self.thread = threading.get_ident()
         self.pending, self.stack, self.rows, self.errors, self.operator_stack = {}, [], [], [], []
+        if self.routes is not None:
+            self.routes.reset()
         self.alias_parents = {}
         input_ids_metadata = metadata(input_ids) if isinstance(input_ids, torch.Tensor) else None
         self.embedding_attempts = 0
@@ -238,9 +249,14 @@ class SourceBoundRows:
                 and sys.getprofile() is (None if self.profile_released else self.callback),
                 'QUANT_ROW_PROFILE_OWNER_CHANGED')
         require(not self.pending and not self.stack and not self.operator_stack, 'QUANT_ROW_BOUNDARIES_STILL_INFLIGHT')
+        require(self.routes is None or not self.routes.live and not self.routes.helper_active,
+                'QUANT_ROUTE_OBSERVER_STILL_INFLIGHT')
         self.ending = True
         while self.owned_modes:
-            self._release_mode(self.owned_modes[-1])
+            current = _get_current_dispatch_mode()
+            require(any(mode is current for mode in self.owned_modes), 'QUANT_ROW_NESTED_MODE_OWNER_CHANGED')
+            self._release_mode(current)
+        require(self.routes is None or not self.routes.helper_modes, 'QUANT_ROUTE_HELPER_MODE_STILL_OWNED')
         if not self.profile_released:
             sys.setprofile(None)
             self.profile_released = sys.getprofile() is None
@@ -252,10 +268,17 @@ class SourceBoundRows:
         return self.report()
 
     def _release_mode(self, mode):
-        require(self.owned_modes and self.owned_modes[-1] is mode, 'QUANT_ROW_NESTED_MODE_ORDER_CHANGED')
+        require(any(item is mode for item in self.owned_modes), 'QUANT_ROW_NESTED_MODE_ORDER_CHANGED')
+        # Torch temporarily pops a dispatch mode during its callback, then
+        # restores it above a helper that failed to exit. Cleanup follows the
+        # actual stack, not chronological creation order. exit_owned_mode
+        # still requires this exact owned handle at the top; foreign modes
+        # are never removed, and failed exits retain their original handles.
         removed, error = exit_owned_mode(mode, 'QUANT_ROW_NESTED_MODE_OWNER_CHANGED')
         if removed:
-            self.owned_modes.pop()
+            self.owned_modes[:] = [item for item in self.owned_modes if item is not mode]
+            if self.routes is not None:
+                self.routes.mode_released(mode)
         if error is not None:
             raise error
 
@@ -318,6 +341,8 @@ class SourceBoundRows:
         if event not in ('call', 'return') or frame.f_code not in self.bindings:
             return
         row = None
+        route_started = (time.monotonic_ns() if self.routes is not None
+                         and self.bindings[frame.f_code]['role'].startswith('route_') else None)
         try:
             binding = self.bindings[frame.f_code]
             # These global helpers run elsewhere too. Only the actual checked
@@ -379,6 +404,9 @@ class SourceBoundRows:
                 row.pop('mode', None)
                 row.pop('parent_operator', None)
                 row.pop('embedding_state', None)
+            if route_started is not None:
+                self.routes.profile_calls += 1
+                self.routes.profile_ns += time.monotonic_ns() - route_started
 
     def _returned(self, row, values, result):
         original = row['input']
@@ -702,6 +730,8 @@ class SourceBoundRows:
             state['expected_role'] = expected
         if expected == 'moe_opaque':
             self.moe.before_operator(state)
+        if self.routes is not None:
+            self.routes.before_operator(state)
         if name == 'vllm.mla_forward.default':
             bound = _arguments(func, args, kwargs)
             writes = [arg.name for arg in schema.arguments if arg.alias_info is not None and arg.alias_info.is_write]
@@ -730,6 +760,8 @@ class SourceBoundRows:
         return state
 
     def failed_operator(self, state, error):
+        if self.routes is not None:
+            self.routes.after_operator(state, error=error)
         if state is not None and 'moe' in state and self.moe is not None:
             self.moe.after_operator(state)
         if state is not None and self.operator_stack and self.operator_stack[-1] is state:
@@ -741,6 +773,8 @@ class SourceBoundRows:
             return set()
         require(self.operator_stack and self.operator_stack[-1] is state, 'QUANT_ROW_OPERATOR_RETURN_ORDER_CHANGED')
         self.operator_stack.pop()
+        if self.routes is not None:
+            self.routes.after_operator(state, output)
         if 'moe' in state and self.moe is not None:
             self.moe.after_operator(state)
         if not self.active or self.errors:
@@ -964,6 +998,7 @@ class SourceBoundRows:
             shared_moe_adapter=dict(enabled=self.moe is not None,
                 frozen_model_owners=len(self.moe.owners) if self.moe is not None else 0,
                 routed_output_row_qualified=False),
+            integer_routes=self.routes.report() if self.routes is not None else None,
             inflight=len(self.pending), native_qualified=False,
             owned_nested_dispatch_modes=len(self.owned_modes), owned_profile_callbacks=int(not self.profile_released),
             owned_scheduler_input_refs=int(self.input_ids is not None),

@@ -1,5 +1,7 @@
 """Probe controls call only explicit collection; no inference or SDK imports."""
 from types import SimpleNamespace as NS
+import inspect
+import sys
 import unittest
 from unittest.mock import Mock, patch
 
@@ -26,6 +28,15 @@ class QuantProbeCollectionTests(unittest.TestCase):
                 with self.subTest(kwargs=kwargs), self.assertRaisesRegex(RuntimeError, 'EXPLICIT_INVENTORY_COLLECTION'):
                     probe.advance(worker, **kwargs)
         session.collect.assert_not_called()
+
+    def test_integer_route_capture_is_opt_in_and_rejected_without_group_before_import(self):
+        self.assertIs(inspect.signature(probe.setup).parameters['capture_integer_routes'].default, False)
+        with self.assertRaisesRegex(RuntimeError, 'READONLY_GROUP_CENSUS'):
+            probe.setup(object(), [], '0' * 64, capture_integer_routes=True)
+        with patch.object(sys, 'argv', ['probe', '--build-sha256', '0' * 64, '--capture-integer-routes']):
+            with self.assertRaises(SystemExit) as caught:
+                probe.main()
+        self.assertEqual(caught.exception.code, 2)
 
 
 if __name__ == '__main__':
