@@ -214,11 +214,14 @@ class SharedMoERowsTests(unittest.TestCase):
     def test_unknown_shared_return_cannot_be_certified_from_shape(self):
         self.model.experts.unknown_shared = True
         with torch.inference_mode():
-            _, output = self.invoke()
+            x, output = self.invoke()
             self.assertIn('MOE_SHARED_RETURN_HAS_NO_COMPLETE_ACTUAL_OPERATOR_CHAIN',
                           self.event()['shared_moe_row_diagnostic']['reason'])
             self.assertFalse(self.graph.query(output[0])['verified'])
             self.assertFalse(self.graph.query(output[1])['verified'])
+            self.assertFalse(self.graph.query(x)['verified'])
+            self.assertTrue(self.event()['shared_moe_row_diagnostic']['revoked_proof_nodes'])
+            self.assertEqual(self.graph.epochs[self.graph.storage_key(metadata(x))], 1)
 
     def test_real_dispatch_override_does_not_borrow_reviewed_source_frame(self):
         foreign = torch.library.Library('cpu_quant_shared_moe_rows', 'FRAGMENT')

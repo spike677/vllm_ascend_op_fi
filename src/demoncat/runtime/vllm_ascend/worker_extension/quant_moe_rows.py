@@ -190,7 +190,20 @@ class SharedMoERows:
         # every operand and every overlapping storage through the usual graph.
 
     def _refuse(self, state, error):
-        state['moe']['reason'] = state['moe']['reason'] or str(error)
+        row = state['moe']
+        row['reason'] = row['reason'] or str(error)
+        if row['resumed'] and 'revoked_nodes' not in row:
+            # A later source/owner/return failure cannot leave the temporarily
+            # resumed input, or a descendant alias, available to later calls.
+            # Revoke proofs, not write epochs: this is not an observed write.
+            revoked = {row['resumed_node']}
+            for node in self.graph.nodes:
+                if any(parent in revoked for parent in node['parents']):
+                    revoked.add(node['node_id'])
+            for key, proof in tuple(self.graph.proofs.items()):
+                if proof['node']['node_id'] in revoked:
+                    self.graph.proofs.pop(key)
+            row['revoked_nodes'] = sorted(revoked)
         state['event']['shared_moe_row_diagnostic'] = self.diagnostic(state)
 
     def diagnostic(self, state):
@@ -199,6 +212,7 @@ class SharedMoERows:
             reason=row['reason'], registration=row.get('registration'), input=row.get('metadata'),
             parent_sequence=state['event']['sequence'], parent_mutable_invalidation_preserved=True,
             resumed=row['resumed'], resumed_node=row.get('resumed_node'),
+            revoked_proof_nodes=row.get('revoked_nodes', []),
             actual_owner=row.get('owner_facts'), shared_output=row.get('shared_output_metadata'),
             routed_output_row_proof=False, native_qualified=False))
 

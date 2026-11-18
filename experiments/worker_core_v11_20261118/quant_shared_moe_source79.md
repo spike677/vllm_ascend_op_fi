@@ -41,7 +41,9 @@ without a version counter. Entering shared part1/part2 rechecks the original
 object/epoch and the exact owner. Public row queries are visible only inside
 those actual shared frames; routed pipeline queries remain unproven. A
 shared output needs a complete observed operator chain and an exact return
-object, disjoint from the input and routed output. The routed result is never
+object, disjoint from the input and routed output. A later source/owner/return
+refusal revokes the resumed node and its observed descendants, without
+inventing a write or changing observed write epochs. The routed result is never
 certified by this adapter. All 135 candidates and all unknown reasons remain
 in the census. Nothing changes the quantization algorithm or Native ABI.
 
