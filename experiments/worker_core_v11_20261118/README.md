@@ -96,6 +96,15 @@ attributes from parsed Native values. Its Python contracts and source checks
 are complete; SDK build and live descriptor/copy-lineage validation remain
 separate pending gates. It adds no public fault or runtime loading authority.
 
+The [separate Fault33 group normal entry](../../docs/worker_core_v1/attention33_group_normal_preparation.md)
+stores bounded per-phase references to complete originals and records actual
+phase/index cost. Its package includes a gated fault branch, but this entry
+only permits normal/OFF; public group C2 wiring and resource admission remain
+separate. The merged TND28/group-normal build, reader and export regression
+ran 160 local tests: 159 passed, one Windows symlink-creation test was skipped.
+The earlier import typo in the test command was corrected and rerun; no
+product failure was suppressed. Production SDK/C++ checks remain required.
+
 ## Ownership and execution
 
 Root owns shared contracts, registry integration, device queue and qualification

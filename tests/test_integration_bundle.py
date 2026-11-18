@@ -43,7 +43,7 @@ class BundleTests(unittest.TestCase):
         evidence = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(evidence)
         payload = bundle._inventory(ROOT)
-        required = set(evidence.REQUIRED + evidence.S2_REQUIRED + evidence.ALL_REQUIRED)
+        required = set(evidence.REQUIRED + evidence.S2_REQUIRED + evidence.ALL_REQUIRED + evidence.GROUP_REQUIRED)
         self.assertFalse(required - payload.keys())
         for name in required:
             self.assertEqual(payload[name], (ROOT / name).read_bytes(), name)
