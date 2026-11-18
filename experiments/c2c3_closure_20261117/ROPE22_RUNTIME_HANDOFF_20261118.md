@@ -24,9 +24,11 @@ a fake `self` local, and changed intermediate graph/forward. The full RoPE CPU
 set is now19 passing contracts. This source repair does not convert the failed
 source42 receipt into a pass and does not grant C2/C3.
 
-This checkpoint is based on integration commit `9a406c9d57790ab814178ed1e74eb88160726159`.
-It changes source and CPU contracts only. **No new NPU execution, standard-Worker
-group acceptance, C2, C3, or E5 is claimed.** The existing ordinary lookup-output
+The original checkpoint was based on integration commit
+`9a406c9d57790ab814178ed1e74eb88160726159`; the ancestor repair and group driver
+are based on `1e15888ccd1df3e26a6e59bff84e4865b8e00e7a`.
+These changes cover source and CPU contracts only. **No new NPU execution,
+standard-Worker group acceptance, C2, C3, or E5 is claimed.** The existing ordinary lookup-output
 proxy and all earlier receipts are unchanged. The root controller still owns
 all device calls and container scheduling.
 
@@ -110,7 +112,7 @@ positions entering the real reader/JIT/launcher and Q/K reaching a real consumer
 Wrong ordering fails the outer-to-reader identity join rather than trusting the
 adapter's event. The adapter never issues a coverage proof itself.
 
-## CPU verification and root next step
+## Initial CPU checkpoint
 
 Fifteen CPU contracts passed: six existing census contracts, four shared-site /
 Triton-shaped callsite contracts, and five fused-input contracts. The three-site
@@ -134,9 +136,71 @@ queue apply its lock, device gates and bounded request plan. The new factory
 refuses different Triton source hashes or dispatch ownership. Read all actual
 outer/reader/launcher and consumer rows; do not reduce acceptance to a counter.
 
-**The fused-input variant is not yet wired into the standard-Worker group
-driver or `CoverageSession`.** That integration, independent C2 denominator and
-per-site effects, live C2-to-C3 admission, cleanup/OFF, and fresh B/F raw
-statistics remain future work. It is not interchangeable with the existing
-`22.wrong_row` ordinary lookup-output group. Vision17 final-argument and first
-consumer work is deferred to a later checkpoint; no Vision source changed here.
+The original checkpoint had no standard-Worker group driver. The following
+source update supplies that driver; its actual NPU acceptance remains pending.
+It is not interchangeable with the existing `22.wrong_row` ordinary
+lookup-output group. Vision17 final-argument and first-consumer work is deferred;
+no Vision source changed here.
+
+## Prepared Worker group and bounded root handoff
+
+`fault_injection/rope_group.py` and `rope_serving.py` use the existing actual
+Worker request/context/logits machinery and `CoverageSession`. They leave the
+shared tensor provider, model methods, reader and launcher implementations
+unchanged. The mechanism scope is explicitly `22.wrong_row.fused_positions`.
+The root probe is `natural_rope_worker_probe.py`; `prepare_rope22_group.py`
+prepares one case using the existing source/model mounts and resource gates.
+
+The queued sequence has nine independently enqueued, fresh-prefill requests:
+
+1. Native baseline, instrumented baseline, repeat and identity/lossless request.
+   Full root inputs, hidden output and logits must match exactly. Each actual
+   shared parent site must have one independently joined reader, outer operator,
+   launcher and consumer. The denominator comes from these calls, crosschecked
+   against the live registration graph; no fixed layer count is accepted.
+2. One C2 fault request covering all qualified sites, then a full exact OFF.
+3. Two every-match C3 requests using the **original live C2 capability inside
+   the same Worker process**, then a full exact OFF. The proof is never copied,
+   serialized or reconstructed through RPC.
+
+The upper independent pre-observer issues each original-call ticket before
+admission; the lower trace independently reads the actual post-adapter arguments
+and actual reader/JIT/launcher/QK consumers. Healthy reader evidence is copied
+and hashed before fault admission. Hit completion requires actual wrong-row
+positions, changed Q/K output, unchanged non-target input/output rows, unchanged
+entire original cache and root positions, and a returned consumer. A matching
+injector event alone cannot complete a hit. Later propagated input changes stay
+explicit and are not isolated causal evidence. Missing sites, launcher calls,
+original object lifetimes or original live C2 proof refuse the group.
+
+The bounded input scope is the existing natural prompt, TP1 BF16 eager,
+fresh prefill, no chunking/prefix reuse/async scheduling, and at most two C3
+requests. No decoder/cross-request cache generality or integer-overflow root
+cause is claimed. Actual runtime source hashes are checked on every phase.
+The original source42 failure and all old receipts remain unchanged.
+
+Owned modes/profile/module hooks and per-request replacement-position tensors
+are released at collection. A bounded CPU healthy-reference pool remains alive
+between C2 and C3 for independent comparisons and is cleared when the serving
+session closes. A zero persistent fault-buffer budget therefore does not mean
+zero diagnostic/model/allocator memory. Post-cleanup healthy generation must
+return the original token on the same Worker.
+
+Final CPU verification: **26 RoPE contracts and 9 existing serving Tensor/MoE
+contracts passed**. The new CPU fixture executes a hook-bypassed parent, tied
+embedding aliases and a shared three-site RoPE; it verifies C2 three hits,
+C3 six hits, OFF recovery and rejection paths. These simulation results do not
+qualify a real Worker. Actual group execution, raw B/F statistics and E5 remain
+pending; `raw_device_launch_payload_observed` and public qualification remain
+false. The JIT/launcher evidence remains source-bound callsite observation,
+not final device ABI decoding.
+
+Root preparation command after freezing a new reviewed source snapshot:
+
+```text
+python experiments/c2c3_closure_20261117/prepare_rope22_group.py --source /home/NEW_FROZEN_SOURCE --card 2 --image sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0 --out NEW_CASES.json
+```
+
+This command only writes a new manifest. The root-owned queue must perform its
+resource lock and per-case device gates and preserve a new attempt directory.
+No device calls or containers were started for this implementation checkpoint.

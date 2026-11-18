@@ -33,7 +33,9 @@ class FusedWrongRowSession(ScopedDispatch):
         self.request_id=None;self.positions=None;self.expected_positions=None
 
     def bind_request(self,request_id,positions,expected_positions):
-        if self.stack or not request_id or not isinstance(expected_positions,list):
+        early_root=(len(self.stack)==1 and self.stack[0][1] is self.model
+                    and not self.events and self.request_id is None)
+        if (self.stack and not early_root) or not request_id or not isinstance(expected_positions,list):
             raise UnsupportedCall('IDLE_ACTUAL_SCHEDULER_REQUEST_REQUIRED')
         self.request_id=request_id;self.positions=positions;self.expected_positions=list(expected_positions)
 

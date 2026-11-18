@@ -202,6 +202,7 @@ class NaturalRoPETrace:
                         cache=metadata(cache),cache_sha256=tensor_identity(cache_cpu)['sha256'],
                         query_before=tensor_identity(self._cpu(actual['query'])),
                         key_before=tensor_identity(self._cpu(actual['key'])),
+                        non_target_qk_before=[tensor_identity(self._cpu(actual[name])[:-1]) for name in ('query','key')],
                         arguments={key:describe(actual[key]) for key in ('head_size','rotary_dim','is_neox_style','offsets')},
                         legal_positions=legal,distinct_first_last_positions=distinct,
                         independent_position_transform='last_from_first' if wrong else 'identity',
@@ -233,6 +234,7 @@ class NaturalRoPETrace:
                     output=tuple(tensors(result))
                     row.update(returned=len(output)==2,output=[metadata(t) for t in output],
                         complete_output=[tensor_identity(self._cpu(t)) for t in output],
+                        non_target_output=[tensor_identity(self._cpu(t)[:-1]) for t in output],
                         actual_positions_unchanged=torch.equal(self._cpu(actual['positions']),positions_cpu),
                         root_positions_unchanged=torch.equal(self._cpu(self.root_positions),root_cpu),
                         complete_cache_unchanged=torch.equal(self._cpu(actual['cos_sin_cache']),cache_cpu))
