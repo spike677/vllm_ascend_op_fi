@@ -114,3 +114,20 @@ Windows CPU-contract forms remain supported under their previous checks.
 A fifth fixed-example lifetime test covers this source76 representation and
 rejects foreign boot, PID, tick and malformed complete markers. No original
 receipt is generated or rewritten to make this test pass.
+
+Current-producer regression review is based on integration
+`1653be27e1f79a5b0da2a62ada2976b8d7e54813`, including the producer that now
+copies the held Worker process identity. The unmodified Windows CPU protocol
+reproduced all three `ACTUAL_WORKER_TARGET_LIFETIME` failures before the fix.
+Its current marker is `process_local:PID:32-lowercase-hex-nonce`, produced by
+`identity._process_start()` when `/proc` is unavailable. CPU review now accepts
+this form only on exact marker equality, matching PID and valid nonce syntax.
+Natural review requires a complete, matching `proc` identity; even two equal
+CPU `process_local` markers cannot qualify as a natural Worker lifetime.
+
+After the fix, all 25 tests in `test_worker_core_group_original_review` pass
+against that current producer. These include the actual host-platform full
+fixture plus two complete public CPU protocol runs with deterministic Linux
+and Windows identity-reader inputs. The producer, collector, RPC flow and
+audit remain real CPU implementations in those runs; saved originals are not
+edited. This is a portability/receipt regression result, not NPU acceptance.

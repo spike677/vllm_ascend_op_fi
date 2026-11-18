@@ -9,12 +9,27 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from experiments.worker_core_v11_20261118 import review39_group_originals as r
 
 
 class ProcessStartRepresentationTests(unittest.TestCase):
     """Fixed saved examples exercise both OS branches on either test platform."""
+    def test_current_cpu_complete_process_local_requires_exact_pid_and_nonce(self):
+        marker='process_local:123:0123456789abcdef0123456789abcdef'
+        worker=dict(pid=123,process_start_identity=marker)
+        self.assertTrue(r.process_start_matches(marker,worker,natural=False))
+        self.assertFalse(r.process_start_matches(marker,dict(worker,pid=124),natural=False))
+        self.assertFalse(r.process_start_matches(marker[:-1]+'0',worker,natural=False))
+        for other in ('process_local:123:short',marker+':extra','process_local:123:'+'g'*32):
+            self.assertFalse(r.process_start_matches(other,dict(pid=123,process_start_identity=other),natural=False))
+
+    def test_natural_rejects_matching_process_local_and_malformed_proc(self):
+        for marker in ('process_local:123:0123456789abcdef0123456789abcdef',
+                       'cpu-contract:123:45678','45678','proc::123:45678','proc:boot:124:45678'):
+            self.assertFalse(r.process_start_matches(marker,dict(pid=123,process_start_identity=marker),natural=True))
+
     def test_current_cpu_complete_proc_identity_requires_exact_pid_and_marker(self):
         marker='proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:1:64770165'
         worker=dict(pid=1,process_start_identity=marker)
@@ -47,6 +62,43 @@ class ProcessStartRepresentationTests(unittest.TestCase):
         self.assertTrue(r.process_start_matches(worker['process_start_identity'],worker,natural=True))
         for marker in ('45678','cpu-contract:123:45678','proc:foreign-boot:123:45678','proc:fixture-boot:123:45679'):
             self.assertFalse(r.process_start_matches(marker,worker,natural=True))
+
+
+class CurrentProducerPlatformReviewTests(unittest.TestCase):
+    """Run the current producer and real CPU RPC/collection chain for both OS forms.
+
+    Only the platform identity reader is a deterministic CPU test input. No
+    provider, collector, auditor or saved original is replaced or rewritten.
+    """
+    def check_current_producer(self,pattern):
+        from test_output39_group_worker_core_probe import Output39GroupProbeTests
+        from demoncat.runtime.vllm_ascend.worker_extension import identity
+        with patch.object(identity,'_process_start',side_effect=lambda pid:pattern.format(pid=pid)):
+            case=Output39GroupProbeTests();case.setUp()
+            try:
+                document=case.drive()
+                host,rpc=r.C.load_rpc(r.C.Originals(case.out,natural=False),document,prefix='')
+                root=os.path.commonpath([str(case.out),document['requests'][0]['original_observations']['path']])
+                originals=r.C.Originals(root,natural=False)
+                final=originals.load(document['requests'][-1]['original_observations'],mounted=True)
+                marker=pattern.format(pid=host['worker']['pid'])
+                self.assertEqual(host['worker']['process_start_identity'],marker)
+                for group in final['finished_groups'].values():
+                    self.assertEqual(group['scope']['evidence_kind'],'cpu_contract')
+                    for row in group['coverage']['recovery']['targets']:
+                        self.assertEqual(row['lease']['target']['process_start_identity'],marker)
+                result=r.review(document,host,rpc,originals,natural=False)
+                self.assertTrue(result['consistent'],result['issues'])
+                self.assertEqual(result['classification'],'CPU_CONTRACT_ONLY')
+                self.assertFalse(result['c2'] or result['c3'] or result['e5'] or result['public_qualification_granted'])
+            finally:
+                case.doCleanups()
+
+    def test_current_producer_linux_proc_full_public_protocol(self):
+        self.check_current_producer('proc:fixed-cpu-test-boot:{pid}:64770165')
+
+    def test_current_producer_windows_process_local_full_public_protocol(self):
+        self.check_current_producer('process_local:{pid}:0123456789abcdef0123456789abcdef')
 
 
 class Output39OriginalReviewTests(unittest.TestCase):
