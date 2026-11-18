@@ -1,0 +1,66 @@
+{
+  "schema": "demoncat.attention33.source88.normal_summary.v1",
+  "scope": "Qwen3-0.6B actual TND paged decode; TP1/CANN8.5.1/A2/card5; five matched phases",
+  "status": "SOURCE_BOUND_EXACT_NORMAL_BRIDGE_RECORDED_NO_F_AUTHORITY",
+  "checks": 281,
+  "issues": [],
+  "complete_payload_pairs": 435,
+  "normal_payloads_exact": true,
+  "source_commit": "b65b829862fe0d52fa56b261d48a15bf0d8566f3",
+  "source_manifest_sha256": "f11a81959bd3873a32f6c2a6c7c681f5247543e3dbcbafaf5570b393af673664",
+  "audit_sha256": "4c111ce4d6a91aa9df7a64ccc456ef8ec32b395d56dabbf12d9c37fd5649868e",
+  "build": {
+    "completion_path": "/home/17-fault-c2c3-20261117/tnd33-arch22-normal-build-a1/build/run/evidence/completion.json",
+    "completion_sha256": "36877553fc282e4e41e66d50cc044fab7d51dc0c124e5577f10662d0e1c24634",
+    "controller_sha256": "380f328070c96a69562a7388289e431f593e290f7c0bd8aa177917e6c37e9449",
+    "schema_sha256": "20dd6a361142aa9acd73f0787673e24660daef46846e5b362eb9306b15fe035c",
+    "compile_receipt_sha256": "fa6e2aa9d285744f837cf12a1f6ac82106970675a39e46bdde1995a0c4e45651",
+    "schema_sentinel_sha256": "ad185ad65d719d069580dae6ad79376f35d95db93c069d6386acb5aa9f80237a",
+    "patch_receipt_sha256": "3cc946ca9429f821927747c47950e4a4f25bdf130a8d7bada6afd0c7b2568528",
+    "artifacts": 1163,
+    "artifact_bytes": 50669146,
+    "kernel_sha256": "2491ce1329597dba7f82e04850d4f637b7614c69018bf42807e13a21db5c4bb7",
+    "variant": "tnd_page16_arch22_normal_bridge",
+    "compiled_keys": [
+      103000000010200003,
+      103000000010300003,
+      104000000010200003,
+      104000000010300003,
+      5000000000000200100,
+      5000000000000200103,
+      5000000000010200100,
+      5000000000010200103,
+      5100000000010200100,
+      5100000000010200103
+    ],
+    "canonical_token_source_sha256": {
+      "attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling_info_parser.cpp": "380248471fef863d9c7ae5f77f00aafb71185330d350388652c6f01557a9f271",
+      "attention/fused_infer_attention_score/op_host/fused_infer_attention_score_tiling_info_parser.h": "54753b541981eb176636bc0243c728830f5076a39d4e69721816d0d4eb6d44f0",
+      "attention/common/op_host/fia_tiling_info.h": "d201e4ed6ca93fb90a7a60c9da5fbfbb5727810768ffd6cd74e8c67115febda4"
+    }
+  },
+  "observer": {
+    "receipt_sha256": "4a84dee6e43e9b7752c9b36275aca739360f224a4dc063766b76c94d7b34b779",
+    "library_sha256": "bcad8a17191db79b1ab0c89a110ff557b3a3b4243ff8d8f2fe353beeeb3a908b"
+  },
+  "limitations": [
+    "No stock private ABI equality assumed. Stock key, symbols and launch bytes are observed without decoding its POD.",
+    "Selected ACLNN callsite owner and every possible runtime entrypoint are not independently observed.",
+    "Mask is hash-only. Logical KV before the first API is hash-only; complete matching later logical KV bins are rehashed.",
+    "Cross-arm same-phase pairs require the complete raw input signature and all 87 payloads exact. No page normalization is applied.",
+    "Within-arm repeats may be actual physical page relocations, not raw-identical inputs. Only independently checked used page IDs and their table hash can differ; raw equality and logical equivalence are reported separately.",
+    "Checkpoint equality does not exclude intervening writes. Supplied scalars and omitted public defaults remain distinguished.",
+    "Python thread identifiers and Native OS TIDs are separate captured domains. Older results without an explicit pair remain unproven.",
+    "Native typed arrays are fully decoded from final private arguments and matched to all host fields, including alignment bytes.",
+    "Model/package identities and source-bound observer receipts are reconciled, not a cryptographic attestation of execution.",
+    "No C1/C2/C3, E5 localization, raw-device fault payload or generic 8x/9x qualification is granted."
+  ],
+  "fault_authorized": false,
+  "bridge_certificate": false,
+  "c1": false,
+  "c2": false,
+  "c3": false,
+  "E5": "NOT_ASSESSED",
+  "original_data_in_git": false,
+  "evidence_location": "/home/17-fault-c2c3-20261117/v11-33-normal-source88-independent-review-a1/review.json"
+}

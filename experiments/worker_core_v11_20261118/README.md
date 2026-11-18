@@ -44,7 +44,7 @@ attempt/source scope. New milestone attempts are listed below; each uses a new s
 |quant.batch_shared_scale|Public C1 source64;2 proven row mappings out of135|Classify the other133 through actual row transformations; unresolved lineage remains unverified; then coverage.|
 |39.output|Source84 isolated C2 accepted for28/28 eligible pairs;113 projection calls retained|Cumulative C3 failure retained; do not bypass the finite-input guard or infer E5.|
 |28.fa.legal,28.fia.legal,28.fia.replay|Distinct standalone/kernel and historical model scopes|Public request-scoped execution adapters for real layouts/launches, no empty factory.|
-|33.paged|Actual TND bridge has67 differing output elements|Resolve normal stock/private bridge first; F is prohibited while it fails.|
+|33.paged|Source88 normal bridge has435 exact complete payload pairs and281 independent checks with0 issues|Next implement/validate actual F and OFF in this new scope; retain earlier67-element mismatch and no inherited fault qualification.|
 |15.alias|Healthy NZ constructed mechanism; observed natural VAE format30 does not match|Natural private-base/view/write/base-consumer chain or explicit non-applicability for the inspected path, not a global model claim.|
 |17.spatial|Natural Qwen3-VL MODEL_LOCAL census|Standard multimodal request identity and actual padding/consumer proof.|
 |25.reduce_scatter|Six bounded8.5.1/9.1 calibration cases have no replay sample|Review actual collective/backend evidence once; no repeated identical calibration or manufactured fault.|
@@ -401,9 +401,13 @@ cross-arm complete payload pairs are exact, and the documented within-arm page
 relocation checks pass. Two original capture failures remain: repeated function
 binding association and mapped library identity. Source88 preserves these
 failures, fixes association using the complete prior binding history, and adds
-per-file map/stat diagnostics. A fresh normal-only pair is running with12 exact
-production image library files mounted read-only; no F is authorized by earlier
-numeric equality alone.
+per-file map/stat diagnostics. A fresh normal-only pair completed with12 exact
+production image library files mounted read-only. Its281 independent checks
+now have0 issues, and all435 complete payload pairs are exact. The
+[normal-only summary](attention33_source88_normal_summary.json) pins source,
+build, observer and report bytes. This bounded normal comparison does not grant
+a runtime bridge certificate or authorize F; ACLNN resolver ownership and
+unobserved stock ABI fields remain explicitly limited.
 
 Source87 completed two healthy B8 first decodes for Batch shared-scale and56
 actual TND FIA calls for28 (two requests,28 calls each), with zero F. Quant
