@@ -152,6 +152,7 @@ class EarlyMetadataTests(unittest.TestCase):
 
     def test_close_before_pop_failure_retains_mode_and_retries_after_profile_removal(self):
         self.observer.begin(self.scope['request_ids'])
+        self.runner.build(self.positions)
         mode = self.observer.mode
         with patch.object(type(mode), '__exit__', side_effect=RuntimeError('TRANSIENT_EXIT_FAILURE')):
             with self.assertRaisesRegex(RuntimeError, 'TRANSIENT_EXIT_FAILURE'):
@@ -168,6 +169,7 @@ class EarlyMetadataTests(unittest.TestCase):
 
     def test_close_after_pop_failure_does_not_exit_the_removed_mode_twice(self):
         self.observer.begin(self.scope['request_ids'])
+        self.runner.build(self.positions)
         mode = self.observer.mode
         original_exit = type(mode).__exit__
         def pop_then_raise(value, *args):
@@ -184,6 +186,7 @@ class EarlyMetadataTests(unittest.TestCase):
 
     def test_staged_close_refuses_foreign_profile_or_thread_then_original_owner_retries(self):
         self.observer.begin(self.scope['request_ids'])
+        self.runner.build(self.positions)
         mode = self.observer.mode
         with patch.object(type(mode), '__exit__', side_effect=RuntimeError('RETRY')):
             with self.assertRaisesRegex(RuntimeError, 'RETRY'):
@@ -210,6 +213,43 @@ class EarlyMetadataTests(unittest.TestCase):
         self.assertIn('OWNER_OR_INFLIGHT_CHANGED', errors[0])
         self.observer.close()
         self.assertEqual(_get_current_dispatch_mode_stack(), [])
+
+    def test_arming_without_actual_builder_never_installs_dispatch_mode(self):
+        self.observer.begin(self.scope['request_ids'])
+        self.assertIsNone(self.observer.mode)
+        self.assertEqual(_get_current_dispatch_mode_stack(), [])
+        self.observer.close()
+        self.assertEqual(self.observer.report()['actual_calls'], 0)
+
+    def test_rpc_arm_then_real_inference_scope_allows_next_request_tensor_factory(self):
+        # Match the serving boundary: begin_capture RPC is outside the runner's
+        # guard, while producer calls and model pre-hook are inside it. A fresh
+        # subprocess isolates PyTorch TLS if the regression returns.
+        import subprocess
+        program = '''
+import torch, numpy as np
+from test_quant_mla_metadata_rows import EarlyMetadataTests
+from torch.utils._python_dispatch import _get_current_dispatch_mode_stack
+case=EarlyMetadataTests('test_actual_index_buffer_and_metadata_return_bind_without_reexecution')
+case.setUp()
+try:
+ for attempt in range(2):
+  with torch.inference_mode(False):
+   case.observer.begin(case.scope['request_ids'])
+   assert _get_current_dispatch_mode_stack() == []
+   with torch.inference_mode():
+    output=case.runner.build(case.positions)
+    case.observer.close(scope=case.scope,actual_positions=case.positions)
+    case.graph.begin('decode-'+str(attempt))
+    assert case.observer.consumer(output,case.graph)['verified']
+    case.graph.end()
+   assert _get_current_dispatch_mode_stack() == []
+   assert torch.equal(torch.from_numpy(np.array([1,2])),torch.tensor([1,2]))
+finally:
+ case.doCleanups()
+'''
+        result = subprocess.run([sys.executable, '-B', '-c', program], capture_output=True, text=True, timeout=60)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
 
 if __name__ == '__main__':

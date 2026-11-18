@@ -79,22 +79,31 @@ class MlaMetadataRows:
         self.total = self.overflow = 0
         self.released = False
         self.profile_released, self.closing = True, False
+        self.mode_scope_inference = None
+        self.active = True
+        # RPC arms only the profile observer. A dispatch mode entered here and
+        # removed inside execute_model's inference_mode guard leaves stale
+        # Python dispatch TLS when that guard restores its entry state.
+        try:
+            sys.setprofile(self.callback)
+        finally:
+            self.profile_released = sys.getprofile() is not self.callback
+
+    def _enter_producer_mode(self):
+        require(self.mode is None and _get_current_dispatch_mode() is None,
+                'EXCLUSIVE_EARLY_METADATA_PRODUCER_MODE_REQUIRED')
         parent = self
         class Observe(TorchDispatchMode):
             def __torch_dispatch__(self, func, types, args=(), kwargs=None):
                 return parent._operator(func, args, kwargs or {})
         self.mode = Observe()
-        self.active = True
+        self.mode_scope_inference = torch.is_inference_mode_enabled()
         try:
             self.mode.__enter__()
         except BaseException:
             if not any(value is self.mode for value in _get_current_dispatch_mode_stack()):
                 self.mode = None
             raise
-        try:
-            sys.setprofile(self.callback)
-        finally:
-            self.profile_released = sys.getprofile() is not self.callback
 
     def _write(self, tensors):
         changes = [_key(tensor) for tensor in tensors]
@@ -148,6 +157,9 @@ class MlaMetadataRows:
                 and binding['function'].__code__ is frame.f_code, 'EARLY_MLA_LOADED_PRODUCER_CHANGED')
             if event == 'call':
                 require(self._runner_in_stack(frame), 'METADATA_PRODUCER_HAS_NO_ACTUAL_RUNNER_OWNER')
+                if binding['role'] == 'builder' and self.mode is None:
+                    self._enter_producer_mode()
+                require(self.mode is not None, 'ACTUAL_BUILDER_MUST_START_METADATA_INTERVAL')
                 row = dict(sequence=len(self.rows) + 1, role=binding['role'], input=dict(frame.f_locals),
                     source_sha256=binding['source_sha256'], operations=[], status='INFLIGHT')
                 if row['role'] == 'rotary':
@@ -211,6 +223,9 @@ class MlaMetadataRows:
                 and sys.getprofile() is (None if self.profile_released else self.callback),
                 'EARLY_METADATA_OBSERVER_OWNER_OR_INFLIGHT_CHANGED')
         self.closing = True
+        if self.mode is not None:
+            require(torch.is_inference_mode_enabled() == self.mode_scope_inference,
+                    'EARLY_METADATA_INFERENCE_SCOPE_CHANGED_RETAIN_OWNER')
         if not self.profile_released:
             sys.setprofile(None)
             self.profile_released = sys.getprofile() is None
