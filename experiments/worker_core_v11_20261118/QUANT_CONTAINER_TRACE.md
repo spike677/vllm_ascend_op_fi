@@ -17,8 +17,9 @@ poison the diagnostic, release any SDK getter arrays, and do not suppress the
 original call. The shim never allocates/frees a model tensor, reads activation
 bytes, dereferences saved descriptor pointers later, or calls a numerical API.
 
-The new private custom proxy depends on the SONAME-renamed original custom
-library and actual SDK `libnnopbase.so`. The existing exact-image runtime
+The new private custom proxy depends on the original custom library by its
+fixed absolute image path and on actual SDK `libnnopbase.so`. The original
+library's bytes and SONAME remain unchanged. The existing exact-image runtime
 identity helper checks the real NN functions and original custom executable
 segments. Caller classification independently checks the current PC against
 the fixed stock `libtorch_npu` or custom extension image; unknown callers
@@ -50,9 +51,18 @@ preserve a receipt and clean only that exact owned container. The source mount
 is read-only. A successful manifest is published only after compiler, exported
 ABI, 19 actual-shim CPU-double scenarios and marker-only actual DSO load pass.
 
-Local validation so far: six command/receipt contracts passed; no Docker or
-SDK compiler was run by this agent. The 19 C++ scenarios are prepared, **not yet
-executed**. A successful SDK/CPU receipt will still not prove the stock resolver
+The first root SDK attempt stopped before C++ compilation because changing the
+original SONAME also changed its executable-segment profile. That failure is
+preserved. The replacement build edits only the newly compiled wrapper to add
+an absolute DT_NEEDED. It first runs a real CPU ELF contract with equal
+original/wrapper SONAMEs: basename lookup must select the wrapper, absolute
+NOLOAD must select the original, the delegated anchor must belong to that
+original mapping, and original SHA must remain unchanged. No segment masks or
+identity exceptions are used.
+
+Local validation so far: command/receipt contracts passed; no Docker or
+SDK compiler was run by this agent. The 19 C++ scenarios and new real ELF
+contract are prepared, **not yet executed**. A successful SDK/CPU receipt will still not prove the stock resolver
 actually calls these functions in inference. The B8 diagnostic and its exact
 loaded-owner/current-source results remain separate required evidence.
 

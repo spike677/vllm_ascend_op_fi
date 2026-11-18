@@ -5,7 +5,6 @@ import json
 import os
 from pathlib import Path
 import re
-import shutil
 import subprocess
 import sys
 import uuid
@@ -56,6 +55,39 @@ def flags(out):
             '-isystem', str(SDK / 'include'), '-isystem', str(SDK / 'include/aclnn'), '-I', str(out)]
 
 
+def absolute_needed_contract(out):
+    """Actual owned CPU ELF fixture; unchanged original and equal SONAMEs."""
+    directory = out / 'absolute-needed-contract'; (directory / 'original').mkdir(parents=True)
+    original = directory / 'original/libcust_opapi.so'; proxy = directory / 'libcust_opapi.so'
+    (directory / 'original.cpp').write_text('extern "C" int fixture_original_anchor(){return 37;}\n')
+    (directory / 'proxy.cpp').write_text('extern "C" int fixture_proxy_marker(){return 91;}\n')
+    for source, target in ((directory / 'original.cpp', original), (directory / 'proxy.cpp', proxy)):
+        run(['g++', '-shared', '-fPIC', '-Wall', '-Wextra', '-Werror', source,
+             '-Wl,-soname,libcust_opapi.so', '-o', target])
+    original_sha = sha(original)
+    run(['patchelf', '--add-needed', str(original), proxy])
+    script = '''import ctypes as C,json,os,pathlib,sys
+class Info(C.Structure):
+ _fields_=[('fname',C.c_char_p),('base',C.c_void_p),('sname',C.c_char_p),('addr',C.c_void_p)]
+locate=C.CDLL(None).dladdr;locate.argtypes=[C.c_void_p,C.POINTER(Info)];locate.restype=C.c_int
+def origin(fn):
+ info=Info();assert locate(C.cast(fn,C.c_void_p),C.byref(info));return str(pathlib.Path(os.fsdecode(info.fname)).resolve())
+proxy,original=map(pathlib.Path,sys.argv[1:]);mode=os.RTLD_NOW|os.RTLD_NOLOAD
+by_name=C.CDLL('libcust_opapi.so',mode=mode);real=C.CDLL(str(original),mode=mode)
+assert origin(by_name.fixture_proxy_marker)==str(proxy)
+assert origin(by_name.fixture_original_anchor)==origin(real.fixture_original_anchor)==str(original)
+assert by_name.fixture_proxy_marker()==91 and real.fixture_original_anchor()==37
+print(json.dumps(dict(status='PASS_REAL_ELF_ABSOLUTE_NEEDED_SAME_SONAME',proxy=str(proxy),original=str(original),
+ actual_npu_calls=0,mocked_cpu_anchor_calls=2)))
+'''
+    environment = dict(os.environ, LD_PRELOAD=str(proxy))
+    result = run([sys.executable, '-c', script, proxy, original], env=environment, capture_output=True, text=True)
+    if sha(original) != original_sha:
+        raise RuntimeError('ABSOLUTE_DEPENDENCY_ORIGINAL_BYTES_CHANGED')
+    proof = json.loads(result.stdout); proof['original_sha256_before'] = proof['original_sha256_after'] = original_sha
+    (out / 'absolute-needed-contract.json').write_text(json.dumps(proof, indent=2) + '\n')
+
+
 def inside(source, out):
     from fault39.tools.version_profile import image
     nn = SDK / 'lib64/libnnopbase.so'
@@ -68,30 +100,33 @@ def inside(source, out):
     if sha(header) != 'be93460abfc7aa14113d7b9a3536fe2dd45d5148a357f55e15847655c9d5ffed':
         raise RuntimeError('EXACT_PUBLIC_OPAQUE_CONTAINER_SDK_ABI_REQUIRED')
     library = out / 'runtime/vendor/op_api/lib/libcust_opapi.so'
-    real = library.parent / 'real/libqct_custom_real.so'
-    real.parent.mkdir(parents=True)
-    shutil.copyfile(paths['custom'], real)
-    run(['patchelf', '--set-soname', 'libqct_custom_real.so', real])
+    library.parent.mkdir(parents=True)
+    absolute_needed_contract(out)
     originals = {key: image(path) for key, path in paths.items()}
     images = {key: value for key, value in originals.items() if key != 'custom'}
-    images['custom_real'] = image(real)
-    if originals['custom']['segments'] != images['custom_real']['segments']:
-        raise RuntimeError('SONAME_REWRITE_CHANGED_EXECUTABLE_SEGMENTS')
+    images['custom_real'] = originals['custom']
     profile = dict(schema='demoncat.quant.container_profile.v1', image=IMAGE,
         actual_npu_calls=0, originals=originals, images=images,
         sdk_header_sha256=sha(header), functions=list(FUNCTIONS),
         sources={name: sha(source / name) for name in SOURCES},
-        scope='FOUR_CONTAINER_APIS_ONLY_NOT_NATIVE_ROW_AUTHORITY')
+        scope='FOUR_CONTAINER_APIS_ONLY_NOT_NATIVE_ROW_AUTHORITY',
+        original_loading='ABSOLUTE_DT_NEEDED_ORIGINAL_IMAGE_BYTES_UNCHANGED')
     ident = hashlib.sha256(json.dumps(profile, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
     profile['profile_sha256'] = ident
     (out / 'profile.json').write_text(json.dumps(profile, sort_keys=True, indent=2) + '\n')
     (out / 'quant_container_profile.h').write_text('namespace qct_profile {\nstatic constexpr const char* id="'
-        + ident + '";\n' + ''.join(declaration(k, v) for k, v in images.items()) + '}\n')
+        + ident + '";\nstatic constexpr const char* custom_path="' + str(paths['custom'].resolve())
+        + '";\n' + ''.join(declaration(k, v) for k, v in images.items()) + '}\n')
     native = source / 'fault_injection/native_adapters'
     run(['g++', *flags(out), '-fPIC', '-shared', native / 'quant_container_trace.cpp',
-        '-L', real.parent, '-L', nn.parent, '-Wl,--no-as-needed', '-l:libqct_custom_real.so', '-lnnopbase',
+        '-L', nn.parent, '-Wl,--no-as-needed', '-lnnopbase',
         '-ldl', '-lpthread', '-Wl,-z,defs', '-Wl,-soname,libcust_opapi.so',
-        '-Wl,-rpath,$ORIGIN/real', '-Wl,-z,origin', '-o', library])
+        '-o', library])
+    # Only our newly compiled wrapper is changed. The fixed image's original
+    # retains its entire file and executable segments, including its SONAME.
+    run(['patchelf', '--add-needed', str(paths['custom'].resolve()), library])
+    if any(sha(path) != PINS[key] for key, path in paths.items()):
+        raise RuntimeError('ORIGINAL_IMAGE_BYTES_CHANGED_DURING_BUILD')
     run(['g++', *flags(out), native / 'test_quant_container_trace.cpp', '-ldl', '-lpthread',
          '-o', out / 'cpu_contract'])
     with (out / 'cpu-contract.log').open('wb') as stream:
@@ -106,7 +141,7 @@ def inside(source, out):
         raise RuntimeError('UNREQUESTED_OPERATOR_OR_FAULT_EXPORT')
     dynamic = run(['readelf', '-d', library], capture_output=True, text=True).stdout
     (out / 'dynamic.txt').write_text(dynamic)
-    if '[libqct_custom_real.so]' not in dynamic or '[libnnopbase.so]' not in dynamic:
+    if '[' + str(paths['custom'].resolve()) + ']' not in dynamic or '[libnnopbase.so]' not in dynamic:
         raise RuntimeError('EXACT_ORIGINAL_DEPENDENCIES_REQUIRED')
     # Loading and these read-only marker calls do not invoke a creator or NPU.
     import ctypes

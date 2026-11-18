@@ -24,6 +24,13 @@ class ContainerBuildTests(unittest.TestCase):
         self.assertEqual(len(set(build.CASES)), 19)
         self.assertTrue(all(len(value) == 64 for value in build.PINS.values()))
 
+    def test_original_elf_is_not_rewritten_or_masked(self):
+        text = Path(build.__file__).read_text()
+        self.assertNotIn('--set-soname', text)
+        self.assertIn("'--add-needed', str(paths['custom'].resolve()), library", text)
+        self.assertIn('ORIGINAL_IMAGE_BYTES_CHANGED_DURING_BUILD', text)
+        self.assertIn('PASS_REAL_ELF_ABSOLUTE_NEEDED_SAME_SONAME', text)
+
     def run_failure(self, exception=None, cleanup=True):
         with tempfile.TemporaryDirectory() as directory:
             out = Path(directory) / 'fresh'

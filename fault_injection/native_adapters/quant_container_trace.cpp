@@ -70,7 +70,7 @@ void resolve() {
         reinterpret_cast<void*>(api.dtype),reinterpret_cast<void*>(api.format),reinterpret_cast<void*>(api.offset),
         reinterpret_cast<void*>(api.shape),reinterpret_cast<void*>(api.strides),reinterpret_cast<void*>(api.storage),
         reinterpret_cast<void*>(api.address)}) api.ready=f39identity::matches(fn,qct_profile::nn) && api.ready;
-    void* original=dlopen("libqct_custom_real.so",RTLD_NOW|RTLD_NOLOAD);
+    void* original=dlopen(qct_profile::custom_path,RTLD_NOW|RTLD_NOLOAD);
     api.ready=original && f39identity::matches(original?dlsym(original,"aclnnMoeInitRoutingCustom"):nullptr,
                                              qct_profile::custom_real) && api.ready;
     if(original)dlclose(original);
