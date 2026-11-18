@@ -1,0 +1,245 @@
+{
+  "blocking_edges": [
+    "GMM2_TENSOR_LIST_MEMBERS_HAVE_NO_REVIEWED_GWS_GETTER",
+    "ROUTING_ACTIVE_RANGE_INT_ARRAY_VALUES_HAVE_NO_REVIEWED_GWS_GETTER",
+    "STOCK_CREATOR_DESTROY_RESOLUTION_AND_CONTAINER_LIFETIMES_UNOBSERVED",
+    "ACTUAL_NATIVE_API_VARIANTS_AND_LOADED_OWNERS_UNOBSERVED"
+  ],
+  "c1": false,
+  "c2": false,
+  "c3": false,
+  "current_previous_request_row_scope": {
+    "candidates_per_forward": 135,
+    "proven_per_forward": 10,
+    "source": "PREVIOUS_SOURCE93_REVIEW_NOT_REMEASURED_HERE",
+    "unknown_per_forward": 125
+  },
+  "custom_resolver": {
+    "creator_arguments_observable_during_actual_creator_only": true,
+    "custom_handle_before_stock": true,
+    "function_addresses_cached": true,
+    "gws_and_execute_may_have_different_threads": true,
+    "path": "/vllm-workspace/vllm-ascend/csrc/aclnn_torch_adapter/op_api_common.h",
+    "sha256": "142023f0f0e682b3b79aeb987044ecbd9b7db0b63b20de967447ba6f9e3d6b16",
+    "stock_torch_npu_implementation_source_proven": false
+  },
+  "disk_images": {
+    "_C.cpython-311-aarch64-linux-gnu.so": {
+      "build_ids": [
+        "b057ff593f9e692a46e1c39288f4595385e7ec44"
+      ],
+      "bytes": 339081,
+      "checked_defined_symbols": [],
+      "executed_api_proven": false,
+      "loaded_owner_proven": false,
+      "needed": [
+        "libtorch_npu.so",
+        "libc10.so",
+        "libtorch.so",
+        "libtorch_cpu.so",
+        "libtorch_python.so",
+        "libhccl.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "path": "/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu/_C.cpython-311-aarch64-linux-gnu.so",
+      "resolved_path": "/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu/_C.cpython-311-aarch64-linux-gnu.so",
+      "runpath": [
+        "$ORIGIN/lib:$ORIGIN/../torch_npu.libs"
+      ],
+      "sha256": "cc905f411e6f11ad4717cf269d591418207cf5be26b605b35c9677123af7257d"
+    },
+    "libcust_opapi.so": {
+      "build_ids": [
+        "20cd5f1488515d3eef55f360ca17b22538cae676"
+      ],
+      "bytes": 6557192,
+      "checked_defined_symbols": [
+        "aclnnMoeInitRoutingCustom",
+        "aclnnMoeInitRoutingCustomGetWorkspaceSize"
+      ],
+      "executed_api_proven": false,
+      "loaded_owner_proven": false,
+      "needed": [
+        "libopapi.so",
+        "libnnopbase.so",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "path": "/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend/op_api/lib/libcust_opapi.so",
+      "resolved_path": "/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend/op_api/lib/libcust_opapi.so",
+      "runpath": [],
+      "sha256": "de1633c2f1f41e505277697ee82f3ffba940f730bed9986c5aeff4c8514b713f"
+    },
+    "libopapi.so": {
+      "build_ids": [],
+      "bytes": 37858936,
+      "checked_defined_symbols": [
+        "aclnnGroupedMatmulSwigluQuant",
+        "aclnnGroupedMatmulSwigluQuantGetWorkspaceSize",
+        "aclnnGroupedMatmulV4",
+        "aclnnGroupedMatmulV4GetWorkspaceSize",
+        "aclnnGroupedMatmulV5",
+        "aclnnGroupedMatmulV5GetWorkspaceSize",
+        "aclnnMoeTokenUnpermute",
+        "aclnnMoeTokenUnpermuteGetWorkspaceSize"
+      ],
+      "executed_api_proven": false,
+      "loaded_owner_proven": false,
+      "needed": [
+        "libnnopbase.so",
+        "libprofapi.so",
+        "libge_common_base.so",
+        "libascend_dump.so",
+        "libdl.so.2",
+        "libexe_graph.so",
+        "libregister.so",
+        "libunified_dlog.so",
+        "libc_sec.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "path": "/usr/local/Ascend/cann-8.5.1/lib64/libopapi.so",
+      "resolved_path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi.so",
+      "runpath": [],
+      "sha256": "b3890625d3e0cc11ef32460083698ecaa8f702b5edd0169ea617e2e6bb76270c"
+    },
+    "libtorch_npu.so": {
+      "build_ids": [
+        "f784d0d51702c5ee243716c8945650872ff18f61"
+      ],
+      "bytes": 58590337,
+      "checked_defined_symbols": [],
+      "executed_api_proven": false,
+      "loaded_owner_proven": false,
+      "needed": [
+        "libhccl.so",
+        "libtorch_python.so",
+        "libascendcl.so",
+        "libacl_op_compiler.so",
+        "libge_runner.so",
+        "libgraph.so",
+        "libtensorpipe.so",
+        "libtorch.so",
+        "libnpu_profiler.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "path": "/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu/lib/libtorch_npu.so",
+      "resolved_path": "/usr/local/python3.11.14/lib/python3.11/site-packages/torch_npu/lib/libtorch_npu.so",
+      "runpath": [
+        "$ORIGIN/lib/:$ORIGIN/:$ORIGIN/../../torch_npu.libs"
+      ],
+      "sha256": "dd07e4afb4e31a5123d0b97a4a319acaa96158705a22d704bfc0a91f662a6041"
+    },
+    "vllm_ascend_C.cpython-311-aarch64-linux-gnu.so": {
+      "build_ids": [
+        "20f3e9ed4d4e1b1e52e74d7f0481fa4c809d8218"
+      ],
+      "bytes": 409784,
+      "checked_defined_symbols": [],
+      "executed_api_proven": false,
+      "loaded_owner_proven": false,
+      "needed": [
+        "libtorch.so",
+        "libc10.so",
+        "libtorch_npu.so",
+        "libvllm_ascend_kernels.so",
+        "libascendcl.so",
+        "libregister.so",
+        "libplatform.so",
+        "libopapi.so",
+        "libtorch_cpu.so",
+        "libruntime.so",
+        "libprofapi.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "path": "/vllm-workspace/vllm-ascend/vllm_ascend/vllm_ascend_C.cpython-311-aarch64-linux-gnu.so",
+      "resolved_path": "/vllm-workspace/vllm-ascend/vllm_ascend/vllm_ascend_C.cpython-311-aarch64-linux-gnu.so",
+      "runpath": [
+        "$ORIGIN:$ORIGIN/lib:$ORIGIN/_cann_ops_custom/vendors/vllm-ascend/op_api/lib"
+      ],
+      "sha256": "e63806486e0311c2df8ce9b120ae98f55e8c8eb91ccaf204ef0cf7d6b469ed67"
+    }
+  },
+  "material_sha256": {
+    "getters": "c8b8fb83c35b78f6920ebe86973a773bbc37b615bc9e3ae59f5da86c1c560b77",
+    "loading": "d21218ba517132c91eeb45a9043105e03f99d9311a5ba6d6a9ce1e4e4fe83054",
+    "native_disk": "e5f43d690210cc81c2ef46899ef8156aff01314b758e5dc4241f64536f20dae3",
+    "sdk_operators": "9d7495ed47e1906efdbe8d332cb10899d1877e797165573f78cec002d90d75cd"
+  },
+  "native_qualified": false,
+  "new_actual_npu_calls": 0,
+  "new_fault_calls": 0,
+  "new_request_row_proof": false,
+  "next_hypothesis": "BOUNDED_ACTUAL_STOCK_CREATOR_DESTROY_ENTRY_DIAGNOSTIC_NOT_IMPLEMENTED",
+  "operator_headers": {
+    "aclnn_grouped_matmul_swiglu_quant.h": {
+      "path": "/usr/local/Ascend/cann-8.5.1/include/aclnnop/aclnn_grouped_matmul_swiglu_quant.h",
+      "sha256": "8a88234b6da476725e448055053544470327c8f29d783dce620f768a705ed643"
+    },
+    "aclnn_grouped_matmul_v4.h": {
+      "path": "/usr/local/Ascend/cann-8.5.1/include/aclnnop/aclnn_grouped_matmul_v4.h",
+      "sha256": "78c28a77f90900ff1acd823cec93900abaa28d4bdc0edb9e49218d2951fba85e"
+    },
+    "aclnn_grouped_matmul_v5.h": {
+      "path": "/usr/local/Ascend/cann-8.5.1/include/aclnnop/aclnn_grouped_matmul_v5.h",
+      "sha256": "577c8692b5bf627601a2191a01a3665792a38269c1fc14199137f0495e983080"
+    },
+    "aclnn_moe_token_unpermute.h": {
+      "path": "/usr/local/Ascend/cann-8.5.1/include/aclnnop/aclnn_moe_token_unpermute.h",
+      "sha256": "c9576934b72199fd944d599afbcc263c5c4e2a35a7028419cb85c3888489bc6f"
+    }
+  },
+  "production_image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+  "proposed_four_stage_proxy_implemented": false,
+  "schema": "demoncat.quant.native_route_material_review.v1",
+  "scope": "FIXED_PRODUCTION_DISK_AND_PUBLIC_SDK_SOURCE_ONLY",
+  "sdk_header": {
+    "creator_destroy_declarations": {
+      "aclCreateIntArray": "const int64_t *value, uint64_t size",
+      "aclCreateTensorList": "const aclTensor *const *value, uint64_t size",
+      "aclDestroyIntArray": "const aclIntArray *array",
+      "aclDestroyTensorList": "const aclTensorList *array"
+    },
+    "getter_names": [
+      "aclGetIntArraySize",
+      "aclGetTensorListSize"
+    ],
+    "opaque_types": [
+      "aclTensorList",
+      "aclIntArray"
+    ],
+    "path": "/usr/local/Ascend/cann-8.5.1/aarch64-linux/include/aclnn/acl_meta.h",
+    "private_layout_read_authorized": false,
+    "python_argument_backfill_authorized": false,
+    "readable_member_api_in_reviewed_header": false,
+    "sha256": "be93460abfc7aa14113d7b9a3536fe2dd45d5148a357f55e15847655c9d5ffed"
+  },
+  "status": "BLOCKED_OPAQUE_CONTAINER_MEMBER_IDENTITY",
+  "stock_resolver": {
+    "creator_destroy_actual_resolution_and_calls_proven": false,
+    "exact_upstream_commit": null,
+    "existing_inspected_profile": "fault_injection/deployments/pta_resolver.py",
+    "library_sha256": "dd07e4afb4e31a5123d0b97a4a319acaa96158705a22d704bfc0a91f662a6041"
+  }
+}
