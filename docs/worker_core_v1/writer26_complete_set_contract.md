@@ -144,3 +144,30 @@ flips, whole-set capacity refusal, foreign owner/generation, late callbacks,
 read-only query and failed final health readback with an explicit cleanup
 retry. The CPU proof remains `evidence_kind='cpu_contract'` and grants no
 actual Worker C2.
+
+## Loaded-environment refusal evidence
+
+The source71 FIA attempt reached the five healthy/qualification requests, then
+failed before F because its actual environment could not be fingerprinted. It
+reported both duplicate `libcust_opapi.so` mappings and CANN/Torch-NPU mapped
+identities that differed from the files opened at those paths. This is not a
+missing SHA format exception to bypass, and the old attempt remains failed.
+
+The observer now retains each executable mapping's device/inode/address/offset,
+the file identities before and after hashing and from a fresh pathname stat,
+and the exact comparison that failed. On an identity mismatch it additionally
+records `/proc/self/map_files` readlink/fstat metadata or the access errno. It
+does not hash that path as a substitute or grant authority from this diagnostic.
+Every duplicate basename retains its underlying file-verification status and
+all same-name mappings. No row is discarded and the default fingerprint still
+rejects any unverified or ambiguous image. Resolving such a deployment requires
+new actual mapping and bound-symbol evidence; installed-version labels or a
+pathname hash are insufficient.
+
+The writer group records the immutable `actual-environment.json` and
+`environment-refusal.json` before raising `LOADED_WORKER_ENVIRONMENT_UNPROVEN`.
+The public read-only report references that original SHA and exposes the missing
+and unverified rows. It constructs no coverage group or live proof and requests
+no F. An owner already registered is retained until explicit cleanup succeeds.
+The four required libraries, all-extra-image check and `CoverageScope` validation
+are unchanged. This adds diagnostic CPU contracts, not actual C2 acceptance.

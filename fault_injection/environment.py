@@ -260,10 +260,46 @@ def _mapped_images(content, additional_names):
     return images
 
 
+def _file_identity(info):
+    return dict(device=info.st_dev, major=os.major(info.st_dev), minor=os.minor(info.st_dev),
+                inode=info.st_ino, bytes=info.st_size, mode=info.st_mode,
+                mtime_ns=info.st_mtime_ns, ctime_ns=info.st_ctime_ns)
+
+
+def _mapping_backing_diagnostic(offsets):
+    """Read kernel mapping metadata only; it never grants file/loaded-code identity.
+
+    In particular, an overlay pathname hash cannot repair a map/stat mismatch.
+    A map_files descriptor may be inaccessible without an extra capability; that
+    refusal is retained rather than falling back to trusting the pathname.
+    """
+    rows = []
+    for address, offset in offsets:
+        path = Path('/proc/self/map_files') / address
+        row = dict(address=address, file_offset=offset, map_file=str(path),
+                   target=None, target_error=None, file_identity=None, open_error=None,
+                   authority_granted=False)
+        try:
+            row['target'] = os.readlink(path)
+        except OSError as error:
+            row['target_error'] = dict(type=type(error).__name__, errno=error.errno)
+        try:
+            with path.open('rb') as stream:
+                row['file_identity'] = _file_identity(os.fstat(stream.fileno()))
+        except OSError as error:
+            row['open_error'] = dict(type=type(error).__name__, errno=error.errno)
+        rows.append(row)
+    return rows
+
+
 def _loaded_library(key, offsets):
     path, device, inode, deleted = key
     row = {'path': path, 'name': Path(path).name, 'status': 'UNAVAILABLE',
-           'sha256': None, 'elf_build_id': None}
+           'sha256': None, 'elf_build_id': None,
+           'mapping': dict(device=device, inode=inode, deleted=deleted,
+               executable_segments=[dict(address=address, file_offset=offset) for address, offset in offsets]),
+           'path_identity_before': None, 'path_identity_after': None, 'path_identity_current': None,
+           'identity_failure': None, 'mapping_backing': None}
     if deleted:
         return dict(row, status='MAPPING_DELETED')
     if len(offsets) != len({offset for _, offset in offsets}):
@@ -271,9 +307,12 @@ def _loaded_library(key, offsets):
     try:
         with open(path, 'rb') as stream:
             before = os.fstat(stream.fileno())
+            row['path_identity_before'] = _file_identity(before)
             mapped_device = tuple(int(part, 16) for part in device.split(':'))
             if (not stat.S_ISREG(before.st_mode) or before.st_ino != int(inode)
                     or mapped_device != (os.major(before.st_dev), os.minor(before.st_dev))):
+                row['identity_failure'] = 'EXECUTABLE_MAP_DOES_NOT_MATCH_OPEN_PATH'
+                row['mapping_backing'] = _mapping_backing_diagnostic(offsets)
                 return dict(row, status='MAPPED_FILE_IDENTITY_CHANGED')
             if stream.read(4) != b'\x7fELF':
                 return dict(row, status='MAPPED_FILE_NOT_ELF')
@@ -281,10 +320,14 @@ def _loaded_library(key, offsets):
             digest = _digest(stream)
             after = os.fstat(stream.fileno())
             current = os.stat(path)
+            row['path_identity_after'], row['path_identity_current'] = _file_identity(after), _file_identity(current)
             identity = lambda info: (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
             if identity(before) != identity(after) or identity(before) != identity(current):
+                row['identity_failure'] = 'OPEN_OR_PATH_IDENTITY_CHANGED_DURING_HASH'
+                row['mapping_backing'] = _mapping_backing_diagnostic(offsets)
                 return dict(row, status='MAPPED_FILE_IDENTITY_CHANGED')
-    except (OSError, ValueError, struct.error):
+    except (OSError, ValueError, struct.error) as error:
+        row['identity_failure'] = dict(type=type(error).__name__, errno=getattr(error, 'errno', None))
         return row
     return dict(row, status='MAPPED_FILE_VERIFIED', sha256=digest, elf_build_id=build_id)
 
@@ -303,7 +346,10 @@ def _loaded_libraries(additional_names):
         counts[row['name']] = counts.get(row['name'], 0) + 1
     for row in rows:
         if counts[row['name']] > 1:
+            row['file_identity_status'] = row['status']
             row['status'] = 'AMBIGUOUS_MAPPING'
+            row['same_basename_mappings'] = [dict(path=other['path'], mapping=other['mapping'])
+                for other in rows if other['name'] == row['name']]
     try:
         final_inventory = _mapped_images(maps.read_text(errors='surrogateescape'), additional_names)
     except OSError:

@@ -28,6 +28,7 @@ class Writer26Coverage(Writer26Experiment):
         self.health_sha = None
         self.root_hooks = 0
         self.actual_environment_sha = None
+        self.environment_refusal = None
         self.implementation_sha = digest([hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
             hashlib.sha256(Path(__file__).with_name('writer26_experiment.py').read_bytes()).hexdigest(), self.runtime.build_identity,
             hashlib.sha256(Path(__file__).with_name('writer26_public.py').read_bytes()).hexdigest(),
@@ -119,8 +120,31 @@ class Writer26Coverage(Writer26Experiment):
     def _planned_qualification_requests(self):
         return 7 if self.trigger == 'every_match' else 6
 
+    def _environment(self):
+        if self.evidence_kind != 'natural_worker':
+            self.actual_environment_sha = digest(['EXPLICIT_CPU_MOCK_NOT_NPU', self.worker_identity, self.runtime.build_identity])
+            return
+        from ..coverage import _is_sha256
+        from ..environment import inspect_environment, environment_fingerprint
+        libraries = ('libdcat26_group_v2.so', 'libfault26_readonly_trace_abi0.so', 'libnnopbase.so', 'libascendcl.so')
+        environment = inspect_environment(additional_libraries=libraries)
+        value = environment_fingerprint(environment, libraries)
+        artifact_sha = self.artifact('actual-environment', environment)
+        if environment.get('pid') != os.getpid() or not _is_sha256(value):
+            names = {row.get('name') for row in environment.get('loaded_libraries', ())}
+            self.environment_refusal = dict(actual_environment_sha256=artifact_sha,
+                maps_status=environment.get('maps_status'), actual_pid=environment.get('pid'), expected_pid=os.getpid(),
+                required_libraries=list(libraries), missing_required_libraries=sorted(set(libraries)-names),
+                unverified_libraries=[{key: row.get(key) for key in ('name', 'path', 'status', 'identity_failure')}
+                    for row in environment.get('loaded_libraries', ()) if row.get('status') != 'MAPPED_FILE_VERIFIED'],
+                scope_constructed=False, qualification_granted=False)
+            self.artifact('environment-refusal', self.environment_refusal)
+        require(environment.get('pid') == os.getpid() and _is_sha256(value), 'LOADED_WORKER_ENVIRONMENT_UNPROVEN')
+        self.actual_environment_sha = value
+
     def _build_group(self):
         require(self.candidates is not None and not self.blockers and self.coverage is None, 'COMPLETE_FROZEN_GROUP_REQUIRED')
+        self._environment()
         by_target = {}
         for row in self.outcomes:
             by_target.setdefault(row['target'], {})[row['mode']] = row
@@ -147,14 +171,6 @@ class Writer26Coverage(Writer26Experiment):
             recovery_scope='target_set', stop_policy='bounded_session', lossless_modes=('destination_lossless',))
         self.group = QualifiedTargetSet(self.candidates, tuple(leases), tuple(proofs), capability,
                                         selection='all_eligible', trigger=self.trigger)
-        if self.evidence_kind == 'natural_worker':
-            from ..environment import inspect_environment, environment_fingerprint
-            libraries = ('libdcat26_group_v2.so', 'libfault26_readonly_trace_abi0.so', 'libnnopbase.so', 'libascendcl.so')
-            environment = inspect_environment(additional_libraries=libraries)
-            self.actual_environment_sha = environment_fingerprint(environment, libraries)
-            self.artifact('actual-environment', environment)
-        else:
-            self.actual_environment_sha = digest(['EXPLICIT_CPU_MOCK_NOT_NPU', self.worker_identity, self.runtime.build_identity])
         scope = CoverageScope(self.runtime.mechanism, self.baseline_input, self.actual_environment_sha,
                               self.implementation_sha, self.evidence_kind)
         self.observer = IndependentCallObserver(source='independent_native_trace', observer_id=self.runtime.owner + ':writer26',
@@ -364,6 +380,7 @@ class Writer26Coverage(Writer26Experiment):
         coverage = self.coverage.report() if self.coverage is not None else None
         passed = bool(coverage and coverage['contract_satisfied'] and self.evidence_kind == 'natural_worker')
         report.update(schema='demoncat.writer26.complete_set.v2', stage='coverage', trigger=self.trigger, evidence_kind=self.evidence_kind,
+            environment_refusal=self.environment_refusal,
             scope='ALL_ELIGIBLE_NATIVE_WRITERS_IN_FIXED_SINGLE_REQUEST_FRESH_PREFILL_NOT_DECODE',
             coverage=coverage, c2=passed and self.trigger == 'once', c3=passed and self.trigger == 'every_match',
             remaining_gates=[] if passed else ['VALID_NATURAL_COMPLETE_SET_AND_REAL_GROUP_EXECUTION_REQUIRED'])
