@@ -1,5 +1,16 @@
 # Current execution checkpoint
 
+## Current checkpoint — source51 diagnostics and completed public Core22 run
+
+- Source50 commit006916a9, source51 commit3ec12a7bc3bd5daebc404c70342083238e075a00 are immutable. Source51 manifest86878d43bc63dc1572b9d571c02def8a4061da66fd66153198748ac3e390866f; packages24 receipt2cbf3aac0d1a4a0f36412a333e09a07e8efa7be73b923d7540df6254dee681fb. Source50 packages23 receipt44e9e961d8137b0cb733017fd1597b98422a0d9f326c53a6d43f6349ceffa7ba.
+- Public Core22 source50 ten requests completed, C2=28/C3=56,29RPCs, DETACHED. Result6515fa39db4fc554649aed8265be3611db157bb0487d24661e89df3db20f8900. New independent reviewer is being prepared; strict totals remain6/4 until review. Raw source46 results unchanged.
+- Native26 source50 newDSO b81b8b9b completes first target reference/lossless/OFF. Second target fails actual adjacency; noF. Resultc8ffee1c; zero pending/memory/hooks/API/strong refs after cleanup. SDK4 actual-shim tests and independent12 Python failure checks pass. Do not re-use old failed source48 pointers.
+- FIA26 source49 read-only60 returns all public ND2/native NCL47; SDK acl_base_rt.h confirms47=NCL. Actual storage shape/offset evidence missing; keep format gate. Resulte6a72572, noF, clean.
+- Fault33 source48 stock/private within-run each exact, cross85/87 payloads differ each of5phases; earliest recorded layer0output67elements/maxabs6.103515625e-5. Independent native audit112 launches passes. New offline a2 SHA d4b863434444639548e957c471db704c9166a0a7c28bdfc4886b27849a673566. Query values/stock launch ownership missing; F blocked. A CPU agent builds matched immediate boundary capture; no agent may use NPU.
+- Quant source49 failed before binding with161001; result1c16800b. New source51 adds NOLOAD diagnostic only. Root session45404 currently runs quant-c1-core-source51-card2-a1 using existing a4 Native with unchanged workload. Poll controller/result, no parallel NPU. Scope b8cd9e13 / case2dd91c67; existing lock and exact Pod/checkpoint review remain.
+- Latest root report CORE_PROVIDER_PROGRESS_20261118.md. All new raw evidence remains124. GitHub remote ffe39134 is older; source/summaries audit and publication pending. Root only schedules card2; no host isolation. Independent CPU agents: Core22 reviewer, quant Native diagnostics, Fault33 boundary evidence.
+- Following checkpoints are historical.
+
 ## Current checkpoint — recovered group reviews and next deployment
 
 - Remote ffe39134 publishes Core V1 and accepted Native20 source46. New local source differs; never relabel frozen deployments.

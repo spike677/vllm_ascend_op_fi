@@ -18,6 +18,10 @@ The separately reviewed HF Fault18 result is not counted twice. This is not
 
 The [17-mechanism and27-node matrix](C2_C3_MATRIX.md) lists the accepted scopes,
 natural-path gaps, queued experiments and version/hardware limits individually.
+The [new Core/provider progress report](CORE_PROVIDER_PROGRESS_20261118.md)
+records the public Core22 run, repaired QMM lifetime, actual FIA NCL/ND metadata,
+quant initialization refusal and independent stock/private33 discrepancy.
+It preserves failures and does not promote a runtime flag into qualification.
 The [latest repaired-build checkpoint](REQUALIFICATION_20261118.md) retains
 the actual Native39/Fault26/Fault41 failures, new independent raw comparisons
 and subsequent CPU/SDK repairs. None silently increases the strict count.

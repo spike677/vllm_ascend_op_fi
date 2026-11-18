@@ -7,6 +7,14 @@
 
 ## 当前统一接入
 
+[公共 Worker Core V1](docs/worker_core_v1/README.md) 已统一 `FaultConfig`、真实 Worker 身份、
+模型结构发现、实际调用盘点、provider 生命周期和源码交付包。终端用户只填写故障编号及变体；
+部署适配器根据实际对象和调用选择位置。17 个清单入口中，11 个已有 RPC 工厂，6 个仍需接线；
+工厂存在、模型自动发现与实际故障验收分别记录。
+[当前逐项矩阵](experiments/c2c3_closure_20261117/C2_C3_MATRIX.md) ·
+[本轮公共入口与新构建验证](experiments/c2c3_closure_20261117/CORE_PROVIDER_PROGRESS_20261118.md)。
+已有通过范围保留，新的原始统计、完整张量和 Native 库均留在124。
+
 [2026-11-17 17条工程整合与新增机制实测](experiments/engineering_20261117/README.md)：
 从 `cae9cdf4` 继续建设算子专属构建器、真实边界身份、Tensor/MoE/RoPE/通信适配、
 20自然QMM、26 residual、独立输出/缓存尾列Provider以及28新构建与33实际分页诊断。
@@ -24,7 +32,7 @@ Fault39 的独立 B/F 原始 statistics/mix 在固定容差下，首个可观测
 
 [2026-11-16 的17条审计报告](docs/fault_closure_report.md) · [当时逐项矩阵](experiments/overnight_20261116/fault_matrix.json) · [当时源码与证据校验](experiments/overnight_20261116/checksums.json)
 
-此前17条能力卡审计、445项CPU测试和15/17/18构造NPU模块B/F/OFF结论保留；其严格统计调用链对齐失败也保留。下文旧能力表均为历史范围。所有机制仍未取得公共 `all_eligible` 资格，本轮单输出投影验收不等于全模型所有层注入。
+此前17条能力卡审计、445项CPU测试和15/17/18构造NPU模块B/F/OFF结论保留；其严格统计调用链对齐失败也保留。下文旧能力表均为历史范围。当时尚无公共 `all_eligible` 资格；后续已经审查的限定 C2/C3 范围见当前逐项矩阵，单输出投影验收仍不等于全模型所有层注入。
 
 [文档索引](docs/README.md) · [生产接线分支的实现与验收](experiments/production_wiring_20261116/README.md) · [17 项能力与支持矩阵](docs/unified_fault_inventory.md#9171f3b-全局审计)
 
