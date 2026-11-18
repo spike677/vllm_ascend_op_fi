@@ -158,8 +158,23 @@ cannot replace the first error. The implementation's79-contract CPU run passed,
 and independent review passed19 focused contracts after the repair. These
 overlapping counts are not added together. The17 source111 compiled/bound
 sources remain byte-identical; no Native ABI or shared Core rewrite occurred.
-Production runtime, actual GWS/execute observation, and internal prepared/Slice
-lineage are still pending. No F, new C1/C2/C3 or E5 follows from this wiring.
+Frozen source113 then passed106 production-image CPU contracts without skips
+and completed two real card5 requests with28 public FIA calls each. Its final
+guard refused: all56 journal windows were entered, but GWS, execute and
+container records were zero. The raw journal reader independently returns
+`NO_OBSERVATION_OR_PARTIAL_FAILURE`. This is an observation-wiring failure,
+not a fault hit or a normal bridge. Both observed requests and the before/after
+healthy requests returned token1246. Public ownership, binding and journal
+resources were released; the owned container exited2 without OOM and was removed.
+
+All56 original census records also retain
+`CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE`. A separate frozen pure-file reader
+rechecks the original runtime and actual registered ELF files:235 checks,
+zero issues,56 scopes and112 launches. This independently resolves the raw
+launch records without changing the failed census originals or filling the
+empty typed-argument journal. Complete Host/protocol cross-review is separate.
+Actual GWS selection, internal prepared/Slice lineage, F and C1/C2/C3/E5 remain
+unproved. No qualification total changes.
 
 Source112's fresh group33 SDK build has now completed, including its real
 serializer and matching kernel. The normal preparer rehashed1163 vendor
