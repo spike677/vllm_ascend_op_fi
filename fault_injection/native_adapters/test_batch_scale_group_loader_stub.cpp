@@ -39,7 +39,9 @@ extern "C" aclError aclrtSynchronizeStream(aclrtStream){assert(false && "no devi
 extern "C" uint64_t fixture_prepare_calls();
 extern "C" uint64_t fixture_dependency_anchor(){return fixture_prepare_calls();}
 #elif defined(DCAT_DQ_LOADER_CACHE_ONLY)
-extern "C" bool CanUsePTACache(const char*){return true;}
+namespace {uint64_t dependency_cache_calls{};}
+extern "C" uint64_t fixture_dependency_cache_calls(){return dependency_cache_calls;}
+extern "C" bool CanUsePTACache(const char*){++dependency_cache_calls;return true;}
 #else
 namespace {uint64_t prepares{},executes{},cache_calls{};}
 extern "C" uint64_t fixture_prepare_calls(){return prepares;}

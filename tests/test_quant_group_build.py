@@ -22,14 +22,15 @@ class QuantGroupBuildTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / 'loader-contract.jsonl'
             rows = [dict(case=name, status='PASS_REAL_ELF_LOADER_CPU_MOCK', actual_npu_calls=0,
-                mocked_sdk_functions=True, native_prepare_calls=int(name in ('no_cache', 'with_cache')),
-                native_execute_calls=int(name in ('no_cache', 'with_cache'))) for name in builder.LOADER_CASES]
+                mocked_sdk_functions=True, native_prepare_calls=int(name in ('no_cache', 'with_cache', 'foreign_cache')),
+                native_execute_calls=int(name in ('no_cache', 'with_cache', 'foreign_cache')),
+                foreign_cache_calls=0) for name in builder.LOADER_CASES]
             path.write_text('\n'.join(json.dumps(row) for row in rows))
             self.assertEqual(builder.loader_contract(path)['cases'], rows)
             path.write_text('\n'.join(json.dumps(row) for row in rows[:-1]))
             with self.assertRaisesRegex(RuntimeError, 'COMPLETE_REAL_ELF'):
                 builder.loader_contract(path)
-            rows[-1]['native_prepare_calls'] = 1
+            rows[-1]['foreign_cache_calls'] = 1
             path.write_text('\n'.join(json.dumps(row) for row in rows))
             with self.assertRaisesRegex(RuntimeError, 'REAL_ELF_LOADER_CPU_CONTRACT_FAILED'):
                 builder.loader_contract(path)

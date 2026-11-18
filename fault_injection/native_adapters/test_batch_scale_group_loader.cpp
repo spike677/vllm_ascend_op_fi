@@ -22,7 +22,7 @@ void* object(void* address){Dl_info info{};assert(dladdr(address,&info) && info.
 }
 int main(int argc,char** argv) {
     assert(argc==4);const std::string group_path=argv[1],root=argv[2],mode=argv[3];
-    const bool success=mode=="no_cache" || mode=="with_cache";
+    const bool success=mode=="no_cache" || mode=="with_cache" || mode=="foreign_cache";
     assert(success || mode=="missing_prepare" || mode=="missing_execute" || mode=="self" || mode=="foreign_owner" || mode=="foreign_cache");
     void* nn=load(root+"/libnnopbase.so",RTLD_NOW|RTLD_LOCAL);
     void* acl=load(root+"/libascendcl.so",RTLD_NOW|RTLD_LOCAL);
@@ -44,7 +44,7 @@ int main(int argc,char** argv) {
         // resolve here even though dlsym(group, export) names the group's body.
         assert(dlsym(RTLD_DEFAULT,"aclnnDynamicQuantV2GetWorkspaceSize")==dlsym(original,"aclnnDynamicQuantV2GetWorkspaceSize"));
         assert(object(dlsym(original,"aclnnDynamicQuantV2GetWorkspaceSize"))!=group_owner);
-        assert((dlsym(original,"CanUsePTACache")!=nullptr)==(mode=="with_cache"));
+        assert((dlsym(original,"CanUsePTACache")!=nullptr)==(mode!="no_cache"));
     }
     if(mode=="foreign_owner" || mode=="foreign_cache") {
         link_map* loaded=nullptr;assert(dlinfo(original,RTLD_DI_LINKMAP,&loaded)==0 && loaded);
@@ -53,6 +53,9 @@ int main(int argc,char** argv) {
     }
     assert(!cache("aclnnDynamicQuantV2"));
     assert(cache("unrelated_api")==(mode=="with_cache"));
+    const auto foreign_cache_calls=mode=="foreign_cache"
+        ?function<uint64_t (*)()>(original,"fixture_dependency_cache_calls")():0;
+    assert(foreign_cache_calls==0);
     uint64_t bytes=0;aclOpExecutor* executor=nullptr;
     const auto status=prepare(reinterpret_cast<const aclTensor*>(1),nullptr,nullptr,ACL_INT8,
         reinterpret_cast<const aclTensor*>(2),reinterpret_cast<const aclTensor*>(3),nullptr,&bytes,&executor);
@@ -83,6 +86,7 @@ int main(int argc,char** argv) {
     } else assert(result.last_error==Identity);
     std::cout<<"{\"case\":\""<<mode<<"\",\"status\":\"PASS_REAL_ELF_LOADER_CPU_MOCK\",\"actual_npu_calls\":0,"
         "\"mocked_sdk_functions\":true,\"native_prepare_calls\":"<<result.census.native_prepares
-        <<",\"native_execute_calls\":"<<result.census.native_executes<<"}\n";
+        <<",\"native_execute_calls\":"<<result.census.native_executes
+        <<",\"foreign_cache_calls\":"<<foreign_cache_calls<<"}\n";
     assert(dlclose(group)==0);if(original)assert(dlclose(original)==0);assert(dlclose(acl)==0);assert(dlclose(nn)==0);
 }

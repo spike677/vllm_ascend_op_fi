@@ -120,8 +120,9 @@ failure in the same process. The first public GWS entry was rejected while
 the resolver was not ready: native prepares/executes were both zero, with no
 installed owner or allocated group resources. Exact vendor `libopapi.so`
 SHA256 `b3890625d3e0cc11ef32460083698ecaa8f702b5edd0169ea617e2e6bb76270c`
-exports both required DynamicQuantV2 functions but not `CanUsePTACache`.
-The old resolver incorrectly required that optional cache-advice function.
+defines both required DynamicQuantV2 functions but has no local definition of
+`CanUsePTACache`. This static fact did not establish a null `dlsym` result;
+the earlier missing-export root-cause attribution was too strong.
 Diagnostic SHA256:
 `00bcfd9d967823d94bcee297f16f474b713a83f62634fd9e55b6ccd388a301e9`.
 
@@ -132,7 +133,15 @@ rejected. Fresh `native-quant-group-v1-a5` passed the actual SDK build and seven
 host-only real ELF loader cases, including global vendor preload, absent cache
 advice, missing functions and wrong symbol owners. Build manifest SHA256:
 `c9137e994eb29f76070c519f245aeeeb4c044a2b398aabd4b76ddde30ae78b71`.
-These are CPU contracts, not new NPU or C1 acceptance. See
+These are CPU contracts, not new NPU or C1 acceptance. The new source52/a5
+Worker still rejected its first GWS before vendor execution or registration;
+result SHA `8ca8ae0f4a44b075662a54ec51fb80c8388cd798550feaad54c612697da867cd`.
+The exact real-library CPU probe subsequently found the cache function in the
+`libnnopbase.so` dependency. All required APIs resolved, but a5 rejected that
+optional function's foreign ownership. The next repair ignores that optional
+callback, returns false for unsupported cache consultation, and preserves exact
+owner checks for the mandatory V2 functions. It requires a fresh SDK/NPU run.
+See
 [the loader repair and limits](providers_quant_loader_repair.md).
 
 ## Fault33: stable stock/private bridge mismatch, no fault admission

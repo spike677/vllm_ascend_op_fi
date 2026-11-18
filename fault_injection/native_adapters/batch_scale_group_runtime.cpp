@@ -69,11 +69,14 @@ bool resolve() {
     api.copy=symbol<Copy>(api.acl,"aclrtMemcpy");api.sync=symbol<Sync>(api.acl,"aclrtSynchronizeStream");
     api.prepare=symbol<decltype(api.prepare)>(api.op,"aclnnDynamicQuantV2GetWorkspaceSize");
     api.execute=symbol<decltype(api.execute)>(api.op,"aclnnDynamicQuantV2");api.cache=symbol<decltype(api.cache)>(api.op,"CanUsePTACache");
+    // dlsym(op, ...) may find optional advice in a DT_NEEDED dependency.
+    // Do not delegate to that owner, but do not reject verified V2 execution
+    // because an unrelated optional capability is unavailable to this adapter.
+    if(api.cache && !operator_symbol_owner(api.op,reinterpret_cast<const void*>(api.cache)))api.cache=nullptr;
     api.ready=api.device && api.type && api.format && api.offset && api.shape && api.strides && api.storage && api.address
         && api.create && api.destroy && api.allocate && api.release && api.copy && api.sync && api.prepare && api.execute
         && operator_symbol_owner(api.op,reinterpret_cast<const void*>(api.prepare))
-        && operator_symbol_owner(api.op,reinterpret_cast<const void*>(api.execute))
-        && (!api.cache || operator_symbol_owner(api.op,reinterpret_cast<const void*>(api.cache)));
+        && operator_symbol_owner(api.op,reinterpret_cast<const void*>(api.execute));
     return api.ready;
 }
 bool legacy_present() {
@@ -357,8 +360,8 @@ extern "C" int dcat_dqg_remove_v1(const Config* c,Admission observed,Completed f
 extern "C" bool CanUsePTACache(const char* name) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(name && std::strcmp(name,"aclnnDynamicQuantV2")==0)return false;
-    // The reviewed 8.5.1 libopapi exports both V2 functions but no cache
-    // consultation function. Absence cannot authorize caching for other APIs.
+    // No trusted operator-owned consultation means no cache authorization.
+    // The actual 8.5.1 dependency-owned advice is deliberately not delegated.
     return resolve() && api.cache && api.cache(name);
 } catch(...) {abi_failure();return false;}
 extern "C" aclnnStatus aclnnDynamicQuantV2GetWorkspaceSize(const aclTensor* x,const aclTensor* a,const aclTensor* b,int64_t dtype,

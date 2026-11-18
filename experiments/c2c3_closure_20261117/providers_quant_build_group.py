@@ -34,10 +34,10 @@ def loader_contract(path):
     if tuple(row.get('case') for row in rows) != LOADER_CASES:
         raise RuntimeError('COMPLETE_REAL_ELF_LOADER_CPU_CONTRACT_REQUIRED')
     for row in rows:
-        expected_calls = int(row['case'] in ('no_cache', 'with_cache'))
+        expected_calls = int(row['case'] in ('no_cache', 'with_cache', 'foreign_cache'))
         if (row.get('status') != 'PASS_REAL_ELF_LOADER_CPU_MOCK' or row.get('actual_npu_calls') != 0
                 or row.get('mocked_sdk_functions') is not True or row.get('native_prepare_calls') != expected_calls
-                or row.get('native_execute_calls') != expected_calls):
+                or row.get('native_execute_calls') != expected_calls or row.get('foreign_cache_calls') != 0):
             raise RuntimeError('REAL_ELF_LOADER_CPU_CONTRACT_FAILED:' + row['case'])
     return dict(sha256=sha(path), cases=rows)
 
