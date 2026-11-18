@@ -5,6 +5,7 @@ from decimal import Decimal
 import hashlib
 import json
 from pathlib import Path
+import re
 
 
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -12,9 +13,47 @@ def digest(value):return hashlib.sha256(json.dumps(value,sort_keys=True,separato
 def read(path):return json.loads(path.read_bytes())
 
 
-def review_arm(folder):
+def valid_prefix(row):
+    """Check the recorded complete logical range, without reading tensor values."""
+    try:
+        before,after=row['input_before'],row['input_after']
+        proof=row['valid_kv_range_proof'];meta=row['boundary']['observational_metadata']
+        cache=row['boundary']['cache']
+        shape=cache['shape'];blocks,page,heads,columns=shape
+        lengths,pages=meta['sequence_lengths'],meta['used_pages']
+        if len(lengths)!=1 or len(pages)!=1:return False
+        length=lengths[0];width=heads*columns
+        if not all(type(x) is int and x>0 for x in (*shape,length)):return False
+        selected=pages[0]
+        if (len(selected)!=(length+page-1)//page or len(set(selected))!=len(selected)
+                or any(type(x) is not int or not 0<=x<blocks for x in selected)):return False
+        expected=[dict(logical_token_start=i*page,physical_page=p,token_count=min(page,length-i*page),
+            element_offset=p*page*width,elements=min(page,length-i*page)*width) for i,p in enumerate(selected)]
+        if (proof['ranges']!=expected or proof['bytes_per_cache']!=length*width*2
+                or not 0<proof['bytes_per_cache']<=1024*1024 or proof['read_only'] is not True
+                or proof['selected_slot']!=row['boundary']['slot'] or before!=after
+                or before['valid_tokens']!=length or before['elements_per_token']!=width):return False
+        for name in ('key','value'):
+            actual=proof['storage'][name];observed=meta[name]
+            if any(actual[k]!=observed[k] for k in ('shape','stride','dtype','storage_identity','storage_offset')):return False
+            # Native FIA receives a legal flattening of heads x head_dim; the
+            # real cache allocation remains four-dimensional. Preserve both.
+            if actual['shape'] not in (shape,[blocks,page,width]) or actual['dtype']!='torch.bfloat16':return False
+            stride=[];elements=1
+            for dim in reversed(actual['shape']):stride.insert(0,elements);elements*=dim
+            if actual['stride']!=stride:return False
+        if any(proof['storage']['value'][k]!=cache[k] for k in ('storage_identity','storage_offset')):return False
+        return (all(isinstance(before.get(k),str) and re.fullmatch('[0-9a-f]{64}',before[k]) for k in
+                    ('slot_sha256','query_sha256','active_key_sha256','active_value_sha256'))
+                and all(type(before.get(k)) is int and before[k]==0 for k in
+                    ('slot_nonfinite','query_nonfinite','active_key_nonfinite','active_value_nonfinite')))
+    except (KeyError,TypeError,ValueError,IndexError):return False
+
+
+def review_arm(folder, group_name='c2', *, require_valid_prefix=False):
+    if group_name not in ('c2','c3'):raise ValueError('EXPLICIT_C2_OR_C3_REQUIRED')
     path=folder/'result.json';document=read(path)
-    group=document['groups']['c2'];c=group['coverage'];records=c['completed_requests']
+    group=document['groups'][group_name];c=group['coverage'];records=c['completed_requests']
     planned=set(c['discovery']['observed_target_ids']);n=len(planned)
     inventories=[row['inventory'] for row in c['independent_discovery']]+[row['inventory'] for row in records]
     module_sets=[set(map(int,frame['module_calls'])) for frame in inventories]
@@ -28,10 +67,13 @@ def review_arm(folder):
     off={row['target_id']:row for row in records[-1]['byte_evidence']}
     baseline=records[0]['model_output_sha256'];health=c['health'];recovery=c['recovery']
     controls=document['arm']=='baseline'
+    repeats=2 if group_name=='c3' else 1
     checks=dict(two_independent_healthy_inventories=len(c['independent_discovery'])==2,
+        actual_trigger=c['trigger']==('every_match' if repeats==2 else 'once') and not (controls and repeats==2),
         complete_actual_writer_consumer_denominators=exact_counts and all(value==module_sets[0] for value in module_sets),
         all_targets_lossless=len(c['per_target_lossless'])==n and {row['target_id'] for row in c['per_target_lossless']}==planned,
-        each_target_controlled_once=len(executions)==n and {row['target_id'] for row in executions}==planned,
+        complete_native_execution_distribution=len(executions)==repeats*n
+            and Counter(row['target_id'] for row in executions)==Counter({target:repeats for target in planned}),
         actual_native_owner_generation=all(str(row['owner'])==c['owner'] and row['generation']==c['generation'] for row in native),
         actual_native_effect_restore=all(row['original_calls']==1 and row['consumer_returned'] and row['restored']
             and row['released'] and row['readback_exact']
@@ -60,13 +102,28 @@ def review_arm(folder):
         and row['forward_id']==independent_calls[row['call_id']]['forward_id']
         and row['receipt']['original_calls']==independent_calls[row['call_id']]['original_calls']==1
         for row in c['calls'])
-    checks['observed_once_hit_distribution']=(not hits if controls else len(hits)==n and {row['target_id'] for row in hits}==planned)
+    checks['observed_hit_distribution']=(not hits if controls else len(hits)==repeats*n
+        and Counter(row['target_id'] for row in hits)==Counter({target:repeats for target in planned}))
+    if require_valid_prefix:
+        checks['every_complete_valid_kv_range_restored']=all(valid_prefix(row)
+            for record in records for row in record['byte_evidence'])
+        controls_to_compare=records if controls else [records[0],records[-1]] + (records[2:3] if repeats==1 else [])
+        reference={row['target_id']:row for row in records[0]['byte_evidence']}
+        checks['lossless_off_and_exhausted_full_prefix_exact']=all(
+            row['input_before']==reference[row['target_id']]['input_before']
+            and row['consumer_output_sha256']==reference[row['target_id']]['consumer_output_sha256']
+            for record in controls_to_compare for row in record['byte_evidence'])
+        provider=document['cleanup']['provider']
+        checks['actual_final_provider_resources_zero']=(provider['installed'] is False
+            and provider['owned_hooks']==provider['owned_api_patches']==provider['native_live_leases']==0
+            and not provider['pending'])
     return document,dict(result_sha256=sha(path),source_sha256=document['source_sha256'],
         native_library_sha256=document['setup']['library_sha256'],checks=checks,
         recomputed_consistency=all(checks.values()),planned_targets=n,independent_inventories=len(inventories),
         actual_eligible_fault_calls=2*n,actual_off_calls=n,recomputed_hits=len(hits),decision_counts=dict(decisions),
         phases=phase_rows,worker_identity=c['discovery']['expected_workers'],
-        limitation='Prior receipt hashes current V slot/query and FIA output, not every effective K/V prefix byte.',
+        limitation=('Complete logical K/V range hashes and actual physical mapping reviewed; unused whole-cache fields remain in raw statistics.'
+            if require_valid_prefix else 'Prior receipt hashes current V slot/query and FIA output, not every effective K/V prefix byte.'),
         public_qualification_granted=False)
 
 
