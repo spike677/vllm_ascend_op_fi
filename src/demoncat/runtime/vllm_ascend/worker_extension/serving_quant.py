@@ -33,7 +33,7 @@ def same_tensor(a,b):
 
 class QuantServingSession:
     def __init__(self,worker,model,*,root,build_sha256,folder,prompts,baseline_control,collector,capture_scope='generation'):
-        from fault_injection.quantization import PinnedQuantRuntime,_discover
+        from fault_injection.quantization import _discover
         from vllm.model_executor.layers.logits_processor import LogitsProcessor
         self.worker,self.runner,self.model=worker,worker.model_runner,model
         require_serial_eager(self.runner,expected_max_seqs=8)
@@ -42,8 +42,7 @@ class QuantServingSession:
         self.prompts=prompts;self.baseline_control=baseline_control;self.collector=collector
         require(capture_scope in ('generation','first_decode'),'UNREVIEWED_CAPTURE_SCOPE')
         self.capture_scope=capture_scope;self.capture_started=False;self.quant_api=None
-        self.runtime=PinnedQuantRuntime.from_portable_v2_backend(root,context_provider=self.context,
-            approved_build_sha256=build_sha256)
+        self.runtime=self._load_runtime(root,build_sha256)
         self.candidates,self.rejected=_discover(model,(1,))
         require(bool(self.candidates),'NO_ACTUAL_DYNAMIC_QUANT_MODULES')
         boundary=discover_logits_boundary(model,actual_logits_processor_type=LogitsProcessor,
@@ -53,6 +52,11 @@ class QuantServingSession:
         self.expected=self.active=self.error=None;self.embedding=self.normalized=None
         self.selected=self.healthy=None;self.quant_call=None;self.quant_session=None
         self.installed=self.collecting=self.recovered=self.aborted=False;self.observations=[]
+
+    def _load_runtime(self,root,build_sha256):
+        from fault_injection.quantization import PinnedQuantRuntime
+        return PinnedQuantRuntime.from_portable_v2_backend(root,context_provider=self.context,
+            approved_build_sha256=build_sha256)
 
     def state(self):
         require(threading.get_ident()==self.thread and self.worker.model_runner is self.runner

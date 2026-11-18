@@ -21,17 +21,26 @@ def actual(worker):
     return worker
 
 
-def setup(worker, prompts, build_sha):
+def setup(worker, prompts, build_sha, group_abi=False):
     from demoncat.runtime.vllm_ascend.worker_extension import serving_shared_scale_inventory, shared_scale_inventory, quant_row_provenance
     from fault_injection.deployments import dynamic_quant_inventory
+    modules = (serving_shared_scale_inventory, shared_scale_inventory, dynamic_quant_inventory, quant_row_provenance)
+    install = serving_shared_scale_inventory.install_shared_scale_inventory
+    if group_abi:
+        from demoncat.runtime.vllm_ascend.worker_extension import serving_shared_scale_group_inventory, shared_scale_group_inventory
+        from fault_injection.deployments import quant_group_inventory
+        from fault_injection import quant_group_native, quant_native_isolation
+        modules += (serving_shared_scale_group_inventory, shared_scale_group_inventory, quant_group_inventory,
+                    quant_group_native, quant_native_isolation)
+        install = serving_shared_scale_group_inventory.install_shared_scale_group_inventory
     sources = []
-    for module in (serving_shared_scale_inventory, shared_scale_inventory, dynamic_quant_inventory, quant_row_provenance):
+    for module in modules:
         path = Path(inspect.getfile(module)).resolve()
         if not path.is_relative_to('/installed'):
             raise RuntimeError('FRESH_INSTALLED_NATIVE_QUANT_OBSERVER_REQUIRED')
         sources.append(dict(path=str(path), sha256=hashlib.sha256(path.read_bytes()).hexdigest()))
     worker = actual(worker)
-    return dict(binding=serving_shared_scale_inventory.install_shared_scale_inventory(worker, prompts=prompts,
+    return dict(binding=install(worker, prompts=prompts,
         root='/quant', build_sha256=build_sha, evidence_dir='/evidence/shared-scale'), sources=sources,
         model_class=type(worker.model_runner.model).__module__ + '.' + type(worker.model_runner.model).__name__)
 
@@ -66,9 +75,10 @@ def rpc(llm, method, *args):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--build-sha256', required=True)
+    parser.add_argument('--group-abi', action='store_true')
     args = parser.parse_args()
     report = dict(status='STARTING', scope='TWO_ACTUAL_B8_FIRST_DECODES_ALL_NATIVE_V2_CALLS', phases=[],
-        c1=False, c2=False, c3=False, native_qualified_targets=0, num_gpu_blocks_override=64)
+        c1=False, c2=False, c3=False, native_qualified_targets=0, num_gpu_blocks_override=64, group_abi=args.group_abi)
     def save():
         Path('/evidence/result.json').write_text(json.dumps(report, indent=2, allow_nan=False) + '\n')
     llm, installed, seen = None, False, []
@@ -85,7 +95,7 @@ def main():
         prompts = [dict(prompt_token_ids=row) for row in tokens]
         params = SamplingParams(temperature=0, max_tokens=2, ignore_eos=True)
         report['healthy_before'] = [list(row.outputs[0].token_ids) for row in llm.generate(prompts, params, use_tqdm=False)]
-        report['setup'] = rpc(llm, setup, tokens, args.build_sha256)
+        report['setup'] = rpc(llm, setup, tokens, args.build_sha256, args.group_abi)
         report['identity'] = rpc(llm, 'demoncat_worker_identity')
         installed = True
         for index in range(2):

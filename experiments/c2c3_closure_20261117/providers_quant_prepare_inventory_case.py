@@ -13,41 +13,50 @@ def main():
     parser.add_argument('--model', default='/home/haoran/models/DeepSeek-V2-Lite-W8A8')
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--group-abi', action='store_true')
     args = parser.parse_args()
     if (not re.fullmatch('[0-9a-f]{7,40}', args.source_commit) or not re.fullmatch(r'sha256:[0-9a-f]{64}', args.image_id)
             or any(not value.startswith('/') or any(c in value for c in ('\n', '\r', '\0', ','))
                    for value in (args.installed, args.quant, args.probe, args.model))):
         parser.error('Actual immutable source commit and absolute inputs required')
     root = Path(args.quant)
-    manifest = root / 'runtime/build.json'
+    manifest = root / ('build.json' if args.group_abi else 'runtime/build.json')
     build = json.loads(manifest.read_text())
-    if build.get('schema') != 'demoncat.quant.v2_portable.v1' or build.get('actual_npu_calls') != 0:
+    expected_schema = 'demoncat.quant.group_deployment.v1' if args.group_abi else 'demoncat.quant.v2_portable.v1'
+    if build.get('schema') != expected_schema or build.get('actual_npu_calls') != 0:
         raise ValueError('Fresh V2 no-device build required')
-    for filename, key in (('native_backend.cpp', 'source_sha256'), ('backend_control.py', 'control_sha256'),
-        ('batch_scale_inventory.h', 'inventory_source_sha256'), ('runtime/vendor/op_api/lib/libcust_opapi.so', 'library_sha256')):
-        if hashlib.sha256((root / filename).read_bytes()).hexdigest() != build[key]:
+    files = (build['files'].items() if args.group_abi else ((filename, build[key]) for filename, key in (
+        ('native_backend.cpp', 'source_sha256'), ('backend_control.py', 'control_sha256'),
+        ('batch_scale_inventory.h', 'inventory_source_sha256'), ('runtime/vendor/op_api/lib/libcust_opapi.so', 'library_sha256'))))
+    if args.group_abi and (build.get('actual_image_id') != args.image_id or build.get('legacy_c1_library_present') is not False):
+        raise ValueError('Actual reviewed group image and no legacy library required')
+    for filename, expected in files:
+        path = (root / filename).resolve(strict=True)
+        if not path.is_relative_to(root.resolve()) or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             raise ValueError('Actual quant Native bundle changed:' + filename)
     sha = hashlib.sha256(manifest.read_bytes()).hexdigest()
-    name = 'providers-quant-deepseek-native-inventory'
+    name = 'providers-quant-group-deepseek-native-inventory' if args.group_abi else 'providers-quant-deepseek-native-inventory'
     case = dict(id=name, timeout=1800, image=args.image_id,
         mounts=[[args.installed, '/installed', 'ro'], [args.model, '/model', 'ro'],
             [args.probe, '/probe.py', 'ro'], [args.quant, '/quant', 'ro']],
         env=dict(VLLM_ENABLE_V1_MULTIPROCESSING='0', VLLM_WORKER_MULTIPROC_METHOD='spawn',
             VLLM_ALLOW_INSECURE_SERIALIZATION='1', TASK_QUEUE_ENABLE='0', OMP_NUM_THREADS='4',
             VLLM_HOST_IP='127.0.0.1', GLOO_SOCKET_IFNAME='lo', HCCL_CONNECT_TIMEOUT='120', HCCL_EXEC_TIMEOUT='120',
-            DCAT_DQ_V2_ENABLE='1', DCAT_REAL_OPAPI='/usr/local/Ascend/cann-8.5.1/opp/built-in/op_impl/ai_core/tbe/op_api/lib/linux/aarch64/libopapi.so'),
+            DCAT_DQ_V2_ENABLE='0' if args.group_abi else '1', DCAT_DQ_GROUP_V1_ALLOWED='1' if args.group_abi else '0',
+            VLLM_SERVER_DEV_MODE='1', DCAT_REAL_OPAPI='/usr/local/Ascend/cann-8.5.1/opp/built-in/op_impl/ai_core/tbe/op_api/lib/linux/aarch64/libopapi.so'),
         command='source /usr/local/Ascend/cann-8.5.1/set_env.sh\n'
             'export ASCEND_CUSTOM_OPP_PATH=/quant/runtime/vendor:/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend\n'
             'export LD_PRELOAD=/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend/op_api/lib/libcust_opapi.so\n'
             'export PYTHONPATH=/installed:/msprobe_packages:$PYTHONPATH\n'
-            'exec python3 /probe.py --build-sha256 ' + sha,
+            'exec python3 /probe.py --build-sha256 ' + sha + (' --group-abi' if args.group_abi else ''),
         review=dict(experiment_id=name, provider='quant.batch_shared_scale / all native V2 calls before admission, read-only',
             model=args.model, cann='8.5.1', soc='Ascend910B4/A2; recheck Worker', physical_cards=[args.card], ranks=[0],
             worker='standard TP1 eager BF16, two identical B8 generation batches; observe only actual first pure decode; fixed64 KVblocks',
             build_fingerprint=sha, source_commit=args.source_commit, expected_hits=0, actual_runtime_image_id=args.image_id,
             resource_budget=dict(timeout_seconds=1800, memory_gib=80, cpus=16, native_events=32768, public_calls=4096,
                 row_operator_calls_per_forward=16384),
-            recovery_plan='No arm function is called. Native descriptor arithmetic and C1 remain unchanged; independent metadata '
+            recovery_plan='No arm function is called and the group variant never installs an owner. The group variant loads only '
+                'the separate group DSO; the legacy variant keeps its original C1 DSO. Native arithmetic remains unchanged; independent metadata '
                 'records every typed V2 prepare and execute before owner selection. Bind actual input/q/scale/current executor '
                 'registration to public call, retain unowned/missing calls and all request-row gaps. Observe bounded actual '
                 'ATen row provenance; unknown row data/Attention/MoE/indexing never inherit rows from matching shape or bytes. '

@@ -278,6 +278,16 @@ class QuantGroupBindingTests(unittest.TestCase):
         with self.assertRaisesRegex(UnsupportedCall, 'EMPTY_CANCEL_IDENTITY'):
             self.runtime.cancel_empty()
         self.assertIs(group._LIVE_OWNERS[self.runtime._registry_key], self.runtime)
+    def test_raw_range_is_bounded_and_uses_one_owned_mapping_check(self):
+        for first, last in ((0, 1), (1, 32769), (4, 3), (True, 1)):
+            with self.assertRaisesRegex(UnsupportedCall, 'CENSUS_RANGE'):
+                self.runtime.raw_range(first, last)
+        self.runtime._verify_mapped.reset_mock()
+        rows = self.runtime.raw_range(1, 3)
+        self.assertEqual(len(rows), 3)
+        self.runtime._verify_mapped.assert_called_once()
+        rows[0]['parent']['input']['address'] = 999
+        self.assertEqual(rows[1]['parent']['input']['address'], 0)
     def test_cpu_input_has_no_native_fallback(self):
         import torch
         with self.assertRaisesRegex(UnsupportedCall, 'ACTUAL_PUBLIC_TENSOR'):

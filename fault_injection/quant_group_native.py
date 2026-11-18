@@ -258,11 +258,19 @@ class QuantGroupNative:
             return value
 
     def raw(self, sequence):
+        return self.raw_range(sequence, sequence)[0]
+
+    def raw_range(self, first, last):
+        if (type(first) is not int or type(last) is not int or not 1 <= first <= last <= 32768):
+            raise UnsupportedCall('BOUNDED_ACTUAL_GROUP_CENSUS_RANGE_REQUIRED')
         with isolation.managed('group', session_runtime=self):
             self._verify_mapped()
-            row = RawRecord()
-            self._checked('raw', sequence, C.byref(row))
-            return snapshot(row)
+            rows = []
+            for sequence in range(first, last + 1):
+                row = RawRecord()
+                self._checked('raw', sequence, C.byref(row))
+                rows.append(snapshot(row))
+            return rows
 
     def install(self, config, observed, finished):
         if (type(config) is not Config or config.thread != threading.get_native_id()
