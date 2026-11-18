@@ -1,0 +1,108 @@
+{
+  "schema": "demoncat.output39.failed_discovery_review_summary.v1",
+  "attempt": "/home/17-fault-c2c3-20261117/v11-core39-output-source80-card5-a1",
+  "controller_status": "CASE_FAILED",
+  "case_exit_code": 2,
+  "post_cleanup_idle": true,
+  "source_commit": "6d9fbc3f49a14e901e9dd2fc093453914afb30f9",
+  "result_sha256": "5e8164dba9f5f4f8a13ea598dabdba7330a584b578bb70d6cc7a33b0fd4a9636",
+  "failure_original_sha256": "bf4a3e8e6fa72bdf444b56f180da59d7157ab28321be747525a28a5a6c418eb2",
+  "failure_original_bytes": 5096892,
+  "first_failure": {
+    "action": "collect",
+    "collected_requests": 5,
+    "completed_requests": 6,
+    "error_type": "PostwriteRefused",
+    "group_recovery": null,
+    "reason": "POSTWRITE_INDEPENDENT_DISCOVERY_INCOMPLETE"
+  },
+  "actual_requests": 6,
+  "all_projection_count": 113,
+  "eligibility_counts": {
+    "AMBIGUOUS": 0,
+    "NOT_OBSERVED": 3,
+    "RESOURCE_LIMITED": 0,
+    "SUPPORTED": 28,
+    "UNSUPPORTED": 341,
+    "UNVERIFIED": 0
+  },
+  "unobserved_structural_rows": [
+    {
+      "actual_forward_calls": 0,
+      "class_name": "vllm.model_executor.models.qwen3.Qwen3Model",
+      "direct_children": [
+        281464510046416,
+        281464510208464,
+        281464510039056
+      ],
+      "forward_identity": 281464861797856,
+      "object_identity": 281467123795280,
+      "parent_identity": 281464510040720,
+      "path": "model",
+      "reason": "NO_ACTUAL_BOUNDARY_IN_HEALTHY_DISCOVERY",
+      "structural_noncall": false
+    },
+    {
+      "actual_forward_calls": 0,
+      "class_name": "torch.nn.modules.container.ModuleList",
+      "direct_children": [
+        281464510040464,
+        281464510038672,
+        281464861356880,
+        281464850344208,
+        281464509925904,
+        281464510431056,
+        281464510415056,
+        281464510427152,
+        281464510002640,
+        281464510043472,
+        281464509969680,
+        281464510217744,
+        281464859687952,
+        281464510279440,
+        281464850342480,
+        281464510419728,
+        281464859683920,
+        281464509923856,
+        281464861356752,
+        281464510205328,
+        281464510374480,
+        281464510163344,
+        281464510347664,
+        281464510338896,
+        281464510429968,
+        281464510074256,
+        281464510429840,
+        281464509927824
+      ],
+      "forward_identity": 281467141100128,
+      "object_identity": 281464510208464,
+      "parent_identity": 281467123795280,
+      "path": "model.layers",
+      "reason": "NO_ACTUAL_BOUNDARY_IN_HEALTHY_DISCOVERY",
+      "structural_noncall": false
+    },
+    {
+      "actual_forward_calls": 0,
+      "class_name": "vllm_ascend.ops.rotary_embedding.AscendApplyRotaryEmb",
+      "direct_children": [],
+      "forward_identity": 281465198069856,
+      "object_identity": 281464510461264,
+      "parent_identity": 281464510452240,
+      "path": "model.layers.0.self_attn.rotary_emb.apply_rotary_emb",
+      "reason": "NO_ACTUAL_BOUNDARY_IN_HEALTHY_DISCOVERY",
+      "structural_noncall": false
+    }
+  ],
+  "ownership_retained": false,
+  "binding_removal": [
+    {
+      "status": "SERVING_DEPLOYMENT_REMOVED"
+    }
+  ],
+  "c2": false,
+  "c3": false,
+  "E5": "NOT_ASSESSED",
+  "new_group_fault_executed": false,
+  "scope": "Failure evidence retention verified; no complete-set qualification."
+}

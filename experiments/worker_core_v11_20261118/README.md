@@ -263,6 +263,18 @@ The failed collection did not persist its in-memory complete discovery report;
 that evidence-retention gap must be repaired before diagnosing missing targets.
 It is not permission to remove unseen modules from the denominator.
 
+The source80/card5 retry verified the failure-retention repair on124. It saved
+the complete5,096,892-byte failed collection before cleanup, including both
+healthy inventories and the actual borrowed-parameter observations. The
+[failure summary](output39_source80_failure_summary.json) retains28 supported,
+341 unsupported and3 unobserved objects. They are `model`, its `ModuleList`,
+and the shared rotary helper, not three missing projection sites. The original
+reason remains `POSTWRITE_INDEPENDENT_DISCOVERY_INCOMPLETE`; no group F ran.
+Native/Runtime owner and deployment were released. Production source shows a
+compile-support `__call__` that can directly invoke `forward` without Module
+hooks; actual bound call/return proof is needed before changing classification.
+An unused helper cannot be counted as executed merely because it is registered.
+
 Source79 (`94b4cefd67cd5c55b80699ec4a413215b2f9a7a0`, manifest
 `122f50404c329b7ba69c22172d635a849fc8f0eca803021c02f7aace9073cac5`)
 passed its production-image CPU gate. It admits actual eval/no-grad model
