@@ -1,10 +1,51 @@
-# Worker Core: source51–66 incremental evidence
+# Worker Core: source51–68 incremental evidence
 
 This report preserves the six accepted C2 and now six accepted C3 scopes. It does
 not qualify all17 routes or another CANN/hardware version. Root owns the single
 card2 queue on124; three specialists work on CPU/code only. Temporary Workers
 are created by normal serving startup. Source snapshots are immutable and all
 new raw statistics, tensors and Native binaries remain on124.
+
+## Public 8/18 source66: natural scheduled requests independently reconciled
+
+Source66 `239096ef14a3f5f4be15311d879aa8e67f77def4` uses the public
+WorkerFaultClient/FaultConfig entrance. RPC arms or collects observations; all
+model execution comes from normal vLLM enqueue/scheduler calls. Each case has
+ten real requests, including ordinary health after unregister/detach, and39
+original RPC records. This is distinct from the earlier direct group entrance.
+
+| Mechanism / actual model | C2 targets | C3 hits in two requests | Independent summary SHA256 |
+|---|---:|---:|---|
+|18.api_half / Qwen3-0.6B|113|226|`ec8e3a10df7fea1ed495874ed42159ea79a9783f706f1f14b2bc0928e01c9abf`|
+|8.restore_offset / DeepSeek-V2-Lite-W8A8|26|52|`8c967e5fe500f9c6f7ab4de01a7e50604953711103a92ada4b922c1771ff21a7`|
+
+The [18 review](tensor18_core_source66_review.json) reconciles82 artifact,
+33 provenance and8839 evidence conditions; the [8 review](tensor8_core_source66_review.json)
+reconciles82/33/1960. RMS has57 actual npu_rms_norm and56 actual custom
+npu_add_rms_norm_bias returns. The denominator comes from actual calls and
+owned gamma/producer/consumer joins, not the number of registered modules.
+Canonical references are independently recomputed:1458 for18 and376 for8.
+Full-output OFF receipts, unchanged healthy tokens and owned resource/deployment
+release reconcile. Complete private tensor bytes are not independently replayed.
+RMS consumer liveness and final dispatch-stack removal have the source-bound
+limits recorded in the summaries. These runs provide no new E5 capture.
+
+Original result hashes:18 `e99df16f9cc1375b90225dff06296a1a49dcc8d66e2efa5aa64e10af43eff90c`;
+8 `b193d3c42ad680e957b962031bf3c5a7237e58c377810819b83017ac82823095`.
+The first independent reviews used the pre-binding group source digest and
+refused both runs. The corrected reader recomputes the complete public binding
+digest `1d25886d7e60a9b4c66bb490d6bbf8a46789bfa9448c0ba80c8de5f896a01264`
+and requires that exact value in scope, discovery and every target proof.
+The a1 reports and unchanged originals remain on124; no evidence is rewritten.
+
+A separate CPU adversarial review found a source66 MoE cleanup defect when a
+nested dispatch-mode exit raises. The later implementation retains every owned
+mode until the actual dispatch stack confirms removal, and preserves ownership
+and the first failure for retry. New-source CPU tests exercise before-pop,
+after-pop, no-op, foreign-stack and retry cases. This does not retroactively
+qualify the old exceptional branch or imply that the successful normal source66
+trace failed. See [the recovery contract](../../docs/worker_core_v1/moe_nested_mode_recovery.md).
+Strict distinct-mechanism totals remain6/17 C2 and6/17 C3.
 
 ## Quant source64: public Core single-site effects and recovery reconciled
 

@@ -54,9 +54,19 @@ The [natural tensor/MoE contract](tensor_group_host_contract.md) now routes 8/18
 through actual enqueued requests. RPC actions arm or collect the existing group
 session; they do not invoke a replay forward. This new public entrance requires
 its own source-bound review and does not inherit the old natural-group result.
+That review now reconciles source66:113/226 RMS targets/hits and26/52 MoE
+targets/hits, exact group OFF receipts and final same-Worker health. See
+[the actual source66 scope and limits](../../experiments/c2c3_closure_20261117/WORKER_INCREMENT_20261118.md#public-818-source66-natural-scheduled-requests-independently-reconciled).
+The separate [nested-mode recovery repair](moe_nested_mode_recovery.md) has new
+CPU failure-path contracts; it does not relabel the old snapshot's exception path.
 The other legacy tensor factories still require trusted synchronous replay.
 Thirteen callable factories must not be described as thirteen naturally
 scheduled, verified public Worker routes.
+
+The [Native26 public contract](writer26_host_contract.md) uses the same
+prepare/register/advance/finish lifecycle for its QMM and typed FIA variants.
+It keeps the complete natural inventory while selecting one proven site for
+C1; it does not provide C2/C3 or turn diagnostic runtime captures into E5.
 
 An ordinary census cannot observe all internal kernels. Native or fused edges
 without a matched observer remain `NOT_VISIBLE`/unverified. A failed request
