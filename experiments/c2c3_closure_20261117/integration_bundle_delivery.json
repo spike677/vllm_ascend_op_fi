@@ -1,0 +1,60 @@
+{
+  "schema": "demoncat.worker_core.final_source_delivery.v1",
+  "source_snapshot_commit": "226716e722eed52ec7e92147a4d87dd08479761b",
+  "branch": "codex/17-fault-c2c3-closure-20261117",
+  "source_review_file": "experiments/c2c3_closure_20261117/integration_source_review.json",
+  "source_review_sha256": "d82043cb794448fd52ef07bc7ec1e3543ea93eeb91e95bcb3e270d6feb7c0e9d",
+  "source_files": 373,
+  "archive_name": "demoncatpfi-integration.tar.gz",
+  "archive_bytes": 1171098,
+  "archive_sha256": "9b65a19f763537cbec53df9b8639a3181877390e1a406208c894a6db5feceb60",
+  "archive_members": 387,
+  "archive_in_git": false,
+  "source_and_tests_unchanged_from_independent_cpu_bundle": true,
+  "changes_from_independent_cpu_bundle": [
+    "docs/worker_core_v1/README.md"
+  ],
+  "independent_cpu_audit": {
+    "path": "experiments/c2c3_closure_20261117/integration_bundle_cpu_review.json",
+    "sha256": "7e3673c85024897586728d9d5cee474bee7eb7b338dae010eca30f13e011fdbe",
+    "source_core_passed": 214,
+    "installed_core_covered_passed": 214,
+    "offline_wheels": 3,
+    "production_python_files_rehashed": 201,
+    "initial_test_namespace_harness_failure_preserved": true
+  },
+  "final_root_relocated_core": {
+    "schema": "demoncat.root_relocated_core_contracts.v1",
+    "tests": 214,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "passed": 214,
+    "runtime_modules_from_bundle": 75,
+    "runtime_source_fallback": false,
+    "actual_npu_calls": 0,
+    "archive_sha256": "9b65a19f763537cbec53df9b8639a3181877390e1a406208c894a6db5feceb60"
+  },
+  "reproduce_from_repository_root": [
+    "python -B tools/export_integration_bundle.py export --source-root . --review experiments/c2c3_closure_20261117/integration_source_review.json --output demoncatpfi-integration.tar.gz",
+    "python -B tools/export_integration_bundle.py verify --archive demoncatpfi-integration.tar.gz --review experiments/c2c3_closure_20261117/integration_source_review.json"
+  ],
+  "contains_weights": false,
+  "contains_raw_statistics": false,
+  "contains_private_tensor_payloads": false,
+  "contains_prebuilt_native": false,
+  "actual_device_qualification_from_export": false,
+  "inner_framework_integration": "PENDING",
+  "qualification_scope": "Existing individually reviewed C1/C2/C3/Recovery evidence only; E5 independent",
+  "accepted_distinct_c2_mechanisms": 6,
+  "accepted_distinct_c3_mechanisms": 6,
+  "total_mechanisms": 17,
+  "all_17_accepted": false,
+  "worker_platform_scope": "Exact CANN8.5.1 Ascend910B4/A2 image; other8.x/9.x Workers and A3 unqualified",
+  "limits": [
+    "Source-only runtime/CPU handoff; serving creates Workers and supplies actual HostAdapter wiring.",
+    "The unavailable yellow-zone Registry/Controller has not been integrated or run.",
+    "Current source and native receipts retain their own immutable deployment/compile snapshots.",
+    "New Core26/output39 runtime diagnostics do not qualify independent statistics/mix E5."
+  ]
+}

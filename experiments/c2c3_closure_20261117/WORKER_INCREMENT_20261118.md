@@ -96,8 +96,10 @@ filtered or injector-directed first-difference evidence. Earlier captures remain
 Source66 `239096ef14a3f5f4be15311d879aa8e67f77def4` uses the public
 WorkerFaultClient/FaultConfig entrance. RPC arms or collects observations; all
 model execution comes from normal vLLM enqueue/scheduler calls. Each case has
-ten real requests, including ordinary health after unregister/detach, and39
-original RPC records. This is distinct from the earlier direct group entrance.
+ten protocol requests, including `cleanup_healthy` with complete hidden/logits
+capture, and39 original RPC records. Finish/disable/unregister/detach follow
+that health request; this entrance has no additional post-unregister enqueue.
+It is distinct from the earlier direct group entrance.
 
 | Mechanism / actual model | C2 targets | C3 hits in two requests | Independent summary SHA256 |
 |---|---:|---:|---|

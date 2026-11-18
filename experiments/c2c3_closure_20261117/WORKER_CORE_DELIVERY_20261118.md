@@ -25,7 +25,7 @@
 
 这批 Worker 结果限于真实测试的 **CANN8.5.1、Ascend910B4/A2、vLLM0.18镜像**。9.1的单算子与collective校准是另一范围；没有据此授予9.x Worker、A3、并发多Worker、任意模型或连续生成正确性。
 
-详细的原件位置、SHA、消费者链和独立审查限制见 [增量报告](WORKER_INCREMENT_20261118.md)。完整 tensor 数组没有公开，也没有把运行时 hash 回执描述成离线重算张量。最后普通健康请求在卸掉观察器后只核对同 Worker 和 token/text。
+详细的原件位置、SHA、消费者链和独立审查限制见 [增量报告](WORKER_INCREMENT_20261118.md)。完整 tensor 数组没有公开，也没有把运行时 hash 回执描述成离线重算张量。26/39的最后普通健康请求在卸掉观察器后只核对同 Worker 和 token/text；8/18的第十次 `cleanup_healthy` 仍采完整 hidden/logits，随后才 finish/unregister/detach，没有另一次注销后请求。
 
 ## 修复及测试
 

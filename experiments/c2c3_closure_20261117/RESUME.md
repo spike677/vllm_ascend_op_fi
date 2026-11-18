@@ -1,5 +1,13 @@
 # Current execution checkpoint
 
+## Delivery checkpoint — final source package verified, no active device work
+
+- All NPU cases in this increment ended and their owned containers were removed. No waiting device job or background controller remains. Public8/18 source66 C2/C3, public26 source67/68 C1, public39 output source68 C1 and quant64 C1 have independent scoped reviews. Strict distinct C2/C3 totals remain6/17 each; new Core26/39 E5 is unassessed.
+- Final source-only package comes from commit226716e7 (full SHA in integration_bundle_delivery.json),373 sources/387 members. Source review d82043cb794448fd52ef07bc7ec1e3543ea93eeb91e95bcb3e270d6feb7c0e9d; archive9b65a19f763537cbec53df9b8639a3181877390e1a406208c894a6db5feceb60. Root extracted this exact archive and ran214Core contracts:214pass,0failure/error/skip,75production modules all from bundle. The independent earlier214installed-Core/3-wheel check has identical production/test bytes; only the final README differs. Preserve its initial harness failure/correction in integration_bundle_cpu_review.json.
+- Reproduce export/verification from the published repository using integration_source_review.json and commands in integration_bundle_delivery.json. Archive is a local source-only artifact, not committed. Raw statistics, private tensors, Native binaries and runtime originals remain124. Publication_manifest.json audits all new Git history since the frozen base and records the reviewed content head; its own commit is intentionally excluded.
+- Main handoff: WORKER_CORE_DELIVERY_20261118.md; exact17 statuses: C2_C3_MATRIX.md; evidence hashes: WORKER_INCREMENT_20261118.md. Version/hardware and yellow-zone limits remain explicit. No17/17, universal model/version, Native MatMul inheritance or fresh msprobe first-difference claim.
+- Remaining engineering tasks are explicitly scoped there; do not rerun healthy/accepted cases just to refresh counts. Future source changes require new immutable source and actual device scopes where behavior changes. Following checkpoints are historical, not active work.
+
 ## Current checkpoint — all queued NPU cases completed; final source-only delivery
 
 - No active NPU controller or owned test container. source68 queue core26-39-source68-card2-a1 completed both cases exit0 and post_cleanup_gate.idle=true. Source67 FIA had already completed. Existing resource lock/gates were used; no host isolation or external cleanup this increment.
