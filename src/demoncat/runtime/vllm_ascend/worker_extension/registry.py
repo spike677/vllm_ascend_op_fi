@@ -12,7 +12,7 @@ _TENSOR = (
 )
 _NATIVE = (
     ('39.output_proxy', 'fault39_output', 'Fault39OutputServingProvider', ['aten.mm', 'aten.matmul', 'aten.linear'],
-     'reviewed_public_acl_native_span', 'trusted_single_site_fresh_prefill_real_enqueue_c1_only'),
+     'reviewed_public_acl_native_span', 'trusted_single_site_or_complete_set_fresh_prefill_real_enqueue'),
     ('41.tail_column', 'fault41', 'Fault41ServingProvider', ['torch_npu.npu_fused_infer_attention_score'],
      'reviewed_public_acl_native_span', 'trusted_first_decode_live_kv_group_real_enqueue_required'),
     ('26.residual_stomp', 'fault26', 'Fault26ResidualProvider', ['aclnnQuantMatmulWeightNz'],
@@ -48,6 +48,10 @@ def rpc_provider_capabilities():
         if row['mechanism'] in ('8.restore_offset', '18.api_half'):
             row.update(execution='reviewed_natural_serving_group_real_enqueue_required',
                        legacy_replay_fallback=False, historical_qualification_inherited=False)
+        if row['mechanism'] == '17.spatial_padding':
+            row.update(optional_two_healthy_mm_census=True,
+                       observation_binding='_demoncat_vision17_observation_binding',
+                       census_grants_fault_admission=False)
         if row['mechanism'] == '22.wrong_row':
             row.update(execution='reviewed_fused_serving_group_real_enqueue_required',
                        variant_selection='actual_source_bound_fused_calls', legacy_lookup_fallback=False)
@@ -90,6 +94,10 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     resolve(mechanism)
     if version != '1':
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
+    if (mechanism == '17.spatial_padding'
+            and hasattr(worker, '_demoncat_vision17_observation_binding')):
+        module = importlib.import_module(__package__ + '.providers.vision17')
+        return module.Vision17ObservationProvider(worker, model, identity)
     if mechanism == '22.wrong_row':
         module = importlib.import_module(__package__ + '.providers.fault22')
         return module.Fault22ServingProvider(worker, model, identity)

@@ -99,6 +99,23 @@ class RegistryTests(unittest.TestCase):
                 getattr(loader.return_value, name).assert_called_once_with('worker', 'model', {'rank': 7})
                 self.assertTrue(loader.call_args.args[0].endswith('.providers.attention_serving'))
 
+    def test_vision_observation_route_requires_explicit_worker_binding(self):
+        from types import SimpleNamespace
+        for bound in (False, True):
+            worker = SimpleNamespace()
+            if bound:
+                worker._demoncat_vision17_observation_binding = object()
+            with patch('importlib.import_module') as loader:
+                resolve_provider('17.spatial_padding', '1', worker, 'model', {})
+                if bound:
+                    loader.return_value.Vision17ObservationProvider.assert_called_once_with(worker, 'model', {})
+                    self.assertTrue(loader.call_args.args[0].endswith('.providers.vision17'))
+                else:
+                    loader.return_value.TensorModuleProvider.assert_called_once_with(worker, 'model', {}, '17.spatial_padding')
+        row = next(r for r in registry.rpc_provider_capabilities() if r['mechanism'] == '17.spatial_padding')
+        self.assertTrue(row['optional_two_healthy_mm_census'])
+        self.assertFalse(row['census_grants_fault_admission'])
+
     def test_enumeration_is_detached_and_never_loads_native_provider(self):
         with patch('importlib.import_module') as loader:
             manifest = registry.worker_core_manifest()
