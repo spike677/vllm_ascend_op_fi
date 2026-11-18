@@ -67,3 +67,12 @@ requests. Three first-layer calls lack current residual-producer proof. The
 other24 change allocator adjacency eligibility between requests (18 lose
 adjacency,6 gain it). These are not module-name or target-key mismatches.
 They cannot be silently excluded to grant C2 to the remaining two candidates.
+
+Source69 (`d58251c0`) built three fresh wheels in the production image without
+an NPU. Its137 CPU preflight tests had one failure in an existing snapshot
+isolation test: two queries intentionally produce different monotonic times,
+but the test compared the whole dictionary for equality. The test now advances
+a controlled clock100→200 and still compares every remaining field, including
+row/tensor identity and mutated nested-prefix isolation. Production behavior
+is unchanged. Source69 has not run the NPU census; a new attempt must use the
+corrected preflight before proceeding.

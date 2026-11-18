@@ -2,6 +2,7 @@
 import gc
 import copy
 import unittest
+from unittest.mock import patch
 
 import torch
 import numpy as np
@@ -193,14 +194,23 @@ class RequestRowProvenanceTests(unittest.TestCase):
         x = torch.ones(8, 4)
         graph = self.graph(x)
         self.seed_nested(graph, x)
-        returned = graph.query(x)
+        clock = 'demoncat.runtime.vllm_ascend.worker_extension.quant_row_provenance.time.monotonic_ns'
+        with patch(clock, return_value=100):
+            returned = graph.query(x)
         expected = copy.deepcopy(returned)
         returned['actual_rows']['request_ids'].reverse()
         returned['actual_rows']['prefixes'][0]['output'].append(99)
         returned['tensor']['shape'][0] = 999
         returned['tensor']['stride'][1] = 0
         returned['node_id'] = -1
-        self.assertEqual(graph.query(x), expected)
+        returned['observation_prefix']['errors'] = 999
+        # Each query intentionally records a fresh observation time. Test
+        # snapshot isolation without relying on the platform clock resolution.
+        with patch(clock, return_value=200):
+            fresh = graph.query(x)
+        self.assertEqual(expected['observation_prefix']['observed_at_monotonic_ns'], 100)
+        expected['observation_prefix']['observed_at_monotonic_ns'] = 200
+        self.assertEqual(fresh, expected)
         derived = x + 1
         self.assertEqual(graph.query(derived)['actual_rows'], expected['actual_rows'])
 
