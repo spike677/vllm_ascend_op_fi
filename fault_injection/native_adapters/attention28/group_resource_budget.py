@@ -128,7 +128,10 @@ def before_fault(plan_value,*,phase_index,started_monotonic,runtime_bytes,resour
     need(elapsed+needed<=plan_value['case_seconds'],'NO_F_TIME_REFUSED:LIVE_F_OFF_RECOVERY_RESERVE')
     disk=GROWTH_FACTOR*plan_value['maximum_phase_artifact_bytes']*(remaining+RECOVERY_REQUESTS)+max(0,projected-runtime_bytes) \
         +GROWTH_FACTOR*plan_value['inputs']['registered_binary_bytes']+64*1024**2
-    memory=plan_value['estimated_additional_memory_bytes']
+    # A larger actual prefix raises the parse/index memory bound even when
+    # the complete projected log is still below the fixed 512 MiB cap.
+    memory=max(plan_value['estimated_additional_memory_bytes'],
+        8*projected+12*plan_value['maximum_capture_json_bytes']+512*1024**2)
     need(all(type(resources[k]) is int and resources[k]>=0 for k in ('free_disk_bytes','available_memory_bytes'))
         and resources['free_disk_bytes']>=disk and resources['available_memory_bytes']>=memory,
         'NO_F_CAPACITY_REFUSED:LIVE_DISK_OR_MEMORY')

@@ -88,6 +88,21 @@ class GroupResourceContracts(unittest.TestCase):
             if change=='off_phase':bad['phase_index']=4
             with self.subTest(change=change),self.assertRaises(RuntimeError):R.before_fault(value,**bad)
 
+    def test_larger_live_prefix_recomputes_memory_even_below_runtime_cap(self):
+        inputs=observations(increment=1024**2)
+        inputs['phases']=[dict(row,capture_json_bytes=1024**2) for row in inputs['phases']]
+        value=R.plan(inputs,variant=R.VARIANT,source_sha256='a'*64,build_sha256='b'*64)
+        self.assertEqual(value['projected_runtime_bytes'],127*1024**2)
+        self.assertEqual(value['estimated_additional_memory_bytes'],1540*1024**2)
+        args=dict(phase_index=57,started_monotonic=100.,runtime_bytes=450*1024**2,now=220.,
+            resources=dict(free_disk_bytes=64*1024**3,available_memory_bytes=1540*1024**2,pid=os.getpid(),
+                python_thread_ident=threading.get_ident(),native_tid=threading.get_native_id(),sampled_monotonic=220.))
+        with self.assertRaisesRegex(RuntimeError,'LIVE_DISK_OR_MEMORY'):R.before_fault(value,**args)
+        args['resources']['available_memory_bytes']=4220*1024**2
+        receipt=R.before_fault(value,**args)
+        self.assertEqual(receipt['projected_runtime_bytes'],462*1024**2)
+        self.assertEqual(receipt['required_available_memory_bytes'],4220*1024**2)
+
     def test_exact_nonserializable_normal_source_build_attempt_scope_required(self):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);runtime=root/'runtime';runtime.mkdir();value=scope(root)
