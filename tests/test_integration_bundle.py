@@ -36,7 +36,10 @@ class BundleTests(unittest.TestCase):
         from experiments.worker_core_v11_20261118.fia_input_journal_build import SOURCES
         payload = bundle._inventory(ROOT)
         required = set(SOURCES) | {'tests/test_fia_input_journal.py',
-                                  'docs/worker_core_v1/fia_input_journal.md'}
+                                  'docs/worker_core_v1/fia_input_journal.md',
+                                  'experiments/worker_core_v11_20261118/diagnose_fia_journal_visibility.py',
+                                  'tests/test_fia_journal_visibility.py',
+                                  'docs/worker_core_v1/fia_input_journal_visibility.md'}
         self.assertFalse(required - payload.keys())
         for name in required:
             self.assertEqual(payload[name], (ROOT / name).read_bytes(), name)
