@@ -12,10 +12,16 @@ class QuantProvider(Scope):
             self.bind(owner,generation);reject_unknown(settings)
             from fault_injection.providers import resolve_runtime
             from ..serving_quant import QuantServingBinding,QuantServingSession,MECHANISM
+            from ..serving_quant_group_c1 import QuantGroupC1ServingBinding,QuantGroupC1ServingSession
             binding=resolve_runtime(MECHANISM,self.model)
-            if type(binding) is not QuantServingBinding:raise ProviderError('REVIEWED_QUANT_DEPLOYMENT_REQUIRED')
-            self.session=binding.make_session(self.worker,self.model)
-            if type(self.session) is not QuantServingSession:raise ProviderError('REVIEWED_QUANT_SESSION_REQUIRED')
+            if type(binding) is QuantGroupC1ServingBinding:
+                self.session=binding.make_session(self.worker,self.model,owner=owner,generation=generation,worker_identity=self.identity)
+                expected=QuantGroupC1ServingSession
+            elif type(binding) is QuantServingBinding:
+                self.session=binding.make_session(self.worker,self.model)
+                expected=QuantServingSession
+            else:raise ProviderError('REVIEWED_QUANT_DEPLOYMENT_REQUIRED')
+            if type(self.session) is not expected:raise ProviderError('REVIEWED_QUANT_SESSION_REQUIRED')
             return self.query(owner=owner,generation=generation)
         self.verify(owner,generation)
         reject_unknown(settings,('request_ids','capture_decode') if action=='advance' else ())
@@ -48,7 +54,9 @@ class QuantProvider(Scope):
         s=self.session
         if s.expected is not None and getattr(s,'decode_result',None) is not None and not s.error:s.collect()
         raw=s.state()
+        from ..serving_quant_group_c1 import QuantGroupC1ServingSession
+        leases=s.provider_call_leases(raw) if type(s) is QuantGroupC1ServingSession else raw['owned']+raw['pending']
         return dict(native_loaded=True,registered=self._registered,native_registered=bool(raw['owned']),enabled=bool(raw['armed']),
-            inflight=raw['executing'],leases=raw['owned']+raw['pending'],native=raw,
+            inflight=raw['executing'],leases=leases,native=raw,
             replay_pending=s.installed,replay_failed=bool(s.error and not s.aborted),
             recovery_validation_pending=s.installed and not s.recovered,serving=s.report())

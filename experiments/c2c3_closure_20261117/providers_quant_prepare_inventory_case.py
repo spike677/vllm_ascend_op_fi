@@ -14,7 +14,10 @@ def main():
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--group-abi', action='store_true')
+    parser.add_argument('--single-site-c1', action='store_true')
     args = parser.parse_args()
+    if args.single_site_c1 and not args.group_abi:
+        parser.error('The isolated group ABI is required for this new single-site C1 adapter')
     if (not re.fullmatch('[0-9a-f]{7,40}', args.source_commit) or not re.fullmatch(r'sha256:[0-9a-f]{64}', args.image_id)
             or any(not value.startswith('/') or any(c in value for c in ('\n', '\r', '\0', ','))
                    for value in (args.installed, args.quant, args.probe, args.model))):
@@ -66,6 +69,26 @@ def main():
                 'same-process healthy generation. Remove only the owned dispatcher mode; a foreign mode prevents cleanup. '
                 'No C1/C2/C3 qualification is claimed. Root retains failures and removes only '
                 'its owned container; restart is never OFF evidence.'))
+    if args.single_site_c1:
+        name = 'providers-quant-group-deepseek-single-site-c1'
+        case['id'] = name
+        case['review'].update(experiment_id=name,
+            provider='quant.batch_shared_scale / public Worker Core V1 / one automatically proven site, not all eligible',
+            worker='standard TP1 eager BF16; seven fresh B8 first-decode phases; fixed64 KVblocks; no user-selected layer',
+            expected_hits=1,
+            recovery_plan='Two complete independent Native/public healthy censuses precede automatic single-site selection. '
+                'Preserve every structural, unowned and unknown-row candidate in discovery.json. The actual selected site '
+                'must retain module/method/weight/process/Worker/input row identity. Run reference, lossless and qualification OFF '
+                'under the new Native owner, seal only the explicit one-site scope, then admit one Fault. Record one model parent '
+                'and BOTH real correct-domain reference/helper and flattened-domain effect GWS/execute pairs; actual input stays '
+                'unchanged, actual owned Q/scale bytes must differ before exact publication. Stop, synchronize every device stream, '
+                'drain the target, recover/release, remove callbacks, then observe identical full healthy B8 OFF on the SAME Worker. '
+                'Remove all own profile/dispatch/module/method/API hooks before finish/unregister/detach. Busy or failed drains '
+                'retain ownership; unknown output lifetimes are never restored after return. An installed zero-target owner uses '
+                'the reviewed cancel_empty stream barrier. Keep functional effect separate from E5 (NOT_ASSESSED here); no C2/C3 '
+                'or complete 135-target qualification. Root owns launch/card gate/owned-container cleanup; restart is never OFF.')
+        case['review']['resource_budget'].update(native_qualified_targets=1, admitted_model_calls=4,
+            fault_model_calls=1, fault_native_helpers=1, max_owned_device_bytes=64*1024*1024, max_host_reference_bytes=128*1024*1024)
     with args.out.open('x') as stream:
         json.dump([case], stream, indent=2)
 

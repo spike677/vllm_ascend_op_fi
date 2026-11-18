@@ -27,24 +27,30 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
         from fault_injection.quant_group_native import QuantGroupNative
         return GroupInventoryRuntime(QuantGroupNative.load(root, approved_build_sha256=build_sha256))
 
+    def make_inventory(self, identity):
+        from .shared_scale_group_inventory import SharedScaleGroupInventory
+        return SharedScaleGroupInventory(self.model, self.candidates, worker_identity=identity,
+            native=self.native_reader, folder=self.folder / 'inventory', row_lineage=self.row_lineage,
+            row_transfer=self.projection_rows)
+
+    def inventory_worker_identity(self):
+        return self.worker.demoncat_worker_identity()
+
     def __init__(self, *args, **kwargs):
         # Reuse actual scheduler/embedding/logits hooks but bypass the legacy
         # inventory constructor and its C1 Native loader entirely.
         QuantServingSession.__init__(self, *args, **kwargs, baseline_control=True,
                                      collector=None, capture_scope='first_decode')
         from fault_injection.deployments.quant_group_inventory import GroupQuantJournal
-        from .shared_scale_group_inventory import SharedScaleGroupInventory
         from .quant_row_provenance import RequestRowProvenance
         import torch_npu
         self.native_reader = GroupQuantJournal(self.runtime.binding, device=int(torch_npu.npu.current_device()))
         self.row_observer = RequestRowProvenance()
-        identity = self.worker.demoncat_worker_identity()
+        identity = self.inventory_worker_identity()
         require(identity['status'] == 'WORKER_IDENTIFIED' and not identity.get('quarantined')
                 and identity['worker']['rank'] == 0,
                 'ONE_ACTUAL_READY_TP1_WORKER_REQUIRED')
-        self.inventory = SharedScaleGroupInventory(self.model, self.candidates, worker_identity=identity['worker'],
-            native=self.native_reader, folder=self.folder / 'inventory', row_lineage=self.row_lineage,
-            row_transfer=self.projection_rows)
+        self.inventory = self.make_inventory(identity['worker'])
         self.norm_evidence = None
         self.source_rows = self.metadata_rows = None
         self.source_row_refusal = None

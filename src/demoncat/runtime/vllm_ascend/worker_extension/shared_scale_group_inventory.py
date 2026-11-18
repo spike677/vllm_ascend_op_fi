@@ -19,7 +19,7 @@ class SharedScaleGroupInventory(SharedScaleInventory):
         def observed(*values, **options):
             before = self.native.state()
             try:
-                return original(*values, **options)
+                return self.invoke_dynamic(original, values, options)
             finally:
                 # Failed public calls also keep their actual prepares/executes.
                 try:
@@ -34,13 +34,18 @@ class SharedScaleGroupInventory(SharedScaleInventory):
                 self.public_calls[public_index]['independent_native'] = record
             self.native_call = None
 
+    def invoke_dynamic(self, original, args, kwargs):
+        return original(*args, **kwargs)
+
+    def verify_dynamic(self, events, x, q, scale):
+        return verify_public_group_call(events, x, q, scale, self.native_thread, expected_device=self.native.device)
+
     def _dynamic_lineage(self, frame, row, args, kwargs, output):
         PublicQuantInventory._dynamic_lineage(self, frame, row, args, kwargs, output)
         row['independent_native'] = self.native_call
         x = args[0] if args else kwargs.get('input')
         q, scale = output
-        self.native_call['binding'] = verify_public_group_call(self.native_call['native_events'], x, q, scale,
-            self.native_thread, expected_device=self.native.device)
+        self.native_call['binding'] = self.verify_dynamic(self.native_call['native_events'], x, q, scale)
         row['request_row_lineage'] = self.row_lineage(x)
         row['native_execution_observed'] = True
         import torch

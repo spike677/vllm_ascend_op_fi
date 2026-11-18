@@ -7,6 +7,7 @@ writes invalidate storage aliases through an independent observed-write epoch.
 import hashlib
 import json
 import threading
+import time
 import weakref
 
 import torch
@@ -185,7 +186,12 @@ class RequestRowProvenance(TorchDispatchMode):
                 shape_is_not_request_row_proof=True, tensor=metadata(tensor))
         return snapshot(dict(verified=True, source='ACTUAL_DISPATCHER_ROW_PRESERVING_CHAIN', forward_id=self.forward_id,
             node_id=record['node']['node_id'], actual_rows=record['rows'], tensor=record['metadata'],
-            observed_write_epoch=record['write_epoch'], native_qualified=False))
+            observed_write_epoch=record['write_epoch'], native_qualified=False,
+            observation_prefix=dict(observer_id=id(self), forward_id=self.forward_id,
+                observed_at_monotonic_ns=time.monotonic_ns(), actual_calls=self.total, retained_calls=len(self.events),
+                missing_calls=self.overflow, errors=len(self.errors),
+                source_errors=0 if self.boundaries is None else len(self.boundaries.errors),
+                parent_source_sequences=[row['sequence'] for row in getattr(self.boundaries, 'stack', ())])))
 
     def projection(self, tensor, output, *, evidence):
         """Only called after exact Native-DQ and public owned-QMM chain checks."""

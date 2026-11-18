@@ -163,7 +163,7 @@ class QuantServingSession:
         try:
             self.state();require(self.expected is not None and self.active is None and not self.error,'UNOWNED_OR_REENTRANT_FORWARD')
             actual=self.binding.bind(module,args,kwargs);context=get_forward_context()
-            self.active=dict(phase=PHASES[len(self.rows)],decode=None,returned=False,logits_returned=False)
+            self.active=dict(phase=self.phase_name(),decode=None,returned=False,logits_returned=False)
             self.embedding=self.normalized=None;self.actual=actual;self.forward_count+=1
             if self.runner.with_prefill is False:
                 require(self.capture_started,'DECODE_WITHOUT_HOST_CAPTURE_ADVANCE')
@@ -175,6 +175,12 @@ class QuantServingSession:
                 self.active['decode']=rows
             if self.guard:self.guard()
         except BaseException as exc:self.error=repr(exc);self.save();raise
+
+    def phase_name(self):
+        return PHASES[len(self.rows)]
+
+    def allow_nonfinite_output(self):
+        return False
 
     def embed(self,module,args,kwargs,output):
         if self.active and self.active.get('decode'):
@@ -192,8 +198,8 @@ class QuantServingSession:
     def post(self,module,args,kwargs,output):
         if self.active is None:return
         try:
-            _,digest,finite=complete_tensor(output);require(finite,'HIDDEN_NONFINITE')
-            self.active.update(returned=True,hidden_sha256=digest)
+            _,digest,finite=complete_tensor(output);require(finite or self.allow_nonfinite_output(),'HIDDEN_NONFINITE')
+            self.active.update(returned=True,hidden_sha256=digest,hidden_finite=finite)
         except BaseException as exc:self.error=repr(exc);self.save();raise
 
     def logits(self,module,args,kwargs,output):
@@ -201,8 +207,8 @@ class QuantServingSession:
         try:
             require(self.active['returned'] and not self.active['logits_returned'],'UNBOUND_LOGITS')
             cpu,digest,finite=complete_tensor(output)
-            require(finite and list(cpu.shape)==[8,self.runner.vllm_config.model_config.hf_config.vocab_size],'FULL_B8_LOGITS_REQUIRED')
-            self.active.update(logits_returned=True,logits_sha256=digest,top1=cpu.argmax(-1).tolist())
+            require((finite or self.allow_nonfinite_output()) and list(cpu.shape)==[8,self.runner.vllm_config.model_config.hf_config.vocab_size],'FULL_B8_LOGITS_REQUIRED')
+            self.active.update(logits_returned=True,logits_sha256=digest,logits_finite=finite,top1=cpu.argmax(-1).tolist())
             if self.active['decode']:
                 require(self.decode_result is None,'MULTIPLE_SELECTED_DECODES');self.decode_result=self.active
             else:
