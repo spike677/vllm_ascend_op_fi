@@ -4,6 +4,14 @@ Base: `027916b3a2e021d107e41cc063d29e66d879ee6b`. Preserve the six accepted
 C2/C3 scopes and all earlier source snapshots, failures and raw evidence.
 This workstream does not reset or transfer their qualification.
 
+Latest reviewed increment: source82 adds **isolated C2 acceptance for
+26.fia_destination, 29/29 eligible targets** on SmolLM2-135M, CANN8.5.1/A2,
+TP1/card5. Root's acceptance is limited to that completed attempt; it is not a
+runtime capability. C3 for that isolated scope and E5 remain open. See the
+[independent review and limits](AGENT7_NATIVE26_SOURCE82_ISOLATED_REVIEW.md).
+The current strictly accepted totals are C2 **7/17**, C3 **6/17**; the original
+six scopes and all narrower historical results remain intact.
+
 ## Ownership and execution
 
 Root owns shared contracts, registry integration, device queue and qualification
@@ -306,3 +314,62 @@ contract on both cards. The source79/card5 stock arm completed all five phases.
 The private normal arm stopped with
 `ARCH22_FINAL_PUBLIC_ARGUMENT_GEOMETRY_DIFFERS`; actual host/POD/runtime evidence
 is retained for diagnosis. No numerical-equivalence or fault claim follows.
+
+
+## Source82 isolated C2 and source83–85 continuation
+
+Source82 completed64 group requests plus ordinary post-unregister health.
+Each of29 eligible FIA targets has its own healthy-input F and fresh OFF;
+the unsupported first call remains in every30-call census. The actual reader
+reconciles69,520 checks,145 owned executions,1,740 ledger entries,205 complete
+stock/writer binaries and exact target restoration. A second CPU-only review
+cross-checks598 conditions and the36 loaded source identities. All29 F requests
+change the complete-output runtime digest and returned token; all35 non-F group
+requests restore the healthy digest and returned output. Original residual and
+logits hashes are not independently rehashed full arrays. The recorded original
+live C2 issuance was not consumed by C3. Source77 cumulative C3 cannot be joined
+to this different isolated scope. These limits and exact SHA pins are in the
+[source82 summary](native26_source82_isolated_independent_summary.json).
+
+The QMM26 [original allocator-file re-review](qmm26_availability_originals_summary.json)
+passes4,455 checks and rehashes924 relevant records without another NPU call.
+Both healthy requests retain all135 sites:20 and8 have eligible geometry,
+with26 in their union and24 changing eligibility. Six non-F controls have30
+sites in the union, with only2 in every control. This is real physical
+availability variation; it does not justify reducing C2 to2 targets or granting
+qualification from geometry alone. Full allocator-snapshot digests remain
+runtime receipts; only the saved relevant segment bytes were rehashed.
+
+Source83's actual two healthy DeepSeek B8 decodes now prove10/135 request-row
+chains each, including the first shared-MoE gate/up and down projections. All270
+Native prepare/execute calls are bound; zero F ran and no Native target was
+qualified. The independent [lineage review](quant_source83_lineage_review.md)
+keeps the complete denominator and identifies the next routed-expert mapping
+gap. Five bounded integer snapshots are being implemented for that gap; expert
+slots will not be represented as duplicate requests or grant routed-output
+semantics without proof.
+
+The source83 new arch22 normal bridge has435 cross-arm complete payload pairs
+exact in a CPU-only diagnostic. Its original normal acceptance still fails:
+capture confused Python thread IDs with Native OS TIDs, actual library mapping
+identity was incomplete, and within-arm raw page-table IDs change. The source85
+capture now records both thread domains; the reader initializes CPU NumPy before
+installing its no-runtime audit hook. Cross-arm pairs still require raw input
+identity. A separate within-arm criterion verifies actual physical page
+relocation through full typed tables, unique in-range pages, writer/consumer
+slots and complete matching logical KV files; it never changes raw equality
+into true. Source85 passes48 local tests and48 production-image CPU contracts.
+Its fresh normal-only pair is prepared with unchanged production libraries
+mounted read-only at original paths. CPU success and prior partial equality do
+not authorize F. See the [reader contract](../../docs/worker_core_v1/attention33_source83_reader_review.md).
+
+Source84 output39 is a separate actual card5 run with bound direct-forward
+observation and source-bound unused rotary-helper classification. Its Native
+fault implementation and library-mapping checks are unchanged. All28 isolated
+F requests, C2 OFF and C2 health completed. The first C3 request refused
+`POSTWRITE_APPLY_4`, the existing original-finiteness guard; its independent
+propagation and completed-C2 review remain pending. Actual recovery OFF/health,
+owner release and deployment removal completed; the controller exited2 and
+keeps CASE_FAILED. No C3 qualification is inferred or failure erased. Final
+result SHA256: `80f3903b653c061d9a72630c4855237ba2c9e37ea93b018404b0f5c79b6c8a60`.
+No output39 group qualification is added pending independent review.
