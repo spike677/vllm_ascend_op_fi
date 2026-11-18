@@ -161,6 +161,12 @@ sources remain byte-identical; no Native ABI or shared Core rewrite occurred.
 Production runtime, actual GWS/execute observation, and internal prepared/Slice
 lineage are still pending. No F, new C1/C2/C3 or E5 follows from this wiring.
 
+Source112's fresh group33 SDK build has now completed, including its real
+serializer and matching kernel. The normal preparer rehashed1163 vendor
+artifacts and prepared two normal-only cases. The22,528 geometry combinations
+are CPU checks, not NPU observations. See the [SDK result and remaining
+gates](ATTENTION33_SOURCE112_SDK_REVIEW.md); the public RPC cost hold remains.
+
 ## Ownership and execution
 
 Root owns shared contracts, registry integration, device queue and qualification
