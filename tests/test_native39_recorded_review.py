@@ -1,10 +1,12 @@
 """Negative audit-boundary checks; these do not simulate NPU acceptance."""
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
 
-from experiments.c2c3_closure_20261117.review_native39_group_124 import fault_effect_errors, statistics, target_key
+from experiments.c2c3_closure_20261117.review_native39_group_124 import (
+    fault_effect_errors, statistics, target_key, metadata_scope_binding, sha)
 
 
 class Native39RecordedReviewTests(unittest.TestCase):
@@ -38,6 +40,41 @@ class Native39RecordedReviewTests(unittest.TestCase):
             self.assertEqual(saved, result['baseline_fault'])
             with self.assertRaises(FileExistsError):
                 statistics(root / 'absent', root / 'audit')
+
+    def test_metadata_source_is_the_fourth_exact_scope_component(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);installed=root/'actual-installed';source=root/'frozen-source42'
+            for folder in (installed,source):
+                (folder/'fault_injection').mkdir(parents=True)
+                (folder/'fault_injection/metadata_arrays.py').write_bytes(b'actual frozen metadata source\n')
+            components=['a'*64,'b'*64,'c'*64]
+            metadata=hashlib.sha256(b'actual frozen metadata source\n').hexdigest()
+            stages={'c2':dict(scope=dict(implementation_sha256=sha([*components,metadata])))}
+            result=metadata_scope_binding(installed,source,*components,stages)
+            self.assertTrue(result['checks_passed'],result)
+            self.assertEqual(result['implementation_sha256'],metadata)
+            stages['c2']['scope']['implementation_sha256']=sha(components)
+            result=metadata_scope_binding(installed,source,*components,stages)
+            self.assertFalse(result['checks_passed'])
+            self.assertIn('c2:METADATA_BOUND_IMPLEMENTATION_SCOPE_MISMATCH',result['errors'])
+
+    def test_changed_installed_or_frozen_metadata_cannot_borrow_recorded_scope(self):
+        for changed in ('actual-installed','frozen-source42','both'):
+            with self.subTest(changed=changed),tempfile.TemporaryDirectory() as temporary:
+                root=Path(temporary);installed=root/'actual-installed';source=root/'frozen-source42'
+                for folder in (installed,source):
+                    (folder/'fault_injection').mkdir(parents=True)
+                    (folder/'fault_injection/metadata_arrays.py').write_bytes(b'original')
+                parts=['a'*64,'b'*64,'c'*64,hashlib.sha256(b'original').hexdigest()]
+                stages={'c3':dict(scope=dict(implementation_sha256=sha(parts)))}
+                for folder in (installed,source):
+                    if changed in (folder.name,'both'):
+                        (folder/'fault_injection/metadata_arrays.py').write_bytes(b'changed')
+                result=metadata_scope_binding(installed,source,*parts[:3],stages)
+                self.assertFalse(result['checks_passed'])
+                if changed!='both':self.assertIn('METADATA_ARRAY_SOURCE_BYTES_MISMATCH',result['errors'])
+                if changed!='frozen-source42':
+                    self.assertIn('c3:METADATA_BOUND_IMPLEMENTATION_SCOPE_MISMATCH',result['errors'])
 
 
 if __name__ == '__main__':

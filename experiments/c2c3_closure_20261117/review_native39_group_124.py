@@ -207,6 +207,28 @@ def statistics(folder, out):
     return results
 
 
+def metadata_scope_binding(installed, source, adapter, observer, profile, stages):
+    """Bind the fourth implementation component to actual deployed bytes.
+
+    This takes the deployment's frozen source, never the reviewer's checkout.
+    A legacy three-item digest must not pass the repaired ownership build.
+    """
+    rel = Path('fault_injection/metadata_arrays.py')
+    actual, frozen = file_record(installed / rel), file_record(source / rel)
+    expected = sha([adapter, observer, profile, actual['sha256']])
+    errors = []
+    if actual['sha256'] != frozen['sha256']:
+        errors.append('METADATA_ARRAY_SOURCE_BYTES_MISMATCH')
+    scopes = {}
+    for name, stage in stages.items():
+        observed = stage['scope']['implementation_sha256']
+        scopes[name] = dict(recorded=observed, expected=expected, exact=observed == expected)
+        if observed != expected:
+            errors.append(name + ':METADATA_BOUND_IMPLEMENTATION_SCOPE_MISMATCH')
+    return dict(actual=actual, frozen_source=frozen, implementation_sha256=actual['sha256'],
+                expected_scope_sha256=expected, scopes=scopes, checks_passed=not errors, errors=errors)
+
+
 def identities(args, data, stages):
     manifest = load(args.case_manifest)[0]
     mounts = {row[1]: Path(row[0]) for row in manifest['mounts']}
@@ -244,9 +266,10 @@ def identities(args, data, stages):
         if actual['sha256'] != source['sha256']:
             errors.append('OBSERVER_SOURCE_BYTES_MISMATCH:' + str(rel))
     profile = data['attempts'][0]['setup']['binding']['build_profile_sha256']
+    metadata_binding = metadata_scope_binding(installed, args.source, adapter, observer, profile, stages)
+    errors.extend(metadata_binding['errors'])
     for name, stage in stages.items():
-        if (stage['scope']['implementation_sha256'] != sha([adapter, observer, profile]) or
-                stage['scope']['environment_sha256'] != sha([profile, data['identity']['worker']])):
+        if stage['scope']['environment_sha256'] != sha([profile, data['identity']['worker']]):
             errors.append(name + ':SOURCE_BUILD_WORKER_SCOPE_BINDING_MISMATCH')
     frozen = []
     for row in control['frozen_scripts']:
@@ -259,6 +282,7 @@ def identities(args, data, stages):
     return dict(controller=file_record(original), case_manifest=file_record(args.case_manifest),
         image_id=control['image_id'], source_root=str(args.source), installed_root=str(installed),
         imported_sources=imported, observer_bindings=observer_bindings, observer_sha256=observer,
+        metadata_array_implementation=metadata_binding,
         frozen_scripts=frozen, native_build_receipt=file_record(receipt_path),
         native_build_artifacts=artifacts, build_profile_sha256=profile, checks_passed=not errors, errors=errors)
 
