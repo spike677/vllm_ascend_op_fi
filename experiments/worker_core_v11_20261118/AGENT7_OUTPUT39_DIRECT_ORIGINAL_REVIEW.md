@@ -55,8 +55,20 @@ TORCH_DEVICE_BACKEND_AUTOLOAD=0
 python -B -m unittest test_worker_core39_direct_original_review test_worker_core_group_original_review -q
 ```
 
-All **44 tests passed** in 17.732 seconds on the local CPU environment. The
-exception-path hook warning is expected by the failed-C3 fixture.
+All **47 tests passed** in 16.975 seconds on the local CPU environment after
+adding the rejected-Native-apply joins. This replaces, and is not added to, the
+earlier overlapping 44-test run. The exception-path hook warning is expected by
+the failed-C3 fixture.
+
+For a rejected Native apply, the partial reviewer separately joins the original
+failed enqueue/abort, target and actual partial projection, exact owner,
+generation, thread and span, followed by the original open/apply/restore/release/
+live event sequence. A claimed `POSTWRITE_APPLY_n` error requires an actual
+nonzero return with that code. A rejected apply with zero changed elements is
+not a hit. The report records successful release when observed but does not
+infer the selected original tensor value or compiler provenance from an error
+number. The extra failure-schema unit fixture is explicitly CPU-only; the
+actual NPU result still requires running the CLI over full pinned originals.
 
 This commit is an audit/CPU adaptation. It does not claim that source84's NPU
 C3 succeeded or that E5 was collected. The actual source84 `POSTWRITE_APPLY_4`

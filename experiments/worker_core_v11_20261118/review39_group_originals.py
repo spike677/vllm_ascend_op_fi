@@ -417,6 +417,82 @@ def check_completed_requests(a, d, rows, *, natural):
     return seen
 
 
+def check_failed_native(a, d, final):
+    """Join a rejected apply to its failed enqueue and original partial call.
+
+    A return code is observed ABI evidence. This reader does not infer the
+    selected tensor's numeric value or prove compiler provenance from that code.
+    """
+    summaries = []; seen = set()
+    pending = {x['mapping']['internal_request_id']:x for x in d.get('requests', [])
+               if 'original_observations' not in x}
+    for label, group in final['finished_groups'].items():
+        if not group.get('failed_attempt'):
+            continue
+        targets = {C.digest(x['lease']['target']):x['lease']['target'] for x in group['coverage']['recovery']['targets']}
+        for row in group['native_lease_receipts']:
+            receipt = row.get('receipt')
+            if receipt is None:
+                continue
+            rejected = [e for e in receipt['events'] if e.get('return_code') not in (0, None)]
+            if not rejected:
+                continue
+            key = (receipt['owner'], receipt['generation'], receipt['handle'])
+            if key in seen:
+                continue
+            seen.add(key); rid = row['actual_request_id']; driver = pending.get(rid)
+            snapshots = [x for x in final['failures'] if x['phase'] == label+'_fault' and
+                x.get('partial_inventory') and any(tuple(c['key']) == tuple(row['target_key'])
+                    for c in x['partial_inventory']['calls'])]
+            a.check(driver is not None and driver['phase'] == label+'_fault' and 'output' not in driver and
+                rid in d.get('owned_request_abort', []) and len(snapshots) == 1 and row['target_id'] in targets,
+                'REJECTED_NATIVE_APPLY_JOINS_FAILED_ENQUEUE_AND_TARGET', label)
+            if len(snapshots) != 1:
+                continue
+            inv = snapshots[0]['partial_inventory']; calls = [c for c in inv['calls'] if tuple(c['key']) == tuple(row['target_key'])]
+            a.check(len(calls) == 1, 'REJECTED_NATIVE_ACTUAL_PROJECTION_UNIQUE', label)
+            if len(calls) != 1:
+                continue
+            target = targets.get(row['target_id'], {})
+            a.check(target.get('module_object_identity') == calls[0]['module_object_identity'] == row['target_key'][0] and
+                target.get('operator_api') == calls[0]['operator'] == row['target_key'][1] and
+                calls[0]['original_calls'] == 1, 'REJECTED_NATIVE_COMPLETE_TARGET_IDENTITY_JOIN', label)
+            scope = inv['frame_observer_scope']; events = receipt['events']; applied = receipt['applications']
+            a.check(receipt['schema'] == 'demoncat.postwrite.lease_receipt.v1' and
+                receipt['owner'] == scope['owner'] == group['native_owner'] and
+                receipt['generation'] == scope['native_generation'] and receipt['thread'] == scope['thread'] and
+                receipt['geometry'] == calls[0]['output_geometry'] and C.positive(receipt['handle']) and
+                receipt['element_offset'] == 0 and receipt['elements'] == math.prod(receipt['geometry']['shape']),
+                'REJECTED_NATIVE_EXACT_SPAN_OWNER_GENERATION', label)
+            a.check([x['operation'] for x in events] == ['open','apply','restore','release','live'] and
+                [x['sequence'] for x in events] == [1,2,3,4,5] and len(rejected) == len(applied) == 1 and
+                rejected[0] == applied[0] == receipt['first_failure'] == events[1] and
+                receipt['open'] == events[0] and receipt['restore'] == events[2] and receipt['release'] == events[3] and
+                receipt['live_readbacks'] == [events[4]], 'REJECTED_APPLY_ORIGINAL_EVENT_SEQUENCE', label)
+            for event in events:
+                a.check(all(event[k] == receipt[k] for k in ('owner','generation','handle')) and
+                    event['returned'] is True and event['error'] is None and type(event['return_code']) is int,
+                    'REJECTED_APPLY_ACTUAL_NATIVE_RETURN', label)
+            a.check(events[1]['mode'] == 1 and events[1]['indices'] == [0] and
+                type(events[1]['return_code']) is int and events[1]['return_code'] != 0 and
+                type(events[1]['changed_elements']) is int and events[1]['changed_elements'] == 0 and
+                all(events[i]['return_code'] == 0 for i in (0,2,3,4)) and
+                events[4]['native_live'] is False and receipt['closed'] is True,
+                'REJECTED_APPLICATION_NOT_A_HIT_AND_NATIVE_RELEASED', label)
+            summaries.append(dict(stage=label, original_operator=calls[0]['operator'],
+                native_apply_return_code=events[1]['return_code'], changed_elements=events[1]['changed_elements'],
+                subsequent_restore_release_return_codes=[events[2]['return_code'],events[3]['return_code']],
+                final_native_live=events[4]['native_live'], receipt_sha256=C.digest(receipt),
+                numeric_original_value_observed=False, compiler_source_binding_inferred=False,
+                qualification_granted=False))
+    declared = re.search(r'POSTWRITE_APPLY_([0-9]+)', str(d.get('error', '')))
+    if declared:
+        a.check(any(x['native_apply_return_code'] == int(declared[1]) for x in summaries),
+                'NATIVE_APPLY_ERROR_REQUIRES_ORIGINAL_NONZERO_RETURN')
+    return dict(unique_rejected_native_receipts=len(summaries), receipts=summaries,
+        absence_of_native_rejection_does_not_mean_no_failure=True, qualification_granted=False)
+
+
 def review(d, host, records, originals, *, natural=True, profile=OLD.CUSTOM_PROFILE,
            direct_cpu_profile=None, frame_model_source=None):
     c, p = OLD.helpers(profile); a = C.Audit(); details = {}
@@ -452,6 +528,9 @@ def review(d, host, records, originals, *, natural=True, profile=OLD.CUSTOM_PROF
             details['live_c2_history'] = a.section('partial_live_proof', check_live_proof, a, groups)
             completed['c2'] = details['c2'] is not None and not a.issues
         a.check(bool(d.get('error')) and bool(final['failure'] or final['failures']), 'PARTIAL_ORIGINAL_FAILURE_PRESERVED')
+        details['failed_native'] = a.section('failed_native', check_failed_native, a, d, final)
+        if 'c2' in completed:
+            completed['c2'] = bool(completed['c2'] and not a.issues)
         return dict(**a.report(), classification='FAILED_OR_PARTIAL_NOT_QUALIFIED', original_error=d.get('error'),
             original_recovery_error=d.get('recovery_error'), completed_requests=len(rows),
             recorded_failure=final['failure'], recorded_failures=final['failures'],

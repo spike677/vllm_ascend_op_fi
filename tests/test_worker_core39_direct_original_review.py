@@ -246,5 +246,55 @@ class DirectOriginalReviewTests(unittest.TestCase):
         self.assertTrue(any(x['code']=='GROUP_IMPLEMENTATION_BINDS_ACTUAL_LOADED_SOURCE' for x in result['group_source_review']['issues']))
 
 
+class FailedNativeSchemaTests(unittest.TestCase):
+    """Small declared CPU schema fixture, never an actual Native receipt."""
+    def fixture(self):
+        target=dict(module_object_identity=101, operator_api='vllm.unquantized_gemm.default')
+        key=[101,target['operator_api'],0]
+        geometry=dict(shape=[2,2],dtype='torch.bfloat16',device='cpu',logical_bytes=8,storage_bytes=8)
+        events=[dict(sequence=i+1,operation=op,handle=11,owner=9,generation=7,returned=True,
+            return_code=4 if op=='apply' else 0,error=None) for i,op in enumerate(('open','apply','restore','release','live'))]
+        events[1].update(mode=1,indices=[0],changed_elements=0);events[4]['native_live']=False
+        receipt=dict(schema='demoncat.postwrite.lease_receipt.v1',owner=9,generation=7,thread=8,handle=11,
+            element_offset=0,elements=4,geometry=geometry,events=events,open=events[0],applications=[events[1]],
+            restore=events[2],release=events[3],live_readbacks=[events[4]],first_failure=events[1],closed=True)
+        document=dict(error="PostwriteRefused('POSTWRITE_APPLY_4')",owned_request_abort=['failed-request'],
+            requests=[dict(phase='c3_fault',mapping=dict(internal_request_id='failed-request'))])
+        final=dict(finished_groups=dict(c3=dict(failed_attempt='CPU_SCHEMA_FAILURE',native_owner=9,
+            coverage=dict(recovery=dict(targets=[dict(lease=dict(target=target))])),
+            native_lease_receipts=[dict(actual_request_id='failed-request',target_key=key,target_id=r.C.digest(target),receipt=receipt)])),
+            failures=[dict(phase='c3_fault',partial_inventory=dict(frame_observer_scope=dict(owner=9,native_generation=7,thread=8),
+                calls=[dict(key=key,module_object_identity=101,operator=target['operator_api'],original_calls=1,output_geometry=geometry)]))])
+        return document,final
+
+    def audit(self,document,final):
+        a=r.C.Audit();value=a.section('failed',r.check_failed_native,a,document,final)
+        return a.report(),value
+
+    def test_recorded_rejected_apply_and_release_never_means_hit(self):
+        report,value=self.audit(*self.fixture())
+        self.assertTrue(report['consistent'],report['issues'])
+        self.assertEqual(value['unique_rejected_native_receipts'],1)
+        self.assertEqual(value['receipts'][0]['native_apply_return_code'],4)
+        self.assertFalse(value['receipts'][0]['numeric_original_value_observed'])
+        self.assertFalse(report['c2'] or report['c3'] or report['e5'])
+
+    def test_wrong_request_owner_target_or_missing_release_refused(self):
+        for kind in ('request','owner','target','live'):
+            d,f=self.fixture();record=f['finished_groups']['c3']['native_lease_receipts'][0]
+            if kind=='request':record['actual_request_id']='foreign'
+            elif kind=='owner':record['receipt']['owner']+=1
+            elif kind=='target':record['target_id']='0'*64
+            else:record['receipt']['events'][4]['native_live']=True
+            self.assertFalse(self.audit(d,f)[0]['consistent'],kind)
+
+    def test_error_string_without_nonzero_original_return_is_insufficient(self):
+        d,f=self.fixture();receipt=f['finished_groups']['c3']['native_lease_receipts'][0]['receipt']
+        receipt['events'][1]['return_code']=0
+        report,_=self.audit(d,f)
+        self.assertFalse(report['consistent'])
+        self.assertIn('NATIVE_APPLY_ERROR_REQUIRES_ORIGINAL_NONZERO_RETURN',[x['code'] for x in report['issues']])
+
+
 if __name__ == '__main__':
     unittest.main()
