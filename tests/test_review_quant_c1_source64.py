@@ -189,9 +189,35 @@ class QuantOriginalReviewTests(unittest.TestCase):
         for row, f in zip(s['rows'], i['forwards']):
             mapping = row['decode']['decode']; mapping.update(counts=[1]*8, row_request_indices=list(range(8)),
                 request_count=8, token_row_count=8, scheduler_capacity=8, pure_decode=True)
+            mapping['actual_input_metadata'] = dict(object_id=1, storage_identity=2, storage_offset=0,
+                shape=[8], stride=[1], dtype='torch.int32', device='npu:0')
+            mapping['actual_position_metadata'] = dict(mapping['actual_input_metadata'], object_id=3,
+                storage_identity=4, dtype='torch.int64')
             f['row_mapping'] = copy.deepcopy(mapping)
         result = review.evidence(s, i, self.discovery, natural=True, count=2)
         self.assertIn('RECOMPUTED_ACTUAL_INPUT_HASH', self.codes(result))
+
+    def test_input_digest_uses_actual_dtype_shape_header_and_complete_values(self):
+        from demoncat.runtime.vllm_ascend.worker_extension.serving import complete_tensor
+        import hashlib
+        values = [185, 185, 207, 185, 185, 185, 185, 185]
+        positions = [8, 8, 8, 10, 11, 7, 7, 8]
+        scheduler = dict(input_ids=values, row_token_positions=positions,
+            actual_input_metadata=dict(object_id=1, storage_identity=2, storage_offset=0,
+                shape=[8], stride=[1], dtype='torch.int32', device='npu:0'),
+            actual_position_metadata=dict(object_id=3, storage_identity=4, storage_offset=0,
+                shape=[8], stride=[1], dtype='torch.int64', device='npu:0'))
+        expected = hashlib.sha256(json.dumps([
+            complete_tensor(fixtures.torch.tensor(values, dtype=fixtures.torch.int32))[1],
+            complete_tensor(fixtures.torch.tensor(positions, dtype=fixtures.torch.int64))[1]]).encode()).hexdigest()
+        self.assertEqual(review.scheduler_input_digest(scheduler), expected)
+        self.assertEqual(expected, 'ddef89156ffc9320ba59be5e9b6a4f0fe58e224a78d60820b47da1ef29d8bd99')
+        for key, value in (('dtype', 'torch.int64'), ('shape', [2, 4]), ('stride', [2]), ('object_id', 0)):
+            bad = copy.deepcopy(scheduler); bad['actual_input_metadata'][key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, 'METADATA_CHANGED'):
+                review.scheduler_input_digest(bad)
+        bad = copy.deepcopy(scheduler); bad['input_ids'][2] += 1
+        self.assertNotEqual(review.scheduler_input_digest(bad), expected)
 
     def test_offline_import_does_not_load_framework_injector_or_dso(self):
         program = '''import importlib.util,sys

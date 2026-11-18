@@ -77,6 +77,25 @@ def signature(rows):
     return fields(rows, ('logical_ids', 'row_token_positions', 'prefixes', 'input_ids'))
 
 
+def scheduler_input_digest(scheduler):
+    """Reproduce complete_tensor's actual dtype/shape header and integer bytes."""
+    hashes = []
+    for values_key, metadata_key, expected_dtype, code in (
+            ('input_ids', 'actual_input_metadata', 'torch.int32', 'i'),
+            ('row_token_positions', 'actual_position_metadata', 'torch.int64', 'q')):
+        values, meta = scheduler[values_key], scheduler[metadata_key]
+        if not (len(values) == 8 and all(type(value) is int for value in values)
+                and meta['dtype'] == expected_dtype and meta['shape'] == [len(values)]
+                and meta['stride'] == [1] and meta['device'] == 'npu:0'
+                and positive(meta['object_id']) and positive(meta['storage_identity'])
+                and type(meta['storage_offset']) is int and meta['storage_offset'] >= 0):
+            raise ValueError('ACTUAL_SCHEDULER_TENSOR_METADATA_CHANGED')
+        h = hashlib.sha256(json.dumps([meta['dtype'], meta['shape']]).encode())
+        h.update(struct.pack('<' + str(len(values)) + code, *values))
+        hashes.append(h.hexdigest())
+    return hashlib.sha256(json.dumps(hashes).encode()).hexdigest()
+
+
 def abi(a, value, kind, loc):
     a.check(value['version'] == 1 and value['size'] == ABI[kind] and value.get('reserved', 0) == 0,
             'NATIVE_ABI', loc)
@@ -423,9 +442,7 @@ def evidence(serving, inventory, discovery, *, natural=True, count=135):
                     and scheduler['pure_decode'] is True and sorted(scheduler['logical_ids']) == list(range(8)), 'ACTUAL_FIRST_DECODE_SCHEDULER', phase)
                 a.check(all(pos == len(prefix['prompt']) and len(prefix['output']) == 1 and token == prefix['output'][0]
                     for pos, prefix, token in zip(scheduler['row_token_positions'], scheduler['prefixes'], scheduler['input_ids'])), 'ACTUAL_PREFIX_TOKEN_POSITION', phase)
-                ih = hashlib.sha256(struct.pack('<8i', *scheduler['input_ids'])).hexdigest()
-                ph = hashlib.sha256(struct.pack('<8q', *scheduler['row_token_positions'])).hexdigest()
-                a.check(f['input_sha256'] == hashlib.sha256(json.dumps([ih, ph]).encode()).hexdigest(), 'RECOMPUTED_ACTUAL_INPUT_HASH', phase)
+                a.check(f['input_sha256'] == scheduler_input_digest(scheduler), 'RECOMPUTED_ACTUAL_INPUT_HASH', phase)
             for stage in ('prefill', 'decode'):
                 value = row[stage]; base = serving['rows'][0][stage]
                 a.check(value['returned'] is True and value['logits_returned'] is True
