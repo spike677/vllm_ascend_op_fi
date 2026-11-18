@@ -73,11 +73,19 @@ class SharedScaleInventorySession(QuantServingSession):
             digest = hashlib.sha256(json.dumps([input_sha, positions_sha]).encode()).hexdigest()
             self.inventory.begin(self.active['decode']['request_ids'][0], digest,
                 request_ids=tuple(self.active['decode']['request_ids']), row_mapping=self.active['decode'])
+            self.prepare_source_rows()
             self.row_observer.begin(self.active['decode']['request_ids'][0])
+            self.start_source_rows()
             for _, owner in self.model.named_modules():
                 for name, tensor in owner._parameters.items():
                     if tensor is not None and not tensor.requires_grad:
                         self.row_observer.register_broadcast_parameter(owner, name, tensor, kind='_parameters')
+
+    def prepare_source_rows(self):
+        """Optional early-producer observer handoff; legacy observation is unchanged."""
+
+    def start_source_rows(self):
+        """Optional exact-source graph adapter after the owned mode is entered."""
 
     def norm(self, module, args, kwargs, output):
         prior = self.normalized
@@ -197,5 +205,8 @@ def remove_shared_scale_inventory(worker):
     report = session.report()
     require(not any(report[key] for key in ('owned_hooks', 'owned_method_patches', 'owned_api_patches', 'owned_row_dispatch_modes')),
             'SHARED_SCALE_INVENTORY_STILL_OWNS_HOOKS')
+    require(not report.get('owned_source_profile_callbacks', 0) and not report.get('owned_early_dispatch_modes', 0)
+            and not report.get('owned_live_metadata_records', 0),
+            'SHARED_SCALE_INVENTORY_STILL_OWNS_SOURCE_OBSERVERS')
     del worker._demoncat_shared_scale_inventory
     return report

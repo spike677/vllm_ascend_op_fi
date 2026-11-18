@@ -46,6 +46,40 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
             native=self.native_reader, folder=self.folder / 'inventory', row_lineage=self.row_lineage,
             row_transfer=self.projection_rows)
         self.norm_evidence = None
+        self.source_rows = self.metadata_rows = None
+        self.source_row_refusal = None
+        try:
+            from .quant_source_rows import SourceBoundRows
+            from .quant_mla_metadata_rows import MlaMetadataRows
+            source_rows = SourceBoundRows.from_runtime(self.row_observer, self.model)
+            metadata_rows = MlaMetadataRows.from_runtime(self.runner)
+            source_rows.metadata_producers = metadata_rows
+            self.source_rows, self.metadata_rows = source_rows, metadata_rows
+            self.row_observer.boundaries = source_rows
+        except Exception as error:
+            # An unavailable adapter keeps the existing Native census and its
+            # unverified rows. It cannot remove a candidate or qualify a set.
+            self.source_row_refusal = type(error).__name__ + ':' + str(error)
+
+    def begin_observation(self):
+        super().begin_observation()
+        if self.metadata_rows is not None:
+            self.metadata_rows.begin(tuple(self.expected))
+
+    def prepare_source_rows(self):
+        if self.metadata_rows is not None:
+            self.metadata_rows.close(scope=self.active['decode'], actual_positions=self.actual['positions'])
+
+    def start_source_rows(self):
+        if self.source_rows is not None:
+            self.source_rows.begin(self.active['decode'])
+
+    def close(self, *, abort=False):
+        if self.metadata_rows is not None and self.metadata_rows.active:
+            self.metadata_rows.close()
+        super().close(abort=abort)
+        if self.metadata_rows is not None:
+            self.metadata_rows.release()
 
     def report(self):
         value = super().report()
@@ -54,6 +88,12 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
             actual_native_prepare_calls=inventory['actual_native_prepare_calls'],
             actual_native_execute_calls=inventory['actual_native_execute_calls'],
             group_owner_installed=False, legacy_library_loaded=False,
+            source_row_adapter=dict(enabled=self.source_rows is not None, refusal=self.source_row_refusal),
+            metadata_producers=self.metadata_rows.report() if self.metadata_rows is not None else None,
+            owned_source_profile_callbacks=sum(int(value is not None and value.active)
+                for value in (self.source_rows, self.metadata_rows)),
+            owned_early_dispatch_modes=int(self.metadata_rows is not None and self.metadata_rows.mode is not None),
+            owned_live_metadata_records=0 if self.metadata_rows is None else self.metadata_rows.report()['live_producer_records'],
             scope='ALL_GROUP_MODEL_PARENTS_AND_NATIVE_CHILDREN_IN_TWO_ACTUAL_B8_FIRST_DECODES')
         return value
 

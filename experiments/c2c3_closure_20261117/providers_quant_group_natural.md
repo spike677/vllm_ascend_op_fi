@@ -55,8 +55,9 @@ agent container/NPU launch is authorized by this handoff.
 Row transfer still uses actual observed scheduler/embedding/RMSNorm lineage,
 current storage/write epochs and the reviewed row-preserving operator chain.
 Attention, opaque MoE routing/combine and unreviewed mutations do not inherit
-labels from shape or equal values. The new raw trace supplies their actual
-operator schema/objects for the next source-bound transfer adapters. All
+labels from shape or equal values. The conditional MLA source/producer adapter
+is documented in `providers_quant_mla_rows.md`; its CPU checks do not qualify
+the natural Attention path. MoE remains unadapted. All
 structural candidates and all actual Native parents remain visible;
 `native_qualified_targets=0`, `c2=false`, `c3=false` until the complete row set,
 per-target reference/lossless/OFF, actual current-input helper/effect and

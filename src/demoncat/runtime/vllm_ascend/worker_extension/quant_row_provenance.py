@@ -74,6 +74,9 @@ class RequestRowProvenance(TorchDispatchMode):
         self.parameters = {}
         self.total = self.overflow = 0
         self.errors = []
+        self.boundaries = None
+        self.watched_storages = []
+        self.call_stack = []
 
     def begin(self, forward_id):
         require(not self.active and threading.get_ident() == self.thread, 'ONE_CURRENT_ROW_OBSERVER_REQUIRED')
@@ -82,6 +85,8 @@ class RequestRowProvenance(TorchDispatchMode):
         self.parameters = {}
         self.total = self.overflow = 0
         self.errors = []
+        self.watched_storages = []
+        self.call_stack = []
         self.__enter__()
         self.active = True
 
@@ -100,12 +105,14 @@ class RequestRowProvenance(TorchDispatchMode):
             return None
         return record
 
-    def _bind(self, tensor, *, rows, parents, operator, evidence):
+    def _bind(self, tensor, *, rows, parents, operator, evidence, row_axis=0):
         rows, evidence = snapshot(rows), snapshot(evidence)
         meta = metadata(tensor)
-        require(tensor.ndim >= 2 and tensor.shape[0] == len(rows['request_ids']), 'ACTUAL_ROW_BOUNDARY_GEOMETRY_CHANGED')
+        require(tensor.ndim >= 2 and type(row_axis) is int and 0 <= row_axis < tensor.ndim
+                and tensor.shape[row_axis] == len(rows['request_ids']), 'ACTUAL_ROW_BOUNDARY_GEOMETRY_CHANGED')
         node = dict(node_id=len(self.nodes) + 1, operator=operator, metadata=meta, parents=list(parents),
-            rows_sha256=digest(rows), evidence=evidence, write_epoch=self.epochs.get(self.storage_key(meta), 0))
+            rows_sha256=digest(rows), row_axis=row_axis, evidence=evidence,
+            write_epoch=self.epochs.get(self.storage_key(meta), 0))
         self.nodes.append(node)
         self.proofs[id(tensor)] = dict(tensor=weakref.ref(tensor), metadata=meta, rows=rows, node=node,
             node_sha256=digest(node), write_epoch=node['write_epoch'])
@@ -138,8 +145,9 @@ class RequestRowProvenance(TorchDispatchMode):
             and (tensor.ndim < len(output_shape) or tensor.ndim == len(output_shape) and tensor.shape[0] == 1))
 
     def query(self, tensor):
-        record = self._lookup(tensor) if self.active and not self.errors and not self.overflow else None
-        if record is None:
+        healthy = self.boundaries is None or not self.boundaries.errors
+        record = self._lookup(tensor) if self.active and healthy and self._visible_context() and not self.errors and not self.overflow else None
+        if record is None or record['node']['row_axis'] != 0:
             return dict(verified=False, reason='NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN',
                 shape_is_not_request_row_proof=True, tensor=metadata(tensor))
         return snapshot(dict(verified=True, source='ACTUAL_DISPATCHER_ROW_PRESERVING_CHAIN', forward_id=self.forward_id,
@@ -148,8 +156,8 @@ class RequestRowProvenance(TorchDispatchMode):
 
     def projection(self, tensor, output, *, evidence):
         """Only called after exact Native-DQ and public owned-QMM chain checks."""
-        record = self._lookup(tensor) if self.active and not self.errors and not self.overflow else None
-        if record is None:
+        record = self._lookup(tensor) if self.active and self._visible_context() and not self.errors and not self.overflow else None
+        if record is None or record['node']['row_axis'] != 0:
             return self.query(output)
         require(evidence.get('complete_native_dynamic_formals') is True and evidence.get('owned_public_qmm_chain') is True
                 and tensor.ndim == output.ndim == 2 and output.shape[0] == tensor.shape[0]
@@ -159,6 +167,10 @@ class RequestRowProvenance(TorchDispatchMode):
             operator='ACTUAL_NATIVE_DYNAMIC_QUANT_TO_OWNED_PUBLIC_QMM', evidence=evidence)
         return self.query(output)
 
+    def _visible_context(self):
+        opaque = [func for func in self.call_stack if not str(func).startswith(('aten.', 'prims.'))]
+        return not opaque or self.boundaries is not None and self.boundaries.permits_public_rows(opaque)
+
     def _invalidate(self, values):
         written = [metadata(t) for t in {id(t): t for t in values}.values()]
         keys = {self.storage_key(meta) for meta in written}
@@ -167,6 +179,11 @@ class RequestRowProvenance(TorchDispatchMode):
         # overlapping live proof, not just aliases with one Storage object.
         for record in list(self.proofs.values()) + list(self.parameters.values()):
             meta = record['metadata']
+            if any(meta['device'] == change['device'] and
+                   meta['storage_address'] < change['storage_address'] + change['storage_bytes'] and
+                   change['storage_address'] < meta['storage_address'] + meta['storage_bytes'] for change in written):
+                keys.add(self.storage_key(meta))
+        for meta in self.watched_storages:
             if any(meta['device'] == change['device'] and
                    meta['storage_address'] < change['storage_address'] + change['storage_bytes'] and
                    change['storage_address'] < meta['storage_address'] + meta['storage_bytes'] for change in written):
@@ -182,7 +199,7 @@ class RequestRowProvenance(TorchDispatchMode):
             return None
         first = inputs[0]
         proof = self._lookup(first)
-        if proof is None or first.ndim < 2:
+        if proof is None or proof['node']['row_axis'] != 0 or first.ndim < 2:
             return None
         count = len(proof['rows']['request_ids'])
         if any(t.shape[0] != count for t in outputs):
@@ -200,7 +217,8 @@ class RequestRowProvenance(TorchDispatchMode):
                 if tensor.ndim == 0 or self._broadcast_parameter(tensor, shape):
                     continue  # No request axis, or a current owned parameter broadcast.
                 other = self._lookup(tensor)
-                if tuple(tensor.shape) != shape or other is None or other['rows'] != proof['rows']:
+                if (tuple(tensor.shape) != shape or other is None or other['node']['row_axis'] != 0
+                        or other['rows'] != proof['rows']):
                     return None
                 records.append(other)
             return records
@@ -225,7 +243,8 @@ class RequestRowProvenance(TorchDispatchMode):
             if dim == 0:
                 return None
             records = [self._lookup(t) for t in inputs]
-            return records if all(record and record['rows'] == proof['rows'] for record in records) else None
+            return records if all(record and record['node']['row_axis'] == 0
+                                  and record['rows'] == proof['rows'] for record in records) else None
         return None
 
     def __torch_dispatch__(self, func, types, args=(), kwargs=None):
@@ -238,29 +257,42 @@ class RequestRowProvenance(TorchDispatchMode):
                      row_preserving=False, reason='UNREVIEWED_OPERATOR_OR_INPUT_ROW_PROVENANCE')
         self.events.append(event)
         schema = getattr(func, '_schema', None)
+        boundary = None
         try:
             require(threading.get_ident() == self.thread, 'FOREIGN_ROW_OBSERVER_THREAD')
             event.update(schema=str(schema), schema_sha256=digest(str(schema)),
                 inputs=[metadata(t) for t in tensor_values((args, kwargs))])
             mutable = schema is None or schema.is_mutable
             event['mutable'] = mutable
+            if self.boundaries is not None:
+                boundary = self.boundaries.before_operator(func, args, kwargs, event)
             if mutable:
-                event['invalidated_storages'] = self._invalidate(tensor_values((args, kwargs)))
+                written = (boundary['written'] if boundary is not None and boundary.get('written') is not None
+                           else tensor_values((args, kwargs)))
+                event['invalidated_storages'] = self._invalidate(written)
                 event['reason'] = 'UNKNOWN_OR_MUTATING_OPERATOR_INVALIDATES_STORAGE_ALIASES'
         except BaseException as error:
             self.errors.append(type(error).__name__ + ':' + str(error))
             mutable = True
         try:
             event['original_calls'] = 1
-            output = func(*args, **kwargs)
+            self.call_stack.append(func)
+            try:
+                output = func(*args, **kwargs)
+            finally:
+                self.call_stack.pop()
         except BaseException as error:
             event.update(status='ORIGINAL_FAILED', exception=repr(error))
+            if self.boundaries is not None:
+                self.boundaries.failed_operator(boundary, error)
             raise
         try:
             outputs = tensor_values(output)
             event['outputs'] = [metadata(t) for t in outputs]
             name = self.allowed.get(func)
             parents = self._parents(name, args, kwargs, outputs) if name and not mutable else None
+            accepted = (self.boundaries.after_operator(boundary, output)
+                        if self.boundaries is not None else set())
             if parents is not None and not self.errors:
                 event['broadcast_parameters'] = [dict(module_object_identity=id(self.parameters[id(t)]['owner']()),
                     parameter_name=self.parameters[id(t)]['name'], metadata=self.parameters[id(t)]['metadata'],
@@ -272,7 +304,10 @@ class RequestRowProvenance(TorchDispatchMode):
                 event.update(row_preserving=True, reason=None)
             else:
                 for tensor in outputs:
-                    self.proofs.pop(id(tensor), None)
+                    if id(tensor) not in accepted:
+                        self.proofs.pop(id(tensor), None)
+                if accepted:
+                    event.update(row_preserving=True, reason=None)
             event['status'] = 'OBSERVED'
         except BaseException as error:
             self.errors.append(type(error).__name__ + ':' + str(error))
@@ -282,14 +317,19 @@ class RequestRowProvenance(TorchDispatchMode):
     def end(self):
         require(self.active and threading.get_ident() == self.thread, 'CURRENT_ROW_OBSERVER_REQUIRED')
         require(_get_current_dispatch_mode() is self, 'ROW_DISPATCH_MODE_OWNER_CHANGED')
+        if self.boundaries is not None and self.boundaries.active:
+            self.boundaries.end()
         self.__exit__(None, None, None)
         self.active = False
         return self.report()
 
     def report(self):
+        boundary_report = self.boundaries.report() if self.boundaries is not None else None
         return snapshot(dict(schema='demoncat.quant.actual_row_provenance.v1', forward_id=self.forward_id,
             scope='ACTUAL_DECODE_THREAD_INCLUDING_READONLY_OBSERVER_READBACKS',
             actual_calls=self.total, retained_calls=len(self.events), missing_calls=self.overflow, errors=self.errors,
-            complete=not self.errors and not self.overflow and all(e['original_calls'] == 1 and e['status'] == 'OBSERVED' for e in self.events),
+            complete=not self.errors and not self.overflow and (boundary_report is None or boundary_report['complete'])
+                and all(e['original_calls'] == 1 and e['status'] == 'OBSERVED' for e in self.events),
             events=self.events, nodes=self.nodes, active=self.active, native_qualified=False,
-            unknown_edges=[e['sequence'] for e in self.events if not e['row_preserving']]))
+            unknown_edges=[e['sequence'] for e in self.events if not e['row_preserving']],
+            source_boundaries=boundary_report))

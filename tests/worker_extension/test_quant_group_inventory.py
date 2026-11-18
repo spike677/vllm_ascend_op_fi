@@ -163,9 +163,22 @@ class GroupQuantInventoryTests(unittest.TestCase):
             self.native.delta(before)
 
     def test_complete_serving_path_uses_group_loader_and_preserves_unknown_row_edge(self):
+        self.complete_serving_path(enable_sources=False)
+
+    def test_actual_serving_hooks_handoff_early_profile_and_release_both_observers(self):
+        self.complete_serving_path(enable_sources=True)
+
+    def complete_serving_path(self, *, enable_sources):
         from demoncat.runtime.vllm_ascend.worker_extension import serving_quant as serving
         from demoncat.runtime.vllm_ascend.worker_extension.serving_shared_scale_group_inventory import SharedScaleGroupInventorySession
         from test_serving_session_lifecycle import CpuProcessor
+        if enable_sources:
+            from demoncat.runtime.vllm_ascend.worker_extension.quant_source_rows import SourceBoundRows
+            from demoncat.runtime.vllm_ascend.worker_extension.quant_mla_metadata_rows import MlaMetadataRows
+            self.enterContext(patch.object(SourceBoundRows, 'from_runtime', side_effect=lambda graph, model:
+                SourceBoundRows(graph, model, [], {}, simulation=True)))
+            self.enterContext(patch.object(MlaMetadataRows, 'from_runtime', side_effect=lambda runner:
+                MlaMetadataRows(runner, [], {}, simulation=True)))
         self.observer.close()
         class Embedding(torch.nn.Module):
             def forward(self, input_):
@@ -233,6 +246,11 @@ class GroupQuantInventoryTests(unittest.TestCase):
                 self.assertEqual(report['actual_native_calls'], 4)
                 self.assertEqual(report['request_row_proven_calls'], 2)
                 self.assertFalse(report['c2'] or report['c3'] or report['owned_hooks'] or report['owned_row_dispatch_modes'])
+                self.assertEqual(report['source_row_adapter']['enabled'], enable_sources)
+                if enable_sources:
+                    self.assertFalse(session.source_rows.active or session.metadata_rows.active)
+                    self.assertTrue(report['metadata_producers']['complete'])
+                    self.assertIsNone(sys.getprofile())
                 group_loader.assert_called_once()
                 legacy_loader.assert_not_called()
             finally:
