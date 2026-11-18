@@ -40,13 +40,18 @@ def inputs(root, writer26=False):
     if writer26:
         trace = root / 'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_trace_preload.cpp'
         group = root / 'fault_injection/native_adapters/writer26_group_runtime.cpp'
-        names += [trace, group, group.with_name('writer26_group_core.h')]
+        names += [trace, group, group.with_name('writer26_group_core.h'),
+                  trace.with_name('fault26_fia_typed.h')]
         traced, grouped = trace.read_text(encoding='utf-8'), group.read_text(encoding='utf-8')
         blocks.update({
             '// @F26_TRACE_TYPES@': 'struct TensorMetadata {' + between(traced, 'struct TensorMetadata {', 'struct CaptureState {'),
-            '// @F26_TRACE_CAPTURE@': 'bool checked_product(' + between(traced, 'bool checked_product(', 'void log_typed_gws_summary('),
-            '// @F26_GROUP_CONTIGUOUS@': 'bool contiguous(' + between(grouped, 'bool contiguous(', 'bool complete_event('),
-            '// @F26_GROUP_CAPTURE@': 'bool descriptor_matches(' + between(grouped, 'bool descriptor_matches(', 'bool destroy_descriptor('),
+            '// @F26_TRACE_CAPTURE@': 'bool checked_product(' + between(traced, 'bool checked_product(',
+                'dcat26_fia_typed::Descriptor fia_typed_descriptor('),
+            '// @F26_GROUP_CONTIGUOUS@': 'bool contiguous(' + between(grouped, 'bool contiguous(', 'bool complete_event_geometry('),
+            '// @F26_GROUP_CAPTURE@': 'bool descriptor_matches(' + between(grouped, 'bool descriptor_matches(',
+                'dcat26_fia_typed::Descriptor capture_fia_descriptor('),
+            '// @F26_GROUP_TYPED_CAPTURE@': 'dcat26_fia_typed::Descriptor capture_fia_descriptor(' + between(grouped,
+                'dcat26_fia_typed::Descriptor capture_fia_descriptor(', 'bool destroy_descriptor('),
         })
     sources = {p.relative_to(root).as_posix(): sha(p.read_bytes()) for p in names}
     unit = (native / 'metadata_ownership_fixture.cpp').read_text(encoding='utf-8')

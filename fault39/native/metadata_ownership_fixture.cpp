@@ -44,6 +44,9 @@ using aclnnStatus=int;
 using aclDataType=int;
 using aclFormat=int;
 constexpr int ACL_SUCCESS=0,ACL_DT_UNDEFINED=-1,ACL_FORMAT_UNDEFINED=-1;
+#ifdef DCAT_TEST_WRITER26
+constexpr int ACL_FLOAT=0,ACL_FLOAT16=1,ACL_BF16=27;
+#endif
 struct aclStorage{};
 struct aclOpExecutor{};
 enum class Failure {None,BeforeReturn,AfterReturn,BeforeThrow,AfterThrow};
@@ -137,8 +140,11 @@ struct Api {
     decltype(&aclGetViewShape) shape{&aclGetViewShape},storage{&aclGetStorageShape},strides{&aclGetViewStrides};
 } api;
 bool same_device(int device){return device==0;}
+uint64_t typed_exceptions{};
+int typed_abi_failure(){++typed_exceptions;return -2;}
 // @F26_GROUP_CONTIGUOUS@
 // @F26_GROUP_CAPTURE@
+// @F26_GROUP_TYPED_CAPTURE@
 }
 #endif
 
@@ -157,6 +163,7 @@ static bool capture(int route,const aclTensor* tensor,const char* api="api") {
     if(route==3){f20::log_tensor(api,"input",1,nullptr,tensor);return true;}
 #ifdef DCAT_TEST_WRITER26
     if(route==4)return trace26::capture_tensor(tensor).metadata_ok;
+    if(route==6)return group26::capture_fia_descriptor(tensor).complete;
     group26::Call call{};call.dimensions=2;call.device=0;call.dtype=1;call.format=2;
     call.shape[0]=2;call.shape[1]=3;call.output=0x2000;call.output_bytes=12;
     return group26::descriptor_matches(tensor,call);
@@ -210,7 +217,7 @@ int main() {
     control={};control.throw_log=true;capture(3,&tensor);clean();++scenarios;
     control={};control.null_array=true;capture(3,&tensor);clean();++scenarios;
 #ifdef DCAT_TEST_WRITER26
-    for(int route=4;route<6;++route) {
+    for(int route=4;route<7;++route) {
         control={};assert(capture(route,&tensor));clean();++scenarios;
         for(int stage=1;stage<=7;++stage)for(auto mode:{Failure::BeforeReturn,Failure::AfterReturn,
                                                       Failure::BeforeThrow,Failure::AfterThrow}) {
@@ -228,6 +235,7 @@ int main() {
             assert(!capture(route,&tensor));clean();++scenarios;
         }
     }
+    assert(group26::typed_exceptions>0);
 #endif
     // Additive query rejects ABI mistakes; no reset or pointer release export.
     DcatMetadataArrayStateV1 state;
