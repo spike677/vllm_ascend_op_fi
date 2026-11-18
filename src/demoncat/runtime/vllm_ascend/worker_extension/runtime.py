@@ -101,6 +101,7 @@ class WorkerFaultRuntime:
         self._lock = threading.Lock()
         self._tenants = {}
         self._leases = {}
+        self._census = None
         self._generation = 0
         self._identity_invalidated = False
 
@@ -116,22 +117,56 @@ class WorkerFaultRuntime:
             if action == 'capabilities':
                 try:
                     providers = _provider_capabilities()
+                    from .registry import worker_core_manifest
+                    core_manifest = worker_core_manifest()
                     resolver_status = 'AVAILABLE'
                 except ModuleNotFoundError as error:
                     if (error.name or '').split('.')[0] not in ('fault_injection', 'demoncat_fault39'):
                         raise
                     providers, resolver_status = [], 'DEPENDENCY_UNAVAILABLE'
+                    core_manifest = None
                 return {'status': 'CAPABILITIES', 'worker': context.worker,
                         'extension_version': EXTENSION_VERSION, 'providers': providers,
+                        'worker_core_manifest': core_manifest,
                         'provider_resolver_status': resolver_status,
                         'native_state_requires_prepared_ticket': True, 'one_attempt_per_lease': True,
                         'quarantined': self._quarantined()}
             if action == 'attach':
                 return self._attach(context, payload)
             if action == 'detach':
+                if self._census is not None:
+                    _check_shape(payload, _TICKET)
+                    tenant = self._tenant(context, payload)
+                    if self._census['tenant'] is tenant:
+                        recovery = self._census_action(worker, context, 'cleanup', self._census_ticket())
+                        if self._census is not None:
+                            return dict(status='RECOVERY_REQUIRED', ticket=tenant.ticket(),
+                                        recoveries=[], census_recoveries=[recovery])
+                        result = self._detach(context, payload)
+                        result['census_recoveries'] = [recovery]
+                        return result
                 return self._detach(context, payload)
+            if isinstance(action, str) and action.startswith('census_'):
+                return self._census_action(worker, context, action.removeprefix('census_'), payload)
             if action == 'query':
                 return self._query(context, payload)
+            if action == 'discover':
+                _check_shape(payload, _TICKET)
+                self._tenant(context, payload)
+                if self._leases or self._census or self._quarantined():
+                    raise Rejected('DISCOVERY_REQUIRES_IDLE_WORKER_OWNER_TABLE')
+                from .discovery import discover_worker
+                try:
+                    report = discover_worker(worker, context.model, context.worker)
+                except Exception as error:
+                    after = self._identity.read(worker)
+                    self._observe_context(after)
+                    return {'status': 'DISCOVERY_FAILED', 'reason': 'READ_ONLY_DISCOVERY_UNAVAILABLE',
+                            **_provider_error(error), 'qualification_granted': False}
+                after = self._identity.read(worker)
+                self._observe_context(after)
+                self._expect_worker(after, payload['worker'])
+                return {'status': 'DISCOVERY_SNAPSHOT', 'discovery': report}
             if isinstance(action, str) and action in _ACTIONS:
                 return self._dispatch(worker, context, action, payload)
             raise Rejected('UNSUPPORTED_ACTION')
@@ -150,7 +185,7 @@ class WorkerFaultRuntime:
         changed = [tenant for tenant in self._tenants.values() if any(
             tenant.identity[key] != live[key] for key in keys
         ) or (context.ready and _json(tenant.identity) != _json(live))]
-        if self._leases and changed:
+        if (self._leases or self._census) and changed:
             self._identity_invalidated = True
         elif changed:
             for tenant in changed:
@@ -181,6 +216,8 @@ class WorkerFaultRuntime:
             raise Rejected('TENANT_ALREADY_ATTACHED')
         if self._quarantined():
             raise Rejected('WORKER_RECOVERY_REQUIRED')
+        if self._census is not None:
+            raise Rejected('WORKER_CENSUS_IN_PROGRESS')
         if any(lease.replay_pending for lease in self._leases.values()):
             raise Rejected('WORKER_REPLAY_IN_PROGRESS')
         tenant = _Tenant(tenant_id, secrets.token_hex(16), deepcopy(context.worker))
@@ -286,8 +323,78 @@ class WorkerFaultRuntime:
         # Providers may share streams, allocators or process-level interposers.
         # An unresolved fault cannot be bypassed by choosing another mechanism
         # or another tenant on this same Worker.
-        return self._identity_invalidated or any(
+        return self._identity_invalidated or bool(self._census and self._census['uncertain']) or any(
             lease.recovery_required for lease in self._leases.values())
+
+    def _census_ticket(self):
+        entry = self._census
+        return dict(entry['tenant'].ticket(), owner=entry['owner'], generation=entry['generation'])
+
+    def _census_action(self, worker, context, action, payload):
+        if action not in ('start', 'query', 'stop', 'cleanup'):
+            raise Rejected('UNSUPPORTED_CENSUS_ACTION')
+        _check_shape(payload, _TICKET | {'owner'} | (set() if action == 'start' else {'generation'}),
+                     ('settings',) if action == 'start' else ())
+        tenant = self._tenant(context, payload)
+        owner = _text(payload['owner'])
+        if action == 'start':
+            if self._census is not None or self._leases or self._quarantined():
+                raise Rejected('CENSUS_REQUIRES_IDLE_WORKER_OWNER_TABLE')
+            settings = payload.get('settings', {})
+            _check_shape(settings, {'phase', 'expected'}, ('expected_max_seqs', 'max_events'))
+            if type(settings.get('max_events', 10000)) is not int or not 1 <= settings.get('max_events', 10000) <= 100000:
+                raise Rejected('CENSUS_EVENT_BUDGET_REQUIRED')
+            from .call_census import WorkerCallCensus
+            try:
+                capture = WorkerCallCensus(worker, context.worker, **settings)
+            except (ValueError, TypeError, RuntimeError) as error:
+                return dict(status='CENSUS_REJECTED', reason='CENSUS_BINDING_INVALID', **_provider_error(error))
+            self._generation += 1
+            # Retain ownership before installing hooks, including partial start.
+            self._census = dict(tenant=tenant, owner=owner, generation=self._generation,
+                                capture=capture, uncertain=False)
+        entry = self._census
+        if (entry is None or (action != 'start' and
+                (type(payload['generation']) is not int or payload['generation'] != entry['generation']))):
+            raise Rejected('STALE_CENSUS_GENERATION')
+        if entry['tenant'] is not tenant or entry['owner'] != owner:
+            raise Rejected('CENSUS_OWNER_MISMATCH')
+        ticket = self._census_ticket()
+        try:
+            report = (entry['capture'].start() if action == 'start' else
+                      getattr(entry['capture'], action)(worker, context.worker))
+            if action in ('cleanup', 'stop'):
+                # Confirm current owned resources independently of the action's
+                # returned success message, as for provider native readback.
+                report = entry['capture'].query(worker, context.worker)
+            report = json.loads(_json(report))
+            if (not isinstance(report, dict) or type(report.get('releasable')) is not bool
+                    or report.get('qualification_granted') is not False
+                    or _json(report.get('worker')) != _json(context.worker)):
+                raise RuntimeError('CENSUS_READBACK_UNAVAILABLE')
+            if report['releasable'] and not (
+                    report.get('identity_valid') is True and report.get('stop_requested') is True
+                    and report.get('resource_cleanup_confirmed') is True
+                    and report.get('cleanup_complete') is True
+                    and report.get('inflight') is False
+                    and type(report.get('observer_hooks')) is int and report['observer_hooks'] == 0
+                    and report.get('foreign_hooks') is False
+                    and report.get('metadata_scope_active') is False):
+                raise RuntimeError('CENSUS_RELEASE_READBACK_CONTRADICTORY')
+        except BaseException as error:
+            entry['uncertain'] = True
+            if not isinstance(error, Exception):
+                raise
+            return dict(status='CENSUS_RECOVERY_REQUIRED', action=action, ticket=ticket,
+                        recovery_required=True, **_provider_error(error))
+        released = action == 'cleanup' and report['releasable']
+        if released:
+            self._census = None
+        elif action == 'cleanup':
+            entry['uncertain'] = True
+        return dict(status='CENSUS_RELEASED' if released else 'CENSUS_SNAPSHOT', action=action,
+                    ticket=ticket, census=report, recovery_required=bool(self._census and entry['uncertain']),
+                    qualification_granted=False)
 
     def _query(self, context, payload):
         _check_shape(payload, _TICKET | _TARGET | {'generation'})
@@ -312,6 +419,8 @@ class WorkerFaultRuntime:
         except (TypeError, ValueError, RecursionError):
             raise Rejected('INVALID_PROVIDER_SETTINGS') from None
         tenant = self._tenant(context, payload)
+        if self._census is not None:
+            raise Rejected('WORKER_CENSUS_IN_PROGRESS')
         if action == 'prepare':
             mechanism = _text(payload['mechanism'])
             version = _text(payload['implementation_version'])

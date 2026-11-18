@@ -39,13 +39,21 @@ class DemoncatWorkerExtension:
     def demoncat_capabilities(self):
         return _call(self, 'capabilities')
 
+    def demoncat_discover(self, payload):
+        return _call(self, 'discover', payload)
+
+    def demoncat_census(self, action, payload):
+        if action not in ('start', 'query', 'stop', 'cleanup'):
+            return {'status': 'REJECTED', 'reason': 'UNSUPPORTED_CENSUS_ACTION'}
+        return _call(self, 'census_' + action, payload)
+
     def demoncat_attach(self, payload):
         return _call(self, 'attach', payload)
 
     def demoncat_fault_rpc(self, action, payload):
         # Control verbs cannot call the attachment API through this method.
-        if not isinstance(action, str) or action in (
-            'worker_identity', 'capabilities', 'attach', 'detach', 'query',
+        if not isinstance(action, str) or action.startswith('census_') or action in (
+            'worker_identity', 'capabilities', 'attach', 'detach', 'query', 'discover',
         ):
             return {'status': 'REJECTED', 'reason': 'UNSUPPORTED_ACTION'}
         return _call(self, action, payload)
