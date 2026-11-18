@@ -19,6 +19,12 @@ from .writer26_inventory import (WriterLifetimeInventory, allocation_segments, c
                                  digest, require, tensor_matches_native)
 
 
+SINGLE_SITE_STAGE = 'c1_single_effects'
+SINGLE_SITE_SCOPE = 'ONE_ACTUAL_QMM_SITE_FIXED_FRESH_PREFILL_NOT_ALL_ELIGIBLE_NOT_C2_C3'
+_STABLE_NATIVE = ('cache', 'registration', 'device', 'dtype', 'format', 'dimensions',
+    'residual_dimensions', 'output_bytes', 'residual_bytes', 'shape', 'strides', 'residual_shape', 'residual_strides')
+
+
 def tensors(value):
     import torch
     if isinstance(value, torch.Tensor):
@@ -100,13 +106,21 @@ class Writer26Experiment(WriterLifetimeInventory):
     if the explicit target budget covers the full resolved set. Stage effects
     adds one F/OFF pair per such target, preserving every unresolved row and
     explicitly keeping C2/C3 false. This is a bounded candidate qualification
-    entrance, not a substitute for a future complete CoverageSession proof.
+    entrance. The explicit c1_single_effects stage selects one actual resolved
+    site and keeps the complete inventory, without granting group coverage.
     """
     def __init__(self, *args, stage='inventory', max_targets=8, **kwargs):
         super().__init__(*args, **kwargs)
-        require(stage in ('inventory', 'lossless', 'effects') and type(max_targets) is int and 1 <= max_targets <= 128,
+        require(stage in ('inventory', 'lossless', 'effects', SINGLE_SITE_STAGE)
+                and type(max_targets) is int and 1 <= max_targets <= 128,
                 'BOUNDED_WRITER_EXPERIMENT_STAGE_REQUIRED')
+        require(stage != SINGLE_SITE_STAGE or (not self.runtime.fia and self.runtime.mechanism == '26.residual_stomp'),
+                'SINGLE_SITE_C1_EFFECTS_QMM_ONLY')
         self.stage, self.max_targets = stage, max_targets
+        self.single_selection = self.single_qualification = None
+        self.single_aliases = self._actual_aliases() if stage == SINGLE_SITE_STAGE else None
+        if stage == SINGLE_SITE_STAGE:
+            self.root_hooks = 0
         self.plan = [dict(phase='inventory_1', mode=None, target=None), dict(phase='inventory_2', mode=None, target=None)]
         self.targets, self.target_refs, self.output_refs = {}, {}, {}
         self.pending, self.consumer_inputs = {}, None
@@ -176,6 +190,9 @@ class Writer26Experiment(WriterLifetimeInventory):
 
     def begin(self, request_id, input_sha256):
         self._thread()
+        if self.stage == SINGLE_SITE_STAGE:
+            require(not self.failure, 'FAILED_SINGLE_SITE_CANNOT_RETRY_OR_SELECT_ANOTHER_TARGET')
+            require(self._actual_aliases() == self.single_aliases, 'SINGLE_SITE_ACTUAL_MODULE_ALIASES_CHANGED')
         require(self.current is None and request_id not in self.requests and self.phase != 'complete',
                 'FRESH_BOUNDED_WRITER_REQUEST_REQUIRED')
         if self.phase == 'health':
@@ -193,6 +210,9 @@ class Writer26Experiment(WriterLifetimeInventory):
         require(input_sha256 == self.baseline_input, 'ACTUAL_FRESH_WORKLOAD_CHANGED')
         self.current.update(plan=dict(self.entry), admissions=0, completed=0)
         if self.entry['mode'] == 'fault':
+            if self.stage == SINGLE_SITE_STAGE:
+                require(self.single_qualification is not None and self.runtime.state()['core']['sealed'],
+                        'SINGLE_SITE_REFERENCE_LOSSLESS_OFF_BEFORE_FAULT_REQUIRED')
             self.fault_started = True
         if self.public_output is not None and not self.native_removed:
             # The serving host has already started its optional collector.
@@ -228,6 +248,13 @@ class Writer26Experiment(WriterLifetimeInventory):
         super().fail(self.failure)
 
     def _requested_mode(self, row):
+        if (self.stage == SINGLE_SITE_STAGE and self.entry['mode'] is not None
+                and row['target_key'] == self.entry['target']):
+            frozen = self.targets[self.entry['target']]['second_native']
+            require(self._actual_aliases() == self.single_aliases
+                and all(row['independent_event'][key] == frozen[key] for key in _STABLE_NATIVE),
+                'SINGLE_SITE_CURRENT_OBJECT_OR_NATIVE_FORMAL_CHANGED')
+            row['single_site_current_binding_verified'] = True
         return self.entry['mode'], self.entry['target']
 
     def _expected_admissions(self):
@@ -237,10 +264,28 @@ class Writer26Experiment(WriterLifetimeInventory):
         pass
 
     def _request_complete(self, row):
-        pass
+        if self.stage == SINGLE_SITE_STAGE:
+            row['complete_inventory'] = dict(native_writer_count=len(row['candidates']),
+                native_events_sha256=digest(row['native_events']), candidates_sha256=digest(row['candidates']),
+                actual_aliases_sha256=digest(self._actual_aliases()))
+            require(self._actual_aliases() == self.single_aliases, 'SINGLE_SITE_ACTUAL_MODULE_ALIASES_CHANGED')
+            if row['phase'] == 'health':
+                self._check_denominator(row)
 
     def _check_denominator(self, row):
         require(len(row['candidates']) == len(self.rows[0]['candidates']), 'NATURAL_WRITER_COUNT_CHANGED_KEEP_FULL_DENOMINATOR')
+        if self.stage == SINGLE_SITE_STAGE and row['plan']['mode'] is not None:
+            selected = [candidate for candidate in row['candidates']
+                if (candidate.get('callback') or {}).get('target_key') == self.single_selection['target_key']]
+            require(len(selected) == 1 and classify_candidate(selected[0])[0] == 'OBSERVED_NOT_QUALIFIED'
+                and selected[0] is row['candidates'][self.single_selection['inventory_index']],
+                'SINGLE_SITE_ACTUAL_OCCURRENCE_OR_CONSUMER_CHANGED')
+
+    def _actual_aliases(self):
+        # Keep every registered alias. Module names are observations, never a
+        # user-supplied selector, and duplicate aliases do not become targets.
+        return [dict(path=name or '<root>', object_identity=id(module))
+                for name, module in self.model.named_modules(remove_duplicate=False)]
 
     def _post(self, module, args, kwargs, output):
         if self.current is not None:
@@ -470,6 +515,7 @@ class Writer26Experiment(WriterLifetimeInventory):
         left, right = self.rows[0]['candidates'], self.rows[1]['candidates']
         require(len(left) == len(right) and len(right) > 0, 'COMPLETE_NATIVE_WRITER_DENOMINATOR_CHANGED')
         counts = Counter(c['callback'].get('target_key') for c in right if c.get('callback'))
+        first_counts = Counter(c['callback'].get('target_key') for c in left if c.get('callback'))
         for index, (before, candidate) in enumerate(zip(left, right)):
             status, reasons = classify_candidate(candidate)
             previous_status, _ = classify_candidate(before)
@@ -478,6 +524,10 @@ class Writer26Experiment(WriterLifetimeInventory):
             if status != previous_status or (status == 'OBSERVED_NOT_QUALIFIED' and
                     (previous is None or previous.get('target_key') != key or counts[key] != 1)):
                 status, reasons = 'UNVERIFIED', ['HEALTHY_TARGET_LIFETIME_OR_OCCURRENCE_CHANGED']
+            if (self.stage == SINGLE_SITE_STAGE and status == 'OBSERVED_NOT_QUALIFIED'
+                    and (first_counts[key] != 1 or
+                         any(before['native'][name] != candidate['native'][name] for name in _STABLE_NATIVE))):
+                status, reasons = 'UNVERIFIED', ['HEALTHY_SINGLE_SITE_OCCURRENCE_OR_NATIVE_FORMAL_CHANGED']
             row = dict(index=index, target_key=key, status=status, reasons=reasons,
                 first_native=before['native'], second_native=candidate['native'], callback=callback)
             self.candidate_inventory.append(row)
@@ -486,15 +536,30 @@ class Writer26Experiment(WriterLifetimeInventory):
         if self.stage == 'inventory':
             self.plan.append(dict(phase='health', mode=None, target=None))
             return
-        if not self.targets or len(self.targets) > self.max_targets:
+        if not self.targets or (self.stage != SINGLE_SITE_STAGE and len(self.targets) > self.max_targets):
             self.blockers.append('EMPTY_OR_OVER_BUDGET_COMPLETE_RESOLVED_TARGET_SET')
             self.plan.append(dict(phase='health', mode=None, target=None))
             return
+        if self.stage == SINGLE_SITE_STAGE:
+            # Select from the complete, twice-observed set; never truncate it.
+            # This ordering is deterministic within this actual Worker lifetime.
+            key = min(self.targets)
+            self.single_selection = dict(policy='MIN_ACTUAL_HEALTHY_RESOLVED_TARGET_KEY_NO_FALLBACK', target_key=key,
+                inventory_index=self.targets[key]['index'], complete_native_count=len(self.candidate_inventory),
+                complete_resolved_count=len(self.targets), inventory_sha256=digest(self.candidate_inventory),
+                aliases_sha256=digest(self.single_aliases), planned_target_count=1,
+                legacy_complete_plan_max_targets=self.max_targets, max_targets_is_selector=False)
         per_request_events = self.rows[1]['native_after']['total_events'] - self.rows[1]['native_before']['total_events']
         remaining_requests = self._planned_qualification_requests()
         available = self.rows[1]['native_after']['capacity'] - self.rows[1]['native_after']['stored_events']
         if per_request_events * remaining_requests > available:
             self.blockers.append('COMPLETE_TARGET_PLAN_EXCEEDS_INDEPENDENT_NATIVE_EVENT_CAPACITY')
+            self.plan.append(dict(phase='health', mode=None, target=None))
+            return
+        if self.stage == SINGLE_SITE_STAGE:
+            for phase, mode in (('reference', 'reference'), ('lossless', 'lossless'), ('qualification_off', 'off'),
+                                ('fault', 'fault'), ('recovery_off', 'off')):
+                self.plan.append(dict(phase='single_site_' + phase, mode=mode, target=self.single_selection['target_key']))
             self.plan.append(dict(phase='health', mode=None, target=None))
             return
         for index, key in enumerate(self.targets):
@@ -507,6 +572,15 @@ class Writer26Experiment(WriterLifetimeInventory):
         self.plan.append(dict(phase='health', mode=None, target=None))
 
     def end(self, output_sha256, *, model_output_finite):
+        try:
+            self._end_request(output_sha256, model_output_finite=model_output_finite)
+        except BaseException as error:
+            if self.stage == SINGLE_SITE_STAGE:
+                self._record_failure(error, 'single_site_request_end')
+                self.save()
+            raise
+
+    def _end_request(self, output_sha256, *, model_output_finite):
         self._thread()
         require(self.current is not None and self.stack == [self.model], 'COMPLETE_ACTUAL_WRITER_ROOT_REQUIRED')
         row = self.current
@@ -543,6 +617,20 @@ class Writer26Experiment(WriterLifetimeInventory):
             self._freeze()
         if self.stage == 'effects' and self.phase != 'complete' and self.entry['mode'] == 'fault' and not self.runtime.state()['core']['sealed']:
             self.runtime.seal(tuple(self.targets))
+        if self.stage == SINGLE_SITE_STAGE and row['phase'] == 'single_site_qualification_off':
+            key = self.single_selection['target_key']
+            require([outcome['mode'] for outcome in self.outcomes] == ['reference', 'lossless', 'off']
+                and all(outcome['target'] == key and outcome['released_receipt']['released'] == 1
+                        for outcome in self.outcomes), 'SINGLE_SITE_FRESH_B_L_OFF_REQUIRED')
+            # The Native engine independently seals exactly the leases it has
+            # qualified. Unselected census entries were passthrough, not leases.
+            self.runtime.seal((key,))
+            self.single_qualification = dict(target_key=key, request_ids=[outcome['request_id'] for outcome in self.outcomes],
+                outcomes_sha256=digest(self.outcomes), owner=getattr(self.runtime, 'owner', None),
+                native_owner=[self.runtime.config.owner_hi, self.runtime.config.owner_lo],
+                generation=self.runtime.config.generation, lifetime_sha256=digest(self.lifetime),
+                build=self.runtime.build_identity, baseline_output_sha256=self.baseline, scope=SINGLE_SITE_SCOPE,
+                serializable_authority=False, qualification_granted=False)
         self.recovered = self.phase == 'complete' and row['phase'] == 'health' and output_sha256 == self.baseline
         self.save()
 
@@ -550,6 +638,8 @@ class Writer26Experiment(WriterLifetimeInventory):
         return 1
 
     def _planned_qualification_requests(self):
+        if self.stage == SINGLE_SITE_STAGE:
+            return 6  # B/L/OFF/F/OFF and one healthy request, full census each.
         return len(self.targets) * (5 if self.stage == 'effects' else 3) + 1
 
     def recover_live_pending(self):
@@ -621,4 +711,27 @@ class Writer26Experiment(WriterLifetimeInventory):
             native_qualified_targets=0, c1=False, c2=False, c3=False,
             remaining_gates=['REVIEW_COMPLETE_VALID_NATURAL_INVENTORY', 'COMMON_ALL_ELIGIBLE_SESSION_NATIVE_DISPATCH',
                             'SAME_WORKER_LIVE_C2_BEFORE_EVERY_MATCH'])
+        if self.stage == SINGLE_SITE_STAGE:
+            modes = [row['mode'] for row in self.outcomes]
+            state = value['native_state']
+            native_released = (not any(state['core'][name] for name in
+                ('installed', 'pending', 'executing', 'device_bytes', 'descriptor_pending', 'error'))
+                and not any(state[name] for name in ('callback_active', 'completion_active', 'descriptor',
+                                                     'prepared_fia', 'foreign_calls', 'rejected_calls')))
+            complete = (self.recovered and not self.installed and not self.failure and not self.blockers
+                and self.single_qualification is not None and native_released
+                and not self.pending and not self.pending_lifetimes and not self.handles and not self.root_hooks
+                and not self.output_refs and not self.retained and len(self.rows) == 8
+                and modes == ['reference', 'lossless', 'off', 'fault', 'off'])
+            value.update(scope=SINGLE_SITE_SCOPE, alias_inventory=self.single_aliases,
+                single_site_c1=dict(schema='demoncat.writer26.single_site_c1.v1', selection=self.single_selection,
+                    reference_lossless_off=self.single_qualification, evidence_complete=complete,
+                    native_released=native_released, owned_root_logits_hooks=self.root_hooks,
+                    selected_native_admissions=sum(row['admissions'] for row in self.rows),
+                    actual_fault_hits=sum(row['mode'] == 'fault' for row in self.outcomes),
+                    whole_request_effect_observed=any(row['plan']['mode'] == 'fault'
+                        and row['output_sha256'] != self.baseline for row in self.rows),
+                    complete_native_counts=[len(row['candidates']) for row in self.rows],
+                    all_eligible_qualification=False, qualification_granted=False, serializable_authority=False,
+                    fallback_attempted=False, e5='UNVERIFIED_INDEPENDENT_RAW_B_F_COMPARISON_REQUIRED'))
         return json.loads(json.dumps(value, allow_nan=False))

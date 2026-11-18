@@ -7,6 +7,11 @@ from pathlib import Path
 import traceback
 
 PROMPT = 'Explain in one sentence why the sky appears blue during the day.'
+SINGLE_SITE_STAGE = 'c1_single_effects'
+
+
+def request_limit(stage, max_targets):
+    return 8 if stage == SINGLE_SITE_STAGE else 9 if stage == 'coverage' else 5 * max_targets + 4
 
 
 def actual(worker):
@@ -65,15 +70,18 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--mechanism', choices=('26.residual_stomp', '26.fia_destination'), required=True)
     parser.add_argument('--manifest-sha256', required=True)
-    parser.add_argument('--stage', choices=('inventory', 'lossless', 'effects', 'coverage'), default='inventory')
+    parser.add_argument('--stage', choices=('inventory', 'lossless', 'effects', 'coverage', SINGLE_SITE_STAGE), default='inventory')
     parser.add_argument('--max-targets', type=int, default=8)
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--memory', type=float, default=.55)
     args = parser.parse_args()
     if not 1 <= args.max_targets <= 128 or not 0 < args.memory < 1:
         parser.error('Explicit bounded target and memory budgets required')
+    if args.stage == SINGLE_SITE_STAGE and args.mechanism != '26.residual_stomp':
+        parser.error('c1_single_effects is an explicit QMM-only single-site experiment')
     report = dict(status='STARTING', scope=('ALL_ELIGIBLE_NATIVE_WRITERS_FIXED_SINGLE_REQUEST_FRESH_PREFILL_NOT_DECODE'
-        if args.stage == 'coverage' else 'SINGLE_FRESH_PREFILL_CANDIDATE_WINDOWS_NOT_ALL_ELIGIBLE_C2'),
+        if args.stage == 'coverage' else 'ONE_ACTUAL_QMM_SITE_FIXED_FRESH_PREFILL_NOT_ALL_ELIGIBLE_NOT_C2_C3'
+        if args.stage == SINGLE_SITE_STAGE else 'SINGLE_FRESH_PREFILL_CANDIDATE_WINDOWS_NOT_ALL_ELIGIBLE_C2'),
         mechanism=args.mechanism, stage=args.stage, native_qualified_targets=0, c1=False, c2=False, c3=False,
         e5='UNVERIFIED_INDEPENDENT_RAW_B_F_COMPARISON_REQUIRED', phases=[], sessions={}, num_gpu_blocks_override=64)
     def save():
@@ -112,7 +120,7 @@ def main():
             installed = True
             # The coverage plan is 8 C2 or 9 C3 complete fresh forwards. No
             # target subset or additional fault request is chosen by this loop.
-            for index in range(9 if args.stage == 'coverage' else 5 * args.max_targets + 4):
+            for index in range(request_limit(args.stage, args.max_targets)):
                 state = rpc(llm, query)
                 if state['phase'] == 'complete':
                     break
@@ -143,6 +151,8 @@ def main():
                 report[name] = final[name] is True
                 if report[name]:
                     report['native_qualified_targets'] = final['coverage']['planned_targets']
+            elif args.stage == SINGLE_SITE_STAGE:
+                report['single_site_c1'] = final['single_site_c1']
             save()
         after, = llm.generate([prompt], sampling, use_tqdm=False)
         report['healthy_after_tokens'] = list(after.outputs[0].token_ids)
@@ -150,6 +160,9 @@ def main():
             raise RuntimeError('POST_RELEASE_STANDARD_WORKER_GENERATION_CHANGED')
         if args.stage == 'coverage':
             report['status'] = 'C2_C3_EVIDENCE_READY_FOR_REVIEW' if report['c2'] and report['c3'] else 'COMPLETE_NATIVE_COVERAGE_BLOCKED'
+        elif args.stage == SINGLE_SITE_STAGE:
+            report['status'] = ('SINGLE_SITE_C1_EFFECTS_EVIDENCE_READY_FOR_REVIEW_NOT_C2'
+                if report['single_site_c1']['evidence_complete'] else 'NATURAL_INVENTORY_RECORDED_DEPENDENT_PHASE_BLOCKED')
         else:
             report['status'] = 'NATIVE_CANDIDATE_EXPERIMENT_RECORDED_NOT_C2' if not state['blockers'] else 'NATURAL_INVENTORY_RECORDED_DEPENDENT_PHASE_BLOCKED'
     except BaseException as error:
@@ -168,7 +181,8 @@ def main():
                 report['quarantine_required'] = True
         save()
     return 0 if report['status'] in ('NATIVE_CANDIDATE_EXPERIMENT_RECORDED_NOT_C2',
-                                     'NATURAL_INVENTORY_RECORDED_DEPENDENT_PHASE_BLOCKED', 'C2_C3_EVIDENCE_READY_FOR_REVIEW') else 2
+                                     'NATURAL_INVENTORY_RECORDED_DEPENDENT_PHASE_BLOCKED', 'C2_C3_EVIDENCE_READY_FOR_REVIEW',
+                                     'SINGLE_SITE_C1_EFFECTS_EVIDENCE_READY_FOR_REVIEW_NOT_C2') else 2
 
 
 if __name__ == '__main__':

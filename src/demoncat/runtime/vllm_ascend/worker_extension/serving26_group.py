@@ -41,6 +41,7 @@ class Serving26GroupExperiment(Serving26InventorySession):
     def _logits_pre(self, module, args, kwargs):
         try:
             self._same_worker()
+            self._single_site_final_logits_hook(module)
             if self.boundary_guard:
                 self.boundary_guard()
             require(self.current is not None and self.current['root_returned'] and not self.logits_active,
@@ -53,6 +54,22 @@ class Serving26GroupExperiment(Serving26InventorySession):
         except BaseException as error:
             self._failure(error)
             raise
+
+    def _single_site_final_logits_hook(self, module):
+        if self.backend.stage == 'c1_single_effects':
+            hooks = module._forward_hooks
+            owned = [handle.id for handle in self.handles if handle.hooks_dict_ref() is hooks]
+            require(len(owned) == 1 and list(hooks)[-1:] == owned,
+                    'SINGLE_SITE_FINAL_LOGITS_OBSERVER_REQUIRED')
+
+    def _logits_post(self, module, args, kwargs, output):
+        if self.logits_active:
+            try:
+                self._single_site_final_logits_hook(module)
+            except BaseException as error:
+                self._failure(error)
+                raise
+        super()._logits_post(module, args, kwargs, output)
 
     def report(self):
         self.collect()
@@ -67,12 +84,14 @@ class Serving26GroupExperiment(Serving26InventorySession):
             failure=value['failure'], blockers=value['blockers'], native_state=value['native_state'],
             recovered=value['recovered'], c2=value['c2'], c3=value['c3'], scope=value['scope'],
             trigger=value.get('trigger'), coverage=value.get('coverage'),
+            single_site_c1=value.get('single_site_c1'),
             inventory=str(self.backend.folder / 'writer_inventory.json'), receipt=str(self.folder / 'serving_receipt.json'))
 
     def close(self):
         super().close()
+        if hasattr(self.backend, 'root_hooks'):
+            self.backend.root_hooks = len(self.handles)
         if hasattr(self.backend, 'finalize'):
-            self.backend.root_hooks = 0
             if not self.backend.failure:
                 self.backend.finalize()
                 if self.backend.proof is not None and self.backend.evidence_kind == 'natural_worker':
@@ -81,14 +100,18 @@ class Serving26GroupExperiment(Serving26InventorySession):
                     self.worker._demoncat26_live_c2[self.backend.runtime.mechanism] = self.backend.proof
             self.backend.save()
             self._save()
+        elif self.backend.stage == 'c1_single_effects':
+            self.backend.save()
+            self._save()
 
 
 def install_writer26_group_experiment(worker, *, mechanism, prompt_token_ids, evidence_dir,
                                       manifest_sha256, stage='inventory', max_targets=8, statistics=False, trigger='once'):
     from fault_injection.deployments.writer26_group import NativeWriter26Group
     from fault_injection.deployments.writer26_inventory import NativeWriterInventory
-    from fault_injection.deployments.writer26_experiment import Writer26Experiment
+    from fault_injection.deployments.writer26_experiment import Writer26Experiment, SINGLE_SITE_STAGE
     require(not hasattr(worker, '_demoncat_writer26_group_experiment'), 'EXCLUSIVE_WRITER_EXPERIMENT_REQUIRED')
+    require(stage != SINGLE_SITE_STAGE or mechanism == '26.residual_stomp', 'SINGLE_SITE_C1_EFFECTS_QMM_ONLY')
     identity = worker.demoncat_worker_identity()
     require(identity['status'] == 'WORKER_IDENTIFIED' and not identity.get('quarantined'), 'ACTUAL_HEALTHY_WORKER_REQUIRED')
     folder = Path(evidence_dir)

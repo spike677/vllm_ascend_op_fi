@@ -13,7 +13,7 @@ def main():
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--max-targets', type=int, default=8)
     parser.add_argument('--statistics', action='store_true')
-    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage'), default=['inventory'])
+    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage', 'c1_single_effects'), default=['inventory'])
     parser.add_argument('--mechanisms', nargs='+', choices=('26.residual_stomp', '26.fia_destination'),
                         default=['26.residual_stomp', '26.fia_destination'])
     parser.add_argument('--out', type=Path, required=True)
@@ -23,6 +23,8 @@ def main():
             or any(not path.startswith('/') or any(c in path for c in ('\n', '\r', '\0', ','))
                    for path in (args.installed, args.native, args.probe))):
         parser.error('Frozen paths, source and bounded distinct phases required')
+    if 'c1_single_effects' in args.stages and args.mechanisms != ['26.residual_stomp']:
+        parser.error('c1_single_effects requires explicit --mechanisms 26.residual_stomp; no FIA case is generated')
     root = Path(args.native).resolve(strict=True)
     manifest = root / 'build.json'
     build = json.loads(manifest.read_text())
@@ -40,6 +42,7 @@ def main():
         model = '/home/fault39-integration-20261116-a1/models-smollm2-135m' if fia else '/home/haoran/models/DeepSeek-V2-Lite-W8A8'
         for stage in args.stages:
             coverage = stage == 'coverage'
+            single_site = stage == 'c1_single_effects'
             name = 'providers26-v2-' + ('fia-smol-' if fia else 'qmm-deepseek-') + stage
             command = ('source /usr/local/Ascend/cann-8.5.1/set_env.sh\n'
                 'export ASCEND_CUSTOM_OPP_PATH=/vllm-workspace/vllm-ascend/vllm_ascend/_cann_ops_custom/vendors/vllm-ascend\n'
@@ -62,6 +65,7 @@ def main():
                     FAULT26_WRITER_TOPOLOGY_ENABLED='1', FAULT26_TRACE_MAX_EVENTS='100000',
                     FAULT26_TRACE_LOG_PATH='/evidence/trace.jsonl', DCAT26_GROUP_V2_ALLOWED='1'), command=command,
                 review=dict(experiment_id=name, provider=mechanism + (' v2 all_eligible once then live every_match' if coverage
+                    else ' v2 one actual healthy-resolved QMM site C1 effects (not C2)' if single_site
                     else ' v2 serial candidate experiment (not C2)'),
                     model=model, cann='8.5.1', soc='Ascend910B4/A2; verify actual Worker', physical_cards=[args.card], ranks=[0],
                     worker='standard TP1 eager BF16; single fresh prefill/request; fixed64 KV blocks; no decode claim',
@@ -70,10 +74,13 @@ def main():
                         'its missing split opapi with RTLD_NOW|RTLD_LOCAL; retain its handle. Then require all four '
                         'already-loaded counters with independent instances and exact mapped/dladdr identities.',
                     expected_hits=('C2: one per complete frozen eligible target; C3: every existing-target call in two fresh requests; '
-                        'no subset, only after actual live C2' if coverage else 0 if stage != 'effects'
+                        'no subset, only after actual live C2' if coverage else
+                        'exactly one F after the selected current site passes reference/lossless/OFF; no fallback or all-eligible claim'
+                        if single_site else 0 if stage != 'effects'
                         else 'one per completely observed and independently lossless-qualified candidate; never C2'),
                     resource_budget=dict(timeout_seconds=1800, memory_gib=80, cpus=16, independent_events=32768,
-                        max_targets=args.max_targets, native_device_bytes=64 * 1024 * 1024, native_host_bytes=512 * 1024 * 1024),
+                        max_targets=args.max_targets, planned_single_site_targets=1 if single_site else None,
+                        max_targets_selects_subset=False, native_device_bytes=64 * 1024 * 1024, native_host_bytes=512 * 1024 * 1024),
                     recovery_plan=('Every original executes once. Two complete healthy censuses plus independent target '
                         'reference/lossless/OFF qualify the full set. Any unresolved, overlapping or over-budget set blocks '
                         'all group faults. Every Native call is independently observed before admission; frozen eligible failures '
@@ -84,6 +91,16 @@ def main():
                         'generation. Copying/relabeling proof is rejected before Native fault sealing. Failed backups/leases '
                         'remain recoverable; absent actual public pointer liveness refuses restoration writes. Container '
                         'restart is not OFF. All raw evidence remains on 124; raw statistics E5 is separate.' if coverage else
+                        'Eight standard requests: two complete healthy censuses, selected reference/lossless/OFF, F/OFF, '
+                        'then same-Worker health after Native release. Keep every actual Native call and module alias. '
+                        'Choose the minimum actual twice-healthy resolved target key once; never truncate the inventory, '
+                        'choose a user layer, skip failed qualification, or fall back to another target. The separate '
+                        'single-site plan has one target; max-targets retains its legacy complete-set budget meaning and '
+                        'does not select this site. Recheck actual object/formal/storage/allocator adjacency and consumer '
+                        'on every admission; failure stops the plan, keeps its first receipt and uses existing '
+                        'stop/drain/restore/readback/release only while public storage owners remain valid. '
+                        'Final full-vocab health and zero Native/host/hooks are required. All raw evidence stays on 124; '
+                        'C1 evidence awaits independent review, C2/C3/all-eligible remain false, and E5 is separate.' if single_site else
                         'Every original executes once, one explicit target per request. Retain full Native denominator '
                         'and every UNVERIFIED row. Budget overflow stops the whole resolved target plan, never chooses the first target. '
                         'Reference/lossless/OFF qualify every candidate before any F. Actual next consumer must retain the exact '
