@@ -1,0 +1,398 @@
+{
+  "schema": "demoncat.quant.source87_integer_diagnostic.v1",
+  "status": "INTEGER_RELATIONS_COMPLETE_NATIVE_ROUTED_ROWS_UNPROVEN",
+  "inputs": {
+    "inventory_sha256": "e67e9cbb6e2c9027bcf801d28df26be759b64d5f6d43888693bca261be776b21",
+    "inventory_bytes": 78609192,
+    "compressed_sha256": "06ba800647866aa465f5283ae45f3687fd352bd2561b62fd1417f516ba2efd72",
+    "result_sha256": "2ac9936b3188ce2ce6b2377a7f4a8920d87df8c4c54251d3c77d6cb0e9fc3130",
+    "result_bytes": 965884
+  },
+  "runtime_source_checks": [
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/serving_shared_scale_inventory.py",
+      "sha256": "a8a02415ca2ad45cce41b33754753bf80c6970fa113750f83d0ce30c8f0f692d"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/shared_scale_inventory.py",
+      "sha256": "ba5f3ee0f7541a3d9571e8a180994991e74a0f8d077b23f87a716c82c9a68eb6"
+    },
+    {
+      "path": "fault_injection/deployments/dynamic_quant_inventory.py",
+      "sha256": "9dc32fc827484f0c74114fcebfb9dbe9d7186dc295d84a5e47586487e9947a3b"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_row_provenance.py",
+      "sha256": "4807d690f4edae8fb2c327b16aae8d5f5288d789bf7704b9694c91390eec87fe"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/serving_shared_scale_group_inventory.py",
+      "sha256": "8fc1dc35e3b663bc7345c143946db2213115adaa681aeb72243ae53ba10b8c7c"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/shared_scale_group_inventory.py",
+      "sha256": "69565391b7bf74bb1b4f3f2a7489fb9702c5d8ddaa05507c58a26f90e42fd38d"
+    },
+    {
+      "path": "fault_injection/deployments/quant_group_inventory.py",
+      "sha256": "712153e2449a80286371cd91b182115fd0d3e5f33e115a0b941eab583bf1c583"
+    },
+    {
+      "path": "fault_injection/quant_group_native.py",
+      "sha256": "0de05a45a734d6f720ecd3489fa4422089926fe812ffbf8534bf1955e8a61a1e"
+    },
+    {
+      "path": "fault_injection/quant_native_isolation.py",
+      "sha256": "0d6199b9491c7f67b0eef0c2c1127de33e53d82ee1a43dddacf45c7bcc175cd9"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_source_rows.py",
+      "sha256": "a737ee51bd37e171ef35dec1d28bd849cdf93a106062775e778d837a88c623c5"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_mla_metadata_rows.py",
+      "sha256": "a0ae3b12576c44eaee7ad92ed05fa465928215a0d2f1f7aa6b15f99c37c62a37"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_moe_rows.py",
+      "sha256": "498094f7c0d17cf6a877f37733e8eae1afffd88388ee651cc63480baae9262bd"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_token_routes.py",
+      "sha256": "d302ccfc6c66a336476bd93eddadfd679c27afa93549b1186ef72d4453712bd9"
+    }
+  ],
+  "native_build": {
+    "path": "/quant/runtime/vendor/op_api/lib/libcust_opapi.so",
+    "library_sha256": "6eb6c19cff6006bc9cd0b1072504dc5d6b7db3a0d7b393af7c88f4db1c8bd2fd",
+    "build_sha256": "b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac",
+    "actual_image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+    "source_commit": "46cd8ad153ad07ce1057cfcbac73d7d9fb76e226",
+    "sdk_abi_sizes": {
+      "view": 80,
+      "call": 280,
+      "config": 72,
+      "lease": 392,
+      "event": 360,
+      "binding": 48,
+      "journal": 104,
+      "plan": 264,
+      "child": 408,
+      "receipt": 1032,
+      "state": 160,
+      "public_input": 104,
+      "completion": 1368,
+      "runtime": 416,
+      "raw": 704
+    },
+    "sdk_metadata_abi_sizes": {
+      "snapshot": 416,
+      "record": 1304,
+      "state": 72
+    },
+    "actual_npu_acceptance": false
+  },
+  "observed_forwards": [
+    {
+      "index": 0,
+      "parents": 26,
+      "integer_snapshots": 130,
+      "arithmetic_checks_passed": 26,
+      "per_parent_bytes": 1600,
+      "integer_bytes": 41600,
+      "helper_calls": 130,
+      "helper_dispatches": 390,
+      "stage_calls": {
+        "topk": 26,
+        "routing": 26,
+        "cumsum": 26,
+        "gmm1": 26,
+        "gmm2": 26,
+        "abs": 26,
+        "unpermute": 26
+      },
+      "missing_or_refused_records": 0,
+      "graph_calls": 12853,
+      "unknown_edges": 12783,
+      "projection_candidates": 135,
+      "row_proven_candidates": 10,
+      "unverified_candidates": 125,
+      "shared_parent_input_rows_resumed": 1,
+      "remaining_parent_input_reasons": {
+        "CURRENT_SHARED_INPUT_OBSERVED": 1,
+        "MOE_CURRENT_REQUEST_INPUT_ROWS_UNPROVEN": 25
+      },
+      "first_unproven_projection": "model.layers.2.self_attn.kv_a_proj_with_mqa",
+      "observed_post_first_route_edges": [
+        {
+          "sequence": 933,
+          "operator": "aten.alias.default",
+          "row_preserving": true,
+          "reason": null
+        },
+        {
+          "sequence": 934,
+          "operator": "aten.alias.default",
+          "row_preserving": false,
+          "reason": "UNREVIEWED_OPERATOR_OR_INPUT_ROW_PROVENANCE"
+        },
+        {
+          "sequence": 935,
+          "operator": "aten.mul_.Tensor",
+          "row_preserving": false,
+          "reason": "UNKNOWN_OR_MUTATING_OPERATOR_INVALIDATES_STORAGE_ALIASES"
+        },
+        {
+          "sequence": 936,
+          "operator": "aten.add_.Tensor",
+          "row_preserving": false,
+          "reason": "UNKNOWN_OR_MUTATING_OPERATOR_INVALIDATES_STORAGE_ALIASES"
+        },
+        {
+          "sequence": 937,
+          "operator": "aten.view.default",
+          "row_preserving": false,
+          "reason": "UNREVIEWED_OPERATOR_OR_INPUT_ROW_PROVENANCE"
+        },
+        {
+          "sequence": 938,
+          "operator": "vllm.maybe_chunk_residual.default",
+          "row_preserving": true,
+          "reason": null
+        },
+        {
+          "sequence": 939,
+          "operator": "_C_ascend.npu_add_rms_norm_bias.default",
+          "row_preserving": false,
+          "reason": "UNREVIEWED_OPERATOR_OR_INPUT_ROW_PROVENANCE"
+        }
+      ],
+      "row_proven_projection_paths": [
+        "model.layers.0.self_attn.kv_a_proj_with_mqa",
+        "model.layers.0.self_attn.q_proj",
+        "model.layers.0.self_attn.o_proj",
+        "model.layers.0.mlp.gate_up_proj",
+        "model.layers.0.mlp.down_proj",
+        "model.layers.1.self_attn.kv_a_proj_with_mqa",
+        "model.layers.1.self_attn.q_proj",
+        "model.layers.1.self_attn.o_proj",
+        "model.layers.1.mlp.shared_experts.gate_up_proj",
+        "model.layers.1.mlp.shared_experts.down_proj"
+      ],
+      "registration_observations": {
+        "topk": {
+          "schema": "_C_ascend::moe_gating_top_k(Tensor x, int k, int k_group, int group_count, int group_select_mode, int renorm, int norm_type, bool out_flag, float routed_scaling_factor, float eps, Tensor? bias_opt=None) -> (Tensor y, Tensor expert_idx, Tensor out)",
+          "privateuse1_origin": "PrivateUse1: registered at /vllm-workspace/vllm-ascend/csrc/torch_binding.cpp:702",
+          "native_registration_proven": false
+        },
+        "routing": {
+          "schema": "_C_ascend::npu_moe_init_routing_custom(Tensor x, Tensor expert_idx, *, Tensor? scale=None, Tensor? offset=None, int active_num=-1, int expert_capacity=-1, int expert_num=-1, int drop_pad_mode=0, int expert_tokens_num_type=0, bool expert_tokens_num_flag=False, int quant_mode=0, int[2] active_expert_range=[], int row_idx_type=0) -> (Tensor, Tensor, Tensor, Tensor)",
+          "privateuse1_origin": "PrivateUse1: registered at /vllm-workspace/vllm-ascend/csrc/torch_binding.cpp:702",
+          "native_registration_proven": false
+        },
+        "cumsum": {
+          "schema": "aten::cumsum(Tensor self, int dim, *, ScalarType? dtype=None) -> Tensor",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:31626",
+          "native_registration_proven": false
+        },
+        "gmm1": {
+          "schema": "npu::npu_grouped_matmul_swiglu_quant(Tensor x, Tensor weight, Tensor group_list, Tensor weight_scale, Tensor x_scale, *, Tensor? bias=None, Tensor? offset=None) -> (Tensor, Tensor, Tensor)",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:8413",
+          "native_registration_proven": false
+        },
+        "gmm2": {
+          "schema": "npu::npu_grouped_matmul(Tensor[] x, Tensor[] weight, *, Tensor[]? bias=None, Tensor[]? scale=None, Tensor[]? offset=None, Tensor[]? antiquant_scale=None, Tensor[]? antiquant_offset=None, Tensor[]? per_token_scale=None, Tensor? group_list=None, Tensor[]? activation_input=None, Tensor[]? activation_quant_scale=None, Tensor[]? activation_quant_offset=None, int? split_item=0, int? group_type=None, int? group_list_type=0, int? act_type=0, int[]? tuning_config=None, ScalarType? output_dtype=None) -> Tensor[]",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:8413",
+          "native_registration_proven": false
+        },
+        "abs": {
+          "schema": "aten::abs(Tensor self) -> Tensor",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:31626",
+          "native_registration_proven": false
+        },
+        "unpermute": {
+          "schema": "npu::npu_moe_token_unpermute(Tensor permuted_tokens, Tensor sorted_indices, Tensor? probs=None, bool padded_mode=False, int[]? restore_shape=None) -> Tensor",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:8413",
+          "native_registration_proven": false
+        }
+      },
+      "readback_seconds": 0.252059862,
+      "observer_seconds": 1.412733962,
+      "source_profile_seconds": 0.014233738,
+      "timing_categories_overlap": true,
+      "max_owned_cpu_copy_bytes": 512,
+      "resources_zero": true
+    },
+    {
+      "index": 1,
+      "parents": 26,
+      "integer_snapshots": 130,
+      "arithmetic_checks_passed": 26,
+      "per_parent_bytes": 1600,
+      "integer_bytes": 41600,
+      "helper_calls": 130,
+      "helper_dispatches": 390,
+      "stage_calls": {
+        "topk": 26,
+        "routing": 26,
+        "cumsum": 26,
+        "gmm1": 26,
+        "gmm2": 26,
+        "abs": 26,
+        "unpermute": 26
+      },
+      "missing_or_refused_records": 0,
+      "graph_calls": 12853,
+      "unknown_edges": 12783,
+      "projection_candidates": 135,
+      "row_proven_candidates": 10,
+      "unverified_candidates": 125,
+      "shared_parent_input_rows_resumed": 1,
+      "remaining_parent_input_reasons": {
+        "CURRENT_SHARED_INPUT_OBSERVED": 1,
+        "MOE_CURRENT_REQUEST_INPUT_ROWS_UNPROVEN": 25
+      },
+      "first_unproven_projection": "model.layers.2.self_attn.kv_a_proj_with_mqa",
+      "observed_post_first_route_edges": [
+        {
+          "sequence": 933,
+          "operator": "aten.alias.default",
+          "row_preserving": true,
+          "reason": null
+        },
+        {
+          "sequence": 934,
+          "operator": "aten.alias.default",
+          "row_preserving": false,
+          "reason": "UNREVIEWED_OPERATOR_OR_INPUT_ROW_PROVENANCE"
+        },
+        {
+          "sequence": 935,
+          "operator": "aten.mul_.Tensor",
+          "row_preserving": false,
+          "reason": "UNKNOWN_OR_MUTATING_OPERATOR_INVALIDATES_STORAGE_ALIASES"
+        },
+        {
+          "sequence": 936,
+          "operator": "aten.add_.Tensor",
+          "row_preserving": false,
+          "reason": "UNKNOWN_OR_MUTATING_OPERATOR_INVALIDATES_STORAGE_ALIASES"
+        },
+        {
+          "sequence": 937,
+          "operator": "aten.view.default",
+          "row_preserving": false,
+          "reason": "UNREVIEWED_OPERATOR_OR_INPUT_ROW_PROVENANCE"
+        },
+        {
+          "sequence": 938,
+          "operator": "vllm.maybe_chunk_residual.default",
+          "row_preserving": true,
+          "reason": null
+        },
+        {
+          "sequence": 939,
+          "operator": "_C_ascend.npu_add_rms_norm_bias.default",
+          "row_preserving": false,
+          "reason": "UNREVIEWED_OPERATOR_OR_INPUT_ROW_PROVENANCE"
+        }
+      ],
+      "row_proven_projection_paths": [
+        "model.layers.0.self_attn.kv_a_proj_with_mqa",
+        "model.layers.0.self_attn.q_proj",
+        "model.layers.0.self_attn.o_proj",
+        "model.layers.0.mlp.gate_up_proj",
+        "model.layers.0.mlp.down_proj",
+        "model.layers.1.self_attn.kv_a_proj_with_mqa",
+        "model.layers.1.self_attn.q_proj",
+        "model.layers.1.self_attn.o_proj",
+        "model.layers.1.mlp.shared_experts.gate_up_proj",
+        "model.layers.1.mlp.shared_experts.down_proj"
+      ],
+      "registration_observations": {
+        "topk": {
+          "schema": "_C_ascend::moe_gating_top_k(Tensor x, int k, int k_group, int group_count, int group_select_mode, int renorm, int norm_type, bool out_flag, float routed_scaling_factor, float eps, Tensor? bias_opt=None) -> (Tensor y, Tensor expert_idx, Tensor out)",
+          "privateuse1_origin": "PrivateUse1: registered at /vllm-workspace/vllm-ascend/csrc/torch_binding.cpp:702",
+          "native_registration_proven": false
+        },
+        "routing": {
+          "schema": "_C_ascend::npu_moe_init_routing_custom(Tensor x, Tensor expert_idx, *, Tensor? scale=None, Tensor? offset=None, int active_num=-1, int expert_capacity=-1, int expert_num=-1, int drop_pad_mode=0, int expert_tokens_num_type=0, bool expert_tokens_num_flag=False, int quant_mode=0, int[2] active_expert_range=[], int row_idx_type=0) -> (Tensor, Tensor, Tensor, Tensor)",
+          "privateuse1_origin": "PrivateUse1: registered at /vllm-workspace/vllm-ascend/csrc/torch_binding.cpp:702",
+          "native_registration_proven": false
+        },
+        "cumsum": {
+          "schema": "aten::cumsum(Tensor self, int dim, *, ScalarType? dtype=None) -> Tensor",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:31626",
+          "native_registration_proven": false
+        },
+        "gmm1": {
+          "schema": "npu::npu_grouped_matmul_swiglu_quant(Tensor x, Tensor weight, Tensor group_list, Tensor weight_scale, Tensor x_scale, *, Tensor? bias=None, Tensor? offset=None) -> (Tensor, Tensor, Tensor)",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:8413",
+          "native_registration_proven": false
+        },
+        "gmm2": {
+          "schema": "npu::npu_grouped_matmul(Tensor[] x, Tensor[] weight, *, Tensor[]? bias=None, Tensor[]? scale=None, Tensor[]? offset=None, Tensor[]? antiquant_scale=None, Tensor[]? antiquant_offset=None, Tensor[]? per_token_scale=None, Tensor? group_list=None, Tensor[]? activation_input=None, Tensor[]? activation_quant_scale=None, Tensor[]? activation_quant_offset=None, int? split_item=0, int? group_type=None, int? group_list_type=0, int? act_type=0, int[]? tuning_config=None, ScalarType? output_dtype=None) -> Tensor[]",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:8413",
+          "native_registration_proven": false
+        },
+        "abs": {
+          "schema": "aten::abs(Tensor self) -> Tensor",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:31626",
+          "native_registration_proven": false
+        },
+        "unpermute": {
+          "schema": "npu::npu_moe_token_unpermute(Tensor permuted_tokens, Tensor sorted_indices, Tensor? probs=None, bool padded_mode=False, int[]? restore_shape=None) -> Tensor",
+          "privateuse1_origin": "PrivateUse1: registered at build/CMakeFiles/torch_npu.dir/compiler_depend.ts:8413",
+          "native_registration_proven": false
+        }
+      },
+      "readback_seconds": 0.462435342,
+      "observer_seconds": 1.629835811,
+      "source_profile_seconds": 0.014273906,
+      "timing_categories_overlap": true,
+      "max_owned_cpu_copy_bytes": 512,
+      "resources_zero": true
+    }
+  ],
+  "integer_snapshot_pairs_equal": 130,
+  "actual_projection_calls": 270,
+  "actual_native_parents": 270,
+  "actual_native_prepares": 270,
+  "actual_native_executes": 270,
+  "integer_parent_records": 52,
+  "integer_snapshots": 260,
+  "integer_payload_bytes": 83200,
+  "helper_dispatches_separate_from_model": 780,
+  "healthy_before_equals_after": true,
+  "cleanup": {
+    "installed": false,
+    "native_faults": 0,
+    "owned_hooks": 0,
+    "owned_method_patches": 0,
+    "owned_api_patches": 0,
+    "owned_row_dispatch_modes": 0,
+    "group_owner_installed": false,
+    "owned_integer_route_parent_refs": 0,
+    "owned_integer_route_tensor_refs": 0,
+    "owned_source_profile_callbacks": 0,
+    "owned_early_dispatch_modes": 0,
+    "owned_nested_dispatch_modes": 0,
+    "owned_scheduler_input_refs": 0,
+    "observer_cleanup_pending": false,
+    "owned_live_metadata_records": 0
+  },
+  "float_activation_values_exported": false,
+  "native_registration_proven": false,
+  "routed_output_row_proof": false,
+  "native_qualified_targets": 0,
+  "c1": false,
+  "c2": false,
+  "c3": false,
+  "qualification_granted": false,
+  "remaining_gates": [
+    "ACTUAL_PER_REQUEST_ROW_LINEAGE_FOR_EVERY_UNRESOLVED_PROJECTION",
+    "PER_CALL_OWNER_GENERATION_NATIVE_LEASE",
+    "PER_TARGET_LOSSLESS_AND_EFFECT",
+    "ALL_TARGET_OFF_DRAIN_RELEASE"
+  ]
+}
