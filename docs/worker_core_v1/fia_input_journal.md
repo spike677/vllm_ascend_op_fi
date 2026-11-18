@@ -41,7 +41,7 @@ python /source/experiments/worker_core_v11_20261118/fia_input_journal_build.py \
 
 导出闭包由 `fia_input_journal_build.SOURCES` 明确列出：新增 native 三件、Python 配置/独立 reader/build；原容器 native 三件、`quant_container_native.py`、`metadata_arrays.py`；`fault39/native/{runtime_identity,metadata_array_owner,metadata_array_state}.h`；`version_profile.py` 及既有容器构建工具和其工具依赖。root 冻结的完整 source archive 仍是最终源码身份。额外测试为 `tests/test_fia_input_journal.py`。
 
-构建必须成功运行 24 个 production-TU CPU 用例、保留每个日志和 executable/DSO/SHA，再生成 `build.json`。本地 Windows 已运行 22 个 Python 合同，通过；当前交付时尚未在本机编译 C++，不把声明的 C++ 用例数算作已通过。SDK 编译及实际调用均待 root 独立执行。
+构建必须成功运行 24 个 production-TU CPU 用例、保留每个日志和 executable/DSO/SHA，再生成 `build.json`。本地 Windows 已运行 25 个 Python 合同，通过；当前交付时尚未在本机编译 C++，不把声明的 C++ 用例数算作已通过。SDK 编译及实际调用均待 root 独立执行。
 
 ## 未来接线位置与原件
 
@@ -64,7 +64,7 @@ preloaded observer + journal
 
 异常时保留原异常、失败快照、退出和资源状态，不覆盖为成功；若 pending 导致不能 leave/stop/release，不强制 reset，也不复用此 Worker。无需为观察候选增加 F。不能由本地假对象或手写输入几何生成 NPU 原件。
 
-独立纯 stdlib reader 不导入配置器或 `assess_observation`，不使用命中/期望输出。它核原件 SHA、结构/顺序、44 typed slots、容器原始 pair/寿命、输入几何、真实 execute 和 release。调用示例：
+独立纯 stdlib reader 不导入配置器或 `assess_observation`，不使用命中/期望输出。它核原件 SHA、结构/顺序、44 typed slots、容器原始 pair/寿命、输入几何、真实 execute 和 release。每个 public 窗口都必须有对应 GWS，缺事件的窗口不能被其他窗口的成功覆盖。K/V creator 成员数不为 1 时仍在固定四个 public role 中保留，明确未 join，不让分母缩小；原生记录完整但 public 几何不全时使用 `COMPLETE_NATIVE_JOURNAL_PUBLIC_JOIN_INCOMPLETE`，不能称 public 参数关联完成。调用示例：
 
 ```sh
 python /source/experiments/worker_core_v11_20261118/fia_input_journal_review.py \

@@ -173,6 +173,42 @@ class IndependentReviewTests(unittest.TestCase):
         result=self.result(lambda d,p,r:d['public_scopes'][0]['evidence']['actual_input_addresses']['value'].update(stride=[1024,128,1],storage_offset=0))
         self.assertFalse(result['observed']['public_storage_geometry_all_joined'])
         self.assertFalse(result['prepared_internal_tensor_lineage_proven'])
+        self.assertEqual(result['status'],'COMPLETE_NATIVE_JOURNAL_PUBLIC_JOIN_INCOMPLETE')
+
+    def test_public_window_without_native_events_is_not_complete(self):
+        def mutate(d,p,r):
+            extra=copy.deepcopy(d['public_scopes'][0]);extra['identity']['scope']['token']=2
+            extra['identity']['call_id']='b'*32;d['public_scopes'].append(extra)
+        result=self.result(mutate)
+        self.assertIn('EVERY_PUBLIC_WINDOW_HAS_NATIVE_PREPARE',result['issues'])
+        self.assertEqual(result['observed']['window_prepare_counts'],{1:1,2:0})
+        self.assertEqual(result['status'],'NO_OBSERVATION_OR_PARTIAL_FAILURE')
+
+    def test_multiple_or_zero_members_cannot_remove_key_value_roles(self):
+        for n,role in ((0,'key'),(1,'value')):
+            for count in (0,2):
+                with self.subTest(role=role,count=count):
+                    def mutate(d,p,r):
+                        for event in d['containers']['events']:
+                            if event['call']==n+1:
+                                event.update(count=count,payload_bytes=count*C.sizeof(qct.Tensor))
+                                event['tensor_descriptors']=[tensor(80000+(n+1)*1000)]*count
+                        for event in d['events'][:2]:
+                            event['containers'][n].update(count=count,actual_count=count,payload_bytes=count*C.sizeof(qct.Tensor))
+                    result=self.result(mutate)
+                    self.assertEqual(result['issues'],[])
+                    self.assertFalse(result['observed']['public_storage_geometry_all_joined'])
+                    joins=result['observed']['public_storage_geometry']
+                    self.assertEqual({x['role'] for x in joins},{'query','key','value','atten_mask'})
+                    actual=next(x for x in joins if x['role']==role)
+                    self.assertEqual(actual['creator_member_count'],count)
+                    self.assertEqual(actual['unjoined_reason'],'SINGLE_CREATOR_MEMBER_REQUIRED')
+                    self.assertEqual(result['status'],'COMPLETE_NATIVE_JOURNAL_PUBLIC_JOIN_INCOMPLETE')
+
+    def test_null_public_mapping_is_partial(self):
+        result=self.result(lambda d,p,r:d['public_scopes'][0]['evidence'].update(actual_input_addresses=None))
+        self.assertEqual(result['status'],'NO_OBSERVATION_OR_PARTIAL_FAILURE')
+        self.assertTrue(result['issues'])
 
     def test_cleanup_missing_or_wrong_owner_is_rejected(self):
         d,p,r=fixture();self.assertIn('RELEASE_ORIGINAL_REQUIRED',reader.review(d,p)['issues'])

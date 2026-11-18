@@ -170,14 +170,16 @@ def review(data,profile,released=None):
                     and 0<b['layout_length']<16 and len(b['layout'])==b['layout_length'],'ACTUAL_TYPED_SCALARS')
                 window=scopes.get(b['scope_token'])
                 public=window.get('evidence',{}).get('actual_input_addresses',{}) if window else {}
-                roles={'query':b['tensors'][0],'atten_mask':b['tensors'][2]}
+                roles={'query':b['tensors'][0],'key':None,'value':None,'atten_mask':b['tensors'][2]}
+                member_counts={}
                 for n,role in ((0,'key'),(1,'value')):
                     slot=b['containers'][n];entry=cpairs.get(slot['registration'],[{}])[0]
                     members=entry.get('tensor_descriptors',[])
+                    member_counts[role]=len(members)
                     if len(members)==1:roles[role]=members[0]
                 for role,t in roles.items():
                     p=public.get(role);equal=False
-                    if p:
+                    if p and t is not None:
                         tags=data['sdk_tags'];dtype=tags['float16_tag'] if p['dtype']=='torch.float16' else tags['int8_tag'] if p['dtype']=='torch.int8' else None
                         equal=(t['address']==p['storage_address'] and t['offset']==p['storage_offset'] and t['dtype']==dtype
                             and t['format']==tags['nd_tag'] and p['object_id']>0 and p['storage_identity']>0
@@ -185,6 +187,9 @@ def review(data,profile,released=None):
                             and math.prod(t['storage'][:t['counts'][2]])*p['element_bytes']==p['storage_bytes']
                             and p['data_address']==p['storage_address']+p['storage_offset']*p['element_bytes'])
                     public_joins.append(dict(call=call,role=role,public_record_present=p is not None,storage_geometry_equal=equal,
+                        native_descriptor_present=t is not None,creator_member_count=member_counts.get(role),
+                        unjoined_reason=None if equal else 'SINGLE_CREATOR_MEMBER_REQUIRED' if role in member_counts and member_counts[role]!=1
+                            else 'PUBLIC_RECORD_MISSING' if not p else 'STORAGE_GEOMETRY_OR_TYPE_NOT_EQUAL',
                         capture_point='CREATOR_ENTRY' if role in ('key','value') else 'GWS_ARGUMENT_ENTRY',internal_prepared_input_proven=False))
             else:executes.setdefault(b['prepare_registration'],[]).append(pair)
         for registration,after in prepares.items():
@@ -198,7 +203,10 @@ def review(data,profile,released=None):
         check(set(executes)==set(prepares),'NO_UNKNOWN_EXECUTE')
         check(s['prepare_returns']==s['original_prepares']==len(prepares)
             and s['execute_returns']==s['original_executes']==s['paired_execute_returns']==len(executes),'REAL_PAIR_COUNTERS')
+        window_counts={token:sum(x['scope_token']==token for x in prepares.values()) for token in scopes}
+        check(bool(window_counts) and all(window_counts.values()),'EVERY_PUBLIC_WINDOW_HAS_NATIVE_PREPARE')
         summary.update(prepare_calls=len(prepares),execute_calls=len(executes),windows=len(scopes),
+            window_prepare_counts=window_counts,
             retained_events=len(events),container_calls=len(cpairs),public_storage_geometry=public_joins,
             public_storage_geometry_all_joined=bool(public_joins) and all(x['storage_geometry_equal'] for x in public_joins))
         check(released is not None,'RELEASE_ORIGINAL_REQUIRED')
@@ -217,11 +225,13 @@ def review(data,profile,released=None):
                 'total_events','entries','returns','original_calls','first_error','arrays')),'RELEASE_SAME_CONTAINER_SESSION')
             check(released['global_wrappers_unloaded'] is False and released['preloaded_library_remains_until_process_exit'] is True,
                 'NO_GLOBAL_UNLOAD_CLAIM')
-    except (KeyError,TypeError,ValueError,IndexError,OverflowError) as error:
+    except (KeyError,TypeError,ValueError,IndexError,OverflowError,AttributeError) as error:
         issues.append('MISSING_OR_INVALID_ORIGINAL:'+repr(error))
+    complete=not issues and not native_failures and summary.get('prepare_calls',0)>0
     return dict(schema='demoncat.fia_input_journal.offline_review.v1',checks=checks,issues=issues,native_failures=native_failures,
-        status='COMPLETE_ARGUMENT_JOURNAL_NO_QUALIFICATION' if not issues and not native_failures and summary.get('prepare_calls',0)>0
-            else 'NO_OBSERVATION_OR_PARTIAL_FAILURE',observed=summary,originals_modified=False,
+        status=('COMPLETE_ARGUMENT_JOURNAL_NO_QUALIFICATION' if summary.get('public_storage_geometry_all_joined')
+            else 'COMPLETE_NATIVE_JOURNAL_PUBLIC_JOIN_INCOMPLETE') if complete else 'NO_OBSERVATION_OR_PARTIAL_FAILURE',
+        observed=summary,originals_modified=False,
         Slice_ABI_known=False,slice_pointer_lineage_proven=False,prepared_internal_tensor_lineage_proven=False,
         C1=False,C2=False,C3=False,E5=False,qualification_granted=False,
         limitations=['Creator metadata is not a reread of opaque list members at execute.',
