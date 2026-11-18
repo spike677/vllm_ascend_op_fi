@@ -79,7 +79,8 @@ class HostAdapter:
             raise HostContractError('INVALID_RPC_RESPONSE')
         return _copy(list(rows))
 
-    def route(self, config):
+    def discover_workers(self):
+        """Read a complete, unambiguous identity census without attaching."""
         rows = self._broadcast('demoncat_worker_identity')
         # A broadcast cannot safely distinguish a missing/duplicate rank. Do
         # not send mutations before every recipient has an established identity.
@@ -91,6 +92,11 @@ class HostAdapter:
             raise HostContractError('INVALID_WORKER_IDENTITY')
         if len({worker['rank'] for worker in identities}) != len(identities):
             raise HostContractError('AMBIGUOUS_BROADCAST_RANK')
+        return rows
+
+    def route(self, config):
+        rows = self.discover_workers()
+        identities = [row['worker'] for row in rows]
         if self._select is None:
             if len(identities) != 1:
                 raise HostContractError('TRUSTED_WORKER_ROUTING_REQUIRED')

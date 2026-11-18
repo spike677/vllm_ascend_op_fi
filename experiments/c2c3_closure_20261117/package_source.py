@@ -11,6 +11,7 @@ import tarfile
 PREFIXES = ('engineering_closure/', 'fault_injection/', 'src/demoncat/', 'fault39/native/', 'fault39/tools/',
             'fault39/src/', 'native_execution_strategy/',
             'experiments/c2c3_closure_20261117/', 'experiments/c2c3_postwrite_20261117/',
+            'experiments/worker_core_v11_20261118/',
             'experiments/engineering_20261117/',
             'experiments/worker_positive_20261117/',
             'experiments/provider_adaptation_20261116/', 'tests/',
