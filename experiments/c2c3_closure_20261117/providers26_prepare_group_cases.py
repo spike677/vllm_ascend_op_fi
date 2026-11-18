@@ -19,14 +19,14 @@ def main():
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--worker-core', action='store_true')
     parser.add_argument('--source', help='Frozen source root for the public Core C1/C2/C3 probe')
-    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage', 'c1_single_effects', 'c2_once', 'c2_c3'), default=['inventory'])
+    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage', 'c1_single_effects', 'c2_once', 'c2_c3', 'c2_isolated_once'), default=['inventory'])
     parser.add_argument('--mechanisms', nargs='+', choices=('26.residual_stomp', '26.fia_destination'),
                         default=None)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
-    if any(stage in args.stages for stage in ('c2_once', 'c2_c3')) and not args.worker_core:
-        parser.error('c2_once/c2_c3 requires the explicit public --worker-core entry')
-    if args.worker_core and (args.stages not in (['c1_single_effects'], ['c2_once'], ['c2_c3'])
+    if any(stage in args.stages for stage in ('c2_once', 'c2_c3', 'c2_isolated_once')) and not args.worker_core:
+        parser.error('C2/C3 stages require the explicit public --worker-core entry')
+    if args.worker_core and (args.stages not in (['c1_single_effects'], ['c2_once'], ['c2_c3'], ['c2_isolated_once'])
             or args.stages == ['c1_single_effects'] and args.max_targets != 1 or args.statistics
             or args.source is None or not args.source.startswith('/')
             or any(c in args.source for c in ('\n', '\r', '\0', ','))):
@@ -56,7 +56,7 @@ def main():
         path = (root / name).resolve(strict=True)
         if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             raise RuntimeError('NATIVE_BUNDLE_CHANGED:' + name)
-    if any(stage in args.stages for stage in ('c1_single_effects', 'c2_once', 'c2_c3')) and '26.fia_destination' in args.mechanisms:
+    if any(stage in args.stages for stage in ('c1_single_effects', 'c2_once', 'c2_c3', 'c2_isolated_once')) and '26.fia_destination' in args.mechanisms:
         from fault_injection.deployments.writer26_fia_typed import profile
         profile(build.get('fia_typed_profile'))
     cases = []
@@ -64,7 +64,8 @@ def main():
         fia = mechanism == '26.fia_destination'
         model = '/home/fault39-integration-20261116-a1/models-smollm2-135m' if fia else '/home/haoran/models/DeepSeek-V2-Lite-W8A8'
         for stage in args.stages:
-            coverage = stage in ('coverage', 'c2_once', 'c2_c3')
+            coverage = stage in ('coverage', 'c2_once', 'c2_c3', 'c2_isolated_once')
+            isolated = stage == 'c2_isolated_once'
             single_site = stage == 'c1_single_effects'
             name = ('providers26-core-' if args.worker_core else 'providers26-v2-') + ('fia-smol-' if fia else 'qmm-deepseek-') + stage
             command = ('source /usr/local/Ascend/cann-8.5.1/set_env.sh\n'
@@ -91,7 +92,8 @@ def main():
                     FAULT26_TRACE_ENABLED='1', FAULT26_TRACE_ALL_APIS='1', FAULT26_TRACE_CAPTURE_TENSORS='1',
                     FAULT26_WRITER_TOPOLOGY_ENABLED='1', FAULT26_TRACE_MAX_EVENTS='100000',
                     FAULT26_TRACE_LOG_PATH='/evidence/trace.jsonl', DCAT26_GROUP_V2_ALLOWED='1'), command=command,
-                review=dict(experiment_id=name, provider=mechanism + (' public Core all_eligible once C2 attempt; not C3'
+                review=dict(experiment_id=name, provider=mechanism + (' public Core all_eligible isolated F/OFF requests C2 attempt; not C3'
+                    if isolated else ' public Core all_eligible once C2 attempt; not C3'
                     if stage == 'c2_once' else ' public Core all_eligible C2 then original-live-proof C3'
                     if stage == 'c2_c3' else ' v2 all_eligible once then live every_match' if coverage
                     else ' v2 one actual healthy-resolved ' + ('typed FIA' if fia else 'QMM') + ' site C1 effects (not C2)' if single_site
@@ -100,7 +102,8 @@ def main():
                     public_entry='WorkerFaultClient+FaultConfig(26,variant)' if args.worker_core else 'legacy callable experiment RPC',
                     public_core_new_source_requires_acceptance=args.worker_core,
                     previous_direct_entry_qualification_inherited=False,
-                    execution_scope='same-request cumulative all stable eligible targets' if coverage else 'one selected target per request',
+                    execution_scope='complete stable eligible set; each target isolated F then OFF in fresh requests'
+                        if isolated else 'same-request cumulative all stable eligible targets' if coverage else 'one selected target per request',
                     c2_dynamic_eligibility=('Any unresolved or two-healthy allocator eligibility flip blocks the whole group; no subset'
                         if coverage else None),
                     worker='standard TP1 eager BF16; single fresh prefill/request; fixed64 KV blocks; no decode claim',
@@ -114,7 +117,8 @@ def main():
                     metadata_startup='Before importing Torch/vLLM, verify the immutable bundle and explicitly load '
                         'its missing split opapi with RTLD_NOW|RTLD_LOCAL; retain its handle. Then require all four '
                         'already-loaded counters with independent instances and exact mapped/dladdr identities.',
-                    expected_hits=('C2: one per complete frozen eligible target after fresh R/L/OFF; C3 not requested'
+                    expected_hits=('C2: one isolated F/request and its own real OFF/request per complete frozen target; C3 not requested'
+                        if isolated else 'C2: one per complete frozen eligible target after fresh R/L/OFF; C3 not requested'
                         if stage == 'c2_once' else 'C2: one per complete frozen eligible target; C3: every existing-target call in two fresh requests; '
                         'no subset, only after actual live C2' if coverage else
                         'exactly one F after the selected current site passes reference/lossless/OFF; no fallback or all-eligible claim'
@@ -122,6 +126,9 @@ def main():
                         else 'one per completely observed and independently lossless-qualified candidate; never C2'),
                     resource_budget=dict(timeout_seconds=1800, memory_gib=80, cpus=16, independent_events=32768,
                         max_targets=args.max_targets, planned_single_site_targets=1 if single_site else None,
+                        isolated_group_requests='6 + 2 * actual stable eligible count' if isolated else None,
+                        isolated_pre_f_timing_gate='2 * max(actual R/L/OFF full cycles) * remaining + 120 cleanup + measured CPU control reserve; session <=1200, case <=1800'
+                            if isolated else None,
                         max_targets_selects_subset=False, native_device_bytes=64 * 1024 * 1024, native_host_bytes=512 * 1024 * 1024,
                         fia_stock_host_bytes=512 * 1024 * 1024 if fia and build.get('fia_typed_profile') else 0),
                     recovery_plan=('Every original executes once. Two complete healthy censuses plus independent target '

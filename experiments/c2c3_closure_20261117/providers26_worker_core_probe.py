@@ -2,8 +2,10 @@
 import argparse
 import importlib
 import json
+import math
 from pathlib import Path
 import sys
+import time
 import traceback
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -39,7 +41,7 @@ MODULES = tuple(('fault_injection.deployments.'+name, 'fault_injection/deploymen
     ('fault_injection.coverage_session', 'fault_injection/coverage_session.py')) + tuple(
     ('demoncat.runtime.vllm_ascend.worker_extension.'+name,
      'src/demoncat/runtime/vllm_ascend/worker_extension/'+name.replace('.', '/')+'.py') for name in
-    ('serving26_core', 'providers.fault26_core', 'providers.fault26', 'providers._scope', 'serving26_group',
+    ('serving26_core', 'serving26_isolated', 'providers.fault26_core', 'providers.fault26', 'providers._scope', 'serving26_group',
      'serving26_inventory', 'serving', 'serving_context', 'call_binding', 'host', 'config', 'runtime', 'identity',
      'extension', 'registry')) + (('demoncat.runtime.vllm_ascend.worker_extension.providers',
         'src/demoncat/runtime/vllm_ascend/worker_extension/providers/__init__.py'),)
@@ -111,13 +113,51 @@ def remove(worker, expected_identity, mechanism):
     return remove_writer26_core_binding(worker, mechanism)
 
 
-def drive(llm, client, *, executor, prompt, params, out, report):
+def isolated_budget_preflight(requests, plan, *, elapsed_seconds):
+    """A new run must earn its own pre-F budget; source77 is not a timing pass."""
+    phases = C2_PHASES[2:5]
+    samples = [row['complete_cycle_seconds'] for row in requests if row['phase'] in phases]
+    if len(samples) != 3 or not all(type(value) in (int, float) and value > 0 for value in samples):
+        raise RuntimeError('THREE_ACTUAL_COMPLETE_QUALIFICATION_CYCLES_REQUIRED_FOR_BUDGET')
+    count = plan.get('full_native_writer_count')
+    if type(count) is not int or count <= 0:
+        raise RuntimeError('FULL_NATIVE_DENOMINATOR_REQUIRED_FOR_BUDGET')
+    remaining = plan['group_requests']-5
+    # The measured full 64-request CPU driver took 279.922s although its first
+    # three qualification cycles were <0.3s. Account separately for growing
+    # evidence/Host-copy overhead; never extrapolate those early cycles alone.
+    control_reserve = math.ceil(360*(plan['group_requests']/64)**3*max(1, count/30))
+    forecast = 2*max(samples)*remaining+120+control_reserve
+    reasons = []
+    if forecast > 1200:
+        reasons.append('ISOLATED_SESSION_1200_SECOND_BUDGET_UNPROVEN')
+    if elapsed_seconds+forecast+120 > 1800:
+        reasons.append('ISOLATED_ROOT_CASE_1800_SECOND_BUDGET_UNPROVEN')
+    return dict(schema='demoncat.writer26.isolated_budget_preflight.v1',
+        status='REFUSED_BEFORE_F' if reasons else 'CONSERVATIVE_ESTIMATE_WITHIN_EXISTING_LIMITS',
+        complete_qualification_cycle_seconds=samples, remaining_requests=remaining,
+        per_request_safety_multiplier=2, cleanup_reserve_seconds=120, outside_probe_startup_margin_seconds=120,
+        python_control_overhead_reserve_seconds=control_reserve,
+        cpu_control_reference=dict(group_requests=64, full_native_writer_count=30, elapsed_seconds=279.922,
+            total_evidence_bytes=957530550, actual_npu_calls=0, qualification_granted=False),
+        forecast_remaining_seconds=forecast, actual_probe_elapsed_seconds=elapsed_seconds,
+        existing_session_limit_seconds=1200, existing_root_case_limit_seconds=1800,
+        source77_total_evidence_bytes=536999909, source77_requests=17,
+        estimated_evidence_reservation_bytes=math.ceil(536999909*plan['group_requests']*2/17*max(1, count/30)),
+        evidence_bytes_are_estimate_not_measured_bound=True, qualification_granted=False, refusal_reasons=reasons)
+
+
+def drive(llm, client, *, executor, prompt, params, out, report, case_started=None):
+    case_started = time.monotonic() if case_started is None else case_started
     seen, pending, last = [], [], None
-    complete_set = report.get('stage') in ('c2_once', 'c2_c3')
+    isolated = report.get('stage') == 'c2_isolated_once'
+    complete_set = report.get('stage') in ('c2_once', 'c2_c3', 'c2_isolated_once')
     every_match = report.get('stage') == 'c2_c3'
     phases = [('c2' if complete_set else 'c1', phase) for phase in (C2_PHASES if complete_set else PHASES)]
     if every_match:
         phases.extend(('c3', phase) for phase in C3_PHASES)
+    if isolated:
+        phases = [('c2', phase) for phase in C2_PHASES[:2]]
     run_counts = dict(c1=0, c2=0, c3=0)
     blocked_run = None
     blocked = False
@@ -164,6 +204,14 @@ def drive(llm, client, *, executor, prompt, params, out, report):
             index = 0
             while index < len(phases):
                 run, phase = phases[index]
+                if isolated and phase == 'group_fault' and 'isolated_budget_preflight' not in report:
+                    budget = isolated_budget_preflight(report['requests'], report['isolated_plan'],
+                        elapsed_seconds=time.monotonic()-case_started)
+                    report['isolated_budget_preflight'] = budget
+                    save()
+                    if budget['refusal_reasons']:
+                        raise RuntimeError(';'.join(budget['refusal_reasons']))
+                cycle_started = time.monotonic()
                 mapping = enqueue()
                 state = action('advance', pending[0])
                 if state['evidence']['phase'] != phase or state['evidence'].get('current_run', run) != run:
@@ -202,8 +250,19 @@ def drive(llm, client, *, executor, prompt, params, out, report):
                     phases = phases[:index+1]+[(run, 'health')]
                     report['complete_set_blockers'] = collected['blockers']
                     report['blocked_run'] = run
+                elif isolated and run_counts[run] == 1:
+                    plan = collected['isolated_plan']
+                    count = collected['resolved_candidate_count']
+                    if (not 0 < count <= 128 or len(set(plan['target_order'])) != count
+                            or plan['group_requests'] != 6+2*count or plan['c3_requested']
+                            or not collected['independent_per_target_replay']):
+                        raise RuntimeError('EXACT_COMPLETE_ISOLATED_PLAN_REQUIRED')
+                    phases.extend(('c2', phase) for phase in
+                        C2_PHASES[2:5]+('group_fault', 'group_off')*count+('health',))
+                    report['isolated_plan'] = plan
                 run_counts[run] += 1
                 index += 1
+                row['complete_cycle_seconds'] = time.monotonic()-cycle_started
                 save()
             if not blocked:
                 state = action('finish')
@@ -287,11 +346,12 @@ def drive(llm, client, *, executor, prompt, params, out, report):
 
 
 def main(argv=None):
+    case_started = time.monotonic()
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mechanism', choices=('26.residual_stomp', '26.fia_destination'), required=True)
     parser.add_argument('--manifest-sha256', required=True)
     parser.add_argument('--source-root', type=Path, required=True)
-    parser.add_argument('--stage', choices=('c1_single_effects', 'c2_once', 'c2_c3'), default='c1_single_effects')
+    parser.add_argument('--stage', choices=('c1_single_effects', 'c2_once', 'c2_c3', 'c2_isolated_once'), default='c1_single_effects')
     parser.add_argument('--max-targets', type=int, default=1)
     parser.add_argument('--memory', type=float, default=.55)
     parser.add_argument('--statistics', action='store_true')
@@ -305,7 +365,8 @@ def main(argv=None):
     out = Path('/evidence/probe')
     out.mkdir(exist_ok=False)
     report = dict(schema='demoncat.writer26.worker_core_probe.v1', status='STARTING', mechanism=args.mechanism,
-        stage=args.stage, scope=('SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS_FIXED_FRESH_PREFILL'
+        stage=args.stage, scope=('ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS'
+            if args.stage == 'c2_isolated_once' else 'SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS_FIXED_FRESH_PREFILL'
             if args.stage in ('c2_once', 'c2_c3') else single_site_scope(args.mechanism)), c2=False, c3=False,
         qualification_granted=False, previous_direct_entry_qualification_inherited=False,
         E5='UNADAPTED_COLLECTOR_BOUNDARY', manifest_sha256=args.manifest_sha256, requests=[])
@@ -349,7 +410,8 @@ def main(argv=None):
             return {}
         client = WorkerFaultClient(HostAdapter(recorder, prepare_binding=bind, timeout=300),
             FaultConfig(26, args.mechanism.split('.', 1)[1]))
-        drive(llm, client, executor=recorder, prompt=prompt, params=params, out=out, report=report)
+        drive(llm, client, executor=recorder, prompt=prompt, params=params, out=out, report=report,
+              case_started=case_started)
         if not report['ownership_retained'] and report.get('setup'):
             replies = recorder.collective_rpc(remove, timeout=300, args=(report['worker'], args.mechanism))
             if len(replies) != 1:

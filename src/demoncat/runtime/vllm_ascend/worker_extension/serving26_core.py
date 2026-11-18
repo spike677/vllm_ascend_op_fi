@@ -16,6 +16,7 @@ ATTRIBUTE = '_demoncat_writer26_core_bindings'
 MECHANISMS = ('26.residual_stomp', '26.fia_destination')
 COMPLETE_SET_STAGE = 'c2_once'
 EVERY_MATCH_STAGE = 'c2_c3'
+ISOLATED_STAGE = 'c2_isolated_once'
 
 
 @dataclass(frozen=True)
@@ -46,7 +47,7 @@ def install_writer26_core_binding(worker, *, mechanism, prompt_token_ids, eviden
     from fault_injection.deployments.writer26_inventory import NativeWriterInventory
     from fault_injection.providers import register_runtime
     require(mechanism in MECHANISMS, 'EXACT_SINGLE_SITE_WRITER_MECHANISM_REQUIRED')
-    require(stage in (SINGLE_SITE_STAGE, COMPLETE_SET_STAGE, EVERY_MATCH_STAGE) and type(max_targets) is int
+    require(stage in (SINGLE_SITE_STAGE, COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE) and type(max_targets) is int
         and 1 <= max_targets <= 128, 'BOUNDED_WRITER26_CORE_STAGE_REQUIRED')
     require(type(_simulation) is bool and (_simulation or _runtime_factory is _reader is None),
             'WRITER26_CORE_OVERRIDES_CPU_ONLY')
@@ -259,6 +260,9 @@ class CoreWriter26Coverage(CoreWriter26Experiment, Writer26Coverage):
         super()._freeze()
         if self.blockers:
             return
+        self._prepare_complete_plan()
+        if self.blockers:
+            return
         row = self.rows[1]
         remaining = len(self.plan)-2
         events = row['native_after']['total_events']-row['native_before']['total_events']
@@ -267,16 +271,26 @@ class CoreWriter26Coverage(CoreWriter26Experiment, Writer26Coverage):
             estimated_native_events=events*remaining,
             available_native_events=row['native_after']['capacity']-row['native_after']['stored_events'],
             native_capacity=row['native_after']['capacity'], max_targets_is_selector=False)
+        if events*remaining > row['native_after']['capacity']-row['native_after']['stored_events']:
+            self.blockers.append('COMPLETE_GROUP_PLAN_EXCEEDS_NATIVE_EVENT_CAPACITY')
+            self.plan = self.plan[:2]+[dict(phase='health', mode=None, target=None)]
+            return
         if self.fia_typed is not None:
             before, after = row['fia_typed_before'], row['fia_typed_after']
             typed = after['stored']-before['stored']
-            owned = len(self.targets)*(remaining-1)
+            owned = self._planned_owned_records(remaining)
             self.capacity_plan.update(full_request_typed_events=typed, additional_owned_execute_records=owned,
                 estimated_typed_events=typed*remaining+owned,
                 available_typed_events=after['capacity']-after['stored'], typed_capacity=after['capacity'])
             if typed*remaining+owned > after['capacity']-after['stored']:
                 self.blockers.append('COMPLETE_GROUP_PLAN_EXCEEDS_TYPED_FIA_EVENT_CAPACITY')
                 self.plan = self.plan[:2]+[dict(phase='health', mode=None, target=None)]
+
+    def _prepare_complete_plan(self):
+        """A concrete execution profile may expand requests before budgeting."""
+
+    def _planned_owned_records(self, remaining):
+        return len(self.targets)*(remaining-1)
 
     def _requested_mode(self, row):
         from fault_injection.deployments.writer26_experiment import _STABLE_NATIVE
@@ -307,9 +321,13 @@ class CoreWriter26Coverage(CoreWriter26Experiment, Writer26Coverage):
             super().finalize()
             self.finalized = True
 
-    def report(self):
-        value = super().report()
-        value.update(alias_inventory=self.complete_aliases, event_capacity_plan=self.capacity_plan,
+    def report(self, *, compact_rpc=False, observation_start=None):
+        value = super().report(compact_rpc=compact_rpc, observation_start=observation_start)
+        aliases = self.complete_aliases
+        if compact_rpc:
+            from fault_injection.deployments.writer26_inventory import digest
+            aliases = dict(count=len(aliases), original_sha256=digest(aliases), compact_rpc_projection=True)
+        value.update(alias_inventory=aliases, event_capacity_plan=self.capacity_plan,
             execution_scope='SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS',
             independent_per_target_replay=False, finalized=self.finalized)
         value['c2'] = bool(value['c2'] and self.finalized and self.proof is not None)

@@ -6,7 +6,7 @@ import threading
 from ._scope import Scope, reject_unknown
 from .. import identity as identities
 from ..serving_context import require
-from ..serving26_core import (ATTRIBUTE, COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, Writer26CoreBinding, CoreWriter26Experiment,
+from ..serving26_core import (ATTRIBUTE, COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE, Writer26CoreBinding, CoreWriter26Experiment,
                             CoreWriter26Coverage, Serving26CoreSession)
 
 
@@ -23,7 +23,7 @@ class Fault26CoreProvider(Scope):
         self.cleanup_requested = False
         self.cleanup_failures = []
         self.native_scope = None
-        self.current_run = 'c2' if binding.stage in (COMPLETE_SET_STAGE, EVERY_MATCH_STAGE) else 'c1'
+        self.current_run = 'c2' if binding.stage in (COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE) else 'c1'
         self.c2_proof = self.c2_evidence = self.c2_session = None
         self.c3_started = False
         self.transition_failures = []
@@ -83,14 +83,21 @@ class Fault26CoreProvider(Scope):
             self.native_scope = (owner, generation, config.owner_hi, config.owner_lo, config.thread)
             self.native = native
             self._context()
-            complete = self.binding.stage in (COMPLETE_SET_STAGE, EVERY_MATCH_STAGE)
+            complete = self.binding.stage in (COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE)
             backend = CoreWriter26Coverage if complete else CoreWriter26Experiment
+            if self.binding.stage == ISOLATED_STAGE:
+                from ..serving26_isolated import CoreWriter26IsolatedCoverage
+                backend = CoreWriter26IsolatedCoverage
             settings = dict(trigger='once', evidence_kind='cpu_contract' if self.binding.simulation else 'natural_worker') \
                 if complete else dict(stage='c1_single_effects')
             self.backend = backend(self.model, native, self.binding.reader,
                 guard=self._context, worker_identity=self.identity, folder=self.binding.folder/owner/'candidate-experiment',
                 max_targets=self.binding.max_targets, **settings)
-            self.session = Serving26CoreSession(self)
+            if self.binding.stage == ISOLATED_STAGE:
+                from ..serving26_isolated import Serving26IsolatedSession
+                self.session = Serving26IsolatedSession(self)
+            else:
+                self.session = Serving26CoreSession(self)
         elif action == 'check':
             require(self._registered and self.session is not None, 'WRITER26_CORE_REGISTER_REQUIRED')
             self._native_state()
@@ -180,11 +187,13 @@ class Fault26CoreProvider(Scope):
         raw = self._native_state()
         core = raw['core']
         serving = self.session.readback() if self.session is not None else None
-        evidence = self.backend.report() if self.backend is not None else None
+        isolated = self.binding.stage == ISOLATED_STAGE
+        evidence = (self.backend.report(compact_rpc=True) if isolated else self.backend.report()) \
+            if self.backend is not None else None
         recovery = self.backend.coverage.recovery_report() if isinstance(self.backend, CoreWriter26Coverage) \
             and self.backend.coverage is not None else None
         if evidence is not None:
-            if evidence.get('coverage') is not None:
+            if evidence.get('coverage') is not None and not evidence['coverage'].get('compact_rpc_projection'):
                 from fault_injection.deployments.writer26_inventory import digest
                 coverage = evidence['coverage']
                 full_sha = digest(coverage)
@@ -192,15 +201,17 @@ class Fault26CoreProvider(Scope):
                     value = coverage.pop(name)
                     coverage[name+'_original_sha256'] = digest(value)
                 coverage.update(compact_rpc_projection=True, original_report_sha256=full_sha)
-            rows = evidence.pop('rows')
-            candidates = evidence.pop('candidates')
+            rows = evidence.pop('rows', None)
+            candidates = evidence.pop('candidates', None)
             # The complete report (including unselected calls, aliases, typed
             # snapshots and failures) stays in immutable action-owned originals.
             # RPC history retains current Native state and the complete indices.
-            evidence['request_index'] = [dict(request_id=row['request_id'], phase=row['phase'],
+            if rows is not None:
+                evidence['request_index'] = [dict(request_id=row['request_id'], phase=row['phase'],
                 native_count=len(row['candidates']), output_sha256=row['output_sha256'],
                 admissions=row['admissions']) for row in rows]
-            evidence['candidate_index'] = [dict(index=row['index'], target_key=row['target_key'], status=row['status'],
+            if candidates is not None:
+                evidence['candidate_index'] = [dict(index=row['index'], target_key=row['target_key'], status=row['status'],
                 reasons=row['reasons'], module_object_identity=(row['callback'] or {}).get('module_object_identity'),
                 module_path=(row['callback'] or {}).get('module_path')) for row in candidates]
             evidence['original_observations'] = self.session.evidence_readback() if self.session else None
@@ -208,10 +219,10 @@ class Fault26CoreProvider(Scope):
                 self.c2_session.evidence_readback()  # Verify originals; never collect or advance.
                 evidence['prior_c2'] = deepcopy(self.c2_evidence)
             evidence['current_run'] = self.current_run
-            evidence.pop('outcomes')
-            evidence.pop('public_output_observer')
-            evidence.pop('metadata_arrays_initial')
-            evidence.pop('metadata_arrays_latest')
+            evidence.pop('outcomes', None)
+            evidence.pop('public_output_observer', None)
+            evidence.pop('metadata_arrays_initial', None)
+            evidence.pop('metadata_arrays_latest', None)
             evidence['public_core'] = dict(worker_identity=deepcopy(self.identity), owner=owner, generation=generation,
                 native_owner=[self.native.config.owner_hi, self.native.config.owner_lo], native_generation=self.native.config.generation,
                 simulation=self.binding.simulation, qualification_granted=False,

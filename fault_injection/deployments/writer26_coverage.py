@@ -382,8 +382,8 @@ class Writer26Coverage(Writer26Experiment):
             self.coverage.disable(timeout_seconds=0)
             self.save()
 
-    def report(self):
-        report = super().report()
+    def report(self, *, compact_rpc=False, observation_start=None):
+        report = super().report(compact_rpc=compact_rpc, observation_start=observation_start)
         coverage = self.coverage.report() if self.coverage is not None else None
         passed = bool(coverage and coverage['contract_satisfied'] and self.evidence_kind == 'natural_worker')
         report.update(schema='demoncat.writer26.complete_set.v2', stage='coverage', trigger=self.trigger, evidence_kind=self.evidence_kind,
@@ -391,4 +391,13 @@ class Writer26Coverage(Writer26Experiment):
             scope='ALL_ELIGIBLE_NATIVE_WRITERS_IN_FIXED_SINGLE_REQUEST_FRESH_PREFILL_NOT_DECODE',
             coverage=coverage, c2=passed and self.trigger == 'once', c3=passed and self.trigger == 'every_match',
             remaining_gates=[] if passed else ['VALID_NATURAL_COMPLETE_SET_AND_REAL_GROUP_EXECUTION_REQUIRED'])
+        if coverage is not None and compact_rpc:
+            full_sha = digest(coverage)
+            for name in ('calls', 'discovery', 'observation'):
+                coverage[name+'_original_sha256'] = digest(coverage.pop(name))
+            coverage.update(compact_rpc_projection=True, original_report_sha256=full_sha)
+        elif coverage is not None and observation_start is not None:
+            request_ids = {row['request_id'] for row in self.rows[observation_start:]}
+            coverage['calls'] = [row for row in coverage['calls'] if row['forward_id'] in request_ids]
+            coverage['calls_are_complete_request_delta'] = True
         return report

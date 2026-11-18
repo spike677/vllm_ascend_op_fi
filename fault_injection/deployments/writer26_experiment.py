@@ -283,6 +283,9 @@ class Writer26Experiment(WriterLifetimeInventory):
     def _outcome_complete(self, outcome, row):
         pass
 
+    def _before_admission(self, row, mode, target, residual_sha256):
+        """Optional execution-profile guard using an already captured digest."""
+
     def _request_complete(self, row):
         if self.fia_typed is not None:
             after, records = self.fia_typed.delta(row['fia_typed_before'])
@@ -489,6 +492,7 @@ class Writer26Experiment(WriterLifetimeInventory):
                     self.fia_bridge.before_admit(selected, row['fia_typed_before'], mode)
                 from demoncat.runtime.vllm_ascend.worker_extension.serving import complete_tensor
                 _, residual_sha, _ = complete_tensor(retained['tensor'])
+                self._before_admission(row, mode, selected, residual_sha)
                 self.pending[call.token] = dict(mode=mode, target=selected, native_call=packet(call),
                     residual_before_sha256=residual_sha, request_id=self.current['request_id'])
                 self.pending_lifetimes[call.token] = dict(residual=hold_storage(retained['tensor']),
@@ -767,7 +771,7 @@ class Writer26Experiment(WriterLifetimeInventory):
             self.fia_bridge.close()
         self.save()
 
-    def report(self):
+    def report(self, *, compact_rpc=False, observation_start=None):
         value = dict(schema='demoncat.writer26.candidate_experiment.v2', mechanism=self.runtime.mechanism,
             stage=self.stage, phase=self.phase, failure=self.failure, first_failure=self.failure,
             failure_events=self.failure_events, last_native_receipt=self.last_native_receipt, blockers=self.blockers,
@@ -817,4 +821,33 @@ class Writer26Experiment(WriterLifetimeInventory):
                     complete_native_counts=[len(row['candidates']) for row in self.rows],
                     all_eligible_qualification=False, qualification_granted=False, serializable_authority=False,
                     fallback_attempted=False, e5='UNVERIFIED_INDEPENDENT_RAW_B_F_COMPARISON_REQUIRED'))
+        if observation_start is not None:
+            require(not compact_rpc and type(observation_start) is int
+                    and 0 <= observation_start <= len(self.rows), 'VALID_COMPLETE_REQUEST_DELTA_REQUIRED')
+            selected = self.rows[observation_start:]
+            request_ids = {row['request_id'] for row in selected}
+            value['rows'] = selected
+            value['outcomes'] = [row for row in self.outcomes if row['request_id'] in request_ids]
+            value['complete_request_delta'] = dict(start=observation_start, stop=len(self.rows),
+                complete_rows=True, complete_native_outcomes=True)
+        if compact_rpc:
+            # Explicit read-only projection for long public request plans. Raw
+            # observations remain in action-owned full originals; Native state,
+            # pending storage and first-failure readbacks are never summarized.
+            value['request_index'] = [dict(request_id=row['request_id'], phase=row['phase'],
+                native_count=len(row['candidates']), output_sha256=row['output_sha256'],
+                admissions=row['admissions']) for row in self.rows]
+            value['candidate_index'] = [dict(index=row['index'], target_key=row['target_key'], status=row['status'],
+                reasons=row['reasons'], module_object_identity=(row['callback'] or {}).get('module_object_identity'),
+                module_path=(row['callback'] or {}).get('module_path')) for row in self.candidate_inventory]
+            for name in ('rows', 'candidates', 'outcomes', 'public_output_observer',
+                         'metadata_arrays_initial', 'metadata_arrays_latest'):
+                value.pop(name)
+            bridge = value.get('fia_typed_stock_bridge')
+            if bridge is not None:
+                bridge = dict(bridge)
+                artifacts = bridge.pop('artifacts')
+                bridge['artifacts_original'] = dict(count=len(artifacts), sha256=digest(artifacts))
+                value['fia_typed_stock_bridge'] = bridge
+            value['compact_rpc_projection'] = True
         return json.loads(json.dumps(value, allow_nan=False))
