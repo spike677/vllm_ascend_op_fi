@@ -95,7 +95,7 @@ accepted113 C2 targets and226 C3 calls with exact OFF and SDK release. Fault20's
 source44 short preflight observed135 QMM calls twice and released15012 SDK arrays,
 but armed no fault. These are not results for the new Core snapshot.
 
-Strict current qualification is6/17 for both C2 and C3: the existing
+The initial V1 qualification was6/17 for both C2 and C3: the existing
 Fault18, MoE8, repaired Native39/Native20 scopes, public Core22 C2/C3, and
 public Core41 C2/C3. Core22 source50 passes9567 independent actual-file conditions,
 including original live-proof issuance/use,29 RPCs and post-cleanup same-Worker
@@ -108,6 +108,12 @@ not complete logits after observer removal. See
 Keep C0/C1/C2/C3, Recovery and E5 separate. In
 particular, Native39's C2 Inf/NaN statistics and absent C3 raw capture remain
 independent E5 limitations. Do not rerun accepted cases merely to refresh counts.
+
+The [V1.1 matrix](../../experiments/c2c3_closure_20261117/C2_C3_MATRIX.md)
+now records C2 **8/17**, C3 **7/17**. Source84 adds bounded output39 isolated
+C2, with its cumulative C3 failure retained. Source89 adds FIA26 isolated C2
+and same-Worker cumulative C3; see [acceptance and limits](../../experiments/worker_core_v11_20261118/NATIVE26_SOURCE89_ACCEPTANCE.md).
+Those new scopes preserve all six original qualifications and do not grant E5.
 
 The new runtime includes the `engineering_closure` observer package in the root
 wheel. Install all three distributions (root, `src`, `fault39`) from the same

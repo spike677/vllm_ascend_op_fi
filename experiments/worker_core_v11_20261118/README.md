@@ -8,9 +8,12 @@ Latest reviewed increments: source82 accepts **isolated C2 for
 26.fia_destination, 29/29 eligible targets**, and source84 accepts **isolated C2
 for39.output_proxy, 28/28 eligible targets**. Both are bounded CANN8.5.1/A2,
 TP1/card5 scopes; neither grants runtime authority from saved records.
-The current strictly accepted totals are C2 **8/17**, C3 **6/17**. The original
-six scopes remain intact.26's new same-Worker isolated-to-C3 transition is still
-under validation.39's cumulative C3 genuinely failed and is not accepted.
+The current strictly accepted totals are C2 **8/17**, C3 **7/17**. The original
+six scopes remain intact. Source89 completes26's new same-Worker isolated-to-C3
+transition:29 isolated F/OFF pairs, then58 every-match hits in two fresh requests.
+The independent reader reconciles81,345 checks with zero issues; see the
+[source89 acceptance and limits](NATIVE26_SOURCE89_ACCEPTANCE.md).
+39's cumulative C3 genuinely failed and is not accepted.
 E5 remains separate. See the [26 review](AGENT7_NATIVE26_SOURCE82_ISOLATED_REVIEW.md)
 and [39 original-file summary](output39_source84_independent_summary.json).
 
@@ -40,7 +43,7 @@ attempt/source scope. New milestone attempts are listed below; each uses a new s
 |---|---|---|
 |8,18,22|Bounded natural Worker C2/C3, including source66 public8/18 and source50 public22|Keep qualification; add uncontaminated E5/device payload and only genuinely new fused/model paths.|
 |20,39.matmul,41|Repaired Native builds or public group C2/C3|Keep original recovery proof; extend E5/actual new API or environment separately.|
-|26.residual,26.fia|Public C1 source68/source67,135/30 observed calls and2/29 resolved chains|Qualify all stable candidates without truncation, then C2 and C3 with actual writer/consumer completion and full group OFF.|
+|26.residual,26.fia|QMM source68 remains C1 with variable adjacency; FIA source89 accepts29 isolated C2 targets and58 cumulative C3 hits|Keep the FIA scope; QMM still needs the complete dynamic-eligibility contract without dropping changing candidates. E5 remains separate.|
 |quant.batch_shared_scale|Public C1 source64;2 proven row mappings out of135|Classify the other133 through actual row transformations; unresolved lineage remains unverified; then coverage.|
 |39.output|Source84 isolated C2 accepted for28/28 eligible pairs;113 projection calls retained|Cumulative C3 failure retained; do not bypass the finite-input guard or infer E5.|
 |28.fa.legal,28.fia.legal,28.fia.replay|Distinct standalone/kernel and historical model scopes|Public request-scoped execution adapters for real layouts/launches, no empty factory.|

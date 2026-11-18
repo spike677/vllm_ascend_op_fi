@@ -1,0 +1,689 @@
+{
+  "schema": "demoncat.worker26.source89.review_summary.v1",
+  "mechanism": "26.fia_destination",
+  "root_review_decision": {
+    "c2": true,
+    "c3": true,
+    "e5": false,
+    "scope": "SOURCE89_SMOLLM2_135M_TP1_BF16_FRESH_PREFILL_CANN851_A2_CARD5_ONLY",
+    "runtime_admission_certificate": false
+  },
+  "originals": {
+    "remote_attempt": "/home/17-fault-c2c3-20261117/v11-core26-fia-transition-source89-card5-a1",
+    "remote_review": "/home/17-fault-c2c3-20261117/v11-core26-fia-source89-independent-review-a1/review.json",
+    "result_sha256": "9149210e54f9a0ee2262c9d1dc1877ee9d18289afea0cc85fe3322e8023b6a86",
+    "controller_sha256": "dc80f4352bcc1d93839ee671b3acfbf1562ce262c4762f8107175c3c302e84a9",
+    "review_sha256": "438ab5985e5f9c6d61920a74aeeefeafb39e897d837e5b1dc4b192da5185d118"
+  },
+  "source": {
+    "commit": "240a5cbffced3c6694a4d1ce019df315cc7cc927",
+    "manifest_sha256": "4f6b41114d9385a44a2e91d89e709df60bedf048d1d4ac0ee3765a2af090dc82"
+  },
+  "native_compile_source": {
+    "commit": "f800a4884f22688737a4ab74a051f4f922ab4b03",
+    "manifest_sha256": "62b700a85663d0955dbc4d99b318786ba75f12c740b0fc46b82666dee5a5f04d",
+    "identity_basis": "ACTUAL_BUILD_RECEIPT_COMMIT_AND_SOURCE_MOUNT",
+    "manifest_binding": "EXPLICIT_REVIEW_MANIFEST_PIN"
+  },
+  "native_image_binding": {
+    "build_manifest_sha256": "dc6150607edf68e3868d5c7d5c976c1ce5458dbba44190e9daf6d85ae779cfa0",
+    "build_receipt_sha256": "692272ebcdc02ed9df2598282a7bcc1c633dad7071e64fa70249fd35df2d1e86",
+    "files": {
+      "libcust_opapi.so": "1d6783aca732a70dfb7a62706f6f8bf09acd0a8a42dd44b2b3c45e490c1c7c64",
+      "libdcat26_group_v2.so": "8804968522025518af5e220809fb8c96937ca0d1555f271d5f442783cb3de6ab",
+      "libfault26_fia_opapi_proxy.so": "7d99bd89add54446ceb2c9cef9ad563221adb0c39605ca553b326db4182c13c6",
+      "libfault26_readonly_trace_abi0.so": "9e165c0fb64362db0f9f5e3eace59fcfd2e2d9b01aa2a42414998089d87b0942",
+      "libopapi.so": "55e2ab8274080682aa04d924383201dc55133b52f270b822b5913ff3f4bafefc",
+      "libopapi_nn.so": "1babe2a881124740e2b4f217024902d8149560444a84b3d21b64e4d6f26090d3",
+      "metadata-array-cpu.json": "c3443c2957e02add75d75f2d90b80c1e0767f1de9a7eaa49467cee727067eee4",
+      "metadata-array-group-cpu.json": "9753cd755aee42c5d641b9f9b0c1fc30f67c441d8e73eb0a3d4e3f407a29c8c7",
+      "metadata-array-ownership.json": "1b1526d07e383f8bd1346506631c01feae0944c9871f5e9cc7dbb5ff6ce0b00b",
+      "real/libcust_opapi_real.so": "28765842049552da1a8723f0f733f326a1014c1b0441b2f384e0f0b9f71f38ca",
+      "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+      "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996"
+    },
+    "bound_symbol_profile": "demoncat.writer26.cached_addresses.v1",
+    "files_rehashed": 12,
+    "parent_manifest_sha256": "979a00fda86dce9b054dcb76da5398d19031230937b97670566405924534c2c8",
+    "metadata_parent_receipt_sha256": "1b1526d07e383f8bd1346506631c01feae0944c9871f5e9cc7dbb5ff6ce0b00b",
+    "rebuilt_dependencies": [
+      "libcust_opapi.so"
+    ],
+    "complete_parent_bundle_rehashed": false
+  },
+  "independent_review": {
+    "checks": 81345,
+    "issues": [],
+    "originals_rehashed": 310,
+    "completed_requests": 73,
+    "provenance_checks_per_generation": 194,
+    "c2": {
+      "collected_requests": 64,
+      "incomplete_requests": [],
+      "complete_originals_reconciled": true,
+      "request_outputs": {
+        "group_requests": 64,
+        "ordinary_post_unregister_health_requests": 1,
+        "isolated_fault_requests": 29,
+        "fault_complete_model_output_hash_changed": 29,
+        "fault_returned_tokens_changed": 29,
+        "complete_residual_and_logits_arrays_rehashed": false,
+        "hashes_are_original_runtime_observations": true
+      },
+      "outside_request_native_boundaries": [
+        {
+          "boundary": "1:inventory_2",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "2:qualification_reference_all",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "3:qualification_lossless_all",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "4:qualification_off_all",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "5:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "6:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "7:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "8:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "9:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "10:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "11:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "12:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "13:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "14:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "15:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "16:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "17:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "18:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "19:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "20:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "21:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "22:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "23:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "24:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "25:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "26:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "27:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "28:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "29:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "30:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "31:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "32:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "33:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "34:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "35:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "36:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "37:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "38:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "39:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "40:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "41:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "42:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "43:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "44:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "45:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "46:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "47:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "48:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "49:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "50:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "51:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "52:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "53:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "54:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "55:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "56:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "57:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "58:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "59:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "60:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "61:group_fault",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "62:group_off",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        },
+        {
+          "boundary": "63:health",
+          "non_target_runs": 13,
+          "accounted": true,
+          "individual_non_target_operators_observed": false
+        }
+      ],
+      "coverage": {
+        "full_calls_per_request": 30,
+        "eligible_targets": 29,
+        "group_requests": 64,
+        "fault_requests": 29,
+        "owned_native_executes": 145,
+        "ledger_calls": 1740,
+        "recomputed_hits": 29,
+        "artifact_files_rehashed": 1803,
+        "execution_scope": "ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_C2_THEN_SAME_WORKER_BOUNDED_C3_EVERY_MATCH"
+      },
+      "typed_fia": {
+        "checks": 48266,
+        "consistent": true,
+        "issues": [],
+        "typed_records": 3985,
+        "full_output_bins_rehashed": 205,
+        "full_output_bytes_rehashed": 3070080,
+        "stock_targets": 30,
+        "initial_typed_records_outside_windows": 60,
+        "source_bound_descriptor_receipts_reconciled": true,
+        "residual_and_logits_tensor_bins_available": false,
+        "final_typed_state_boundary": "LAST_ACTUAL_HEALTH_REQUEST_AFTER",
+        "separate_post_cleanup_typed_state_available": false,
+        "public_qualification_granted": false,
+        "c2": false,
+        "c3": false,
+        "e5": false
+      }
+    },
+    "c3": {
+      "collected_requests": 9,
+      "incomplete_requests": [],
+      "complete_originals_reconciled": true,
+      "coverage": {
+        "projection_calls_per_request": 30,
+        "eligible_targets": 29,
+        "fault_requests": 2,
+        "per_target_native_outcomes": 6,
+        "ledger_calls": 90,
+        "recomputed_hits": 58,
+        "artifact_files_rehashed": 153
+      },
+      "outside_request_non_target_runs": [
+        {
+          "before_phase": "inventory_2",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "qualification_reference_all",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "qualification_lossless_all",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "qualification_off_all",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "group_fault",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "group_fault_repeat",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "group_off",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "health",
+          "non_target_runs": 13
+        }
+      ],
+      "typed_fia": {
+        "checks": 8384,
+        "consistent": true,
+        "issues": [],
+        "typed_records": 714,
+        "full_output_bins_rehashed": 234,
+        "full_output_bytes_rehashed": 3504384,
+        "stock_targets": 30,
+        "initial_typed_records_outside_windows": 4045,
+        "source_bound_descriptor_receipts_reconciled": true,
+        "residual_and_logits_tensor_bins_available": false,
+        "final_typed_state_boundary": "LAST_ACTUAL_HEALTH_REQUEST_AFTER",
+        "separate_post_cleanup_typed_state_available": false,
+        "public_qualification_granted": false,
+        "c2": false,
+        "c3": false,
+        "e5": false
+      }
+    },
+    "transition": {
+      "rpc_generation": 1,
+      "native_generations": [
+        1,
+        2
+      ],
+      "same_saved_object_binding": true,
+      "proof_sha256": "80c61e96ca30a3305580a65f7bf38be00170d50f15a4ae7dcb6ec65a4ec80d13",
+      "serializable_authority": false,
+      "live_authority_recreated": false,
+      "outside_request_native_boundary": {
+        "boundary": "C2_to_C3_generation_boundary",
+        "non_target_runs": 13,
+        "accounted": true,
+        "individual_non_target_operators_observed": false
+      }
+    }
+  },
+  "observed_outputs": {
+    "c2": {
+      "group_requests": 64,
+      "ordinary_post_unregister_health_requests": 1,
+      "isolated_fault_requests": 29,
+      "fault_complete_model_output_hash_changed": 29,
+      "fault_returned_tokens_changed": 29,
+      "complete_residual_and_logits_arrays_rehashed": false,
+      "hashes_are_original_runtime_observations": true
+    },
+    "c3": [
+      {
+        "phase": "inventory_1",
+        "tokens": [
+          2
+        ],
+        "text": ""
+      },
+      {
+        "phase": "inventory_2",
+        "tokens": [
+          2
+        ],
+        "text": ""
+      },
+      {
+        "phase": "qualification_reference_all",
+        "tokens": [
+          2
+        ],
+        "text": ""
+      },
+      {
+        "phase": "qualification_lossless_all",
+        "tokens": [
+          2
+        ],
+        "text": ""
+      },
+      {
+        "phase": "qualification_off_all",
+        "tokens": [
+          2
+        ],
+        "text": ""
+      },
+      {
+        "phase": "group_fault",
+        "tokens": [
+          14423
+        ],
+        "text": " affili"
+      },
+      {
+        "phase": "group_fault_repeat",
+        "tokens": [
+          14423
+        ],
+        "text": " affili"
+      },
+      {
+        "phase": "group_off",
+        "tokens": [
+          2
+        ],
+        "text": ""
+      },
+      {
+        "phase": "health",
+        "tokens": [
+          2
+        ],
+        "text": ""
+      }
+    ],
+    "post_unregister_tokens": [
+      2
+    ]
+  },
+  "recovery": {
+    "c2": {
+      "recovered": true,
+      "installed": false,
+      "native_removed": true,
+      "owned_hooks": 0,
+      "owned_public_api_wrappers": 0,
+      "pending_output_tensors": 0,
+      "pending_public_storage_owners": 0,
+      "pending_residual_tensors": 0,
+      "pending_per_call_leases": [],
+      "pending_outcomes": []
+    },
+    "c3": {
+      "recovered": true,
+      "installed": false,
+      "native_removed": true,
+      "owned_hooks": 0,
+      "owned_public_api_wrappers": 0,
+      "pending_output_tensors": 0,
+      "pending_public_storage_owners": 0,
+      "pending_residual_tensors": 0,
+      "pending_per_call_leases": [],
+      "pending_outcomes": []
+    }
+  },
+  "ownership_retained": false,
+  "deployment_removed": "WRITER26_CORE_DEPLOYMENT_REMOVED",
+  "controller_exit_code": 0,
+  "raw_statistics_published": false,
+  "private_tensor_bins_published": false,
+  "limits": [
+    "Saved originals document a historical transition; they never create live C2/C3 authority or qualify another scope.",
+    "C2 isolates one target per fresh F/OFF pair; C3 admits all eligible targets within each of two fresh requests.",
+    "A failed later stage retains completed-stage evidence without becoming complete C3.",
+    "FIA full stock/writer bytes are rehashed in natural mode; full residual/logits equality remains a runtime digest observation.",
+    "E5 requires independent raw statistics and is not inferred from these Native or coverage records.",
+    "C2/C3 is bounded to 29 eligible targets out of 30 observed FIA calls; the first unresolved call remains in the denominator.",
+    "The two cumulative F requests are fresh prefills; this is not continuous decode or arbitrary model acceptance.",
+    "Full FIA stock/writer payloads are independently rehashed; complete residual/logits arrays are not independently available.",
+    "The final typed-state snapshot is from the last actual health request, not a separate post-cleanup typed snapshot.",
+    "External model weights/source are frozen-runtime receipts, not independently re-read in this review."
+  ]
+}
