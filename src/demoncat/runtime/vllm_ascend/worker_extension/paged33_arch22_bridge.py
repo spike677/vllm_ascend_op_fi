@@ -124,13 +124,23 @@ def validate_native(launch, host, actual, boundary):
         'ARCH22_ACTUAL_NORMAL_HOST_ROUTE_DIFFERS')
     require(launch['tiling_key'] == 103000000010300003 and launch['block_dim'] == 16
         and launch['schedule_mode'] == 1, 'ARCH22_OBSERVED_STOCK_ROUTE_ENTRY_DIFFERS')
-    typed = launch['typed']
+    tokens=validate_scalar_geometry(launch['typed'],actual,boundary,selected_s2=512)
+    return dict(route='FiaTilingNonQuant', selected_s2=512, normal_only=True,
+        actual_pre_tokens=launch['typed']['maskParams.preToken'], actual_next_tokens=launch['typed']['maskParams.nextToken'],
+        public_to_native_token_window=tokens,
+        scalar_source='INDEPENDENT_FINAL_ARGUMENT_POD_MATCHED_TO_PUBLIC_HOST_SERIALIZER',
+        stock_route_entry_matches=True, stock_abi_decoded=False, stock_private_exact_proven=False)
+
+
+def validate_scalar_geometry(typed,actual,boundary,*,selected_s2):
+    """Shared scalar checks; callers separately prove mode, entry and full split."""
+    require(type(selected_s2) is int and selected_s2 in (512,256),'ARCH22_REVIEWED_S2_REQUIRED')
     tokens = normal_token_window(actual)
     expected = {'baseParams.bSize': 1, 'baseParams.n2Size': 8, 'baseParams.gSize': 2,
         'baseParams.headDim': 128, 'baseParams.headDimRope': 0, 'baseParams.softmaxLseFlag': 0,
         'baseParams.isLegacyIfa': 0,
         'baseParams.actualSeqS1Dims': 1, 'baseParams.actualSeqS2Dims': 1,
-        'innerSplitParams.s2BaseSize': 512, 'pageAttenParams.blockSize': 16,
+        'innerSplitParams.s2BaseSize': selected_s2, 'pageAttenParams.blockSize': 16,
         'pageAttenParams.maxBlockNumPerBatch': int(actual['block_table'].shape[1]),
         'maskParams.attenMaskFlag': 1, 'maskParams.sparseMode': 3,
         'maskParams.preToken': tokens['effective_native_pre_token'],
@@ -145,11 +155,7 @@ def validate_native(launch, host, actual, boundary):
     require(typed['baseParams.s1Size'] == 1
         and boundary['sequence_lengths'][0] <= typed['baseParams.s2Size'] <= int(actual['key'].shape[0])*16,
         'ARCH22_FINAL_SEQUENCE_CAPACITY_DIFFERS')
-    return dict(route='FiaTilingNonQuant', selected_s2=512, normal_only=True,
-        actual_pre_tokens=typed['maskParams.preToken'], actual_next_tokens=typed['maskParams.nextToken'],
-        public_to_native_token_window=tokens,
-        scalar_source='INDEPENDENT_FINAL_ARGUMENT_POD_MATCHED_TO_PUBLIC_HOST_SERIALIZER',
-        stock_route_entry_matches=True, stock_abi_decoded=False, stock_private_exact_proven=False)
+    return tokens
 
 
 class Arch22NormalNativeCall(_NativeCall):

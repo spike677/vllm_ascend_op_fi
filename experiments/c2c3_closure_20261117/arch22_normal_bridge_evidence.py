@@ -51,6 +51,12 @@ S2_REQUIRED = (EXPERIMENT+'prepare_arch22_s2_normal_bridge_cases.py',EXPERIMENT+
     WORKER+'paged33_arch22_s2_normal.py',WORKER+'paged33_logical_binding.py') + tuple(NATIVE+'fia/'+name for name in (
     'apply_tnd33_arch22_s2.py','paged33_arch22_s2.h','arch22_s2_geometry.py','compile_arch22_s2_matrix.py',
     'arch22_s2_build_evidence.py','build_fresh.py','binary_registration.py','base_policy.py'))
+S2_REQUIRED += tuple(EXPERIMENT+name+'.py' for name in (
+    'natural33_arch22_s2_worker_core_probe','prepare_arch22_s2_single_cases','review_arch22_s2_single')) + tuple(WORKER+name+'.py' for name in (
+    'paged33_s2_evidence','paged33_s2_execution','paged33_arch22_s2_effects',
+    'providers/paged33_s2','providers/attention_serving','serving_attention','attention_execution',
+    'config','host','runtime','identity','registry','extension','discovery','providers/_scope','batch_context',
+    'attention28_prefill','providers/tensor_modules','providers/tensor_natural'))
 
 
 def variant(source):return source.get('variant',VARIANT)

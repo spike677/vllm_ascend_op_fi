@@ -303,6 +303,15 @@ class AttentionExecutionAdapter:
             row['mask_values_verified'] = True
         return row
 
+    def _selected(self,row):
+        return self.target is not None and row['target_key']==self.target
+
+    def _selected_phase(self,phase):
+        return phase not in ('observe','observe_repeat','health')
+
+    def _execute_selected(self,actual,row,phase,once):
+        return self.driver.execute(actual,row,phase,once)
+
     def _invoke(self, name, original, args, kwargs):
         self.callbacks += 1
         row = dict(actual_operator='torch_npu.'+name, original_calls=0, original_returned=False,
@@ -347,7 +356,7 @@ class AttentionExecutionAdapter:
                 row.update(self._boundary(name, actual, path, module))
             except Exception as error:
                 row['reasons'].append(str(error))
-            selected = self.target is not None and row['target_key'] == self.target
+            selected = self._selected(row)
             phase = self.current['phase']
             if selected:
                 require(row['input_contract_matches'], 'ATTENTION_SELECTED_ACTUAL_LAYOUT_CHANGED')
@@ -363,9 +372,9 @@ class AttentionExecutionAdapter:
                     phase=phase)
                 output,receipt=self.driver.observe(original,args,actual,row,context.attn_metadata[module.layer_name],once)
                 row['native_census']=receipt
-            elif selected and phase not in ('observe', 'observe_repeat', 'health'):
+            elif selected and self._selected_phase(phase):
                 if phase == 'fault':self.needs_off = True
-                output, receipt = self.driver.execute(actual, row, phase, once)
+                output, receipt = self._execute_selected(actual,row,phase,once)
                 row['native'] = receipt
             else:
                 output = once()

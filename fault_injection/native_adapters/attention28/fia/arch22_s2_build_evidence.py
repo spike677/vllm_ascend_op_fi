@@ -86,30 +86,38 @@ def verify_inputs(root,data,pins):
     lines='\n'.join('array("'+name+'",r.'+('' if name in ('bN2End','gS1End','s2End') else 'fdRes.')+name+');' for name in ARRAYS)
     need((folder/'matrix.cpp').read_text()==ast.literal_eval(assignments[0].value).replace('ARRAY_LINES',lines),
          'S2_CPU_MATRIX_PROGRAM_NOT_FROZEN_DRIVER')
-    selected={}
+    selected={512:{},256:{}}
     def rows():
         with matrix.open(encoding='utf-8') as stream:
             for line in stream:
                 need(len(line)<128*1024,'S2_MATRIX_ROW_BOUND')
                 row=parse(line)
-                if row['kv_length']==1025 and row['s2']==512:selected[row['aic']]=row
+                if row['kv_length']==1025:selected[row['s2']][row['aic']]=row
                 yield row
     checked=validate_matrix(rows())
-    need(all(receipt.get(k)==v for k,v in checked.items()) and set(selected)==set(range(16,27)),
+    need(all(receipt.get(k)==v for k,v in checked.items())
+        and all(set(rows)==set(range(16,27)) for rows in selected.values()),
         'S2_CPU_MATRIX_RECOMPUTATION_DIFFERS')
     need(sha(matrix)==receipt['matrix_sha256'] and sha(folder/'receipt.json')==data['arch22_s2_cpu_receipt_sha256'],
          'S2_MATRIX_CHANGED_DURING_REVIEW')
-    return dict(normal_first_decode_rows=selected,receipt_sha256=sha(folder/'receipt.json'),
+    return dict(normal_first_decode_rows=selected[512],first_decode_rows=selected,receipt_sha256=sha(folder/'receipt.json'),
                 matrix_sha256=sha(matrix),cases=checked['cases'],qualification_granted=False)
 
 
 def verify_normal_geometry(typed,host,row):
+    need(row['s2']==512,'S2_NORMAL_TILE_REQUIRED')
+    return verify_scope_geometry(typed,host,row)
+
+
+def verify_scope_geometry(typed,host,row):
     checked=validate_split(row)
-    need(row['kv_length']==host['actual_kv_length']==1025 and row['s2']==host['native_s2']==host['selected_s2']==512
+    tile=row['s2'];loops=(1040+tile-1)//tile
+    need(row['kv_length']==host['actual_kv_length']==1025 and host['native_s2']==512
+        and host['selected_s2']==tile
         and row['aic']==host['aic'] and host['aiv']==2*host['aic']
         and host['real_s2_capacity']==typed['baseParams.s2Size']==1040
-        and host['s2_loops']==3 and host['s2_tail']==16 and host['s2_aligned']==512
-        and typed['innerSplitParams.mBaseSize']==512 and typed['innerSplitParams.s2BaseSize']==512
+        and host['s2_loops']==loops and host['s2_tail']==1040-(loops-1)*tile and host['s2_aligned']==tile
+        and typed['innerSplitParams.mBaseSize']==512 and typed['innerSplitParams.s2BaseSize']==tile
         and typed['baseParams.usedCoreNum']==host['block_dim']==row['usedCoreNum']
         and typed['fdParams.numOfFdHead']==row['numOfFdHead']
         and typed['fdParams.usedVecNumOfFd']==row['usedVecNumOfFd']

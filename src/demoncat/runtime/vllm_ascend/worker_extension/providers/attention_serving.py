@@ -27,6 +27,8 @@ def request_values(row):
 
 class AttentionServingProvider(Scope):
     mechanism = None
+    phases=PHASES
+    execution_adapter_type=AttentionExecutionAdapter
 
     def __init__(self, worker, model, identity):
         super().__init__(worker, model, identity)
@@ -86,7 +88,7 @@ class AttentionServingProvider(Scope):
                 self.attempted, self.stopped = True, False
                 # Save object before construction/install so partial starts
                 # retain all resource handles for public cleanup retry.
-                self.session = AttentionExecutionAdapter.__new__(AttentionExecutionAdapter)
+                self.session = self.execution_adapter_type.__new__(self.execution_adapter_type)
                 self.session.__init__(self.binding, self._context)
                 self.session.install()
             elif action == 'advance':
@@ -97,17 +99,10 @@ class AttentionServingProvider(Scope):
                             'ATTENTION_EXPLICIT_COLLECTION_REQUIRED')
                     self._collect()
                 else:
-                    require(set(settings) == {'request_id'} and self.pending is None and self.index < len(PHASES),
+                    require(set(settings) == {'request_id'} and self.pending is None and self.index < len(self.phases),
                             'ATTENTION_EXPLICIT_FRESH_REQUEST_REQUIRED')
-                    phase = PHASES[self.index]
-                    if phase.startswith('baseline'):
-                        require(not getattr(self.binding.native,'observer_only',False), 'ATTENTION_STOCK_CENSUS_OBSERVE_ONLY')
-                        require(self.selection is not None, 'ATTENTION_NO_STABLE_MATCHING_ACTUAL_CALL')
-                        require(self.binding.native.state()['native_loaded'], 'ATTENTION_MATCHING_NATIVE_DEPLOYMENT_REQUIRED')
-                    if phase == 'fault':
-                        # Neither the old standalone FA/FIA evidence nor the
-                        # nonexact source53 TND bridge is in-process authority.
-                        raise ProviderError('ATTENTION_STOCK_PRIVATE_BRIDGE_REQUIRED')
+                    phase = self.phases[self.index]
+                    self._prepare_phase(phase)
                     request_id = settings['request_id']
                     self.session.expect(request_id, phase)
                     self.pending = (request_id, phase)
@@ -126,6 +121,14 @@ class AttentionServingProvider(Scope):
             self._failure(action, error)
             raise
         return self.query(owner=owner, generation=generation)
+
+    def _prepare_phase(self,phase):
+        if phase.startswith('baseline'):
+            require(not getattr(self.binding.native,'observer_only',False), 'ATTENTION_STOCK_CENSUS_OBSERVE_ONLY')
+            require(self.selection is not None, 'ATTENTION_NO_STABLE_MATCHING_ACTUAL_CALL')
+            require(self.binding.native.state()['native_loaded'], 'ATTENTION_MATCHING_NATIVE_DEPLOYMENT_REQUIRED')
+        if phase=='fault':
+            raise ProviderError('ATTENTION_STOCK_PRIVATE_BRIDGE_REQUIRED')
 
     def _collect(self):
         require(self.pending is not None, 'ATTENTION_NO_REQUEST_TO_COLLECT')
@@ -195,7 +198,7 @@ class AttentionServingProvider(Scope):
             replay_failed=bool(self.error or not self.stopped and session and getattr(session, 'last_error', None)),
             owned_hooks=state['owned_hooks'], owned_api_wrappers=state['owned_api_wrappers'],
             mechanism=self.mechanism, simulation=self.binding.simulation, native_state=native,
-            serving=dict(next_phase=PHASES[self.index] if self.index < len(PHASES) else 'complete',
+            serving=dict(next_phase=self.phases[self.index] if self.index < len(self.phases) else 'complete',
                          pending_request=self.pending, failures=deepcopy(self.failures), resource_state=state),
             evidence=dict(schema='demoncat.attention.actual_calls.v1', provenance=json.loads(self.binding.provenance_json),
                 selection=self.selection, requests=deepcopy(self.records), actual_requests_sha256=digest(self.records),

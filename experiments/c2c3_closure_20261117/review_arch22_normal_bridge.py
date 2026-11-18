@@ -372,11 +372,11 @@ def check_live_input(saved,audit):
         original_calls=1,source_bound=True,qualification_granted=False)
 
 
-def one_launch(run, rows, token, pid, helper, *, native_tid, kernel_sha=None, symbols=None):
+def one_launch(run, rows, token, pid, helper, *, native_tid, kernel_sha=None, symbols=None,block_dim=16):
     resolution = helper.boundary.scoped_runtime(run, rows, token, expected_pid=pid)
     need(len(resolution['launches']) == 1, 'EXACT_ONE_ACTUAL_KERNEL_PER_NORMAL_CALL_REQUIRED')
     launch = resolution['launches'][0]
-    need(int(launch['tiling_key']) == evidence.KEY and launch['block_dim'] == 16 and launch['schedule_mode'] == 1,
+    need(int(launch['tiling_key']) == evidence.KEY and launch['block_dim'] == block_dim and launch['schedule_mode'] == 1,
          'ACTUAL_NORMAL_ENTRY_PROFILE_DIFFERS')
     # A successful sync cannot mask another failed sync or capture overflow.
     scoped = [row for row in rows if row.get('call_id') == token]
@@ -402,8 +402,11 @@ def one_launch(run, rows, token, pid, helper, *, native_tid, kernel_sha=None, sy
     return resolution
 
 
-def final_private_pod(raw_event, resolved, host, bundle, abi_helper):
+def final_private_pod(raw_event, resolved, host, bundle, abi_helper,*,selected_s2=512):
     """Select raw bytes by the fresh entry ABI, never by expected byte search."""
+    need(type(selected_s2) is int and selected_s2 in (512,256)
+        and (selected_s2==512 or bundle.get('completion',{}).get('variant')==evidence.S2_VARIANT),
+        'EXPLICIT_NEW_S2_VARIANT_REQUIRED')
     abi, schema = bundle['abi'], bundle['schema']; size = schema['size']
     args = bytes.fromhex(raw_event['args_hex'])
     need(len(args) == raw_event['args_size'] <= 1024**2 and abi['pointer_bytes'] == 8,
@@ -436,7 +439,7 @@ def final_private_pod(raw_event, resolved, host, bundle, abi_helper):
     need(set(host['typed']) == set(typed)-set(padding), 'HOST_TYPED_FIELD_SET_NOT_COMPLETE')
     expected = {'baseParams.bSize':1, 'baseParams.n2Size':8, 'baseParams.gSize':2, 'baseParams.headDim':128,
         'baseParams.headDimRope':0, 'baseParams.softmaxLseFlag':0, 'baseParams.isLegacyIfa':0, 'baseParams.actualSeqS1Dims':1,
-        'baseParams.actualSeqS2Dims':1, 'baseParams.s1Size':1, 'innerSplitParams.s2BaseSize':512,
+        'baseParams.actualSeqS2Dims':1, 'baseParams.s1Size':1, 'innerSplitParams.s2BaseSize':selected_s2,
         'pageAttenParams.blockSize':16, 'pageAttenParams.maxBlockNumPerBatch':80,
         'maskParams.attenMaskFlag':1, 'maskParams.sparseMode':3, 'maskParams.preToken':2147483647,
         # The exact built attention parser (checked by build_bundle) converts
@@ -451,9 +454,10 @@ def final_private_pod(raw_event, resolved, host, bundle, abi_helper):
     s2=bundle.get('completion',{}).get('variant')==evidence.S2_VARIANT
     need(host['schema'] == ('demoncat.paged33.arch22_s2_host.v1' if s2 else 'demoncat.paged33.arch22_normal_host.v1')
         and host['route'] == 'FiaTilingNonQuant'
-        and host['mode'] == ('arch22_s2_off' if s2 else 'arch22_normal') and host['normal_route_preference_changed'] is True
-        and host['eligible'] is True and host['policy_applied'] is False
-        and host['native_s2'] == host['selected_s2'] == 512, 'NATIVE_HOST_NORMAL_ONLY_ROUTE_DIFFERS')
+        and host['mode'] == ('arch22_s2_256' if selected_s2==256 else 'arch22_s2_off' if s2 else 'arch22_normal')
+        and host['normal_route_preference_changed'] is True
+        and host['eligible'] is True and host['policy_applied'] is (selected_s2==256)
+        and host['native_s2'] == 512 and host['selected_s2']==selected_s2, 'NATIVE_HOST_EXPLICIT_SELECTION_DIFFERS')
     return dict(raw_sha256=hashlib.sha256(raw).hexdigest(), raw_size=size, args_sha256=hashlib.sha256(args).hexdigest(),
         args_size=len(args), tiling_pointer_offset=address, tiling_data_offset=offset, typed=typed,
         verified_public_serializer_padding=padding, kernel_argument_abi=abi)
@@ -518,7 +522,7 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
         independently_replayed=len(summaries), calls=summaries)
 
 
-def check_coexistence(document, source, bundle, pid):
+def check_coexistence(document, source, bundle, pid,*,cleanup_receipts=None):
     constants = literal_constants(source, 'paged33_loading.py',
         ('STOCK_FILES','LOADER_HEADER_SHA','NORM_SYMBOLS','FIA_SYMBOLS','PRIVATE_LIB'))
     stock_root = '/vllm-workspace/vllm-ascend/vllm_ascend/'
@@ -528,7 +532,8 @@ def check_coexistence(document, source, bundle, pid):
     private_sha = bundle['artifacts'][constants['PRIVATE_LIB']]['sha256']
     rows = [document[key] for key in ('library_bootstrap','library_coexistence',
         'library_coexistence_after_standard_worker_initialization')]
-    rows += [phase['finish']['cleanup']['library_coexistence'] for phase in document['phases'][:-1]]
+    rows += ([phase['finish']['cleanup']['library_coexistence'] for phase in document['phases'][:-1]]
+             if cleanup_receipts is None else cleanup_receipts)
     for index,row in enumerate(rows):
         need(row['schema'] == 'demoncat.paged33.api_coexistence.v1' and row['pid'] == pid
             and row['stock_files'] == constants['STOCK_FILES'] and row['stock_loader_source_sha256'] == constants['LOADER_HEADER_SHA']
