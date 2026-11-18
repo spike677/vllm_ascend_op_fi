@@ -109,6 +109,29 @@ def _disjoint(left, right):
         or b['storage_address'] + b['storage_bytes'] <= a['storage_address'])
 
 
+def _singleton_view_axis(before, after, axis):
+    """Prove an actual view only inserted/removed dimensions of size one.
+
+    MLA splits and transposes leave noncontiguous query/rope tensors. Adding
+    the S=1 dimension preserves every nontrivial coordinate and its address;
+    contiguity is neither necessary nor evidence for that particular edge.
+    No feature/request dimension is split, merged, reordered or broadcast.
+    """
+    shared = ('storage_address', 'storage_bytes', 'storage_identity', 'offset', 'dtype', 'device')
+    if (any(before[key] != after[key] for key in shared)
+            or not 0 <= axis < len(before['shape']) or before['shape'][axis] <= 1):
+        return None
+    source = [(index, size, stride) for index, (size, stride) in enumerate(zip(before['shape'], before['stride']))
+              if size != 1]
+    target = [(index, size, stride) for index, (size, stride) in enumerate(zip(after['shape'], after['stride']))
+              if size != 1]
+    if (any(size <= 0 or stride <= 0 for _, size, stride in source + target)
+            or [(size, stride) for _, size, stride in source] != [(size, stride) for _, size, stride in target]):
+        return None
+    ordinal = next((index for index, (dimension, _, _) in enumerate(source) if dimension == axis), None)
+    return target[ordinal][0] if ordinal is not None else None
+
+
 class SourceBoundRows:
     """One thread, one source-checked profile owner, bounded nested dispatch."""
     def __init__(self, graph, model, bindings, sources, *, max_boundaries=4096, simulation=False, operator_aliases=None):
@@ -479,9 +502,35 @@ class SourceBoundRows:
                     and math.prod(target.shape[i+1:]) == math.prod(first.shape[axis+1:])]
                 if len(axes) == 1 and first.is_contiguous() and target.is_contiguous():
                     return {self._bind(target, proof, name, row, axis=axes[0])}
+                # Only the real readonly aten view overload, under an active
+                # source-bound MLA frame, can use the noncontiguous bridge.
+                # Object identity is supplied by this observed call; storage
+                # and exact non-singleton strides prove the coordinate map.
+                if func is torch.ops.aten.view.default and state['event']['inputs'][0] == metadata(first):
+                    after = metadata(target)
+                    new_axis = _singleton_view_axis(proof['metadata'], after, axis)
+                    if new_axis is not None:
+                        return {self._bind(target, proof, name, row, axis=new_axis,
+                            extra=dict(actual_dispatch_sequence=state['event']['sequence'],
+                                view_rule='ACTUAL_ATEN_VIEW_SINGLETON_COORDINATES_V1',
+                                input_metadata=proof['metadata'], output_metadata=after,
+                                input_write_epoch=proof['write_epoch'],
+                                input_row_axis=axis, output_row_axis=new_axis))}
             if name in ('aten.clone.default', 'aten.detach.default', 'aten.alias.default', 'aten._to_copy.default'):
                 if target.shape == first.shape:
                     return {self._bind(target, proof, name, row, axis=axis)}
+            if func is torch.ops.aten.contiguous.default:
+                bound = _arguments(func, args, kwargs)
+                if (set(bound) == {'self', 'memory_format'} and bound['self'] is first
+                    and bound['memory_format'] in (0, torch.contiguous_format)
+                    and target.shape == first.shape and target.dtype == first.dtype and target.device == first.device
+                    and target.is_contiguous() and state['event']['inputs'][0] == metadata(first)
+                    and (target is first or _disjoint(target, first))):
+                    return {self._bind(target, proof, name, row, axis=axis,
+                        extra=dict(actual_dispatch_sequence=state['event']['sequence'],
+                            view_rule='ACTUAL_ATEN_CONTIGUOUS_DEFAULT_COORDINATES_V1',
+                            input_metadata=proof['metadata'], output_metadata=metadata(target),
+                            input_write_epoch=proof['write_epoch'], input_row_axis=axis, output_row_axis=axis))}
             qrow = self._parent('mla_q')
             if name == 'aten.bmm.default' and qrow is not None:
                 weight = args[1]
