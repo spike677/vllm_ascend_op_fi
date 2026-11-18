@@ -305,6 +305,9 @@ class Fault22ServingProvider(Scope):
         error = self.error or getattr(session, 'request_error', None)
         hooks = bool(getattr(session, 'handles', []) or getattr(session, 'trace', None)
                      or adapter is not None or getattr(session, 'completion_handle', None) or self.health_hooks)
+        group_provider = getattr(session, 'provider', None)
+        group = getattr(group_provider, 'group', None)
+        rows = getattr(group_provider, 'rows', [])
         return dict(execution_boundary=self.execution_boundary, state_source='OWNED_PYTHON_HOOKS',
             hook_state_available=True, owner=owner, generation=generation, hook_owned=hooks,
             native_loaded=False, native_registered=False, registered=self._registered,
@@ -317,6 +320,9 @@ class Fault22ServingProvider(Scope):
             serving=dict(next_phase=('recovery_off' if self.recovering else
                 _REQUESTS[self.index][0] if self.index < len(_REQUESTS) else 'complete'),
                 pending_request=self.pending, complete=self.complete, recovered=self.recovered,
-                error=error, failures=self.failures),
+                error=error, failures=self.failures, provenance=getattr(session, 'provenance', None),
+                last_request=rows[-1] if rows else None,
+                group=(dict(session_id=group.session_id, owner=group.owner, generation=group.generation,
+                    targets=len(group.group.leases), trigger=group.group.trigger) if group else None)),
             coverage=self.reports, public_qualification_granted=False,
             E5='NOT_ASSESSED_SEPARATE_RAW_STATISTICS_REQUIRED')

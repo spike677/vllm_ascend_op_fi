@@ -137,3 +137,62 @@ original proof use, failed root/logits and uncertain-reply recovery, owner
 isolation, identity drift, partial/silent cleanup failure and ordinary
 post-cleanup serving. Its self-contained `rope22_fixture.py` imports no
 experiment history; both are included in the source-only integration bundle.
+
+## Root-scheduled standard Worker probe
+
+`experiments/c2c3_closure_20261117/prepare_rope22_worker_core.py` generates a
+reviewable case without launching it. It reuses the existing fixed
+Qwen3-0.6B pretrained weights, prompt, TP1 eager Worker and bounded resource
+configuration. For example, the root scheduler can prepare its new reviewed
+source snapshot with:
+
+```sh
+python3 experiments/c2c3_closure_20261117/prepare_rope22_worker_core.py \
+  --source /absolute/reviewed/frozen-source --card 2 --out worker-core22-case.json
+```
+
+The generated case calls `natural_rope_worker_core_probe.py` with
+`--model /model --out /evidence/probe --memory .35`. That entrypoint constructs
+the normal serving host, obtains its actual Worker identity through
+`HostAdapter`, and installs the inert reviewed binding on that same Worker.
+All ten managed requests then use public enqueue, actual output-processor ID
+mapping, `client.advance`, scheduler completion and `client.query`. Every
+root/operator runs through the serving scheduler; no fault RPC invokes a model.
+
+The full server-local `result.json` retains the nine original phase rows in
+`requests`, with every reader, outer/native call, observation and scheduler
+mapping. Request 10 is separate in `health_request`. `cleanup` records the
+group cleanup preceding that healthy request; `worker_core.final_cleanup`
+records the final public cleanup. `c2` and `c3` are the complete original
+CoverageSession/group reports, including `live_c2_proof`; `c2_open` and
+`c3_open` join their actual owner, generation, target denominator and trigger.
+Neither phase rows nor proof ledgers are reduced to a summary.
+
+`worker_core_rpc/*.json` contains each original public Host action/query
+receipt once, indexed with its SHA256. `host_receipt.json` retains the final
+client scope and entire original history. The generated case also retains
+stdout and stderr under `/evidence`. These raw artifacts belong on the serving
+host (server 124 in the current deployment), not in public Git or the
+source-only integration bundle. A failed attempt stays failed even if one
+explicit real recovery OFF permits owner cleanup. Uncertain fault requests
+are never retried; failed cleanup retains the existing owner and its receipts.
+
+CPU tests use the real public Host/Runtime and torch model hooks with a small
+scheduler fixture. The fixture supplies actual enqueue-state mappings and
+executes its model only from `wait_for_completion`. Run from a full reviewed
+checkout:
+
+```powershell
+python -B -m unittest -v test_rope_worker_core_probe
+```
+
+This experiment code and its scheduler test are deliberately outside the
+source-only bundle. A new frozen source and actual Worker validation are
+required before deployment acceptance. The pinned source46 reviewer still
+describes source46; its missing proof evidence is not retroactively repaired
+by the new probe. New independent review must verify full scope/owner/
+generation/targets and recompute the original Coverage report hash after
+removing its audit ledger and the six group report decoration fields:
+`execution_boundary`, `mechanism_semantics`, `phase_rows`,
+`scheduler_requests_claimed`, `raw_device_launch_payload_observed`, and
+`independent_statistics`. Serialized proof receipts remain evidence only.
