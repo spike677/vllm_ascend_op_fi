@@ -16,10 +16,11 @@ def require(value, reason):
 
 
 class PostwriteObservedForward:
-    def __init__(self, provider, phase, *, manual_modules, guard):
+    def __init__(self, provider, phase, *, manual_modules, guard, parameter_owners=()):
         self.provider, self.phase, self.guard = provider, phase, guard
         self.manual = dict(manual_modules)
         self.observer = _ObserveDispatch(provider, phase)
+        self.observer.parameter_owners = tuple(parameter_owners)
         self.handles, self.callbacks = [], {}
         self.mode_active = self.locked = self.active = self.returned = False
         self.failure = None

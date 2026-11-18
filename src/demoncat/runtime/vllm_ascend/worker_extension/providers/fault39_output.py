@@ -19,6 +19,14 @@ _PHASES = ('observe', 'observe_repeat', 'baseline', 'fault', 'off', 'health')
 
 class Fault39OutputServingProvider(Scope):
     execution_boundary = 'native'
+    session_type = Serving39OutputSession
+
+    def __new__(cls, worker, model, identity):
+        binding = getattr(worker, _ATTRIBUTE, None)
+        if cls is Fault39OutputServingProvider and type(binding) is Output39ServingBinding and binding.stage != 'c1':
+            from .fault39_output_group import Fault39OutputGroupProvider
+            return object.__new__(Fault39OutputGroupProvider)
+        return object.__new__(cls)
 
     def __init__(self, worker, model, identity):
         super().__init__(worker, model, identity)
@@ -96,7 +104,7 @@ class Fault39OutputServingProvider(Scope):
             self.native_generation = generation
             self.module_bindings = tuple((name, id(module), getattr(module.forward, '__func__', module.forward))
                 for name, module in self.model.named_modules(remove_duplicate=False))
-            self.session = Serving39OutputSession(self)
+            self.session = self.session_type(self)
         elif action == 'check':
             require(self._registered and self.session is not None, 'OUTPUT39_REGISTER_REQUIRED')
             require(not self.p.live_lease_count, 'OUTPUT39_NATIVE_RECOVERY_REQUIRED')

@@ -27,14 +27,18 @@ class Output39ServingBinding:
     native_library_identity: int
     simulation: bool = False
     native_readback: object = None
+    stage: str = 'c1'
+    max_live_leases: int = 1
     leases: set = field(default_factory=set, compare=False, repr=False)
 
 
 def install_fault39_output_serving_binding(worker, *, transport, prompt_token_ids,
-        evidence_dir, _simulation=False, _native_readback=None):
+        evidence_dir, stage='c1', max_live_leases=1, _simulation=False, _native_readback=None):
     """Bind an already initialized Worker. No model, hooks or Native leases run."""
     from fault_injection.deployments.postwrite import NativePostwriteLibrary
     require(not hasattr(worker, _ATTRIBUTE), 'SERVING_DEPLOYMENT_ALREADY_BOUND')
+    require(stage in ('c1', 'c2_once', 'c2_c3') and type(max_live_leases) is int and 1 <= max_live_leases <= 256,
+            'OUTPUT39_EXPLICIT_BOUNDED_GROUP_STAGE_REQUIRED')
     require(type(_simulation) is bool and (_simulation or _native_readback is None),
             'OUTPUT39_DEPLOYMENT_OVERRIDES_CPU_ONLY')
     require(not _simulation or callable(_native_readback), 'EXPLICIT_CPU_OUTPUT39_FIXTURE_REQUIRED')
@@ -51,7 +55,8 @@ def install_fault39_output_serving_binding(worker, *, transport, prompt_token_id
     require(isinstance(sha, str) and len(sha) == 64 and all(c in '0123456789abcdef' for c in sha),
             'OUTPUT39_REVIEWED_NATIVE_HASH_REQUIRED')
     binding = Output39ServingBinding(worker, runner, model, transport, tuple(prompt_token_ids), folder,
-        os.getpid(), threading.get_ident(), sha, id(getattr(transport, 'lib', None)), _simulation, _native_readback)
+        os.getpid(), threading.get_ident(), sha, id(getattr(transport, 'lib', None)), _simulation, _native_readback,
+        stage, max_live_leases)
     native = read_native_binding(binding)
     setattr(worker, _ATTRIBUTE, binding)
     return dict(status='SERVING_DEPLOYMENT_BOUND_NOT_QUALIFIED', mechanism='39.output_proxy',
@@ -95,6 +100,9 @@ class Serving39OutputSession(ServingReplaySession):
             self.callbacks[handle.id] = callback
         self.installed = True
 
+    def observed_parameter_owners(self):
+        return ()
+
     def _same_worker(self):
         super()._same_worker()
         # Runtime already obtained the real identity; avoid recursive RPC locks.
@@ -124,12 +132,13 @@ class Serving39OutputSession(ServingReplaySession):
             super()._root_pre(module, args, kwargs)
             self.root_running = True
             self.provider.begin_actual(args, kwargs)
-            if self.provider.phase != 'health':
+            if self.provider.native_phase != 'health':
                 from fault_injection.deployments.postwrite_observed import PostwriteObservedForward
                 paths = {obj: name for name, obj in self.model.named_modules()}
                 require(self.processor in paths, 'OUTPUT39_LOGITS_NOT_IN_HELD_MODEL')
                 self.window = PostwriteObservedForward(self.provider.p, self.provider.native_phase,
-                    manual_modules={self.model: '', self.processor: paths[self.processor]}, guard=self.provider._context)
+                    manual_modules={self.model: '', self.processor: paths[self.processor]}, guard=self.provider._context,
+                    parameter_owners=self.observed_parameter_owners())
                 self.window.start()
                 # This hook is already executing. No newly registered root pre
                 # hook is assumed to run in PyTorch's current hook iteration.

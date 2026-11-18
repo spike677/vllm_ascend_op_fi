@@ -352,6 +352,8 @@ class _ObserveDispatch(TorchDispatchMode):
         self.gemm_binding = None
         from .postwrite_inventory import ProjectionWorkloadInventory
         self.inventory = ProjectionWorkloadInventory()
+        self.parameter_owners = ()
+        self.parameter_consumption = []
 
     def _coverage_projection(self, record, candidate=None, rejection=None):
         if record is not None:
@@ -400,6 +402,13 @@ class _ObserveDispatch(TorchDispatchMode):
         if any(self._writes(func, args, kwargs, lease.storage) for lease in p._live_leases()):
             raise PostwriteRefused('WRITE_AFTER_SELECTED_WRITER_REFUSED')
         result = func(*args, **kwargs)  # Exactly one real original operation.
+        for module in self.parameter_owners:
+            for name, parameter in module.named_parameters(recurse=False):
+                if any(tensor is parameter for tensor in operands):
+                    self.parameter_consumption.append(dict(module_object_identity=id(module), parameter_name=name,
+                        parameter_object_identity=id(parameter), parameter_geometry=tensor_geometry(parameter),
+                        actual_operator=operation, schema=str(func._schema), original_returned=True,
+                        calling_module_identity=id(p._stack[-1][1]), module_forward_observed=False))
         record = self.inventory.original_returned(func, p._stack[-1][0], p._stack[-1][1], result)
         self.original_calls += 1
         self.operator_counts[operation] = self.operator_counts.get(operation, 0) + 1

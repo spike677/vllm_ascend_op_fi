@@ -18,14 +18,20 @@ from demoncat.runtime.vllm_ascend.worker_extension.serving_context import read_e
 
 PHASES = ('observe', 'observe_repeat', 'baseline', 'fault', 'off', 'health')
 SUCCESS = 'STANDARD_WORKER_OUTPUT39_C1_EVIDENCE_READY_FOR_REVIEW'
+GROUP_SUCCESS = 'STANDARD_WORKER_OUTPUT39_GROUP_EVIDENCE_READY_FOR_REVIEW'
+GROUP_CPU = 'CPU_OUTPUT39_GROUP_CONTRACT_COMPLETE_NOT_NPU'
 STATISTICS_REFUSAL = ('OUTPUT39_STATISTICS_BOUNDARY_UNADAPTED: root/logits complete_tensor diagnostics '
     'would enter mix API statistics; no filtering or diagnostic first-difference is accepted')
 MODULES = tuple(('fault_injection.deployments.'+name, 'fault_injection/deployments/'+name+'.py')
     for name in ('postwrite', 'postwrite_boundaries', 'postwrite_inventory', 'postwrite_observed',
-                 'postwrite_npu_consumers')) + tuple(
+                 'postwrite_npu_consumers', 'postwrite_coverage', 'postwrite_structure', 'postwrite_evidence')) + (
+    ('fault_injection.coverage', 'fault_injection/coverage.py'),
+    ('fault_injection.coverage_session', 'fault_injection/coverage_session.py'),
+    ('fault_injection.runtime_discovery', 'fault_injection/runtime_discovery.py')) + tuple(
     ('demoncat.runtime.vllm_ascend.worker_extension.'+name,
      'src/demoncat/runtime/vllm_ascend/worker_extension/'+name.replace('.', '/')+'.py')
-    for name in ('serving39_output', 'providers.fault39_output', 'serving', 'serving41',
+    for name in ('serving39_output', 'providers.fault39_output', 'serving39_output_group', 'providers.fault39_output_group',
+                 'serving', 'serving41',
                  'serving_context', 'gemm_lineage', 'call_binding', 'host', 'config', 'runtime', 'identity', 'registry'))
 SOURCES = tuple(path for _, path in MODULES) + (
     'experiments/c2c3_postwrite_20261117/natural39_worker_core_probe.py',
@@ -39,7 +45,7 @@ def write_json(path, value):
     path.write_text(json.dumps(value, indent=2, allow_nan=False)+'\n', encoding='utf-8')
 
 
-def setup(worker, expected_identity, library, sha256, prompt, sources):
+def setup(worker, expected_identity, library, sha256, prompt, sources, stage='c1', max_live_leases=1):
     from fault_injection.deployments.postwrite import NativePostwriteLibrary
     from demoncat.runtime.vllm_ascend.worker_extension.serving39_output import install_fault39_output_serving_binding
     worker = actual_worker(worker)
@@ -59,7 +65,7 @@ def setup(worker, expected_identity, library, sha256, prompt, sources):
         loaded[relative] = dict(path=str(path), sha256=sha)
     transport = NativePostwriteLibrary(library, sha256)
     result = install_fault39_output_serving_binding(worker, transport=transport,
-        prompt_token_ids=prompt, evidence_dir='/evidence/output39-runtime')
+        prompt_token_ids=prompt, evidence_dir='/evidence/output39-runtime', stage=stage, max_live_leases=max_live_leases)
     return dict(worker=expected_identity, binding=result, loaded_sources=loaded,
                 model_source=model_source_identity(worker.model_runner.model))
 
@@ -98,6 +104,7 @@ class RecordingExecutor:
 def drive(llm, client, *, executor, prompt, params, out, report):
     seen, pending = [], []
     scope, last = None, None
+    grouped = report.get('stage', 'c1') != 'c1'
     def save():
         report['rpc_receipts'] = list(executor.receipts)
         write_json(out/'result.json', report)
@@ -144,17 +151,44 @@ def drive(llm, client, *, executor, prompt, params, out, report):
             raise RuntimeError('ACTUAL_C1_REQUEST_OR_NATIVE_READBACK_INCOMPLETE')
         row['worker_observation_receipt'] = executor.receipts[-1]
         pending = []
+        if grouped:
+            state = action('collect_replay')
+            row['original_observations'] = state['evidence']['group_originals'][-1]
         save()
+        return state
     try:
         try:
             for name in ('prepare', 'register', 'check', 'enable'):
                 action(name)
-            for phase in PHASES:
-                request(phase)
+            if grouped:
+                phase = PHASES[0]
+                for _ in range(270):
+                    if phase == 'complete':
+                        break
+                    state = request(phase)
+                    phase = state['next_phase']
+                if phase != 'complete':
+                    raise RuntimeError('COMPLETE_GROUP_REQUEST_BUDGET_EXCEEDED')
+            else:
+                for phase in PHASES:
+                    request(phase)
             state = action('finish')
             if not state['evidence']['c1_evidence_complete'] or state['owned_hooks'] or state['leases']:
                 raise RuntimeError('C1_EFFECT_OFF_HEALTH_OR_CLEANUP_UNPROVEN')
-            report['c1'] = state['evidence']
+            if grouped:
+                evidence = state['evidence']
+                for label in (('c2', 'c3') if report['stage'] == 'c2_c3' else ('c2',)):
+                    coverage = evidence['group_summary'][label]['coverage']
+                    if not coverage['contract_satisfied']:
+                        raise RuntimeError('ACTUAL_COMPLETE_GROUP_CONTRACT_UNPROVEN:'+label)
+                if report['stage'] == 'c2_c3':
+                    first = evidence['group_summary']['c2']['coverage']['live_c2_proof']['issued']
+                    used = evidence['group_summary']['c3']['coverage']['live_c2_proof']['consumed']
+                    if len(first) != 1 or not used or first[0]['object_binding'] != used['object_binding']:
+                        raise RuntimeError('ORIGINAL_LIVE_C2_OBJECT_USE_UNPROVEN')
+                report.update(group=evidence, c2=evidence['c2'], c3=evidence['c3'])
+            else:
+                report['c1'] = state['evidence']
             action('disable'); action('unregister')
             mapping = enqueue()
             healthy = complete(mapping)
@@ -165,7 +199,8 @@ def drive(llm, client, *, executor, prompt, params, out, report):
             report['post_unregister_health'] = dict(mapping=mapping, output=healthy, worker=scope)
             pending = []
             action('detach', expected='DETACHED')
-            report['status'] = SUCCESS
+            report['status'] = (GROUP_CPU if state['evidence']['evidence_kind'] == 'cpu_contract' else GROUP_SUCCESS) \
+                if grouped else SUCCESS
         except BaseException as error:
             report.update(status='REFUSED_OR_FAILED', error=repr(error), traceback=traceback.format_exc())
             if pending:
@@ -181,6 +216,11 @@ def drive(llm, client, *, executor, prompt, params, out, report):
                 state = action('recover')
                 if state['replay_pending'] and state['next_phase'] == 'off':
                     request('off', recovery=True); request('health', recovery=True)
+                elif grouped:
+                    for _ in range(2):
+                        if not state['next_phase'].startswith('group_recovery_'):
+                            break
+                        state = request(state['next_phase'], recovery=True)
                 action('unregister'); action('detach', expected='DETACHED')
             except BaseException as recovery_error:
                 report['recovery_error'] = repr(recovery_error)
@@ -202,17 +242,19 @@ def main(argv=None):
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--memory', type=float, default=.35)
     parser.add_argument('--statistics', action='store_true')
+    parser.add_argument('--stage', choices=('c1', 'c2_once', 'c2_c3'), default='c1')
+    parser.add_argument('--max-live-leases', type=int, default=128)
     args = parser.parse_args(argv)
     if args.statistics:
         parser.error(STATISTICS_REFUSAL)  # Before importing vLLM or creating a model.
-    if not .1 <= args.memory <= .8 or any(len(value) != 64 or any(c not in '0123456789abcdef' for c in value)
+    if not 1 <= args.max_live_leases <= 256 or not .1 <= args.memory <= .8 or any(len(value) != 64 or any(c not in '0123456789abcdef' for c in value)
             for value in (args.sha256, args.build_fingerprint)):
         parser.error('Bounded memory and actual reviewed Native identities required')
     if not args.out.is_absolute() or not args.out.resolve().is_relative_to(Path('/evidence')):
         parser.error('Private complete observations must stay under /evidence')
     args.out.mkdir(parents=True, exist_ok=False)
     report = dict(schema='demoncat.output39.worker_core_probe.v1', status='STARTED', mechanism='39.output_proxy',
-        standard_worker=True, c2=False, c3=False, E5='UNADAPTED_COLLECTOR_BOUNDARY',
+        standard_worker=True, stage=args.stage, c2=False, c3=False, E5='UNADAPTED_COLLECTOR_BOUNDARY',
         public_qualification_granted=False, model_local_qualification_inherited=False,
         native_sha256=args.sha256, build_fingerprint=args.build_fingerprint, requests=[])
     try:
@@ -235,7 +277,8 @@ def main(argv=None):
         report['healthy_before'] = output(healthy)
         executor = RecordingExecutor(llm, args.out/'worker_core_rpc')
         def binding(identity, config):
-            replies = executor.collective_rpc(setup, args=(identity, args.library, args.sha256, tokens, report['sources']), timeout=300)
+            replies = executor.collective_rpc(setup,
+                args=(identity, args.library, args.sha256, tokens, report['sources'], args.stage, args.max_live_leases), timeout=300)
             if len(replies) != 1 or replies[0]['worker'] != identity:
                 raise RuntimeError('TP1_ACTUAL_DEPLOYMENT_ROUTE_REQUIRED')
             report['binding'] = replies[0]
@@ -250,7 +293,7 @@ def main(argv=None):
     finally:
         write_json(args.out/'result.json', report)
     print(json.dumps({key:report[key] for key in ('status','error') if key in report}))
-    return 0 if report['status'] == SUCCESS else 2
+    return 0 if report['status'] in (SUCCESS, GROUP_SUCCESS) else 2
 
 
 if __name__ == '__main__':

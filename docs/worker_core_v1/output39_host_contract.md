@@ -1,5 +1,9 @@
 # Output39 public Worker C1 and remaining route audit
 
+The default C1 route below is retained. The separately selected
+[complete-set C2/C3 route](output39_complete_set_contract.md) needs its own
+new-source actual Worker acceptance and does not inherit earlier qualification.
+
 This audit starts from `dc40a87d`, where five catalog entries still had
 `WORKER_RPC_ADAPTATION_PENDING`. The following are separate mechanism and
 deployment boundaries. Native/operator evidence does not grant a Worker route
