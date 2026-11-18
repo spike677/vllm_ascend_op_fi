@@ -112,10 +112,12 @@ def literal_constants(source, filename, names):
 def check_execution(document, kind, source, helper, bundle, observer):
     need(document['schema'] == 'demoncat.paged33.first_boundary_worker_run.v1'
         and document['phase'] == kind and document['diagnostic_only'] is True
-        and document['statistics'] is False and document['normal_bridge_variant'] == evidence.VARIANT
+        and document['statistics'] is False and document['normal_bridge_variant'] == evidence.variant(source)
         and document['normal_route_preference_changed'] is (kind == 'baseline')
         and all(document[k] is False for k in ('bridge_compatible', 'fault_authorized',
             'stock_private_exact_proven', 'public_worker_qualified', 'c2', 'c3')), 'NORMAL_ONLY_RUN_SCOPE')
+    if evidence.variant(source)==evidence.S2_VARIANT:
+        need(document.get('native_target_scope')=='FIRST_LAYER_NORMAL_ONLY','S2_FIRST_LAYER_NATIVE_SCOPE_REQUIRED')
     need(document['observer_receipt_sha256'] == observer['sha256'], 'FRESH_SHARED_OBSERVER_RECEIPT_DIFFERS')
     if kind == 'baseline':
         need(document['completion_sha256'] == bundle['completion_sha256']
@@ -148,7 +150,7 @@ def check_execution(document, kind, source, helper, bundle, observer):
     return execution
 
 
-def check_cleanup(finish, private):
+def check_cleanup(finish, private, *, first_layer_only=False):
     cleanup = finish['cleanup']
     need(finish.get('closed') is True and not finish.get('error') and not finish.get('cleanup_error')
         and cleanup['scope_cleared'] is True and cleanup['local_streams_drained'] is True
@@ -157,12 +159,18 @@ def check_cleanup(finish, private):
         and not cleanup.get('failures'), 'OWNER_OR_RESOURCE_CLEANUP_INCOMPLETE')
     if private:
         need(cleanup['scope_active'] is cleanup['scope_owned'] is False and cleanup['environment_owned'] == 0
-            and cleanup['first_error'] is None and cleanup['calls'] == 28 and cleanup['simulation'] is False,
+            and cleanup['first_error'] is None and cleanup['calls'] == (1 if first_layer_only else 28) and cleanup['simulation'] is False,
              'PRIVATE_NATIVE_SCOPE_OR_ERROR_REMAINS')
+        if first_layer_only:
+            rows=cleanup['unscoped_original_calls']
+            need(len(rows)==27 and {row['module_path'] for row in rows}==set(LAYERS)-{FIRST}
+                and all(row['original_calls']==1 and row['returned'] is True for row in rows),
+                'S2_NON_TARGET_ORIGINAL_CALL_CENSUS_INCOMPLETE')
     else:
         stock = cleanup['stock_launch_scope']
         need(stock['scope_cleared'] is True and stock['local_streams_drained'] is True and stock['errors'] == [],
              'STOCK_OBSERVER_SCOPE_REMAINS')
+    if first_layer_only:need(cleanup.get('logical_binding_released') is True,'S2_LIVE_INPUT_REFERENCES_REMAIN')
     return dict(owned_hooks=0, owned_api_wrappers=0, boundary_refs_released=True,
                 scope_cleared=True, local_streams_drained=True)
 
@@ -330,6 +338,40 @@ def captured_thread_identity(saved):
     return dict(identity)
 
 
+def check_live_input(saved,audit):
+    """Join the new live binding record to independently captured real bytes."""
+    report=saved['logical_input_binding'];identity=report['identity'];record=report['evidence']
+    thread=captured_thread_identity(saved)
+    need(report['schema']=='demoncat.paged33.live_logical_input.v1'
+        and report['actual_original_calls']==1 and report['complete'] is True
+        and report['inflight'] is report['closed'] is report['simulation'] is report['qualification_granted'] is False
+        and report['first_error'] is None and report['operator_input_repacked'] is False
+        and type(identity['owner_object_id']) is int and identity['owner_object_id']>0
+        and type(identity['generation']) is int and identity['generation']==1
+        and all(identity[key]==thread[key] for key in ('pid','python_thread_ident','native_tid'))
+        and all(identity[key]==saved[key] for key in ('worker_object_id','model_object_id'))
+        and identity['module_object_id']==audit['module_object_id']
+        and identity['impl_object_id']==audit['impl_object_id'], 'S2_LIVE_OWNER_OR_ACTUAL_OBJECT_JOIN_DIFFERS')
+    need(record['before']==record['after'] and record['request_id']==audit['scheduler']['request_ids'][0],
+         'S2_LIVE_INPUT_CHANGED_OR_REQUEST_DIFFERS')
+    before=record['before']
+    for key in ('query','key','value','page_table','live_key_cache','live_value_cache','used_pages',
+                'slots','expected_slots','sequence_lengths','scheduler','writer'):
+        need(before['boundary'][key]==audit[key],'S2_LIVE_BOUNDARY_JOIN_DIFFERS:'+key)
+    for key,value in before['tensors'].items():
+        captured=saved['inputs'][key]['snapshot']
+        need(all(value[name]==captured[name] for name in ('metadata','version','bytes','sha256','finite')),
+             'S2_LIVE_TENSOR_BYTES_JOIN_DIFFERS:'+key)
+    need(set(before['tensors'])=={'query','atten_mask','block_table'}
+        and before['logical_kv']==saved['logical_kv_before'],'S2_COMPLETE_LOGICAL_KV_JOIN_DIFFERS')
+    need(len(record['outputs'])==len(saved['outputs'])==2
+        and all(all(left[key]==right[key] for key in ('metadata','version','bytes','sha256','finite'))
+            for left,right in zip(record['outputs'],saved['outputs'])), 'S2_IMMEDIATE_ACTUAL_RETURN_JOIN_DIFFERS')
+    return dict(owner_object_id=identity['owner_object_id'],generation=1,
+        actual_request_id=record['request_id'],complete_logical_kv_joined=True,
+        original_calls=1,source_bound=True,qualification_granted=False)
+
+
 def one_launch(run, rows, token, pid, helper, *, native_tid, kernel_sha=None, symbols=None):
     resolution = helper.boundary.scoped_runtime(run, rows, token, expected_pid=pid)
     need(len(resolution['launches']) == 1, 'EXACT_ONE_ACTUAL_KERNEL_PER_NORMAL_CALL_REQUIRED')
@@ -406,8 +448,10 @@ def final_private_pod(raw_event, resolved, host, bundle, abi_helper):
         'baseParams.scaleValue':struct.unpack('<f',struct.pack('<f',128**-.5))[0]}
     need(all(typed.get(key) == value for key,value in expected.items()) and 1025 <= typed['baseParams.s2Size'] <= 2048,
          'FINAL_PUBLIC_POD_NORMAL_GEOMETRY_DIFFERS')
-    need(host['schema'] == 'demoncat.paged33.arch22_normal_host.v1' and host['route'] == 'FiaTilingNonQuant'
-        and host['mode'] == 'arch22_normal' and host['normal_route_preference_changed'] is True
+    s2=bundle.get('completion',{}).get('variant')==evidence.S2_VARIANT
+    need(host['schema'] == ('demoncat.paged33.arch22_s2_host.v1' if s2 else 'demoncat.paged33.arch22_normal_host.v1')
+        and host['route'] == 'FiaTilingNonQuant'
+        and host['mode'] == ('arch22_s2_off' if s2 else 'arch22_normal') and host['normal_route_preference_changed'] is True
         and host['eligible'] is True and host['policy_applied'] is False
         and host['native_s2'] == host['selected_s2'] == 512, 'NATIVE_HOST_NORMAL_ONLY_ROUTE_DIFFERS')
     return dict(raw_sha256=hashlib.sha256(raw).hexdigest(), raw_size=size, args_sha256=hashlib.sha256(args).hexdigest(),
@@ -418,14 +462,16 @@ def final_private_pod(raw_event, resolved, host, bundle, abi_helper):
 def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symbols):
     name = phase['phase']; calls = phase['finish']['capture']['native_calls']; prefix = name+'.native'
     identity = captured_thread_identity(saved)
-    need(len(calls) == 28 and {row['module_path'] for row in calls} == set(LAYERS)
-        and len({row['call_id'] for row in calls}) == 28, 'COMPLETE_28_PRIVATE_NATIVE_CALLS_REQUIRED')
+    s2=bundle['completion'].get('variant')==evidence.S2_VARIANT
+    paths={FIRST} if s2 else set(LAYERS)
+    need(len(calls) == len(paths) and {row['module_path'] for row in calls} == paths
+        and len({row['call_id'] for row in calls}) == len(paths), 'COMPLETE_SCOPED_PRIVATE_NATIVE_CALLS_REQUIRED')
     folder = run/name/'native'; log = folder/'host.jsonl'; before = log.stat()
     need(0 < before.st_size <= 32*1024**2 and not log.is_symlink(), 'HOST_LOG_BOUND_OR_LINK')
     raw = log.read_bytes(); after = log.stat()
     need(raw.endswith(b'\n') and (before.st_size,before.st_mtime_ns) == (after.st_size,after.st_mtime_ns), 'HOST_LOG_NOT_COMPLETE_STABLE')
     hosts = [json.loads(line,object_pairs_hook=evidence.unique) for line in raw.splitlines()]
-    need(len(hosts) == 28 and len({row['token'] for row in hosts}) == 28
+    need(len(hosts) == len(paths) and len({row['token'] for row in hosts}) == len(paths)
         and {row['token'] for row in hosts} == {row['call_id'] for row in calls}, 'HOST_AND_ACTUAL_CALL_SETS_DIFFER')
     host_map = {row['token']:row for row in hosts}; summaries = []
     def single(call):
@@ -444,6 +490,17 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
             native_tid=identity['native_tid'],kernel_sha=bundle['completion']['kernel_binary_sha256'],symbols=symbols)
         launch = resolution['launches'][0]
         decoded = final_private_pod(runtime[launch['raw_line']-1],launch,host_map[token],bundle,helper.abi)
+        if s2:
+            host=host_map[token];owner=call['owner_mapping'];logical=call['logical_input_binding']
+            need(host['phase']==call['phase'] and host['target_path']==FIRST
+                and host['actual_observer_scope_matched'] is True
+                and host['owner']==owner['native_owner'] and len(host['owner'])==32
+                and all(c in '0123456789abcdef' for c in host['owner'])
+                and type(host['generation']) is int and host['generation']==owner['generation']==1
+                and owner['python_owner_object_id']==logical['identity']['owner_object_id']
+                and logical==saved['logical_input_binding'],'S2_ACTUAL_HOST_OWNER_PHASE_INPUT_JOIN_DIFFERS')
+            helper.arch22_s2_build_evidence.verify_normal_geometry(decoded['typed'],host,
+                bundle['s2_cpu_matrix']['normal_first_decode_rows'][host['aic']])
         recorded = call['native']
         need(all(recorded[key] == value for key,value in decoded.items())
             and recorded['call_id'] == token and recorded['pid'] == launch['pid'] and recorded['tid'] == launch['tid']
@@ -466,7 +523,7 @@ def check_coexistence(document, source, bundle, pid):
         ('STOCK_FILES','LOADER_HEADER_SHA','NORM_SYMBOLS','FIA_SYMBOLS','PRIVATE_LIB'))
     stock_root = '/vllm-workspace/vllm-ascend/vllm_ascend/'
     stock_path = stock_root+'_cann_ops_custom/vendors/vllm-ascend/'+constants['PRIVATE_LIB']
-    private_path = '/native/stage/vendors/'+evidence.VENDOR+'/'+constants['PRIVATE_LIB']
+    private_path = '/native/stage/vendors/'+evidence.vendor_name(source)+'/'+constants['PRIVATE_LIB']
     stock_sha = constants['STOCK_FILES']['_cann_ops_custom/vendors/vllm-ascend/'+constants['PRIVATE_LIB']]
     private_sha = bundle['artifacts'][constants['PRIVATE_LIB']]['sha256']
     rows = [document[key] for key in ('library_bootstrap','library_coexistence',
@@ -486,7 +543,7 @@ def check_coexistence(document, source, bundle, pid):
                 and all(item['path'] == path and item['sha256'] == digest and type(item['address']) is int
                     and item['address'] > 0 for item in symbols), 'API_LIBRARY_SYMBOL_RECEIPT_DIFFERS')
         need(row['bindings']['distinct_library_handles'] is True, 'STOCK_PRIVATE_HANDLES_ALIASED')
-        expected_order = ['/native/stage/vendors/'+evidence.VENDOR]
+        expected_order = ['/native/stage/vendors/'+evidence.vendor_name(source)]
         if index: expected_order += [stock_root+'_cann_ops_custom/vendors/vllm-ascend']
         need(row['vendor_order'] == expected_order, 'EXACT_VENDOR_SEARCH_ORDER_DIFFERS')
     return dict(receipts=len(rows), all_source_bound_symbol_owners_consistent=True,
@@ -527,6 +584,7 @@ def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks
     run = Path(run).resolve(strict=True); result = run/'result.json'
     need(evidence.sha(result) == expected_sha, 'PINNED_RESULT_SHA_DIFFERS:'+kind)
     document = evidence.read(result); failures = original_failures(document)
+    s2=evidence.variant(source)==evidence.S2_VARIANT
     summary = dict(result_path=str(result), result_sha256=expected_sha, original_status=document.get('status'),
         original_failures=failures, phase_summaries=[], within_run={}, qualification_authority=False)
     checks.require(kind, not failures, 'ORIGINAL_RUN_FAILURES_PRESERVED')
@@ -551,7 +609,7 @@ def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks
         if not name in PHASES:
             checks.require(path,False,'UNKNOWN_PHASE'); continue
         finish = phase.get('finish', {})
-        phase_summary['cleanup'] = checks.run(path+'.cleanup',lambda:check_cleanup(finish,private))
+        phase_summary['cleanup'] = checks.run(path+'.cleanup',lambda:check_cleanup(finish,private,first_layer_only=s2))
         def request():
             need(phase['response']['prompt_token_ids'] == tokens and phase['response']['outputs'] == document['warm_healthy']['outputs']
                 and phase['response']['request_id'] == phase['mapping']['external_request_id']
@@ -576,6 +634,7 @@ def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks
             checks.require(path+'.first_boundary',False,'COMPLETE_FIRST_BOUNDARY_OR_NATURAL_CENSUS_MISSING'); continue
         phase_summary['python_token_attributes'] = checks.run(path+'.actual_inputs',lambda:check_actual_inputs(saved))
         phase_summary['thread_identity'] = checks.run(path+'.thread_identity',lambda:captured_thread_identity(saved))
+        if s2:phase_summary['live_input'] = checks.run(path+'.live_input',lambda:check_live_input(saved,audit[FIRST]))
         boundary = checks.run(path+'.first_boundary',lambda:helper.boundary.first_boundary(run,phase,audit[FIRST],difference_reader=helper.differences))
         if boundary is not None:
             phase_summary['first_boundary'] = boundary['summary']
@@ -594,6 +653,11 @@ def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks
         phase_summary['new_offline_runtime_resolution'] = resolution
         phase_summary['original_runtime_observation'] = saved['runtime_observation']
         if private:
+            if s2:
+                checks.run(path+'.unscoped_call_joins',lambda:need(all(
+                    row['module_object_id']==audit[row['module_path']]['module_object_id']
+                    and row['request_ids']==audit[row['module_path']]['scheduler']['request_ids']
+                    for row in finish['cleanup']['unscoped_original_calls']), 'S2_UNSCOPED_ACTUAL_MODULE_OR_REQUEST_DIFFERS'))
             native = checks.run(path+'.all_native',lambda:native_phase(run,phase,audit,runtime_rows,saved,helper,bundle,checks,symbols))
             phase_summary['native_replay'] = native
             if native is not None:
@@ -605,11 +669,11 @@ def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks
         and len(requests) == len(set(requests)) == 5, 'SAME_WORKER_OR_UNIQUE_REQUEST_SCOPE_INCOMPLETE')
     begins = [row['call_id'] for row in runtime_rows if row['event'] == 'begin']
     ends = [row['call_id'] for row in runtime_rows if row['event'] == 'end']
-    expected_scopes = 113 if kind == 'baseline' else 5
+    expected_scopes = 5 if s2 or kind=='stock' else 113
     checks.require(kind+'.all_owned_runtime_scopes', len(scope_tokens) == expected_scopes
         and len(set(scope_tokens)) == expected_scopes and Counter(begins) == Counter(ends) == Counter(scope_tokens),
         'EXTRA_MISSING_OR_UNCLOSED_OWNED_RUNTIME_SCOPE')
-    checks.require(kind+'.native_census',native_total == (112 if kind == 'baseline' else 0),'COMPLETE_NATIVE_NORMAL_CENSUS_NOT_REPLAYED')
+    checks.require(kind+'.native_census',native_total == ((4 if s2 else 112) if kind == 'baseline' else 0),'COMPLETE_NATIVE_NORMAL_CENSUS_NOT_REPLAYED')
     summary['private_native_replayed'] = native_total
     if kind == 'baseline' and identities:
         summary['library_coexistence'] = checks.run(kind+'.libraries',lambda:check_coexistence(document,source,bundle,identities[0][0]))
@@ -644,7 +708,8 @@ def review(args):
                         original_failures=original_failures(document),qualification_authority=False)
         report['arms'][kind] = checks.run(kind+'.original',original)
     def context():
-        source = evidence.frozen_source(args.source,args.source_manifest_sha256)
+        source = evidence.frozen_source(args.source,args.source_manifest_sha256,
+            build_variant=evidence.S2_VARIANT if getattr(args,'arch22_s2_normal',False) else evidence.VARIANT)
         need(evidence.sha(Path(__file__)) == source['pins'][evidence.EXPERIMENT+Path(__file__).name], 'REVIEWER_NOT_FROZEN_SOURCE')
         helper = evidence.helpers(source)
         bundle = evidence.build_bundle(args.build_root,source,helper,args.completion_sha256)
@@ -653,6 +718,9 @@ def review(args):
     loaded = checks.run('source_build_observer',context)
     if loaded is not None:
         source,helper,bundle,observer = loaded
+        report['native_call_scope'] = (dict(module_path=FIRST,layout='TND',query_tokens=1,kv_length=1025,page_size=16,
+            private_calls=4,natural_layers_per_phase=28,normal_only=True)
+            if evidence.variant(source)==evidence.S2_VARIANT else dict(private_calls=112,natural_layers_per_phase=28,normal_only=True))
         report['source'] = dict(root=str(source['root']),commit=source['manifest']['base_commit'],
             manifest_sha256=source['manifest_sha256'],required_sources=source['pins'])
         report['build'] = bundle['summary']; report['observer'] = dict(receipt_sha256=observer['sha256'],
@@ -687,6 +755,8 @@ def review(args):
         'Native typed arrays are fully decoded from final private arguments and matched to all host fields, including alignment bytes.',
         'Model/package identities and source-bound observer receipts are reconciled, not a cryptographic attestation of execution.',
         'No C1/C2/C3, E5 localization, raw-device fault payload or generic 8x/9x qualification is granted.'])
+    if getattr(args,'arch22_s2_normal',False):
+        report['limitations'].append('The new S2-capable package is exercised only in normal/OFF mode. Its four private Native receipts cover layer0 TND Q1/KV1025/page16; 27 other layers remain unscoped original calls. The complete 28-layer outputs are still compared. This is the trusted standard Worker probe, not completion of the public Core fault entry.')
     return report
 
 
@@ -696,6 +766,7 @@ def main():
         parser.add_argument('--'+name,type=Path,required=True)
     for name in ('source-manifest-sha256','completion-sha256','observer-receipt-sha256','stock-sha256','baseline-sha256'):
         parser.add_argument('--'+name,required=True)
+    parser.add_argument('--arch22-s2-normal',action='store_true',help='New S2 package normal-only first-layer profile')
     args = parser.parse_args(); sys.dont_write_bytecode = True
     need(not args.out.exists(),'FRESH_REVIEW_OUTPUT_REQUIRED')
     cpu_reader = initialize_cpu_byte_reader()

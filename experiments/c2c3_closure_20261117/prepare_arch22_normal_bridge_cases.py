@@ -26,11 +26,13 @@ def make_cases(args, source, bundle, observer, contract, installed_pins):
     evidence.need(args.card in (2, 5) and type(args.timeout) is int and 1 <= args.timeout <= 1800,
                   'NORMAL_BRIDGE_CASE_BUDGET_INVALID')
     cases = []
+    s2=evidence.variant(source)==evidence.S2_VARIANT
     for arm in ('stock', 'baseline'):
-        label = 'attention33-arch22-normal-'+arm
+        label = ('attention33-arch22-s2-normal-' if s2 else 'attention33-arch22-normal-')+arm
         argv = ['python3', '-B', '/repo/'+evidence.EXPERIMENT+'attention33_worker_probe.py',
             '--phase', arm, '--model', '/model', '--out', '/evidence/run',
-            '--experimental-qualification', '--first-boundary-diagnostic', '--arch22-normal-bridge',
+            '--experimental-qualification', '--first-boundary-diagnostic',
+            '--arch22-s2-normal-bridge' if s2 else '--arch22-normal-bridge',
             '--observer-receipt', '/build/attention-preflight/result.json',
             '--observer-receipt-sha256', observer['sha256']]
         mounts = [[str(args.source), '/repo', 'ro'], [str(args.installed), '/installed', 'ro'],
@@ -40,7 +42,7 @@ def make_cases(args, source, bundle, observer, contract, installed_pins):
         if arm == 'baseline':
             argv += ['--completion', '/native/evidence/completion.json',
                 '--completion-sha256', bundle['completion_sha256'],
-                '--vendor', '/native/stage/vendors/'+evidence.VENDOR,
+                '--vendor', '/native/stage/vendors/'+evidence.vendor_name(source),
                 '--public-schema', '/native/evidence/arch22_schema/fia_abi_schema.json',
                 '--schema-sha256', bundle['completion']['arch22_public_schema_sha256']]
             mounts.append([str(args.build_root), '/native', 'ro'])
@@ -56,7 +58,8 @@ def make_cases(args, source, bundle, observer, contract, installed_pins):
                 model=str(args.model), cann='8.5.1', soc='Ascend910B4/A2', physical_cards=[args.card], ranks=[0],
                 worker='Standard Qwen TP1 eager; actual 1024-token prefill and first KV1025 decode',
                 expected_hits='0 faults; 5 first-boundary captures and 5 x 87 complete payloads per arm; '
-                              'private first 4 phases additionally observe all 28 native calls',
+                              + ('private first 4 phases each observe only layer0 Native; 27 other calls are unscoped'
+                                 if s2 else 'private first 4 phases additionally observe all 28 native calls'),
                 recovery_plan='Five normal phases plus ordinary post-clean request; exact repeated outputs and zero owned scope/hooks/wrappers.',
                 resource_budget=dict(timeout_seconds=args.timeout, memory_gib=48, cpus=16),
                 diagnostic_only=True, statistics=False, fault_authorized=False,
@@ -67,10 +70,10 @@ def make_cases(args, source, bundle, observer, contract, installed_pins):
     return cases
 
 
-def prepare(args):
+def prepare(args, *, build_variant=evidence.VARIANT):
     for name in ('source','installed','build_root','observer','model'):
         setattr(args,name,getattr(args,name).resolve(strict=True))
-    source = evidence.frozen_source(args.source, args.source_manifest_sha256)
+    source = evidence.frozen_source(args.source, args.source_manifest_sha256,build_variant=build_variant)
     evidence.need(evidence.sha(Path(__file__)) == source['pins'][evidence.EXPERIMENT+Path(__file__).name],
                   'PREPARER_NOT_THE_FROZEN_SOURCE')
     helper = evidence.helpers(source)
@@ -82,7 +85,7 @@ def prepare(args):
     return make_cases(args, source, bundle, observer, contract, installed_pins)
 
 
-def main():
+def main(*, build_variant=evidence.VARIANT):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('source', 'installed', 'build-root', 'observer', 'model', 'out'):
         parser.add_argument('--'+name, type=Path, required=True)
@@ -94,7 +97,7 @@ def main():
     sys.addaudithook(evidence.prohibit_runtime)
     evidence.need(not args.out.exists(), 'FRESH_CASE_MANIFEST_REQUIRED')
     try:
-        cases = prepare(args)
+        cases = prepare(args,build_variant=build_variant)
         args.out.parent.mkdir(parents=True, exist_ok=True)
         with args.out.open('x', encoding='utf-8') as stream:
             json.dump(cases, stream, indent=2, allow_nan=False); stream.write('\n')

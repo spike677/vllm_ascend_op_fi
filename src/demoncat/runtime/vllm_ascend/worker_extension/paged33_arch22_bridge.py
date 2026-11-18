@@ -154,10 +154,11 @@ def validate_native(launch, host, actual, boundary):
 
 class Arch22NormalNativeCall(_NativeCall):
     mechanism = '33.paged_decode'
+    bundle_verifier = staticmethod(verify_bundle)
 
     def __init__(self, *, completion, completion_sha256, vendor, schema, schema_sha256,
                  observer_receipt, observer_receipt_sha256, evidence_dir):
-        self.build = verify_bundle(completion, completion_sha256, vendor)
+        self.build = self.bundle_verifier(completion, completion_sha256, vendor)
         data = self.build['completion']
         require(sha(schema) == schema_sha256 == data['arch22_public_schema_sha256'],
                 'ARCH22_PUBLIC_SCHEMA_HASH_DIFFERS')

@@ -113,6 +113,14 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
             self.collector = PrecisionDebugger(config_path=str(self.folder/'config.json'))
             self.packet_attributes = CollectorPacketAttributes()
         adapter_type = TNDNativeAdapter
+        s2_normal = bool(boundary_args is not None and boundary_args.get('arch22_s2_normal') is True)
+        require(not s2_normal or (not statistics and (native_args is None or
+            native_args.get('arch22_s2_normal') is True)), 'S2_NORMAL_SAME_CAPTURE_SCOPE_REQUIRED')
+        if native_args is not None and native_args.get('arch22_s2_normal') is True:
+            require(s2_normal and not native_args.get('normal_bridge'), 'S2_NORMAL_DISTINCT_VARIANT_REQUIRED')
+            from .paged33_arch22_s2_normal import S2NormalProbeAdapter
+            adapter_type = S2NormalProbeAdapter
+            native_args = {name:value for name,value in native_args.items() if name!='arch22_s2_normal'}
         if native_args is not None and native_args.get('normal_bridge') is True:
             require(not statistics and boundary_args is not None, 'ARCH22_NORMAL_PROBE_NEEDS_INDEPENDENT_BOUNDARY')
             from .paged33_arch22_bridge import NormalBridgeProbeAdapter
@@ -120,6 +128,9 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
             native_args = {name: value for name, value in native_args.items() if name != 'normal_bridge'}
         adapter = None if native_args is None else adapter_type(**native_args, evidence_dir=self.folder/'native')
         super().__init__(worker, adapter=adapter)
+        self.s2_normal = s2_normal
+        self.logical_binding = None
+        self.logical_owner = object() if adapter is None else getattr(adapter,'owner',None)
         self.binding = class_forward_binding(self.model)
         boundary = discover_logits_boundary(model, actual_logits_processor_type=LogitsProcessor,
             actual_vocab_size=worker.model_runner.vllm_config.model_config.hf_config.vocab_size)
@@ -189,12 +200,30 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
             capture.start(name, original, args, kwargs, record, self.stack[-1][1], len(self.rows)-1)
             def invoke(*actual_args, **actual_kwargs):
                 return capture.invoke_original(original, actual_args, actual_kwargs)
+        if first and getattr(self,'s2_normal',False):
+            from .paged33_logical_binding import LogicalPagedInput
+            from vllm.forward_context import get_forward_context
+            context=get_forward_context();path,module=self.stack[-1]
+            actual=dict(kwargs)
+            require(len(args)<=3,'S2_NORMAL_POSITIONAL_OPTIONALS_UNADAPTED')
+            for argument_name,value in zip(('query','key','value'),args):
+                require(argument_name not in actual,'S2_NORMAL_DUPLICATE_ARGUMENT');actual[argument_name]=value
+            self.logical_binding=LogicalPagedInput(worker=self.worker,module=module,module_path=path,
+                forward_context=context,metadata=context.attn_metadata[module.layer_name],actual=actual,
+                scheduler=self.current,writer=self.writers[id(module)],owner=self.logical_owner,generation=1)
+            if self.adapter is not None:self.adapter.bind_input(self.logical_binding)
+            else:
+                captured_invoke=invoke
+                def invoke(*actual_args,**actual_kwargs):
+                    return self.logical_binding.execute(lambda:captured_invoke(*actual_args,**actual_kwargs),
+                                                        owner=self.logical_owner,generation=1)
         if first and self.boundary_stock_scope is not None:
             result = self.boundary_stock_scope.invoke(lambda: Paged33Audit._invoke_api(self, name, invoke, args, kwargs, record))
         else:
             result = (Paged33Audit._invoke_api(self, name, invoke, args, kwargs, record) if self.adapter is None
                       else super()._invoke_api(name, invoke, args, kwargs, record))
         if first:
+            if getattr(self,'s2_normal',False):capture.data['logical_input_binding']=self.logical_binding.report()
             from .paged33_boundary_probe import mapped_api_libraries, read_scoped_launches, MappedLibraryObservationError
             token = self.boundary_stock_scope.token if self.boundary_stock_scope else self.adapter.calls[-1]['call_id']
             runtime = self.boundary_stock_scope.runtime_dir if self.boundary_stock_scope else self.adapter.runtime_dir
@@ -282,4 +311,7 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
         if self.boundary_capture is not None:
             self.boundary_capture.release()
             state.update(boundary_refs_released=True, stock_launch_scope=stock_cleanup)
+        if getattr(self,'logical_binding',None) is not None:
+            self.logical_binding.release(owner=self.logical_owner,generation=1)
+            state['logical_binding_released']=self.logical_binding.closed
         return state

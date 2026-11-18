@@ -20,6 +20,8 @@ WORKER = 'src/demoncat/runtime/vllm_ascend/worker_extension/'
 NATIVE = 'fault_injection/native_adapters/attention28/'
 VARIANT = 'tnd_page16_arch22_normal_bridge'
 VENDOR = 'dcat_f33_arch22_normal_transformer'
+S2_VARIANT = 'tnd_page16_arch22_s2_256'
+S2_VENDOR = 'dcat_f33_arch22_s2_transformer'
 IMAGE = 'sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0'
 COMMIT = 'c77c0829f1f0f0b8f882db1d9b051a758b605472'
 KEY = 103000000010300003
@@ -45,6 +47,14 @@ REQUIRED = tuple(EXPERIMENT+name+'.py' for name in (
     NATIVE+'launch.py', NATIVE+'launch_observer.cpp', NATIVE+'fia/build_contract.json',
     NATIVE+'fia/apply_tnd33_arch22_bridge.py', NATIVE+'fia/paged33_arch22_bridge.h',
     NATIVE+'fia/compile_public_schema.py', NATIVE+'fia/fia_abi_decoder.cpp')
+S2_REQUIRED = (EXPERIMENT+'prepare_arch22_s2_normal_bridge_cases.py',EXPERIMENT+'build_tnd33_124.py',
+    WORKER+'paged33_arch22_s2_normal.py',WORKER+'paged33_logical_binding.py') + tuple(NATIVE+'fia/'+name for name in (
+    'apply_tnd33_arch22_s2.py','paged33_arch22_s2.h','arch22_s2_geometry.py','compile_arch22_s2_matrix.py',
+    'arch22_s2_build_evidence.py','build_fresh.py','binary_registration.py','base_policy.py'))
+
+
+def variant(source):return source.get('variant',VARIANT)
+def vendor_name(source):return S2_VENDOR if variant(source)==S2_VARIANT else VENDOR
 
 
 def need(ok, reason):
@@ -87,7 +97,8 @@ def child(root, relative):
     return path
 
 
-def frozen_source(root, expected_sha):
+def frozen_source(root, expected_sha, *, build_variant=VARIANT):
+    need(build_variant in (VARIANT,S2_VARIANT),'NORMAL_BUILD_VARIANT_REQUIRED')
     root = Path(root).resolve(strict=True); manifest = root/'source_manifest.json'
     need(re.fullmatch('[0-9a-f]{64}', expected_sha or '') and sha(manifest) == expected_sha,
          'FROZEN_SOURCE_MANIFEST_SHA_DIFFERS')
@@ -95,13 +106,13 @@ def frozen_source(root, expected_sha):
     need(data.get('schema') == 'demoncat.c2c3.source.v1'
          and len({row['path'] for row in rows}) == len(rows), 'FROZEN_SOURCE_MANIFEST_INVALID')
     files = {row['path']: row for row in rows}; pins = {}
-    for name in REQUIRED:
+    for name in REQUIRED+(S2_REQUIRED if build_variant==S2_VARIANT else ()):
         path = child(root, name)
         need(name in files and not path.is_symlink() and sha(path) == files[name]['sha256'],
              'FROZEN_REQUIRED_SOURCE_DIFFERS:'+name)
         pins[name] = files[name]['sha256']
     need(sha(Path(__file__)) == pins[EXPERIMENT+Path(__file__).name], 'REVIEW_COMMON_SOURCE_DIFFERS')
-    return dict(root=root, pins=pins, manifest=data, manifest_sha256=expected_sha)
+    return dict(root=root, pins=pins, manifest=data, manifest_sha256=expected_sha,variant=build_variant)
 
 
 def helpers(source):
@@ -127,6 +138,16 @@ def helpers(source):
     namespace = dict(require=need, sha=sha, Path=Path, re=re, struct=struct, json=json)
     exec(compile(ast.Module(body=nodes, type_ignores=[]), str(path), 'exec'), namespace)
     result.abi = SimpleNamespace(**{name:namespace[name] for name in names})
+    if variant(source)==S2_VARIANT:
+        for name in ('arch22_s2_geometry','arch22_s2_build_evidence'):
+            path=source['root']/NATIVE/'fia'/(name+'.py')
+            if name in sys.modules:
+                need(Path(sys.modules[name].__file__).resolve()==path,'AMBIENT_S2_HELPER_REFUSED')
+                loaded=sys.modules[name]
+            else:
+                spec=importlib.util.spec_from_file_location(name,path)
+                loaded=importlib.util.module_from_spec(spec);sys.modules[name]=loaded;spec.loader.exec_module(loaded)
+            setattr(result,name,loaded)
     return result
 
 
@@ -148,16 +169,21 @@ def build_bundle(root, source, helper, expected_completion=None):
     root = Path(root).resolve(strict=True); completion = root/'evidence/completion.json'
     completion_sha = sha(completion)
     need(expected_completion is None or completion_sha == expected_completion, 'COMPLETION_SHA_DIFFERS')
-    data = read(completion); vendor = root/'stage/vendors'/VENDOR
+    data = read(completion); vendor = root/'stage/vendors'/vendor_name(source)
+    selected_variant=variant(source);s2=selected_variant==S2_VARIANT
     need(data.get('schema') == 'demoncat.fia.fresh_build.v1' and data.get('source_commit') == COMMIT
-        and data.get('variant') == VARIANT and data.get('status') == 'CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION'
+        and data.get('variant') == selected_variant and data.get('status') == 'CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION'
         and all(data.get(k) is False for k in ('loading_allowed', 'npu_executed',
             'previous_experiment_objects_used', 'fault_execution_ready', 'stock_private_exact_proven'))
         and len(data.get('compiled_keys', [])) == len(KEYS) and set(data['compiled_keys']) == KEYS,
         'SEPARATE_NORMAL_ONLY_FRESH_BUILD_REQUIRED')
-    need(data.get('normal_bridge_recipe_sha256') == source['pins'][NATIVE+'fia/apply_tnd33_arch22_bridge.py']
-        and data.get('normal_bridge_header_sha256') == source['pins'][NATIVE+'fia/paged33_arch22_bridge.h']
-        and data.get('contract_sha256') == source['pins'][NATIVE+'fia/build_contract.json'], 'FRESH_BUILD_SOURCE_BINDING_DIFFERS')
+    need(data.get('contract_sha256') == source['pins'][NATIVE+'fia/build_contract.json'], 'FRESH_BUILD_SOURCE_BINDING_DIFFERS')
+    matrix=None
+    if s2:matrix=helper.arch22_s2_build_evidence.verify_inputs(root,data,source['pins'])
+    else:
+        need(data.get('normal_bridge_recipe_sha256') == source['pins'][NATIVE+'fia/apply_tnd33_arch22_bridge.py']
+            and data.get('normal_bridge_header_sha256') == source['pins'][NATIVE+'fia/paged33_arch22_bridge.h'],
+            'FRESH_BUILD_SOURCE_BINDING_DIFFERS')
     for relative, expected in CANONICAL_TOKEN_SOURCE_SHA256.items():
         path=child(root/'source',relative)
         need(not path.is_symlink() and path.resolve(strict=True) == path
@@ -165,9 +191,12 @@ def build_bundle(root, source, helper, expected_completion=None):
              'FRESH_NORMAL_CAUSAL_TOKEN_PARSER_DIFFERS:'+relative)
     patch_path=root.parents[1]/'patch/policy_source_manifest.json'; patch=read(patch_path)
     need(sha(patch_path) == data['patch_receipt_sha256'] and patch['source_commit'] == COMMIT
-        and patch['variant'] == VARIANT and patch['recipe_sha256'] == data['normal_bridge_recipe_sha256']
+        and patch['variant'] == selected_variant and patch['recipe_sha256'] == data['arch22_s2_recipe_sha256' if s2 else 'normal_bridge_recipe_sha256']
         and patch['normal_route_preference_changed'] is True and all(patch[key] is False for key in
-            ('tensor_payload_mutated','kernel_source_modified','tiling_arithmetic_modified','fault_execution_ready','stock_private_exact_proven')),
+            ('tensor_payload_mutated','kernel_source_modified','fault_execution_ready','stock_private_exact_proven'))
+        and (patch.get('selection_before_original_split') is True and patch.get('m_policy_changed') is False
+             and patch.get('old_normal_certificate_reused') is False and patch.get('loading_allowed') is False
+             if s2 else patch.get('tiling_arithmetic_modified') is False),
         'ACTUAL_NORMAL_PATCH_RECEIPT_DIFFERS')
     need(0 < len(patch['files']) <= 32 and len({row['path'] for row in patch['files']}) == len(patch['files']),
          'NORMAL_PATCH_SOURCE_CENSUS_DIFFERS')
@@ -234,16 +263,18 @@ def build_bundle(root, source, helper, expected_completion=None):
         and controller.get('source_commit') == COMMIT
         and re.fullmatch('[0-9a-f]{64}', data.get('sdk_interface_manifest_sha256', ''))
         and controller.get('sdk_interfaces_sha256') == data['sdk_interface_manifest_sha256']
-        and controller.get('image_id') == IMAGE and controller.get('strategy') == 'arch22-normal-bridge'
+        and controller.get('image_id') == IMAGE and controller.get('strategy') == ('arch22-s2' if s2 else 'arch22-normal-bridge')
         and controller.get('owned_container_removed') is True
         and controller.get('final_state', {}).get('Running') is False, 'EXACT_DEVICE_FREE_BUILD_CONTROLLER_REQUIRED')
     return dict(root=root, vendor=vendor, completion=data, completion_sha256=completion_sha,
-        artifacts=files, metadata=metadata, abi=abi, schema=schema, controller=controller,
+        artifacts=files, metadata=metadata, abi=abi, schema=schema, controller=controller,s2_cpu_matrix=matrix,
         summary=dict(completion_path=str(completion), completion_sha256=completion_sha,
             controller_sha256=sha(controller_path), schema_sha256=sha(schema_path),
             compile_receipt_sha256=sha(compile_path), schema_sentinel_sha256=sha(schema_path.with_name('fia_abi_selftest.json')),
             patch_receipt_sha256=sha(patch_path), artifacts=len(files), artifact_bytes=total,
-            kernel_sha256=data['kernel_binary_sha256'], variant=VARIANT, compiled_keys=sorted(KEYS),
+            kernel_sha256=data['kernel_binary_sha256'], variant=selected_variant, compiled_keys=sorted(KEYS),
+            s2_cpu_matrix=None if matrix is None else {key:matrix[key] for key in
+                ('receipt_sha256','matrix_sha256','cases','qualification_granted')},
             canonical_token_source_sha256=dict(CANONICAL_TOKEN_SOURCE_SHA256)))
 
 

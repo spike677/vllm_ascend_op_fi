@@ -51,6 +51,9 @@ class LogicalPagedInput:
         self.writer_before = copy.deepcopy(writer)
         self.calls,self.inflight,self.complete,self.closed = 0,False,False,False
         self.first_error,self._sealed,self.result = None,None,None
+        self.identity=dict(owner_object_id=id(owner),generation=generation,worker_object_id=id(worker),
+            model_object_id=id(self.model),module_object_id=id(module),impl_object_id=id(self.impl),
+            pid=self.thread[0],python_thread_ident=self.thread[1],native_tid=self.thread[2])
         self.before = self._snapshot(owner,generation)
 
     def _identity(self,owner,generation):
@@ -149,7 +152,7 @@ class LogicalPagedInput:
             actual_original_calls=self.calls,complete=self.complete,inflight=self.inflight,
             closed=self.closed,first_error=self.first_error,source_bound=True,
             full_input_arrays_preserved=False,operator_input_repacked=False,
-            simulation=self.cpu,qualification_granted=False,evidence=self._sealed))
+            simulation=self.cpu,qualification_granted=False,identity=self.identity,evidence=self._sealed))
 
     def release(self,*,owner,generation):
         require(owner is self.owner and type(generation) is int and generation==self.generation
