@@ -29,8 +29,19 @@ recovery sequences and export closure:17 passed, with one Windows symlink
 permission skip. The independent reviewer ran17 focused contracts:16 passed
 with the same platform skip. The implementation agent then reran the complete
 corrected60-request/189-RPC protocol once: PASS in308.331 seconds, zero skips.
-These overlapping counts are not added together. Linux must run the symlink
-negative case before a production normal experiment.
+These overlapping counts are not added together. Those Windows runs did not
+cover the Linux symlink-negative gate.
+
+Frozen source112 (`a243aeb04b2462488905aa47b1a3673941afa13f`) subsequently
+completed the selected129 contracts in the real aarch64 production image:
+129 passed, zero skipped,1369.648 seconds. This includes the corrected complete
+60-request/189-RPC protocol, Linux symlink rejection, artifact limits, recovery,
+normal-reader, resource and export contracts. The container had no NPU devices.
+Its source-manifest SHA is
+`cd135f6a27d735b9705cabcfd9784f7868c50c91f97d9c4eb3bfcf97685ee5eb`;
+the complete CPU log SHA is
+`ba83c35ae6d963fce97038350fee1b17ce0fd51adc1a2eec6ca8b0b0a834a096`.
+This closes the Linux CPU gate, not any device qualification.
 
 The earlier resource fix also remains: actual log growth increases reserved
 parse memory; resource checks run before every F request and again before
@@ -44,6 +55,13 @@ final frozen package, complete a fresh stock/private normal pair, independently
 reconcile435 full payload pairs and140 target pairs, and pass measured resource
 gates before any F. C3 and E5 remain separate and unqualified. The strict
 overall totals remain C2 9/17 and C3 8/17 in their already accepted scopes.
+
+Further independent review found an additional public-RPC cost gap. Actual
+normal-phase measurements do not bound repeated complete-history copying and
+final persistence by the public client. All group F remains held until a
+measured/enforced repair covers that path and its recovery reserve; see the
+[cost review](ATTENTION33_GROUP_RPC_COST_REVIEW.md). The129-test pass does not
+override this separate admission requirement.
 
 See [preparation and limits](../../docs/worker_core_v1/attention33_group_c2_preparation.md).
 Publication contains source, tests and summaries only, without new raw
