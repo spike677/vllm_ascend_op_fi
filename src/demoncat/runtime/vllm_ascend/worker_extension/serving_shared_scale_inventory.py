@@ -63,6 +63,7 @@ class SharedScaleInventorySession(QuantServingSession):
         self.capture_started = True
 
     def pre(self, module, args, kwargs):
+        import torch
         super().pre(module, args, kwargs)
         self.norm_evidence = None
         self.active['phase'] = 'inventory_' + str(len(self.rows) + 1)
@@ -76,10 +77,12 @@ class SharedScaleInventorySession(QuantServingSession):
             self.prepare_source_rows()
             self.row_observer.begin(self.active['decode']['request_ids'][0])
             self.start_source_rows()
-            for _, owner in self.model.named_modules():
+            for path, owner in self.model.named_modules():
                 for name, tensor in owner._parameters.items():
                     if tensor is not None and not tensor.requires_grad:
                         self.row_observer.register_broadcast_parameter(owner, name, tensor, kind='_parameters')
+                    elif tensor is not None and not torch.is_grad_enabled():
+                        self.row_observer.register_inference_broadcast_parameter(self.model, path, owner, name, tensor)
 
     def prepare_source_rows(self):
         """Optional early-producer observer handoff; legacy observation is unchanged."""

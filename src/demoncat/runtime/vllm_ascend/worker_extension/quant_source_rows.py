@@ -414,8 +414,10 @@ class SourceBoundRows:
                 and owner.forward_type is None, 'ACTUAL_TP1_ORIGIN_EMBEDDING_ONLY')
             weight = owner.weight
             record = self.graph.parameters.get(id(weight))
+            context = self.graph._inference_parameter_context(record, weight) if record is not None else None
             require(record is not None and record['owner']() is owner and record['tensor']() is weight
                 and record['name'] == 'weight' and owner._parameters.get('weight') is weight
+                and (context is None or context['current'])
                 and metadata(weight) == record['metadata'] and weight.ndim == 2
                 and self.graph.epochs.get(self.graph.storage_key(record['metadata']), 0) == record['write_epoch'],
                 'ACTUAL_CURRENT_EMBEDDING_PARAMETER_REQUIRED')
@@ -509,6 +511,7 @@ class SourceBoundRows:
                 record.update(input=metadata(expected), output=metadata(result), returned_same_object=result is expected)
             elif role == 'embedding_origin':
                 events = capture['operators']
+                context = self.graph._inference_parameter_context(capture['weight_record'], capture['weight'])
                 names = [item['canonical_operator'] for item in events]
                 expected = ['aten.embedding.default', 'vllm.maybe_pad_and_reduce.default']
                 require(names in (expected, ['aten.to.dtype'] + expected)
@@ -516,6 +519,7 @@ class SourceBoundRows:
                     and metadata(self.input_ids) == self.input_ids_metadata
                     and self.graph.epochs.get(self.graph.storage_key(self.input_ids_metadata), 0) == 0
                     and owner.weight is capture['weight'] and metadata(owner.weight) == capture['weight_record']['metadata']
+                    and (context is None or context['current'])
                     and self.graph.epochs.get(self.graph.storage_key(capture['weight_record']['metadata']), 0)
                         == capture['weight_record']['write_epoch']
                     and owner.comm_group is group and owner.tp_size == group.world_size == 1
@@ -537,6 +541,9 @@ class SourceBoundRows:
                     model_module_object_id=id(owner), input_ids=metadata(self.input_ids), weight=metadata(owner.weight),
                     source_boundary=row['sequence'], source_sha256=row['source_sha256'],
                     actual_operators=events, source_returns=returns, simulation=self.simulation)
+                if context is not None:
+                    evidence.update(weight_inference_registration=capture['weight_record']['inference_registration'],
+                        weight_inference_context=context)
                 self.graph.seed(result, evidence, operator='ACTUAL_SCHEDULER_IDS_TO_TP1_EMBEDDING')
                 row['accepted'].append(self.graph._lookup(result)['node']['node_id'])
                 row['embedding_producer'] = snapshot(evidence)
@@ -596,6 +603,10 @@ class SourceBoundRows:
                 owner_model_path=self.model_paths.get(id(owner)), parameter_name=record['name'], kind=record['kind'],
                 recorded_metadata=record['metadata'], recorded_write_epoch=record['write_epoch'],
                 metadata_changed_fields=[key for key in actual if actual[key] != record['metadata'].get(key)])
+            context = self.graph._inference_parameter_context(record, tensor)
+            if context is not None:
+                checks['inference_context_current'] = context['current']
+                result.update(inference_registration=record['inference_registration'], inference_context=context)
         result.update(checks=checks, broadcast_proven=all(checks.values()),
             failures=[name for name, ok in checks.items() if not ok])
         return snapshot(result)

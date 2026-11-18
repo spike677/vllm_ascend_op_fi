@@ -170,13 +170,73 @@ class RequestRowProvenance(TorchDispatchMode):
         self.parameters[id(tensor)] = dict(tensor=weakref.ref(tensor), owner=weakref.ref(module), name=name, kind=kind,
             metadata=meta, write_epoch=self.epochs.get(self.storage_key(meta), 0))
 
+    def register_inference_broadcast_parameter(self, model, module_path, module, name, tensor):
+        """Observe a real inference weight without changing its autograd flag.
+
+        requires_grad describes a Parameter's training capability, not whether
+        this thread is currently recording gradients. This separate route is
+        only valid in the same checked eval/no-grad forward and model path.
+        """
+        require(self.active and not self.ending and threading.get_ident() == self.thread
+            and not torch.is_grad_enabled() and isinstance(model, torch.nn.Module)
+            and isinstance(module, torch.nn.Module) and isinstance(module_path, str)
+            and isinstance(tensor, torch.nn.Parameter) and tensor.requires_grad
+            and module._parameters.get(name) is tensor,
+            'CURRENT_INFERENCE_MODEL_PARAMETER_REQUIRED')
+        require(self.total == 0 and not self.call_stack,
+            'INFERENCE_PARAMETER_REGISTRATION_BEFORE_OBSERVED_CALLS_REQUIRED')
+        current, chain = model, [(None, weakref.ref(model))]
+        for part in module_path.split('.') if module_path else ():
+            require(isinstance(current, torch.nn.Module) and part in current._modules,
+                'ACTUAL_INFERENCE_PARAMETER_MODULE_PATH_REQUIRED')
+            current = current._modules[part]
+            require(isinstance(current, torch.nn.Module), 'ACTUAL_INFERENCE_PARAMETER_MODULE_PATH_REQUIRED')
+            chain.append((part, weakref.ref(current)))
+        require(current is module and all(ref().training is False for _, ref in chain),
+            'EVAL_INFERENCE_PARAMETER_OWNER_PATH_REQUIRED')
+        meta = metadata(tensor)
+        registration = dict(model_object_id=id(model), owner_object_id=id(module), module_path=module_path,
+            forward_id=self.forward_id, thread=self.thread, grad_enabled=torch.is_grad_enabled(),
+            inference_mode_enabled=torch.is_inference_mode_enabled(), requires_grad=bool(tensor.requires_grad),
+            owner_path_object_ids=[id(ref()) for _, ref in chain])
+        self.parameters[id(tensor)] = dict(tensor=weakref.ref(tensor), owner=weakref.ref(module), name=name,
+            kind='_parameters', metadata=meta, write_epoch=self.epochs.get(self.storage_key(meta), 0),
+            inference_registration=registration, model_path_chain=chain)
+
+    def _inference_parameter_context(self, record, tensor):
+        registration = record.get('inference_registration')
+        if registration is None:
+            return None
+        chain = record['model_path_chain']
+        root = chain[0][1]()
+        current, same_path = root, root is not None
+        for part, expected in chain[1:]:
+            current = current._modules.get(part) if isinstance(current, torch.nn.Module) else None
+            same_path = same_path and current is not None and current is expected()
+        actual = dict(thread=threading.get_ident(), forward_id=self.forward_id,
+            grad_enabled=torch.is_grad_enabled(), inference_mode_enabled=torch.is_inference_mode_enabled(),
+            requires_grad=bool(tensor.requires_grad), model_object_id=id(root) if root is not None else None,
+            owner_object_id=id(current) if current is not None else None)
+        checks = dict(observer_active=self.active and not self.ending,
+            same_thread=actual['thread'] == registration['thread'] == self.thread,
+            same_forward=actual['forward_id'] == registration['forward_id'],
+            gradients_disabled=actual['grad_enabled'] is False,
+            same_inference_mode=actual['inference_mode_enabled'] is registration['inference_mode_enabled'],
+            same_requires_grad_flag=actual['requires_grad'] is registration['requires_grad'],
+            same_model_owner_path=bool(same_path and current is record['owner']()),
+            owner_path_eval=all(ref() is not None and ref().training is False for _, ref in chain))
+        return dict(current=all(checks.values()), actual=actual, checks=checks,
+            failures=[name for name, ok in checks.items() if not ok])
+
     def _broadcast_parameter(self, tensor, output_shape):
         record = self.parameters.get(id(tensor))
         if record is None or record['tensor']() is not tensor or record['owner']() is None:
             return False
         meta = metadata(tensor)
+        context = self._inference_parameter_context(record, tensor)
         return (getattr(record['owner'](), record['kind']).get(record['name']) is tensor
             and meta == record['metadata'] and self.epochs.get(self.storage_key(meta), 0) == record['write_epoch']
+            and (context is None or context['current'])
             and (tensor.ndim < len(output_shape) or tensor.ndim == len(output_shape) and tensor.shape[0] == 1))
 
     def _query(self, tensor, *, visible):
@@ -441,7 +501,10 @@ class RequestRowProvenance(TorchDispatchMode):
             if parents is not None and not self.errors:
                 event['broadcast_parameters'] = [dict(module_object_identity=id(self.parameters[id(t)]['owner']()),
                     parameter_name=self.parameters[id(t)]['name'], metadata=self.parameters[id(t)]['metadata'],
-                    write_epoch=self.parameters[id(t)]['write_epoch']) for t in tensor_values((args, kwargs))
+                    write_epoch=self.parameters[id(t)]['write_epoch'], **(dict(
+                        inference_registration=self.parameters[id(t)]['inference_registration'],
+                        inference_context=self._inference_parameter_context(self.parameters[id(t)], t))
+                        if 'inference_registration' in self.parameters[id(t)] else {})) for t in tensor_values((args, kwargs))
                     if self._broadcast_parameter(t, tuple(outputs[0].shape))]
                 for tensor in outputs:
                     self._bind(tensor, rows=parents[0]['rows'], parents=[p['node']['node_id'] for p in parents],
