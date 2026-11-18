@@ -15,7 +15,7 @@ std::vector<Event> events;
 std::vector<dcat26_fia_typed::Record> typed;
 std::set<Tensor*> owned;
 uint64_t getter_calls{},fail_getter_at{},throw_getter_at{},created{},destroyed{},writer_calls{},consumer_calls{};
-bool throw_admission{},bad_before_call{};
+bool throw_admission{},bad_before_call{},prepared_registration{};
 FiaSnapshotsV3 completed_snapshot{};
 Tensor* tensor(const aclTensor* value){return reinterpret_cast<Tensor*>(const_cast<aclTensor*>(value));}
 aclError device(int32_t* value){*value=0;return 0;}
@@ -47,11 +47,16 @@ int state(TraceState* value){*value=TraceState{};value->flags=7;value->capacity=
 int read(uint64_t index,Event* out){if(index>=events.size())return 1;*out=events[index];return 0;}
 int typed_state(dcat26_fia_typed::State* out) {
     *out=dcat26_fia_typed::State{};out->capacity=32768;out->total=out->stored=typed.size();
+    for(const auto& row:typed) {
+        if(row.phase==dcat26_fia_typed::OriginalBeforeGws)++out->before_gws;
+        if(row.phase==dcat26_fia_typed::OriginalAndEffectiveAfterGws)++out->after_gws;
+        if(row.phase==dcat26_fia_typed::OwnedEffectiveBeforeExecute)++out->before_execute;
+    }
     if(!typed.empty()) {
         const auto phase=typed.back().phase;
         out->preparing=phase==dcat26_fia_typed::OriginalBeforeGws;
-        out->prepared=phase!=dcat26_fia_typed::OriginalBeforeGws;
-        out->executing=phase==dcat26_fia_typed::OwnedEffectiveBeforeExecute;
+        out->prepared=prepared_registration;
+        out->executing=prepared_registration && phase==dcat26_fia_typed::OwnedEffectiveBeforeExecute;
     }
     return 0;
 }
@@ -109,6 +114,7 @@ struct Case {
         auto row=typed.front();row.phase=dcat26_fia_typed::OriginalAndEffectiveAfterGws;row.event_sequence=events.back().sequence;
         row.executor=reinterpret_cast<uint64_t>(executor);row.original=capture_fia_descriptor(reinterpret_cast<const aclTensor*>(&original));
         row.effective=capture_fia_descriptor(effective);append(row);
+        prepared_registration=true;
     }
     void complete_gws(){fault26_fia_writer_gws_complete(reinterpret_cast<const aclTensor*>(&original),effective,executor,0);}
     bool start() {
@@ -118,6 +124,7 @@ struct Case {
     void execute() {
         assert(start());++writer_calls;std::memset(tensor(effective)->address,17,32);
         fault26_fia_writer_after_execute(executor,stream,0);
+        prepared_registration=false; // Successful proxy end consumes its independent registration.
     }
     void consumer() {
         auto next=event;next.call=next.producer=event.producer+1;next.executor=789;next.output=reinterpret_cast<uint64_t>(consumed.data());
@@ -163,6 +170,12 @@ void changed_before_execute() {
     Case test;test.prepare();test.gws();test.complete_gws();tensor(test.effective)->offset=1;
     assert(!test.start());test.retain();arrays_zero();
 }
+void gws_binding_failure_keeps_unclassified_executor() {
+    Case test;test.prepare();test.gws();
+    fault26_fia_writer_gws_complete(nullptr,test.effective,test.executor,0);
+    assert(!fia.executor && prepared_registration && !test.start());
+    test.retain();arrays_zero();
+}
 void getter_fail(bool exception) {
     Case test;test.prepare();test.gws();test.complete_gws();
     if(exception)throw_getter_at=getter_calls+2;else fail_getter_at=getter_calls+2;
@@ -192,8 +205,9 @@ void run(void (*test)()) {
 int main() {
     using namespace typed_fixture;
     run(success);run(changed_before_execute);run(callback_throw);run(wrong_call);run(nd_and_qmm_do_not_gain_ncl);
+    run(gws_binding_failure_keeps_unclassified_executor);
     run([]{getter_fail(false);});run([]{getter_fail(true);});
     run([]{changed_after(0);});run([]{changed_after(1);});run([]{changed_after(2);});run([]{changed_after(3);});
     run([]{changed_after(4);});run([]{changed_after(5);});run([]{changed_after(6);});run([]{changed_after(7);});
-    std::cout<<"{\"status\":\"PASS_CPU_TYPED_FIA_RUNTIME\",\"actual_npu_calls\":0,\"cases\":15}\n";
+    std::cout<<"{\"status\":\"PASS_CPU_TYPED_FIA_RUNTIME\",\"actual_npu_calls\":0,\"cases\":16}\n";
 }

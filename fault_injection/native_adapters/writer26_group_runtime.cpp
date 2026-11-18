@@ -176,6 +176,14 @@ bool typed_tail(uint32_t phase,dcat26_fia_typed::Record& row) {
         && api.fia_typed_read(state.stored-1,&row)==0 && row.sequence==state.total
         && dcat26_fia_typed::path(row) && row.phase==phase && row.thread==tid();
 }
+bool typed_quiescent() {
+    dcat26_fia_typed::State state{};
+    return !fia_abi_exceptions.load() && api.fia_typed_state && api.fia_typed_state(&state)==0
+        && state.version==2 && state.size==sizeof(state) && state.capacity==32768
+        && state.total==state.stored && state.total==state.before_gws+state.after_gws+state.before_execute
+        && state.before_gws==state.after_gws && !state.overflow && !state.errors && !state.exceptions
+        && !state.preparing && !state.prepared && !state.executing;
+}
 int typed_abi_failure() noexcept {
     ++fia_abi_exceptions;
     try {std::lock_guard<std::recursive_mutex> lock(mutex);reject(Identity);}catch(...){}
@@ -365,13 +373,13 @@ extern "C" int dcat26_group_stop_v2(const Config* config) {
 extern "C" int dcat26_group_drain_v2(const Config* config) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(config) || runtime.callback_active || runtime.completion_active)return Identity;
-    if(fia.typed && (fia_abi_exceptions.load() || (fia.executor && !fia.native_return_success)))return StateError;
+    if(fia.typed && (!typed_quiescent() || (fia.executor && !fia.native_return_success)))return StateError;
     return engine.drain(*config);
 }
 extern "C" int dcat26_group_restore_v2(const Config* config,uint64_t token) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!same_owner(config) || runtime.callback_active || runtime.completion_active)return Identity;
-    if(fia.typed && (fia_abi_exceptions.load() || (fia.executor && !fia.native_return_success)))return StateError;
+    if(fia.typed && (!typed_quiescent() || (fia.executor && !fia.native_return_success)))return StateError;
     const int status=engine.restore(*config,token);
     if(status)return status;
     return destroy_descriptor()?Ok:Free;
@@ -495,7 +503,17 @@ extern "C" bool fault26_fia_writer_before_execute(aclOpExecutor* executor,aclrtS
     if(!admit || engine.mechanism()!=Fia || !fia.active)return true;
     // A new overlapping/nonowned executor still executes its original once.
     // It remains in the independent denominator and invalidates this scope.
-    if(executor!=fia.executor){reject(Busy);return true;}
+    if(executor!=fia.executor) {
+        if(fia.typed) {
+            Event actual{};
+            // A failed GWS binding may not have saved its executor. The real
+            // selected call must never execute a substituted destination then.
+            if(!tail(dcat26_inventory::FiaEnter,actual) || actual.call==fia.call.independent_call) {
+                reject(Identity);return false;
+            }
+        }
+        reject(Busy);return true;
+    }
     Event event{};
     if(fia.typed) {
         if(!owned_thread() || !fia.gws_done || !fia.owned || fia.effective!=fia.owned

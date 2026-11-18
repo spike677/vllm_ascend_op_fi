@@ -24,7 +24,7 @@ class GroupBuildTests(unittest.TestCase):
                 build.require_typed_trace(exports.replace(' T ' + name, ' U ' + name))
         abi = dict(version=3, inventory_version=2, descriptor=280, record=656, state=104, lease=912, snapshots=2048)
         control = dict(fia_typed_abi=abi)
-        contract = dict(status='PASS_CPU_TYPED_FIA_RUNTIME', actual_npu_calls=0, cases=15)
+        contract = dict(status='PASS_CPU_TYPED_FIA_RUNTIME', actual_npu_calls=0, cases=16)
         result = build.typed_profile(control, contract)
         self.assertEqual(result['native_format'], 47)
         self.assertFalse(result['old_reference_reusable'])
@@ -33,7 +33,7 @@ class GroupBuildTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(RuntimeError, 'ACTUAL_SDK'):
                 build.typed_profile(dict(fia_typed_abi={**abi, name: abi[name] + 1}), contract)
         with self.assertRaisesRegex(RuntimeError, 'ACTUAL_SDK'):
-            build.typed_profile(control, {**contract, 'cases': 14})
+            build.typed_profile(control, {**contract, 'cases': 15})
 
     def test_old_parent_without_ownership_evidence_is_refused(self):
         with tempfile.TemporaryDirectory() as folder:
