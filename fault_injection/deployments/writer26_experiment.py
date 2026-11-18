@@ -36,6 +36,24 @@ def full_storage(tensor, address, size):
         and tensor.numel() * tensor.element_size() == size)
 
 
+def hold_storage(tensor):
+    """Own the actual Tensor and allocation, not a reusable pointer witness."""
+    storage = tensor.untyped_storage()
+    return dict(tensor=tensor, storage=storage, object_identity=id(tensor), storage_identity=storage._cdata,
+        shape=tuple(tensor.shape), stride=tuple(tensor.stride()), dtype=tensor.dtype, device=tensor.device)
+
+
+def held_storage(record, address, size):
+    if record is None:
+        return False
+    tensor, storage = record['tensor'], record['storage']
+    return (id(tensor) == record['object_identity'] and storage._cdata == record['storage_identity']
+        and tensor.untyped_storage()._cdata == record['storage_identity']
+        and storage.data_ptr() == address and storage.nbytes() == size and full_storage(tensor, address, size)
+        and tuple(tensor.shape) == record['shape'] and tuple(tensor.stride()) == record['stride']
+        and tensor.dtype == record['dtype'] and tensor.device == record['device'])
+
+
 def actual_method(module):
     from demoncat.runtime.vllm_ascend.worker_extension.call_binding import original_before_collector
     function = original_before_collector(module).__func__
@@ -92,6 +110,8 @@ class Writer26Experiment(WriterLifetimeInventory):
         self.plan = [dict(phase='inventory_1', mode=None, target=None), dict(phase='inventory_2', mode=None, target=None)]
         self.targets, self.target_refs, self.output_refs = {}, {}, {}
         self.pending, self.consumer_inputs = {}, None
+        self.pending_lifetimes = {}
+        self.failure_events, self.last_native_receipt = [], None
         self.outcomes = []
         self.candidate_inventory = []
         self.blockers = []
@@ -166,7 +186,8 @@ class Writer26Experiment(WriterLifetimeInventory):
             native_before=self.reader.state(), callback_start=len(self.callbacks), producer_start=len(self.producers))
         self.requests.add(request_id)
         self.stack = [self.model]
-        require(not self.output_refs and not self.pending, 'WRITER_LIFETIME_ESCAPED_ACTUAL_REQUEST')
+        require(not self.output_refs and not self.pending and not self.pending_lifetimes,
+                'WRITER_LIFETIME_ESCAPED_ACTUAL_REQUEST')
         if self.phase == 'inventory_1':
             self.baseline_input = input_sha256
         require(input_sha256 == self.baseline_input, 'ACTUAL_FRESH_WORKLOAD_CHANGED')
@@ -183,6 +204,28 @@ class Writer26Experiment(WriterLifetimeInventory):
 
     def _observe_callback(self, row, call):
         pass
+
+    def _record_failure(self, reason, source, *, token=None):
+        message = str(reason)
+        self.failure_events.append(dict(source=source, reason=message, phase=self.phase, token=token))
+        if self.failure is None:
+            self.failure = message
+
+    def fail(self, reason):
+        self._record_failure(reason, 'request_unwind')
+        for token, outcome in self.pending.items():
+            try:
+                receipt = self.runtime.receipt(token)
+                outcome['last_native_receipt'] = receipt
+                self.last_native_receipt = receipt
+            except BaseException as error:
+                outcome['native_receipt_read_failure'] = str(error)
+        if self.current is not None:
+            self.current.update(failure_events=list(self.failure_events), pending_outcomes=list(self.pending.values()),
+                                last_native_receipt=self.last_native_receipt)
+        # Always-call root/logits cleanup must not replace the earlier Native
+        # receipt failure with the secondary missing-model-output exception.
+        super().fail(self.failure)
 
     def _requested_mode(self, row):
         return self.entry['mode'], self.entry['target']
@@ -245,6 +288,10 @@ class Writer26Experiment(WriterLifetimeInventory):
                     same_residual_storage=True, writer_retained_through_actual_consumer=True)
             if call['token'] in self.pending:
                 require(valid, 'QUALIFIED_WRITER_OR_RESIDUAL_PUBLIC_LIFETIME_CHANGED_BEFORE_CONSUMER')
+                owned = self.pending_lifetimes[call['token']]
+                require(held_storage(owned['residual'], call['residual'], call['residual_bytes']),
+                        'PENDING_PRODUCER_STORAGE_OWNER_CHANGED_BEFORE_CONSUMER')
+                owned.update(consumer=hold_storage(consumed[0]), writer=hold_storage(writer))
             live.append(row)
         self.consumer_inputs = inputs  # Strong references through the actual native callback.
         try:
@@ -270,8 +317,12 @@ class Writer26Experiment(WriterLifetimeInventory):
                     self._outcome_complete(outcome, row)
                     self.outcomes.append(outcome)
                     del self.pending[call['token']]
+                    del self.pending_lifetimes[call['token']]
                 self.output_refs.pop(call['token'], None)
             return result
+        except BaseException as error:
+            self._record_failure(error, 'public_consumer')
+            raise
         finally:
             self.consumer_inputs = None
 
@@ -352,6 +403,8 @@ class Writer26Experiment(WriterLifetimeInventory):
                 _, residual_sha, _ = complete_tensor(retained['tensor'])
                 self.pending[call.token] = dict(mode=mode, target=selected, native_call=packet(call),
                     residual_before_sha256=residual_sha, request_id=self.current['request_id'])
+                self.pending_lifetimes[call.token] = dict(residual=hold_storage(retained['tensor']),
+                    producer_sequence=call.producer_sequence, request_id=self.current['request_id'])
                 row['original_continuations'] = 1
                 self.pending[call.token]['lease'] = self.runtime.execute(call, mode, selected, row.get('allocation'))
                 row['claimed'] = 1
@@ -361,25 +414,28 @@ class Writer26Experiment(WriterLifetimeInventory):
             if (self.current is not None and self.entry['mode'] is not None
                     and (row.get('target_key') == self.entry['target'] or
                          self.entry['target'] == '*' and row.get('target_key') in self.targets)):
-                self.failure = str(error)
+                self._record_failure(error, 'native_admission', token=call.token)
         finally:
             if not observed and row.get('independent_event') is not None:
                 try:
                     self._observe_callback(row, call)
                 except BaseException as error:
-                    self.failure = str(error)
+                    self._record_failure(error, 'independent_observer', token=call.token)
             if not row['original_continuations']:
                 row['original_continuations'] = 1
                 try:
                     self.runtime.passthrough(call)
                 except BaseException as error:
-                    self.failure = str(error)
+                    self._record_failure(error, 'native_passthrough', token=call.token)
         return 0 if self.failure is None else 1
 
     def _completed(self, pointer):
+        receipt = None
         try:
             receipt = packet(pointer.contents)
+            self.last_native_receipt = receipt
             outcome = self.pending[receipt['token']]
+            outcome['observed_consumer_receipt'] = receipt  # Preserve failed receipts before any validation.
             call = outcome['native_call']
             require(self.consumer_inputs is not None and receipt['target'] == list(key_words(outcome['target']))
                 and receipt['owner_hi'] == self.runtime.config.owner_hi and receipt['owner_lo'] == self.runtime.config.owner_lo
@@ -404,7 +460,7 @@ class Writer26Experiment(WriterLifetimeInventory):
             require(outcome['released_receipt']['released'] == 1, 'ACTUAL_NATIVE_WRITER_LEASE_NOT_RELEASED')
             return 0
         except BaseException as error:
-            self.failure = str(error)
+            self._record_failure(error, 'native_completion', token=None if receipt is None else receipt['token'])
             return 1
 
     def _freeze(self):
@@ -502,16 +558,21 @@ class Writer26Experiment(WriterLifetimeInventory):
         self.runtime.drain()
         for token, outcome in list(self.pending.items()):
             call = outcome['native_call']
-            writer = self.output_refs.get(token)
-            residual = self.retained.get(call['residual'])
-            require(writer is not None and residual is not None
-                and full_storage(writer, call['output'], call['output_bytes'])
-                and full_storage(residual['tensor'], call['residual'], call['residual_bytes']),
+            owned = self.pending_lifetimes.get(token)
+            writer = owned.get('writer') if owned is not None else None
+            # The inventory advances its current producer after AddRms returns.
+            # The selected lease independently holds the consumed allocation.
+            require(owned is not None and owned['producer_sequence'] == call['producer_sequence']
+                and owned['request_id'] == outcome['request_id']
+                and held_storage(owned['residual'], call['residual'], call['residual_bytes'])
+                and held_storage(owned.get('consumer'), call['residual'], call['residual_bytes'])
+                and held_storage(writer, call['output'], call['output_bytes']),
                 'PENDING_OFF_POINTER_LIVENESS_UNVERIFIED_DO_NOT_WRITE')
             self.runtime.restore(token)
             outcome['recovery_receipt'] = self.runtime.acknowledge(token)
             self.outcomes.append(outcome)
             del self.pending[token]
+            del self.pending_lifetimes[token]
 
     def close(self):
         self._thread()
@@ -535,11 +596,15 @@ class Writer26Experiment(WriterLifetimeInventory):
             self.installed = False
         self.output_refs.clear()
         self.retained.clear()
+        # Native close verified zero pending/executing/resources above. Any
+        # remaining diagnostic outcome owns no Native memory or restore right.
+        self.pending_lifetimes.clear()
         self.save()
 
     def report(self):
-        return dict(schema='demoncat.writer26.candidate_experiment.v2', mechanism=self.runtime.mechanism,
-            stage=self.stage, phase=self.phase, failure=self.failure, blockers=self.blockers,
+        value = dict(schema='demoncat.writer26.candidate_experiment.v2', mechanism=self.runtime.mechanism,
+            stage=self.stage, phase=self.phase, failure=self.failure, first_failure=self.failure,
+            failure_events=self.failure_events, last_native_receipt=self.last_native_receipt, blockers=self.blockers,
             scope='SINGLE_FRESH_PREFILL_ONE_CURRENT_TARGET_PER_REQUEST_NOT_DECODE_NOT_C2',
             lifetime=self.lifetime, build=self.runtime.build_identity, rows=self.rows, candidates=self.candidate_inventory,
             metadata_arrays_initial=self.metadata_initial, metadata_arrays_latest=self.metadata.latest,
@@ -548,6 +613,7 @@ class Writer26Experiment(WriterLifetimeInventory):
             outcomes=self.outcomes, native_state=self.runtime.state(), owned_hooks=len(self.handles),
             pending_output_tensors=len(self.output_refs), pending_residual_tensors=len(self.retained),
             pending_per_call_leases=list(self.pending),
+            pending_outcomes=list(self.pending.values()), pending_public_storage_owners=len(self.pending_lifetimes),
             public_output_observer=self.public_output.report() if self.public_output is not None else None,
             owned_public_api_wrappers=len(self.public_output.owned) if self.public_output is not None else 0,
             healthy_repeated=len(self.rows) >= 2 and self.rows[0]['output_sha256'] == self.rows[1]['output_sha256'],
@@ -555,3 +621,4 @@ class Writer26Experiment(WriterLifetimeInventory):
             native_qualified_targets=0, c1=False, c2=False, c3=False,
             remaining_gates=['REVIEW_COMPLETE_VALID_NATURAL_INVENTORY', 'COMMON_ALL_ELIGIBLE_SESSION_NATIVE_DISPATCH',
                             'SAME_WORKER_LIVE_C2_BEFORE_EVERY_MATCH'])
+        return json.loads(json.dumps(value, allow_nan=False))
