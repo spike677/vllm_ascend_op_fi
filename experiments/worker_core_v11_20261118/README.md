@@ -15,6 +15,11 @@ transition:29 isolated F/OFF pairs, then58 every-match hits in two fresh request
 The independent reader reconciles81,345 checks with zero issues; see the
 [source89 acceptance and limits](NATIVE26_SOURCE89_ACCEPTANCE.md).
 39's cumulative C3 genuinely failed and is not accepted.
+The one bounded source101 diagnostic completed24/28 isolated targets before
+the1200-second session budget stopped admission; it did not enter C3 or
+reproduce Native apply4. Independent original-file review confirms recovery
+and preserves the missing counterfactual records. This closes that diagnostic
+as unresolved; see [the actual partial result](OUTPUT39_SOURCE101_PARTIAL_REVIEW.md).
 E5 remains separate. See the [26 review](AGENT7_NATIVE26_SOURCE82_ISOLATED_REVIEW.md)
 and [39 original-file summary](output39_source84_independent_summary.json).
 
@@ -27,7 +32,10 @@ The source-bound reader and root rerun produce the identical summary hash.
 
 The independent source94 Fault33 S2 candidate has passed the real pinned
 SplitCore22,528-case CPU geometry matrix. Its new host/kernel/package build has completed successfully without a device.
-Its own normal bridge and F/OFF remain separate device acceptance work; no F gate is opened.
+Its source102 same-package normal bridge now passes435 exact complete payload
+pairs. The following public single-site attempt failed during prepare with
+ContextRefused, before any protocol request or F. Its failed cleanup receipt
+is retained; entry and uncertain-prepare cleanup need repair before a new run.
 The original source88 normal package and evidence remain unchanged.
 
 Source99 completed the public Worker18 protocol and three native statistics
@@ -38,8 +46,11 @@ window repeat control fails with60 changes, so E5 is not granted. See the
 
 The [Native quant container audit](QUANT_NATIVE_ROUTE_GATE.md) confirms that
 public8.5.1 container getters expose sizes, not members. The GWS-only proxy
-proposal is closed; a separate bounded creator/destroy diagnostic is in build
-validation. No new request-row or C2/C3 qualification follows from that code.
+proposal is closed. A source102-runtime/source104-SDK zero-fault diagnostic
+observed1241 actual container API calls in one healthy B8 first-decode request,
+with104 source windows, exact token/text health recovery and no cleanup errors.
+Independent owner/member review is in progress. Observation alone grants no
+new request-row or C2/C3 qualification.
 
 ## Ownership and execution
 
