@@ -18,17 +18,21 @@ pass the required zero-error receipt check. This code path is consistent with
 the saved state; the old artifact did not preserve the first failing receipt,
 so its exact initial error cannot be reconstructed from the final state alone.
 
-The narrow change permits observation only after the selected writer finished
+The narrow QMM-only change permits observation only after the selected writer finished
 and while its consumer remains pending, with no Native error or execution in
 flight. An unselected call passes unchanged. A second selected lease still
 fails `Engine::prepare`, and an actually executing overlapping writer remains
 refused. Writer output, effect, consumer identity and restore checks are
 unchanged. No candidate is removed from the independent trace.
+FIA retains its prior pending-call refusal: its separate GWS/executor record
+does not yet support an intervening unselected FIA call. This QMM repair does
+not claim or grant that support.
 
 `test_writer26_pending_runtime.cpp` includes the actual shim and supplies
 explicit host-memory SDK doubles. It tests successful pass-through between
-writer and consumer, refusal of a second selected lease, and refusal of an
-actually executing overlap. The normal builder compiles and executes this
+writer and consumer, refusal of a second selected lease, refusal of an
+actually executing overlap, and unchanged FIA pending-call refusal with its
+original executor record retained. The normal builder compiles and executes this
 test with the installed CANN SDK and retains `pending-runtime-cpu.json` in its
 build receipt. This test is not a CANN arithmetic or NPU acceptance test.
 

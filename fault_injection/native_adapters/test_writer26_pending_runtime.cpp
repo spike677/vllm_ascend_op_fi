@@ -47,9 +47,9 @@ struct Case {
     Event event{};
     Fault26QmmUnderflowContext context{};
     Fault26QmmUnderflowDecision selected{};
-    explicit Case(uint64_t identity) {
+    explicit Case(uint64_t identity,uint32_t mechanism=Qmm) {
         events.clear();observed.clear();completed.clear();select_second=false;
-        owner=Config{};owner.mechanism=Qmm;owner.owner_hi=identity;owner.owner_lo=5;
+        owner=Config{};owner.mechanism=mechanism;owner.owner_hi=identity;owner.owner_lo=5;
         owner.generation=1;owner.thread=tid();owner.max_targets=4;owner.max_calls=16;
         owner.max_host_bytes=65536;owner.max_device_bytes=8192;
         assert(engine.open(owner)==Ok);runtime=RuntimeState{};admit=observer;complete=completion;
@@ -126,5 +126,21 @@ int main() {
     {Case test(103);test.start_writer();test.other_writer();
      assert(observed.size()==1 && engine.state().executing && engine.state().error==Busy);
      engine.failed_writer_completion(test.selected.token,123,0,1,Busy);test.close();} // True overlap remains refused.
-    std::cout<<"{\"status\":\"PASS_CPU_PENDING_CONSUMER_RUNTIME\",\"actual_npu_calls\":0,\"cases\":3}\n";
+    {Case test(104,Fia);auto first=test.event;
+     first.flags=3;first.cache=first.registration=0;first.output_bytes=64;first.shape[1]=first.strides[0]=8;
+     const auto call=make_call(first,Fia);
+     Lease lease{};lease.mode=Reference;lease.owner_hi=owner.owner_hi;lease.owner_lo=owner.owner_lo;
+     lease.generation=owner.generation;lease.thread=owner.thread;lease.target={1,2,3,4};lease.expected=call;
+     assert(engine.prepare(call,lease)==Ok);assert(engine.start(call.token,123,456,1)==Ok);
+     std::memset(reinterpret_cast<void*>(call.output),17,call.output_bytes);
+     assert(engine.writer_done(call.token,123,0,1)==Ok);
+     fia.active=fia.gws_done=true;fia.call=call;fia.executor=reinterpret_cast<aclOpExecutor*>(456);
+     auto next=first;next.call=1823;next.output=reinterpret_cast<uint64_t>(test.other.data()+80);
+     append(next,dcat26_inventory::FiaBefore);
+     auto output=reinterpret_cast<const aclTensor*>(next.output);
+     assert(fault26_fia_writer_prepare_output(output)==output);
+     assert(observed.empty() && engine.state().pending && engine.state().error==Busy);
+     assert(fia.active && fia.call.token==call.token && fia.executor==reinterpret_cast<aclOpExecutor*>(456));
+     test.close();assert(!fia.active);} // This QMM repair does not grant FIA interleaving support.
+    std::cout<<"{\"status\":\"PASS_CPU_PENDING_CONSUMER_RUNTIME\",\"actual_npu_calls\":0,\"cases\":4}\n";
 }
