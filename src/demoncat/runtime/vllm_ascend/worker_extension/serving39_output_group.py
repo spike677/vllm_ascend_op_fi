@@ -30,6 +30,10 @@ class WorkerProjectionCoverage(ProjectionCoverage):
         self.native_receipts, self.retained_receipts = [], {}
         self.reviewed_consumers = {}
         self.parameter_consumption = [deepcopy(observation.parameter_consumption) for observation in core.p._observations]
+        self.noncall_discovery = [deepcopy(observation.inventory.report().get('bounded_noncall_proofs', []))
+                                 for observation in core.p._observations]
+        require(len(self.noncall_discovery) == 2 and self.noncall_discovery[0] == self.noncall_discovery[1],
+                'OUTPUT39_ACTUAL_NONCALL_BRANCH_CHANGED')
         require(len(self.parameter_consumption) == 2 and self.parameter_consumption[0] == self.parameter_consumption[1],
                 'OUTPUT39_ACTUAL_BORROWED_PARAMETER_CONSUMPTION_CHANGED')
         for row in core.p._observations[0].inventory.calls:
@@ -37,8 +41,9 @@ class WorkerProjectionCoverage(ProjectionCoverage):
                 self.reviewed_consumers[row.key] = [deepcopy(item['reviewed_consumer'])
                     for item in row.candidate.consumer_observations if item.get('reviewed_consumer')]
         sources = [Path(__file__), Path(__file__).with_name('providers')/'fault39_output_group.py',
-            Path(__file__).with_name('serving39_output.py'), Path(__file__).with_name('providers')/'fault39_output.py',
-            Path(__file__).with_name('gemm_lineage.py'), Path(identities.__file__)]
+            Path(__file__).with_name('serving39_output.py'), Path(__file__).with_name('serving39_output_discovery.py'),
+            Path(__file__).with_name('providers')/'fault39_output.py',
+            Path(__file__).with_name('gemm_lineage.py'), Path(__file__).with_name('call_binding.py'), Path(identities.__file__)]
         from fault_injection.deployments import postwrite_coverage, postwrite, postwrite_boundaries, postwrite_npu_consumers
         from fault_injection.deployments import postwrite_observed, postwrite_inventory, postwrite_structure
         from fault_injection import environment as environment_module
@@ -94,6 +99,14 @@ class WorkerProjectionCoverage(ProjectionCoverage):
         rows = super()._structural_inventory(module_calls)
         head, processor = self.core.session.head, self.core.session.processor
         for row in rows:
+            proofs = [proof for proof in self.noncall_discovery[0]
+                      if proof['child_identity'] == row['object_identity']]
+            if proofs:
+                from .serving39_output_discovery import verify_noncall_binding
+                for proof in proofs:
+                    verify_noncall_binding(self.provider.model, proof)
+                row.update(structural_noncall=True, reason=proofs[0]['reason'],
+                           actual_bounded_noncall=deepcopy(proofs))
             if row['object_identity'] != id(head):
                 continue
             proofs = [item for item in self.parameter_consumption[0]
@@ -133,6 +146,8 @@ class WorkerProjectionCoverage(ProjectionCoverage):
                     self.lossless[row.key]['native_lease_receipt'] = deepcopy(self.provider._last_native_lease_receipt)
 
     def forward_returned(self, observation, output):
+        require(observation.inventory.report().get('bounded_noncall_proofs', []) == self.noncall_discovery[0],
+                'OUTPUT39_ACTUAL_NONCALL_BRANCH_CHANGED')
         require(observation.parameter_consumption == self.parameter_consumption[0],
                 'OUTPUT39_ACTUAL_LOGITS_PARAMETER_CONSUMPTION_CHANGED')
         super().forward_returned(observation, output)

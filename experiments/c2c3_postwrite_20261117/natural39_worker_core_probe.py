@@ -31,7 +31,8 @@ MODULES = tuple(('fault_injection.deployments.'+name, 'fault_injection/deploymen
     ('fault_injection.runtime_discovery', 'fault_injection/runtime_discovery.py')) + tuple(
     ('demoncat.runtime.vllm_ascend.worker_extension.'+name,
      'src/demoncat/runtime/vllm_ascend/worker_extension/'+name.replace('.', '/')+'.py')
-    for name in ('serving39_output', 'providers.fault39_output', 'serving39_output_group', 'providers.fault39_output_group',
+    for name in ('serving39_output', 'serving39_output_discovery', 'providers.fault39_output',
+                 'serving39_output_group', 'providers.fault39_output_group',
                  'serving', 'serving41',
                  'serving_context', 'gemm_lineage', 'call_binding', 'host', 'config', 'runtime', 'identity', 'registry'))
 SOURCES = tuple(path for _, path in MODULES) + (

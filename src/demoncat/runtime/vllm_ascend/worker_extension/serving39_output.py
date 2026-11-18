@@ -133,10 +133,10 @@ class Serving39OutputSession(ServingReplaySession):
             self.root_running = True
             self.provider.begin_actual(args, kwargs)
             if self.provider.native_phase != 'health':
-                from fault_injection.deployments.postwrite_observed import PostwriteObservedForward
+                from .serving39_output_discovery import Output39ObservedForward
                 paths = {obj: name for name, obj in self.model.named_modules()}
                 require(self.processor in paths, 'OUTPUT39_LOGITS_NOT_IN_HELD_MODEL')
-                self.window = PostwriteObservedForward(self.provider.p, self.provider.native_phase,
+                self.window = Output39ObservedForward(self.provider.p, self.provider.native_phase,
                     manual_modules={self.model: '', self.processor: paths[self.processor]}, guard=self.provider._context,
                     parameter_owners=self.observed_parameter_owners())
                 self.window.start()
