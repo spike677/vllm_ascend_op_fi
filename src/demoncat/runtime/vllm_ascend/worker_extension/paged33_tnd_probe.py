@@ -195,17 +195,21 @@ class TNDWorkerProbeSession(Paged33TNDProvider):
             result = (Paged33Audit._invoke_api(self, name, invoke, args, kwargs, record) if self.adapter is None
                       else super()._invoke_api(name, invoke, args, kwargs, record))
         if first:
-            from .paged33_boundary_probe import mapped_api_libraries, read_scoped_launches
+            from .paged33_boundary_probe import mapped_api_libraries, read_scoped_launches, MappedLibraryObservationError
             token = self.boundary_stock_scope.token if self.boundary_stock_scope else self.adapter.calls[-1]['call_id']
             runtime = self.boundary_stock_scope.runtime_dir if self.boundary_stock_scope else self.adapter.runtime_dir
             capture.data['native_call_id'] = token
-            for key, observe in (('runtime_observation', lambda: read_scoped_launches(runtime, token)),
+            for key, observe in (('runtime_observation', lambda: read_scoped_launches(runtime, token,
+                    expected_pid=capture.pid,expected_native_tid=capture.native_tid)),
                                  ('mapped_api_libraries', mapped_api_libraries)):
                 try:
                     capture.data[key] = observe()
                 except Exception as error:
                     # Missing coverage is evidence, never a guessed stock ABI.
                     capture.data[key] = dict(status='UNOBSERVED_OR_INCOMPLETE', error=repr(error))
+                    if isinstance(error,MappedLibraryObservationError):
+                        capture.data[key]['error']=error.evidence['error']
+                        capture.data[key]['diagnostic']=error.evidence
             capture.write()
         if record is not None:
             require(record.get('metadata_binding') == 'VERIFIED' and self.stack,

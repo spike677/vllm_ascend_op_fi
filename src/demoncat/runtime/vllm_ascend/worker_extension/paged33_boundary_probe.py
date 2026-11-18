@@ -14,7 +14,7 @@ import threading
 import uuid
 
 from .paged33_audit import _meta
-from .serving_context import require
+from .serving_context import ContextRefused, require
 
 
 FIRST_LAYER = 'model.layers.0.self_attn.attn'
@@ -92,7 +92,7 @@ def same_tensor(before, after):
     return all(before.get(key) == after.get(key) for key in ('metadata', 'bytes', 'sha256', 'version'))
 
 
-def read_scoped_launches(directory, token):
+def read_scoped_launches(directory, token, *, expected_pid=None, expected_native_tid=None):
     """Join raw registration/launch facts, without decoding a guessed stock ABI."""
     root = Path(directory).resolve(strict=True); raw = root/'runtime.jsonl'
     require(raw.stat().st_size <= 128 * 1024**2 and re.fullmatch('[0-9a-f]{32}', token),
@@ -105,36 +105,66 @@ def read_scoped_launches(directory, token):
     ends = [row for row in scoped if row.get('event') == 'end']
     require(len(begins) == len(ends) == 1, 'BOUNDARY_SCOPE_BEGIN_END_AMBIGUOUS')
     begin, end = begins[0], ends[0]; owner = (begin['pid'], begin['tid'])
-    require(begin['monotonic_ns'] < end['monotonic_ns'] and all(
+    require((expected_pid is None or type(expected_pid) is int and expected_pid == owner[0])
+            and (expected_native_tid is None or type(expected_native_tid) is int and expected_native_tid == owner[1]),
+            'BOUNDARY_CAPTURED_NATIVE_OWNER_DIFFERS')
+    begin_index = rows.index(begin); end_index = rows.index(end)
+    require(begin_index < end_index and begin['monotonic_ns'] < end['monotonic_ns'] and all(
         (row['pid'], row['tid']) == owner and row.get('schema') == 'demoncat.attention.runtime_observer.v1'
-        and begin['monotonic_ns'] <= row['monotonic_ns'] <= end['monotonic_ns'] for row in scoped),
+        and begin_index <= index <= end_index
+        and begin['monotonic_ns'] <= row['monotonic_ns'] <= end['monotonic_ns']
+        for index,row in enumerate(rows) if row.get('call_id') == token),
         'BOUNDARY_SCOPE_OWNER_OR_ORDER_CHANGED')
     launches = []; gaps = []
     if any(row.get('event') == 'capture_overflow' for row in rows):
         gaps.append('REGISTERED_BINARY_CAPTURE_OVERFLOW')
-    for row in scoped:
-        if row.get('event') != 'launch':
+    for index, row in enumerate(rows):
+        if row.get('call_id') != token or row.get('event') != 'launch':
             continue
         require(row['result'] == 0 and row.get('observer_mutates_arguments') is False
                 and begin['monotonic_ns'] <= row['launch_begin_ns'] <= row['launch_end_ns'] <= row['monotonic_ns'],
                 'BOUNDARY_LAUNCH_FAILED_OR_ORDER_CHANGED')
-        registered = [item for item in rows if item.get('event') == 'register'
-            and (item['pid'], item['handle'], item['generation']) == (row['pid'], row['handle'], row['generation'])]
-        require(len(registered) == 1 and registered[0]['result'] == 0
-                and registered[0]['monotonic_ns'] <= row['launch_begin_ns'], 'BOUNDARY_REGISTERED_BINARY_JOIN_MISSING')
-        registration = registered[0]; name = row['binary_file']
+        registrations = [(i,item) for i,item in enumerate(rows) if item.get('event') == 'register'
+            and (item['pid'],item['handle']) == (row['pid'],row['handle'])
+            and item['monotonic_ns'] <= row['launch_begin_ns']]
+        registered = [(i,item) for i,item in registrations if item['generation'] == row['generation']]
+        require(len(registered) == 1 and registered[0][1]['result'] == 0, 'BOUNDARY_REGISTERED_BINARY_JOIN_MISSING')
+        reg_index, registration = registered[0]; name = row['binary_file']
+        latest_registration = max(item['monotonic_ns'] for _,item in registrations)
+        require(registration['monotonic_ns'] == latest_registration
+                and sum(item['monotonic_ns'] == latest_registration for _,item in registrations) == 1
+                and reg_index < index, 'BOUNDARY_STALE_REGISTERED_HANDLE_GENERATION')
         require(name == registration['binary_file'] and re.fullmatch(r'registered-\d+-\d+\.bin', name),
                 'BOUNDARY_REGISTERED_BINARY_NAME_CHANGED')
         binary = root/name
         require(not binary.is_symlink() and binary.resolve(strict=True).parent == root
                 and binary.stat().st_size == registration['binary_bytes'] <= MAX_TENSOR_BYTES,
                 'BOUNDARY_REGISTERED_BINARY_FILE_CHANGED')
-        if row.get('function_handle'):
-            bindings = [item for item in rows if item.get('event') == 'function_bind'
-                and (item['pid'], item['handle'], item['generation'], item['function_handle'], str(item['tiling_key']))
-                == (row['pid'], row['handle'], row['generation'], row['function_handle'], str(row['tiling_key']))
-                and item['result'] == 0 and item['monotonic_ns'] <= row['launch_begin_ns']]
-            require(len(bindings) == 1, 'BOUNDARY_ACTUAL_FUNCTION_JOIN_MISSING')
+        binding = None
+        if row['api'] == 'aclrtLaunchKernelWithHostArgs' or row.get('function_handle'):
+            require(type(row.get('function_handle')) is int and row['function_handle'] > 0,
+                    'BOUNDARY_ACTUAL_FUNCTION_JOIN_MISSING')
+            # Same current-scope/last-effective-bind rule as the independent
+            # source53 reader. Examine all prior identities before selecting;
+            # filtering by expected key/handle would hide conflicting history.
+            history = [(i,item) for i,item in enumerate(rows) if item.get('event') == 'function_bind'
+                and (item['pid'],item['function_handle']) == (row['pid'],row['function_handle'])
+                and item['monotonic_ns'] <= row['launch_begin_ns']]
+            require(history, 'BOUNDARY_ACTUAL_FUNCTION_JOIN_MISSING')
+            identity = (row['handle'],row['generation'],str(row['tiling_key']))
+            require(all(item['result'] == 0 and (item['handle'],item['generation'],str(item['tiling_key'])) == identity
+                        for _,item in history), 'BOUNDARY_CONFLICTING_FUNCTION_HANDLE_KEY_OR_GENERATION_HISTORY')
+            current = [(i,item) for i,item in history if item.get('call_id') == token]
+            require(len(current) == 1, 'BOUNDARY_CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')
+            bind_index, bound = current[0]; newest = max(item['monotonic_ns'] for _,item in history)
+            require(sum(item['monotonic_ns'] == newest for _,item in history) == 1
+                and bound['monotonic_ns'] == newest and (bound['pid'],bound['tid']) == owner
+                and reg_index < bind_index < index and begin_index < bind_index
+                and begin['monotonic_ns'] <= bound['monotonic_ns'] <= row['launch_begin_ns'],
+                'BOUNDARY_LATEST_EFFECTIVE_BIND_NOT_IN_CURRENT_SCOPE')
+            binding = dict(rule='CURRENT_SCOPE_LAST_EFFECTIVE_BIND_WITH_ALL_PRIOR_FUNCTION_IDENTITIES_CONSISTENT',
+                function_handle=row['function_handle'],raw_line=bind_index+1,repeated_identical_history=len(history)-1,
+                current_scope_binds=1,handle=row['handle'],generation=row['generation'],tiling_key=str(row['tiling_key']))
         arguments = bytes.fromhex(row['args_hex'])
         require(len(arguments) == row['args_size'] <= 1024**2, 'BOUNDARY_ARGUMENT_SNAPSHOT_SIZE_CHANGED')
         if not row.get('snapshot_valid'):
@@ -146,6 +176,7 @@ def read_scoped_launches(directory, token):
             args_bytes=len(arguments), args_sha256=hashlib.sha256(arguments).hexdigest(),
             registered_binary=dict(path=str(binary), bytes=binary.stat().st_size, sha256=sha(binary)),
             pid=row['pid'], tid=row['tid'], generation=row['generation'],
+            function_binding=binding,
             kernel_argument_abi='NOT_DECODED_NO_ASSUMED_PRIVATE_ABI', api_library_owner='NOT_CAPTURED'))
     if not launches:
         gaps.append('NO_INTERCEPTED_RUNTIME_LAUNCH')
@@ -159,27 +190,60 @@ def read_scoped_launches(directory, token):
         all_runtime_entrypoints_covered=False, private_key_used_to_classify_stock=False)
 
 
+class MappedLibraryObservationError(ContextRefused):
+    def __init__(self, reason, evidence):
+        super().__init__(reason)
+        self.evidence = evidence
+
+
 def mapped_api_libraries():
-    """Mapped files are evidence of presence, never of ACLNN resolver selection."""
+    """Keep exact failure evidence; presence still is not resolver selection."""
     names = {'libcust_opapi.so', 'libopapi.so', 'liboptiling.so', 'libcust_opmaster_rt2.0.so', 'libtorch_npu.so'}
-    maps = Path('/proc/self/maps'); paths = {}
-    for line in maps.read_text().splitlines():
-        parts = line.split(None, 5)
-        if len(parts) == 6 and Path(parts[5].removesuffix(' (deleted)')).name in names:
-            require(not parts[5].endswith(' (deleted)'), 'BOUNDARY_MAPPED_LIBRARY_DELETED')
-            path = Path(parts[5]).resolve(strict=True); paths[path] = (int(parts[4]), parts[3])
-    require(len(paths) <= 32, 'BOUNDARY_MAPPED_LIBRARY_LIMIT')
-    files = []
-    for path, (inode, device) in sorted(paths.items()):
-        before = path.stat(); major, minor = (int(item, 16) for item in device.split(':'))
-        require(before.st_ino == inode and (os.major(before.st_dev), os.minor(before.st_dev)) == (major, minor)
-                and before.st_size <= 512 * 1024**2, 'BOUNDARY_MAPPED_LIBRARY_IDENTITY_CHANGED')
-        digest = sha(path); after = path.stat()
-        require((before.st_ino, before.st_size, before.st_mtime_ns) == (after.st_ino, after.st_size, after.st_mtime_ns),
-                'BOUNDARY_MAPPED_LIBRARY_CHANGED_DURING_HASH')
-        files.append(dict(path=str(path), bytes=before.st_size, sha256=digest))
-    return dict(status='ACTUAL_MAPPED_FILE_FINGERPRINTS_ONLY', files=files,
-                selected_api_owner_observed=False, limitation='Existing observer does not intercept ACLNN resolver selection')
+    report = dict(schema='demoncat.paged33.mapped_library_diagnostic.v1',pid=os.getpid(),
+        python_thread_ident=threading.get_ident(),native_tid=threading.get_native_id(),
+        considered_basenames=sorted(names),map_rows=[],files=[],current_file=None,
+        selected_api_owner_observed=False,complete=False)
+    def stat_record(value):
+        return dict(inode=value.st_ino,device=value.st_dev,device_major=os.major(value.st_dev),
+            device_minor=os.minor(value.st_dev),bytes=value.st_size,mtime_ns=value.st_mtime_ns)
+    try:
+        maps = Path('/proc/self/maps'); raw = maps.read_bytes(); paths = {}
+        report.update(maps_sha256=hashlib.sha256(raw).hexdigest(),maps_bytes=len(raw))
+        require(len(raw) <= 16*1024**2, 'BOUNDARY_MAPPED_LIBRARY_MAPS_LIMIT')
+        for line in raw.decode().splitlines():
+            parts = line.split(None, 5)
+            if len(parts) == 6 and Path(parts[5].removesuffix(' (deleted)')).name in names:
+                row=dict(raw_line=line,raw_path=parts[5],address_range=parts[0],permissions=parts[1],
+                    offset_hex=parts[2],device_hex=parts[3],inode=int(parts[4]))
+                report['map_rows'].append(row)
+        require(len(report['map_rows']) <= 512, 'BOUNDARY_MAPPED_LIBRARY_ROWS_LIMIT')
+        for row in report['map_rows']:
+            report['current_map_row']=row
+            require(not row['raw_path'].endswith(' (deleted)'), 'BOUNDARY_MAPPED_LIBRARY_DELETED')
+            path=Path(row['raw_path']).resolve(strict=True);row['resolved_path']=str(path)
+            row['device_major'],row['device_minor']=(int(x,16) for x in row['device_hex'].split(':'))
+            paths.setdefault(path,[]).append(row)
+        report.pop('current_map_row',None)
+        require(len(paths) <= 32, 'BOUNDARY_MAPPED_LIBRARY_LIMIT')
+        for path, rows in sorted(paths.items()):
+            item=dict(path=str(path),map_rows=rows);report['current_file']=item
+            before=path.stat();item['stat_before']=stat_record(before)
+            item['checks']=dict(inode_matches=all(before.st_ino == row['inode'] for row in rows),
+                device_matches=all((os.major(before.st_dev),os.minor(before.st_dev)) ==
+                    (row['device_major'],row['device_minor']) for row in rows),
+                size_within_bound=before.st_size <= 512*1024**2)
+            item['failed_checks']=[key for key,value in item['checks'].items() if not value]
+            require(not item['failed_checks'], 'BOUNDARY_MAPPED_LIBRARY_IDENTITY_CHANGED')
+            item['sha256']=sha(path);after=path.stat();item['stat_after']=stat_record(after)
+            require((before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns) ==
+                (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns), 'BOUNDARY_MAPPED_LIBRARY_CHANGED_DURING_HASH')
+            item['bytes']=before.st_size;report['files'].append(item)
+        report.update(status='ACTUAL_MAPPED_FILE_FINGERPRINTS_ONLY',complete=True,current_file=None,
+            limitation='Existing observer does not intercept ACLNN resolver selection')
+        return report
+    except Exception as error:
+        report.update(status='UNOBSERVED_OR_INCOMPLETE',error=repr(error),complete=False)
+        raise MappedLibraryObservationError(str(error),report) from error
 
 
 class StockLaunchScope:

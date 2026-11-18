@@ -1,5 +1,6 @@
 """CPU contracts only: actual Tensor identity, single calls and raw trace joins."""
 import hashlib
+from copy import deepcopy
 import json
 from pathlib import Path, PurePosixPath
 import sys
@@ -315,6 +316,7 @@ class StockRawTraceTests(unittest.TestCase):
         for index, key in enumerate(('123', '987654321')):
             bind = row('function_bind', 2+index, handle=80, generation=1, function_handle=90+index, tiling_key=key, result=0)
             bind['call_id'] = ''; self.rows.insert(1, bind)
+            self.rows.append(row('function_bind',18+index*5,handle=80,generation=1,function_handle=90+index,tiling_key=key,result=0))
             self.rows.append(row('launch', 23+index*5, api='aclrtLaunchKernelWithHostArgs', handle=80, generation=1,
                 function_handle=90+index, binary_file=binary.name, result=0, observer_mutates_arguments=False,
                 launch_begin_ns=20+index*5, launch_end_ns=22+index*5, args_hex='0001020304050607', args_size=8,
@@ -332,6 +334,7 @@ class StockRawTraceTests(unittest.TestCase):
         self.assertEqual(report['launches'][0]['registered_binary']['sha256'], probe.sha(self.folder/'registered-12-1.bin'))
         self.assertFalse(report['argument_abi_qualified'] or report['actual_api_library_owner_observed'])
         self.assertEqual(report['observation_gaps'], [])
+        self.assertEqual(report['launches'][0]['function_binding']['repeated_identical_history'],1)
 
     def test_foreign_owner_function_join_and_filename_cannot_be_inferred(self):
         launch = next(row for row in self.rows if row['event'] == 'launch')
@@ -349,6 +352,41 @@ class StockRawTraceTests(unittest.TestCase):
         self.assertEqual(set(report['observation_gaps']), {'REGISTERED_BINARY_CAPTURE_OVERFLOW',
             'INVALID_RAW_ARGUMENT_SNAPSHOT', 'SCHEDULE_MODE_NOT_OBSERVED'})
         self.assertFalse(report['argument_abi_qualified'])
+
+    def test_repeated_identical_history_is_resolved_but_conflicts_are_never_filtered(self):
+        old=next(row for row in self.rows if row['event']=='function_bind' and row['function_handle']==90)
+        for now in range(4,9):self.rows.insert(1,dict(old,monotonic_ns=now))
+        self.assertEqual(self.read()['launches'][0]['function_binding']['repeated_identical_history'],6)
+        for key,value in (('handle',81),('generation',2),('tiling_key','456'),('result',1)):
+            saved=old[key];old[key]=value
+            with self.subTest(key=key),self.assertRaisesRegex(RuntimeError,'CONFLICTING_FUNCTION'):
+                self.read()
+            old[key]=saved
+
+    def test_current_binding_missing_duplicated_or_shadowed_by_foreign_scope_refuses(self):
+        original=deepcopy(self.rows)
+        current=next(row for row in self.rows if row['event']=='function_bind' and row['call_id']==self.token)
+        current['call_id']=''
+        with self.assertRaisesRegex(RuntimeError,'CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE'):self.read()
+        self.rows=deepcopy(original)
+        current=next(row for row in self.rows if row['event']=='function_bind' and row['call_id']==self.token)
+        index=self.rows.index(current)
+        self.rows.insert(index+1,dict(current,monotonic_ns=19))
+        with self.assertRaisesRegex(RuntimeError,'CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE'):self.read()
+        self.rows[index+1].update(call_id='foreign',tid=99)
+        with self.assertRaisesRegex(RuntimeError,'LATEST_EFFECTIVE_BIND_NOT_IN_CURRENT_SCOPE'):self.read()
+
+    def test_current_binding_raw_order_must_be_inside_actual_scope(self):
+        current=next(row for row in self.rows if row['event']=='function_bind' and row['call_id']==self.token)
+        self.rows.remove(current);self.rows.append(current)
+        with self.assertRaisesRegex(RuntimeError,'SCOPE_OWNER_OR_ORDER_CHANGED'):self.read()
+
+    def test_stale_registration_or_python_ident_as_native_tid_cannot_be_reconciled(self):
+        self.read()
+        with self.assertRaisesRegex(RuntimeError,'CAPTURED_NATIVE_OWNER_DIFFERS'):
+            probe.read_scoped_launches(self.folder,self.token,expected_pid=12,expected_native_tid=281463120013952)
+        self.rows.insert(1,dict(self.rows[0],generation=2,monotonic_ns=9))
+        with self.assertRaisesRegex(RuntimeError,'STALE_REGISTERED_HANDLE_GENERATION'):self.read()
 
 
 class BoundaryCaseTests(unittest.TestCase):
