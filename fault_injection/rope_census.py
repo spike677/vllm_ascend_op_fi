@@ -17,6 +17,7 @@ from .tensor_callable import TensorCallableGuard
 from .tensor_observer import callable_identity, metadata, tensors
 from .moe_census import describe
 from .rope_sites import ModuleSites
+from ._scoped_dispatch import _close_owned_mode
 from .rope_triton_trace import TritonRoPELaunchTrace, TRITON_ROPE_SOURCE, TRITON_JIT_SOURCE
 
 
@@ -348,13 +349,14 @@ class NaturalRoPETrace:
             if _get_current_dispatch_mode() is not self.outer_mode:raise RuntimeError('ROPE_OUTER_MODE_OWNERSHIP_CHANGED')
         if self.active:sys.setprofile(None);self.active=False
         if self.outer_mode is not None:
-            self.outer_mode.__exit__(None,None,None);self.outer_mode=None
+            _close_owned_mode(self,'outer_mode','ROPE_OUTER_MODE_OWNERSHIP_CHANGED')
         for handle,callback in reversed(self.hooks[:]):
-            handle.remove()
             hooks=handle.hooks_dict_ref()
+            try:handle.remove()
+            finally:
+                if hooks is None or handle.id not in hooks:self.hooks.remove((handle,callback))
             if hooks is not None and handle.id in hooks:
                 raise RuntimeError('ROPE_CONSUMER_HOOK_REMOVAL_UNCONFIRMED')
-            self.hooks.remove((handle,callback))
         self.returned.clear()
 
     def report(self):

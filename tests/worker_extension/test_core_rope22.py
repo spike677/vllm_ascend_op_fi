@@ -364,6 +364,131 @@ class CoreRoPE22Tests(unittest.TestCase):
     def test_foreign_logits_return_failure_cannot_be_marked_as_a_completed_request(self):
         self._foreign_return_failure(logits=True)
 
+    def test_last_completion_records_final_processor_output_after_other_hooks(self):
+        from demoncat.runtime.vllm_ascend.worker_extension.providers.tensor_modules import _capture, _identity
+        self.start()
+        handle = self.model.processor.register_forward_hook(lambda module, args, output: output+1)
+        try:
+            actual = self.enqueue(0)
+            row, = self.provider.session.provider.rows
+            self.assertEqual(row['output']['logits'], _identity(_capture(actual)))
+            self.ok(self.client.unregister())
+        finally:
+            handle.remove()
+        self.assert_clean()
+
+    def test_changed_final_processor_off_cannot_issue_live_c2_from_early_snapshot(self):
+        self.start()
+        force_baseline = [False]
+        handle = self.model.processor.register_forward_hook(lambda module, args, output:
+            output+1 if self.provider.index < 5 or force_baseline[0] else output)
+        try:
+            for index in range(5):
+                self.enqueue(index)
+            with self.assertRaisesRegex(RuntimeError, 'HIDDEN_LOGITS_OFF_NOT_EXACT'):
+                self.enqueue(5)
+            self.assertIsNone(self.provider.proof)
+            self.assertNotIn('C2', self.provider.reports)
+            self.assertTrue(self.client.query()['ownership_retained'])
+            force_baseline[0] = True
+            self.ok(self.client.recover())
+            self.enqueue('off-after-final-return-mismatch')
+            self.ok(self.client.finish()); self.ok(self.client.unregister())
+        finally:
+            handle.remove()
+        self.assert_clean()
+
+    def test_after_actual_base_hook_removal_error_retires_handle_but_preserves_failed_reply(self):
+        self.start()
+        handle = self.provider.session.handles[0]
+        original = handle.remove
+
+        def removed_then_error():
+            original()
+            raise RuntimeError('after actual removal')
+
+        with patch.object(handle, 'remove', side_effect=removed_then_error):
+            failed = self.client.unregister()
+        self.assertEqual(failed['status'], 'PROVIDER_ACTION_FAILED')
+        self.assertTrue(failed['ownership_retained'])
+        self.assertNotIn(handle, self.provider.session.handles)
+        self.ok(self.client.unregister())
+        self.assertEqual(self.client.snapshot()['history'][-2]['response']['status'], 'PROVIDER_ACTION_FAILED')
+        self.assert_clean()
+
+    def _after_actual_removal(self, kind):
+        self.start(); self.enqueue(0)
+        self.ok(self.client.advance('after-remove-' + kind))
+        hidden = self.model(input_ids=torch.tensor([1, 2, 3]), positions=torch.arange(3))
+        resource = getattr(self.provider.session, kind)
+        handles = resource.handles if kind == 'observer' else resource.hooks
+        handle, _ = handles[0]
+        original = handle.remove
+
+        def removed_then_error():
+            original()
+            raise RuntimeError('after actual removal')
+
+        with patch.object(handle, 'remove', side_effect=removed_then_error):
+            with self.assertRaisesRegex(RuntimeError, 'after actual removal'):
+                self.model.logits(hidden)
+        self.assertFalse(any(item[0] is handle for item in handles))
+        self.assertTrue(self.client.query()['ownership_retained'])
+        self.ok(self.client.unregister())
+        self.assert_clean()
+
+    def test_after_actual_trace_hook_removal_error_allows_owned_cleanup_retry(self):
+        self._after_actual_removal('trace')
+
+    def test_after_actual_adapter_hook_removal_error_allows_owned_cleanup_retry(self):
+        self._after_actual_removal('adapter')
+
+    def test_after_actual_observer_hook_removal_error_allows_owned_cleanup_retry(self):
+        self._after_actual_removal('observer')
+
+    def _actual_mode_exit_failure(self, kind, after_pop):
+        from torch.utils._python_dispatch import _get_current_dispatch_mode_stack
+        self.start(); self.enqueue(0)
+        self.ok(self.client.advance('mode-exit-' + kind))
+        hidden = self.model(input_ids=torch.tensor([1, 2, 3]), positions=torch.arange(3))
+        resource = getattr(self.provider.session, kind)
+        attribute = 'outer_mode' if kind == 'trace' else 'mode'
+        mode = getattr(resource, attribute)
+        original = mode.__exit__
+
+        def exit_failure(*args):
+            if after_pop:
+                original(*args)
+            raise RuntimeError('observed mode exit failure')
+
+        with patch.object(mode, '__exit__', side_effect=exit_failure):
+            with self.assertRaisesRegex(RuntimeError, 'observed mode exit failure'):
+                self.model.logits(hidden)
+        self.assertEqual(any(item is mode for item in _get_current_dispatch_mode_stack()), not after_pop)
+        self.assertIs(getattr(resource, attribute), None if after_pop else mode)
+        self.assertTrue(self.client.query()['ownership_retained'])
+        self.ok(self.client.unregister())
+        self.assert_clean()
+
+    def test_after_pop_trace_mode_error_retires_only_confirmed_absent_owned_mode(self):
+        self._actual_mode_exit_failure('trace', after_pop=True)
+
+    def test_after_pop_adapter_mode_error_retires_only_confirmed_absent_owned_mode(self):
+        self._actual_mode_exit_failure('adapter', after_pop=True)
+
+    def test_before_pop_error_keeps_owned_mode_for_explicit_cleanup_retry(self):
+        self._actual_mode_exit_failure('trace', after_pop=False)
+
+    def test_clean_cannot_unbind_runtime_ticket_before_unregister(self):
+        self.start()
+        self.ok(self.client.clean())
+        with self.assertRaisesRegex(RuntimeError, 'OWNER_CLEAN_REQUIRED'):
+            serving22.remove_fault22_serving_binding(self.worker)
+        self.assertTrue(self.provider.binding.leases)
+        self.ok(self.client.unregister())
+        self.assertEqual(serving22.remove_fault22_serving_binding(self.worker)['status'],
+                         'SERVING_DEPLOYMENT_REMOVED')
+
     def test_real_forward_rechecks_held_device_and_thread_without_recursive_identity(self):
         self.start()
         self.ok(self.client.advance('device-drift'))
@@ -489,6 +614,27 @@ class CoreRoPE22Tests(unittest.TestCase):
 
 
 class TorchRootHookSnapshotTests(unittest.TestCase):
+    def test_cleanup_readback_preserves_a_foreign_mode_above_the_owned_mode(self):
+        from torch.utils._python_dispatch import TorchDispatchMode, _get_current_dispatch_mode_stack
+        from fault_injection._scoped_dispatch import _close_owned_mode
+
+        class Mode(TorchDispatchMode):
+            def __torch_dispatch__(self, func, types, args=(), kwargs=None):
+                return func(*args, **(kwargs or {}))
+
+        owned, foreign = Mode(), Mode()
+        holder = SimpleNamespace(mode=owned)
+        owned.__enter__(); foreign.__enter__()
+        try:
+            with self.assertRaisesRegex(RuntimeError, 'FOREIGN_MODE'):
+                _close_owned_mode(holder, 'mode', 'FOREIGN_MODE')
+            self.assertIs(holder.mode, owned)
+            self.assertIs(_get_current_dispatch_mode_stack()[-1], foreign)
+        finally:
+            foreign.__exit__(None, None, None)
+            _close_owned_mode(holder, 'mode', 'FOREIGN_MODE')
+        self.assertIsNone(holder.mode)
+
     def test_newly_registered_pre_hook_is_absent_from_current_forward_snapshot(self):
         model = torch.nn.Identity()
         events, handles = [], []

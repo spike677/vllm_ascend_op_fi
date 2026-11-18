@@ -91,11 +91,14 @@ class ServingTensorGroup:
         hooks = handle.hooks_dict_ref()
         require(hooks is not None and (handle.id not in hooks or
             hooks[handle.id] is self._callbacks.get(handle.id)), 'SERVING_TENSOR_HOOK_OWNERSHIP_CHANGED')
-        handle.remove()
+        try:
+            handle.remove()
+        finally:
+            if handle.id not in hooks:
+                self._callbacks.pop(handle.id, None)
+                if handle in self.handles:
+                    self.handles.remove(handle)
         require(handle.id not in hooks, 'SERVING_TENSOR_HOOK_REMOVAL_UNCONFIRMED')
-        self._callbacks.pop(handle.id, None)
-        if handle in self.handles:
-            self.handles.remove(handle)
 
     def _context(self, *, verify_targets=True):
         require(threading.get_ident() == self.thread, 'SERVING_TENSOR_THREAD_CHANGED')

@@ -141,8 +141,8 @@ class NaturalTensorObserver:
             if actual is self.model:
                 self.forwards[-1].update(status='returned' if output is not None else 'failed',
                     output=[metadata(x) for x in tensors(output)])
-                self.mode.__exit__(None, None, None)
-                self.mode = None
+                from ._scoped_dispatch import _close_owned_mode
+                _close_owned_mode(self, 'mode', 'OBSERVER_MODE_OWNERSHIP_CHANGED')
         return leave
 
     def _open_mode(self):
@@ -275,10 +275,13 @@ class NaturalTensorObserver:
             hooks = handle.hooks_dict_ref()
             if hooks is not None and handle.id in hooks and hooks[handle.id] is not callback:
                 raise RuntimeError('OBSERVER_HOOK_OWNERSHIP_CHANGED')
-            handle.remove()
+            try:
+                handle.remove()
+            finally:
+                if hooks is None or handle.id not in hooks:
+                    self.handles.remove((handle, callback))
             if hooks is not None and handle.id in hooks:
                 raise RuntimeError('OBSERVER_HOOK_REMOVAL_UNCONFIRMED')
-            self.handles.remove((handle, callback))
         self.outputs.clear()
         self.views.clear()
         self._dispatch_outputs.clear()

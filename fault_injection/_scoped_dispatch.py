@@ -9,6 +9,22 @@ from .core import UnsupportedCall
 _LEASE = threading.Lock()
 
 
+def _close_owned_mode(holder, attribute, reason):
+    """Retire a mode only after actual stack readback, including exit errors."""
+    from torch.utils._python_dispatch import _get_current_dispatch_mode_stack
+    mode = getattr(holder, attribute)
+    stack = _get_current_dispatch_mode_stack()
+    if not stack or stack[-1] is not mode:
+        raise RuntimeError(reason)
+    try:
+        mode.__exit__(None, None, None)
+    finally:
+        if all(item is not mode for item in _get_current_dispatch_mode_stack()):
+            setattr(holder, attribute, None)
+    if getattr(holder, attribute) is not None:
+        raise RuntimeError(reason)
+
+
 class ScopedDispatch:
     def __init__(self, model, *, arm='fault', simulation=False, selected_call=None,
                  diagnostics_context=None):
@@ -147,19 +163,18 @@ class ScopedDispatch:
         self.active = False
         self.synchronize()
         if self.mode is not None:
-            from torch.utils._python_dispatch import _get_current_dispatch_mode
-            if _get_current_dispatch_mode() is not self.mode:
-                raise RuntimeError('Foreign dispatcher is above the owned mode')
-            self.mode.__exit__(None,None,None)
-            self.mode = None
+            _close_owned_mode(self, 'mode', 'Foreign dispatcher is above the owned mode')
         for handle, callback in reversed(self.hooks[:]):
             hooks = handle.hooks_dict_ref()
             if hooks is not None and handle.id in hooks and hooks[handle.id] is not callback:
                 raise RuntimeError('Foreign model hook replaced an owned callback')
-            handle.remove()
+            try:
+                handle.remove()
+            finally:
+                if hooks is None or handle.id not in hooks:
+                    self.hooks.remove((handle, callback))
             if hooks is not None and handle.id in hooks:
                 raise RuntimeError('Owned dispatcher hook removal is unconfirmed')
-            self.hooks.remove((handle, callback))
         self.temps.clear()
         self.closed = True
         if self.locked:

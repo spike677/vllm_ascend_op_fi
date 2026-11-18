@@ -150,6 +150,10 @@ class ServingRoPEGroup(ServingTensorGroup):
             require(output is not None and sys.exc_info()[1] is self.request_entry_error
                     and next(reversed(module._forward_hooks))==self.completion_handle.id,
                     'ACTUAL_ROPE_LOGITS_RETURN_REQUIRED')
+            # Earlier processor hooks may legitimately transform the return.
+            # The complete final output, not the early observer's snapshot,
+            # is the value the serving caller will actually receive.
+            with self._diagnostics():self.current['logits']=_capture(output)
             self._remove_hook(self.completion_handle);self.completion_handle=None
             self.collect()
         except BaseException as error:

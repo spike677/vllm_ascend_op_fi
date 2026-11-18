@@ -67,6 +67,11 @@ RPCs, the idle scheduler reservation is reported as `replay_pending`; active
 dispatch modes and temporary leases are zero. With no owner, ordinary serving
 has no managed-request requirement.
 
+The final completion callback captures the actual processor return again,
+after any preceding return-transforming hooks. An earlier logits observer
+snapshot cannot stand in for that final value. An OFF return mismatch prevents
+live proof issuance even when earlier observer values appear unchanged.
+
 Runtime supplies the already validated identity to the provider. Its local
 guard rechecks held Worker/runner/model objects, process, thread, rank and
 configured/observed logical device. It never recursively calls
@@ -103,6 +108,12 @@ against the same already observed OFF and sealed denominator. Hook removal is
 read back, and each failed removal retains its handle for retry. Foreign hooks
 are not removed. An incomplete failed attempt remains a failed coverage result
 even if its resources and same-Worker health are subsequently recovered.
+
+If removal/pop actually completes and then raises, the failed response is
+retained while confirmed-absent handles are retired using the actual hook map
+or dispatch-mode stack. A before-removal failure retains ownership. Deployment
+binding occupancy survives `clean` until the existing RPC `unregister` releases
+its ticket; unbinding cannot strand a still-owned ticket.
 
 The final cleanup/healthy request, C2, C3, resource Recovery and E5 are separately
 reported. E5 requires its independent raw-statistics workflow and is not

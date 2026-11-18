@@ -136,7 +136,7 @@ class Fault22ServingProvider(Scope):
         elif action in ('disable', 'abort', 'clean', 'unregister'):
             self._cleanup()
             if action in ('clean', 'unregister'):
-                if self.binding is not None:
+                if self.binding is not None and action == 'unregister':
                     self.binding.leases.discard(self._ticket)
                 self._registered = False
         else:
@@ -184,9 +184,12 @@ class Fault22ServingProvider(Scope):
             hooks = handle.hooks_dict_ref()
             require(hooks is not None and (handle.id not in hooks or hooks[handle.id] is callback),
                     'ROPE_HEALTH_HOOK_OWNER_CHANGED')
-            handle.remove()
+            try:
+                handle.remove()
+            finally:
+                if handle.id not in hooks:
+                    self.health_hooks.remove((handle, callback))
             require(handle.id not in hooks, 'ROPE_HEALTH_HOOK_REMOVAL_UNCONFIRMED')
-            self.health_hooks.remove((handle, callback))
 
     def _schedule_health(self, request_id):
         session = self.session
