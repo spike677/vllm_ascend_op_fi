@@ -88,8 +88,14 @@ print('CPU_STDLIB_ONLY')
 
 class StockCensusPreparationContracts(unittest.TestCase):
     def test_probe_bootstrap_import_precedes_any_device_framework(self):
-        result=subprocess.run([sys.executable,'-B','-c',
-            "import natural_attention28_stock_census_probe,sys; assert not any(x in sys.modules for x in ('torch','torch_npu','vllm')); print('NO_FRAMEWORK')"],
+        script=Path(__file__).resolve().parents[1]/'experiments/c2c3_closure_20261117/natural_attention28_stock_census_probe.py'
+        code=("import importlib.util,sys; "
+            f"sys.path.insert(0,{str(script.parent)!r}); "
+            f"spec=importlib.util.spec_from_file_location('actual_stock_census_probe',{str(script)!r}); "
+            "module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module); "
+            "assert not any(x in sys.modules for x in ('torch','torch_npu','vllm')); print('NO_FRAMEWORK')")
+        env=dict(os.environ);env.pop('PYTHONPATH',None)
+        result=subprocess.run([sys.executable,'-B','-c',code],env=env,
             capture_output=True,text=True,check=False)
         self.assertEqual(result.returncode,0,result.stderr);self.assertIn('NO_FRAMEWORK',result.stdout)
 
