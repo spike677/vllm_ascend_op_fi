@@ -6,6 +6,8 @@ import torch
 
 from fault_injection.rope_census import NaturalRoPETrace
 from fault_injection.tensor_observer import NaturalTensorObserver
+from fault_injection.core import UnsupportedCall
+from fault_injection.rope_sites import ModuleSites
 from test_rope_census import Rope, Consumer, native_rotary
 
 
@@ -112,6 +114,55 @@ class SharedRoPETests(unittest.TestCase):
         JIT.replace_position=True;report=self.run_trace(Model().eval())
         self.assertFalse(report['triton_reader_joins_complete']);self.assertFalse(report['complete'])
         self.assertFalse(report['triton_launches'][0]['launches'][0]['actual_argument_join']['positions_exact_object'])
+
+
+class BypassParent(torch.nn.Module):
+    def __init__(self):
+        super().__init__();self.embed=torch.nn.Identity();self.body=Model()
+    def __call__(self,*args,**kwargs):
+        # Matches the observed vLLM decorated-model call contract: this
+        # ancestor does execute, but its nn.Module hooks are bypassed.
+        return self.forward(*args,**kwargs)
+    def forward(self,x,positions):return self.body(self.embed(x),positions)
+
+
+class BypassRoot(torch.nn.Module):
+    def __init__(self):
+        super().__init__();self.model=BypassParent();self.head_alias=self.model.embed
+    def forward(self,x,positions):return self.model(x,positions)
+
+
+class ActualAncestorTests(unittest.TestCase):
+    def setUp(self):JIT.skip_launch=False;JIT.replace_position=False
+    def test_hook_bypassed_forward_disambiguates_tied_embedding_by_live_parent(self):
+        root=BypassRoot().eval();positions=torch.arange(4);x=torch.ones(4,4)
+        trace=NaturalRoPETrace(root,triton_reader,
+            {'model.body.layers.0.rope':root.model.body.layers[0].rope},{},simulation=True,
+            outer_operator='rope_shared_triton_fixture::opaque',triton_kernel=JIT)
+        with trace,NaturalTensorObserver(root):
+            trace.set_request('actual-wrapper',positions,list(range(4)),{})
+            root(x,positions);trace.end_request()
+        self.assertTrue(trace.report()['complete'],trace.errors)
+        self.assertEqual([r['model_path'] for r in trace.rows],
+            ['model.body.layers.0.rope','model.body.layers.1.rope','model.body.layers.2.rope'])
+    def test_same_object_alias_without_live_bound_ancestor_stays_ambiguous(self):
+        root=BypassRoot();sites=ModuleSites(root)
+        with self.assertRaisesRegex(UnsupportedCall,'AMBIGUOUS_OR_FOREIGN'):
+            sites.resolve(root.model.embed,[('<root>',root)])
+    def test_fake_self_local_does_not_supply_a_bound_forward_frame(self):
+        root=BypassRoot();sites=ModuleSites(root)
+        def pretend(self):return sites.resolve(self.embed,[('<root>',root)])
+        with self.assertRaisesRegex(UnsupportedCall,'AMBIGUOUS_OR_FOREIGN'):
+            pretend(root.model)
+    def test_intermediate_graph_and_forward_changes_are_refused(self):
+        root=BypassRoot();sites=ModuleSites(root)
+        root.model.body=torch.nn.Identity()
+        with self.assertRaisesRegex(UnsupportedCall,'LIVE_MODULE_CHILD_REGISTRATION_CHANGED'):
+            sites.verify_ancestry('model.embed')
+        root=BypassRoot();sites=ModuleSites(root)
+        root.model.forward=types.MethodType(lambda self,*args:args[0],root.model)
+        with self.assertRaisesRegex(UnsupportedCall,'LIVE_ANCESTOR_FORWARD_CHANGED'):
+            sites.verify_ancestry('model.embed')
 
 
 if __name__=='__main__':unittest.main()

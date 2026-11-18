@@ -1,5 +1,29 @@
 # RoPE22 shared-site and fused-input checkpoint
 
+## Actual source42 refusal and ancestor repair
+
+The root's next zero-injection receipt remains failed and unchanged:
+`/home/17-fault-c2c3-20261117/rope22-runtime-census-card2-a2/natural-rope22-census/probe/result.json`,
+SHA256 `5ef82f834791077a5a3105dfc8ad4122da9500a318407be52d9271314f482397`.
+It discovered all28 shared RoPE registrations, but failed before the first
+reader. The actual traceback runs Qwen3 root→decorated Qwen2Model `__call__`→
+direct `forward`→`embed_tokens`; the model ancestor's Module hooks are bypassed.
+The actual pinned Qwen3 source also registers tied `lm_head` as the same embedding
+object. A root-only hook stack therefore cannot select the embedding alias.
+Read-only image source hashes are Qwen3
+`153ac85de337ebfec8fd505be600bf93b0f4c55aa3e0ee3f4a91ca6637f75c76`
+and compilation decorators
+`09d05a7ffd3f3e7692b331bd01dbbede404eab2b0e787b1d45fd51c74fbe63c0`.
+
+`ModuleSites` now additionally uses real executing frames of frozen, bound
+ancestor forward methods. A matching `self` variable or class/path string is
+insufficient. Every ancestor registration edge and live method/code identity
+is rechecked; absent/ambiguous ancestry still refuses. The four new CPU cases
+cover the actual direct-forward/tied-alias pattern, a missing live ancestor,
+a fake `self` local, and changed intermediate graph/forward. The full RoPE CPU
+set is now19 passing contracts. This source repair does not convert the failed
+source42 receipt into a pass and does not grant C2/C3.
+
 This checkpoint is based on integration commit `9a406c9d57790ab814178ed1e74eb88160726159`.
 It changes source and CPU contracts only. **No new NPU execution, standard-Worker
 group acceptance, C2, C3, or E5 is claimed.** The existing ordinary lookup-output
