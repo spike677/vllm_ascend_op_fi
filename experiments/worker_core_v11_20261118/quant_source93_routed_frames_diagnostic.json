@@ -1,0 +1,1096 @@
+{
+  "schema": "demoncat.quant.routed_frames_independent_review.v1",
+  "status": "RAW_FRAMES_AUDITED_NO_NATIVE_ROW_AUTHORITY",
+  "inputs": {
+    "inventory_sha256": "3f639448f70fa200d5038dc50b7933904ff11093d4e5796c7051a574c97b1489",
+    "result_sha256": "d7331f8e734fc32647df195c6187b14f30315cfb0e0187b45471185346e7959b"
+  },
+  "sources": [
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/serving_shared_scale_inventory.py",
+      "sha256": "a8a02415ca2ad45cce41b33754753bf80c6970fa113750f83d0ce30c8f0f692d"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/shared_scale_inventory.py",
+      "sha256": "ba5f3ee0f7541a3d9571e8a180994991e74a0f8d077b23f87a716c82c9a68eb6"
+    },
+    {
+      "path": "fault_injection/deployments/dynamic_quant_inventory.py",
+      "sha256": "9dc32fc827484f0c74114fcebfb9dbe9d7186dc295d84a5e47586487e9947a3b"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_row_provenance.py",
+      "sha256": "4807d690f4edae8fb2c327b16aae8d5f5288d789bf7704b9694c91390eec87fe"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/serving_shared_scale_group_inventory.py",
+      "sha256": "3855ccde963a8cdbe2ae9160da280984692b9f098c5b662c22ff5583cd3cd015"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/shared_scale_group_inventory.py",
+      "sha256": "69565391b7bf74bb1b4f3f2a7489fb9702c5d8ddaa05507c58a26f90e42fd38d"
+    },
+    {
+      "path": "fault_injection/deployments/quant_group_inventory.py",
+      "sha256": "712153e2449a80286371cd91b182115fd0d3e5f33e115a0b941eab583bf1c583"
+    },
+    {
+      "path": "fault_injection/quant_group_native.py",
+      "sha256": "0de05a45a734d6f720ecd3489fa4422089926fe812ffbf8534bf1955e8a61a1e"
+    },
+    {
+      "path": "fault_injection/quant_native_isolation.py",
+      "sha256": "0d6199b9491c7f67b0eef0c2c1127de33e53d82ee1a43dddacf45c7bcc175cd9"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_source_rows.py",
+      "sha256": "29dea05cb636c407fb7ec533171f12d1cbe8a390b6edd0c09f46bee911e45c7e"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_mla_metadata_rows.py",
+      "sha256": "a0ae3b12576c44eaee7ad92ed05fa465928215a0d2f1f7aa6b15f99c37c62a37"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_moe_rows.py",
+      "sha256": "498094f7c0d17cf6a877f37733e8eae1afffd88388ee651cc63480baae9262bd"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_token_routes.py",
+      "sha256": "d302ccfc6c66a336476bd93eddadfd679c27afa93549b1186ef72d4453712bd9"
+    },
+    {
+      "path": "demoncat/runtime/vllm_ascend/worker_extension/quant_route_frames.py",
+      "sha256": "97cb26e3f18e00b1ec8fde88c86bc41412d83c2b7b64e21ecab99bf32f55ce33"
+    }
+  ],
+  "actual_projection_calls": 270,
+  "candidates_per_forward": 135,
+  "observed_model_parents": 52,
+  "independently_complete_python_chains": 52,
+  "refused_or_incomplete_python_chains": 0,
+  "records": [
+    {
+      "model_path": "model.layers.1.mlp",
+      "model_boundary_sequence": 30,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": true,
+      "reported_input_rows_reason": null,
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.2.mlp",
+      "model_boundary_sequence": 69,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.3.mlp",
+      "model_boundary_sequence": 108,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.4.mlp",
+      "model_boundary_sequence": 147,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.5.mlp",
+      "model_boundary_sequence": 186,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.6.mlp",
+      "model_boundary_sequence": 225,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.7.mlp",
+      "model_boundary_sequence": 264,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.8.mlp",
+      "model_boundary_sequence": 303,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.9.mlp",
+      "model_boundary_sequence": 342,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.10.mlp",
+      "model_boundary_sequence": 381,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.11.mlp",
+      "model_boundary_sequence": 420,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.12.mlp",
+      "model_boundary_sequence": 459,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.13.mlp",
+      "model_boundary_sequence": 498,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.14.mlp",
+      "model_boundary_sequence": 537,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.15.mlp",
+      "model_boundary_sequence": 576,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.16.mlp",
+      "model_boundary_sequence": 615,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.17.mlp",
+      "model_boundary_sequence": 654,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.18.mlp",
+      "model_boundary_sequence": 693,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.19.mlp",
+      "model_boundary_sequence": 732,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.20.mlp",
+      "model_boundary_sequence": 771,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.21.mlp",
+      "model_boundary_sequence": 810,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.22.mlp",
+      "model_boundary_sequence": 849,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.23.mlp",
+      "model_boundary_sequence": 888,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.24.mlp",
+      "model_boundary_sequence": 927,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.25.mlp",
+      "model_boundary_sequence": 966,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.26.mlp",
+      "model_boundary_sequence": 1005,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.1.mlp",
+      "model_boundary_sequence": 30,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": true,
+      "reported_input_rows_reason": null,
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.2.mlp",
+      "model_boundary_sequence": 69,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.3.mlp",
+      "model_boundary_sequence": 108,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.4.mlp",
+      "model_boundary_sequence": 147,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.5.mlp",
+      "model_boundary_sequence": 186,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.6.mlp",
+      "model_boundary_sequence": 225,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.7.mlp",
+      "model_boundary_sequence": 264,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.8.mlp",
+      "model_boundary_sequence": 303,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.9.mlp",
+      "model_boundary_sequence": 342,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.10.mlp",
+      "model_boundary_sequence": 381,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.11.mlp",
+      "model_boundary_sequence": 420,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.12.mlp",
+      "model_boundary_sequence": 459,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.13.mlp",
+      "model_boundary_sequence": 498,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.14.mlp",
+      "model_boundary_sequence": 537,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.15.mlp",
+      "model_boundary_sequence": 576,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.16.mlp",
+      "model_boundary_sequence": 615,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.17.mlp",
+      "model_boundary_sequence": 654,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.18.mlp",
+      "model_boundary_sequence": 693,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.19.mlp",
+      "model_boundary_sequence": 732,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.20.mlp",
+      "model_boundary_sequence": 771,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.21.mlp",
+      "model_boundary_sequence": 810,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.22.mlp",
+      "model_boundary_sequence": 849,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.23.mlp",
+      "model_boundary_sequence": 888,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.24.mlp",
+      "model_boundary_sequence": 927,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.25.mlp",
+      "model_boundary_sequence": 966,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    },
+    {
+      "model_path": "model.layers.26.mlp",
+      "model_boundary_sequence": 1005,
+      "checked_sections": [
+        "source_frames_and_owner",
+        "integer_arithmetic_parent_and_native_stage_refs",
+        "raw_integer_snapshots_epochs_and_separate_helpers",
+        "typed_builder_mlp_payloads",
+        "native_inputs_outputs_and_current_epochs",
+        "raw_scalar_consumers_aliases_and_epoch_replay"
+      ],
+      "issues": [],
+      "independently_complete": true,
+      "reported_first_failure": null,
+      "reported_input_rows_verified": false,
+      "reported_input_rows_reason": "NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN",
+      "native_row_authority": false
+    }
+  ],
+  "forwards": [
+    {
+      "index": 0,
+      "forward_id": "8-8d6c452d",
+      "actual_graph_calls": 12853,
+      "unknown_edges": 12783,
+      "projection_candidates": 135,
+      "reported_row_proven": 10,
+      "reported_input_rows_verified": 1,
+      "raw_native_denominator": {
+        "raw_model_parents": 135,
+        "raw_prepare_calls": 135,
+        "raw_execute_calls": 135,
+        "raw_public_calls": 270,
+        "actual_native_events": 675
+      },
+      "actual_integer_parents": 26,
+      "integer_snapshot_bytes": 41600,
+      "separate_helper_dispatches": 390,
+      "frame_callbacks": 27440,
+      "frame_observer_ns": 1837420360,
+      "frame_metadata_bytes": 1310662,
+      "per_parent_metadata_bytes_min": 47599,
+      "per_parent_metadata_bytes_max": 53254,
+      "frame_timing_scope": "CALLBACK_BODY_EXCLUDES_SHARED_PROFILE_AND_GRAPH_OVERHEAD",
+      "integer_observer_ns": 1529581856,
+      "integer_readback_ns": 274505534,
+      "source_profile_ns": 347344048,
+      "timings_overlap": true
+    },
+    {
+      "index": 1,
+      "forward_id": "16-a22b79a5",
+      "actual_graph_calls": 12853,
+      "unknown_edges": 12783,
+      "projection_candidates": 135,
+      "reported_row_proven": 10,
+      "reported_input_rows_verified": 1,
+      "raw_native_denominator": {
+        "raw_model_parents": 135,
+        "raw_prepare_calls": 135,
+        "raw_execute_calls": 135,
+        "raw_public_calls": 270,
+        "actual_native_events": 675
+      },
+      "actual_integer_parents": 26,
+      "integer_snapshot_bytes": 41600,
+      "separate_helper_dispatches": 390,
+      "frame_callbacks": 27440,
+      "frame_observer_ns": 1837350964,
+      "frame_metadata_bytes": 1308845,
+      "per_parent_metadata_bytes_min": 47599,
+      "per_parent_metadata_bytes_max": 53140,
+      "frame_timing_scope": "CALLBACK_BODY_EXCLUDES_SHARED_PROFILE_AND_GRAPH_OVERHEAD",
+      "integer_observer_ns": 1533044259,
+      "integer_readback_ns": 274617072,
+      "source_profile_ns": 345019712,
+      "timings_overlap": true
+    }
+  ],
+  "cleanup": {
+    "installed": false,
+    "native_faults": 0,
+    "owned_hooks": 0,
+    "owned_method_patches": 0,
+    "owned_api_patches": 0,
+    "owned_row_dispatch_modes": 0,
+    "group_owner_installed": false,
+    "owned_integer_route_parent_refs": 0,
+    "owned_integer_route_tensor_refs": 0,
+    "owned_routed_frame_parents": 0,
+    "owned_routed_frame_tensor_holds": 0,
+    "owned_routed_frame_payload_holds": 0,
+    "owned_source_profile_callbacks": 0,
+    "owned_early_dispatch_modes": 0,
+    "owned_nested_dispatch_modes": 0,
+    "owned_scheduler_input_refs": 0,
+    "observer_cleanup_pending": false,
+    "owned_live_metadata_records": 0
+  },
+  "native_registration_proven": false,
+  "routed_output_row_proof": false,
+  "native_qualified": false,
+  "c1": false,
+  "c2": false,
+  "c3": false,
+  "qualification_granted": false
+}
