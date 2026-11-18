@@ -232,7 +232,7 @@ phase is **same-request cumulative injection**, not29 isolated healthy-input
 replays. Recovery and post-unregister health were recorded. The original result
 SHA256 is `97444665296400698f9935bdb6cf2ce793a7fdedfb2874a7df61388d07ad577c`.
 The first independent review reconciles typed output bins and both actual
-source/build identities but retains21 unresolved checks: cross-request
+source/build identities but retains20 unresolved checks: cross-request
 non-target counter changes and two custom-library getter joins per generation.
 No new C2/C3 qualification is issued while these checks remain unresolved.
 A separate bounded isolated-target stage is being implemented; it will have
