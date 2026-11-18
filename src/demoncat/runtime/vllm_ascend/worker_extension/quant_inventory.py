@@ -217,10 +217,17 @@ class PublicQuantInventory:
                    native_gate='CURRENT_TYPED_GWS_RUN_METADATA_AND_LEASE_NOT_OBSERVED')
 
     def _restore_apis(self):
-        for module, name, original, observer in reversed(self.api_patches):
+        while self.api_patches:
+            module, name, original, observer = self.api_patches[-1]
             require(getattr(module, name) is observer, 'PUBLIC_QUANT_OBSERVER_OWNER_CHANGED')
-            setattr(module, name, original)
-        self.api_patches.clear()
+            restored = False
+            try:
+                setattr(module, name, original)
+            finally:
+                restored = getattr(module, name) is original
+                if restored:
+                    self.api_patches.pop()
+            require(restored, 'PUBLIC_QUANT_OBSERVER_NOT_RESTORED')
 
     def end(self, model_output_sha256, *, model_output_finite):
         self._thread()
@@ -246,15 +253,27 @@ class PublicQuantInventory:
 
     def close(self):
         self._thread()
-        self._restore_apis()
         require(self.frame is None, 'ACTIVE_QUANT_PROJECTION_CANNOT_REMOVE_OBSERVER')
-        for method, original, observer, local, saved in reversed(self.patches):
+        self._restore_apis()
+        while self.patches:
+            method, original, observer, local, saved = self.patches[-1]
             require(method.apply is observer, 'QUANT_METHOD_OBSERVER_OWNER_CHANGED')
-            if local:
-                method.apply = saved
-            else:
-                del method.apply
-        self.patches.clear()
+            restored = False
+            try:
+                if local:
+                    method.apply = saved
+                else:
+                    del method.apply
+            finally:
+                actual = getattr(method, 'apply', None)
+                restored = ((local and vars(method).get('apply') is saved and actual is saved)
+                    or (not local and 'apply' not in vars(method) and (actual is original
+                        or getattr(original, '__func__', None) is not None
+                        and getattr(actual, '__func__', None) is original.__func__
+                        and getattr(actual, '__self__', None) is original.__self__)))
+                if restored:
+                    self.patches.pop()
+            require(restored, 'QUANT_METHOD_OBSERVER_NOT_RESTORED')
         self.installed = False
 
     def report(self):

@@ -732,6 +732,65 @@ class QuantGroupC1Tests(unittest.TestCase):
         self.assertEqual(client.detach()['status'], 'DETACHED')
         self.assertFalse(self.session.installed or self.session.handles)
 
+    def test_actual_runtime_retries_partial_method_cleanup_after_foreign_owner_is_returned(self):
+        client = self.host_client()
+        x, positions = torch.tensor([3]*8), torch.tensor([2]*8)
+        self.phase(collect=False)
+        self.dispatch('query')
+        baseline = self.session.rows[-1]['decode']['hidden_sha256']
+        first, last = self.session.inventory.patches
+        foreign = lambda *args: None
+        first[0].apply = foreign
+        try:
+            failed = client.disable()
+            self.assertTrue(failed['ownership_retained'])
+            self.assertIn('QUANT_METHOD_OBSERVER_OWNER_CHANGED', str(failed['response']))
+            self.assertTrue(self.session.installed and self.session.handles)
+            self.assertEqual(self.session.inventory.patches, [first])
+            self.assertIs(first[0].apply, foreign)
+            self.assertNotIn('apply', vars(last[0]))
+        finally:
+            first[0].apply = first[2]
+        self.dispatch('disable')
+        self.dispatch('unregister')
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+        self.assertFalse(self.session.installed or self.session.handles or self.session.inventory.patches)
+        self.assertEqual(serving.complete_tensor(self.model(input_ids=x, positions=positions))[1], baseline)
+
+    def test_actual_runtime_retries_partial_api_cleanup_without_releasing_worker_early(self):
+        client = self.host_client()
+        ids = ['cleanup-' + str(i) for i in range(8)]
+        self.dispatch('advance', {'request_ids': ids})
+        self.runner.with_prefill = True
+        hidden = self.model(input_ids=torch.tensor([1, 2]*8), positions=torch.arange(16))
+        self.model.processor(self.model.head, hidden[-8:])
+        self.runner.input_batch = NS(req_ids=ids)
+        self.runner.requests = {value: NS(prompt_token_ids=[1, 2], output_token_ids=[3]) for value in ids}
+        self.dispatch('advance', {'capture_decode': True})
+        self.runner.with_prefill = False
+        x, positions = torch.tensor([3]*8), torch.tensor([2]*8)
+        baseline = self.model(input_ids=x, positions=positions)
+        first, last = self.session.inventory.api_patches
+        foreign = lambda *args: None
+        setattr(first[0], first[1], foreign)
+        try:
+            failed = client.disable()
+            self.assertTrue(failed['ownership_retained'])
+            self.assertIn('PUBLIC_QUANT_OBSERVER_OWNER_CHANGED', str(failed['response']))
+            self.assertTrue(self.session.installed and self.session.handles)
+            self.assertEqual(self.session.inventory.api_patches, [first])
+            self.assertIs(getattr(first[0], first[1]), foreign)
+            self.assertIs(getattr(last[0], last[1]), last[2])
+        finally:
+            setattr(first[0], first[1], first[3])
+        self.dispatch('disable')
+        self.dispatch('unregister')
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+        self.assertFalse(self.session.installed or self.session.handles or self.session.inventory.api_patches)
+        self.assertFalse(self.session.row_observer.active)
+        self.assertIsNone(sys.getprofile())
+        self.assertTrue(torch.equal(self.model(input_ids=x, positions=positions), baseline))
+
     def test_wrong_current_device_refuses_before_native_owner_install(self):
         self.phase()
         self.phase()

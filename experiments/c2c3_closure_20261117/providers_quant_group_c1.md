@@ -66,7 +66,7 @@ not validate CANN arithmetic or natural NPU row mapping. E5 is not assessed by
 this entry; C2/C3 remain false. The real NPU result is still pending root's
 queue and review.
 
-The focused suite passes 140 CPU tests with no skips when the real Core source
+The focused suite passes 149 CPU tests with no skips when the real Core source
 is present (or supplied as the explicit local overlay below). The new cases
 cover the complete seven-phase route, retained unknown candidates, missing or
 relabelled child receipts, current-device mismatch, busy Native leases, a lost
@@ -95,11 +95,22 @@ drain retention and explicit successful cleanup retry. Positive contracts use
 real CPU OpOverloads, including a source-checked outer MLA fixture, through
 the real Runtime/Host lifecycle. They do not prove the NPU dispatch path.
 
+Observer removal records confirmed progress per API/method patch. A foreign
+owner or unsuccessful restore retains its ledger entry and Worker ownership;
+already restored entries are removed immediately, including a setter/deleter
+that restores the exact callable and then raises. No API is removed while a
+projection frame remains active. Nine additional cleanup contracts cover
+partial API/method restoration, inherited and local methods, exceptions after
+restoration, ignored writes, in-flight refusal and Runtime/Host cleanup retry
+followed by an equal ordinary forward in the same CPU Worker. The seven
+inventory cleanup cases live in `test_quant_inventory_cleanup.py`; after that
+test-only relocation, the 41 inventory/provider/cleanup regressions also pass.
+
 ```powershell
 $env:PYTHONPATH='src;fault39/src;.;tests;tests/worker_extension;fault39/tests'
 # Only needed in the isolated branch before the Core commits are integrated:
 $env:DCAT_QUANT_C1_CORE_SOURCE='C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.publish/c2c3-closure-20261117/src'
-& 'C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.codex-tmp/unified-env/Scripts/python.exe' -m unittest test_quant_group_c1 test_quant_group_inventory test_shared_scale_inventory test_quant_inventory test_quant_source_rows test_quant_mla_metadata_rows test_quant_mla_decode_rows test_quant_row_provenance test_worker_quant test_quant_group_binding
+& 'C:/Users/admin/.codex/worktrees/fault28-native-fa-publish/demoncatpfi/.codex-tmp/unified-env/Scripts/python.exe' -m unittest test_quant_group_c1 test_quant_group_inventory test_shared_scale_inventory test_quant_inventory test_quant_inventory_cleanup test_quant_source_rows test_quant_mla_metadata_rows test_quant_mla_decode_rows test_quant_row_provenance test_worker_quant test_quant_group_binding
 ```
 
 Root's preparation command (creates the review manifest, starts nothing):
