@@ -80,18 +80,32 @@ class Vision17WorkerCensus:
             row['request_binding']=self.context.snapshot(module,args,kwargs,
                 expected_request_id=self.pending,expected_prompt=self.prompt)
             row['encoder_observed']=True;self.visual_active=True
-            before=set(module._forward_pre_hooks)
-            self.trace=Vision17Trace(self.visual,simulation=self.simulation)
-            self.trace.__enter__()
-            # PyTorch has already snapshotted this call's pre-hooks.
-            for key,callback in tuple(module._forward_pre_hooks.items()):
-                if key not in before:
-                    require(callback(module,args,kwargs) is None,'CENSUS_OBSERVER_CHANGED_ARGUMENTS')
+            self._open_encoder(args,kwargs)
             self.completion_handle=self._install(module,'register_forward_hook',self._visual_post,
                                                  with_kwargs=True,always_call=True)
         except BaseException as error:
             self._failed(error);self.visual_active=False;raise
         finally:self.callbacks-=1
+
+    def _enter_encoder_scope(self,scope,args,kwargs):
+        before=set(self.visual._forward_pre_hooks)
+        scope.__enter__()
+        # PyTorch has already snapshotted this call's pre-hooks.
+        for key,callback in tuple(self.visual._forward_pre_hooks.items()):
+            if key not in before:
+                result=(callback(self.visual,args,kwargs) if key in self.visual._forward_pre_hooks_with_kwargs
+                        else callback(self.visual,args))
+                require(result is None,'CENSUS_OBSERVER_CHANGED_ARGUMENTS')
+
+    def _open_encoder(self,args,kwargs):
+        self.trace=Vision17Trace(self.visual,simulation=self.simulation)
+        self._enter_encoder_scope(self.trace,args,kwargs)
+
+    def _finish_encoder(self):
+        self.trace.close();self.current['conv_observation']=self.trace.report();self.trace=None
+
+    def _abort_encoder(self):
+        if self.trace is not None:self.trace.close();self.trace=None
 
     def _remove(self,handle):
         entry=next((entry for entry in self.handles if entry[0] is handle),None)
@@ -110,7 +124,7 @@ class Vision17WorkerCensus:
             require(self.visual_active and output is not None and sys.exc_info()[1] is self.visual_entry_error
                     and next(reversed(module._forward_hooks))==self.completion_handle.id,'CENSUS_ENCODER_RETURN_UNCONFIRMED')
             with vision17_diagnostics():self.current['encoder_output']=[tensor_identity(_cpu(t)) for t in tensors(output)]
-            self.trace.close();self.current['conv_observation']=self.trace.report();self.trace=None
+            self._finish_encoder()
             self._remove(self.completion_handle)
         except BaseException as error:
             self._failed(error);raise
@@ -176,8 +190,7 @@ class Vision17WorkerCensus:
     def close(self):
         require(threading.get_ident()==self.thread and not self.callbacks and not self.visual_active and not self.root_active,
                 'CENSUS_ACTUAL_CALLBACK_STILL_ACTIVE')
-        if self.trace is not None:
-            self.trace.close();self.trace=None
+        self._abort_encoder()
         for handle,_ in reversed(self.handles[:]):self._remove(handle)
         self.context.close();self.current=self.pending=None;self.closed=True
         return dict(owned_hooks=0,owned_modes=0,held_tensors=0,fault_injections=0,qualification_granted=False)

@@ -42,12 +42,14 @@ class Vision17Trace:
     READERS = {'aten::add', 'aten::mul', 'aten::linear', 'aten::mm', 'aten::matmul', 'aten::addmm',
                'aten::bmm', 'aten::convolution', 'aten::conv3d', 'aten::cat'}
 
-    def __init__(self, model, *, simulation=False, diagnostics_context=None, max_calls=16, max_edges=128):
+    def __init__(self, model, *, simulation=False, diagnostics_context=None, max_calls=16, max_edges=128,
+                 on_call=None):
         import torch
         require(type(simulation) is bool and type(max_calls) is int and 0 < max_calls <= 64
                 and type(max_edges) is int and 0 < max_edges <= 4096, 'FINITE_SCOPE_REQUIRED')
         self.model, self.simulation = model, simulation
         self.diagnostics_context = diagnostics_context
+        self.on_call = on_call
         self.max_calls, self.max_edges = max_calls, max_edges
         self.sites = ModuleSites(model)
         self.owners = {path: module for path, module in self.sites.nodes.items()
@@ -118,6 +120,7 @@ class Vision17Trace:
                         inputs_before=before, returned=False, lineage_edges=[], consumer=None,
                         final_torch_native_dispatch_arguments=True, aclnn_launch_arguments=False)
                     self.rows.append(row)
+                    if self.on_call is not None:self.on_call(row)
             finally:
                 self.diagnostic = False
         result = func(*args, **kwargs)
