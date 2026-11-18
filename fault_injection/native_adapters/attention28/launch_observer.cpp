@@ -33,6 +33,16 @@ std::map<void*, Binary> registered;
 struct Function { void* binary=nullptr; uint64_t generation=0,key=0; std::string name; };
 std::map<void*, Function> functions;
 uint64_t captured_bytes=0,captured_count=0;
+// A standard Worker registers hundreds of small runtime kernels before FIA.
+// Keep byte limits unchanged; 128 registrations was exhausted before the first
+// observed decode in the source45 stock/private bridge (333 registrations).
+constexpr uint64_t max_binary_bytes=128ULL*1024*1024;
+constexpr uint64_t max_capture_bytes=256ULL*1024*1024;
+constexpr uint64_t max_capture_count=1024;
+bool fits_capture_budget(uint64_t length,uint64_t count,uint64_t bytes) {
+    return length>0 && length<=max_binary_bytes && count<max_capture_count &&
+        bytes<=max_capture_bytes && length<=max_capture_bytes-bytes;
+}
 thread_local std::string token;
 thread_local bool nested=false;
 thread_local int memory_vm_errno=0,memory_proc_errno=0;
@@ -100,11 +110,17 @@ void register_binary(const rtDevBinary_t* input, void** handle, rtError_t result
     std::vector<uint8_t> descriptor,bytes;
     if(!read_self(input,sizeof(*input),descriptor))return;
     rtDevBinary_t b{};std::memcpy(&b,descriptor.data(),sizeof(b));
-    bool overflow=false;
+    bool overflow=false;uint64_t count=0,total=0;
     {std::lock_guard<std::mutex> lock(gate);
-        overflow=b.length>128*1024*1024 || captured_count>=128 || b.length>256*1024*1024-captured_bytes;
-        if(!overflow){captured_bytes+=b.length;++captured_count;}}
-    if(overflow){emit("\"event\":\"capture_overflow\",\"reason\":\"registered_binary_budget\"");return;}
+        overflow=!fits_capture_budget(b.length,captured_count,captured_bytes);
+        if(!overflow){captured_bytes+=b.length;++captured_count;}
+        count=captured_count;total=captured_bytes;}
+    if(overflow){
+        std::ostringstream row;row<<"\"event\":\"capture_overflow\",\"reason\":\"registered_binary_budget\""
+            <<",\"binary_bytes\":"<<b.length<<",\"captured_count\":"<<count<<",\"captured_bytes\":"<<total
+            <<",\"max_count\":"<<max_capture_count<<",\"max_total_bytes\":"<<max_capture_bytes;
+        emit(row.str());return;
+    }
     if(!read_self(b.data,b.length,bytes))return;
     // Raw registered bytes stay private on the experiment host. Python hashes
     // these exact bytes and compares them with the freshly built ELF manifest.
@@ -164,6 +180,11 @@ extern "C" int dcat_attention_observer_end_v1() {
     if(token.empty())return -1;bool ok=emit("\"event\":\"end\"");token.clear();return ok?0:-2;
 }
 extern "C" int dcat_attention_observer_memory_selftest_v1() {
+    // Host-only budget boundary checks; no allocation, file or NPU operation.
+    if(!fits_capture_budget(1,333,35521944) || !fits_capture_budget(1,1023,max_capture_bytes-1) ||
+       fits_capture_budget(1,1024,0) || fits_capture_budget(max_binary_bytes+1,0,0) ||
+       fits_capture_budget(1,0,max_capture_bytes) || fits_capture_budget(1,0,UINT64_MAX) ||
+       fits_capture_budget(0,0,0))return -4;
     uint64_t expected[3]={0x4712a8ffdeadbeefULL,0,0x8a1f447766221199ULL};std::vector<uint8_t> bytes;
     if(!read_self(expected,sizeof(expected),bytes)||std::memcmp(bytes.data(),expected,sizeof(expected)))return -1;
     // Confirm inaccessible addresses are refused without a signal/crash.

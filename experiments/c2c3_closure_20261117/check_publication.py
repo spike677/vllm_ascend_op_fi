@@ -83,7 +83,9 @@ def main():
         content_scope='Reviewed implementation, CPU contracts, probes, summaries and hashes only',
         mechanism_qualification_granted=False)
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(result, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+    # Deterministic JSON bytes on Windows as well as Linux; this manifest is
+    # published as a hashable source-audit artifact, not a native text stream.
+    args.out.write_bytes((json.dumps(result, indent=2, ensure_ascii=False) + '\n').encode('utf-8'))
     print(json.dumps(dict(head=head, files=len(current), history_blobs=len(history_blobs),
                           manifest_sha256=hashlib.sha256(args.out.read_bytes()).hexdigest())))
 
