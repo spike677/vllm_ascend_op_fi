@@ -42,7 +42,13 @@ def setup(worker, native_args, evidence_dir, statistics, boundary_args=None):
     require(not hasattr(worker, OWNER), 'TND33_EXISTING_SESSION_OWNER')
     for owner in (worker, worker.model_runner):
         require('execute_model' not in vars(owner), 'CORE_METHOD_INSTANCE_OVERRIDE')
-    session = paged33_tnd_probe.TNDWorkerProbeSession(worker, native_args=native_args,
+    session_type=paged33_tnd_probe.TNDWorkerProbeSession
+    if boundary_args is not None and boundary_args.get('arch22_all_normal') is True:
+        from demoncat.runtime.vllm_ascend.worker_extension.paged33_all_normal import AllNormalWorkerSession
+        session_type=AllNormalWorkerSession
+        require(Path(inspect.getfile(session_type)).resolve().is_relative_to('/installed'),
+                'ALL_NORMAL_INSTALLED_WHEEL_REQUIRED')
+    session = session_type(worker, native_args=native_args,
         evidence_dir=evidence_dir, statistics=statistics, boundary_args=boundary_args)
     setattr(worker, OWNER, session)
     try:
@@ -53,7 +59,8 @@ def setup(worker, native_args, evidence_dir, statistics, boundary_args=None):
     return dict(candidate_count=len(session.candidates), source=session.source,
         module_path=inspect.getfile(paged33_tnd_probe), module_sha256=sha(inspect.getfile(paged33_tnd_probe)),
         stock_read_only=native_args is None, core_methods_replaced=False,
-        first_boundary_diagnostic=boundary_args is not None)
+        first_boundary_diagnostic=boundary_args is not None,
+        all_normal_session_sha256=sha(inspect.getfile(session_type)) if session_type is not paged33_tnd_probe.TNDWorkerProbeSession else None)
 
 
 def expect(worker, request_id, tokens):
@@ -118,6 +125,10 @@ def run(args, bundle):
         report.update(normal_bridge_variant='tnd_page16_arch22_s2_256',
             normal_route_preference_changed=bundle is not None,stock_private_exact_proven=False,
             fault_authorized=False,native_target_scope='FIRST_LAYER_NORMAL_ONLY')
+    if getattr(args,'arch22_all_normal_bridge',False):
+        report.update(normal_bridge_variant='tnd_page16_arch22_all_normal',
+            normal_route_preference_changed=bundle is not None,stock_private_exact_proven=False,
+            fault_authorized=False,native_target_scope='ALL_DISCOVERED_OBJECTS_NORMAL_ONLY')
     target = args.out/'result.json'
     def save():
         target.write_text(json.dumps(report, indent=2, allow_nan=False)+'\n')
@@ -164,6 +175,7 @@ def run(args, bundle):
                 if getattr(args, 'arch22_normal_bridge', False):
                     native['normal_bridge'] = True
                 if getattr(args,'arch22_s2_normal_bridge',False):native['arch22_s2_normal']=True
+                if getattr(args,'arch22_all_normal_bridge',False):native['arch22_all_normal']=True
             row = dict(phase=phase);report['phases'].append(row);save()
             installed = True  # setup may install a partial owned session
             boundary = (dict(path=str(args.observer_receipt), expected_sha256=args.observer_receipt_sha256,
@@ -171,6 +183,8 @@ def run(args, bundle):
                                 'src/demoncat/runtime/vllm_ascend/worker_extension/paged33_boundary_probe.py'))
                         if args.first_boundary_diagnostic else None)
             if boundary is not None and getattr(args,'arch22_s2_normal_bridge',False):boundary['arch22_s2_normal']=True
+            if boundary is not None and getattr(args,'arch22_all_normal_bridge',False):
+                boundary.update(arch22_all_normal=True,prompt_token_ids=tokens)
             row['setup'] = rpc(llm, setup, native, str(args.out/phase), args.statistics and phase == 'measured', boundary)
             require(row['setup']['candidate_count'] == 28, 'COMPLETE_QWEN_28_LAYER_CENSUS_REQUIRED')
             ids = llm.enqueue([prompt], params, use_tqdm=False)
@@ -247,6 +261,7 @@ def main():
         help='Separate normal-only route candidate; requires new stock/private boundary captures and never accepts F')
     parser.add_argument('--arch22-s2-normal-bridge',action='store_true',
         help='Only first-layer normal/OFF of the new S2 package; no F or old proof inheritance')
+    parser.add_argument('--arch22-all-normal-bridge',action='store_true',help='All discovered decode objects; zero F')
     parser.add_argument('--child', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args()
     require(args.experimental_qualification and str(args.out).startswith('/evidence/'),
@@ -258,16 +273,21 @@ def main():
     require(not args.arch22_s2_normal_bridge or (args.first_boundary_diagnostic and args.phase in ('stock','baseline')
         and not args.arch22_normal_bridge and not args.statistics and args.bridge is None
         and args.bridge_sha256 is None),'S2_NORMAL_BRIDGE_NEVER_AUTHORIZES_FAULT_OR_OLD_PROOF')
+    require(not args.arch22_all_normal_bridge or (args.first_boundary_diagnostic and args.phase in ('stock','baseline')
+        and not args.arch22_normal_bridge and not args.arch22_s2_normal_bridge and not args.statistics
+        and args.bridge is None and args.bridge_sha256 is None),'ALL_NORMAL_NO_FAULT_OR_INHERITED_PROOF')
     bundle, library = None, None
     if args.phase != 'stock':
-        if args.arch22_s2_normal_bridge:
+        if args.arch22_all_normal_bridge:
+            from demoncat.runtime.vllm_ascend.worker_extension.paged33_all_normal import verify_bundle
+        elif args.arch22_s2_normal_bridge:
             from demoncat.runtime.vllm_ascend.worker_extension.paged33_arch22_s2_normal import verify_bundle
         elif args.arch22_normal_bridge:
             from demoncat.runtime.vllm_ascend.worker_extension.paged33_arch22_bridge import verify_bundle
         else:
             from demoncat.runtime.vllm_ascend.worker_extension.paged33_tnd import verify_bundle
         bundle = verify_bundle(args.completion, args.completion_sha256, args.vendor)
-        schema_field = 'arch22_public_schema_sha256' if args.arch22_normal_bridge or args.arch22_s2_normal_bridge else 'fai_public_schema_sha256'
+        schema_field = 'arch22_public_schema_sha256' if args.arch22_normal_bridge or args.arch22_s2_normal_bridge or args.arch22_all_normal_bridge else 'fai_public_schema_sha256'
         require(sha(args.public_schema) == args.schema_sha256 == bundle['completion'][schema_field],
                 'EXACT_NEW_FAI_SCHEMA_REQUIRED')
     if bundle is not None or args.first_boundary_diagnostic:

@@ -233,7 +233,7 @@ def check_actual_inputs(saved):
                 declaration_is_native_observation=False)
 
 
-def page_relocation_evidence(saved, validated, completed_boundary):
+def page_relocation_evidence(saved, validated, completed_boundary, *, target_path=FIRST):
     """Prove a per-request page map without changing the raw input signature.
 
     ``validated`` is produced in this process by first_boundary, which reads
@@ -273,7 +273,7 @@ def page_relocation_evidence(saved, validated, completed_boundary):
     need(all(type(n) is int for n in bound['slots'])
          and bound['slots'] == bound['expected_slots'] == writer['slots'] == [slot]
          and writer['returned'] is True
-         and writer['module_path'] == bound['module_path'] == FIRST,
+         and writer['module_path'] == bound['module_path'] == target_path,
          'REPEAT_CURRENT_WRITER_OR_CONSUMER_SLOT_DIFFERS')
     logical = {}; capacity = []
     for kind in ('key', 'value'):
@@ -452,9 +452,10 @@ def final_private_pod(raw_event, resolved, host, bundle, abi_helper,*,selected_s
     need(all(typed.get(key) == value for key,value in expected.items()) and 1025 <= typed['baseParams.s2Size'] <= 2048,
          'FINAL_PUBLIC_POD_NORMAL_GEOMETRY_DIFFERS')
     s2=bundle.get('completion',{}).get('variant')==evidence.S2_VARIANT
-    need(host['schema'] == ('demoncat.paged33.arch22_s2_host.v1' if s2 else 'demoncat.paged33.arch22_normal_host.v1')
+    normal_all=bundle.get('completion',{}).get('variant')==evidence.ALL_VARIANT
+    need(host['schema'] == ('demoncat.paged33.arch22_all_normal_host.v1' if normal_all else 'demoncat.paged33.arch22_s2_host.v1' if s2 else 'demoncat.paged33.arch22_normal_host.v1')
         and host['route'] == 'FiaTilingNonQuant'
-        and host['mode'] == ('arch22_s2_256' if selected_s2==256 else 'arch22_s2_off' if s2 else 'arch22_normal')
+        and host['mode'] == ('arch22_all_normal' if normal_all else 'arch22_s2_256' if selected_s2==256 else 'arch22_s2_off' if s2 else 'arch22_normal')
         and host['normal_route_preference_changed'] is True
         and host['eligible'] is True and host['policy_applied'] is (selected_s2==256)
         and host['native_s2'] == 512 and host['selected_s2']==selected_s2, 'NATIVE_HOST_EXPLICIT_SELECTION_DIFFERS')
@@ -470,6 +471,9 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
     paths={FIRST} if s2 else set(LAYERS)
     need(len(calls) == len(paths) and {row['module_path'] for row in calls} == paths
         and len({row['call_id'] for row in calls}) == len(paths), 'COMPLETE_SCOPED_PRIVATE_NATIVE_CALLS_REQUIRED')
+    if bundle['completion'].get('variant')==evidence.ALL_VARIANT:
+        need(len({row['owner'] for row in calls})==1,
+             'ALL_NORMAL_NATIVE_OWNER_CHANGED_WITHIN_REQUEST')
     folder = run/name/'native'; log = folder/'host.jsonl'; before = log.stat()
     need(0 < before.st_size <= 32*1024**2 and not log.is_symlink(), 'HOST_LOG_BOUND_OR_LINK')
     raw = log.read_bytes(); after = log.stat()
@@ -503,6 +507,23 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
                 and type(host['generation']) is int and host['generation']==owner['generation']==1
                 and owner['python_owner_object_id']==logical['identity']['owner_object_id']
                 and logical==saved['logical_input_binding'],'S2_ACTUAL_HOST_OWNER_PHASE_INPUT_JOIN_DIFFERS')
+            helper.arch22_s2_build_evidence.verify_normal_geometry(decoded['typed'],host,
+                bundle['s2_cpu_matrix']['normal_first_decode_rows'][host['aic']])
+        if bundle['completion'].get('variant')==evidence.ALL_VARIANT:
+            capture=phase['finish']['capture'];targets=capture['target_scope'];current=capture['all_decode_boundaries'][path]
+            index=[r['path'] for r in targets['targets']].index(path);host=host_map[token]
+            logical=current['logical_input_binding']
+            need(call==row.get('native') and host['phase']==call['phase'] and host['target_path']==path and host['normal_only'] is True
+                and host['target_set_sha256']==call['target_set_sha256']==targets['sha256']
+                and host['module_object_id']==call['module_object_id']==targets['targets'][index]['module_object_id']
+                and type(host['target_ordinal']) is int and type(call['target_ordinal']) is int
+                and host['target_ordinal']==call['target_ordinal']==index
+                and host['actual_observer_scope_matched'] is True and host['owner']==call['owner']
+                and len(host['owner'])==32 and all(c in '0123456789abcdef' for c in host['owner'])
+                and type(host['generation']) is int and host['generation']==call['generation']==targets['generation']==1
+                and targets['owner_object_id']==logical['identity']['owner_object_id']
+                and token==current['native_call_id'] and call['logical_input_binding']==logical,
+                'ALL_NORMAL_HOST_LIVE_OBJECT_SET_OR_CALL_SCOPE_DIFFERS')
             helper.arch22_s2_build_evidence.verify_normal_geometry(decoded['typed'],host,
                 bundle['s2_cpu_matrix']['normal_first_decode_rows'][host['aic']])
         recorded = call['native']
@@ -555,9 +576,10 @@ def check_coexistence(document, source, bundle, pid,*,cleanup_receipts=None):
                 selected_callsite_aclnn_owner_observed=False)
 
 
-def compare_pair(left, right, helper, *, allow_page_relocation=False):
+def compare_pair(left, right, helper, *, allow_page_relocation=False, payload_comparison=None):
     a,b = left['boundary'],right['boundary']
-    payloads = helper.differences.compare(left['payloads'],right['payloads'],LAYERS)
+    payloads = (helper.differences.compare(left['payloads'],right['payloads'],LAYERS)
+                if payload_comparison is None else payload_comparison)
     if a is None or b is None:
         return dict(complete_first_input_signature_equal=None,raw_input_exact=None,
                     logical_input_equivalent=False,normal_repeat_valid=False,

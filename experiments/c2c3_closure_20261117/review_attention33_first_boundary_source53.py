@@ -229,15 +229,18 @@ def same_snapshot(left, right):
     return all(left.get(k) == right.get(k) for k in ('metadata','version','bytes','sha256','finite'))
 
 
-def first_boundary(run, phase, frozen_row, *, difference_reader):
-    capture = phase['finish']['capture']; value = capture['first_decode_boundary']; bound = value['boundary']
-    name = phase['phase']; prefix = '/evidence/run/'+name+'/first_boundary/'
-    need(read(Path(run)/name/'first_boundary/boundary.json') == value, 'BOUNDARY_FILE_DIFFERS_FROM_RESULT')
+def first_boundary(run, phase, frozen_row, *, difference_reader, target_path=FIRST, relative_folder='first_boundary'):
+    capture = phase['finish']['capture']
+    value=(capture['first_decode_boundary'] if target_path==FIRST and relative_folder=='first_boundary'
+           else capture['all_decode_boundaries'][target_path]); bound = value['boundary']
+    name = phase['phase']; prefix = '/evidence/run/'+name+'/'+relative_folder+'/'
+    need(not Path(relative_folder).is_absolute() and '..' not in Path(relative_folder).parts,'BOUNDARY_FOLDER_INVALID')
+    need(read(Path(run)/name/relative_folder/'boundary.json') == value, 'BOUNDARY_FILE_DIFFERS_FROM_RESULT')
     need(value['schema'] == 'demoncat.paged33.first_decode_boundary.v1' and value['state'] == 'FINALIZED'
         and value['execution'] == 'NATURAL_WORKER_DIAGNOSTIC' and value['errors'] == [] and value['original_calls'] == 1
         and value['input_substitutions'] == 0 and value['operator_arguments_modified'] is False
         and all(value[k] is False for k in ('fault_enabled','c2','c3')) and value['rank'] == 0, 'FIRST_BOUNDARY_SCOPE_OR_ORIGINAL_ONCE')
-    need(bound['module_path'] == FIRST and bound['metadata_binding'] == 'VERIFIED'
+    need(bound['module_path'] == target_path and bound['metadata_binding'] == 'VERIFIED'
         and all(bound[k] == frozen_row[k] for k in ('module_path','module_object_id','impl_object_id','query','key','value',
             'page_table','live_key_cache','live_value_cache','used_pages','slots','sequence_lengths','scheduler','writer')),
         'FIRST_BOUNDARY_ACTUAL_CALL_JOIN')
@@ -281,7 +284,7 @@ def first_boundary(run, phase, frozen_row, *, difference_reader):
     kv = {}
     for kind in ('key','value'):
         before, after = value['logical_kv_before'][kind], value['logical_kv_after'][kind]
-        live = bound['live_'+kind+'_cache']; post = capture['attention'][FIRST][kind]
+        live = bound['live_'+kind+'_cache']; post = capture['attention'][target_path][kind]
         need(before['metadata'] == live and same_snapshot(before,after) and before['shape'] == [1025,8,128]
             and before['bytes'] == 2099200 and before['finite'] is True and before['version'] == inputs[kind]['version']
             and before['physical_pages'] == after['physical_pages'] == post['physical_pages'] == bound['used_pages'][0]
@@ -299,7 +302,7 @@ def first_boundary(run, phase, frozen_row, *, difference_reader):
     for index, (before,after) in enumerate(zip(outputs,value['outputs_after'])):
         need(before['path'] == prefix+'output-'+str(index)+'.bin' and same_snapshot(before,after), 'IMMEDIATE_OUTPUT_CHECKPOINT_CHANGED')
         output_raw.append(raw_snapshot(run,before))
-    first_output = capture['attention'][FIRST]['output']
+    first_output = capture['attention'][target_path]['output']
     need(all(output_raw[0][k] == first_output[k] for k in ('shape','dtype','bytes','sha256')), 'IMMEDIATE_OUTPUT_DIFFERS_FROM_LATER_RETAINED_OUTPUT')
     expected_checks = set(inputs) | {'logical_key','logical_value','impl_key_same_object','impl_value_same_object'} | {'output_'+str(i) for i in range(len(outputs))}
     need(set(value['subsequent_checks']) == expected_checks and all(item is True for item in value['subsequent_checks'].values())
@@ -315,7 +318,7 @@ def first_boundary(run, phase, frozen_row, *, difference_reader):
             hash_only_input_tensors={k:inputs[k]['snapshot']['sha256'] for k in hash_only},
             block_table_full_values_rehashed=True, block_table_sha256=table['sha256'],
             checkpoint_checks=len(expected_checks), original_runtime_observation=value['runtime_observation'],
-            mapped_api_libraries=value.get('mapped_api_libraries'), original_boundary_json_sha256=sha(Path(run)/name/'first_boundary/boundary.json'),
+            mapped_api_libraries=value.get('mapped_api_libraries'), original_boundary_json_sha256=sha(Path(run)/name/relative_folder/'boundary.json'),
             checkpoint_equality=True, intervening_write_absence_proven=False,
             scalar_after_values_independently_recomputed=False, mask_raw_bytes_rehashed=False))
 

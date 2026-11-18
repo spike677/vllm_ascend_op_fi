@@ -27,12 +27,13 @@ def make_cases(args, source, bundle, observer, contract, installed_pins):
                   'NORMAL_BRIDGE_CASE_BUDGET_INVALID')
     cases = []
     s2=evidence.variant(source)==evidence.S2_VARIANT
+    normal_all=evidence.variant(source)==evidence.ALL_VARIANT
     for arm in ('stock', 'baseline'):
-        label = ('attention33-arch22-s2-normal-' if s2 else 'attention33-arch22-normal-')+arm
+        label = ('attention33-arch22-all-normal-' if normal_all else 'attention33-arch22-s2-normal-' if s2 else 'attention33-arch22-normal-')+arm
         argv = ['python3', '-B', '/repo/'+evidence.EXPERIMENT+'attention33_worker_probe.py',
             '--phase', arm, '--model', '/model', '--out', '/evidence/run',
             '--experimental-qualification', '--first-boundary-diagnostic',
-            '--arch22-s2-normal-bridge' if s2 else '--arch22-normal-bridge',
+            '--arch22-all-normal-bridge' if normal_all else '--arch22-s2-normal-bridge' if s2 else '--arch22-normal-bridge',
             '--observer-receipt', '/build/attention-preflight/result.json',
             '--observer-receipt-sha256', observer['sha256']]
         mounts = [[str(args.source), '/repo', 'ro'], [str(args.installed), '/installed', 'ro'],
@@ -57,7 +58,7 @@ def make_cases(args, source, bundle, observer, contract, installed_pins):
                 observer_library_sha256=observer['receipt']['observer_library']['sha256'],
                 model=str(args.model), cann='8.5.1', soc='Ascend910B4/A2', physical_cards=[args.card], ranks=[0],
                 worker='Standard Qwen TP1 eager; actual 1024-token prefill and first KV1025 decode',
-                expected_hits='0 faults; 5 first-boundary captures and 5 x 87 complete payloads per arm; '
+                expected_hits=('0 faults; all 28 actual decode boundaries, full 56 calls per phase and 5 x 87 payloads; ' if normal_all else '0 faults; 5 first-boundary captures and 5 x 87 complete payloads per arm; ')
                               + ('private first 4 phases each observe only layer0 Native; 27 other calls are unscoped'
                                  if s2 else 'private first 4 phases additionally observe all 28 native calls'),
                 recovery_plan='Five normal phases plus ordinary post-clean request; exact repeated outputs and zero owned scope/hooks/wrappers.',

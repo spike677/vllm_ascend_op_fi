@@ -31,10 +31,16 @@ def _value_signature(snapshot):
 class LogicalPagedInput:
     """One natural call; retains failures and actual objects until release()."""
     def __init__(self, *, worker, module, module_path, forward_context, metadata,
-                 actual, scheduler, writer, owner, generation, allow_cpu_test=False):
+                 actual, scheduler, writer, owner, generation, allow_cpu_test=False, target_scope=None):
         require(owner is not None and not isinstance(owner,(str,int,float,bool,dict,list,tuple))
                 and type(generation) is int and generation>0, 'PAGED_LIVE_OWNER_REQUIRED')
-        require(module_path == FIRST_LAYER, 'PAGED_FIRST_LAYER_SCOPE_ONLY')
+        if target_scope is None:
+            require(module_path == FIRST_LAYER, 'PAGED_FIRST_LAYER_SCOPE_ONLY')
+        else:
+            from .paged33_normal_targets import NormalTargetScope
+            require(type(target_scope) is NormalTargetScope, 'PAGED_TRUSTED_NORMAL_TARGET_SCOPE_REQUIRED')
+            target_scope.check(worker, module_path, module, owner, generation)
+        self.target_scope = target_scope
         self.owner,self.generation,self.thread = owner,generation,_thread()
         self.worker,self.runner = worker,worker.model_runner
         self.model,self.module,self.impl = self.runner.model,module,module.impl
@@ -57,6 +63,8 @@ class LogicalPagedInput:
         self.before = self._snapshot(owner,generation)
 
     def _identity(self,owner,generation):
+        if self.target_scope is not None:
+            self.target_scope.check(self.worker,self.module_path,self.module,owner,generation)
         require(not self.closed and owner is self.owner and type(generation) is int
                 and generation == self.generation and _thread() == self.thread,
                 'PAGED_OWNER_GENERATION_OR_THREAD_DIFFERS')

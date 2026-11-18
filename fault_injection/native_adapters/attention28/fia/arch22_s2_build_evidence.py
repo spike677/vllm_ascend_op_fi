@@ -51,12 +51,15 @@ def pristine_split_pins(recipe_sha256):
     return {name:declared[name] for name in names}
 
 
-def verify_inputs(root,data,pins):
+def verify_inputs(root,data,pins,*,all_normal=False):
     root=Path(root).resolve(strict=True)
-    need(data.get('variant')==VARIANT and data.get('arch22_s2_recipe_sha256')==pins[PREFIX+'apply_tnd33_arch22_s2.py']
+    expected_variant='tnd_page16_arch22_all_normal' if all_normal else VARIANT
+    recipe='apply_tnd33_arch22_all_normal.py' if all_normal else 'apply_tnd33_arch22_s2.py'
+    header='paged33_arch22_all_normal.h' if all_normal else 'paged33_arch22_s2.h'
+    need(data.get('variant')==expected_variant and data.get('arch22_s2_recipe_sha256')==pins[PREFIX+recipe]
         and data.get('arch22_s2_normal_route_recipe_sha256')==pins[PREFIX+'apply_tnd33_arch22_bridge.py']
         and data.get('arch22_s2_headers')=={name:pins[PREFIX+name] for name in
-            ('paged33_arch22_s2.h','paged33_arch22_bridge.h')}
+            (header,'paged33_arch22_bridge.h')}
         and all(data.get(k) is False for k in ('old_normal_certificate_reused','fault_execution_ready','stock_private_exact_proven')),
         'S2_NEW_RECIPE_HEADERS_AND_NO_INHERITED_AUTHORITY_REQUIRED')
     folder=root/'evidence/arch22_s2_matrix';receipt=read(folder/'receipt.json');matrix=folder/'split_matrix.jsonl'

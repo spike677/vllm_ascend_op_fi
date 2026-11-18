@@ -324,7 +324,7 @@ def stock_scope_from_receipt(path, expected_sha256):
 
 
 class FirstDecodeBoundaryCapture:
-    def __init__(self, worker, folder, synchronize, *, allow_cpu_test=False):
+    def __init__(self, worker, folder, synchronize, *, allow_cpu_test=False, target_scope=None, target_path=None):
         self.worker, self.runner, self.model = worker, worker.model_runner, worker.model_runner.model
         self.rank = worker.rank
         self.folder, self.synchronize = Path(folder), synchronize
@@ -332,6 +332,11 @@ class FirstDecodeBoundaryCapture:
         self.native_tid = threading.get_native_id()
         self.allow_cpu_test, self.refs, self.result, self.data = allow_cpu_test, None, None, None
         self.calls = 0; self.inflight = False
+        self.target_scope,self.target_path=target_scope,target_path
+        if target_scope is not None:
+            from .paged33_normal_targets import NormalTargetScope
+            require(type(target_scope) is NormalTargetScope and type(target_path) is str,
+                    'BOUNDARY_LIVE_NORMAL_TARGET_SCOPE_REQUIRED')
 
     def _owner(self):
         require(threading.get_ident() == self.thread and threading.get_native_id() == self.native_tid
@@ -342,8 +347,13 @@ class FirstDecodeBoundaryCapture:
     def start(self, name, original, args, kwargs, boundary, module, ordinal):
         import torch
         self._owner()
-        require(self.data is None and ordinal == 0 and name == 'npu_fused_infer_attention_score'
-                and boundary['module_path'] == FIRST_LAYER and boundary['module_object_id'] == id(module)
+        expected_path,expected_ordinal=FIRST_LAYER,0
+        if self.target_scope is not None:
+            expected_path=self.target_path
+            expected_ordinal=self.target_scope.check(self.worker,expected_path,module,
+                self.target_scope.owner,self.target_scope.generation)
+        require(self.data is None and ordinal == expected_ordinal and name == 'npu_fused_infer_attention_score'
+                and boundary['module_path'] == expected_path and boundary['module_object_id'] == id(module)
                 and boundary.get('metadata_binding') == 'VERIFIED', 'BOUNDARY_FIRST_ACTUAL_LAYER_REQUIRED')
         if not self.allow_cpu_test:
             require(original is getattr(torch.ops.npu, name), 'BOUNDARY_ACTUAL_PUBLIC_PACKET_REQUIRED')
@@ -399,7 +409,7 @@ class FirstDecodeBoundaryCapture:
     def _cache(self):
         return {key: logical_cache_snapshot(self.refs[key], self.refs['pages'], self.refs['length']) for key in ('key', 'value')}
 
-    def invoke_original(self, original, args, kwargs):
+    def invoke_original(self, original, args, kwargs, *, call_once=None):
         import torch
         self._owner()
         require(self.data is not None and self.data['state'] == 'INPUT_CAPTURED' and self.calls == 0,
@@ -414,7 +424,8 @@ class FirstDecodeBoundaryCapture:
                 'BOUNDARY_ORIGINAL_ARGUMENT_IDENTITY_CHANGED')
         self.calls += 1; self.data['original_calls'] = self.calls; self.inflight = True
         try:
-            result = original(*args, **kwargs)
+            require(call_once is None or self.target_scope is not None, 'BOUNDARY_OWNED_CALL_ONCE_SCOPE_REQUIRED')
+            result = original(*args, **kwargs) if call_once is None else call_once()
             self.result = result
             values = list(result) if isinstance(result, (tuple, list)) else [result]
             require(values and len(values) <= 16 and all(isinstance(value, torch.Tensor) for value in values),
