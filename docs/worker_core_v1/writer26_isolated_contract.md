@@ -135,3 +135,104 @@ missing calls, changed actual pre-F residual, foreign owner/generation, late
 callbacks, original-file corruption, cleanup retry and pre-F budget refusal.
 Earlier focused runs and the separate 279.922-second CPU cost measurement
 overlap this coverage; their counts are not added to the 94.
+
+## Explicit same-Worker isolated C2 to cumulative C3
+
+`c2_isolated_c3` is a separate, FIA-only trusted deployment profile. It retains
+the complete current candidate inventory, including the first fresh-forward
+call without a live residual producer. It does not reuse source77/source82
+qualification. `c2_isolated_once` still ends after its isolated C2; existing
+`c2_once` and `c2_c3` keep their execution plans.
+
+The new profile first completes the full isolated C2 above. Its explicit collect
+then performs the existing whole-group recovery, same-Worker health and Native
+release. Only that backend's newly issued **original Python C2 proof object**
+is passed to the next backend. No RPC serializes or reconstructs authority.
+The Worker, logical owner, process lifetime, source-bound scope and complete
+target set remain the same; the Native generation increments once. The old
+callbacks stay disabled. A failed recovery/install retains the original
+failure, evidence and owner until explicit cleanup can establish zero resources.
+
+C3 performs two new healthy inventories, complete Reference/lossless/OFF,
+then two fresh requests in which **every matching eligible call** is admitted,
+followed by real all-target OFF and health. C3 is cumulative within each request;
+it is not described as isolated. The unchanged CoverageSession checks the exact
+issued live object before fault sealing. New ambiguity, allocator change,
+missing targets or copied proof blocks C3 without narrowing the set. Propagated
+input or writer/consumer failures retain the unchanged Native safety gates.
+
+For the source82-sized 30-call/29-eligible set the new plan has 64 isolated C2
+requests plus 9 cumulative C3 requests, then one post-unregister healthy request.
+Each generation retains all 30 calls per request. C2 has 29 F hits and C3 seeks
+58 further hits; expected owned Native executions total `29*(5+6)=319`.
+Before any C2 F, the actual trace capacity reserves the entire combined plan,
+including both generations' typed records. C3 rechecks the remaining capacity.
+Delta originals and final merged reports remain separate for both generations.
+Neither collection nor query runs a model forward.
+
+### Real cost evidence and clock boundaries
+
+The new probe requires two fixed-SHA, read-only **cost originals**, kept on 124:
+
+| Original | SHA256 |
+| --- | --- |
+| source82 result, all 64 complete cycle durations | `f84c1cc357ae5cce58b3b1d52d1e4a977e887de5acca883e8c0a9d08af654643` |
+| source82 controller, actual start/end | `77779e19ac4adbaa9443393d81f37eefb26762df1ec2061fea348f4af2c31319` |
+
+It validates both before model initialization. Missing/changed originals refuse
+with a saved result; their success flags are never used. Actual source82 request
+cycles total 736.386828 seconds, the largest late cycle is 25.441892 seconds,
+and its controller interval is 921.375026 seconds. Faster early measurements
+cannot erase those late costs. Each pre-F check applies the larger current
+R/L/OFF-to-source82 comparable-cycle ratio (minimum one), complete-denominator
+scaling and a 1.25 safety multiplier. C2 compares initial qualification cycles;
+C3 compares its qualification cycles against source82's actual late maximum,
+because C3 already carries the full prior C2 history. It does not multiply that
+same accumulated history cost again by an early sub-second baseline.
+Remaining C2 cost uses the actual 59 post-qualification
+cycles; C3 uses the larger actual late-cycle cost, scaled for the full 73-request
+history. The code records every input, calculation and refusal reason.
+
+The existing 1200-second CoverageSession deadline begins at **each generation's
+first fault group construction**. Neither generation may exceed that bound.
+The 1800-second case remains one continuous clock; the probe starts its clock
+before model initialization and never resets it at C3. Forecasts include 120
+seconds for cleanup plus another 120 seconds outside the probe for controller
+startup, exit and disk overhead. At the source82 measured speed and its actual
+114.342905 seconds before F, the estimate is 1036.430113 seconds for the C2
+generation and 285.502735 for C3; continuous projected case time is 1643.154172
+seconds. These are estimates, not device acceptance or permission to extend
+either deadline. A slower/late new run refuses before its first F. C3 repeats
+the budget check after its own five healthy qualification requests, preserving
+completed C2 evidence if no time remains for C3.
+
+Prepare a fresh source/package with the unchanged reviewed Native bundle:
+
+```bash
+python3 "$SOURCE/experiments/c2c3_closure_20261117/providers26_prepare_group_cases.py" \
+  --installed "$INSTALLED" --native "$NATIVE" \
+  --probe "$SOURCE/experiments/c2c3_closure_20261117/providers26_worker_core_probe.py" \
+  --source "$SOURCE" --source-commit "$COMMIT" --worker-core \
+  --stages c2_isolated_c3 --mechanisms 26.fia_destination --max-targets 128 \
+  --isolated-cost-result "$SOURCE82_RESULT" \
+  --isolated-cost-controller "$SOURCE82_CONTROLLER" --card 2 --out "$CASES"
+```
+
+The preparer verifies and mounts those exact files at `/cost/source82-result.json`
+and `/cost/source82-controller.json`, both read-only. It adds no SDK build or NPU
+action. Root alone reviews and runs the case. This implementation and its CPU
+doubles grant no new C1/C2/C3 or E5 qualification; actual new public-entry
+evidence must be independently reviewed. Native ABI, allocator/liveness checks
+and the fault's numerical mechanism are unchanged.
+
+Local CPU validation covers 25 new contracts and 22 retained-entry regressions.
+The full actual Host/Runtime fixture keeps 30 calls, 29 targets, 73 group
+requests, 319 owned Native-double executions and the original live proof across
+both generations, followed by ordinary post-unregister health. The public probe
+fixture separately exercises its dynamic 19-request complete two-target plan,
+read-only queries, explicit collection, per-generation SHA-linked originals,
+cost refusal before either first F and failure preservation. Other negatives
+cover copied proof, original proof under a changed implementation scope,
+combined-capacity exhaustion, failed C2 health, stale callbacks, wrong mechanism,
+missing/altered cost originals, incomplete/reordered cycles and continuous outer
+deadline exhaustion. CPU fixtures do not establish device numerical effects.

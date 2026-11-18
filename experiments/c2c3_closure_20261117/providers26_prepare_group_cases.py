@@ -19,14 +19,16 @@ def main():
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--worker-core', action='store_true')
     parser.add_argument('--source', help='Frozen source root for the public Core C1/C2/C3 probe')
-    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage', 'c1_single_effects', 'c2_once', 'c2_c3', 'c2_isolated_once'), default=['inventory'])
+    parser.add_argument('--isolated-cost-result', type=Path)
+    parser.add_argument('--isolated-cost-controller', type=Path)
+    parser.add_argument('--stages', nargs='+', choices=('inventory', 'lossless', 'effects', 'coverage', 'c1_single_effects', 'c2_once', 'c2_c3', 'c2_isolated_once', 'c2_isolated_c3'), default=['inventory'])
     parser.add_argument('--mechanisms', nargs='+', choices=('26.residual_stomp', '26.fia_destination'),
                         default=None)
     parser.add_argument('--out', type=Path, required=True)
     args = parser.parse_args()
-    if any(stage in args.stages for stage in ('c2_once', 'c2_c3', 'c2_isolated_once')) and not args.worker_core:
+    if any(stage in args.stages for stage in ('c2_once', 'c2_c3', 'c2_isolated_once', 'c2_isolated_c3')) and not args.worker_core:
         parser.error('C2/C3 stages require the explicit public --worker-core entry')
-    if args.worker_core and (args.stages not in (['c1_single_effects'], ['c2_once'], ['c2_c3'], ['c2_isolated_once'])
+    if args.worker_core and (args.stages not in (['c1_single_effects'], ['c2_once'], ['c2_c3'], ['c2_isolated_once'], ['c2_isolated_c3'])
             or args.stages == ['c1_single_effects'] and args.max_targets != 1 or args.statistics
             or args.source is None or not args.source.startswith('/')
             or any(c in args.source for c in ('\n', '\r', '\0', ','))):
@@ -40,6 +42,17 @@ def main():
         parser.error('c1_single_effects requires explicit --mechanisms 26.residual_stomp and/or 26.fia_destination')
     if args.mechanisms is None:
         args.mechanisms = ['26.residual_stomp', '26.fia_destination']
+    cost_reference = None
+    if args.stages == ['c2_isolated_c3']:
+        if args.mechanisms != ['26.fia_destination']:
+            parser.error('c2_isolated_c3 is the explicit typed FIA transition only')
+        from experiments.c2c3_closure_20261117.providers26_isolated_budget import load_cost_reference
+        cost_reference = load_cost_reference(args.isolated_cost_result, args.isolated_cost_controller)
+        if any(not row['path'].startswith('/') or any(c in row['path'] for c in ('\n', '\r', '\0', ','))
+                for row in cost_reference['originals'].values()):
+            parser.error('Fixed cost originals require absolute safe read-only mount paths')
+    elif args.isolated_cost_result is not None or args.isolated_cost_controller is not None:
+        parser.error('Cost originals belong only to the explicit c2_isolated_c3 stage')
     if (not re.fullmatch('[0-9a-f]{7,40}', args.source_commit) or not 1 <= args.max_targets <= 128
             or len(set(args.stages)) != len(args.stages) or len(set(args.mechanisms)) != len(args.mechanisms)
             or any(not path.startswith('/') or any(c in path for c in ('\n', '\r', '\0', ','))
@@ -56,7 +69,7 @@ def main():
         path = (root / name).resolve(strict=True)
         if not path.is_relative_to(root) or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
             raise RuntimeError('NATIVE_BUNDLE_CHANGED:' + name)
-    if any(stage in args.stages for stage in ('c1_single_effects', 'c2_once', 'c2_c3', 'c2_isolated_once')) and '26.fia_destination' in args.mechanisms:
+    if any(stage in args.stages for stage in ('c1_single_effects', 'c2_once', 'c2_c3', 'c2_isolated_once', 'c2_isolated_c3')) and '26.fia_destination' in args.mechanisms:
         from fault_injection.deployments.writer26_fia_typed import profile
         profile(build.get('fia_typed_profile'))
     cases = []
@@ -64,8 +77,9 @@ def main():
         fia = mechanism == '26.fia_destination'
         model = '/home/fault39-integration-20261116-a1/models-smollm2-135m' if fia else '/home/haoran/models/DeepSeek-V2-Lite-W8A8'
         for stage in args.stages:
-            coverage = stage in ('coverage', 'c2_once', 'c2_c3', 'c2_isolated_once')
-            isolated = stage == 'c2_isolated_once'
+            coverage = stage in ('coverage', 'c2_once', 'c2_c3', 'c2_isolated_once', 'c2_isolated_c3')
+            isolated = stage in ('c2_isolated_once', 'c2_isolated_c3')
+            transition = stage == 'c2_isolated_c3'
             single_site = stage == 'c1_single_effects'
             name = ('providers26-core-' if args.worker_core else 'providers26-v2-') + ('fia-smol-' if fia else 'qmm-deepseek-') + stage
             command = ('source /usr/local/Ascend/cann-8.5.1/set_env.sh\n'
@@ -78,10 +92,14 @@ def main():
                     if args.worker_core else '/probe.py') + ' --mechanism ' + mechanism + ' --manifest-sha256 ' + sha + ' --stage ' + stage
                 + ' --max-targets ' + str(args.max_targets) + ' --memory ' + ('.25' if fia else '.55')
                 + (' --statistics' if args.statistics else '')
+                + (' --isolated-cost-result /cost/source82-result.json --isolated-cost-controller /cost/source82-controller.json'
+                    if transition else '')
                 + (' --source-root /source > /evidence/worker-core26.stdout.log 2> /evidence/worker-core26.stderr.log'
                    if args.worker_core else ''))
             cases.append(dict(id=name, timeout=1800, image=build['actual_image_id'],
                 mounts=([[args.source, '/source', 'ro']] if args.worker_core else []) +
+                    ([[cost_reference['originals'][name]['path'], '/cost/source82-'+name+'.json', 'ro']
+                        for name in ('result', 'controller')] if transition else []) +
                     [[args.installed, '/installed', 'ro'], [args.native, '/native', 'ro'], [args.probe, '/probe.py', 'ro'],
                     [model, '/model', 'ro'], [args.native + '/libopapi_nn.so',
                     '/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_nn.so', 'ro']],
@@ -92,7 +110,8 @@ def main():
                     FAULT26_TRACE_ENABLED='1', FAULT26_TRACE_ALL_APIS='1', FAULT26_TRACE_CAPTURE_TENSORS='1',
                     FAULT26_WRITER_TOPOLOGY_ENABLED='1', FAULT26_TRACE_MAX_EVENTS='100000',
                     FAULT26_TRACE_LOG_PATH='/evidence/trace.jsonl', DCAT26_GROUP_V2_ALLOWED='1'), command=command,
-                review=dict(experiment_id=name, provider=mechanism + (' public Core all_eligible isolated F/OFF requests C2 attempt; not C3'
+                review=dict(experiment_id=name, provider=mechanism + (' public Core isolated C2 then same-Worker original-live-proof cumulative every_match C3'
+                    if transition else ' public Core all_eligible isolated F/OFF requests C2 attempt; not C3'
                     if isolated else ' public Core all_eligible once C2 attempt; not C3'
                     if stage == 'c2_once' else ' public Core all_eligible C2 then original-live-proof C3'
                     if stage == 'c2_c3' else ' v2 all_eligible once then live every_match' if coverage
@@ -102,7 +121,8 @@ def main():
                     public_entry='WorkerFaultClient+FaultConfig(26,variant)' if args.worker_core else 'legacy callable experiment RPC',
                     public_core_new_source_requires_acceptance=args.worker_core,
                     previous_direct_entry_qualification_inherited=False,
-                    execution_scope='complete stable eligible set; each target isolated F then OFF in fresh requests'
+                    execution_scope='complete stable eligible set; isolated C2 F/OFF pairs, then cumulative C3 every_match in two fresh requests'
+                        if transition else 'complete stable eligible set; each target isolated F then OFF in fresh requests'
                         if isolated else 'same-request cumulative all stable eligible targets' if coverage else 'one selected target per request',
                     c2_dynamic_eligibility=('Any unresolved or two-healthy allocator eligibility flip blocks the whole group; no subset'
                         if coverage else None),
@@ -117,7 +137,8 @@ def main():
                     metadata_startup='Before importing Torch/vLLM, verify the immutable bundle and explicitly load '
                         'its missing split opapi with RTLD_NOW|RTLD_LOCAL; retain its handle. Then require all four '
                         'already-loaded counters with independent instances and exact mapped/dladdr identities.',
-                    expected_hits=('C2: one isolated F/request and its own real OFF/request per complete frozen target; C3 not requested'
+                    expected_hits=('C2: each complete frozen target once in its own F/OFF pair; C3: every matching target in two new requests; original live proof only'
+                        if transition else 'C2: one isolated F/request and its own real OFF/request per complete frozen target; C3 not requested'
                         if isolated else 'C2: one per complete frozen eligible target after fresh R/L/OFF; C3 not requested'
                         if stage == 'c2_once' else 'C2: one per complete frozen eligible target; C3: every existing-target call in two fresh requests; '
                         'no subset, only after actual live C2' if coverage else
@@ -126,8 +147,10 @@ def main():
                         else 'one per completely observed and independently lossless-qualified candidate; never C2'),
                     resource_budget=dict(timeout_seconds=1800, memory_gib=80, cpus=16, independent_events=32768,
                         max_targets=args.max_targets, planned_single_site_targets=1 if single_site else None,
-                        isolated_group_requests='6 + 2 * actual stable eligible count' if isolated else None,
-                        isolated_pre_f_timing_gate='2 * max(actual R/L/OFF full cycles) * remaining + 120 cleanup + measured CPU control reserve; session <=1200, case <=1800'
+                        isolated_group_requests='15 + 2 * actual stable eligible count' if transition else '6 + 2 * actual stable eligible count' if isolated else None,
+                        isolated_cost_reference=cost_reference,
+                        isolated_pre_f_timing_gate='Fixed-SHA actual 64-cycle/controller costs plus current complete qualification cycles; each generation <=1200; continuous case <=1800 including startup/exit/disk margin; recheck before both first faults'
+                            if transition else '2 * max(actual R/L/OFF full cycles) * remaining + 120 cleanup + measured CPU control reserve; session <=1200, case <=1800'
                             if isolated else None,
                         max_targets_selects_subset=False, native_device_bytes=64 * 1024 * 1024, native_host_bytes=512 * 1024 * 1024,
                         fia_stock_host_bytes=512 * 1024 * 1024 if fia and build.get('fia_typed_profile') else 0),

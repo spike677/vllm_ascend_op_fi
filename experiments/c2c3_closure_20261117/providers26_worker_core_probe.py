@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # Keep reviewed /installed distributions first.
 from experiments.c2c3_closure_20261117.providers26_group_probe import PROMPT, actual, single_site_scope
+from experiments.c2c3_closure_20261117.providers26_isolated_budget import load_cost_reference, transition_budget
 from experiments.c2c3_postwrite_20261117.model_identity import file_sha, model_source_identity, vllm_safetensors_identity
 from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
 from demoncat.runtime.vllm_ascend.worker_extension.host import HostAdapter, WorkerFaultClient
@@ -48,6 +49,7 @@ MODULES = tuple(('fault_injection.deployments.'+name, 'fault_injection/deploymen
 SOURCES = tuple(path for _, path in MODULES) + (
     'experiments/c2c3_closure_20261117/providers26_worker_core_probe.py',
     'experiments/c2c3_closure_20261117/providers26_prepare_group_cases.py',
+    'experiments/c2c3_closure_20261117/providers26_isolated_budget.py',
     'experiments/c2c3_closure_20261117/providers26_group_probe.py',
     'experiments/c2c3_postwrite_20261117/natural41_probe.py',
     'experiments/c2c3_postwrite_20261117/natural41_coverage_probe.py',
@@ -150,9 +152,10 @@ def isolated_budget_preflight(requests, plan, *, elapsed_seconds):
 def drive(llm, client, *, executor, prompt, params, out, report, case_started=None):
     case_started = time.monotonic() if case_started is None else case_started
     seen, pending, last = [], [], None
-    isolated = report.get('stage') == 'c2_isolated_once'
-    complete_set = report.get('stage') in ('c2_once', 'c2_c3', 'c2_isolated_once')
-    every_match = report.get('stage') == 'c2_c3'
+    transition = report.get('stage') == 'c2_isolated_c3'
+    isolated = report.get('stage') in ('c2_isolated_once', 'c2_isolated_c3')
+    complete_set = report.get('stage') in ('c2_once', 'c2_c3', 'c2_isolated_once', 'c2_isolated_c3')
+    every_match = report.get('stage') in ('c2_c3', 'c2_isolated_c3')
     phases = [('c2' if complete_set else 'c1', phase) for phase in (C2_PHASES if complete_set else PHASES)]
     if every_match:
         phases.extend(('c3', phase) for phase in C3_PHASES)
@@ -164,6 +167,10 @@ def drive(llm, client, *, executor, prompt, params, out, report, case_started=No
     simulation = False
     def save():
         report['rpc_receipts'] = list(executor.receipts)
+        if transition:
+            report['outer_clock'] = dict(elapsed_probe_seconds=time.monotonic()-case_started,
+                includes_model_initialization=True, continuous_across_generations=True,
+                root_case_limit_seconds=1800, outside_probe_reserved_seconds=120)
         write_json(out/'result.json', report)
     def action(name, *args, expected='ACTION_COMPLETED'):
         nonlocal last
@@ -204,7 +211,14 @@ def drive(llm, client, *, executor, prompt, params, out, report, case_started=No
             index = 0
             while index < len(phases):
                 run, phase = phases[index]
-                if isolated and phase == 'group_fault' and 'isolated_budget_preflight' not in report:
+                if transition and phase == 'group_fault' and run not in report.get('transition_budget_preflights', {}):
+                    budget = transition_budget(report['requests'], report['isolated_plan'],
+                        report.get('isolated_cost_reference'), elapsed_seconds=time.monotonic()-case_started, run=run)
+                    report.setdefault('transition_budget_preflights', {})[run] = budget
+                    save()
+                    if budget['refusal_reasons']:
+                        raise RuntimeError(';'.join(budget['refusal_reasons']))
+                elif isolated and not transition and phase == 'group_fault' and 'isolated_budget_preflight' not in report:
                     budget = isolated_budget_preflight(report['requests'], report['isolated_plan'],
                         elapsed_seconds=time.monotonic()-case_started)
                     report['isolated_budget_preflight'] = budget
@@ -250,15 +264,20 @@ def drive(llm, client, *, executor, prompt, params, out, report, case_started=No
                     phases = phases[:index+1]+[(run, 'health')]
                     report['complete_set_blockers'] = collected['blockers']
                     report['blocked_run'] = run
-                elif isolated and run_counts[run] == 1:
+                elif isolated and run == 'c2' and run_counts[run] == 1:
                     plan = collected['isolated_plan']
                     count = collected['resolved_candidate_count']
                     if (not 0 < count <= 128 or len(set(plan['target_order'])) != count
-                            or plan['group_requests'] != 6+2*count or plan['c3_requested']
+                            or plan['group_requests'] != 6+2*count or plan['c3_requested'] is not transition
                             or not collected['independent_per_target_replay']):
                         raise RuntimeError('EXACT_COMPLETE_ISOLATED_PLAN_REQUIRED')
                     phases.extend(('c2', phase) for phase in
                         C2_PHASES[2:5]+('group_fault', 'group_off')*count+('health',))
+                    if transition:
+                        if (plan['c2_group_requests'] != 6+2*count or plan['c3_group_requests'] != 9
+                                or plan['combined_group_requests'] != 15+2*count):
+                            raise RuntimeError('EXACT_COMPLETE_ISOLATED_C2_CUMULATIVE_C3_PLAN_REQUIRED')
+                        phases.extend(('c3', phase) for phase in C3_PHASES)
                     report['isolated_plan'] = plan
                 run_counts[run] += 1
                 index += 1
@@ -351,7 +370,9 @@ def main(argv=None):
     parser.add_argument('--mechanism', choices=('26.residual_stomp', '26.fia_destination'), required=True)
     parser.add_argument('--manifest-sha256', required=True)
     parser.add_argument('--source-root', type=Path, required=True)
-    parser.add_argument('--stage', choices=('c1_single_effects', 'c2_once', 'c2_c3', 'c2_isolated_once'), default='c1_single_effects')
+    parser.add_argument('--stage', choices=('c1_single_effects', 'c2_once', 'c2_c3', 'c2_isolated_once', 'c2_isolated_c3'), default='c1_single_effects')
+    parser.add_argument('--isolated-cost-result', type=Path)
+    parser.add_argument('--isolated-cost-controller', type=Path)
     parser.add_argument('--max-targets', type=int, default=1)
     parser.add_argument('--memory', type=float, default=.55)
     parser.add_argument('--statistics', action='store_true')
@@ -365,13 +386,22 @@ def main(argv=None):
     out = Path('/evidence/probe')
     out.mkdir(exist_ok=False)
     report = dict(schema='demoncat.writer26.worker_core_probe.v1', status='STARTING', mechanism=args.mechanism,
-        stage=args.stage, scope=('ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS'
+        stage=args.stage, scope=('ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_C2_THEN_SAME_WORKER_BOUNDED_C3_EVERY_MATCH'
+            if args.stage == 'c2_isolated_c3' else 'ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS'
             if args.stage == 'c2_isolated_once' else 'SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS_FIXED_FRESH_PREFILL'
             if args.stage in ('c2_once', 'c2_c3') else single_site_scope(args.mechanism)), c2=False, c3=False,
         qualification_granted=False, previous_direct_entry_qualification_inherited=False,
         E5='UNADAPTED_COLLECTOR_BOUNDARY', manifest_sha256=args.manifest_sha256, requests=[])
     llm = recorder = client = None
     try:
+        if args.stage == 'c2_isolated_c3':
+            if args.mechanism != '26.fia_destination':
+                raise RuntimeError('ISOLATED_C3_REVIEWED_TYPED_FIA_ONLY')
+            # Cost evidence is verified before any model, Torch or Native owner.
+            # It never supplies the original live C2 proof required below.
+            report['isolated_cost_reference'] = load_cost_reference(args.isolated_cost_result, args.isolated_cost_controller)
+        elif args.isolated_cost_result is not None or args.isolated_cost_controller is not None:
+            raise RuntimeError('ISOLATED_C3_COST_ARGUMENTS_ONLY_FOR_EXPLICIT_TRANSITION')
         source = args.source_root.resolve(strict=True)
         manifest = source/'source_manifest.json'
         document = json.loads(manifest.read_text())

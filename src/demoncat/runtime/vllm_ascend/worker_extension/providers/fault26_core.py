@@ -6,7 +6,7 @@ import threading
 from ._scope import Scope, reject_unknown
 from .. import identity as identities
 from ..serving_context import require
-from ..serving26_core import (ATTRIBUTE, COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE, Writer26CoreBinding, CoreWriter26Experiment,
+from ..serving26_core import (ATTRIBUTE, COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE, ISOLATED_C3_STAGE, Writer26CoreBinding, CoreWriter26Experiment,
                             CoreWriter26Coverage, Serving26CoreSession)
 
 
@@ -23,7 +23,7 @@ class Fault26CoreProvider(Scope):
         self.cleanup_requested = False
         self.cleanup_failures = []
         self.native_scope = None
-        self.current_run = 'c2' if binding.stage in (COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE) else 'c1'
+        self.current_run = 'c2' if binding.stage in (COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE, ISOLATED_C3_STAGE) else 'c1'
         self.c2_proof = self.c2_evidence = self.c2_session = None
         self.c3_started = False
         self.transition_failures = []
@@ -83,17 +83,20 @@ class Fault26CoreProvider(Scope):
             self.native_scope = (owner, generation, config.owner_hi, config.owner_lo, config.thread)
             self.native = native
             self._context()
-            complete = self.binding.stage in (COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE)
+            complete = self.binding.stage in (COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE, ISOLATED_C3_STAGE)
             backend = CoreWriter26Coverage if complete else CoreWriter26Experiment
             if self.binding.stage == ISOLATED_STAGE:
                 from ..serving26_isolated import CoreWriter26IsolatedCoverage
                 backend = CoreWriter26IsolatedCoverage
+            elif self.binding.stage == ISOLATED_C3_STAGE:
+                from ..serving26_isolated import CoreWriter26IsolatedTransition
+                backend = CoreWriter26IsolatedTransition
             settings = dict(trigger='once', evidence_kind='cpu_contract' if self.binding.simulation else 'natural_worker') \
                 if complete else dict(stage='c1_single_effects')
             self.backend = backend(self.model, native, self.binding.reader,
                 guard=self._context, worker_identity=self.identity, folder=self.binding.folder/owner/'candidate-experiment',
                 max_targets=self.binding.max_targets, **settings)
-            if self.binding.stage == ISOLATED_STAGE:
+            if self.binding.stage in (ISOLATED_STAGE, ISOLATED_C3_STAGE):
                 from ..serving26_isolated import Serving26IsolatedSession
                 self.session = Serving26IsolatedSession(self)
             else:
@@ -110,7 +113,7 @@ class Fault26CoreProvider(Scope):
             require(self.attempted and not self.stopped, 'WRITER26_CORE_ACTIVE_ATTEMPT_REQUIRED')
             if settings == {'collect': True}:
                 self.session.collect()
-                if (self.binding.stage == EVERY_MATCH_STAGE and self.current_run == 'c2'
+                if (self.binding.stage in (EVERY_MATCH_STAGE, ISOLATED_C3_STAGE) and self.current_run == 'c2'
                         and self.backend.phase == 'complete' and not self.backend.blockers and not self.backend.failure):
                     self._start_c3(owner, generation)
             else:
@@ -118,7 +121,7 @@ class Fault26CoreProvider(Scope):
                 self.session.expect(settings['request_id'])
         elif action in ('finish', 'disable', 'abort', 'recover', 'clean', 'unregister'):
             if action == 'finish':
-                require(self.binding.stage != EVERY_MATCH_STAGE or self.current_run == 'c3',
+                require(self.binding.stage not in (EVERY_MATCH_STAGE, ISOLATED_C3_STAGE) or self.current_run == 'c3',
                         'WRITER26_C3_ACTUAL_REQUESTS_REQUIRED')
                 require(self.backend is not None and self.backend.recovered and not self.backend.failure
                     and self.backend.phase == 'complete', 'WRITER26_CORE_REAL_OFF_AND_HEALTH_REQUIRED')
@@ -170,11 +173,15 @@ class Fault26CoreProvider(Scope):
             self.native_scope = (owner, generation+1, config.owner_hi, config.owner_lo, config.thread)
             self.native = native
             self._context()
-            self.backend = CoreWriter26Coverage(self.model, native, self.binding.reader,
+            backend_type, session_type = CoreWriter26Coverage, Serving26CoreSession
+            if self.binding.stage == ISOLATED_C3_STAGE:
+                from ..serving26_isolated import CoreWriter26IsolatedTransition, Serving26IsolatedSession
+                backend_type, session_type = CoreWriter26IsolatedTransition, Serving26IsolatedSession
+            self.backend = backend_type(self.model, native, self.binding.reader,
                 guard=self._context, worker_identity=self.identity, folder=self.binding.folder/owner/'candidate-experiment-c3',
                 max_targets=self.binding.max_targets, trigger='every_match', c2_proof=self.c2_proof,
                 evidence_kind='cpu_contract' if self.binding.simulation else 'natural_worker')
-            self.session = Serving26CoreSession(self)
+            self.session = session_type(self)
             self.session.install()
         except BaseException as error:
             self.transition_failures.append(dict(phase='c3_prepare', owner=owner, generation=generation,
@@ -187,7 +194,7 @@ class Fault26CoreProvider(Scope):
         raw = self._native_state()
         core = raw['core']
         serving = self.session.readback() if self.session is not None else None
-        isolated = self.binding.stage == ISOLATED_STAGE
+        isolated = self.binding.stage in (ISOLATED_STAGE, ISOLATED_C3_STAGE)
         evidence = (self.backend.report(compact_rpc=True) if isolated else self.backend.report()) \
             if self.backend is not None else None
         recovery = self.backend.coverage.recovery_report() if isinstance(self.backend, CoreWriter26Coverage) \

@@ -17,6 +17,7 @@ MECHANISMS = ('26.residual_stomp', '26.fia_destination')
 COMPLETE_SET_STAGE = 'c2_once'
 EVERY_MATCH_STAGE = 'c2_c3'
 ISOLATED_STAGE = 'c2_isolated_once'
+ISOLATED_C3_STAGE = 'c2_isolated_c3'
 
 
 @dataclass(frozen=True)
@@ -47,8 +48,9 @@ def install_writer26_core_binding(worker, *, mechanism, prompt_token_ids, eviden
     from fault_injection.deployments.writer26_inventory import NativeWriterInventory
     from fault_injection.providers import register_runtime
     require(mechanism in MECHANISMS, 'EXACT_SINGLE_SITE_WRITER_MECHANISM_REQUIRED')
-    require(stage in (SINGLE_SITE_STAGE, COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE) and type(max_targets) is int
+    require(stage in (SINGLE_SITE_STAGE, COMPLETE_SET_STAGE, EVERY_MATCH_STAGE, ISOLATED_STAGE, ISOLATED_C3_STAGE) and type(max_targets) is int
         and 1 <= max_targets <= 128, 'BOUNDED_WRITER26_CORE_STAGE_REQUIRED')
+    require(stage != ISOLATED_C3_STAGE or mechanism == '26.fia_destination', 'ISOLATED_C3_REVIEWED_TYPED_FIA_ONLY')
     require(type(_simulation) is bool and (_simulation or _runtime_factory is _reader is None),
             'WRITER26_CORE_OVERRIDES_CPU_ONLY')
     require(not _simulation or callable(_runtime_factory) and _reader is not None, 'EXPLICIT_CPU_WRITER26_CORE_REQUIRED')

@@ -20,22 +20,29 @@ from .serving_context import require
 
 
 SCOPE = 'ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS'
+TRANSITION_SCOPE = 'ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_C2_THEN_SAME_WORKER_BOUNDED_C3_EVERY_MATCH'
 
 
 class CoreWriter26IsolatedCoverage(CoreWriter26Coverage):
+    execution_profile = SCOPE
+    supports_every_match = False
+
     def __init__(self, *args, **kwargs):
-        require(kwargs.get('trigger', 'once') == 'once', 'ISOLATED_WRITER26_IS_C2_ONLY')
+        require(kwargs.get('trigger', 'once') == 'once' or self.supports_every_match,
+                'ISOLATED_WRITER26_IS_C2_ONLY')
         self.isolated_order = ()
         self.isolated_active = None
         self.isolated_pairs = []
         super().__init__(*args, **kwargs)
         self.implementation_sha = digest([self.implementation_sha,
-            hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), SCOPE])
+            hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), self.execution_profile])
 
     def _prepare_complete_plan(self):
         self.isolated_order = tuple(self.targets)  # Complete actual census order, never a user selector.
         require(self.isolated_order and len(set(self.isolated_order)) == len(self.targets),
                 'ISOLATED_COMPLETE_TARGET_ORDER_REQUIRED')
+        if self.trigger == 'every_match':
+            return  # Keep the existing two-inventory/R/L/OFF/two-F/OFF/health plan.
         self.plan = self.plan[:5]
         for index in range(len(self.isolated_order)):
             self.plan.extend(dict(phase=phase, mode=mode, target='*', isolated_pair=index)
@@ -46,9 +53,11 @@ class CoreWriter26IsolatedCoverage(CoreWriter26Coverage):
             self.plan = self.plan[:2]+[dict(phase='health', mode=None, target=None)]
 
     def _planned_owned_records(self, remaining):
-        return len(self.targets)*5  # Every target: fresh R/L/OFF, one F, its own OFF.
+        return len(self.targets)*5 if self.trigger == 'once' else super()._planned_owned_records(remaining)
 
     def begin(self, request_id, input_sha256):
+        if self.trigger == 'every_match':
+            return super().begin(request_id, input_sha256)
         require(self.isolated_active is None, 'PREVIOUS_ISOLATED_LOGICAL_DECISION_UNFINISHED')
         if self.phase == 'group_fault':
             require(len(self.isolated_pairs) == self.entry['isolated_pair']
@@ -65,7 +74,7 @@ class CoreWriter26IsolatedCoverage(CoreWriter26Coverage):
 
     def _observe_callback(self, row, call):
         super()._observe_callback(row, call)
-        if self.phase != 'group_fault' or self.coverage is None:
+        if self.trigger != 'once' or self.phase != 'group_fault' or self.coverage is None:
             return
         call_id = str(call.independent_call)
         decision = self.decisions[call_id]
@@ -78,7 +87,7 @@ class CoreWriter26IsolatedCoverage(CoreWriter26Coverage):
 
     def _requested_mode(self, row):
         mode, key = super()._requested_mode(row)
-        if not self.phase.startswith('group_'):
+        if self.trigger != 'once' or not self.phase.startswith('group_'):
             return mode, key
         expected = self.isolated_order[self.entry['isolated_pair']]
         if self.phase == 'group_off':
@@ -90,10 +99,10 @@ class CoreWriter26IsolatedCoverage(CoreWriter26Coverage):
         return mode, key
 
     def _expected_admissions_for(self, row):
-        return 1 if row['phase'].startswith('group_') else super()._expected_admissions_for(row)
+        return 1 if self.trigger == 'once' and row['phase'].startswith('group_') else super()._expected_admissions_for(row)
 
     def _before_admission(self, row, mode, target, residual_sha256):
-        if mode == 'fault':
+        if self.trigger == 'once' and mode == 'fault':
             reference = self.target_refs[target]['residual_sha256']
             require(self.current['admissions'] == 0 and residual_sha256 == reference,
                     'ISOLATED_FIRST_F_MUST_START_FROM_ACTUAL_HEALTHY_RESIDUAL')
@@ -106,6 +115,8 @@ class CoreWriter26IsolatedCoverage(CoreWriter26Coverage):
             self.isolated_active['pre_fault_baseline'] = proof
 
     def _outcome_complete(self, outcome, row):
+        if self.trigger == 'every_match':
+            return super()._outcome_complete(outcome, row)
         if self.phase != 'group_fault':
             super()._outcome_complete(outcome, row)
             if self.phase == 'group_off':
@@ -170,7 +181,7 @@ class CoreWriter26IsolatedCoverage(CoreWriter26Coverage):
         self.save()
 
     def _request_complete(self, row):
-        if row['phase'] == 'group_fault':
+        if self.trigger == 'once' and row['phase'] == 'group_fault':
             active = self.isolated_active
             require(active is not None and active['request_id'] == row['request_id']
                 and active['execution_sha256'] and active.get('pre_fault_baseline')
@@ -203,15 +214,47 @@ class CoreWriter26IsolatedCoverage(CoreWriter26Coverage):
 
     def report(self, *, compact_rpc=False, observation_start=None):
         value = super().report(compact_rpc=compact_rpc, observation_start=observation_start)
-        value.update(execution_scope=SCOPE, independent_per_target_replay=True,
-            scope=SCOPE,
+        value.update(execution_scope=self.execution_profile, independent_per_target_replay=self.trigger == 'once',
+            scope=self.execution_profile,
             isolated_pairs=deepcopy(self.isolated_pairs), isolated_logical_inflight=int(self.isolated_active is not None),
             isolated_plan=dict(target_order=list(self.isolated_order),
                 group_requests=len(self.plan), ordinary_post_unregister_requests=1,
                 full_native_writer_count=len(self.candidate_inventory),
-                native_owned_execute_records=5*len(self.isolated_order),
-                max_targets_is_selector=False, c3_requested=False))
+                native_owned_execute_records=(5 if self.trigger == 'once' else 6)*len(self.isolated_order),
+                max_targets_is_selector=False, c3_requested=self.supports_every_match))
+        if self.supports_every_match:
+            value['isolated_plan'].update(c2_group_requests=6+2*len(self.isolated_order),
+                c3_group_requests=9, combined_group_requests=15+2*len(self.isolated_order),
+                current_phase_scope=SCOPE if self.trigger == 'once' else 'SAME_REQUEST_CUMULATIVE_EVERY_MATCH_TWO_FRESH_REQUESTS')
         return value
+
+
+class CoreWriter26IsolatedTransition(CoreWriter26IsolatedCoverage):
+    """One source/scope for isolated C2 and its original-live-proof C3."""
+    execution_profile = TRANSITION_SCOPE
+    supports_every_match = True
+
+    def _freeze(self):
+        super()._freeze()
+        if self.blockers or self.trigger != 'once':
+            return
+        # Reserve the complete future C3 observation capacity before ANY C2
+        # fault. C3 rechecks it again against actual counters after transition.
+        plan = self.capacity_plan
+        requests = plan['remaining_complete_requests'] + 9
+        native = plan['full_request_native_events'] * requests
+        plan.update(combined_remaining_requests=requests, c3_requests_reserved=9,
+                    combined_estimated_native_events=native)
+        if native > plan['available_native_events']:
+            self.blockers.append('ISOLATED_C2_C3_FULL_PLAN_EXCEEDS_NATIVE_EVENT_CAPACITY')
+        if self.fia_typed is not None:
+            owned = len(self.targets) * 11  # C2 5 + C3 6, including every actual OFF.
+            typed = plan['full_request_typed_events'] * requests + owned
+            plan.update(combined_owned_execute_records=owned, combined_estimated_typed_events=typed)
+            if typed > plan['available_typed_events']:
+                self.blockers.append('ISOLATED_C2_C3_FULL_PLAN_EXCEEDS_TYPED_FIA_EVENT_CAPACITY')
+        if self.blockers:
+            self.plan = self.plan[:2]+[dict(phase='health', mode=None, target=None)]
 
 
 class Serving26IsolatedSession(Serving26CoreSession):
