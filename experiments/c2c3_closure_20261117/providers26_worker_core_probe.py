@@ -24,6 +24,10 @@ C2_PHASES = ('inventory_1', 'inventory_2', 'qualification_reference_all', 'quali
 C2_SUCCESS = 'STANDARD_WORKER_NATIVE26_COMPLETE_SET_C2_EVIDENCE_READY_FOR_REVIEW'
 C2_BLOCKED = 'STANDARD_WORKER_NATIVE26_COMPLETE_SET_C2_QUALIFICATION_BLOCKED'
 C2_CPU_CONTRACT = 'CPU_CORE26_COMPLETE_SET_CONTRACT_COMPLETE_NO_QUALIFICATION'
+C3_PHASES = C2_PHASES[:6]+('group_fault_repeat',)+C2_PHASES[6:]
+C3_SUCCESS = 'STANDARD_WORKER_NATIVE26_COMPLETE_SET_C2_C3_EVIDENCE_READY_FOR_REVIEW'
+C3_BLOCKED = 'STANDARD_WORKER_NATIVE26_COMPLETE_SET_C3_QUALIFICATION_BLOCKED'
+C3_CPU_CONTRACT = 'CPU_CORE26_C2_C3_CONTRACT_COMPLETE_NO_QUALIFICATION'
 STATISTICS_REFUSAL = 'CORE26_STATISTICS_BOUNDARY_UNADAPTED: complete diagnostic byte/hash reads are not model statistics'
 MODULES = tuple(('fault_injection.deployments.'+name, 'fault_injection/deployments/'+name+'.py') for name in
     ('writer26_loader', 'writer26_group', 'writer26_inventory', 'writer26_experiment', 'writer26_coverage', 'writer26_public',
@@ -109,8 +113,13 @@ def remove(worker, expected_identity, mechanism):
 
 def drive(llm, client, *, executor, prompt, params, out, report):
     seen, pending, last = [], [], None
-    complete_set = report.get('stage') == 'c2_once'
-    phases = list(C2_PHASES if complete_set else PHASES)
+    complete_set = report.get('stage') in ('c2_once', 'c2_c3')
+    every_match = report.get('stage') == 'c2_c3'
+    phases = [('c2' if complete_set else 'c1', phase) for phase in (C2_PHASES if complete_set else PHASES)]
+    if every_match:
+        phases.extend(('c3', phase) for phase in C3_PHASES)
+    run_counts = dict(c1=0, c2=0, c3=0)
+    blocked_run = None
     blocked = False
     simulation = False
     def save():
@@ -140,57 +149,92 @@ def drive(llm, client, *, executor, prompt, params, out, report):
         if len(replies) != 1 or replies[0].request_id != mapping['external_request_id']:
             raise RuntimeError('ACTUAL_REQUEST_MAPPING_CHANGED')
         return output(replies[0])
+    def verify_c2(first):
+        coverage = first.get('coverage')
+        qualified = (first.get('evidence_kind') == 'cpu_contract' and first['c2'] is False) \
+            if first['public_core']['simulation'] else first['c2'] is True
+        if (not coverage or not coverage['contract_satisfied'] or not qualified
+                or first['c3'] or len(coverage['live_c2_proof']['issued']) != 1
+                or coverage['live_c2_proof']['consumed'] is not None):
+            raise RuntimeError('COMPLETE_SET_C2_OR_ORIGINAL_PROOF_UNPROVEN')
     try:
         try:
             for name in ('prepare', 'register', 'check', 'enable'):
                 action(name)
             index = 0
             while index < len(phases):
-                phase = phases[index]
+                run, phase = phases[index]
                 mapping = enqueue()
                 state = action('advance', pending[0])
-                if state['evidence']['phase'] != phase:
+                if state['evidence']['phase'] != phase or state['evidence'].get('current_run', run) != run:
                     raise RuntimeError('EXISTING_WRITER_PLAN_PHASE_CHANGED')
-                row = dict(phase=phase, mapping=mapping)
+                row = dict(run=run, phase=phase, mapping=mapping)
                 report['requests'].append(row)
                 save()
                 row['output'] = complete(mapping)
                 state = action('query', expected='QUERY_OK')
                 evidence = state['evidence']
                 observed = evidence['request_index'][-1]
-                if (len(evidence['request_index']) != index+1 or observed['phase'] != phase
+                if (len(evidence['request_index']) != run_counts[run]+1 or observed['phase'] != phase
                         or observed['request_id'] != pending[0] or evidence['failure'] is not None
                         or state['leases'] or state['inflight'] or not state['serving']['needs_collect']):
                     raise RuntimeError('ACTUAL_WRITER_CONSUMER_OR_REQUEST_READBACK_INCOMPLETE')
                 row['pre_collect_query'] = executor.receipts[-1]
                 state = action('collect_replay')
-                originals = state['evidence']['original_observations']
+                collected = state['evidence']
+                if collected.get('current_run', run) != run:
+                    if not (every_match and run == 'c2' and phase == 'health'
+                            and collected['current_run'] == 'c3' and collected.get('prior_c2')):
+                        raise RuntimeError('EXACT_COMPLETED_C2_BEFORE_C3_TRANSITION_REQUIRED')
+                    collected = collected['prior_c2']
+                    verify_c2(collected)
+                    report['c2_attempt'], report['c2'] = collected, bool(collected['c2'])
+                originals = collected['original_observations']
                 if originals['status'] != 'CURRENT_COLLECTED' or state['serving']['needs_collect']:
                     raise RuntimeError('EXPLICIT_ORIGINAL_COLLECTION_UNCONFIRMED')
                 row['original_observations'] = originals['originals'][-1]
                 pending = []
-                if complete_set and index == 1 and state['evidence']['blockers']:
+                if complete_set and run_counts[run] == 1 and collected['blockers']:
                     # Keep the entire failed census. Run only its already
                     # planned Native-release health; never pick a subset.
                     blocked = True
-                    phases = phases[:2]+['health']
-                    report['complete_set_blockers'] = state['evidence']['blockers']
+                    blocked_run = run
+                    phases = phases[:index+1]+[(run, 'health')]
+                    report['complete_set_blockers'] = collected['blockers']
+                    report['blocked_run'] = run
+                run_counts[run] += 1
                 index += 1
                 save()
             if not blocked:
                 state = action('finish')
             evidence = state['evidence']
             if complete_set:
-                coverage = evidence.get('coverage')
                 simulation = evidence['public_core']['simulation']
-                qualified = (evidence.get('evidence_kind') == 'cpu_contract' and evidence['c2'] is False) \
-                    if simulation else evidence['c2'] is True
-                if not blocked and (not coverage or not coverage['contract_satisfied'] or not qualified
-                        or evidence['c3'] or len(coverage['live_c2_proof']['issued']) != 1
-                        or coverage['live_c2_proof']['consumed'] is not None):
-                    raise RuntimeError('COMPLETE_SET_C2_OR_ORIGINAL_PROOF_UNPROVEN')
-                report['c2_attempt'] = evidence
-                report['c2'] = bool(not blocked and evidence['c2'])
+                first = evidence.get('prior_c2', evidence)
+                second = evidence if every_match and evidence.get('current_run') == 'c3' else None
+                coverage = first.get('coverage')
+                if blocked_run != 'c2':
+                    verify_c2(first)
+                report['c2_attempt'] = first
+                report['c2'] = bool(blocked_run != 'c2' and first['c2'])
+                if second is not None:
+                    report['c3_attempt'] = second
+                if every_match and not blocked:
+                    current = second.get('coverage') if second else None
+                    qualified = (second.get('evidence_kind') == 'cpu_contract' and second['c3'] is False) \
+                        if simulation and second else bool(second and second['c3'] is True)
+                    if (not current or not current['contract_satisfied'] or not qualified or second['c2']
+                            or current['live_c2_proof']['issued'] or not current['live_c2_proof']['consumed']):
+                        raise RuntimeError('COMPLETE_SET_C3_OR_LIVE_CONSUMPTION_UNPROVEN')
+                    issued, = coverage['live_c2_proof']['issued']
+                    consumed = current['live_c2_proof']['consumed']
+                    if (not consumed['exact_issued_object_verified']
+                            or issued['object_binding'] != consumed['object_binding']
+                            or issued['proof_sha256'] != consumed['proof_sha256']
+                            or current['owner'] != coverage['owner'] or current['generation'] != coverage['generation']+1
+                            or current['scope'] != coverage['scope']):
+                        raise RuntimeError('EXACT_SAME_WORKER_LIVE_C2_TO_C3_RECEIPTS_REQUIRED')
+                    report['c3'] = bool(second['c3'])
             else:
                 if not evidence['single_site_c1']['evidence_complete'] or evidence['c2'] or evidence['c3']:
                     raise RuntimeError('SINGLE_SITE_EFFECT_OFF_HEALTH_UNPROVEN')
@@ -208,8 +252,14 @@ def drive(llm, client, *, executor, prompt, params, out, report):
             report['post_unregister_health'] = dict(mapping=mapping, output=healthy, worker=scope)
             pending = []
             action('detach', expected='DETACHED')
-            report['status'] = (C2_BLOCKED if blocked else C2_CPU_CONTRACT if simulation else C2_SUCCESS) \
-                if complete_set else SUCCESS
+            if not complete_set:
+                report['status'] = SUCCESS
+            elif blocked:
+                report['status'] = C3_BLOCKED if blocked_run == 'c3' else C2_BLOCKED
+            elif every_match:
+                report['status'] = C3_CPU_CONTRACT if simulation else C3_SUCCESS
+            else:
+                report['status'] = C2_CPU_CONTRACT if simulation else C2_SUCCESS
         except BaseException as error:
             report.update(status='REFUSED_OR_FAILED', error=repr(error), traceback=traceback.format_exc())
             if pending:
@@ -241,7 +291,7 @@ def main(argv=None):
     parser.add_argument('--mechanism', choices=('26.residual_stomp', '26.fia_destination'), required=True)
     parser.add_argument('--manifest-sha256', required=True)
     parser.add_argument('--source-root', type=Path, required=True)
-    parser.add_argument('--stage', choices=('c1_single_effects', 'c2_once'), default='c1_single_effects')
+    parser.add_argument('--stage', choices=('c1_single_effects', 'c2_once', 'c2_c3'), default='c1_single_effects')
     parser.add_argument('--max-targets', type=int, default=1)
     parser.add_argument('--memory', type=float, default=.55)
     parser.add_argument('--statistics', action='store_true')
@@ -256,7 +306,7 @@ def main(argv=None):
     out.mkdir(exist_ok=False)
     report = dict(schema='demoncat.writer26.worker_core_probe.v1', status='STARTING', mechanism=args.mechanism,
         stage=args.stage, scope=('SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS_FIXED_FRESH_PREFILL'
-            if args.stage == 'c2_once' else single_site_scope(args.mechanism)), c2=False, c3=False,
+            if args.stage in ('c2_once', 'c2_c3') else single_site_scope(args.mechanism)), c2=False, c3=False,
         qualification_granted=False, previous_direct_entry_qualification_inherited=False,
         E5='UNADAPTED_COLLECTOR_BOUNDARY', manifest_sha256=args.manifest_sha256, requests=[])
     llm = recorder = client = None
@@ -312,7 +362,7 @@ def main(argv=None):
             report['metadata_startup_failure'] = error.evidence
     finally:
         write_json(out/'result.json', report)
-    return 0 if report['status'] in (SUCCESS, C2_SUCCESS) else 2
+    return 0 if report['status'] in (SUCCESS, C2_SUCCESS, C3_SUCCESS) else 2
 
 
 if __name__ == '__main__':

@@ -15,6 +15,7 @@ from .serving_context import require, require_serial_eager
 ATTRIBUTE = '_demoncat_writer26_core_bindings'
 MECHANISMS = ('26.residual_stomp', '26.fia_destination')
 COMPLETE_SET_STAGE = 'c2_once'
+EVERY_MATCH_STAGE = 'c2_c3'
 
 
 @dataclass(frozen=True)
@@ -45,7 +46,7 @@ def install_writer26_core_binding(worker, *, mechanism, prompt_token_ids, eviden
     from fault_injection.deployments.writer26_inventory import NativeWriterInventory
     from fault_injection.providers import register_runtime
     require(mechanism in MECHANISMS, 'EXACT_SINGLE_SITE_WRITER_MECHANISM_REQUIRED')
-    require(stage in (SINGLE_SITE_STAGE, COMPLETE_SET_STAGE) and type(max_targets) is int
+    require(stage in (SINGLE_SITE_STAGE, COMPLETE_SET_STAGE, EVERY_MATCH_STAGE) and type(max_targets) is int
         and 1 <= max_targets <= 128, 'BOUNDED_WRITER26_CORE_STAGE_REQUIRED')
     require(type(_simulation) is bool and (_simulation or _runtime_factory is _reader is None),
             'WRITER26_CORE_OVERRIDES_CPU_ONLY')
@@ -312,6 +313,7 @@ class CoreWriter26Coverage(CoreWriter26Experiment, Writer26Coverage):
             execution_scope='SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS',
             independent_per_target_replay=False, finalized=self.finalized)
         value['c2'] = bool(value['c2'] and self.finalized and self.proof is not None)
+        value['c3'] = bool(value['c3'] and self.finalized)
         return value
 
 
@@ -320,7 +322,8 @@ class Serving26CoreSession(Serving26GroupExperiment):
         self.provider = provider
         binding = provider.binding
         super().__init__(provider.worker, provider.model, provider.backend, provider.native, provider._ticket[0],
-            prompt_token_ids=list(binding.prompt), evidence_dir=binding.folder/provider._ticket[0]/'runtime')
+            prompt_token_ids=list(binding.prompt), evidence_dir=binding.folder/provider._ticket[0]/(
+                'runtime-c3' if provider.current_run == 'c3' else 'runtime'))
         self.hook_callbacks = {}
         self.root_running = self.logits_running = False
         self.evidence_files = []
@@ -422,6 +425,8 @@ class Serving26CoreSession(Serving26GroupExperiment):
         self.evidence_attempts += 1  # Keep partial failed files; never reuse their name.
         value = dict(schema='demoncat.writer26.core_observations.v1', action=action,
             worker=self.provider.identity, native_owner=self.provider._ticket[0], generation=self.provider._ticket[1],
+            rpc_generation=self.provider._ticket[1], native_generation=self.backend.runtime.config.generation,
+            run=self.provider.current_run,
             simulation=self.provider.binding.simulation, qualification_granted=False,
             inventory=self.backend.report(), serving_requests=self.rows, serving=self.readback())
         data = (json.dumps(value, sort_keys=True, allow_nan=False)+'\n').encode('utf-8')

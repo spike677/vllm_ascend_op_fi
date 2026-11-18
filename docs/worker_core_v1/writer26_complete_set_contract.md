@@ -1,6 +1,6 @@
-# Native26 public Core complete-set C2
+# Native26 public Core complete-set C2 and C3
 
-The trusted deployment may select `stage='c2_once'` in
+The trusted deployment may select `stage='c2_once'` or `stage='c2_c3'` in
 `install_writer26_core_binding`. The user still supplies only
 `FaultConfig(26, 'residual_stomp')` or `FaultConfig(26, 'fia_destination')`.
 The binding consumes the existing Worker, fixed prompt, current Native-v2
@@ -18,7 +18,7 @@ finish/disable/unregister, ordinary health and detach. No RPC calls the model.
 
 ## Actual request and eligibility scope
 
-Eight fresh-prefill requests are required:
+The C2 stage requires eight fresh-prefill requests:
 
 1. Two complete healthy Native inventories with actual module identities and
    every registered alias retained.
@@ -28,7 +28,7 @@ Eight fresh-prefill requests are required:
    then same-Worker full-vocabulary health after Native release.
 
 This is **same-request cumulative multi-target execution**. It is not
-independent per-target replay, decode coverage or C3 every-match. All original
+independent per-target replay or decode coverage. All original
 producer/writer/consumer calls execute once. Every actual Native call remains
 in the independent denominator, including unsupported calls and failures.
 The existing model objects, current Native formals, public storage owners,
@@ -108,11 +108,58 @@ The existing `CoverageSession` records the original issued object's owner,
 generation, scope, target IDs, process/object binding and hashes. JSON is
 read-only audit evidence and cannot restore live proof authority. The C2
 proof is issued once after finalization. C3 consumption remains a separate
-future stage in this commit. Query neither collects nor saves; RPC carries
+stage using the original in-process object. Query neither collects nor saves; RPC carries
 compact coverage hashes/counts and the complete current Native readback.
 Immutable private observation files retain the full calls, candidate rows,
 aliases, typed descriptors, output evidence, recovery and proof audit ledger.
 The shared Host history semantics are unchanged.
+
+## C3 after the original live C2
+
+The explicit combined stage performs C2's eight requests, then the existing
+every-match engine's nine requests in the same Worker: two fresh complete
+healthy inventories, Reference/Lossless/OFF for the entire stable eligible
+set, two F requests, group OFF and post-release health. One final ordinary
+request after unregister makes eighteen requests, excluding the existing
+single model warmup. The probe records each actual enqueue, every original RPC
+and both generations' immutable complete observations; it takes one final
+Host snapshot.
+
+The collect action after C2 health removes the old hooks and Native owner,
+finishes group recovery and issues the original C2 proof. Only then does it
+construct the existing Native engine at `RPC generation + 1`, under the same
+Runtime owner, and install the new serving hooks. It does not call the model.
+The RPC ticket remains unchanged; current Native generation and both group
+generations are explicit in the readback. C3 does not inherit C2's stock output,
+Reference, candidate qualification or available event budget. It observes and
+checks them again before any new F. Scope, target identities and the exact
+issued proof object must still match; serialized or copied proof is refused.
+
+The full 135/30 observed Native denominator remains independent of the eligible
+target count. Every new healthy eligibility flip blocks the whole C3 group,
+including a flip after successful C2. No count or target is hardcoded. The
+original C2 report remains available when C3 fails or is blocked. A completed
+CPU C2/C3 contract still reports both natural qualification flags false.
+
+C3 budgets all seven remaining complete requests after its two healthy
+inventories, plus six typed owned-execute records per eligible target. From the
+prior FIA observation this estimates `300 * 7 = 2100` Native records and
+`60 * 7 + 29 * 6 = 594` typed records. The comparison uses the actual remaining
+global counters after C2 and the new healthy requests; counters and capacities
+are never reset or expanded to force admission.
+
+An uncertain C2 cleanup cannot start C3. A failed C3 preparation retains the
+Runtime owner, the original error and C2 evidence until explicit recovery and
+unregister. Recovery only cleans existing resources and never reruns a fault
+or automatically resumes the next stage. Late C2 callbacks cannot enter the
+new Native generation, and foreign owner/generation prevents cleanup writes.
+The combined CPU contracts exercise these transitions with actual Torch hooks
+and Host/Runtime RPCs, including typed flat storage and all thirty FIA calls.
+The C3 change passed 67 related CPU contracts across the new transition/driver,
+the retained C1/C2 paths, environment refusal and the existing coverage engine.
+After adding explicit RPC/Native generation labels to observation originals,
+the five driver contracts passed again. These runs overlap and grant no
+actual Worker qualification.
 
 ## Root-owned preparation
 
@@ -134,6 +181,13 @@ every original RPC, eight request observations when applicable, final host
 receipt and stdout/stderr on 124. The ordinary post-unregister request is a
 ninth request. A successful actual C2 result still needs independent review.
 `--statistics` explicitly refuses before model startup; E5 remains separate.
+
+For the combined actual attempt, change only `--stages c2_once` to
+`--stages c2_c3`. It is a new source-bound attempt with seventeen group requests
+and one post-unregister health request. A new result must independently prove
+both stages and the original C2 issuance/use ledger; the combined script alone
+does not qualify C2 or C3. The old source71 environment refusal and the QMM
+allocator-instability evidence remain unchanged.
 
 Local validation: 136 related CPU contracts passed, followed by 20 final
 focused contracts after the last census-hash and case-generator assertions.
