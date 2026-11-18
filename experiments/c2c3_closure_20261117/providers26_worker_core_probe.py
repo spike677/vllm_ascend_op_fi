@@ -10,8 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # Keep reviewed /installed distributions first.
 from experiments.c2c3_closure_20261117.providers26_group_probe import PROMPT, actual, single_site_scope
-from experiments.c2c3_postwrite_20261117.model_identity import file_sha, model_source_identity
-from experiments.c2c3_postwrite_20261117.natural41_coverage_probe import actual_vllm_weights
+from experiments.c2c3_postwrite_20261117.model_identity import file_sha, model_source_identity, vllm_safetensors_identity
 from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
 from demoncat.runtime.vllm_ascend.worker_extension.host import HostAdapter, WorkerFaultClient
 from demoncat.runtime.vllm_ascend.worker_extension.serving_context import read_enqueued_identity
@@ -237,7 +236,7 @@ def main(argv=None):
         from fault_injection.deployments.writer26_loader import StartupDependencies
         startup = StartupDependencies(bundle='/native', manifest_sha256=args.manifest_sha256)
         report['metadata_startup'] = startup.evidence
-        report['weights'] = actual_vllm_weights('/model')
+        report['weights'] = vllm_safetensors_identity('/model')
         from vllm import LLM, SamplingParams
         from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require_host_driven_core
         llm = LLM(model='/model', dtype='bfloat16', load_format='safetensors', trust_remote_code=False,
