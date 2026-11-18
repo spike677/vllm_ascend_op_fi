@@ -14,6 +14,7 @@ import threading
 import types
 
 from experiments.c2c3_closure_20261117.tensor_statistics_capture import TensorStatisticsCapture
+from experiments.worker_core_v11_20261118.collector_packet_compat import CustomPacketMetadata
 from demoncat.runtime.vllm_ascend.worker_extension import serving_tensor_request as request_module
 from demoncat.runtime.vllm_ascend.worker_extension.call_binding import original_before_collector, same_callable
 
@@ -156,12 +157,15 @@ class PublicTensorStatisticsSidecar:
         self._verify_runtime()
         self.capture = _capture or TensorStatisticsCapture(self.folder/'statistics', session.provider.synchronize)
         self.production_collector = _capture is None
+        self.packet_metadata = None
         if _hook_verifier is None:
             identity_path = self.capture.folder/'collector_identity.json'
             identity = json.loads(identity_path.read_text())
             require(all(identity['files'].get(name) == expected for name, expected in EXTRA_COLLECTOR_PINS.items()),
                     'UNREVIEWED_COLLECTOR_HOOK_CONTROL_SOURCE')
             self.verifier = PinnedModuleHooks(identity['package'], identity['files'])
+            self.packet_metadata = CustomPacketMetadata(self.capture.collector, identity['package'], identity['files'])
+            identity['custom_packet_metadata_compatibility'] = self.packet_metadata.report()
             identity['experimental_public_core_adapter'] = dict(source_sha256=sha(__file__),
                 runtime_source_pins=self.source_pins, root_hook_adapted=False,
                 native_root_module_record_absent=True,
@@ -234,6 +238,8 @@ class PublicTensorStatisticsSidecar:
             self.rows.append(dict(phase=phase, arm=PHASES[phase], actual_step=len(self.rows),
                 request_id=self.session.expected, before=public_inventory(self.before), completed=False))
             self.capture.begin(self.session.model, 'statistics_'+PHASES[phase])
+            if self.packet_metadata is not None:
+                self.packet_metadata.verify()
             require(self.capture.collector.service is self.service
                     and len(self.service.hooked_modules) == 1 and self.service.hooked_modules[0] is self.session.model,
                     'COLLECTOR_MODULE_CACHE_OWNER_CHANGED')

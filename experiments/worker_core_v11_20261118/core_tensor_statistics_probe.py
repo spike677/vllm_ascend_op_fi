@@ -18,6 +18,7 @@ from experiments.worker_core_v11_20261118.core_tensor_statistics_capture import 
 
 ATTRIBUTE = '_demoncat_experimental_public_rms_statistics'
 EXTRA_FILES = ('experiments/worker_core_v11_20261118/core_tensor_statistics_capture.py',
+               'experiments/worker_core_v11_20261118/collector_packet_compat.py',
                'experiments/worker_core_v11_20261118/core_tensor_statistics_probe.py')
 ORIGINAL_DRIVE = original.drive
 

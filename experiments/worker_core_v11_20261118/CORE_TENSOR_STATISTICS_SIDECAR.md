@@ -50,6 +50,23 @@ first-difference record. The collector's normal output-hook order is retained.
 
 ## Collector ownership and recovery
 
+The source96 NPU attempt failed before the first capture window: automatic
+custom-op registration replaced an `OpOverloadPacket` by a generated function
+without its `default` metadata. TorchDispatchMode then failed at the actual
+`_C_ascend.npu_add_rms_norm_bias` call. The failed original and clean container
+exit are retained; CPU protocol tests had not exercised a custom packet.
+
+The compatibility helper now preserves the **original OpOverload** as the
+`default` attribute on the exact collector-generated wrapper, matching the
+same collector's normal `API_ATTR_LIST` handling. It verifies registry source,
+generated code, closure-bound packet/name/namespace and current identity before
+adding missing metadata; foreign attributes or later changes refuse. It does
+not replace a callable, alter inputs/outputs, filter operators or rewrite raw
+statistics. Collector identity records every affected packet and helper hash.
+Direct `.default` calls are not newly instrumented by this metadata repair;
+that pre-existing collector visibility limit is retained. The attributes,
+like the stopped global wrappers, end with the disposable process.
+
 The unedited package's public `start/stop/step` controls are reused. The
 sidecar attaches only to the existing `session.statistics_capture` observer
 slot, so owned diagnostic snapshots and return-proxy arithmetic pause capture
@@ -138,6 +155,7 @@ frozen source archive (they are not additions to the production Runtime API):
 
 ```text
 experiments/worker_core_v11_20261118/core_tensor_statistics_capture.py
+experiments/worker_core_v11_20261118/collector_packet_compat.py
 experiments/worker_core_v11_20261118/core_tensor_statistics_probe.py
 experiments/worker_core_v11_20261118/prepare_core_tensor_statistics.py
 experiments/worker_core_v11_20261118/review_core_tensor_statistics.py
