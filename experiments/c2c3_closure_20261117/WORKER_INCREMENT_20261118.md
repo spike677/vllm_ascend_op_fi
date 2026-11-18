@@ -1,10 +1,41 @@
-# Worker Core: source51–60 incremental evidence
+# Worker Core: source51–62 incremental evidence
 
-This report preserves the six accepted C2 and five accepted C3 scopes. It does
+This report preserves the six accepted C2 and now six accepted C3 scopes. It does
 not qualify all17 routes or another CANN/hardware version. Root owns the single
 card2 queue on124; three specialists work on CPU/code only. Temporary Workers
 are created by normal serving startup. Source snapshots are immutable and all
 new raw statistics, tensors and Native binaries remain on124.
+
+## 41.tail_column: public Core and original live proof independently reconciled
+
+Source60 `62095b0a5fc4c6eb7450f666cdf5f8a095ba7b18` completed17 protocol
+requests,43 original public RPCs, and an eighteenth ordinary same-Worker request
+after unregister/detach. The original Native build is unchanged. Controller
+exit0, owned container removal and the subsequent idle-device gate pass.
+The separate original-file reviewer checks88 artifact conditions,100 provenance
+conditions and6608 runtime-evidence conditions with no contradiction. It joins
+the public ticket owner, internal provider owner and numeric Native owner through
+their actual receipts, rather than requiring them to be the same string.
+
+C2 covers28 targets once; C3 covers56 actual matching calls in two requests.
+Original live C2 issuance/use, complete logical K/V-prefix recovery, exact legal
+tail spans, full-root OFF hashes and owned hook/API/lease cleanup reconcile.
+The second C2 request is correctly a no-repeat control: its root output does
+not change. Both C3 fault requests change the full-root hash. Ordinary final
+health preserves Worker identity and tokens `[576, 4226]` / text ` The answer`.
+That post-unregister request has no full-root tensor capture after observer removal.
+
+Result SHA256 `7547e859ccab85c0a36c9712f0b66a20a330ebfefb16ebaeca63c0daabb0796a`;
+original Host ledger SHA256
+`e89cc0df828ec5d95674b11ce670bff8cd205950e08298739708811cbd6ccd6f`.
+Independent review SHA256
+`6e607e6664adb424072980e234e30c56c5b6f045a467e6349c9dfb5fb5e0a5c2` is
+[published as a summary](../c2c3_postwrite_20261117/core41_source60_review.json).
+Its37 CPU contracts pass. This is a source-bound CANN8.5.1/A2 Qwen scope, not
+portable qualification. Complete private tensor arrays and external model files
+are not independently rehashed by this reviewer. This entrance does not collect
+new raw statistics; earlier E5 ambiguity remains. The2.4GB private Host history
+also exposes substantial receipt-serialization overhead; it stays on124.
 
 ## 26.residual_stomp: real single-site effects completed
 
@@ -119,6 +150,21 @@ No Native fault was attempted and owned resources were cleaned. Its query-time
 collection currently obscures qualification refusal as a state-read error;
 moving collection to an explicit action is a separate interface correction.
 
+Source61 adds explicit collection rather than query-time mutation and a bounded
+actual-GWS diagnostic. New SDK build
+`b032fe3e57ee3258eb61b35baba5c8a20519b755a78a68020f776d50659db7a4`
+passed20 runtime scenarios and actual-ELF/device-free load checks. Its healthy
+Worker diagnostic again completes both B8 decodes and270 projections, with zero
+fault calls and complete cleanup. It fails qualification, with result SHA
+`42620b2db6724092a1d48dcd051a9e3e00fa3b7dfb2c3284a74c71905d98d7da`.
+Current Native getters prove ND format2, rank-two view/strides over rank-one
+exact-flat storage. Observed widths are2048,10944 and2816, with eight rows;
+no public Tensor field supplies that missing Native geometry. The actual MLA
+builder performs two successive prefix slices, and the second returned object
+feeds rotary metadata. The current one-slice adapter still refuses this chain.
+The independent source61 evidence now supports targeted adaptation of both
+boundaries; it is not itself a new C1/C2/C3 result.
+
 ## Remaining work and deployment boundary
 
 Fault33 source53 captured the actual first decode Q/K/V, immediate returns and
@@ -176,13 +222,39 @@ Result SHA256820ff0110256209a973d2e76b7b9abb780ba76d54a92cd691354973de7fe9007.
 The next implementation reuses the explicit single-site C1 plan, preserving the
 full inventory and stock gate while separating minimum functional proof from C2.
 
+Source62 `dc40a87d5e21cd8a36ba24e1fa542bcd0e543bc2` then completed the eight
+real SmolLM2 requests with that single-site entrance and unchanged typed Native
+a4. All30 calls per request and397 registered aliases are retained. Selection
+chooses actual minimum resolved key at index17; only one F is performed, with no
+fallback. The65 complete public-output artifacts cover60 stock samples and the
+five selected R/L/OFF/F/OFF returns. F records14782 changed residual bytes,
+one writer/consumer and exact residual restoration. Its model-output hash changes
+and generated token changes2→15442; both OFF and uninstalled health recover the
+baseline full-output hash and token2. Typed preparation/execution, Native memory
+and owned hooks are zero at completion. Result SHA256
+`c47ec0438492479e8b1ace37fcd9176d4031051a74b1648f0ad7863ed25045dd`.
+The independent original-file runtime review is pending; these observations
+do not create C2/C3 or all29-target acceptance.
+
+Separately, raw-only B/F statistics compare the real recovery-OFF step6 with
+fault step5, without renaming steps or receiving runtime/hit/target hints.
+With baseline-reference rtol1e-5/atol1e-8,2846 records align and1798 fields
+exceed tolerance. The first is
+`NPU._npu_reshape_and_cache.0.forward/input_kwargs/slot_indices`, Max140→124,
+with164 earlier nulls;5762 null fields remain overall. There are no incomparable
+nonfinite fields, and B self-comparison has no observable difference. This is
+a valid raw statistical comparison but **not localization of the injected
+destination write**: the earlier cache-slot parameter already differs. No field
+is filtered or normalized. Summary SHA256
+`56b68e4efecf2d2e9974667efb189a931fa2e41780771288984c179ba7e92a9a`.
+
 The public41 adapter now reuses the existing KV group through the public Host,
 Runtime and Provider interface, with query remaining read-only. It retains the
 original live C2 proof, tracks actual owned hook/API links and handles lost
 Native release replies through the exact handle/owner/generation readback.
-Root ran61 focused checks:60 passed, one platform skip. Source60 is under real
-standard-Worker validation, with17 protocol requests plus one after unregister.
-Existing isolated KV evidence is not automatically inherited by this entrance.
+Root ran61 focused checks:60 passed, one platform skip. Source60 subsequently
+completed real standard-Worker validation and the separate original-file review
+described above. Existing isolated KV evidence was not inherited by this entrance.
 The source-only integration
 exporter includes the new required FIA header and continues to exclude all raw
 data/vendor binaries. Yellow-zone wiring, general8.x/9.x and A3 remain separate

@@ -30,7 +30,7 @@ remain explicit refusals.
 |---|---|---|
 | Identity, generation, tenants, ownership | existing `identity.py` / `runtime.py` | one actual Worker; uncertain actions retain owner |
 | Public configuration and routing | `config.py` / `host.py` | all17 catalog IDs resolve; this does not qualify their factories |
-| Provider inventory | `registry.py`, exposed in capabilities/discovery |11 existing RPC providers;6 routes explicitly awaiting RPC adaptation |
+| Provider inventory | `registry.py`, exposed in capabilities/discovery |12 existing RPC providers;5 routes explicitly awaiting RPC adaptation |
 | Structural CandidateSet | `discovery.py` using existing model discovery | all aliases and unknown roles retained; no model forward or device load |
 | Natural call census | `call_census.py` using existing path/request/native observers | one naturally scheduled prefill or first-decode request; bounded capture |
 | Native build | existing `fault_injection.native_build.NativeBuildManager` | explicit recipes, source/compiler/ABI/library fingerprints; no universal8.x/9.x promise |
@@ -67,12 +67,17 @@ accepted113 C2 targets and226 C3 calls with exact OFF and SDK release. Fault20's
 source44 short preflight observed135 QMM calls twice and released15012 SDK arrays,
 but armed no fault. These are not results for the new Core snapshot.
 
-Strict current qualification is6/17 for C2 and5/17 for C3: the existing
+Strict current qualification is6/17 for both C2 and C3: the existing
 Fault18, MoE8, repaired Native39/Native20 scopes, public Core22 C2/C3, and
-KV41 C2. Core22 source50 passes9567 independent actual-file conditions,
+public Core41 C2/C3. Core22 source50 passes9567 independent actual-file conditions,
 including original live-proof issuance/use,29 RPCs and post-cleanup same-Worker
 health. See [its reviewer](../../experiments/c2c3_closure_20261117/worker_core_rope_review.md).
-KV41's direct live-proof receipt gap remains. Keep C0/C1/C2/C3, Recovery and E5 separate. In
+Core41 source60 adds6796 reconciled artifact/provenance/evidence conditions,
+43 original RPCs and original live C2 issuance/use. Its28 targets/56 calls and
+whole-group OFF are source-bound; final ordinary health captures tokens/text,
+not complete logits after observer removal. See
+[the original-file summary](../../experiments/c2c3_postwrite_20261117/core41_source60_review.json).
+Keep C0/C1/C2/C3, Recovery and E5 separate. In
 particular, Native39's C2 Inf/NaN statistics and absent C3 raw capture remain
 independent E5 limitations. Do not rerun accepted cases merely to refresh counts.
 

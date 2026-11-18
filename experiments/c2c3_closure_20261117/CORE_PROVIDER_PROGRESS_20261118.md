@@ -5,7 +5,7 @@ This is an incremental report for `codex/17-fault-c2c3-closure-20261117`.
 writer26 single-site run, output39 original-file/statistics reviews and quant
 loader/observer fixes. Read that continuation for the latest state; older failed
 attempts below remain evidence, not current queue status.
-The existing six strict C2 and five strict C3 scopes are preserved. A new
+The existing six strict C2 and six strict C3 scopes are preserved. A new
 runtime success requires its own independent review; this report does not
 claim17/17, yellow-zone integration, CANN9.x Worker or A3 acceptance.
 
@@ -13,7 +13,7 @@ The public API is `WorkerFaultClient(HostAdapter(...), FaultConfig(id, variant))
 Serving owns Worker construction and scheduling. The trusted deployment adapter
 selects actual objects/calls and supplies the matching native package. End users
 do not select layers, pointers, ranks or library paths. There are17 catalog routes,
-11 RPC factories and6 separately implemented routes awaiting Worker RPC adapters.
+12 RPC factories and5 separately implemented routes awaiting Worker RPC adapters.
 See the [route and acceptance matrix](C2_C3_MATRIX.md), not catalog presence,
 for what actually works on each model.
 
