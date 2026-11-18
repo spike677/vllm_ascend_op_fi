@@ -425,3 +425,40 @@ per-generation1200s and continuous-case1800s limits. Its25 new local CPU
 contracts pass, including the full73-request lifecycle. CPU success grants no
 new26 qualification; an actual run and independent original-file review are
 required. No new raw statistics, tensor files or Native binaries are published.
+
+
+## Source87 complete read-only rechecks
+
+The [integer-route recheck](QUANT_SOURCE87_INTEGER_DIAGNOSTIC.md) independently
+recalculates52 parent maps,260 integer snapshots and130 equal cross-forward
+snapshot pairs. Root reproduces the same summary SHA;9 corruption contracts
+pass. The complete projection denominator remains135 per request, with10
+proved request-row chains and125 unverified. Only the first MoE parent's input
+already has a current request-row proof. Arithmetic consistency alone does not
+authenticate the GMM/unpermute Native semantics or revive invalidated aliases.
+New MLP source/frame observation is under CPU development; no new quantization
+fault qualification follows from this diagnostic.
+
+The [complete28 census recheck](attention28_source87_independent_summary.json)
+passes237 conditions and rehashes73 original artifacts, including15 actual RPCs,
+all56 call files, raw runtime and registered ELF bytes. It resolves112 launches:
+56 cached Slice entries and56 fresh FIA aic/aiv entries. The exact actual keys
+are524000000 and5000000000000200103. Function bodies are separately hashed;
+co-resident internal symbols and same-prefix data objects are not entry reachability.
+The original56 unobserved records remain unchanged. Two offline audit failures
+are also retained: the first assumed the Host convenience method name was the
+RPC action; the second confused the public ticket owner with Runtime's private
+provider owner. Source92 checks both real owner namespaces and all lifecycle
+states, then reconciles the same original files successfully.
+
+This is actual execution-boundary evidence, not a28 fault or normal-bridge
+acceptance. Stock POD, exact tensor-pointer ABI and selected ACLNN resolver
+ownership remain unobserved. Source88's distinct33 Q1/page16 bridge cannot be
+used to authorize this TND2048 route. The next adaptation must use its own
+matching source, normal comparison, legal tiling and fault/OFF proof.
+
+Source89's45 production-image CPU contracts passed in1201.272s before NPU
+startup. Its actual26 isolated-to-C3 case is running serially oncard5, retaining
+all30 observed calls and29 eligible targets. First-F cost gating passed without
+changing1200s/1800s limits. The actual run and subsequent independent review,
+not this progress note, determine its C2/C3 result.

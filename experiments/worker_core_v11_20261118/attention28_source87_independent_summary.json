@@ -1,0 +1,503 @@
+{
+  "schema": "demoncat.attention28.source87.independent_summary.v1",
+  "status": "SOURCE_BOUND_TND_STOCK_SCOPES_RECONCILED_NO_FAULT_QUALIFICATION",
+  "checks": 237,
+  "issues": [],
+  "result_sha256": "3b7143f1b3873211214a79e3d22afc21a86e80b8a86409496bfe6e15dfba3340",
+  "audit_sha256": "63245627592213699a466ccc3e3d2dbb7b14c628413ef56e96022c15d3449e49",
+  "reviewer_sha256": "f08c3d5a54e5442ff1800171b20f56c5d2dd7cd1ce48ab05e3a2e4750f266914",
+  "offline_raw_reader_sha256": "21e03cdd1ef9ba42637a702fe54995e2a98866fa1709fac8fe6609f8bc1dc363",
+  "provenance": {
+    "source_commit": "66d1c76be375e8995622c870900c51c34b6bddbd",
+    "manifest_sha256": "4624e735fc244e5133e712db2695bfc6d34ad1196e1905738f24be36f0ad092b",
+    "source_pins": {
+      "experiments/c2c3_closure_20261117/prepare_attention28_stock_census.py": "55ea4465a119d4c99255237c88d5c4f01fb18862aeb4af00230aa5249885a136",
+      "experiments/c2c3_closure_20261117/natural_attention28_stock_census_probe.py": "c0aa7077eda21ce6228975c6f431815170cd8671b57ce28bf50476f143696fcf",
+      "experiments/c2c3_closure_20261117/natural_attention_worker_core_probe.py": "0fed73b0b90c3562534105d8ff4492c1e4ef1e14a441d3b7e2024fb07686e531",
+      "experiments/c2c3_closure_20261117/arch22_normal_bridge_evidence.py": "78889741c07cc074cd954152abfb77c67f9032889182ff320fbd96765b1339a5",
+      "experiments/c2c3_closure_20261117/queue_contract.py": "44d53cf8bb0abd432091018c9295fe6235cf17130efa9c85b6b5af3e7e5fece1",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/attention28_stock_census.py": "07e98b8845aedc6e43b2f92357c93d2b8fe6d600fbfdb4525f5af121d603a911",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/attention_stock_launch.py": "43a9519f1a6aa4565a058519838bd16ad3d559d708239efe2ab558c4094a8c97",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/attention_native.py": "71dc085d4688a5a752f1cf2ff18baa843de164e2247c816fa9d2141a901ef6d3",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/attention_execution.py": "6f83aaf48dee29ed51f8c5c6e71a94cbb6e7337cb4f2094717dd57ba0f53b776",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving_attention.py": "564afc2ab3d0ab9f0d5e2c462486dc15bb675a625383b1de39fef72ec86ba927",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/attention_serving.py": "f8853690027b005289de8ddb207d27d60efaa174bde3502faffbd1cfcf702f8b",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/attention28_prefill.py": "ac57a743975e5e730a2d5a8d66269f2e361698cfa060c31924d9f08fc97a25b2",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/tensor_modules.py": "471a64680a80ae95937926fcba6662336a87ae56bf7c7d2f8542734e9f05c7b8",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/paged33_boundary_probe.py": "f04dfb16ec89896f227b4d6980a8ff1ce3a2d321698358c59abab2f9795f0a59",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/paged33_audit.py": "2112ff9b9f78ca75ec23ecdd24cfcfd352e0195d1212c808adb55f5a381412dd",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/paged33_tnd.py": "5fdf1332b556b9153c42d1aa4759694211c09b54b57cc4f3ab16b67ee91e5cc3",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/paged33_loading.py": "5b188c760d50b1ef8ccea95f19a60cfc1f0730fd618beb9d546f364f61c4375c",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/paged33_arch22_bridge.py": "78f45e6ea77525f90833fa0424cf7c928af85a8b983adab8fb89a8ef60361512",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving_context.py": "61e51a706d1482e381f248f2cea47558db33f65959ba01a35f24e88b4f461021",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/call_binding.py": "000e3d11f666c9cf4a897487c486eb9b5ccebe03807d12fdc572442c07340adb",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/identity.py": "0af0136c9ada160391c95f2adc7ff1f08b11bdd9327f7e496108141516b9112f",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/batch_context.py": "e1dc36947b4cceaafdb423e3935e4fe2e4ea9ae9a5ab14e81730183f09ec044e",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/config.py": "fb59fe21877dddc64322b23ff520960d7b10a39280350edf18a495984a6afccf",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/host.py": "17fc60f06bb2d39e91fa88994c3ca6fd8b636688465baa8d12c00929ddc242f1",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/runtime.py": "51fd9d7975b179ec67e6935a06b20a1bba9b8da53fdd10902c388cf979636363",
+      "fault_injection/native_adapters/attention28/launch.py": "3580203f7d5cf922c018b8073771c2cbc39327b63a0bd92429386ddf24b55127",
+      "fault_injection/native_adapters/attention28/launch_observer.cpp": "0fa0ed681d78be892fabe6bb49fcb20fa5cbfb5aea793e6cfa20506e795da214"
+    },
+    "observer_receipt_sha256": "f7e7cb0ff9f6e660512968a6d8b550e3578b133ac0a0b39da3d7f776e44e0cee",
+    "observer_library_sha256": "bcad8a17191db79b1ab0c89a110ff557b3a3b4243ff8d8f2fe353beeeb3a908b"
+  },
+  "actual_calls_per_request": [
+    28,
+    28
+  ],
+  "independently_resolved_scopes": 56,
+  "actual_launches": 112,
+  "binding_kinds": {
+    "CACHED_PRE_SCOPE_LAST_EFFECTIVE_BIND": 56,
+    "FRESH_CURRENT_SCOPE_BIND": 56
+  },
+  "original_unobserved_scopes": [
+    {
+      "where": "observe/0",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/1",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/2",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/3",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/4",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/5",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/6",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/7",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/8",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/9",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/10",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/11",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/12",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/13",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/14",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/15",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/16",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/17",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/18",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/19",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/20",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/21",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/22",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/23",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/24",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/25",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/26",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe/27",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/0",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/1",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/2",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/3",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/4",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/5",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/6",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/7",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/8",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/9",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/10",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/11",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/12",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/13",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/14",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/15",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/16",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/17",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/18",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/19",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/20",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/21",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/22",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/23",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/24",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/25",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/26",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    },
+    {
+      "where": "observe_repeat/27",
+      "reasons": [
+        "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')"
+      ]
+    }
+  ],
+  "artifacts_rehashed": 73,
+  "original_rpc_actions": [
+    "attach",
+    "prepare",
+    "register",
+    "check",
+    "enable",
+    "advance",
+    "query",
+    "advance",
+    "advance",
+    "query",
+    "advance",
+    "finish",
+    "disable",
+    "unregister",
+    "detach"
+  ],
+  "public_and_private_owner_namespaces_separately_bound": true,
+  "actual_launch_profiles": [
+    {
+      "api": "aclrtLaunchKernelWithHostArgs",
+      "actual_tiling_key": "524000000",
+      "block_dim": 40,
+      "schedule_mode": 0,
+      "argument_layout": "aclrt_host_placeholders",
+      "args_bytes": 208,
+      "registered_binary": {
+        "path": "/home/17-fault-c2c3-20261117/v11-observations-source87-card5-a1/attention28-tnd-stock-native-census/probe/runtime/registered-1-28.bin",
+        "bytes": 2363808,
+        "sha256": "ceadb83454273d7a9dd67c343c2dd7ca0f756ff0f44340d42126ec584a36b63d"
+      },
+      "selected_entry_symbols": [
+        {
+          "name": "Slice_cf62034947577763b2b546efd5444507_high_performance_524000000",
+          "symbol_type": 2,
+          "binding": 1,
+          "section_index": 1,
+          "address": 12820,
+          "bytes": 1940,
+          "table": ".symtab",
+          "code_sha256": "cb0cd7e627aaf03cad49e1364c23ccb4de32397b3a0c3e412086a1cd3dda04b8",
+          "section_name": ".text"
+        }
+      ],
+      "symbols_sha256": "89d20947ec4891ce605e4f805dcbe57019edc34ea0f37854219346a3fb50a96f",
+      "native_algorithm_branch": "UNRESOLVED_WITHOUT_ENTRY_CALLGRAPH_OR_MATCHING_BUILD_METADATA"
+    },
+    {
+      "api": "aclrtLaunchKernelWithHostArgs",
+      "actual_tiling_key": "5000000000000200103",
+      "block_dim": 20,
+      "schedule_mode": 0,
+      "argument_layout": "aclrt_host_placeholders",
+      "args_bytes": 600,
+      "registered_binary": {
+        "path": "/home/17-fault-c2c3-20261117/v11-observations-source87-card5-a1/attention28-tnd-stock-native-census/probe/runtime/registered-1-327.bin",
+        "bytes": 20097744,
+        "sha256": "c182034ed30e94e277feeb4ae3ac859027758efc49f5418dcbaabecea236f11a"
+      },
+      "selected_entry_symbols": [
+        {
+          "name": "FusedInferAttentionScore_8cd36e66e4ceb2d60ef96db29a147347_5000000000000200103_mix_aic",
+          "symbol_type": 2,
+          "binding": 1,
+          "section_index": 1,
+          "address": 18915260,
+          "bytes": 10204,
+          "table": ".symtab",
+          "code_sha256": "2ed3c7fa9ef012e8f9442214eb895199f0c0314e00f38795edd9b4d99e88509e",
+          "section_name": ".text"
+        },
+        {
+          "name": "FusedInferAttentionScore_8cd36e66e4ceb2d60ef96db29a147347_5000000000000200103_mix_aiv",
+          "symbol_type": 2,
+          "binding": 1,
+          "section_index": 1,
+          "address": 18925464,
+          "bytes": 20852,
+          "table": ".symtab",
+          "code_sha256": "46947fdab9c951fdf4872d3ac59d5fb53f06417414a76d115e0cbf3e04996a62",
+          "section_name": ".text"
+        }
+      ],
+      "symbols_sha256": "1efc9dec6e160d0348800ce8ac37d5a629b065826ea1ca7fdbd08605b895909f",
+      "native_algorithm_branch": "UNRESOLVED_WITHOUT_ENTRY_CALLGRAPH_OR_MATCHING_BUILD_METADATA"
+    }
+  ],
+  "previous_failed_reviews_retained": [
+    "11e87456c49638746de48bed0209388d200bb94bf4c5723f5232b2bdaf43b3cd",
+    "b3c989a44e0358ff9a53ae7e9c36394d6eea9d745801e9a91a284ffd9ec1b8a7"
+  ],
+  "original_data_modified": false,
+  "fault_authorized": false,
+  "C1": false,
+  "C2": false,
+  "C3": false,
+  "E5": "NOT_ASSESSED",
+  "stock_pod_decoded": false,
+  "all_runtime_entrypoints_covered": false,
+  "limitations": [
+    "QKV and complete model arrays were not retained; their full hashes are source-bound receipts.",
+    "Only intercepted launch scopes are reconciled; no claim covers every runtime entrypoint.",
+    "Schema defaults are declarations, not observed final Native typed attributes.",
+    "Registered ELF entry symbols identify the launched entry, not a decoded stock POD or selected ACLNN owner.",
+    "Co-resident internal symbols do not prove entry reachability. No expected key classifies the actual branch.",
+    "Post-unregister health is tokens only; no post-clean full logits are observed."
+  ],
+  "evidence_location": "/home/17-fault-c2c3-20261117/v11-attention28-source87-independent-review-a3/review.json",
+  "raw_data_in_git": false
+}
