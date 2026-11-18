@@ -20,6 +20,17 @@ SPEC.loader.exec_module(bundle)
 
 
 class BundleTests(unittest.TestCase):
+    def test_actual_all_normal_reader_and_build_source_closure_is_exported(self):
+        spec = importlib.util.spec_from_file_location('all_normal_export_contract',
+            ROOT / 'experiments/c2c3_closure_20261117/arch22_normal_bridge_evidence.py')
+        evidence = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(evidence)
+        payload = bundle._inventory(ROOT)
+        required = set(evidence.REQUIRED + evidence.S2_REQUIRED + evidence.ALL_REQUIRED)
+        self.assertFalse(required - payload.keys())
+        for name in required:
+            self.assertEqual(payload[name], (ROOT / name).read_bytes(), name)
+
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
