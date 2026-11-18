@@ -171,7 +171,9 @@ class Review:
 def target_key(callback):
     call = callback['native_packet']
     signature = {name:call[name] for name in ('mechanism', 'device', 'dtype', 'format', 'dimensions',
-        'output_bytes', 'residual_bytes', 'shape', 'cache', 'registration')}
+        'output_bytes', 'residual_bytes', 'shape')}
+    if call['mechanism'] == 1:
+        signature.update(cache=call['cache'], registration=call['registration'])
     return digest(dict(module=callback['module_object_identity'], method=callback['method'], signature=signature))
 
 
@@ -186,7 +188,7 @@ def contiguous(shape, stride):
     return True
 
 
-def public_tensor(meta, event, residual=False):
+def public_tensor(meta, event, residual=False, *, public_format=None):
     prefix = 'residual_' if residual else ''
     address, size = event['residual' if residual else 'output'], event['residual_bytes' if residual else 'output_bytes']
     dims = event[prefix+'dimensions']
@@ -197,7 +199,8 @@ def public_tensor(meta, event, residual=False):
         and contiguous(meta['shape'], meta['stride']) and math.prod(meta['shape'])*meta['element_size'] == size
         and meta['dtype'] == {0:'torch.float32', 1:'torch.float16', 27:'torch.bfloat16'}[event['dtype']]
         and meta['element_size'] == (4 if event['dtype'] == 0 else 2)
-        and meta['actual_format'] == event['format'] and meta['device'] == 'npu:' + str(event['device']))
+        and meta['actual_format'] == (event['format'] if public_format is None else public_format)
+        and meta['device'] == 'npu:' + str(event['device']))
 
 
 def allocation(snapshot, call):
@@ -234,7 +237,7 @@ def allocation(snapshot, call):
     return None, nonadjacent
 
 
-def trace(r, row, lifetime, where):
+def trace(r, row, lifetime, where, *, mechanism=1):
     before, after, events = row['native_before'], row['native_after'], row['native_events']
     for value in (before, after):
         r.check(integer_packet(value) and value['version'] == 1 and value['size'] == 160 and value['flags'] == 7 and value['reserved'] == 0
@@ -253,23 +256,24 @@ def trace(r, row, lifetime, where):
     counts = Counter(e['kind_name'] for e in events)
     r.check(all(counts[k] == after[k] - before[k] for k in KINDS.values()), 'NATIVE_DETAIL_COUNTER_JOIN', where)
     r.check(counts['qmm_enter'] == after['qmm_runs'] - before['qmm_runs'], 'FULL_QMM_DENOMINATOR', where)
-    starts = [e for e in events if e['kind_name'] == 'qmm_enter']
+    starts = [e for e in events if e['kind_name'] == ('qmm_enter' if mechanism == 1 else 'fia_before')]
     r.check(len({e['call'] for e in starts}) == len(starts) and all(positive(e['call']) for e in starts),
             'NATIVE_CALL_DUPLICATION', where)
     return starts
 
 
-def correlate(row):
+def correlate(row, *, mechanism=1):
     events, callbacks, producers = row['native_events'], row['callbacks'], row['producers']
     callback_map = {c['independent_call']:c for c in callbacks if c.get('independent_call')}
     result = []
-    for native in (e for e in events if e['kind_name'] == 'qmm_enter'):
+    start, finish = ('qmm_enter', 'qmm_exit') if mechanism == 1 else ('fia_before', 'fia_exit')
+    for native in (e for e in events if e['kind_name'] == start):
         callback, reasons = callback_map.get(native['call']), []
         if callback is None:
             reasons.append('NATIVE_WRITER_HAS_NO_OWNED_PUBLIC_CALLBACK')
         else:
             reasons.extend(callback['errors'])
-        endings = [e for e in events if e['kind_name'] == 'qmm_exit' and e['call'] == native['call']]
+        endings = [e for e in events if e['kind_name'] == finish and e['call'] == native['call']]
         if len(endings) != 1 or endings[0]['status'] != 0:
             reasons.append('ACTUAL_WRITER_EXECUTION_NOT_COMPLETED')
         public = [p for p in producers if p.get('native_producer') == native['producer']
@@ -303,6 +307,9 @@ def classify(candidate):
         reasons.append('PUBLIC_WRITER_OUTPUT_NOT_RETAINED')
     if not callback.get('public_consumer_lifetime'):
         reasons.append('PUBLIC_CONSUMER_LIFETIME_NOT_PROVEN')
+    if callback.get('fia_typed_before') is not None and (not callback.get('fia_typed_public_records')
+            or (callback.get('writer_output_retained') or {}).get('evidence') != 'ACTUAL_PUBLIC_FIA_RETURN'):
+        reasons.append('FIA_TYPED_ACTUAL_PUBLIC_PATH_UNVERIFIED')
     return ('UNVERIFIED', sorted(set(reasons))) if reasons else ('OBSERVED_NOT_QUALIFIED', [])
 
 
@@ -339,14 +346,15 @@ def public_producer(r, producer, row, aliases, where):
                 and public_tensor(producer['consumed'], e, True), 'PUBLIC_PRODUCER_FULL_STORAGE_FORMALS', where)
 
 
-def callback_proof(r, candidate, row, lifetime, aliases, artifacts, where):
+def callback_proof(r, candidate, row, lifetime, aliases, artifacts, where, *, mechanism=1):
     callback, native = candidate['callback'], candidate['native']
     if callback is None:
         return
     call = callback['native_packet']
     r.check(integer_packet(call, arrays=('shape',)) and len(call['shape']) == 4
-        and call['version'] == 2 and call['size'] == 144 and call['mechanism'] == 1 and call['reserved'] == 0
-        and call['thread'] == lifetime['native_thread'] and positive(call['token']), 'ACTUAL_QMM_CALL_ABI', where)
+        and call['version'] == 2 and call['size'] == 144 and call['mechanism'] == mechanism and call['reserved'] == 0
+        and call['thread'] == lifetime['native_thread'] and positive(call['token']),
+        'ACTUAL_QMM_CALL_ABI' if mechanism == 1 else 'ACTUAL_FIA_CALL_ABI', where)
     r.check(callback['original_continuations'] == 1 and callback['claimed'] in (0, 1), 'ORIGINAL_WRITER_NOT_EXACTLY_ONCE', where)
     r.check(callback['token'] == call['token'] and callback['independent_call'] == call['independent_call'] == native['call']
         and callback['independent_event'] == native and call['producer_sequence'] == native['producer']
@@ -393,10 +401,13 @@ def callback_proof(r, candidate, row, lifetime, aliases, artifacts, where):
             and binding['writer_tensor_object_identity'] == output['tensor_object_identity']
             and binding['same_residual_storage'] is True and binding['writer_retained_through_actual_consumer'] is True
             and c['consumed_retained_producer'] == call['producer_sequence']
-            and public_tensor(p['output'], native, True) and public_tensor(c['consumed'], native, True),
+            and public_tensor(p['output'], native, True, public_format=2 if mechanism == 2 else None)
+            and public_tensor(c['consumed'], native, True, public_format=2 if mechanism == 2 else None),
             'PUBLIC_PRODUCER_WRITER_CONSUMER_OBJECT_STORAGE_JOIN', where)
     if classify(candidate)[0] == 'OBSERVED_NOT_QUALIFIED':
-        r.check(callback.get('current_candidate_geometry_eligible') is True and bool(callback.get('allocation'))
+        geometry = (bool(callback.get('allocation')) if mechanism == 1 else
+                    call['output'] != call['residual'] and 0 < call['output_bytes'] <= call['residual_bytes'])
+        r.check(callback.get('current_candidate_geometry_eligible') is True and geometry
             and not callback['errors'] and bool(callback.get('public_consumer_binding')), 'RESOLVED_TARGET_COMPLETE_PROOFS', where)
 
 
@@ -451,7 +462,7 @@ def input_hash(tokens, positions, meta):
     return hashlib.sha256(json.dumps(values).encode()).hexdigest()
 
 
-def requests(r, document, inventory, serving):
+def requests(r, document, inventory, serving, *, mechanism=1):
     rows, phases, observations = inventory['rows'], document['phases'], serving['requests']
     r.check(len(rows) == len(phases) == len(observations) == 8, 'EXACT_EIGHT_REQUESTS')
     r.check(document['sessions']['candidate']['phases'] == phases and serving['native_phases'] == rows,
@@ -484,7 +495,9 @@ def requests(r, document, inventory, serving):
             == [1, serving['boundary']['vocab_size']] and positive(serving['boundary']['vocab_size'])
             and observed['model_output_sha256'] == row['output_sha256'] and valid_sha(row['output_sha256'])
             and observed['model_output_finite'] is True and row['output_finite'] is True, 'COMPLETE_ACTUAL_VOCAB_RETURN', label)
-        r.check(phase['generated_tokens'] == [observed['top1']] == document['healthy_before_tokens'] == document['healthy_after_tokens'],
+        r.check(phase['generated_tokens'] == [observed['top1']]
+            and document['healthy_before_tokens'] == document['healthy_after_tokens']
+            and (MODES[index] == 'fault' and mechanism == 2 or phase['generated_tokens'] == document['healthy_before_tokens']),
                 'ACTUAL_GENERATION_AND_POST_RELEASE_HEALTH', label)
         r.check((row['output_sha256'] != baseline) if MODES[index] == 'fault' else (row['output_sha256'] == baseline),
                 'FULL_LOGITS_EFFECT_OR_HEALTHY_OFF_MISMATCH', label)
@@ -493,8 +506,9 @@ def requests(r, document, inventory, serving):
         post_native_remove_full_logits=True, post_python_remove_full_logits=False)
 
 
-def outcome(r, value, candidate, row, qualification, where):
-    call, lease = value['native_call'], value['lease']
+def outcome(r, value, candidate, row, qualification, where, *, mechanism=1):
+    call = value['native_call']
+    lease = value['lease'] if mechanism == 1 else value['lease']['lease']
     callback, selected = candidate['callback'], qualification['target_key']
     r.check(value['target'] == selected == callback['target_key'] and value['request_id'] == row['request_id']
         and call == callback['native_packet'] and value['mode'] == row['plan']['mode']
@@ -505,30 +519,41 @@ def outcome(r, value, candidate, row, qualification, where):
         and [lease['owner_hi'], lease['owner_lo']] == qualification['native_owner']
         and lease['generation'] == qualification['generation'] and lease['thread'] == call['thread']
         and lease['expected'] == call, 'LEASE_OWNER_GENERATION_ACTUAL_FORMALS', where)
-    alloc = callback['allocation']
-    r.check(lease['residual_allocation_end'] == alloc['residual_block'][1]
-        and lease['output_allocation_begin'] == alloc['output_block'][0] == call['output']
-        and lease['shift_bytes'] == alloc['shift'] == alloc['padding'] + 32 <= 4096,
-        'LEASE_ACTUAL_ADJACENT_ALLOCATION', where)
+    if mechanism == 1:
+        alloc = callback['allocation']
+        r.check(lease['residual_allocation_end'] == alloc['residual_block'][1]
+            and lease['output_allocation_begin'] == alloc['output_block'][0] == call['output']
+            and lease['shift_bytes'] == alloc['shift'] == alloc['padding'] + 32 <= 4096,
+            'LEASE_ACTUAL_ADJACENT_ALLOCATION', where)
+    else:
+        r.check(lease['residual_allocation_end'] == lease['output_allocation_begin'] == lease['shift_bytes'] == 0
+            and call['output'] != call['residual'] and 0 < call['output_bytes'] <= call['residual_bytes'],
+            'FIA_DIRECT_LIVE_RESIDUAL_DESTINATION', where)
     observed, receipt, released = (value[k] for k in ('observed_consumer_receipt', 'consumer_receipt', 'released_receipt'))
     r.check(observed == receipt and released == dict(receipt, released=1) and receipt['released'] == 0,
             'FIRST_NATIVE_RECEIPT_AND_ACK_ONLY_RELEASE', where)
     for label, p in (('consumer', receipt), ('released', released)):
         r.check(integer_packet(p, arrays=('target',)) and len(p['target']) == 4
             and p['version'] == 2 and p['size'] == 296 and p['reserved'] == p['error'] == p['writer_status'] == p['consumer_status'] == 0
-            and p['mode'] == lease['mode'] and p['mechanism'] == 1 and p['target'] == lease['target']
+            and p['mode'] == lease['mode'] and p['mechanism'] == mechanism and p['target'] == lease['target']
             and [p['owner_hi'], p['owner_lo']] == qualification['native_owner'] and p['generation'] == qualification['generation']
-            and all(p[k] == call[k] for k in ('token', 'independent_call', 'registration', 'cache', 'producer_sequence',
+            and (p['registration'] == call['registration'] if mechanism == 1 else positive(p['registration']) and positive(p['executor']))
+            and all(p[k] == call[k] for k in ('token', 'independent_call', 'cache', 'producer_sequence',
                 'output', 'output_bytes', 'residual', 'residual_bytes')) and positive(p['stream']), 'NATIVE_RECEIPT_IDENTITY', where+':'+label)
         r.check(p['writer_calls'] == p['consumer_calls'] == 1 and all(p[k] == 1 for k in
             ('writer_complete', 'consumer_complete', 'output_readback_exact', 'padding_readback_exact', 'residual_restored_exact')),
             'NATIVE_EXECUTION_CONSUMPTION_RECOVERY', where+':'+label)
     mode = value['mode']
     if mode == 'fault':
-        r.check(0 < receipt['changed_residual_bytes'] <= 32 and receipt['residual_unchanged'] == 0
-            and receipt['replacement'] == call['output'] - alloc['shift']
-            == call['residual'] + call['residual_bytes'] - 32 and receipt['lossless_qualified'] == 1,
-            'QMM_ACTUAL_32_BYTE_RESIDUAL_EFFECT', where)
+        if mechanism == 1:
+            r.check(0 < receipt['changed_residual_bytes'] <= 32 and receipt['residual_unchanged'] == 0
+                and receipt['replacement'] == call['output'] - alloc['shift']
+                == call['residual'] + call['residual_bytes'] - 32 and receipt['lossless_qualified'] == 1,
+                'QMM_ACTUAL_32_BYTE_RESIDUAL_EFFECT', where)
+        else:
+            r.check(0 < receipt['changed_residual_bytes'] <= call['output_bytes'] and receipt['residual_unchanged'] == 0
+                and receipt['replacement'] == call['residual'] and receipt['lossless_qualified'] == 1,
+                'FIA_ACTUAL_RESIDUAL_DESTINATION_EFFECT', where)
     else:
         r.check(receipt['changed_residual_bytes'] == 0 and receipt['residual_unchanged'] == receipt['reference_equal'] == 1,
                 'REFERENCE_LOSSLESS_OFF_CHANGED_RESIDUAL', where)
@@ -544,11 +569,11 @@ def outcome(r, value, candidate, row, qualification, where):
         and value['public_consumer_lifetime'] is True, 'FULL_RESIDUAL_RESTORATION_HASH', where)
 
 
-def runtime_state(r, state, qualification, thread, callbacks, admissions, *, removed, sealed, where):
+def runtime_state(r, state, qualification, thread, callbacks, admissions, *, removed, sealed, where, mechanism=1):
     core = state['core']
     r.check(integer_packet(state, nested=('core',)) and integer_packet(core)
         and state['version'] == 2 and state['size'] == 240 and state['reserved'] == 0
-        and core['version'] == 2 and core['size'] == 136 and core['mechanism'] == 1
+        and core['version'] == 2 and core['size'] == 136 and core['mechanism'] == mechanism
         and core['reserved'] == core['reserved2'] == 0 and core['error'] == 0
         and [core['owner_hi'], core['owner_lo']] == qualification['native_owner']
         and core['generation'] == qualification['generation'] and core['thread'] == thread, 'NATIVE_RUNTIME_OWNER_ABI', where)
@@ -566,15 +591,17 @@ def runtime_state(r, state, qualification, thread, callbacks, admissions, *, rem
 
 
 def review(document, inventory, serving, artifacts, *, expected_count=135, expected_aliases=728,
-           expected_selection=(SELECTED_KEY, 83), expected_resolved=2):
+           expected_selection=(SELECTED_KEY, 83), expected_resolved=2, mechanism=1, scope=SCOPE, build_sha=BUILD_SHA):
+    if mechanism not in (1, 2):
+        raise ValueError('EXPLICIT_QMM_OR_TYPED_FIA_REQUIRED')
     r, details = Review(), {}
     rows, lifetime = inventory['rows'], inventory['lifetime']
     aliases = inventory['alias_inventory']
     alias_pairs = {(a['path'], a['object_identity']) for a in aliases}
     r.check(inventory['schema'] == 'demoncat.writer26.candidate_experiment.v2' and inventory['stage'] == document['stage'] == 'c1_single_effects'
-        and inventory['mechanism'] == document['mechanism'] == '26.residual_stomp'
-        and inventory['scope'] == document['scope'] == SCOPE, 'EXACT_SINGLE_QMM_SCOPE')
-    r.check(len(aliases) == expected_aliases and len({a['path'] for a in aliases}) == len(aliases)
+        and inventory['mechanism'] == document['mechanism'] == ('26.residual_stomp' if mechanism == 1 else '26.fia_destination')
+        and inventory['scope'] == document['scope'] == scope, 'EXACT_SINGLE_QMM_SCOPE' if mechanism == 1 else 'EXACT_SINGLE_TYPED_FIA_SCOPE')
+    r.check((expected_aliases is None or len(aliases) == expected_aliases) and len({a['path'] for a in aliases}) == len(aliases)
         and all(positive(a['object_identity']) and isinstance(a['path'], str) and a['path'] for a in aliases)
         and ('<root>', lifetime['model_object_identity']) in alias_pairs, 'COMPLETE_ALIAS_INVENTORY')
     worker = lifetime['worker']
@@ -583,17 +610,17 @@ def review(document, inventory, serving, artifacts, *, expected_count=135, expec
         and positive(lifetime['pid']) and positive(lifetime['native_thread']) and worker['rank'] == 0
         and worker['logical_device'] == worker['configured_logical_device'] == worker['observed_logical_device']
         and worker['worker_start_identity'] and worker['model_instance_id'], 'ONE_ACTUAL_WORKER_PROCESS_LIFETIME')
-    r.check(inventory['build'] == document['sessions']['candidate']['setup']['binding']['build'] == BUILD_SHA,
+    r.check(inventory['build'] == document['sessions']['candidate']['setup']['binding']['build'] == build_sha,
             'SINGLE_NATIVE_BUILD_JOIN')
     r.check(inventory['failure'] is inventory['first_failure'] is None and inventory['failure_events'] == []
         and inventory['blockers'] == [] and not any(document.get(k) for k in ('error', 'cleanup_error', 'quarantine_required')),
         'FIRST_FAILURE_OR_INCOMPLETE_RECOVERY')
-    details['requests'] = r.section('requests', requests, r, document, inventory, serving)
+    details['requests'] = r.section('requests', requests, r, document, inventory, serving, mechanism=mechanism)
     rebuilt, callback_total, producer_total = [], 0, 0
     all_calls, all_tokens, outside = set(), set(), []
     for index, row in enumerate(rows):
         label = row['phase']
-        r.section(label+':trace', trace, r, row, lifetime, label)
+        r.section(label+':trace', trace, r, row, lifetime, label, mechanism=mechanism)
         if index:
             previous, current = rows[index-1]['native_after'], row['native_before']
             delta = current['all_runs'] - previous['all_runs']
@@ -603,10 +630,10 @@ def review(document, inventory, serving, artifacts, *, expected_count=135, expec
             outside.append(dict(before_phase=label, non_target_runs=delta))
         r.check(row['callback_start'] == callback_total and row['producer_start'] == producer_total, 'PUBLIC_LEDGER_OFFSET', label)
         callback_total += len(row['callbacks']); producer_total += len(row['producers'])
-        reconstructed = r.section(label+':candidates', correlate, row)
+        reconstructed = r.section(label+':candidates', correlate, row, mechanism=mechanism)
         rebuilt.append(reconstructed)
         r.check(reconstructed == row['candidates'] and len(row['candidates']) == expected_count, 'COMPLETE_CANDIDATE_RECONSTRUCTION', label)
-        calls = [e['call'] for e in row['native_events'] if e['kind_name'] == 'qmm_enter']
+        calls = [e['call'] for e in row['native_events'] if e['kind_name'] == ('qmm_enter' if mechanism == 1 else 'fia_before')]
         r.check(not all_calls.intersection(calls), 'NATIVE_CALL_REUSED_ACROSS_REQUESTS', label); all_calls.update(calls)
         callbacks = row['callbacks']
         callback_calls = [c.get('independent_call') for c in callbacks]
@@ -619,7 +646,8 @@ def review(document, inventory, serving, artifacts, *, expected_count=135, expec
             r.section(label+':producer', public_producer, r, p, row, alias_pairs, label)
         if reconstructed is not None:
             for ordinal, candidate in enumerate(reconstructed):
-                r.section(label+':'+str(ordinal), callback_proof, r, candidate, row, lifetime, alias_pairs, artifacts, label+':'+str(ordinal))
+                r.section(label+':'+str(ordinal), callback_proof, r, candidate, row, lifetime, alias_pairs, artifacts,
+                          label+':'+str(ordinal), mechanism=mechanism)
         complete = row['complete_inventory']
         r.check(complete['native_writer_count'] == len(calls) == expected_count
             and complete['native_events_sha256'] == digest(row['native_events'])
@@ -651,7 +679,7 @@ def review(document, inventory, serving, artifacts, *, expected_count=135, expec
     r.check(qualification['target_key'] == selected['target_key'] and qualification['request_ids'] == [o['request_id'] for o in outcomes[:3]]
         and qualification['outcomes_sha256'] == digest(outcomes[:3]) and qualification['lifetime_sha256'] == digest(lifetime)
         and qualification['build'] == inventory['build'] and qualification['baseline_output_sha256'] == rows[0]['output_sha256']
-        and qualification['scope'] == SCOPE and qualification['native_owner'] == words(hashlib.sha256(qualification['owner'].encode()).hexdigest())[:2]
+        and qualification['scope'] == scope and qualification['native_owner'] == words(hashlib.sha256(qualification['owner'].encode()).hexdigest())[:2]
         and positive(qualification['generation']), 'SOURCE_BOUND_REFERENCE_LOSSLESS_OFF_ISSUANCE')
     admissions = callbacks = 0
     for index, row in enumerate(rows):
@@ -667,13 +695,13 @@ def review(document, inventory, serving, artifacts, *, expected_count=135, expec
                 and candidate['callback']['target_key'] == selected['target_key']
                 and all(candidate['native'][k] == rows[1]['candidates'][selected['inventory_index']]['native'][k] for k in STABLE_NATIVE),
                 'SELECTED_OCCURRENCE_STILL_VALID_BEFORE_EACH_ADMISSION', row['phase'])
-            r.section(row['phase']+':outcome', outcome, r, outcomes[index-2], candidate, row, qualification, row['phase'])
+            r.section(row['phase']+':outcome', outcome, r, outcomes[index-2], candidate, row, qualification, row['phase'], mechanism=mechanism)
         phase = document['phases'][index]
         r.section(row['phase']+':advance', runtime_state, r, phase['advance']['native_state'], qualification,
-            lifetime['native_thread'], callbacks, admissions, removed=False, sealed=index >= 5, where=row['phase']+':advance')
+            lifetime['native_thread'], callbacks, admissions, removed=False, sealed=index >= 5, where=row['phase']+':advance', mechanism=mechanism)
         callbacks += len(row['callbacks']); admissions += int(mode is not None)
         r.section(row['phase']+':result', runtime_state, r, phase['result']['native_state'], qualification,
-            lifetime['native_thread'], callbacks, admissions, removed=index == 7, sealed=index >= 4, where=row['phase']+':result')
+            lifetime['native_thread'], callbacks, admissions, removed=index == 7, sealed=index >= 4, where=row['phase']+':result', mechanism=mechanism)
     r.check(inventory['qualified_candidate_count'] == 1 and len({o['target'] for o in outcomes}) == 1,
             'SINGLE_NATIVE_LOSSLESS_TARGET')
     r.check(len({o['writer_output_sha256'] for o in outcomes}) == len({o['residual_before_sha256'] for o in outcomes}) == 1,
@@ -681,7 +709,7 @@ def review(document, inventory, serving, artifacts, *, expected_count=135, expec
     r.check(inventory['last_native_receipt'] == outcomes[-1]['observed_consumer_receipt'], 'LAST_RECEIPT_NOT_OVERWRITTEN_BY_SUCCESS')
     final = document['sessions']['candidate']['remove']['report']
     r.section('final_native', runtime_state, r, inventory['native_state'], qualification, lifetime['native_thread'],
-        callbacks, admissions, removed=True, sealed=True, where='final')
+        callbacks, admissions, removed=True, sealed=True, where='final', mechanism=mechanism)
     r.check(final['native_state'] == inventory['native_state'] and final['completed_requests'] == 8
         and final['full_native_writer_counts'] == [expected_count]*8 and final['phase'] == inventory['phase'] == 'complete'
         and final['owned_root_logits_hooks'] == final['owned_module_hooks'] == final['owned_public_api_wrappers'] == 0
@@ -691,7 +719,9 @@ def review(document, inventory, serving, artifacts, *, expected_count=135, expec
         'FINAL_ALL_OWNED_NATIVE_AND_PYTHON_RESOURCES_ZERO')
     r.check(all(inventory[k] == 0 for k in ('pending_output_tensors', 'pending_residual_tensors', 'pending_public_storage_owners'))
         and inventory['pending_per_call_leases'] == inventory['pending_outcomes'] == []
-        and inventory['public_output_observer'] is None, 'PENDING_PUBLIC_OWNERS_OR_LEASES_RETAINED')
+        and (inventory['public_output_observer'] is None if mechanism == 1 else
+             inventory['public_output_observer']['owned_api_wrappers'] == inventory['public_output_observer']['inflight_public_calls'] == 0),
+        'PENDING_PUBLIC_OWNERS_OR_LEASES_RETAINED')
     r.check(final['single_site_c1'] == inventory['single_site_c1'] == document['single_site_c1'], 'SINGLE_SITE_FINAL_REPORT_JOIN')
     snapshots = [('initial', inventory['metadata_arrays_initial'])] + [(row['phase'], row['metadata_arrays']) for row in rows]
     snapshots.append(('final', inventory['metadata_arrays_latest']))
@@ -700,37 +730,45 @@ def review(document, inventory, serving, artifacts, *, expected_count=135, expec
         fault_changed_residual_bytes=[o['consumer_receipt']['changed_residual_bytes'] for o in outcomes if o['mode'] == 'fault'],
         writer_output_sha256=outcomes[0]['writer_output_sha256'], full_residual_sha256=outcomes[0]['residual_before_sha256'],
         allocator_artifacts_rehashed=len(artifacts.cache), final_host_bytes=inventory['native_state']['core']['host_bytes'])
-    return dict(**r.summary(), **details, scope=SCOPE, single_site_receipt_chain_reconciled=not r.errors,
+    return dict(**r.summary(), **details, scope=scope, single_site_receipt_chain_reconciled=not r.errors,
         public_qualification_granted=False, c2=False, c3=False, e5=False, complete_tensor_bytes_rehashed=False,
         evidence_limits=[
-            'Full inputs/logits/residuals/writer outputs were hashed by frozen runtime code; no complete tensor bins are available for independent device-byte rehash.',
-            'Saved relevant allocator segments are rehashed and adjacency rebuilt; complete_snapshot_sha256 names an unsaved whole allocator snapshot.',
+            ('Full inputs/logits/residuals/writer outputs were hashed by frozen runtime code; no complete tensor bins are available for independent device-byte rehash.' if mechanism == 1 else
+             'This shared receipt stage does not rehash tensor bins; the typed FIA reviewer separately rehashes literal writer-output files. Full logits and residual bytes remain runtime hash/readback receipts.'),
+            ('Saved relevant allocator segments are rehashed and adjacency rebuilt; complete_snapshot_sha256 names an unsaved whole allocator snapshot.' if mechanism == 1 else
+             'FIA uses the current retained residual as its typed destination; QMM allocator adjacency and tail shifting are not applicable.'),
             'Object/storage identity, strong-reference duration, original-call counts and exact readbacks are source-bound runtime/Native receipts, not new live observations.',
             'Native owner fields may remain as retired identity after removal; active resources and callbacks are required to be zero.',
             'Health request checks complete logits after Native removal; the later ordinary generation checks tokens after Python cleanup.',
-            'This fixed fresh-prefill QMM target is not the complete resolved set, C2, C3, FIA or E5.',
-            'Separate E5 review reported an earlier KV-cache input difference and incomparable preceding rows; this reader does not establish fault-only output attribution.'])
+            ('This fixed fresh-prefill QMM target is not the complete resolved set, C2, C3, FIA or E5.' if mechanism == 1 else
+             'This fixed fresh-prefill typed FIA target is not the complete resolved set, C2, C3 or E5; typed descriptor and stock-byte review is additionally required.'),
+            ('Separate E5 review reported an earlier KV-cache input difference and incomparable preceding rows; this reader does not establish fault-only output attribution.'
+             if mechanism == 1 else 'No E5 or fault-only output attribution is inferred from the Native receipt chain.')])
 
 
-def provenance(document, inventory, source_root, native_root):
+def provenance(document, inventory, source_root, native_root, *, pins=None, extra_sources=(), setup_sources=SETUP_SOURCES):
+    # Explicit pins let another independently reviewed mechanism reuse file,
+    # installed-source, Native-build and metadata ownership checks unchanged.
+    pins = pins or dict(source_manifest=SOURCE_MANIFEST, source_commit=SOURCE_COMMIT,
+                        build=BUILD_SHA, trace=TRACE_SHA, writer=WRITER_SHA)
     r = Review()
     manifest_path = resolve_under(source_root, 'source_manifest.json')
     manifest = read(manifest_path)
-    r.check(file_sha(manifest_path) == SOURCE_MANIFEST and manifest['base_commit'] == SOURCE_COMMIT, 'EXACT_SOURCE54_MANIFEST')
+    r.check(file_sha(manifest_path) == pins['source_manifest'] and manifest['base_commit'] == pins['source_commit'], 'EXACT_SOURCE_MANIFEST')
     files = {v['path']:v for v in manifest['files']}
     r.check(len(files) == len(manifest['files']), 'SOURCE_MANIFEST_DUPLICATE_PATH')
     hashes = {}
-    for name in SOURCES:
+    for name in dict.fromkeys((*SOURCES, *extra_sources)):
         path = resolve_under(source_root, name)
         hashes[name] = file_sha(path)
         r.check(files[name]['sha256'] == hashes[name] and files[name]['bytes'] == path.stat().st_size, 'FROZEN_SOURCE_BYTES', name)
     loaded = document['sessions']['candidate']['setup']['sources']
-    r.check(len(loaded) == len(SETUP_SOURCES), 'EXACT_INSTALLED_SOURCE_SET')
-    for row, relative in zip(loaded, SETUP_SOURCES):
+    r.check(len(loaded) == len(setup_sources), 'EXACT_INSTALLED_SOURCE_SET')
+    for row, relative in zip(loaded, setup_sources):
         installed = PurePosixPath('/installed') / (relative[4:] if relative.startswith('src/') else relative)
         r.check(PurePosixPath(row['path']) == installed and row['sha256'] == hashes[relative], 'ACTUAL_INSTALLED_SOURCE_JOIN', relative)
     path = resolve_under(native_root, 'build.json'); build = read(path)
-    r.check(file_sha(path) == BUILD_SHA == inventory['build'] and build['schema'] == 'demoncat.writer26.group_deployment.v2'
+    r.check(file_sha(path) == pins['build'] == inventory['build'] and build['schema'] == 'demoncat.writer26.group_deployment.v2'
         and build['legacy_writers_absent'] is True and build['actual_npu_calls'] == 0, 'EXACT_NATIVE_BUILD')
     for name, expected in build['files'].items():
         r.check(file_sha(resolve_under(native_root, name)) == expected and valid_sha(expected), 'NATIVE_BUILD_FILE_BYTES', name)
@@ -749,19 +787,21 @@ def provenance(document, inventory, source_root, native_root):
     r.check(spec['schema'] == 'demoncat.metadata_arrays.v1' and spec['state_version'] == 1 and spec['images'] == SYMBOLS
         and spec['reset_supported'] is False and spec['runtime_quiescent_readback_required'] is True
         and spec['parent_receipt_sha256'] == build['files']['metadata-array-ownership.json'], 'NATIVE_METADATA_OWNERSHIP_BUILD')
-    r.check(build['files']['libfault26_readonly_trace_abi0.so'] == inventory['lifetime']['native_inventory_sha256'] == TRACE_SHA
-        and build['files']['libdcat26_group_v2.so'] == inventory['lifetime']['native_writer_sha256'] == WRITER_SHA, 'ACTUAL_NATIVE_TRACE_WRITER_IMAGES')
+    r.check(build['files']['libfault26_readonly_trace_abi0.so'] == inventory['lifetime']['native_inventory_sha256']
+        == pins.get('trace', build['files']['libfault26_readonly_trace_abi0.so'])
+        and build['files']['libdcat26_group_v2.so'] == inventory['lifetime']['native_writer_sha256']
+        == pins.get('writer', build['files']['libdcat26_group_v2.so']), 'ACTUAL_NATIVE_TRACE_WRITER_IMAGES')
     for label, report in [('initial', inventory['metadata_arrays_initial']), ('final', inventory['metadata_arrays_latest'])]:
         for image in report['images']:
             r.check(image['sha256'] == build['files'][image['name']] and image['path'] == '/native/'+image['name'],
                     'LOADED_METADATA_IMAGE_BYTES', label+':'+image['name'])
     startup = document['metadata_startup']
     r.check(startup['schema'] == 'demoncat.writer26.startup_dependencies.v1' and startup['pid'] == inventory['lifetime']['pid']
-        and startup['manifest_sha256'] == BUILD_SHA and startup['implementation_sha256'] == hashes[SOURCES[5]]
+        and startup['manifest_sha256'] == pins['build'] and startup['implementation_sha256'] == hashes[SOURCES[5]]
         and startup['model_runtime_imports_before'] == [] and startup['callback_installed'] is False
         and startup['device_api_calls'] == 0 and startup['global_symbol_scope_changed'] is False, 'PRE_MODEL_LOCAL_DEPENDENCY_BOOTSTRAP')
     r.section('startup_metadata', metadata, r, [('startup', startup['metadata_arrays']),
-        ('initial', inventory['metadata_arrays_initial']), ('final', inventory['metadata_arrays_latest'])], inventory['lifetime'], BUILD_SHA)
+        ('initial', inventory['metadata_arrays_initial']), ('final', inventory['metadata_arrays_latest'])], inventory['lifetime'], pins['build'])
     return dict(**r.summary(), source_files_rehashed=len(hashes), native_files_rehashed=len(build['files'])+1,
         native_compile_sources_rehashed=len(build['sources']),
         source_manifest_sha256=file_sha(manifest_path), native_build_sha256=file_sha(path),
