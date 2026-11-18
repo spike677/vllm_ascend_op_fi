@@ -124,6 +124,9 @@ def create_worker_provider(mechanism, version, worker, model, identity):
             return getattr(module, class_name)(worker, model, identity)
     for name, class_name, _ in _ATTENTION:
         if name == mechanism:
+            if mechanism == '33.paged_decode':
+                module = importlib.import_module(__package__ + '.providers.paged33_s2')
+                return module.resolve_paged_decode_provider(worker, model, identity)
             module = importlib.import_module(__package__ + '.providers.attention_serving')
             return getattr(module, class_name)(worker, model, identity)
     raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')

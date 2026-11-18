@@ -92,12 +92,31 @@ class RegistryTests(unittest.TestCase):
         constructors = {'28.fa.legal_tiling': 'FaLegalTilingServingProvider',
             '28.fia.legal_tiling': 'FiaLegalTilingServingProvider',
             '28.fia.denominator_replay': 'FiaDenominatorReplayServingProvider',
-            '33.paged_decode': 'PagedDecodeServingProvider'}
+            '33.paged_decode': 'resolve_paged_decode_provider'}
         for mechanism, name in constructors.items():
             with self.subTest(mechanism=mechanism), patch('importlib.import_module') as loader:
                 resolve_provider(mechanism, '1', 'worker', 'model', {'rank': 7})
                 getattr(loader.return_value, name).assert_called_once_with('worker', 'model', {'rank': 7})
-                self.assertTrue(loader.call_args.args[0].endswith('.providers.attention_serving'))
+                expected = '.providers.paged33_s2' if mechanism == '33.paged_decode' else '.providers.attention_serving'
+                self.assertTrue(loader.call_args.args[0].endswith(expected))
+
+    def test_paged_s2_requires_exact_trusted_driver_and_preserves_stock_census(self):
+        from types import SimpleNamespace
+        from demoncat.runtime.vllm_ascend.worker_extension.providers import paged33_s2
+        from demoncat.runtime.vllm_ascend.worker_extension.serving_attention import ATTRIBUTE
+        driver_type = paged33_s2.Arch22S2EffectsNativeCall
+        class Lookalike(driver_type):
+            pass
+        for native in (None, object(), object.__new__(Lookalike), object.__new__(driver_type)):
+            worker = SimpleNamespace()
+            setattr(worker, ATTRIBUTE, {'33.paged_decode': SimpleNamespace(native=native)})
+            with self.subTest(native_type=type(native).__name__), \
+                    patch.object(paged33_s2, 'Paged33S2ServingProvider') as effect, \
+                    patch.object(paged33_s2, 'PagedDecodeServingProvider') as census:
+                registry.create_worker_provider('33.paged_decode', '1', worker, 'model', {'rank': 0})
+                selected, other = (effect, census) if type(native) is driver_type else (census, effect)
+                selected.assert_called_once_with(worker, 'model', {'rank': 0})
+                other.assert_not_called()
 
     def test_vision_observation_route_requires_explicit_worker_binding(self):
         from types import SimpleNamespace
