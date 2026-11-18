@@ -48,3 +48,52 @@ Local validation: `tests.test_worker_core_group_original_review` has 16 passing
 CPU contract/negative tests against originals produced by the real public
 Host/Runtime CPU fixture. Its Native transport is an explicit double, so this
 is not NPU acceptance. No SSH, container or NPU call was made for this change.
+
+`review26_group_originals.py` adds a separate complete-set audit for
+`26.residual_stomp` and `26.fia_destination`. Its scope is one cumulative fresh
+request containing every stable eligible writer, followed by actual OFF and
+health. It independently joins all Native entries to callbacks, original
+writer execution, the previous residual producer and next value consumer;
+checks Reference/Lossless/qualification-OFF/F/OFF for every target; rehashes
+the original execution, recovery, complete-census and health artifacts; and
+checks real owned resources and SDK metadata-array readbacks.
+
+Missing or unresolved candidates block the whole set. A stale Native producer
+from a previous request can be excluded only with an uninterrupted current
+request trace proving no preceding producer and the exact next producer.
+The test suite covers trace gaps, changed thread and a false absence witness.
+
+FIA additionally checks all typed descriptors/public returns, destination and
+executor joins, exact descriptor release, two stock repetitions and every
+owned Reference/Lossless/OFF output file. Files remain on124. It reports the
+number and total bytes rehashed, without publishing tensor contents. The last
+typed state is the actual health request's after-state; a separate post-cleanup
+typed state is not invented.
+
+```sh
+python experiments/worker_core_v11_20261118/review26_group_originals.py \
+  --evidence-root "$CASE" --result-sha256 "$RESULT_SHA" \
+  --mechanism 26.fia_destination --expected-writers "$FULL_NATIVE_COUNT" \
+  --source-root "$ACTUAL_WORKER_SOURCE" --source-commit "$WORKER_COMMIT" \
+  --source-manifest-sha256 "$WORKER_MANIFEST_SHA" \
+  --native-root "$ACTUAL_NATIVE_BUILD" --native-build-sha256 "$BUILD_SHA" \
+  --native-source-root "$ACTUAL_COMPILE_SOURCE" --native-source-commit "$COMPILE_COMMIT" \
+  --native-source-manifest-sha256 "$COMPILE_MANIFEST_SHA"
+```
+
+The worker and compiler snapshots are independently pinned: a newer Python
+source tree cannot stand in for the Native build's actual source. Writer26
+JSON digests retain their original default separators; coverage digests retain
+their compact separators. Neither original byte stream is rewritten.
+
+Local validation adds 21 tests in `test_worker_core26_group_original_review`.
+The typed CPU fixture has three stock writers, two eligible targets, 58 typed
+records and 16 complete output artifacts; these are test data, not124 results.
+The CPU public fixture deliberately has simplified Native ABI doubles. Its
+topology mode cannot pass the natural-Native audit. No CLI switch enables that
+CPU mode for device acceptance.
+
+Source71's reported `Exact workload ... scope required` refusal occurred before
+the shared F request completed. It remains failed/partial even if a summary
+claims success. This change has not connected to124 or independently read that
+attempt; the root must run this reviewer over the retained originals.
