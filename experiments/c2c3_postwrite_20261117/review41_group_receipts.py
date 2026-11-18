@@ -51,8 +51,18 @@ def valid_prefix(row):
 
 
 def review_arm(folder, group_name='c2', *, require_valid_prefix=False):
+    path=folder/'result.json'
+    return review_document(read(path),group_name,require_valid_prefix=require_valid_prefix,result_sha256=sha(path))
+
+
+def review_document(document, group_name='c2', *, require_valid_prefix=False,
+                    result_sha256=None, native_owner=None):
+    """Same saved-evidence checks, without requiring a new/rewritten result file.
+
+    Public Core has a separate RPC owner; its caller must join native_owner to
+    the actual deployment receipt. Existing standalone callers keep their owner.
+    """
     if group_name not in ('c2','c3'):raise ValueError('EXPLICIT_C2_OR_C3_REQUIRED')
-    path=folder/'result.json';document=read(path)
     group=document['groups'][group_name];c=group['coverage'];records=c['completed_requests']
     planned=set(c['discovery']['observed_target_ids']);n=len(planned)
     inventories=[row['inventory'] for row in c['independent_discovery']]+[row['inventory'] for row in records]
@@ -74,7 +84,8 @@ def review_arm(folder, group_name='c2', *, require_valid_prefix=False):
         all_targets_lossless=len(c['per_target_lossless'])==n and {row['target_id'] for row in c['per_target_lossless']}==planned,
         complete_native_execution_distribution=len(executions)==repeats*n
             and Counter(row['target_id'] for row in executions)==Counter({target:repeats for target in planned}),
-        actual_native_owner_generation=all(str(row['owner'])==c['owner'] and row['generation']==c['generation'] for row in native),
+        actual_native_owner_generation=all(str(row['owner'])==(c['owner'] if native_owner is None else str(native_owner))
+            and row['generation']==c['generation'] for row in native),
         actual_native_effect_restore=all(row['original_calls']==1 and row['consumer_returned'] and row['restored']
             and row['released'] and row['readback_exact']
             and row['changed_elements']==(0 if controls else row['selected_elements']) for row in native),
@@ -117,7 +128,7 @@ def review_arm(folder, group_name='c2', *, require_valid_prefix=False):
         checks['actual_final_provider_resources_zero']=(provider['installed'] is False
             and provider['owned_hooks']==provider['owned_api_patches']==provider['native_live_leases']==0
             and not provider['pending'])
-    return document,dict(result_sha256=sha(path),source_sha256=document['source_sha256'],
+    return document,dict(result_sha256=result_sha256,source_sha256=document['source_sha256'],
         native_library_sha256=document['setup']['library_sha256'],checks=checks,
         recomputed_consistency=all(checks.values()),planned_targets=n,independent_inventories=len(inventories),
         actual_eligible_fault_calls=2*n,actual_off_calls=n,recomputed_hits=len(hits),decision_counts=dict(decisions),
