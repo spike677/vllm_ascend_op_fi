@@ -1,5 +1,6 @@
 #ifndef DCAT26_GROUP_CORE_V2_H
 #define DCAT26_GROUP_CORE_V2_H
+#include "../../fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_fia_typed.h"
 // Independent v2 serial transaction engine. Legacy writer/C1 controls are not changed.
 #include <algorithm>
 #include <array>
@@ -161,7 +162,16 @@ public:
         config_=value;generations_[key]=value.generation;installed_=true;stopped_=sealed_=false;
         calls_=last_token_=last_independent_=0;error_=0;targets_.clear();last_=Receipt{};return Ok;
     }
-    int prepare(const Call& call,const Lease& lease) {
+    int prepare(const Call& call,const Lease& lease) {return prepare_impl(call,lease,false);}
+    int prepare_fia_ncl_v3(const Call& call,const Lease& lease,const dcat26_fia_typed::Descriptor& descriptor) {
+        if(call.mechanism!=Fia || call.format!=static_cast<int32_t>(dcat26_fia_typed::kNcl)
+            || call.dtype!=static_cast<int32_t>(dcat26_fia_typed::kBf16) || call.dimensions!=3 || call.shape[3]
+            || !dcat26_fia_typed::ncl(descriptor) || descriptor.raw!=call.output || descriptor.view_bytes!=call.output_bytes
+            || !std::equal(call.shape,call.shape+3,descriptor.view))return Geometry;
+        return prepare_impl(call,lease,true);
+    }
+private:
+    int prepare_impl(const Call& call,const Lease& lease,bool verified_fia_ncl) {
         if(!matches_owner(lease.owner_hi,lease.owner_lo,lease.generation,lease.thread)
             || lease.version!=2 || lease.size!=sizeof(Lease) || lease.reserved || !same_call(call,lease.expected)
             || call.version!=2 || call.size!=sizeof(Call) || call.mechanism!=config_.mechanism
@@ -170,7 +180,7 @@ public:
         if(stopped_ || tx_.active)return Busy;
         if(error_ || calls_>=config_.max_calls)return Budget;
         if(lease.mode<Reference || lease.mode>Off || call.device<0 || !call.producer_sequence
-            || (call.dtype!=1 && call.dtype!=27) || call.format!=2 || !call.dimensions || call.dimensions>4
+            || (call.dtype!=1 && call.dtype!=27) || (!verified_fia_ncl && call.format!=2) || !call.dimensions || call.dimensions>4
             || !span(call.output,call.output_bytes) || !span(call.residual,call.residual_bytes)
             || call.output_bytes>8*1024*1024 || call.residual_bytes>8*1024*1024
             || overlap(call.output,call.output_bytes,call.residual,call.residual_bytes))return Geometry;
@@ -229,6 +239,7 @@ public:
         }
         tx_.receipt.replacement=tx_.replacement;return Ok;
     }
+public:
     uint64_t replacement() const {return tx_.active?tx_.replacement:0;}
     uint64_t token() const {return tx_.active?tx_.call.token:0;}
     uint32_t mechanism() const {return config_.mechanism;}

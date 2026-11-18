@@ -22,6 +22,9 @@ using TraceWriterGwsFn = void (*)(const char *, const char *,
                                   aclOpExecutor *, aclnnStatus);
 using TraceAddRmsConsumeFn = void (*)(aclrtStream);
 using InventoryFiaBeforeFn = void (*)(const aclTensor *);
+using InventoryFiaBeforeV2Fn = void (*)(const aclTensor *,const char *);
+using InventoryFiaAfterV2Fn = void (*)(const aclTensor *,const aclTensor *,aclOpExecutor *,aclnnStatus);
+using InventoryFiaEndV2Fn = void (*)(aclOpExecutor *,aclnnStatus);
 using AddRmsNormBiasGwsFn = aclnnStatus (*)(
     const aclTensor *, const aclTensor *, const aclTensor *, const aclTensor *,
     double, const aclTensor *, const aclTensor *, const aclTensor *, uint64_t *,
@@ -59,6 +62,9 @@ TraceBeginFn g_trace_begin = nullptr;
 TraceEndFn g_trace_end = nullptr;
 TraceWriterGwsFn g_trace_writer_gws = nullptr;
 InventoryFiaBeforeFn g_inventory_fia_before = nullptr;
+InventoryFiaBeforeV2Fn g_inventory_fia_before_v2 = nullptr;
+InventoryFiaAfterV2Fn g_inventory_fia_after_v2 = nullptr;
+InventoryFiaEndV2Fn g_inventory_fia_end_v2 = nullptr;
 TraceAddRmsConsumeFn g_trace_add_rms_consume = nullptr;
 TraceAddRmsNormBiasGwsFn g_trace_add_rms_norm_bias_gws = nullptr;
 WriteGateAddRmsNormBiasGwsFn g_write_gate_add_rms_norm_bias_gws = nullptr;
@@ -91,6 +97,12 @@ void resolve_symbols() {
         dlsym(RTLD_DEFAULT, "fault26_trace_writer_gws"));
     g_inventory_fia_before = reinterpret_cast<InventoryFiaBeforeFn>(
         dlsym(RTLD_DEFAULT, "dcat26_inventory_fia_before_v1"));
+    g_inventory_fia_before_v2 = reinterpret_cast<InventoryFiaBeforeV2Fn>(
+        dlsym(RTLD_DEFAULT, "dcat26_inventory_fia_before_v2"));
+    g_inventory_fia_after_v2 = reinterpret_cast<InventoryFiaAfterV2Fn>(
+        dlsym(RTLD_DEFAULT, "dcat26_inventory_fia_after_v2"));
+    g_inventory_fia_end_v2 = reinterpret_cast<InventoryFiaEndV2Fn>(
+        dlsym(RTLD_DEFAULT, "dcat26_inventory_fia_end_v2"));
     g_trace_add_rms_consume = reinterpret_cast<TraceAddRmsConsumeFn>(
         dlsym(RTLD_DEFAULT, "fault26_trace_add_rms_consume"));
     g_trace_add_rms_norm_bias_gws =
@@ -204,7 +216,10 @@ extern "C" aclnnStatus aclnnFusedInferAttentionScoreV3GetWorkspaceSize(
         return static_cast<aclnnStatus>(1);
     }
     const bool outermost = g_fia_gws_depth++ == 0;
-    if(outermost && g_inventory_fia_before != nullptr)g_inventory_fia_before(attention_out);
+    if(outermost) {
+        if(g_inventory_fia_before_v2)g_inventory_fia_before_v2(attention_out,input_layout);
+        else if(g_inventory_fia_before)g_inventory_fia_before(attention_out);
+    }
     const aclTensor *effective_attention_out = attention_out;
     if (outermost && g_fia_writer_prepare != nullptr) {
         const aclTensor *candidate = g_fia_writer_prepare(attention_out);
@@ -230,7 +245,7 @@ extern "C" aclnnStatus aclnnFusedInferAttentionScoreV3GetWorkspaceSize(
         key_antiquant_mode, value_antiquant_mode, effective_attention_out,
         softmax_lse, workspace_size, executor);
     --g_fia_gws_depth;
-    if (outermost && g_fia_writer_gws_complete != nullptr) {
+    if (outermost && !g_inventory_fia_after_v2 && g_fia_writer_gws_complete != nullptr) {
         g_fia_writer_gws_complete(
             attention_out, effective_attention_out,
             executor == nullptr ? nullptr : *executor, status);
@@ -241,6 +256,13 @@ extern "C" aclnnStatus aclnnFusedInferAttentionScoreV3GetWorkspaceSize(
             effective_attention_out,
             workspace_size == nullptr ? 0 : *workspace_size,
             executor == nullptr ? nullptr : *executor, status);
+    }
+    if(outermost && g_inventory_fia_after_v2) {
+        // Typed after-GWS evidence precedes the writer's current-call audit.
+        // The borrowed original is still an argument on this actual GWS stack.
+        g_inventory_fia_after_v2(attention_out,effective_attention_out,executor==nullptr?nullptr:*executor,status);
+        if(g_fia_writer_gws_complete)g_fia_writer_gws_complete(
+            attention_out,effective_attention_out,executor==nullptr?nullptr:*executor,status);
     }
     return status;
 }
@@ -273,6 +295,7 @@ extern "C" aclnnStatus aclnnFusedInferAttentionScoreV3(
         g_trace_end(FAULT26_EXECUTE_FIA_V3,
                     "aclnnFusedInferAttentionScoreV3", status);
     }
+    if(outermost && g_inventory_fia_end_v2)g_inventory_fia_end_v2(executor,status);
     return status;
 }
 

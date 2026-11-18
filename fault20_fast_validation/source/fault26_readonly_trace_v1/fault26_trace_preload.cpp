@@ -1,6 +1,7 @@
 #include "fault26_trace_shared.h"
 #include "fault26_qmm_underflow_api.h"
 #include "fault26_inventory.h"
+#include "fault26_fia_typed.h"
 #include "../l4_buffer_substitute_allhit_v1/fault20_buffer_api.h"
 #include "../../../fault39/native/metadata_array_owner.h"
 
@@ -204,6 +205,16 @@ pthread_once_t g_resolve_once = PTHREAD_ONCE_INIT;
 dcat26_inventory::Inventory<32768> g_independent_inventory;
 std::atomic<uint64_t> g_inventory_registration_epoch{0};
 thread_local uint64_t g_inventory_fia_call=0;
+dcat26_fia_typed::Inventory<32768> g_fia_typed_inventory;
+struct TypedFiaPending {
+    dcat26_fia_typed::Record before{},after{};
+    const aclTensor *original{},*effective{};
+    bool active{},executing{};
+};
+thread_local TypedFiaPending g_fia_typed_pending;
+std::mutex g_fia_typed_mutex;
+std::unordered_map<aclOpExecutor*,TypedFiaPending> g_fia_typed_prepared;
+std::atomic<uint64_t> g_fia_typed_preparing{0};
 RunFn g_real_run = nullptr;
 AddFn g_real_add = nullptr;
 AddParamConstTensorFn g_real_add_param_const_tensor = nullptr;
@@ -533,6 +544,24 @@ TensorMetadata capture_tensor(const aclTensor *tensor) try {
 } catch (...) {
     dcat_metadata::capture_exception();
     return TensorMetadata{};
+}
+
+dcat26_fia_typed::Descriptor fia_typed_descriptor(const TensorMetadata& value) {
+    dcat26_fia_typed::Descriptor out{};
+    out.complete=value.present && value.metadata_ok;
+    out.contiguous=value.contiguous;out.dtype=value.dtype;out.format=value.format;
+    out.view_rank=value.view_rank;out.storage_rank=value.storage_rank;out.stride_rank=value.stride_rank;
+    out.descriptor=value.tensor_ptr;out.raw=value.raw_addr;out.view_bytes=value.view_bytes;
+    out.storage_bytes=value.storage_bytes;out.element_bytes=value.element_size;out.offset=value.view_offset;
+    std::copy(value.view_shape,value.view_shape+8,out.view);std::copy(value.storage_shape,value.storage_shape+8,out.storage);
+    std::copy(value.strides,value.strides+8,out.strides);return out;
+}
+
+bool fia_typed_tail(uint32_t kind,dcat26_inventory::Event& event) {
+    const auto state=g_independent_inventory.state();
+    return state.stored_events && state.stored_events==state.total_events
+        && g_independent_inventory.read(state.stored_events-1,&event)
+        && event.kind==kind && event.thread==static_cast<uint64_t>(syscall(SYS_gettid));
 }
 
 void log_typed_gws_summary(const char *api, double epsilon,
@@ -2288,6 +2317,87 @@ extern "C" void dcat26_inventory_fia_before_v1(const aclTensor *output) {
     // This is before the native writer's prepare callback and before arm.
     g_inventory_fia_call=g_independent_inventory.append(event);
 }
+
+extern "C" int dcat26_inventory_fia_typed_state_v2(dcat26_fia_typed::State* out) try {
+    if(!out || out->version!=2 || out->size!=sizeof(*out))return 1;
+    std::lock_guard<std::mutex> lock(g_fia_typed_mutex);
+    *out=g_fia_typed_inventory.state();out->preparing=g_fia_typed_preparing.load();out->prepared=g_fia_typed_prepared.size();
+    for(const auto& row:g_fia_typed_prepared)if(row.second.executing)++out->executing;
+    return 0;
+} catch(...) {g_fia_typed_inventory.error(true);return 2;}
+
+extern "C" int dcat26_inventory_fia_typed_read_v2(uint64_t index,dcat26_fia_typed::Record* out) try {
+    if(!out || out->version!=2 || out->size!=sizeof(*out))return 1;
+    return g_fia_typed_inventory.read(index,out)?0:2;
+} catch(...) {g_fia_typed_inventory.error(true);return 2;}
+
+extern "C" void dcat26_inventory_fia_before_v2(const aclTensor* output,const char* layout) try {
+    // Preserve the complete v1 denominator before collecting additive typed evidence.
+    dcat26_inventory_fia_before_v1(output);
+    if(g_fia_typed_pending.active){g_fia_typed_inventory.error();return;}
+    ++g_fia_typed_preparing;
+    auto& pending=g_fia_typed_pending;pending.active=true;pending.original=output;
+    auto& row=pending.before;row.phase=dcat26_fia_typed::OriginalBeforeGws;
+    row.call=row.event_sequence=g_inventory_fia_call;row.thread=static_cast<uint64_t>(syscall(SYS_gettid));
+    if(g_get_device)(void)g_get_device(&row.device);
+    if(layout) {
+        row.layout_length=static_cast<uint32_t>(strnlen(layout,sizeof(row.layout)));
+        std::copy(layout,layout+row.layout_length,row.layout);
+    }
+    row.original=fia_typed_descriptor(capture_tensor(output));row.effective=row.original;
+    row.sequence=g_fia_typed_inventory.append(row);
+} catch(...) {g_fia_typed_inventory.error(true);}
+
+extern "C" void dcat26_inventory_fia_after_v2(const aclTensor* original,const aclTensor* effective,
+    aclOpExecutor* executor,aclnnStatus status) try {
+    auto pending=g_fia_typed_pending;
+    dcat26_inventory::Event event{};
+    const bool paired=pending.active && pending.original && original==pending.original
+        && fia_typed_tail(dcat26_inventory::FiaGws,event) && event.call==pending.before.call
+        && event.executor==reinterpret_cast<uint64_t>(executor) && event.status==static_cast<int32_t>(status);
+    auto& row=pending.after;row=pending.before;row.phase=dcat26_fia_typed::OriginalAndEffectiveAfterGws;
+    row.event_sequence=event.sequence;row.executor=reinterpret_cast<uint64_t>(executor);row.status=static_cast<int32_t>(status);
+    row.thread=static_cast<uint64_t>(syscall(SYS_gettid));row.device=-1;if(g_get_device)(void)g_get_device(&row.device);
+    // Both pointers are actual parameters of the still-active original GWS stack.
+    row.original=fia_typed_descriptor(capture_tensor(original));row.effective=fia_typed_descriptor(capture_tensor(effective));
+    row.sequence=g_fia_typed_inventory.append(row);
+    if(!paired)g_fia_typed_inventory.error();
+    pending.effective=effective;
+    if(executor) {
+        std::lock_guard<std::mutex> lock(g_fia_typed_mutex);
+        if(g_fia_typed_prepared.size()>=32768 || !g_fia_typed_prepared.emplace(executor,pending).second)
+            g_fia_typed_inventory.error();
+    }
+    if(g_fia_typed_pending.active){--g_fia_typed_preparing;g_fia_typed_pending=TypedFiaPending{};}
+} catch(...) {g_fia_typed_inventory.error(true);}
+
+extern "C" int dcat26_inventory_fia_owned_execute_v2(const aclTensor* owned_effective,aclOpExecutor* executor) try {
+    dcat26_inventory::Event event{};
+    if(!fia_typed_tail(dcat26_inventory::FiaEnter,event)){g_fia_typed_inventory.error();return 1;}
+    std::lock_guard<std::mutex> lock(g_fia_typed_mutex);
+    const auto found=g_fia_typed_prepared.find(executor);
+    if(found==g_fia_typed_prepared.end() || found->second.executing || !owned_effective
+        || owned_effective!=found->second.effective || event.call!=found->second.before.call
+        || event.executor!=reinterpret_cast<uint64_t>(executor) || !event.registration) {
+        g_fia_typed_inventory.error();return 1;
+    }
+    auto row=found->second.after;row.phase=dcat26_fia_typed::OwnedEffectiveBeforeExecute;
+    row.event_sequence=event.sequence;row.registration=event.registration;
+    row.thread=static_cast<uint64_t>(syscall(SYS_gettid));row.device=-1;if(g_get_device)(void)g_get_device(&row.device);
+    // Called only after the group confirms this exact descriptor is in its
+    // owned ledger. Never re-read the borrowed original descriptor here.
+    row.effective=fia_typed_descriptor(capture_tensor(owned_effective));
+    g_fia_typed_inventory.append(row);found->second.executing=true;return 0;
+} catch(...) {g_fia_typed_inventory.error(true);return 2;}
+
+extern "C" void dcat26_inventory_fia_end_v2(aclOpExecutor* executor,aclnnStatus status) try {
+    std::lock_guard<std::mutex> lock(g_fia_typed_mutex);
+    const auto found=g_fia_typed_prepared.find(executor);
+    if(found==g_fia_typed_prepared.end()){g_fia_typed_inventory.error();return;}
+    // Successful original execution consumes the observation's registration.
+    // A failure cannot establish consumption of a prepared executor.
+    if(status==0)g_fia_typed_prepared.erase(found);
+} catch(...) {g_fia_typed_inventory.error(true);}
 
 extern "C" void fault20_qmm_gws_begin() {
     g_qmm_capture = QmmCaptureState{};

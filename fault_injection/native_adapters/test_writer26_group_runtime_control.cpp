@@ -21,6 +21,13 @@ int main() {
     static_assert(ACL_FLOAT16==1 && ACL_BF16==27 && ACL_FORMAT_ND==2);
     static_assert(sizeof(Config)==72 && sizeof(Call)==144 && sizeof(Lease)==248);
     static_assert(sizeof(Receipt)==296 && sizeof(State)==136 && sizeof(RuntimeState)==240);
+    FiaAbiV3 typed{};assert(dcat26_group_fia_abi_v3(&typed)==Ok);
+    static_assert(sizeof(dcat26_fia_typed::Descriptor)==280 && sizeof(dcat26_fia_typed::Record)==656);
+    static_assert(sizeof(dcat26_fia_typed::State)==104 && sizeof(FiaLeaseV3)==912 && sizeof(FiaSnapshotsV3)==2048);
+    assert(dcat26_group_continue_fia_v3(nullptr)==Identity);
+    assert(dcat26_group_fia_snapshots_v3(nullptr,1,nullptr)==Identity);
     std::cout<<"{\"status\":\"PASS_SDK_ABI_CONTROL_ONLY\",\"actual_npu_calls\":0,\"runtime_state_bytes\":"
-        <<sizeof(RuntimeState)<<"}\n";
+        <<sizeof(RuntimeState)<<",\"fia_typed_abi\":{\"version\":3,\"inventory_version\":2,\"descriptor\":"<<typed.descriptor
+        <<",\"record\":"<<typed.record<<",\"state\":"<<typed.state<<",\"lease\":"<<typed.lease
+        <<",\"snapshots\":"<<typed.snapshots<<"}}\n";
 }

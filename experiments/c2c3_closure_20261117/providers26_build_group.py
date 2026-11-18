@@ -21,11 +21,14 @@ from fault_injection.native_build.metadata26 import verify_parent, RECEIPT, CPU_
 SOURCES = (
     'fault_injection/native_adapters/writer26_group_core.h',
     'fault_injection/native_adapters/writer26_group_runtime.cpp',
+    'fault_injection/native_adapters/writer26_fia_typed_api.h',
     'fault_injection/native_adapters/test_writer26_group_core.cpp',
     'fault_injection/native_adapters/test_writer26_group_runtime_control.cpp',
     'fault_injection/native_adapters/test_writer26_pending_runtime.cpp',
+    'fault_injection/native_adapters/test_writer26_fia_typed_runtime.cpp',
     'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_qmm_underflow_api.h',
     'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_inventory.h',
+    'fault20_fast_validation/source/fault26_readonly_trace_v1/fault26_fia_typed.h',
     'fault39/native/metadata_array_owner.h',
     'fault39/native/metadata_ownership_fixture.cpp',
     'fault39/native/test_metadata_ownership.py',
@@ -37,6 +40,26 @@ REQUIRED = {'libfault26_readonly_trace_abi0.so', 'libfault26_fia_opapi_proxy.so'
             'real/libopapi_nn_real.so', 'real/libcust_opapi_real.so'}
 IMAGE = 'quay.io/ascend/vllm-ascend:v0.18.0'
 TOOLKIT = '/usr/local/Ascend/cann-8.5.1/aarch64-linux'
+TYPED_TRACE_EXPORTS = ('dcat26_inventory_fia_typed_state_v2', 'dcat26_inventory_fia_typed_read_v2',
+    'dcat26_inventory_fia_before_v2', 'dcat26_inventory_fia_after_v2', 'dcat26_inventory_fia_owned_execute_v2',
+    'dcat26_inventory_fia_end_v2')
+
+
+def require_typed_trace(symbols):
+    if any(not re.search(r'\bT ' + name + r'$', symbols, re.M) for name in TYPED_TRACE_EXPORTS):
+        raise RuntimeError('FRESH_TYPED_FIA_TRACE_PARENT_REQUIRED')
+
+
+def typed_profile(control, contract):
+    expected = dict(version=3, inventory_version=2, descriptor=280, record=656, state=104, lease=912, snapshots=2048)
+    if (control.get('fia_typed_abi') != expected or contract.get('status') != 'PASS_CPU_TYPED_FIA_RUNTIME'
+            or contract.get('actual_npu_calls') != 0 or contract.get('cases') != 15):
+        raise RuntimeError('TYPED_FIA_ACTUAL_SDK_AND_RUNTIME_CONTRACT_REQUIRED')
+    return dict(schema='demoncat.writer26.fia_ncl_typed.v3', abi=expected, native_format=47, public_format=2,
+        dtype='bfloat16', dimensions=3, view_storage_equal=True, offset=0, contiguous=True,
+        borrowed_original_read_scope='ACTUAL_GWS_STACK_ONLY', effective_descriptor='GROUP_OWNED_ALL_SELECTED_MODES',
+        stock_to_owned_reference_full_byte_comparison_required=True, old_reference_reusable=False,
+        before_execute_complete_typed_readback_required=True, native_qualified=False)
 
 
 def sha(path):
@@ -93,6 +116,9 @@ def main():
         if not path.is_relative_to(parent) or sha(path) != expected:
             raise RuntimeError('PARENT_FILE_CHANGED:' + name)
     ownership = verify_parent(source, parent, files)
+    trace_exports = subprocess.run(['nm', '-D', '--defined-only', str(parent / 'libfault26_readonly_trace_abi0.so')],
+        capture_output=True, text=True, check=True, timeout=30).stdout
+    require_typed_trace(trace_exports)
     required = REQUIRED | {RECEIPT, CPU_RECEIPT}
     if out.exists():
         raise RuntimeError('NEW_EMPTY_BUILD_PATH_REQUIRED')
@@ -115,11 +141,13 @@ g++ "${flags[@]}" "$native/test_writer26_group_runtime_control.cpp" -ldl -lpthre
 /build/test_group_control > /build/sdk-control.json
 g++ "${flags[@]}" "$native/test_writer26_pending_runtime.cpp" -ldl -lpthread -o /build/test_pending_runtime
 /build/test_pending_runtime > /build/pending-runtime-cpu.json
+g++ "${flags[@]}" "$native/test_writer26_fia_typed_runtime.cpp" -ldl -lpthread -o /build/test_fia_typed_runtime
+/build/test_fia_typed_runtime > /build/fia-typed-runtime-cpu.json
 g++ "${flags[@]}" "$native/test_writer26_group_core.cpp" -o /build/test_group_core
 /build/test_group_core > /build/cpu-contract.json
 nm -D /build/libdcat26_group_v2.so > /build/exported-symbols.txt
 readelf -d /build/libdcat26_group_v2.so > /build/elf-dynamic.txt
-sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/aclnn/opdev/common_types.h > /build/sdk-header-sha256.txt
+sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl_base.h /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/aclnn/opdev/common_types.h > /build/sdk-header-sha256.txt
 '''
     nonce = uuid.uuid4().hex
     name = 'dcat26-group-build-' + nonce
@@ -166,16 +194,25 @@ sha256sum /usr/local/Ascend/cann-8.5.1/aarch64-linux/include/acl/acl.h /usr/loca
         raise RuntimeError('LEGACY_WRITER_ABI_MUST_NOT_BE_PRESENT')
     if not re.search(r'\bT dcat26_group_metadata_arrays_v1$', exports, re.M):
         raise RuntimeError('ACTUAL_GROUP_METADATA_COUNTER_EXPORT_REQUIRED')
+    for name in ('abi', 'snapshots'):
+        if not re.search(r'\bT dcat26_group_fia_' + name + r'_v3$', exports, re.M):
+            raise RuntimeError('TYPED_FIA_GROUP_ABI_REQUIRED:' + name)
+    if not re.search(r'\bT dcat26_group_continue_fia_v3$', exports, re.M):
+        raise RuntimeError('TYPED_FIA_ADMISSION_ABI_REQUIRED')
     receipt.update(status='SDK_BUILD_AND_CPU_CONTRACT_PASS_NOT_NATIVE_ACCEPTANCE',
         sdk_control=json.loads((out / 'sdk-control.json').read_text()),
         pending_runtime_contract=json.loads((out / 'pending-runtime-cpu.json').read_text()),
+        fia_typed_runtime_contract=json.loads((out / 'fia-typed-runtime-cpu.json').read_text()),
         cpu_contract=json.loads((out / 'cpu-contract.json').read_text()))
+    profile = typed_profile(receipt['sdk_control'], receipt['fia_typed_runtime_contract'])
+    receipt['fia_typed_profile'] = profile
     (out / 'build-receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     output_files = {name: sha(out / name) for name in sorted(required | {'libdcat26_group_v2.so', 'metadata-array-group-cpu.json'})}
     (out / 'build.json').write_text(json.dumps(dict(schema='demoncat.writer26.group_deployment.v2',
         files=output_files, build_receipt_sha256=sha(out / 'build-receipt.json'), sources=sources,
         actual_npu_calls=0, native_qualified_targets=0, c2=False, c3=False,
         actual_image_id=receipt['actual_image_id'],
+        fia_typed_profile=profile,
         metadata_array_ownership=dict(schema='demoncat.metadata_arrays.v1', state_version=1,
             images=dict(SYMBOLS, **{'libdcat26_group_v2.so': 'dcat26_group_metadata_arrays_v1'}),
             reset_supported=False, runtime_quiescent_readback_required=True,
