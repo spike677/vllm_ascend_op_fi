@@ -284,7 +284,7 @@ def ledger(a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural,native_b
     a.check(cov['scope']['mechanism']==inv['mechanism'] and cov['scope']['evidence_kind']==
         ('natural_worker' if natural else 'cpu_contract') and cov['owner']==owner and cov['generation']==generation and
         cov['trigger']==('every_match' if context.get('run')=='c3' else 'once') and cov['selection']=='all_eligible' and cov['budget']['max_concurrency']==1 and
-        inv['execution_scope']=='SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS' and
+        inv['execution_scope']==context.get('execution_scope','SAME_REQUEST_CUMULATIVE_ALL_STABLE_ELIGIBLE_TARGETS') and
         inv['independent_per_target_replay'] is False,'EXACT_COMPLETE_GROUP_SCOPE')
     candidates=[dict(candidate_id=x['target_key'] or 'unsupported-native-'+str(i),identity=x['identity'],
         eligibility=dict(status='SUPPORTED' if x['target_key'] in eligible else 'UNSUPPORTED',reasons=x['reasons']))
@@ -423,11 +423,13 @@ def requests(a,b,d,final,worker,*,natural):
         health['mapping']['source']=='ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR','POST_UNREGISTER_REAL_HEALTH')
 
 
-def complete_group(a,b,d,final,final_ref,originals,context,*,mechanism,expected_count,natural,run='c2',native_build_binding=None):
+def complete_group(a,b,d,final,final_ref,originals,context,*,mechanism,expected_count,natural,run='c2',native_build_binding=None,
+        transition_isolated=False):
     details={};inv=final['inventory'];context=dict(context,run=run,
         native_generation=context['ticket']['generation']+int(run=='c3'))
+    stage_ok=d['stage'] in ('c2_once','c2_c3') if not transition_isolated else d['stage']=='c2_isolated_c3' and run=='c3'
     a.check(inv['schema']=='demoncat.writer26.complete_set.v2' and inv['mechanism']==mechanism and
-        inv['stage']=='coverage' and d['stage'] in ('c2_once','c2_c3') and inv['phase']=='complete' and inv['finalized'] is True and
+        inv['stage']=='coverage' and stage_ok and inv['phase']=='complete' and inv['finalized'] is True and
         inv['failure'] is inv['first_failure'] is None and not inv['failure_events'] and not inv['blockers'],
         'COMPLETE_GROUP_NO_ERASED_FAILURE')
     artifacts=GroupArtifacts(originals,final_ref,run=run)
@@ -452,6 +454,11 @@ def complete_group(a,b,d,final,final_ref,originals,context,*,mechanism,expected_
 
 
 def review(d,host,records,originals,*,mechanism,expected_count,natural=True,native_build_binding=None):
+    if d.get('stage')=='c2_isolated_c3':
+        helper=C.pure_module(Path(__file__).with_name('review26_isolated_c3_originals.py'),'_isolated_c3_originals26')
+        from types import SimpleNamespace
+        return helper.review(SimpleNamespace(**globals()),d,host,records,originals,
+            mechanism=mechanism,expected_count=expected_count,natural=natural,native_build_binding=native_build_binding)
     if d.get('stage')=='c2_isolated_once':
         helper=C.pure_module(Path(__file__).with_name('review26_isolated_originals.py'),'_isolated_originals26')
         from types import SimpleNamespace
@@ -507,9 +514,10 @@ def provenance(d,final,args):
     if "joinpath('environment.py')" in coverage_source:components.append(hashes['fault_injection/environment.py'])
     components.append(hashes['fault_injection/metadata_arrays.py']);shared=D(components)
     implementation=D([shared,hashes[OLD.PREFIX+'serving26_core.py'],hashes[OLD.PREFIX+'providers/fault26_core.py']])
-    if d.get('stage')=='c2_isolated_once':
+    if d.get('stage') in ('c2_isolated_once','c2_isolated_c3'):
         implementation=D([implementation,hashes[OLD.PREFIX+'serving26_isolated.py'],
-            'ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS'])
+            'ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_C2_THEN_SAME_WORKER_BOUNDED_C3_EVERY_MATCH'
+            if d['stage']=='c2_isolated_c3' else 'ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS'])
     a=C.Audit();a.check(final['inventory']['coverage']['scope']['implementation_sha256']==implementation,
         'GROUP_SCOPE_BINDS_ACTUAL_CORE_COVERAGE_NATIVE_AND_METADATA_SOURCE')
     result['group_scope_source']=a.report();result['consistent']=result['consistent'] and not a.issues
@@ -532,7 +540,7 @@ def main(argv=None):
             expected_count=args.expected_writers,native_build_binding=native_build_binding)
         result['native_image_binding']=native_build_binding
         proofs={}
-        for run in ('c2','c3') if d.get('stage')=='c2_c3' else ('c2',):
+        for run in ('c2','c3') if d.get('stage') in ('c2_c3','c2_isolated_c3') else ('c2',):
             refs=d.get(run+'_attempt',{}).get('original_observations',{}).get('originals',[])
             if not refs:continue
             final=originals.load(refs[-1],mounted=True)
@@ -554,7 +562,7 @@ def main(argv=None):
     result.update(schema='demoncat.writer26.worker_group.independent_originals.v1',reviewer_sha256=C.file_sha(__file__),
         atomic_helpers=OLD.HELPERS,independent_helpers={name:C.file_sha(Path(__file__).with_name(name)) for name in
             ('group_review_common.py','review26_group_native.py','review26_c3_originals.py','review26_environment_originals.py',
-             'review26_isolated_originals.py')},
+             'review26_isolated_originals.py','review26_isolated_c3_originals.py')},
         read_only=True,runtime_executed=False)
     print(json.dumps(result,indent=2,allow_nan=False));return 0 if result['consistent'] else 2
 

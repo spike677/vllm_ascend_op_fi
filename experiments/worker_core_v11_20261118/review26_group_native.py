@@ -98,13 +98,14 @@ def group_outcome(b, r, value, candidate, row, qualification, where, *, mechanis
 
 
 
-def typed_group_review(b, t, inventory, artifacts, *, expected_count, isolated=False):
+def typed_group_review(b, t, inventory, artifacts, *, expected_count, isolated=False,
+        isolated_scope='ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS'):
     trace_state, records = t.trace_state, t.records
     r = b.Review(); rows = inventory['rows']; bridges = inventory['fia_typed_stock_bridge']
     modes=[row['plan']['mode'] for row in rows]
     selected_order=[v['target_key'] for v in inventory['candidates'] if v['status']=='OBSERVED_NOT_QUALIFIED']
     if isolated:
-        r.check(inventory['execution_scope']=='ALL_STABLE_ELIGIBLE_TARGETS_ISOLATED_F_OFF_FRESH_REQUEST_PAIRS' and
+        r.check(inventory['execution_scope']==isolated_scope and
             inventory['independent_per_target_replay'] is True and inventory['coverage']['trigger']=='once',
             'EXPLICIT_ISOLATED_TYPED_SCOPE')
         expected_modes=[None,None,'reference','lossless','off']+['fault','off']*len(selected_order)+[None]

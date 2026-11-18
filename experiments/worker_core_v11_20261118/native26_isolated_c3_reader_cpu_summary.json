@@ -1,0 +1,41 @@
+{
+  "schema": "demoncat.agent7.native26_isolated_c3_reader_cpu.v1",
+  "stage": "c2_isolated_c3",
+  "review_base": "b65b8298",
+  "producer_dependency": "4331c110",
+  "actual_npu_attempt_reviewed": false,
+  "runtime_or_native_implementation_changed": false,
+  "ssh_or_container_or_npu_executed": false,
+  "tests": {
+    "command": "python -B -m unittest test_worker_core26_isolated_c3_original_review test_worker_core26_isolated_original_review test_worker_core_group_original_review -q",
+    "passed": 61,
+    "failed": 0,
+    "new_tests_in_total": 19,
+    "actual_public_cpu_driver_originals_used": true,
+    "native_abi_is_cpu_double": true
+  },
+  "cpu_fixture_observations": {
+    "complete_native_calls_per_request": 3,
+    "eligible_targets": 2,
+    "c2_isolated_group_requests": 10,
+    "c2_owned_executes": 10,
+    "c2_ledger_calls": 12,
+    "c2_recomputed_hits": 2,
+    "c3_cumulative_group_requests": 9,
+    "c3_owned_executes": 12,
+    "c3_recomputed_hits": 4,
+    "post_unregister_health_requests": 1,
+    "c2_typed_records": 70,
+    "c3_typed_records": 66,
+    "c2_full_stock_and_owned_bins": 16,
+    "c3_full_stock_and_owned_bins": 18,
+    "historical_live_object_joined": true,
+    "saved_json_recreates_live_authority": false
+  },
+  "c2": false,
+  "c3": false,
+  "e5": false,
+  "public_qualification_granted": false,
+  "source82_qualification_inherited": false,
+  "raw_statistics_or_tensors_in_commit": false
+}

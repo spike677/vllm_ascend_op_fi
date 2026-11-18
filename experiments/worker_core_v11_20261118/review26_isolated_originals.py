@@ -108,7 +108,7 @@ def join(r,a,originals,d,context,*,natural):
         latest_inventory=last)
 
 
-def native(r,a,b,inv,context,artifacts,*,natural,expected_count):
+def native(r,a,b,inv,context,artifacts,*,natural,expected_count,transition=False):
     rows=inv['rows'];life=inv['lifetime'];mechanism=1 if inv['mechanism']=='26.residual_stomp' else 2
     aliases={(x['path'],x['object_identity']) for x in inv['alias_inventory']}
     a.check(len(aliases)==len(inv['alias_inventory']) and ('<root>',life['model_object_identity']) in aliases,'COMPLETE_ISOLATED_ALIAS_SET')
@@ -145,8 +145,12 @@ def native(r,a,b,inv,context,artifacts,*,natural,expected_count):
     eligible={x['target_key']:x for x in frozen if x['status']=='OBSERVED_NOT_QUALIFIED'};keys=list(eligible);phases=plan(keys)
     a.check(bool(keys) and inv['resolved_candidate_count']==inv['qualified_candidate_count']==len(keys) and len(rows)==len(phases),
         'COMPLETE_ISOLATED_TARGET_AND_REQUEST_COUNTS')
-    a.check(inv['isolated_plan']==dict(target_order=keys,group_requests=len(phases),ordinary_post_unregister_requests=1,
-        full_native_writer_count=expected_count,native_owned_execute_records=5*len(keys),max_targets_is_selector=False,c3_requested=False),
+    expected_plan=dict(target_order=keys,group_requests=len(phases),ordinary_post_unregister_requests=1,
+        full_native_writer_count=expected_count,native_owned_execute_records=5*len(keys),max_targets_is_selector=False,c3_requested=transition)
+    if transition:
+        expected_plan.update(c2_group_requests=len(phases),c3_group_requests=9,
+            combined_group_requests=len(phases)+9,current_phase_scope=SCOPE)
+    a.check(inv['isolated_plan']==expected_plan,
         'ISOLATED_PLAN_REBUILT_FROM_ACTUAL_CENSUS')
     outcomes={};owner=b.words(hashlib.sha256(context['provider_owner'].encode()).hexdigest())[:2];generation=context['ticket']['generation']
     for outcome in inv['outcomes']:
@@ -195,9 +199,9 @@ def native(r,a,b,inv,context,artifacts,*,natural,expected_count):
     return frozen,eligible,outcomes,boundaries
 
 
-def ledger(r,a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural,native_build_binding):
+def ledger(r,a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural,native_build_binding,execution_scope=SCOPE):
     C=r.C;cov=inv['coverage'];rows=inv['rows'];keys=list(eligible);owner=context['provider_owner'];generation=context['ticket']['generation']
-    a.check(inv['execution_scope']==inv['scope']==SCOPE and inv['independent_per_target_replay'] is True and
+    a.check(inv['execution_scope']==inv['scope']==execution_scope and inv['independent_per_target_replay'] is True and
         cov['scope']['mechanism']==inv['mechanism'] and cov['scope']['evidence_kind']==('natural_worker' if natural else 'cpu_contract') and
         cov['owner']==owner and cov['generation']==generation and cov['trigger']=='once' and cov['selection']=='all_eligible' and
         cov['budget']['max_concurrency']==1,'EXACT_ISOLATED_C2_SCOPE')
@@ -278,10 +282,10 @@ def ledger(r,a,b,inv,frozen,eligible,outcomes,artifacts,context,*,natural,native
     r.check_c2_proof(a,inv,target_ids)
     return dict(full_calls_per_request=len(frozen),eligible_targets=len(keys),group_requests=len(rows),
         fault_requests=len(keys),owned_native_executes=len(outcomes),ledger_calls=len(calls),recomputed_hits=hits,
-        artifact_files_rehashed=len(artifacts.checked),execution_scope=SCOPE)
+        artifact_files_rehashed=len(artifacts.checked),execution_scope=execution_scope)
 
 
-def requests(r,a,b,d,final,worker,*,natural):
+def requests(r,a,b,d,final,worker,*,natural,require_post_health=True):
     rows=final['inventory']['rows'];observed=final['serving_requests'];seen=set()
     a.check(len(rows)==len(observed)==len(d['requests']),'ISOLATED_REAL_REQUEST_DENOMINATOR')
     for row,obs,driver in zip(rows,observed,d['requests']):
@@ -301,7 +305,7 @@ def requests(r,a,b,d,final,worker,*,natural):
         if row['phase']!='group_fault':a.check(row['output_sha256']==rows[0]['output_sha256'] and row['output_finite'] is True and
             driver['output']==d['healthy_before'],'REFERENCE_LOSSLESS_EACH_OFF_AND_FINAL_HEALTH_EXACT',rid)
     health=d.get('post_unregister_health')
-    a.check(health is not None and health['worker']==worker and health['output']==d['healthy_before'] and
+    a.check(not require_post_health and health is None or health is not None and health['worker']==worker and health['output']==d['healthy_before'] and
         health['mapping']['internal_request_id'] not in seen and health['mapping']['source']=='ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR',
         'ORDINARY_POST_UNREGISTER_HEALTH_REQUEST')
     faults=[(row,driver) for row,driver in zip(rows,d['requests']) if row['phase']=='group_fault']
