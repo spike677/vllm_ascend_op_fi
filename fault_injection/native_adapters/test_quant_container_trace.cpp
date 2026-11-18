@@ -109,5 +109,7 @@ void test(const std::string& name) {
     finish(c);assert(dcat_qct_begin_v1(&c)!=0);
 }
 }
+#ifndef DCAT_QCT_NO_TEST_MAIN
 int main(int argc,char** argv){assert(argc==2);test(argv[1]);
     std::cout<<"PASS_CPU_SDK_TYPED_FUNCTION_DOUBLE_NOT_NPU "<<argv[1]<<"\n";}
+#endif

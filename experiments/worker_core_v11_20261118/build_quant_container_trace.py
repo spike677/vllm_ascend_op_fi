@@ -109,10 +109,10 @@ def loaded_driver_mappings(expected, maps=None):
     return rows
 
 
-def cpu_contracts(source, out):
+def cpu_contracts(source, out, source_paths=None):
     receipt = dict(schema='demoncat.quant.container_cpu_contract.v1', status='INCOMPLETE',
         actual_npu_calls=0, scope='SDK_TYPED_REAL_SHIM_WITH_CPU_FUNCTION_DOUBLES',
-        sources={name: sha(source / name) for name in SOURCES}, executable_sha256=sha(out / 'cpu_contract'),
+        sources={name: sha(source / name) for name in (SOURCES if source_paths is None else source_paths)}, executable_sha256=sha(out / 'cpu_contract'),
         expected_cases=list(CASES), cases=[])
     path = out / 'cpu-contract.json'; write_json(path, receipt)
     try:

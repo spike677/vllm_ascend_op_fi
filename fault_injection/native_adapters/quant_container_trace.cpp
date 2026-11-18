@@ -1,5 +1,5 @@
-// Four public container APIs only. No GWS interception, private layout, device
-// data copy, replacement, or fault operation is implemented by this library.
+// Four public container APIs. The separate, explicitly built GMM2 extension
+// adds a typed read-only pair; neither build implements faults or data copies.
 #include "quant_container_trace.h"
 // This existing shared header is byte-pinned by the build profile. Its compact
 // formatting triggers GCC's indentation warning; keep our own TU strict.
@@ -47,6 +47,10 @@ struct Registration {uint64_t id{},kind{};};
 std::map<uint64_t,Registration> live;
 std::atomic<uint64_t> exceptions{0};
 uint64_t next_scope{},started{};
+#ifdef DCAT_QCT_GMM2_EXTENSION
+bool gmm2_active();
+bool gmm2_owns_journal();
+#endif
 thread_local uint64_t call_depth{};
 uint64_t tid(){return static_cast<uint64_t>(syscall(SYS_gettid));}
 uint64_t now(){return static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -250,10 +254,16 @@ extern "C" int dcat_qct_scope_begin_v1(const dcat_qct::Config* c,const dcat_qct:
 extern "C" int dcat_qct_scope_end_v1(const dcat_qct::Config* c,uint64_t token) try {
     std::lock_guard<std::mutex> lock(mutex);
     if(!owner(c) || !token || scope.token!=token || state.active_calls)return 1;
+#ifdef DCAT_QCT_GMM2_EXTENSION
+    if(gmm2_active())return 1;
+#endif
     scope=Scope{};return 0;
 }catch(...){poisoned();return 2;}
 extern "C" int dcat_qct_stop_v1(const dcat_qct::Config* c) try {
     std::lock_guard<std::mutex> lock(mutex);if(!owner(c) || scope.token || state.active_calls)return 1;
+#ifdef DCAT_QCT_GMM2_EXTENSION
+    if(gmm2_active())return 1;
+#endif
     state.stopped=1;return 0;
 }catch(...){poisoned();return 2;}
 extern "C" int dcat_qct_event_v1(uint64_t index,dcat_qct::Event* out) try {
@@ -271,6 +281,9 @@ extern "C" int dcat_qct_payload_v1(uint64_t offset,uint64_t bytes,void* out) try
 extern "C" int dcat_qct_release_v1(const dcat_qct::Config* c) try {
     std::lock_guard<std::mutex> lock(mutex);
     if(!owner(c) || !state.stopped || scope.token || state.active_calls || !live.empty())return 1;
+#ifdef DCAT_QCT_GMM2_EXTENSION
+    if(gmm2_owns_journal())return 1;
+#endif
     std::vector<Event>().swap(events);std::vector<uint8_t>().swap(payload);
     state.installed=0;state.retired=1;return 0;
 }catch(...){poisoned();return 2;}
@@ -301,3 +314,7 @@ extern "C" aclnnStatus aclDestroyIntArray(const aclIntArray* value) {
     call.enter();try{const auto status=api.destroy_ints(value);call.returned(0,status);return status;}
     catch(...){poisoned();call.returned(0,161001);return 161001;}
 }
+
+#ifdef DCAT_QCT_GMM2_EXTENSION
+#include "quant_gmm2_trace.inc"
+#endif
