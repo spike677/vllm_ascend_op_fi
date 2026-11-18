@@ -20,6 +20,7 @@ DRIVER = PurePosixPath('/usr/local/Ascend/driver/lib64')
 DRIVER_PINS = {
     'driver/libascend_hal.so': '3ccd859a4df96c13106ef6b950aee89d61cee50cf743172d288fc76591b5a9e6',
     'common/libc_sec.so': 'c61ed19a711a75b1ac5c3c6793d7d3ec2848846eb8113da828632881b8d91db8',
+    'common/libmmpa.so': '2094e03c1ad683c43fbfbe7e93f705d119bc605aaf96db78f0adbc7c69e1f6f7',
 }
 PINS = dict(nn='6dc3b4fcfcf57b10be0018e89f4edbc079f02b4bb0aaadb109df350939fd4c99',
     custom='de1633c2f1f41e505277697ee82f3ffba940f730bed9986c5aeff4c8514b713f',
@@ -69,7 +70,8 @@ def driver_identity(root=DRIVER):
         files[relative] = dict(path=str(path), sha256=actual, bytes=after.st_size,
                                device=after.st_dev, inode=after.st_ino)
     return dict(schema='demoncat.quant.container_driver_dependencies.v1', root=str(root),
-                files=files, device_mounts=[], explicit_driver_api_calls=0)
+                files=files, device_mounts=[], explicit_driver_api_calls=0,
+                loader_constructor_driver_calls='NOT_COUNTED_MAY_PROBE_DEVICE_INFORMATION')
 
 
 def loader_path(image):
@@ -86,7 +88,7 @@ def loader_path(image):
 
 
 def loaded_driver_mappings(expected, maps=None):
-    """Only the two actual read-only driver dependencies, never all system ELFs."""
+    """Only the three pinned read-only dependencies, never all system ELFs."""
     rows = []; seen = set(); allowed = {row['path']: row for row in expected['files'].values()}
     for line in (Path('/proc/self/maps').read_text() if maps is None else maps).splitlines():
         parts = line.split(maxsplit=5)
@@ -103,7 +105,7 @@ def loaded_driver_mappings(expected, maps=None):
         rows.append(dict(path=path, address_range=parts[0], permissions=parts[1], offset=parts[2],
                          mapped_device=parts[3], mapped_inode=int(parts[4]), sha256=item['sha256']))
     if seen != set(allowed):
-        raise RuntimeError('REAL_HAL_AND_LIBC_SEC_MAPPINGS_REQUIRED')
+        raise RuntimeError('ALL_THREE_PINNED_DRIVER_MAPPINGS_REQUIRED')
     return rows
 
 
@@ -147,6 +149,7 @@ def marker_load(out, library, ident):
     import ctypes
     receipt = dict(status='FAILED_SDK_MARKER_LOAD', actual_npu_calls=0, creator_calls=0,
         install_calls=0, explicit_driver_api_calls=0, profile_sha256=ident,
+        loader_constructor_driver_calls='NOT_COUNTED_MAY_PROBE_DEVICE_INFORMATION',
         driver_identity_sha256=sha(out / 'driver-identity.json'))
     try:
         expected = json.loads((out / 'driver-identity.json').read_text())
@@ -291,6 +294,7 @@ def main():
     sources = {name: sha(source / name) for name in SOURCES}; out.mkdir(parents=True)
     nonce = uuid.uuid4().hex; name = 'dcat-quant-container-build-' + nonce
     receipt = dict(schema='demoncat.quant.container_build.v1', status='FAILED_CPU_BUILD', actual_npu_calls=0,
+        explicit_driver_api_calls=0, loader_constructor_driver_calls='NOT_COUNTED_MAY_PROBE_DEVICE_INFORMATION',
         source_commit=a.source_commit, sources=sources, image_id=IMAGE, container_name=name, container_owner_nonce=nonce)
     launched = False
     try:
@@ -346,6 +350,7 @@ def main():
     files = {str(path.relative_to(out)): sha(path) for path in (out / 'runtime').rglob('*') if path.is_file()}
     files['profile.json'] = sha(out / 'profile.json')
     manifest = dict(schema='demoncat.quant.container_deployment.v1', actual_npu_calls=0,
+        explicit_driver_api_calls=0, loader_constructor_driver_calls='NOT_COUNTED_MAY_PROBE_DEVICE_INFORMATION',
         source_commit=a.source_commit, image_id=IMAGE, sources=sources, files=files,
         library='runtime/vendor/op_api/lib/libcust_opapi.so', profile_sha256=json.loads((out / 'profile.json').read_text())['profile_sha256'],
         build_receipt_sha256=sha(out / 'build-receipt.json'), qualified=False, c1=False, c2=False, c3=False)

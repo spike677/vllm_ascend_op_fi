@@ -30,6 +30,9 @@ class ContainerBuildTests(unittest.TestCase):
         self.assertEqual(len(build.CASES), 19)
         self.assertEqual(len(set(build.CASES)), 19)
         self.assertTrue(all(len(value) == 64 for value in build.PINS.values()))
+        self.assertEqual(set(build.DRIVER_PINS), {'driver/libascend_hal.so', 'common/libc_sec.so', 'common/libmmpa.so'})
+        self.assertEqual(build.DRIVER_PINS['common/libmmpa.so'],
+                         '2094e03c1ad683c43fbfbe7e93f705d119bc605aaf96db78f0adbc7c69e1f6f7')
 
     def test_shared_header_warning_scope_ends_before_own_code(self):
         source = (build.ROOT / 'fault_injection/native_adapters/quant_container_trace.cpp').read_text()
@@ -122,21 +125,28 @@ class ContainerBuildTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, 'ACTUAL_DRIVER_DEPENDENCY_CHANGED'):
                     build.driver_identity(root)
 
-    def test_loaded_driver_maps_require_both_exact_real_files(self):
+    def test_loaded_driver_maps_require_three_exact_files_and_refuse_fourth(self):
         expected = dict(root='/driver', files={
             'hal': dict(path='/driver/driver/libascend_hal.so', inode=11, device=5, sha256='a' * 64),
-            'sec': dict(path='/driver/common/libc_sec.so', inode=12, device=5, sha256='b' * 64)})
+            'sec': dict(path='/driver/common/libc_sec.so', inode=12, device=5, sha256='b' * 64),
+            'mmpa': dict(path='/driver/common/libmmpa.so', inode=13, device=5, sha256='c' * 64)})
         maps = ('100-200 r-xp 0 00:05 11 /driver/driver/libascend_hal.so\n'
-                '200-300 r-xp 0 00:05 12 /driver/common/libc_sec.so\n')
+                '200-300 r-xp 0 00:05 12 /driver/common/libc_sec.so\n'
+                '300-400 r-xp 0 00:05 13 /driver/common/libmmpa.so\n')
+        identities = {row['path']: row['sha256'] for row in expected['files'].values()}
         with patch.object(build.os, 'major', return_value=0, create=True), \
                 patch.object(build.os, 'minor', return_value=5, create=True), \
-                patch.object(build, 'sha', side_effect=lambda path: 'a' * 64 if 'hal' in str(path) else 'b' * 64):
-            self.assertEqual(len(build.loaded_driver_mappings(expected, maps)), 2)
+                patch.object(build, 'sha', side_effect=lambda path: identities[str(path)]):
+            self.assertEqual(len(build.loaded_driver_mappings(expected, maps)), 3)
             for changed in (maps.replace('00:05', '00:06'), maps.replace(' 11 ', ' 99 '),
                             maps.replace('libc_sec.so', 'foreign.so'), maps.splitlines()[0],
-                            maps.replace('libc_sec.so', 'libc_sec.so (deleted)')):
+                            maps.replace('libc_sec.so', 'libc_sec.so (deleted)'),
+                            maps + '400-500 r-xp 0 00:05 14 /driver/common/unreviewed.so\n'):
                 with self.subTest(maps=changed), self.assertRaises(RuntimeError):
                     build.loaded_driver_mappings(expected, changed)
+            identities['/driver/common/libmmpa.so'] = 'd' * 64
+            with self.assertRaisesRegex(RuntimeError, 'LOADED_DRIVER_MAPPING_IDENTITY_CHANGED'):
+                build.loaded_driver_mappings(expected, maps)
 
     def contract_fixture(self, root):
         source = root / 'source'; out = root / 'out'; source.mkdir(); out.mkdir()
@@ -166,6 +176,7 @@ class ContainerBuildTests(unittest.TestCase):
             marker = json.loads((out / 'sdk-load.json').read_text())
             self.assertEqual(marker['status'], 'FAILED_SDK_MARKER_LOAD')
             self.assertEqual(marker['explicit_driver_api_calls'], 0)
+            self.assertEqual(marker['loader_constructor_driver_calls'], 'NOT_COUNTED_MAY_PROBE_DEVICE_INFORMATION')
             self.assertFalse((out / 'build.json').exists())
 
     def test_mid_contract_failure_keeps_prior_results_and_first_failed_case(self):

@@ -43,7 +43,7 @@ Only root executes this command on 124, with a fresh output directory:
 ```text
 python3 <frozen-source>/experiments/worker_core_v11_20261118/build_quant_container_trace.py \
   --source <frozen-source> --source-commit <40-digit-frozen-commit> \
-  --out /home/17-fault-c2c3-20261117/quant-container-trace-sdk-a4
+  --out /home/17-fault-c2c3-20261117/quant-container-trace-sdk-a5
 ```
 
 The builder pins production image `sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0`,
@@ -51,7 +51,9 @@ NN/custom/stock/custom-extension bytes, public SDK metadata header and source
 closure. It uses an owned, uniquely named, no-network `runc` CPU container with
 no device mounts, 4 CPUs, 4 GiB and a 300-second bound. Actual driver `lib64`
 is mounted read-only solely to resolve the real library's dependencies; the
-builder still invokes no driver/NPU API. Timeout and exceptions
+script makes no explicit driver/NPU API calls. Loading a real library may run
+constructors that probe device information; no claim of zero driver function
+calls is made. Timeout and exceptions
 preserve a receipt and clean only that exact owned container. The source mount
 is read-only. A successful manifest is published only after compiler, exported
 ABI, 19 actual-shim CPU-double scenarios and marker-only actual DSO load pass.
@@ -88,10 +90,28 @@ file is `driver/libascend_hal.so`, 1,861,080 bytes, SHA
 `3ccd859a4df96c13106ef6b950aee89d61cee50cf743172d288fc76591b5a9e6`;
 its only additional nonsystem dependency is `common/libc_sec.so`, SHA
 `c61ed19a711a75b1ac5c3c6793d7d3ec2848846eb8113da828632881b8d91db8`.
-The nonexistent `lib64/libascend_hal.so` is not used. Both actual files are
+The nonexistent `lib64/libascend_hal.so` is not used. The pinned files are
 checked before launch, in the mounted build, and before/after marker loading;
 the loaded paths, map ranges, device/inode and file hashes must match. An
 additional unreviewed driver mapping is a refusal, never a stub substitution.
+
+The a4 build reached marker/mapping validation and correctly refused the
+third actual mapping `common/libmmpa.so`. Root's read of `driver_maps_raw`
+found exactly HAL, `libc_sec.so`, and this third object. The a5 profile adds
+only its verified SHA
+`2094e03c1ad683c43fbfbe7e93f705d119bc605aaf96db78f0adbc7c69e1f6f7`.
+Its actual DT_NEEDED entries are `libc_sec.so`, `libdl.so.2`, `librt.so.1`,
+`libpthread.so.0`, `libc.so.6`, and `ld-linux-aarch64.so.1`. The three mapped
+files must all match; a fourth driver mapping, a missing mapping, or changed
+bytes/inode/device still refuses. **The a4 overall build remains failed.**
+
+The a4 log also records HAL constructor diagnostics: `get platform info
+failed`, `drvErr4`, in the container without devices. The script only loads
+the real library and calls the two marker/profile functions, but its loader
+can trigger such constructors. Receipts now explicitly label those indirect
+driver calls as uncounted. `actual_npu_calls=0` here denotes no model/NPU
+operator execution by this build; it must not be read as proof of zero
+driver-function calls or successful device initialization.
 
 Each C++ case now has its own persisted log and SHA, return code, and status in
 `cpu-contract.json`, bound to the source and executable bytes. The combined
@@ -155,7 +175,7 @@ python3 <frozen-source>/experiments/worker_core_v11_20261118/prepare_quant_conta
 
 This only prepares the JSON; root's existing queue and device gate own launch.
 All inputs mount read-only, evidence stays on 124, and the outer 1800-second /
-80-GiB / 16-CPU case budget stays unchanged. Do not reuse the failed SDK a1/a2/a3.
+80-GiB / 16-CPU case budget stays unchanged. Do not reuse the failed SDK a1/a2/a3/a4.
 
 New source-only closure: `fault_injection.quant_container_native` (depends on
 existing `fault_injection.metadata_arrays`) and
