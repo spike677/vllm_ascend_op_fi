@@ -43,13 +43,15 @@ Only root executes this command on 124, with a fresh output directory:
 ```text
 python3 <frozen-source>/experiments/worker_core_v11_20261118/build_quant_container_trace.py \
   --source <frozen-source> --source-commit <40-digit-frozen-commit> \
-  --out /home/17-fault-c2c3-20261117/quant-container-trace-sdk-a3
+  --out /home/17-fault-c2c3-20261117/quant-container-trace-sdk-a4
 ```
 
 The builder pins production image `sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0`,
 NN/custom/stock/custom-extension bytes, public SDK metadata header and source
 closure. It uses an owned, uniquely named, no-network `runc` CPU container with
-no device mounts, 4 CPUs, 4 GiB and a 300-second bound. Timeout and exceptions
+no device mounts, 4 CPUs, 4 GiB and a 300-second bound. Actual driver `lib64`
+is mounted read-only solely to resolve the real library's dependencies; the
+builder still invokes no driver/NPU API. Timeout and exceptions
 preserve a receipt and clean only that exact owned container. The source mount
 is read-only. A successful manifest is published only after compiler, exported
 ABI, 19 actual-shim CPU-double scenarios and marker-only actual DSO load pass.
@@ -71,9 +73,37 @@ warnings. Actual metadata capture exceptions now call the shared exception
 counter before rethrowing to the ABI guard, with array cleanup still tested.
 Both failed build originals remain preserved.
 
-Local validation so far: command/receipt contracts passed; no Docker or
-SDK compiler was run by this agent. The 19 C++ scenarios are **not yet
-executed**. A successful SDK/CPU receipt will still not prove the stock resolver
+Root independently read a3's persistent `cpu-contract.log`: all 19 actual-shim
+SDK-typed CPU-double scenarios passed, log SHA
+`234bb2890381ab1d2343ff4be1ce5eda98259abfec5458c0a5c7e5e52a4dfa7b`.
+The later marker-only `ctypes.CDLL` failed because `libascend_hal.so` was not
+available in that device-free container. **The a3 overall build remains
+failed**; the earlier 19 passes are a separate result, not a completed bundle.
+
+The a4 builder adds only the actual read-only
+`/usr/local/Ascend/driver/lib64` mount and explicit `driver`/`common` library
+search directories before the inspected image's existing loader path. It
+does not inherit the host shell's loader path. Root verified the actual HAL
+file is `driver/libascend_hal.so`, 1,861,080 bytes, SHA
+`3ccd859a4df96c13106ef6b950aee89d61cee50cf743172d288fc76591b5a9e6`;
+its only additional nonsystem dependency is `common/libc_sec.so`, SHA
+`c61ed19a711a75b1ac5c3c6793d7d3ec2848846eb8113da828632881b8d91db8`.
+The nonexistent `lib64/libascend_hal.so` is not used. Both actual files are
+checked before launch, in the mounted build, and before/after marker loading;
+the loaded paths, map ranges, device/inode and file hashes must match. An
+additional unreviewed driver mapping is a refusal, never a stub substitution.
+
+Each C++ case now has its own persisted log and SHA, return code, and status in
+`cpu-contract.json`, bound to the source and executable bytes. The combined
+log is flushed after each case. A failed case retains earlier passes and the
+first failure. The independent `sdk-load.json` records marker success or
+failure in `finally`. The outer build receipt hashes both stage receipts even
+when the overall build fails; only the complete original success gate can
+publish `build.json`.
+
+Local validation so far: all 13 build command/receipt contracts passed; no
+Docker or SDK compiler was run by this agent. Root's a3 C++ result is recorded
+above; the dependency fix needs a fresh actual build. A successful SDK/CPU receipt will still not prove the stock resolver
 actually calls these functions in inference. The B8 diagnostic and its exact
 loaded-owner/current-source results remain separate required evidence.
 
@@ -125,7 +155,7 @@ python3 <frozen-source>/experiments/worker_core_v11_20261118/prepare_quant_conta
 
 This only prepares the JSON; root's existing queue and device gate own launch.
 All inputs mount read-only, evidence stays on 124, and the outer 1800-second /
-80-GiB / 16-CPU case budget stays unchanged. Do not reuse the failed SDK a1/a2.
+80-GiB / 16-CPU case budget stays unchanged. Do not reuse the failed SDK a1/a2/a3.
 
 New source-only closure: `fault_injection.quant_container_native` (depends on
 existing `fault_injection.metadata_arrays`) and
