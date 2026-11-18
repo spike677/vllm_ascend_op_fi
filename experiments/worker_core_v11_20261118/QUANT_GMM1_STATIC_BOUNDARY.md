@@ -15,9 +15,13 @@ request-row proofs remain unchanged; C2/C3 remain false.
 | `v11-quant-gmm1-local-window-a2.tar.gz` | `64bdac1df293a12a92ede4cccb503e3579a649439c16f6c85c0cdba83b06ac43` |
 | a2 disassembly | `4ef4aa9b04a36e3bfcea0575d1e95eb4a6faa904fe7066f5a3ae23031cc9a4a1` |
 | a2 actual `torch_npu/__init__.py` | `967690b75576c1dfb76ed3cef3bd8a876fe94ec3195e4afa3116ef7d31e9b160` |
+| `v11-gmm1-dispatch-metadata-a1.tar.gz` | `17ed7828f71abc3fbd6d59d42ecbe5d8e599bfef59cc3cda912b502a2d39ff2c` |
+| `v11-gmm1-dispatch-metadata-a2.tar.gz` | `41382a968a642295a2463b68abb197839043445479584ebdff8fdce92af8fa73` |
+| `v11-gmm1-debuglink-a1.json` | `e26afe26a1bb64e886e8027721e07c1b24ee08b62961e5861d177d5beca0cc71` |
 
-Both archive hashes and all nine manifest-listed artifact sizes/hashes were
-recomputed locally. No original package or ELF is committed. The extracts
+Both static archive hashes and all nine manifest-listed artifact sizes/hashes
+were recomputed locally. Each installed-metadata archive's five declared files
+were also checked. No original package or ELF is committed. The extracts
 bind `libtorch_npu.so` SHA256
 `dd07e4afb4e31a5123d0b97a4a319acaa96158705a22d704bfc0a91f662a6041`,
 58,590,337 bytes, from image
@@ -55,40 +59,85 @@ creator/destroy interfaces. Thus there is no actual GMM1 caller PC to reuse
 from those events, and no basis to borrow a GMM2 caller PC or assume a
 TensorList conversion/cache outcome.
 
-## Smallest next metadata collection
+## Installed metadata follow-up
 
-1. Read the ELF's existing `.gnu_debuglink`: its file offset is `0x373c98c`
-   and size is `0x1c` in the checked section table. The same ELF's Build-ID is
-   `f784d0d51702c5ee243716c8945650872ff18f61`. For example,
-   `readelf -x .gnu_debuglink "$ELF"` reads this section without disassembling
-   `.text`. Check only the named file's standard local debug locations and
-   `/usr/lib/debug/.build-id/f7/84d0d51702c5ee243716c8945650872ff18f61.debug`.
-   A file is usable only after the full Build-ID/debuglink CRC and identity
-   checks match. If present, query only the two public GMM1/v2 wrappers and
-   `op_api` symbols, then request their exact function/FDE spans. A missing
-   debug file stays missing; a nearby release's symbols are not a substitute.
-2. Read the installed `torch_npu/version.py` and its distribution metadata.
-   The locally available version string is only
-   `2.9.0.post1+gitee7ba04`; the full upstream and `op-plugin` submodule commits
-   are not established. Preserve any full commit/build identity and hash the
-   files. Public source is usable only after those exact identities match;
-   neither the release name nor the shortened suffix is enough.
-3. In the same fixed image, a device-free, no-operator-call probe may record
-   the two GMM1 operators' actual schemas, `_dispatch_dump`, and
-   `_dispatch_dump_table`, together with canonical loaded `_C`/`libtorch_npu`
-   file identities. These APIs describe registration keys, signatures, source
-   labels, and fallback state. They do not establish an ACLNN owner or prove
-   that a kernel/API executed. Existing same-image RMSNorm/SwiGLU originals
-   illustrate the limitation: their PrivateUse1 source is the generic
-   `build/CMakeFiles/torch_npu.dir/compiler_depend.ts:8413`, not a kernel
-   function address. Source107's saved dispatch dumps concern
-   `vllm::moe_forward_shared`, not GMM1.
-4. If the new dump remains generic, inspect the *installed production*
-   `Dispatcher.h`, `KernelFunction.h`, `BoxedKernel.h`, and relevant Python
-   dispatcher declarations before proposing an address probe. The local
-   development headers are Torch 2.10, so they cannot authorize a Torch 2.9
-   layout. Do not read private kernel fields using guessed offsets or cast a
-   Python object address to a Native entry.
+The additional device-free metadata packages supply five source/header files.
+The exact installed `torch_npu/version.py` is SHA256
+`d07f96f22289c55c3ab70ef6a735b8458b775ec4de7b4dce352c3d33a3c39b2f`
+and declares full `git_version=ee7ba047d3021288b2957294ffdcdb1e0d2cea65`.
+Its distribution `direct_url.json` records wheel SHA256
+`73d2e4fb88acccfc032dee8d5e540168098b96c2375ca5a5d3860d6c4c4bc6fb`.
+`METADATA`, `direct_url.json`, and `version.py` also match the wheel's selected
+`RECORD` entries, including byte counts and base64 SHA256 values.
+The `op-plugin` submodule/build identity is not yet established.
+
+Package a1 **did not obtain GMM1 dispatcher registrations**. Its result has
+`errors=[RuntimeError('Failed to load the backend extension: torch_npu...')]`
+and no operator/schema/dump fields. The controller's exit code 0 means the
+probe saved its result; it does not turn the import failure into a successful
+registration audit. `requested_operator_calls=0` is retained. A retry must
+show the actual explicit `torch_npu` import result rather than treating
+disabled automatic loading as successful NPU registration.
+
+Package a2 sourced the fixed CANN environment, disabled automatic backend
+loading, and explicitly imported `torch_npu`. It records `errors=[]`, zero
+requested operator calls, and the expected mapped `_C` and `libtorch_npu`
+hashes. Its two schemas distinguish the old single-Tensor weight operator
+with three Tensor returns from the v2 TensorList weight/scale operator with
+two Tensor returns. Both current PrivateUse1 registrations report the same
+generic `compiler_depend.ts:8413` location; neither dump supplies a kernel
+address or selected ACLNN name. This is successful schema/registration
+observation in that CPU process, not a replay of source107's Native GMM1 call.
+
+The supplied *production Torch 2.9* declarations close the public-address
+interface question for these headers. `Dispatcher.h` line 490 returns a
+`SafeKernelFunction`; its public operations are `callBoxed`, `debug`, and
+`opHandle`. `KernelFunction.h` lines 279–295 keep the unboxed pointers
+private, and `BoxedKernel.h` lines 183–208 keep `getFnPtr` private. The Python
+stub's `_SafeKernelFunction` has only `call_boxed` and `op_handle`; the
+operator handle has `schema`, `debug`, and `redispatch_boxed`. None of these
+declared inspection methods exposes a kernel function pointer. The call
+methods will not be used to manufacture an address observation. This is an
+inspection of the supplied interfaces, not a claim about uninspected internal
+implementation hooks.
+
+## Debug and exact-source checks
+
+The existing `.gnu_debuglink` at file offset `0x373c98c`, size `0x1c`, names
+`libtorch_npu.so.debug` and records CRC32 `0x456e1e00`; the 28 bytes were
+independently decoded. The ELF's Build-ID is
+`f784d0d51702c5ee243716c8945650872ff18f61`. All four recorded standard paths
+are absent: the library directory, its `.debug` subdirectory, the corresponding
+`/usr/lib/debug` path, and the full Build-ID path. No broader filesystem or
+text-section scan was performed. A nearby release's debug symbols are not a
+substitute.
+
+The exact full commit was then queried through the GitHub connector and
+bounded official HTTPS reads. These are access results, not proof that no
+vendor/private/historical source exists:
+
+| Exact-commit endpoint | Observed result |
+| --- | --- |
+| [GitHub commit object](https://api.github.com/repos/Ascend/pytorch/git/commits/ee7ba047d3021288b2957294ffdcdb1e0d2cea65) | HTTP 404 |
+| [GitHub `.gitmodules`](https://api.github.com/repos/Ascend/pytorch/contents/.gitmodules?ref=ee7ba047d3021288b2957294ffdcdb1e0d2cea65) | HTTP 404, no commit found for ref |
+| [Gitee exact commit](https://gitee.com/api/v5/repos/ascend/pytorch/commits/ee7ba047d3021288b2957294ffdcdb1e0d2cea65) | HTTP 404, `Commit not found` |
+| [GitCode exact commit](https://api.gitcode.com/api/v5/repos/Ascend/pytorch/commits/ee7ba047d3021288b2957294ffdcdb1e0d2cea65) | HTTP 404, `404 Not Found Commit` |
+
+The Gitee and GitCode exact-commit raw `.gitmodules` reads also returned 404.
+No branch HEAD or approximate version was substituted. Consequently no
+`op-plugin` gitlink or exact GMM1 implementation was obtained in this step.
+
+## Remaining minimum evidence
+
+Obtain either the matching debug artifact or the exact wheel's source/build
+manifest, including the full `op-plugin` commit and any applied patches.
+For debug data, require full Build-ID/debuglink CRC and file identity before
+querying only the two GMM1/v2 wrappers and `op_api` function spans. For source,
+first bind the declared submodule tree; then inspect only the two implementations
+and their registration configuration. Full wheel identity remains separate
+from a source-tree hypothesis. Successful dispatcher metadata cannot fill
+this missing source/address evidence. Do not repeat its CPU probe merely to
+refresh the same generic source label.
 
 The stop condition is no exact matching source/symbol identity and no supported
 current-kernel-address observation. In that case the typed GMM1 branch remains
