@@ -35,7 +35,20 @@ REVIEWED = {
     'vllm_ascend.ops.register_custom_ops': (
         'c5eaccde6568f6f480c00a07cc582c8650e6849f25933c8e82787f4b0477ca9b',
         {'_maybe_all_gather_and_maybe_unpad_impl': 'no_gather',
-         '_maybe_chunk_residual_impl': 'no_chunk'}),
+         '_maybe_chunk_residual_impl': 'no_chunk',
+         '_maybe_pad_and_reduce_impl': 'embedding_pad'}),
+    'vllm_ascend.ops.vocab_parallel_embedding': (
+        '27d9c4f38c11d051b22dadc903ed0009269a303199639287ba937d882442f094',
+        {'AscendVocabParallelEmbedding._forward_origin': 'embedding_origin'}),
+    'vllm.model_executor.layers.vocab_parallel_embedding': (
+        '9dff6cab7c17798991cc48e854f275a6b596cc637e5694f166c20cdc68d31879',
+        {'UnquantizedEmbeddingMethod.embedding': 'embedding_lookup'}),
+    'vllm.distributed.communication_op': (
+        '3c3f8ac60db38ece891d39dc1e2f6f1947ad438685893d2e5777d072320bd1b8',
+        {'tensor_model_parallel_all_reduce': 'embedding_tp_reduce'}),
+    'vllm.distributed.parallel_state': (
+        '1cb040ec56cca83fc82613413b8bda2aa697c71981ba895189713e902ff4e570',
+        {'GroupCoordinator.all_reduce': 'embedding_comm_return', 'get_tp_group': 'embedding_get_tp'}),
 }
 
 
@@ -155,6 +168,8 @@ class SourceBoundRows:
         self.owned_modes = []
         self.profile_released = True
         self.ending = False
+        self.input_ids = self.input_ids_metadata = None
+        self.embedding_attempts = 0
 
     @classmethod
     def from_runtime(cls, graph, model):
@@ -179,7 +194,7 @@ class SourceBoundRows:
                     value.constants[(id(impl), name)] = (impl, tensor, metadata(tensor))
         return value
 
-    def begin(self, scope):
+    def begin(self, scope, *, input_ids=None):
         require(not self.active and not self.owned_modes and sys.getprofile() is None
                 and self.graph.active and not self.graph.ending,
                 'EXCLUSIVE_QUANT_ROW_PROFILE_OWNER_REQUIRED')
@@ -187,14 +202,19 @@ class SourceBoundRows:
         self.thread = threading.get_ident()
         self.pending, self.stack, self.rows, self.errors, self.operator_stack = {}, [], [], [], []
         self.alias_parents = {}
+        input_ids_metadata = metadata(input_ids) if isinstance(input_ids, torch.Tensor) else None
+        self.embedding_attempts = 0
         self.profile_released, self.ending = True, False
         self.graph.watched_storages.extend(snapshot(item[2]) for item in self.constants.values())
+        if input_ids_metadata is not None:
+            self.graph.watched_storages.append(snapshot(input_ids_metadata))
         if self.metadata_producers is not None:
             self.graph.watched_storages.extend(self.metadata_producers.watched_storages())
         for name, row in self.sources.items():
             require(hashlib.sha256(Path(row['path']).read_bytes()).hexdigest() == row['sha256'],
                     'QUANT_ROW_SOURCE_CHANGED_BEFORE_FORWARD:' + name)
         self._verify_bindings()
+        self.input_ids, self.input_ids_metadata = input_ids, input_ids_metadata
         self.active = True
         try:
             sys.setprofile(self.callback)
@@ -222,6 +242,7 @@ class SourceBoundRows:
             require(self.profile_released, 'QUANT_ROW_PROFILE_NOT_RELEASED')
         if self.metadata_producers is not None:
             self.metadata_producers.release()
+        self.input_ids = self.input_ids_metadata = None
         self.active = False
         return self.report()
 
@@ -287,6 +308,11 @@ class SourceBoundRows:
         row = None
         try:
             binding = self.bindings[frame.f_code]
+            # These global helpers run elsewhere too. Only the actual checked
+            # embedding frame may attach them to a scheduler row producer.
+            if (binding['role'].startswith('embedding_') and binding['role'] != 'embedding_origin'
+                    and self._parent('embedding_origin') is None):
+                return
             require(self.active and not self.ending and threading.get_ident() == self.thread and frame.f_globals is vars(binding['module'])
                     and _resolve(binding['module'], binding['qualname']) is binding['function']
                     and binding['function'].__code__ is frame.f_code,
@@ -301,6 +327,7 @@ class SourceBoundRows:
                     snapshots={id(t): metadata(t) for t in tensor_values(tuple(frame.f_locals.values()))},
                     parent_operator=self.operator_stack[-1] if self.operator_stack else None,
                     mode=None, status='INFLIGHT', accepted=[], operator_sequences=[])
+                row['parent_source_sequence'] = self.stack[-1]['sequence'] if self.stack else None
                 self.rows.append(row)
                 self.pending[id(frame)] = row
                 self.stack.append(row)
@@ -308,6 +335,8 @@ class SourceBoundRows:
                     row['parent_operator']['actual_boundaries'].append(row)
                 if binding['role'] == 'mla_opaque':
                     row['mode'] = self._mode()
+                if binding['role'] == 'embedding_origin':
+                    self._embedding_start(row)
             else:
                 row = self.pending.get(id(frame))
                 require(row is not None and self.stack[-1] is row, 'QUANT_ROW_PROFILE_RETURN_ORDER_CHANGED')
@@ -335,10 +364,13 @@ class SourceBoundRows:
                 row.pop('snapshots', None)
                 row.pop('mode', None)
                 row.pop('parent_operator', None)
+                row.pop('embedding_state', None)
 
     def _returned(self, row, values, result):
         original = row['input']
-        if row['role'] in ('no_gather', 'no_chunk'):
+        if row['role'].startswith('embedding_'):
+            self._embedding_return(row, result)
+        elif row['role'] in ('no_gather', 'no_chunk'):
             name = 'x' if row['role'] == 'no_gather' else 'residual'
             source = original[name]
             proof = self.graph._lookup(source)
@@ -366,6 +398,154 @@ class SourceBoundRows:
         row['accepted'].append(node['node_id'])
         return id(output)
 
+    def _embedding_start(self, row):
+        self.embedding_attempts += 1
+        state = row['embedding_state'] = dict(errors=[], operators=[], returns=[], indices=None, output=None)
+        try:
+            owner, ids = row['input']['self'], row['input']['input_']
+            require(self.embedding_attempts == 1 and ids is self.input_ids
+                and self.input_ids_metadata is not None and metadata(ids) == self.input_ids_metadata
+                and ids.ndim == 1 and ids.dtype in (torch.int32, torch.int64)
+                and ids.shape[0] == len(self.scope['request_ids']) == 8
+                and self.graph.epochs.get(self.graph.storage_key(self.input_ids_metadata), 0) == 0,
+                'CURRENT_SCHEDULER_EMBEDDING_INPUT_OBJECT_REQUIRED')
+            group = owner.comm_group
+            require(owner.tp_size == group.world_size == 1 and owner.tp_rank == group.rank_in_group == 0
+                and owner.forward_type is None, 'ACTUAL_TP1_ORIGIN_EMBEDDING_ONLY')
+            weight = owner.weight
+            record = self.graph.parameters.get(id(weight))
+            require(record is not None and record['owner']() is owner and record['tensor']() is weight
+                and record['name'] == 'weight' and owner._parameters.get('weight') is weight
+                and metadata(weight) == record['metadata'] and weight.ndim == 2
+                and self.graph.epochs.get(self.graph.storage_key(record['metadata']), 0) == record['write_epoch'],
+                'ACTUAL_CURRENT_EMBEDDING_PARAMETER_REQUIRED')
+            state.update(owner=owner, group=group, weight=weight, weight_record=record,
+                indices=ids if ids.dtype == torch.int64 else None,
+                indices_metadata=metadata(ids) if ids.dtype == torch.int64 else None)
+        except BaseException as error:
+            state['errors'].append(str(error))
+
+    def _embedding_operator(self, state, output):
+        row = self._parent('embedding_origin')
+        capture = row.get('embedding_state') if row is not None else None
+        if capture is None or capture['errors']:
+            return
+        try:
+            func, args, kwargs = state['func'], state['args'], state['kwargs']
+            name = self.operator_aliases.get(func, str(func))
+            bound = _arguments(func, args, kwargs)
+            require(not func._schema.is_mutable, 'EMBEDDING_PRODUCER_MUTATING_OPERATOR')
+            if func is torch.ops.aten.to.dtype:
+                require(not capture['operators'] and bound['self'] is self.input_ids
+                    and set(bound) == {'self', 'dtype', 'non_blocking', 'copy', 'memory_format'}
+                    and bound['dtype'] == torch.int64 and bound['non_blocking'] is False
+                    and bound['copy'] is False and bound['memory_format'] is None
+                    and isinstance(output, torch.Tensor) and output.dtype == torch.int64
+                    and output.shape == self.input_ids.shape and output.device == self.input_ids.device
+                    and output.is_contiguous() and metadata(self.input_ids) == self.input_ids_metadata,
+                    'ACTUAL_DEFAULT_INT64_INDEX_CONVERSION_REQUIRED')
+                capture.update(indices=output, indices_metadata=metadata(output))
+                scalar_args = dict(dtype=str(bound['dtype']), non_blocking=bound['non_blocking'],
+                    copy=bound['copy'], memory_format=bound['memory_format'])
+            elif func is torch.ops.aten.embedding.default:
+                lookup = self._parent('embedding_lookup')
+                require(capture['output'] is None and lookup is not None
+                    and lookup['input']['self'] is capture['owner'].quant_method
+                    and lookup['input']['layer'] is capture['owner']
+                    and lookup['input']['input_'] is capture['indices']
+                    and set(bound) == {'weight', 'indices', 'padding_idx', 'scale_grad_by_freq', 'sparse'}
+                    and bound['weight'] is capture['weight'] and bound['indices'] is capture['indices']
+                    and bound['padding_idx'] == -1 and bound['scale_grad_by_freq'] is False and bound['sparse'] is False
+                    and metadata(capture['indices']) == capture['indices_metadata']
+                    and self.graph.epochs.get(self.graph.storage_key(capture['indices_metadata']), 0) == 0
+                    and isinstance(output, torch.Tensor) and tuple(output.shape) == (8, capture['weight'].shape[1])
+                    and output.dtype == capture['weight'].dtype and output.device == capture['weight'].device
+                    and _disjoint(output, capture['weight']) and _disjoint(output, capture['indices']),
+                    'ACTUAL_OWNED_EMBEDDING_INDEX_LOOKUP_REQUIRED')
+                capture.update(output=output, output_metadata=metadata(output))
+                scalar_args = {key: bound[key] for key in ('padding_idx', 'scale_grad_by_freq', 'sparse')}
+            elif name == 'vllm.maybe_pad_and_reduce.default':
+                require(set(bound) == {'x', 'is_ep_comm'} and bound['x'] is capture['output']
+                    and bound['is_ep_comm'] is False and output is capture['output']
+                    and metadata(output) == capture['output_metadata'], 'ACTUAL_SAME_OBJECT_EMBEDDING_REDUCTION_REQUIRED')
+                scalar_args = dict(is_ep_comm=bound['is_ep_comm'])
+            else:
+                raise RuntimeError('UNREVIEWED_EMBEDDING_PRODUCER_OPERATOR:' + str(func))
+            capture['operators'].append(dict(sequence=state['event']['sequence'], operator=str(func),
+                canonical_operator=name,
+                schema=str(func._schema), actual_scalar_args=scalar_args,
+                inputs=state['event']['inputs'], outputs=[metadata(t) for t in tensor_values(output)]))
+        except BaseException as error:
+            capture['errors'].append(str(error))
+
+    def _embedding_return(self, row, result):
+        origin = self._parent('embedding_origin')
+        capture = origin.get('embedding_state') if origin is not None else None
+        if capture is None:
+            return
+        try:
+            require(not capture['errors'], 'EMBEDDING_PRODUCER_CHAIN_REFUSED')
+            role, original = row['role'], row['input']
+            owner, group = capture['owner'], capture['group']
+            record = dict(sequence=row['sequence'], role=role, parent_source_sequence=row['parent_source_sequence'],
+                source_sha256=row['source_sha256'], function=row['function'])
+            if role == 'embedding_get_tp':
+                require(result is group and group.world_size == 1 and group.rank_in_group == 0,
+                    'ACTUAL_TP_GROUP_OBJECT_REQUIRED')
+                record.update(group_object_id=id(group), world_size=group.world_size, rank=group.rank_in_group)
+            elif role == 'embedding_comm_return':
+                require(original['self'] is group and group.world_size == 1 and group.rank_in_group == 0
+                    and original['input_'] is capture['output'] and result is original['input_']
+                    and not row['operator_sequences'] and metadata(result) == row['snapshots'][id(result)],
+                    'ACTUAL_TP1_ALL_REDUCE_EARLY_RETURN_REQUIRED')
+                record.update(group_object_id=id(group), world_size=group.world_size, rank=group.rank_in_group,
+                    input=metadata(result), returned_same_object=True, observed_child_operators=[])
+            elif role in ('embedding_tp_reduce', 'embedding_pad', 'embedding_lookup'):
+                name = 'x' if role == 'embedding_pad' else 'input_'
+                expected = capture['indices'] if role == 'embedding_lookup' else capture['output']
+                require(original[name] is expected and result is capture['output']
+                    and metadata(expected) == row['snapshots'][id(expected)]
+                    and metadata(result) == capture['output_metadata'], 'EMBEDDING_SOURCE_RETURN_OBJECT_CHANGED')
+                record.update(input=metadata(expected), output=metadata(result), returned_same_object=result is expected)
+            elif role == 'embedding_origin':
+                events = capture['operators']
+                names = [item['canonical_operator'] for item in events]
+                expected = ['aten.embedding.default', 'vllm.maybe_pad_and_reduce.default']
+                require(names in (expected, ['aten.to.dtype'] + expected)
+                    and result is capture['output'] and metadata(result) == capture['output_metadata']
+                    and metadata(self.input_ids) == self.input_ids_metadata
+                    and self.graph.epochs.get(self.graph.storage_key(self.input_ids_metadata), 0) == 0
+                    and owner.weight is capture['weight'] and metadata(owner.weight) == capture['weight_record']['metadata']
+                    and self.graph.epochs.get(self.graph.storage_key(capture['weight_record']['metadata']), 0)
+                        == capture['weight_record']['write_epoch']
+                    and owner.comm_group is group and owner.tp_size == group.world_size == 1
+                    and owner.tp_rank == group.rank_in_group == 0 and owner.forward_type is None,
+                    'COMPLETE_CURRENT_EMBEDDING_PRODUCER_REQUIRED')
+                returns = capture['returns']
+                def one(wanted):
+                    found = [item for item in returns if item['role'] == wanted]
+                    require(len(found) == 1, 'EXACT_EMBEDDING_SOURCE_CHILD_REQUIRED:' + wanted)
+                    return found[0]
+                lookup, pad, tp, get, comm = [one(wanted) for wanted in ('embedding_lookup', 'embedding_pad',
+                    'embedding_tp_reduce', 'embedding_get_tp', 'embedding_comm_return')]
+                require(lookup['parent_source_sequence'] == pad['parent_source_sequence'] == row['sequence']
+                    and tp['parent_source_sequence'] == pad['sequence']
+                    and get['parent_source_sequence'] == comm['parent_source_sequence'] == tp['sequence'],
+                    'EMBEDDING_SOURCE_CHILD_CALL_ORDER_CHANGED')
+                evidence = dict(verified=True, source='ACTUAL_TP1_SCHEDULER_IDS_EMBEDDING_PRODUCER',
+                    actual_rows=self.scope, forward_id=self.graph.forward_id, model_path=row['model_path'],
+                    model_module_object_id=id(owner), input_ids=metadata(self.input_ids), weight=metadata(owner.weight),
+                    source_boundary=row['sequence'], source_sha256=row['source_sha256'],
+                    actual_operators=events, source_returns=returns, simulation=self.simulation)
+                self.graph.seed(result, evidence, operator='ACTUAL_SCHEDULER_IDS_TO_TP1_EMBEDDING')
+                row['accepted'].append(self.graph._lookup(result)['node']['node_id'])
+                row['embedding_producer'] = snapshot(evidence)
+                return
+            capture['returns'].append(record)
+        except BaseException as error:
+            capture['errors'].append(str(error))
+            row['row_refusal'] = list(capture['errors'])
+
     def before_operator(self, func, args, kwargs, event):
         try:
             return self._before_operator(func, args, kwargs, event)
@@ -392,6 +572,8 @@ class SourceBoundRows:
         expected = {'vllm.mla_forward.default': 'mla_opaque',
             'vllm.maybe_all_gather_and_maybe_unpad.default': 'no_gather',
             'vllm.maybe_chunk_residual.default': 'no_chunk'}.get(name)
+        if name == 'vllm.maybe_pad_and_reduce.default' and self._parent('embedding_origin') is not None:
+            expected = 'embedding_pad'
         if expected is not None:
             self._verify_bindings()
             state['expected_role'] = expected
@@ -448,6 +630,7 @@ class SourceBoundRows:
                     and isinstance(state['args'][0], torch.Tensor) and _same_extent(output, state['args'][0])):
                 self.alias_parents[id(output)] = (weakref.ref(output), weakref.ref(state['args'][0]))
             accepted = set(state['certified'])
+            self._embedding_operator(state, output)
             accepted.update(self._operator_rule(state, output))
             return accepted
         except BaseException as error:
@@ -646,6 +829,7 @@ class SourceBoundRows:
             sources=self.sources, boundaries=rows, errors=self.errors, active=self.active,
             inflight=len(self.pending), native_qualified=False,
             owned_nested_dispatch_modes=len(self.owned_modes), owned_profile_callbacks=int(not self.profile_released),
+            owned_scheduler_input_refs=int(self.input_ids is not None),
             cleanup_pending=self.active and self.ending,
-            complete=not self.active and not self.owned_modes and not self.errors and not self.pending
+            complete=not self.active and not self.owned_modes and self.input_ids is None and not self.errors and not self.pending
                 and all(row['status'] == 'OBSERVED' for row in rows)))

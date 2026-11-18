@@ -153,14 +153,14 @@ class RequestRowProvenance(TorchDispatchMode):
             node_sha256=digest(node), write_epoch=node['write_epoch'])
         return snapshot(node)
 
-    def seed(self, tensor, proof):
+    def seed(self, tensor, proof, *, operator='ACTUAL_SCHEDULER_EMBEDDING_RMSNORM'):
         require(self.active and not self.ending and not self.errors and not self.overflow and proof.get('verified') is True,
                 'ACTUAL_VERIFIED_ROW_SEED_REQUIRED')
         rows = proof['actual_rows']
         ids = rows['request_ids']
         require(isinstance(ids, list) and len(ids) == len(set(ids)) == tensor.shape[0]
                 and all(isinstance(key, str) and key for key in ids), 'ACTUAL_ORDERED_REQUEST_ROWS_REQUIRED')
-        self._bind(tensor, rows=rows, parents=(), operator='ACTUAL_SCHEDULER_EMBEDDING_RMSNORM', evidence=proof)
+        self._bind(tensor, rows=rows, parents=(), operator=operator, evidence=proof)
 
     def register_broadcast_parameter(self, module, name, tensor, *, kind):
         require(self.active and not self.ending and kind == '_parameters' and isinstance(tensor, torch.nn.Parameter)

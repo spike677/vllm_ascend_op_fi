@@ -78,7 +78,7 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
 
     def start_source_rows(self):
         if self.source_rows is not None:
-            self.source_rows.begin(self.active['decode'])
+            self.source_rows.begin(self.active['decode'], input_ids=self.actual['input_ids'])
 
     def close(self, *, abort=False):
         if self.metadata_rows is not None and self.metadata_rows.active:
@@ -100,6 +100,7 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
                 for value in (self.source_rows, self.metadata_rows)),
             owned_early_dispatch_modes=int(self.metadata_rows is not None and self.metadata_rows.mode is not None),
             owned_nested_dispatch_modes=0 if self.source_rows is None else len(self.source_rows.owned_modes),
+            owned_scheduler_input_refs=0 if self.source_rows is None else self.source_rows.report()['owned_scheduler_input_refs'],
             observer_cleanup_pending=any(value is not None and value.active for value in
                 (self.source_rows, self.metadata_rows)) or self.row_observer.active,
             owned_live_metadata_records=0 if self.metadata_rows is None else self.metadata_rows.report()['live_producer_records'],
