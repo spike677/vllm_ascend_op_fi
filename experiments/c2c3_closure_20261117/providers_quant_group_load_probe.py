@@ -12,7 +12,17 @@ import traceback
 
 def require_zero_state(state):
     """A loaded ABI is not an installed group or a Native invocation."""
+    import ctypes as C
+    from fault_injection.quant_group_native import METADATA_ABI_TYPES, METADATA_CAPACITY, METADATA_DIMENSIONS
+    metadata = dict(version=1, size=C.sizeof(METADATA_ABI_TYPES['state']),
+        snapshot_size=C.sizeof(METADATA_ABI_TYPES['snapshot']), record_size=C.sizeof(METADATA_ABI_TYPES['record']),
+        dimensions=METADATA_DIMENSIONS, capacity=METADATA_CAPACITY, total=0, retained=0, overflow=0,
+        storage_bytes=METADATA_CAPACITY*C.sizeof(METADATA_ABI_TYPES['record']))
+    if state.get('metadata_diagnostics') != metadata or any(type(value) is not int for value in state['metadata_diagnostics'].values()):
+        raise RuntimeError('LOAD_QUERY_HAS_ACTIVITY_OR_RESOURCES:metadata_diagnostics')
     def check(value, path=()):
+        if path == ('metadata_diagnostics',):
+            return  # Exact fixed log ABI/storage and zero activity checked above.
         if isinstance(value, dict):
             for name, item in value.items():
                 check(item, path + (name,))

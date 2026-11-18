@@ -350,6 +350,11 @@ class WorkerFaultClient:
         with self._lock:
             return self._dispatch('advance', settings={'capture_decode': True})
 
+    def collect_replay(self):
+        """Collect completed provider observations without advancing inference."""
+        with self._lock:
+            return self._dispatch('advance', settings={'collect': True})
+
     def disable(self):
         return self._action('disable')
 

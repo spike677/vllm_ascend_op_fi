@@ -25,7 +25,8 @@ void operator delete[](void* p,size_t) noexcept {::operator delete[](p);}
 namespace {
 struct Tensor {
     void* data{};aclDataType type{};uint64_t rank{};
-    int64_t shape[4]{},strides[4]{};
+    int64_t shape[12]{},strides[12]{};
+    uint64_t storage_rank{UINT64_MAX},stride_rank{UINT64_MAX};int64_t storage[12]{};
 };
 struct Executor {Tensor x{},q{},s{};uint64_t workspace{16};};
 Tensor* tensor(const aclTensor* t){return reinterpret_cast<Tensor*>(const_cast<aclTensor*>(t));}
@@ -34,7 +35,7 @@ std::set<const aclTensor*> descriptors;
 uint64_t allocations_made{},releases{},real_prepares{},real_executes{},copies{},late_copies{},executor_handles{},getter_calls{};
 bool public_storage_live=true,uniform_outputs=false,fail_completion=false;
 bool throw_completion=false,throw_device=false;
-uint64_t throw_copy_at{},throw_getter_at{},fail_getter_at{};
+uint64_t throw_copy_at{},throw_getter_at{},fail_getter_at{},null_getter_at{};
 int fail_prepare_at=0,fail_execute_at=0;uint64_t fail_sync_stream=0;
 int selected_mode=Reference;
 Config configured{};Key selected_target{{1,2,3,4}},other_target{{5,6,7,8}},rows_proof{{11,12,13,14}};
@@ -42,14 +43,20 @@ aclError fake_device(int32_t* d){if(throw_device)throw std::bad_alloc();*d=0;ret
 aclnnStatus fake_type(const aclTensor* t,aclDataType* out){*out=tensor(t)->type;return 0;}
 aclnnStatus fake_format(const aclTensor*,aclFormat* out){*out=ACL_FORMAT_ND;return 0;}
 aclnnStatus fake_offset(const aclTensor*,int64_t* out){*out=0;return 0;}
-aclnnStatus fake_dimensions(const aclTensor* t,int64_t** out,uint64_t* n,bool strides) {
-    ++getter_calls;*n=tensor(t)->rank;*out=new int64_t[*n];
-    const auto* source=strides?tensor(t)->strides:tensor(t)->shape;std::copy(source,source+*n,*out);
+aclnnStatus fake_dimensions(const aclTensor* t,int64_t** out,uint64_t* n,unsigned kind) {
+    ++getter_calls;const auto* value=tensor(t);
+    *n=kind==1 && value->stride_rank!=UINT64_MAX?value->stride_rank:
+        kind==2 && value->storage_rank!=UINT64_MAX?value->storage_rank:value->rank;
+    if(getter_calls==null_getter_at){*out=nullptr;return 0;}
+    *out=new int64_t[*n];
+    const auto* source=kind==1?value->strides:kind==2 && value->storage_rank!=UINT64_MAX?value->storage:value->shape;
+    std::copy(source,source+*n,*out);
     if(getter_calls==throw_getter_at)throw std::bad_alloc();
     return getter_calls==fail_getter_at?37:0;
 }
-aclnnStatus fake_shape(const aclTensor* t,int64_t** out,uint64_t* n){return fake_dimensions(t,out,n,false);}
-aclnnStatus fake_strides(const aclTensor* t,int64_t** out,uint64_t* n){return fake_dimensions(t,out,n,true);}
+aclnnStatus fake_shape(const aclTensor* t,int64_t** out,uint64_t* n){return fake_dimensions(t,out,n,0);}
+aclnnStatus fake_strides(const aclTensor* t,int64_t** out,uint64_t* n){return fake_dimensions(t,out,n,1);}
+aclnnStatus fake_storage(const aclTensor* t,int64_t** out,uint64_t* n){return fake_dimensions(t,out,n,2);}
 aclnnStatus fake_address(const aclTensor* t,void** out){*out=tensor(t)->data;return 0;}
 aclTensor* fake_create(const int64_t* shape,uint64_t rank,aclDataType type,const int64_t* strides,int64_t offset,
     aclFormat format,const int64_t* storage,uint64_t stored,void* address) {
@@ -96,7 +103,7 @@ int observe(const Call* call) {
 int finish(const Completion* value){assert(value->call.token);if(throw_completion)throw std::bad_alloc();return fail_completion?1:0;}
 void install() {
     api.device=fake_device;api.type=fake_type;api.format=fake_format;api.offset=fake_offset;
-    api.shape=fake_shape;api.storage=fake_shape;api.strides=fake_strides;api.address=fake_address;
+    api.shape=fake_shape;api.storage=fake_storage;api.strides=fake_strides;api.address=fake_address;
     api.create=fake_create;api.destroy=fake_destroy;api.allocate=fake_allocate;api.release=fake_release;
     api.copy=fake_copy;api.sync=fake_sync;api.prepare=fake_prepare;api.execute=fake_execute;api.cache=fake_cache;api.ready=true;
     setenv("VLLM_SERVER_DEV_MODE","1",1);setenv("DCAT_DQ_GROUP_V1_ALLOWED","1",1);unsetenv("DCAT_DQ_V2_ENABLE");
@@ -254,6 +261,64 @@ void sdk_metadata_arrays_release_on_all_view_exits() {
     try{(void)view(input);}catch(const std::bad_alloc&){caught=true;}
     assert(caught && array_accounting::count()==alive);throw_getter_at=0;
 }
+void raw_metadata_keeps_rank_refusal_without_public_fill() {
+    install();selected_mode=0;Invocation call;
+    call.xx.storage_rank=1;call.xx.storage[0]=8;
+    call.qq.storage_rank=1;call.qq.storage[0]=8;
+    const auto arrays=array_accounting::count();
+    assert(!call.prepare() && !call.execute());
+    MetadataState state{};assert(dcat_dqg_metadata_state_v1(&state)==Ok);
+    assert(state.total==1 && state.retained==1 && !state.overflow && state.snapshot_size==sizeof(MetadataView)
+        && state.record_size==sizeof(MetadataRecord) && state.dimensions==8);
+    MetadataRecord row{},by_parent{};assert(dcat_dqg_metadata_v1(1,&row)==Ok);
+    assert(row.sequence==1 && row.public_entry==1 && row.parent_token==1 && row.capture_complete
+        && row.thread==tid() && row.device==0 && row.ready);
+    assert(dcat_dqg_metadata_parent_v1(row.parent_token,&by_parent)==Ok && by_parent.sequence==row.sequence);
+    const auto& x=row.input;
+    assert(x.stage==MetadataRank && x.called_mask==127 && !x.null_arrays && !x.truncated_arrays
+        && x.counts[0]==2 && x.counts[1]==2 && x.counts[2]==1 && x.retained[2]==1
+        && x.shape[0]==2 && x.shape[1]==4 && x.strides[0]==4 && x.strides[1]==1 && x.storage[0]==8
+        && x.dtype==ACL_BF16 && x.format==ACL_FORMAT_ND && x.address==reinterpret_cast<uint64_t>(call.x.data())
+        && !x.result.rows && !x.result.columns && !x.result.bytes && x.result.dimensions==2);
+    assert(row.quant.stage==MetadataRank && row.scale.stage==MetadataComplete && row.scale.result.bytes==8);
+    RawRecord raw{};assert(dcat_dqg_raw_v1(row.parent_token,&raw)==Ok && same_view(raw.parent.input,x.result,true,true));
+    assert(real_prepares==1 && real_executes==1 && !engine.state().admitted_model_calls && !allocations_made
+        && array_accounting::count()==arrays);
+    const auto getters=getter_calls;
+    assert(dcat_dqg_metadata_v1(1,&row)==Ok && getter_calls==getters); // No late descriptor reads.
+}
+void raw_metadata_rank_arrays_partial_failures_and_truncation() {
+    install();Invocation call;MetadataView captured{};const auto alive=array_accounting::count();
+    const auto* x=reinterpret_cast<const aclTensor*>(&call.xx);
+    assert(view(x,&captured).bytes==16 && captured.stage==MetadataComplete && captured.counts[0]==2);
+    assert(view(reinterpret_cast<const aclTensor*>(&call.ss),&captured).bytes==8 && captured.counts[0]==1);
+    call.xx.rank=3;assert(!view(x,&captured).bytes && captured.stage==MetadataRank && captured.retained[0]==3);
+    call.xx.rank=9;assert(!view(x,&captured).bytes && captured.stage==MetadataRank && captured.counts[0]==9
+        && captured.retained[0]==8 && captured.truncated_arrays==7);
+    call.xx.rank=2;call.xx.stride_rank=1;
+    assert(!view(x,&captured).bytes && captured.stage==MetadataRank && captured.counts[1]==1);call.xx.stride_rank=UINT64_MAX;
+    for(uint64_t failure:{1u,2u,3u}) {
+        getter_calls=0;fail_getter_at=failure;
+        assert(!view(x,&captured).bytes && captured.stage==MetadataOffset+failure
+            && captured.getter_status[2+failure]==37 && captured.counts[failure-1]==2
+            && array_accounting::count()==alive);
+    }
+    fail_getter_at=0;getter_calls=0;null_getter_at=2;
+    assert(!view(x,&captured).bytes && captured.stage==MetadataRank && captured.null_arrays==2
+        && captured.counts[1]==2 && captured.retained[1]==0 && array_accounting::count()==alive);null_getter_at=0;
+    getter_calls=0;throw_getter_at=3;bool caught=false;
+    try{(void)view(x,&captured);}catch(const std::bad_alloc&){caught=true;}
+    assert(caught && captured.stage==MetadataException && captured.last_getter==MetadataStorage
+        && captured.counts[2]==2 && array_accounting::count()==alive);throw_getter_at=0;
+}
+void raw_metadata_budget_retains_counts_without_native_mutation() {
+    MetadataState state{};
+    for(uint64_t index=0;index<MetadataCapacity+2;++index)(void)begin_metadata();
+    assert(dcat_dqg_metadata_state_v1(&state)==Ok && state.total==MetadataCapacity+2
+        && state.retained==MetadataCapacity && state.overflow==2 && journal.state().total==0);
+    MetadataRecord row{};assert(dcat_dqg_metadata_v1(MetadataCapacity,&row)==Ok);
+    assert(dcat_dqg_metadata_v1(MetadataCapacity+1,&row)==Observer && dcat_dqg_metadata_parent_v1(0,&row)==Observer);
+}
 void empty_owner_cancel_drains_and_removes_exact_callbacks() {
     install();selected_mode=0;Invocation call;call.success(71);
     assert(!engine.state().targets && !journal.state().pending && admission==observe);
@@ -307,8 +372,11 @@ int main() {
     run("exception at completion revokes stack",throw_during_completion);
     run("C control ABI catches exceptions",control_abi_catches_exceptions);
     run("SDK metadata ownership on all exits",sdk_metadata_arrays_release_on_all_view_exits);
+    run("actual GWS raw storage rank without geometry fill",raw_metadata_keeps_rank_refusal_without_public_fill);
+    run("raw metadata ranks errors nulls and bounded arrays",raw_metadata_rank_arrays_partial_failures_and_truncation);
+    run("raw metadata bounded retention",raw_metadata_budget_retains_counts_without_native_mutation);
     run("empty owner actual raw stream drain and exact callback removal",empty_owner_cancel_drains_and_removes_exact_callbacks);
     run("empty cancel retains live scope and pending executor",empty_cancel_refuses_live_scope_pending_executor_and_nonempty_group);
     run("empty cancel cannot release admitted target",empty_cancel_does_not_release_an_admitted_target);
-    std::cout<<"PASS 17 typed-shim CPU memory contracts; actual NPU calls=0; mocked Native functions; SDK status depends on build headers\n";
+    std::cout<<"PASS 20 typed-shim CPU memory contracts; actual NPU calls=0; mocked Native functions; SDK status depends on build headers\n";
 }

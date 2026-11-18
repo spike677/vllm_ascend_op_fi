@@ -20,7 +20,7 @@ SOURCES = tuple('fault_injection/native_adapters/' + name for name in (
     'test_batch_scale_group_core.cpp', 'test_batch_scale_group_runtime.cpp',
     'test_batch_scale_group_loader.cpp', 'test_batch_scale_group_loader_stub.cpp')) + (
     'tests/native_quant_group_mock_sdk/acl/acl.h', 'tests/native_quant_group_mock_sdk/aclnnop/aclnn_dynamic_quant_v2.h')
-EXPORTS = ('abi', 'state', 'raw', 'install', 'public_begin', 'public_end', 'pass', 'continue',
+EXPORTS = ('abi', 'state', 'raw', 'metadata_state', 'metadata', 'metadata_parent', 'install', 'public_begin', 'public_end', 'pass', 'continue',
            'seal', 'stop', 'drain', 'cancel_empty', 'recover', 'remove')
 LOADER_CASES = ('no_cache', 'with_cache', 'missing_prepare', 'missing_execute', 'self', 'foreign_owner', 'foreign_cache')
 
@@ -112,7 +112,16 @@ sizes=Sizes();sizes.version=1;sizes.size=C.sizeof(sizes)
 lib=C.CDLL('/build/runtime/vendor/op_api/lib/libcust_opapi.so',mode=C.RTLD_LOCAL)
 lib.dcat_dqg_abi_v1.argtypes=[C.POINTER(Sizes)];lib.dcat_dqg_abi_v1.restype=C.c_int
 assert lib.dcat_dqg_abi_v1(C.byref(sizes))==0
+class MetadataState(C.Structure):
+    _fields_=[('version',C.c_uint32),('size',C.c_uint32)]+[(name,C.c_uint64) for name in
+        'snapshot_size record_size dimensions capacity total retained overflow storage_bytes'.split()]
+metadata=MetadataState();metadata.version=1;metadata.size=C.sizeof(metadata)
+lib.dcat_dqg_metadata_state_v1.argtypes=[C.POINTER(MetadataState)];lib.dcat_dqg_metadata_state_v1.restype=C.c_int
+assert lib.dcat_dqg_metadata_state_v1(C.byref(metadata))==0
+assert metadata.dimensions==8 and metadata.capacity==8192 and metadata.total==metadata.retained==metadata.overflow==0
 record=dict(actual_npu_calls=0,library_loaded_only=True,abi_sizes={name:getattr(sizes,name) for name in names},
+ metadata_abi_sizes=dict(snapshot=metadata.snapshot_size,record=metadata.record_size,state=metadata.size),
+ metadata_diagnostic_capacity=metadata.capacity,metadata_diagnostic_storage_bytes=metadata.storage_bytes,
  real_opapi=str(real),real_opapi_sha256=sha(real),
  sdk_headers={str(path.relative_to(sdk)):sha(path) for path in (sdk/'include/acl/acl.h',sdk/'include/aclnnop/aclnn_dynamic_quant_v2.h')})
 Path('/build/sdk-identity.json').write_text(json.dumps(record,indent=2)+'\n')

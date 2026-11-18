@@ -33,6 +33,9 @@ def main():
         ('batch_scale_inventory.h', 'inventory_source_sha256'), ('runtime/vendor/op_api/lib/libcust_opapi.so', 'library_sha256'))))
     if args.group_abi and (build.get('actual_image_id') != args.image_id or build.get('legacy_c1_library_present') is not False):
         raise ValueError('Actual reviewed group image and no legacy library required')
+    if args.group_abi and (build.get('sdk_identity', {}).get('metadata_diagnostic_capacity') != 8192
+                          or set(build['sdk_identity'].get('metadata_abi_sizes', {})) != {'snapshot', 'record', 'state'}):
+        raise ValueError('Fresh SDK build with bounded actual GWS metadata diagnostics required')
     for filename, expected in files:
         path = (root / filename).resolve(strict=True)
         if not path.is_relative_to(root.resolve()) or hashlib.sha256(path.read_bytes()).hexdigest() != expected:
@@ -89,6 +92,9 @@ def main():
                 'or complete 135-target qualification. Root owns launch/card gate/owned-container cleanup; restart is never OFF.')
         case['review']['resource_budget'].update(native_qualified_targets=1, admitted_model_calls=4,
             fault_model_calls=1, fault_native_helpers=1, max_owned_device_bytes=64*1024*1024, max_host_reference_bytes=128*1024*1024)
+    if args.group_abi:
+        case['review']['resource_budget'].update(native_metadata_records=8192, native_metadata_dimensions=8,
+            native_metadata_static_bytes=build['sdk_identity']['metadata_diagnostic_storage_bytes'])
     with args.out.open('x') as stream:
         json.dump([case], stream, indent=2)
 

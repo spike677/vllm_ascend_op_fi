@@ -46,9 +46,13 @@ def setup(worker, prompts, build_sha, group_abi=False):
         model_class=type(worker.model_runner.model).__module__ + '.' + type(worker.model_runner.model).__name__)
 
 
-def advance(worker, request_ids=None, capture=False):
+def advance(worker, request_ids=None, capture=False, collect=False):
     session = actual(worker)._demoncat_shared_scale_inventory
-    if capture:
+    if collect:
+        if collect is not True or request_ids is not None or capture is not False:
+            raise RuntimeError('EXPLICIT_INVENTORY_COLLECTION_REQUIRED')
+        session.collect()
+    elif capture:
         session.begin_decode_capture()
     else:
         session.expect(request_ids)
@@ -57,7 +61,6 @@ def advance(worker, request_ids=None, capture=False):
 
 def query(worker):
     session = actual(worker)._demoncat_shared_scale_inventory
-    session.collect()
     return session.report()
 
 
@@ -119,6 +122,7 @@ def main():
             if len(outputs) != 8 or {value.request_id for value in outputs} != {value['external_request_id'] for value in mapping}:
                 raise RuntimeError('ACTUAL_COMPLETED_BATCH_MAPPING_CHANGED')
             row['output_tokens'] = [list(value.outputs[0].token_ids) for value in outputs]
+            rpc(llm, advance, None, False, True)
             row['inventory'] = rpc(llm, query)
             save()
         report['remove'] = rpc(llm, remove)

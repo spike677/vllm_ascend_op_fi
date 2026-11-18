@@ -41,6 +41,20 @@ class CpuRunner:
         return self.builder.build(0, NS(positions=positions))
 
 
+class CpuChangedBuilder:
+    def __init__(self, start=0, end=8, step=1, clone=False, mutate=False):
+        self.start, self.end, self.step, self.clone, self.mutate = start, end, step, clone, mutate
+
+    def build(self, common_prefix_len, common_attn_metadata):
+        positions = common_attn_metadata.positions[self.start:self.end:self.step].long()
+        if self.clone:
+            positions = positions.clone()
+        if self.mutate:
+            common_attn_metadata.positions.add_(0)
+        cos, sin = cpu_rotary(positions, use_cache=True)
+        return NS(input_positions=positions, cos=cos[:8], sin=sin[:8])
+
+
 class EarlyMetadataTests(unittest.TestCase):
     def setUp(self):
         global _cos_cache, _sin_cache, _cos_mla, _sin_mla
@@ -91,10 +105,93 @@ class EarlyMetadataTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'POSITION_OWNER_REQUIRED'):
             self.observer.consumer(output, self.graph)
 
+    def padded_source(self, *, versioned=False):
+        with torch.inference_mode(not versioned):
+            source = torch.zeros(272, dtype=torch.int64)
+            source[:8] = torch.arange(8)
+            if versioned:
+                for _ in range(5):
+                    source.add_(0)
+            self.positions = source[:8]
+        return source
+
+    def use_changed_builder(self, **settings):
+        self.runner.builder = CpuChangedBuilder(**settings)
+        pins = {__name__: (hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                          {'CpuChangedBuilder.build': 'builder', 'cpu_rotary': 'rotary'})}
+        self.observer = MlaMetadataRows(self.runner, *source_bindings(pins), simulation=True)
+
+    def test_actual_padded_common_prefix_slice_proves_unpadded_metadata_return(self):
+        source = self.padded_source()
+        output = self.produce(source)
+        proof = self.observer.consumer(output, self.graph)
+        chain = proof['position_lineage']
+        self.assertEqual(chain['source']['shape'], [272])
+        self.assertEqual(chain['slice_output']['shape'], [8])
+        self.assertEqual(chain['source']['storage_address'], chain['slice_output']['storage_address'])
+        self.assertEqual(chain['actual_slice_arguments'], [0, 0, 8, 1])
+        self.assertTrue(chain['actual_return_object_verified'])
+        self.assertFalse(chain['values_used_as_authority'])
+
+    def test_padded_position_version_drift_after_return_refuses_even_same_values(self):
+        source = self.padded_source(versioned=True)
+        output = self.produce(source)
+        chain = self.observer.consumer(output, self.graph)['position_lineage']
+        self.assertEqual(chain['source']['version'], 6)
+        self.assertEqual(chain['slice_dispatch_output']['version'], 0)
+        self.assertEqual(chain['slice_output']['version'], 6)
+        self.assertEqual(chain['slice_dispatch_output']['object_id'], chain['slice_output']['object_id'])
+        self.graph.end()
+        source.add_(0)  # No dispatch observer: the real shared version still changes.
+        self.graph.begin('version-drift')
+        with self.assertRaisesRegex(RuntimeError, 'COMPLETE_METADATA_INTERVAL'):
+            self.observer.consumer(output, self.graph)
+
+    def test_padded_inference_alias_write_between_producer_and_close_refuses(self):
+        source = self.padded_source()
+        self.observer.begin(self.scope['request_ids'])
+        output = self.runner.build(source)
+        source.add_(0)  # Inference tensors have no _version: all storage aliases share an epoch.
+        self.observer.close(scope=self.scope, actual_positions=self.positions)
+        self.graph.begin('decode')
+        with self.assertRaisesRegex(RuntimeError, 'POSITION_OWNER_REQUIRED'):
+            self.observer.consumer(output, self.graph)
+
+    def test_changed_prefix_start_end_or_step_cannot_borrow_rows(self):
+        for settings in ({'start': 1, 'end': 9}, {'end': 16, 'step': 2}, {'end': 7}):
+            with self.subTest(settings=settings):
+                self.use_changed_builder(**settings)
+                output = self.produce(self.padded_source())
+                with self.assertRaisesRegex(RuntimeError, 'POSITION_OWNER_REQUIRED'):
+                    self.observer.consumer(output, self.graph)
+                self.assertIn('PREFIX_SLICE_CHANGED', self.observer.rows[0]['reason'])
+                self.graph.end()
+
+    def test_equal_value_clone_after_slice_has_no_actual_return_object_chain(self):
+        self.use_changed_builder(clone=True)
+        output = self.produce(self.padded_source())
+        with self.assertRaisesRegex(RuntimeError, 'POSITION_OWNER_REQUIRED'):
+            self.observer.consumer(output, self.graph)
+        self.assertIn('NO_OBSERVED_PREFIX_SLICE', self.observer.rows[0]['reason'])
+
+    def test_position_write_inside_builder_invalidates_entry_epoch(self):
+        self.use_changed_builder(mutate=True)
+        output = self.produce(self.padded_source())
+        with self.assertRaisesRegex(RuntimeError, 'POSITION_OWNER_REQUIRED'):
+            self.observer.consumer(output, self.graph)
+        self.assertIn('POSITIONS_CHANGED_DURING_BUILDER', self.observer.rows[0]['reason'])
+
     def test_equal_value_cos_clone_is_not_the_producer_output(self):
         output = self.produce()
         output.cos = output.cos.clone()
         with self.assertRaisesRegex(RuntimeError, 'NO_LIVE_ACTUAL_ROTARY'):
+            self.observer.consumer(output, self.graph)
+
+    def test_replacing_returned_position_object_with_equal_extent_alias_refuses(self):
+        output = self.produce(self.padded_source())
+        self.assertIsNot(output.input_positions, self.positions)
+        output.input_positions = self.positions
+        with self.assertRaisesRegex(RuntimeError, 'RETURN_AND_POSITION_OWNER'):
             self.observer.consumer(output, self.graph)
 
     def test_reused_output_buffer_written_after_producer_invalidates_consumer(self):
@@ -238,7 +335,8 @@ try:
    case.observer.begin(case.scope['request_ids'])
    assert _get_current_dispatch_mode_stack() == []
    with torch.inference_mode():
-    output=case.runner.build(case.positions)
+    padded=case.padded_source()
+    output=case.runner.build(padded)
     case.observer.close(scope=case.scope,actual_positions=case.positions)
     case.graph.begin('decode-'+str(attempt))
     assert case.observer.consumer(output,case.graph)['verified']

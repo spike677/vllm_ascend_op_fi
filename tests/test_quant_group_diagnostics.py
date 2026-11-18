@@ -9,7 +9,8 @@ import unittest
 from unittest.mock import Mock, patch
 
 from fault_injection import quant_group_diagnostics as diagnostic
-from fault_injection.quant_group_native import ABI_TYPES, AbiSizes, NativeEvent, RawRecord, RuntimeState
+from fault_injection.quant_group_native import (ABI_TYPES, AbiSizes, NativeEvent, RawRecord, RuntimeState,
+    METADATA_ABI_TYPES, METADATA_CAPACITY, METADATA_DIMENSIONS, MetadataRecord, MetadataState)
 
 
 class LoadedReadFixture:
@@ -28,6 +29,16 @@ class LoadedReadFixture:
         self.state.census.model_parents = self.state.census.native_prepares = self.state.census.native_executes = 1
         self.state.census.pending = self.state.quarantined = self.state.public_gws_entries = self.state.public_execute_entries = 1
         self.rows = {}
+        self.metadata_state = MetadataState(snapshot_size=C.sizeof(METADATA_ABI_TYPES['snapshot']), record_size=C.sizeof(MetadataRecord),
+            dimensions=METADATA_DIMENSIONS, capacity=METADATA_CAPACITY, total=1, retained=1,
+            storage_bytes=METADATA_CAPACITY*C.sizeof(MetadataRecord))
+        self.metadata = MetadataRecord(sequence=1, parent_token=1, public_entry=1, capture_complete=1)
+        self.metadata.input.stage = 9
+        self.metadata.input.counts[:] = [2, 2, 1]
+        self.metadata.input.retained[:] = [2, 2, 1]
+        self.metadata.input.shape[:2] = [8, 2048]
+        self.metadata.input.strides[:2] = [2048, 1]
+        self.metadata.input.storage[0] = 16384
         parent = RawRecord()
         parent.kind, parent.parent.token = 1, 1
         self.rows[1] = parent
@@ -41,6 +52,8 @@ class LoadedReadFixture:
             'dcat_dqg_abi_v1': diagnostic.READ_EXPORTS['abi'][1](self.abi),
             'dcat_dqg_state_v1': diagnostic.READ_EXPORTS['state'][1](self.read_state),
             'dcat_dqg_raw_v1': diagnostic.READ_EXPORTS['raw'][1](self.raw),
+            'dcat_dqg_metadata_state_v1': diagnostic.READ_EXPORTS['metadata_state'][1](self.read_metadata_state),
+            'dcat_dqg_metadata_v1': diagnostic.READ_EXPORTS['metadata'][1](self.read_metadata),
         }
         self.addresses = {name: C.cast(value, C.c_void_p).value for name, value in self.functions.items()}
         self.owner = dict(mode='group', path=str(self.path.resolve()), base=4096, inode=10, device=20,
@@ -57,7 +70,8 @@ class LoadedReadFixture:
         manifest = dict(schema='demoncat.quant.group_deployment.v1', cann='8.5.1', actual_npu_calls=0,
             legacy_c1_library_present=False, library=diagnostic.LIBRARY,
             files={diagnostic.LIBRARY: self.owner['sha256'], **{Path(name).name: sha for name, sha in sources.items()}},
-            sources=sources, sdk_identity=dict(abi_sizes={name: C.sizeof(kind) for name, kind in ABI_TYPES.items()}))
+            sources=sources, sdk_identity=dict(abi_sizes={name: C.sizeof(kind) for name, kind in ABI_TYPES.items()},
+                metadata_abi_sizes={name: C.sizeof(kind) for name, kind in METADATA_ABI_TYPES.items()}))
         (root / 'build.json').write_text(json.dumps(manifest))
         self.build_sha = diagnostic._sha(root / 'build.json')
 
@@ -83,6 +97,18 @@ class LoadedReadFixture:
         if sequence not in self.rows:
             return -15
         C.memmove(output, C.byref(self.rows[sequence]), C.sizeof(RawRecord))
+        return 0
+
+    def read_metadata_state(self, output):
+        self.calls.append(('metadata_state',))
+        C.memmove(output, C.byref(self.metadata_state), C.sizeof(self.metadata_state))
+        return 0
+
+    def read_metadata(self, sequence, output):
+        self.calls.append(('metadata', sequence))
+        if sequence != 1:
+            return -15
+        C.memmove(output, C.byref(self.metadata), C.sizeof(self.metadata))
         return 0
 
     def dladdr(self, address, output):
@@ -123,8 +149,13 @@ class QuantGroupDiagnosticTests(unittest.TestCase):
         self.native.process.dlopen.assert_called_once_with(os.fsencode(self.native.path.resolve()), 6)
         self.native.process.dlclose.assert_called_once_with(99)
         self.assertEqual([call.args[1].decode() for call in self.native.process.dlsym.call_args_list],
-                         ['dcat_dqg_abi_v1', 'dcat_dqg_state_v1', 'dcat_dqg_raw_v1'])
+                         ['dcat_dqg_abi_v1', 'dcat_dqg_state_v1', 'dcat_dqg_raw_v1', 'dcat_dqg_metadata_state_v1', 'dcat_dqg_metadata_v1'])
         self.assertEqual([row[1] for row in self.native.calls if row[0] == 'raw'], list(range(1, 6)))
+        captured = report['metadata_records'][0]['record']['input']
+        self.assertEqual(captured['stage'], 9)
+        self.assertEqual(captured['counts'], [2, 2, 1])
+        self.assertEqual(captured['shape'][:2], [8, 2048])
+        self.assertEqual(captured['result']['rows'], 0)  # No guessed geometry repair.
 
     def test_shim_refusal_is_not_relabelled_a_real_execute(self):
         self.native.rows[5].native.original_calls = 0

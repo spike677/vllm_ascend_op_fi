@@ -144,6 +144,7 @@ def main():
             if len(outputs) != 8 or {value.request_id for value in outputs} != {value['external_request_id'] for value in mapping}:
                 raise RuntimeError('ACTUAL_COMPLETED_B8_MAPPING_CHANGED')
             row['output_tokens'] = [list(value.outputs[0].token_ids) for value in outputs]
+            checked(client.collect_replay())
             state = checked(client.query(), 'QUERY_OK')
             serving = state['serving']
             row['receipt'] = {name: serving[name] for name in ('status', 'next_phase', 'native_faults', 'functional_effect_proven',

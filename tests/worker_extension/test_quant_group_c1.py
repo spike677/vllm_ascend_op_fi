@@ -526,6 +526,7 @@ class QuantGroupC1Tests(unittest.TestCase):
         def dispatch(action, settings=None):
             if action == 'advance':
                 result = (self.client.advance_batch(settings['request_ids']) if 'request_ids' in settings
+                          else self.client.collect_replay() if 'collect' in settings
                           else self.client.begin_decode_capture())
             else:
                 result = getattr(self.client, action)()
@@ -536,10 +537,54 @@ class QuantGroupC1Tests(unittest.TestCase):
             self.dispatch(action)
         return self.client
 
+    def test_actual_host_query_does_not_collect_completed_observations(self):
+        client = self.host_client()
+        self.phase(collect=False)
+        before = self.session.report()
+        expected = self.session.expected
+        native_calls = list(self.binding.calls)
+        with patch.object(self.session, 'collect', side_effect=AssertionError('QUERY_MUST_NOT_COLLECT')):
+            for _ in range(2):
+                state = self.dispatch('query')
+                self.assertEqual(state['serving'], before)
+        self.assertEqual(self.session.rows, [])
+        self.assertIs(self.session.expected, expected)
+        self.assertEqual(self.binding.calls, native_calls)
+        self.assertTrue(client.snapshot()['ownership_retained'])
+        self.dispatch('advance', {'collect': True})
+        self.assertEqual(len(self.session.rows), 1)
+        self.assertIsNone(self.session.expected)
+
+    def test_actual_host_explicit_collect_reports_selection_failure_and_retains_owner(self):
+        client = self.host_client()
+        self.phase()
+        self.phase(collect=False)
+        with patch.object(self.session, '_select_target', side_effect=RuntimeError('ACTUAL_NATIVE_FORMALS_REFUSED')):
+            self.assertEqual(client.query()['status'], 'QUERY_OK')
+            self.assertEqual(len(self.session.rows), 1)
+            result = client.collect_replay()
+        self.assertEqual(result['response']['status'], 'PROVIDER_ACTION_FAILED')
+        self.assertIn('ACTUAL_NATIVE_FORMALS_REFUSED', str(self.session.collection_errors))
+        self.assertNotIn('NATIVE_STATE_UNAVAILABLE', str(result['response']))
+        self.assertTrue(result['ownership_retained'])
+        self.assertTrue(self.session.installed and self.session.handles)
+        self.assertFalse(self.binding.selected_modes)
+        self.assertEqual(len(self.session.collection_errors), 1)
+        self.dispatch('disable')
+        self.dispatch('unregister')
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+
+    def test_collection_advance_requires_exclusive_explicit_true(self):
+        for settings in ({'collect': False}, {'collect': 1}, {'collect': True, 'request_ids': ['x']},
+                         {'collect': True, 'capture_decode': True}):
+            with self.subTest(settings=settings), self.assertRaisesRegex(RuntimeError, 'EXPLICIT_REPLAY_COLLECTION'):
+                self.dispatch('advance', settings)
+
     def test_actual_runtime_and_public_host_complete_all_phases_without_recursive_identity_rpc(self):
         client = self.host_client()
         for _ in range(7):
             self.phase(collect=False)
+            self.dispatch('advance', {'collect': True})
             state = self.dispatch('query')
             if self.session.phase_name() in ('lossless', 'qualification_off', 'fault'):
                 self.assertTrue(state['native_registered'])
@@ -560,7 +605,7 @@ class QuantGroupC1Tests(unittest.TestCase):
         client = self.host_client()
         for _ in range(7):
             self.phase(collect=False)
-            self.dispatch('query')
+            self.dispatch('advance', {'collect': True})
         result = self.dispatch('finish')['serving']
         self.assertTrue(result['c1'])
         for packet in result['receipts']:
@@ -596,7 +641,7 @@ class QuantGroupC1Tests(unittest.TestCase):
         client = self.host_client()
         for _ in range(7):
             self.phase(collect=False)
-            self.dispatch('query')
+            self.dispatch('advance', {'collect': True})
         result = self.dispatch('finish')['serving']
         self.assertTrue(result['c1'])
         self.assertTrue(all(row['admission_row_proof']['observation_prefix']['parent_source_sequences']
@@ -611,7 +656,7 @@ class QuantGroupC1Tests(unittest.TestCase):
         client = self.host_client()
         for _ in range(5):
             self.phase(collect=False)
-            self.dispatch('query')
+            self.dispatch('advance', {'collect': True})
         if dispatcher:
             self.binding.dispatch_quant = True
             self.binding.unknown_dispatch = unknown
@@ -699,7 +744,7 @@ class QuantGroupC1Tests(unittest.TestCase):
         client = self.host_client()
         for _ in range(2):
             self.phase(collect=False)
-            self.dispatch('query')
+            self.dispatch('advance', {'collect': True})
         self.dispatch('advance', {'request_ids': ['busy-' + str(i) for i in range(8)]})
         self.runner.with_prefill = True
         hidden = self.model(input_ids=torch.tensor([1, 2]*8), positions=torch.arange(16))
@@ -736,7 +781,7 @@ class QuantGroupC1Tests(unittest.TestCase):
         client = self.host_client()
         x, positions = torch.tensor([3]*8), torch.tensor([2]*8)
         self.phase(collect=False)
-        self.dispatch('query')
+        self.dispatch('advance', {'collect': True})
         baseline = self.session.rows[-1]['decode']['hidden_sha256']
         first, last = self.session.inventory.patches
         foreign = lambda *args: None

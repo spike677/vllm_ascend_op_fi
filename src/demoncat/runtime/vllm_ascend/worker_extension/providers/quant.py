@@ -24,7 +24,7 @@ class QuantProvider(Scope):
             if type(self.session) is not expected:raise ProviderError('REVIEWED_QUANT_SESSION_REQUIRED')
             return self.query(owner=owner,generation=generation)
         self.verify(owner,generation)
-        reject_unknown(settings,('request_ids','capture_decode') if action=='advance' else ())
+        reject_unknown(settings,('request_ids','capture_decode','collect') if action=='advance' else ())
         if self.session is None:raise ProviderError('QUANT_PREPARE_REQUIRED')
         if action=='register':self._registered=True
         elif action=='check':
@@ -34,7 +34,10 @@ class QuantProvider(Scope):
             if not self.checked or self.attempted:raise ProviderError('SINGLE_REVIEWED_ATTEMPT_REQUIRED')
             self.attempted=True;self.session.install()
         elif action=='advance':
-            if 'capture_decode' in settings:
+            if 'collect' in settings:
+                if set(settings)!= {'collect'} or settings['collect'] is not True:raise ProviderError('EXPLICIT_REPLAY_COLLECTION_ADVANCE_REQUIRED')
+                self.session.collect()
+            elif 'capture_decode' in settings:
                 if settings!={'capture_decode':True}:raise ProviderError('EXPLICIT_DECODE_CAPTURE_ADVANCE_REQUIRED')
                 self.session.begin_decode_capture()
             else:self.session.expect(settings.get('request_ids'))
@@ -52,7 +55,6 @@ class QuantProvider(Scope):
         self.verify(owner,generation)
         if self.session is None:raise ProviderError('NATIVE_STATE_UNAVAILABLE')
         s=self.session
-        if s.expected is not None and getattr(s,'decode_result',None) is not None and not s.error:s.collect()
         raw=s.state()
         from ..serving_quant_group_c1 import QuantGroupC1ServingSession
         leases=s.provider_call_leases(raw) if type(s) is QuantGroupC1ServingSession else raw['owned']+raw['pending']

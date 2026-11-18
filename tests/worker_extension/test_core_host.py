@@ -77,9 +77,10 @@ class CoreHostTests(unittest.TestCase):
         ids = ['actual-' + str(i) for i in range(8)]
         self.assertEqual(client.advance_batch(ids)['status'], 'ACTION_COMPLETED')
         self.assertEqual(client.begin_decode_capture()['status'], 'ACTION_COMPLETED')
+        self.assertEqual(client.collect_replay()['status'], 'ACTION_COMPLETED')
         calls = [args[-1]['settings'] for method, args in self.executor.calls
                  if method == 'demoncat_fault_rpc' and args[0] == 'advance']
-        self.assertEqual(calls, [{'request_ids': ids}, {'capture_decode': True}])
+        self.assertEqual(calls, [{'request_ids': ids}, {'capture_decode': True}, {'collect': True}])
         self.assertEqual(client.detach()['status'], 'DETACHED')
 
     def test_invalid_batch_mapping_is_rejected_without_rpc(self):

@@ -15,7 +15,8 @@ import threading
 
 from .core import UnsupportedCall
 from . import quant_native_isolation as isolation
-from .quant_group_native import ABI_TYPES, AbiSizes, PRODUCTION_SOURCES, RawRecord, RuntimeState, snapshot
+from .quant_group_native import (ABI_TYPES, AbiSizes, PRODUCTION_SOURCES, RawRecord, RuntimeState,
+    MetadataRecord, MetadataState, read_metadata_state, snapshot)
 
 
 CAPACITY = 32768
@@ -24,6 +25,8 @@ READ_EXPORTS = {
     'abi': ('dcat_dqg_abi_v1', C.CFUNCTYPE(C.c_int, C.POINTER(AbiSizes))),
     'state': ('dcat_dqg_state_v1', C.CFUNCTYPE(C.c_int, C.POINTER(RuntimeState))),
     'raw': ('dcat_dqg_raw_v1', C.CFUNCTYPE(C.c_int, C.c_uint64, C.POINTER(RawRecord))),
+    'metadata_state': ('dcat_dqg_metadata_state_v1', C.CFUNCTYPE(C.c_int, C.POINTER(MetadataState))),
+    'metadata': ('dcat_dqg_metadata_v1', C.CFUNCTYPE(C.c_int, C.c_uint64, C.POINTER(MetadataRecord))),
 }
 
 
@@ -51,7 +54,7 @@ def _reviewed_library(bundle, approved_build_sha256):
                 or manifest['files'].get(name) != expected):
             raise UnsupportedCall('QUANT_DIAGNOSTIC_REVIEWED_READ_EXPORTS_CHANGED:' + name)
     return dict(path=str(path), sha256=manifest['files'][LIBRARY], build_sha256=approved_build_sha256,
-                sdk_abi_sizes=manifest['sdk_identity']['abi_sizes'])
+                sdk_abi_sizes=manifest['sdk_identity']['abi_sizes'], sdk_metadata_abi_sizes=manifest['sdk_identity']['metadata_abi_sizes'])
 
 
 @contextmanager
@@ -97,7 +100,7 @@ def capture_loaded_quant_state(bundle, *, approved_build_sha256):
     """
     report = dict(schema='demoncat.quant.loaded_dso_diagnostic.v1', status='READ_REFUSED',
         process_id=os.getpid(), native_thread_id=threading.get_native_id(), snapshot_complete=False,
-        diagnostic_device_calls=0, qualification_authority=False, records=[], read_errors=[])
+        diagnostic_device_calls=0, qualification_authority=False, records=[], metadata_records=[], read_errors=[])
     try:
         report['reviewed_library'] = identity = _reviewed_library(bundle, approved_build_sha256)
         report['mapped_before'] = list(isolation.mapped_native_modes())
@@ -120,6 +123,8 @@ def capture_loaded_quant_state(bundle, *, approved_build_sha256):
             report['state_before'] = before = _state(functions['state'])
             if before['census']['capacity'] != CAPACITY:
                 raise UnsupportedCall('QUANT_DIAGNOSTIC_REVIEWED_CENSUS_CAPACITY_CHANGED')
+            report['metadata_before'] = metadata_before = read_metadata_state(functions['metadata_state'], identity['sdk_metadata_abi_sizes'])
+            report['metadata_public_entries_reconciled'] = metadata_before['total'] == before['public_gws_entries']
             last = min(before['last_sequence'], CAPACITY)
             report['sequence_range'] = dict(first=1 if last else 0, last=last,
                 reported_last=before['last_sequence'], omitted=max(0, before['last_sequence'] - last))
@@ -132,12 +137,21 @@ def capture_loaded_quant_state(bundle, *, approved_build_sha256):
                         or value.kind not in (1, 2)
                         or (value.parent.token if value.kind == 1 else value.native.sequence) != sequence):
                     report['read_errors'].append(dict(sequence=sequence, status=code, reason='RAW_RECORD_UNAVAILABLE_OR_CHANGED'))
+            for sequence in range(1, metadata_before['retained'] + 1):
+                value = MetadataRecord()
+                code = int(functions['metadata'](sequence, C.byref(value)))
+                report['metadata_records'].append(dict(sequence=sequence, status=code, record=snapshot(value)))
+                if code or value.version != 1 or value.size != C.sizeof(MetadataRecord) or value.sequence != sequence:
+                    report['read_errors'].append(dict(sequence=sequence, status=code, reason='METADATA_RECORD_UNAVAILABLE_OR_CHANGED'))
+            report['metadata_after'] = read_metadata_state(functions['metadata_state'], identity['sdk_metadata_abi_sizes'])
             report['state_after'] = after = _state(functions['state'])
             report['mapped_after'] = list(isolation.mapped_native_modes())
             report['state_stable'] = before == after
             report['mapping_stable'] = report['mapped_before'] == report['mapped_after']
             report['snapshot_complete'] = (report['state_stable'] and report['mapping_stable']
                 and not report['read_errors'] and not report['sequence_range']['omitted']
+                and report['metadata_after'] == metadata_before and not metadata_before['overflow']
+                and report['metadata_public_entries_reconciled']
                 and not before['census']['overflow'] and before['census']['total'] == before['last_sequence'])
             report['status'] = 'READ_ONLY_SNAPSHOT_COMPLETE' if report['snapshot_complete'] else 'READ_ONLY_SNAPSHOT_INCOMPLETE'
     except BaseException as error:
@@ -167,5 +181,7 @@ def diagnostic_summary(report):
                         'thread', 'device', 'status', 'original_calls')})
     return {**{name: report.get(name) for name in ('status', 'process_id', 'native_thread_id', 'snapshot_complete',
         'state_before', 'state_after', 'state_stable', 'mapping_stable', 'sequence_range', 'read_errors')},
+        'metadata_before': report.get('metadata_before'), 'metadata_after': report.get('metadata_after'),
+        'metadata_records': len(report.get('metadata_records', [])),
         'counts': counts, 'failed_native_exits': failures[:16], 'failed_native_exit_count': len(failures),
         'failure_index_omitted': max(0, len(failures) - 16)}

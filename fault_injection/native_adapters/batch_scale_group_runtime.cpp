@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 #include <link.h>
 #include <mutex>
+#include <new>
 #include <sys/syscall.h>
 #include <unistd.h>
 
@@ -103,6 +104,20 @@ struct NativeOps final:Ops {
     bool destroy_descriptor(uint64_t handle)override{return api.destroy(reinterpret_cast<const aclTensor*>(handle))==ACL_SUCCESS;}
 } operations;
 Journal journal;Engine engine(operations,journal);
+// Fixed BSS storage avoids thousands of nonzero default constructors. Only
+// retained entries are placement-constructed; no target owner owns this log.
+alignas(MetadataRecord) unsigned char metadata_storage[MetadataCapacity*sizeof(MetadataRecord)]{};
+uint64_t metadata_total{},metadata_retained{},metadata_overflow{};
+MetadataRecord* metadata_record(uint64_t index) noexcept {
+    if(index>=metadata_retained)return nullptr;
+    return std::launder(reinterpret_cast<MetadataRecord*>(metadata_storage+index*sizeof(MetadataRecord)));
+}
+MetadataRecord* begin_metadata() noexcept {
+    ++metadata_total;
+    if(metadata_retained==MetadataCapacity){++metadata_overflow;return nullptr;}
+    auto* record=new(metadata_storage+metadata_retained*sizeof(MetadataRecord)) MetadataRecord{};
+    ++metadata_retained;record->sequence=metadata_total;return record;
+}
 std::recursive_mutex mutex;
 std::atomic<uint64_t> entrants{0},overlaps{0},abi_exceptions{0};
 struct Entry {
@@ -144,21 +159,56 @@ struct Dimensions {
     ~Dimensions() noexcept {delete[] data;}
     Dimensions()=default;Dimensions(const Dimensions&)=delete;Dimensions& operator=(const Dimensions&)=delete;
 };
-View view(const aclTensor* tensor) {
-    View v{};v.descriptor=reinterpret_cast<uint64_t>(tensor);if(!tensor || !api.ready)return v;
+void capture_dimensions(MetadataView* captured,unsigned kind,const int64_t* values,uint64_t count) noexcept {
+    if(!captured)return;
+    captured->counts[kind]=count;
+    if(!values){captured->null_arrays|=uint64_t(1)<<kind;return;}
+    const auto retained=std::min(count,MetadataDimensions);captured->retained[kind]=retained;
+    if(retained!=count)captured->truncated_arrays|=uint64_t(1)<<kind;
+    auto* out=kind==0?captured->shape:kind==1?captured->strides:captured->storage;
+    std::copy(values,values+retained,out);
+}
+View view(const aclTensor* tensor,MetadataView* captured=nullptr) {
+    View v{};v.descriptor=reinterpret_cast<uint64_t>(tensor);
+    if(captured){*captured=MetadataView{};captured->descriptor=v.descriptor;}
+    const auto finish=[&](uint32_t stage){if(captured){captured->stage=stage;captured->result=v;}return v;};
+    if(!tensor || !api.ready)return finish(MetadataUnavailable);
     aclDataType type{};aclFormat format{};Dimensions shape_owner,strides_owner,storage_owner;uint64_t count=0,scount=0,stored=0;
     void* address=nullptr;
-    if(api.type(tensor,&type) || api.format(tensor,&format) || api.offset(tensor,&v.offset)
-       || api.shape(tensor,&shape_owner.data,&count) || api.strides(tensor,&strides_owner.data,&scount)
-       || api.storage(tensor,&storage_owner.data,&stored) || api.address(tensor,&address))return v;
+    const auto getter=[&](unsigned index,const auto& invoke) {
+        if(captured){captured->last_getter=MetadataType+index;captured->called_mask|=uint64_t(1)<<index;}
+        const int status=invoke();if(captured)captured->getter_status[index]=status;return status;
+    };
+    try {
+        int status=getter(0,[&]{return api.type(tensor,&type);});if(captured)captured->dtype=type;
+        if(status)return finish(MetadataType);
+        status=getter(1,[&]{return api.format(tensor,&format);});if(captured)captured->format=format;
+        if(status)return finish(MetadataFormat);
+        status=getter(2,[&]{return api.offset(tensor,&v.offset);});if(captured)captured->offset=v.offset;
+        if(status)return finish(MetadataOffset);
+        status=getter(3,[&]{return api.shape(tensor,&shape_owner.data,&count);});capture_dimensions(captured,0,shape_owner.data,count);
+        if(status)return finish(MetadataShape);
+        status=getter(4,[&]{return api.strides(tensor,&strides_owner.data,&scount);});capture_dimensions(captured,1,strides_owner.data,scount);
+        if(status)return finish(MetadataStrides);
+        status=getter(5,[&]{return api.storage(tensor,&storage_owner.data,&stored);});capture_dimensions(captured,2,storage_owner.data,stored);
+        if(status)return finish(MetadataStorage);
+        status=getter(6,[&]{return api.address(tensor,&address);});if(captured)captured->address=reinterpret_cast<uint64_t>(address);
+        if(status)return finish(MetadataAddress);
+    } catch(...) {
+        // A getter may allocate before throwing. Dimensions owns every array
+        // even on this ABI-exception path; preserve only bounded copied data.
+        capture_dimensions(captured,0,shape_owner.data,count);capture_dimensions(captured,1,strides_owner.data,scount);
+        capture_dimensions(captured,2,storage_owner.data,stored);
+        finish(MetadataException);throw;
+    }
     const auto* shape=shape_owner.data;const auto* strides=strides_owner.data;const auto* storage=storage_owner.data;
     v.address=reinterpret_cast<uint64_t>(address);v.dtype=type;v.format=format;v.dimensions=static_cast<uint32_t>(count);
-    if(count<1 || count>2 || scount!=count || stored!=count || !shape || !strides || !storage)return v;
+    if(count<1 || count>2 || scount!=count || stored!=count || !shape || !strides || !storage)return finish(MetadataRank);
     v.rows=shape[0];v.columns=count==2?shape[1]:0;v.stride0=strides[0];v.stride1=count==2?strides[1]:0;
-    if(!std::equal(shape,shape+count,storage)){v.reserved=1;return v;}
+    if(!std::equal(shape,shape+count,storage)){v.reserved=1;return finish(MetadataStorageMismatch);}
     const uint64_t element=type==ACL_INT8?1:(type==ACL_FLOAT16 || type==ACL_BF16)?2:type==ACL_FLOAT?4:0;
-    if(v.rows<1 || v.rows>1048576 || (count==2 && (v.columns<1 || v.columns>1048576/v.rows)))return v;
-    v.bytes=uint64_t(v.rows)*(count==2?uint64_t(v.columns):1)*element;return v;
+    if(v.rows<1 || v.rows>1048576 || (count==2 && (v.columns<1 || v.columns>1048576/v.rows)))return finish(MetadataExtent);
+    v.bytes=uint64_t(v.rows)*(count==2?uint64_t(v.columns):1)*element;return finish(v.bytes?MetadataComplete:MetadataExtent);
 }
 LiveWitness live_witness() {
     LiveWitness w{};
@@ -268,6 +318,27 @@ extern "C" int dcat_dqg_raw_v1(uint64_t sequence,RawRecord* output) try {
     }
     return Observer;
 } catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_metadata_state_v1(MetadataState* output) try {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(!output || output->version!=1 || output->size!=sizeof(MetadataState))return Identity;
+    *output=MetadataState{};output->total=metadata_total;output->retained=metadata_retained;
+    output->overflow=metadata_overflow;return Ok;
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_metadata_v1(uint64_t sequence,MetadataRecord* output) try {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(!output || output->version!=1 || output->size!=sizeof(MetadataRecord))return Identity;
+    if(!sequence || sequence>metadata_retained)return Observer;
+    *output=*metadata_record(sequence-1);return Ok;
+} catch(...) {return abi_failure();}
+extern "C" int dcat_dqg_metadata_parent_v1(uint64_t parent,MetadataRecord* output) try {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(!output || output->version!=1 || output->size!=sizeof(MetadataRecord))return Identity;
+    if(!parent)return Observer;
+    for(uint64_t index=metadata_retained;index;--index) {
+        const auto* row=metadata_record(index-1);if(row->parent_token==parent){*output=*row;return Ok;}
+    }
+    return Observer;
+} catch(...) {return abi_failure();}
 extern "C" int dcat_dqg_install_v1(const Config* c,Admission observed,Completed finished) try {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!c || c->version!=1 || c->size!=sizeof(Config) || c->thread!=tid() || !observed || !finished || admission || completed
@@ -367,14 +438,20 @@ extern "C" bool CanUsePTACache(const char* name) try {
 extern "C" aclnnStatus aclnnDynamicQuantV2GetWorkspaceSize(const aclTensor* x,const aclTensor* a,const aclTensor* b,int64_t dtype,
     const aclTensor* q,const aclTensor* s,const aclTensor* o,uint64_t* workspace,aclOpExecutor** executor) try {
     Entry entry;std::lock_guard<std::recursive_mutex> lock(mutex);++runtime.public_gws_entries;
+    auto* captured=begin_metadata();
+    if(captured){captured->public_entry=runtime.public_gws_entries;captured->thread=tid();}
     const bool ready=resolve();
-    Call call{};call.thread=tid();call.device=device();call.input=view(x);call.quant=view(q);call.scale=view(s);
+    Call call{};call.thread=tid();call.device=device();
+    if(captured){captured->public_entry=runtime.public_gws_entries;captured->thread=call.thread;captured->device=call.device;captured->ready=ready;}
+    call.input=view(x,captured?&captured->input:nullptr);call.quant=view(q,captured?&captured->quant:nullptr);
+    call.scale=view(s,captured?&captured->scale:nullptr);
     if(!ready || a || b || o || dtype!=ACL_INT8)call.reserved=1;
     if(envelope.active) {
         ++envelope.gws_calls;
         if(envelope.gws_calls==1 && same_view(call.input,envelope.input.input,true,false))call.lifetime_token=envelope.token;
     }
     call=journal.parent(call); // Independent actual public entry, before admission.
+    if(captured){captured->parent_token=call.token;captured->capture_complete=1;}
     if(!ready || !workspace || !executor || !call.token || entry.overlap || runtime.quarantined || abi_exceptions.load() || legacy_present()
        || (admission && (tid()!=owner.thread || device()!=owner.device || !engine.state().installed || engine.state().stopped))
        || engine.state().pending_parent) {

@@ -114,6 +114,42 @@ class RawRecord(Versioned):
                 + [('parent', Call), ('native', NativeEvent), ('binding', ChildBinding)])
 
 
+METADATA_DIMENSIONS, METADATA_CAPACITY = 8, 8192
+
+
+class MetadataView(C.Structure):
+    _fields_ = (_fields('descriptor address') + [('offset', I64)] + _fields('dtype format', I32)
+                + _fields('stage last_getter', U32) + _fields('called_mask null_arrays truncated_arrays')
+                + [('getter_status', I32 * 7), ('reserved', U32), ('counts', U64 * 3), ('retained', U64 * 3)]
+                + [(name, I64 * METADATA_DIMENSIONS) for name in ('shape', 'strides', 'storage')] + [('result', View)])
+
+
+class MetadataRecord(Versioned):
+    _fields_ = (_fields('version size', U32) + _fields('sequence public_entry parent_token thread')
+                + _fields('device ready', I32) + [('capture_complete', U64)]
+                + [(name, MetadataView) for name in ('input', 'quant', 'scale')])
+
+
+class MetadataState(Versioned):
+    _fields_ = _fields('version size', U32) + _fields('snapshot_size record_size dimensions capacity total retained overflow storage_bytes')
+
+
+METADATA_ABI_TYPES = dict(snapshot=MetadataView, record=MetadataRecord, state=MetadataState)
+
+
+def read_metadata_state(function, expected_sizes):
+    """Copy only the native log header; never query a descriptor or device."""
+    value = MetadataState()
+    code = int(function(C.byref(value)))
+    sizes = dict(snapshot=value.snapshot_size, record=value.record_size, state=value.size)
+    if (code or value.version != 1 or sizes != {name: C.sizeof(kind) for name, kind in METADATA_ABI_TYPES.items()}
+            or sizes != expected_sizes or value.dimensions != METADATA_DIMENSIONS or value.capacity != METADATA_CAPACITY
+            or value.retained != min(value.total, value.capacity) or value.overflow != value.total - value.retained
+            or value.storage_bytes != value.capacity * value.record_size):
+        raise UnsupportedCall('QUANT_GROUP_METADATA_DIAGNOSTIC_LAYOUT_OR_COUNTS_CHANGED')
+    return snapshot(value)
+
+
 ABI_TYPES = dict(view=View, call=Call, config=Config, lease=Lease, event=NativeEvent, binding=ChildBinding,
                  journal=JournalState, plan=ChildPlan, child=ChildReceipt, receipt=Receipt, state=State,
                  public_input=PublicInput, completion=Completion, runtime=RuntimeState, raw=RawRecord)
@@ -204,7 +240,7 @@ class QuantGroupNative:
         library = C.CDLL(str(path), mode=C.RTLD_LOCAL)
         identity = dict(path=str(path), library_sha256=_sha(path), build_sha256=approved_build_sha256,
                         actual_image_id=manifest['actual_image_id'], source_commit=manifest['source_commit'],
-                        sdk_abi_sizes=sdk['abi_sizes'], actual_npu_acceptance=False)
+                        sdk_abi_sizes=sdk['abi_sizes'], sdk_metadata_abi_sizes=sdk['metadata_abi_sizes'], actual_npu_acceptance=False)
         result = cls(library, identity, _token=_VERIFIED_LOAD)
         result._verify_mapped()
         return result
@@ -212,6 +248,7 @@ class QuantGroupNative:
     def _bind(self):
         pointer = C.POINTER
         arguments = dict(abi=[pointer(AbiSizes)], state=[pointer(RuntimeState)], raw=[U64, pointer(RawRecord)],
+            metadata_state=[pointer(MetadataState)], metadata=[U64, pointer(MetadataRecord)], metadata_parent=[U64, pointer(MetadataRecord)],
             install=[pointer(Config), Admission, Completed], public_begin=[pointer(Config), pointer(PublicInput), pointer(U64)],
             public_end=[pointer(Config), U64, pointer(View), pointer(View), C.c_int, pointer(Completion)],
             **{'pass': [pointer(Config), pointer(Call)], 'continue': [pointer(Lease)]},
@@ -226,6 +263,7 @@ class QuantGroupNative:
         actual = {name: getattr(sizes, name) for name in ABI_TYPES}
         if actual != {name: C.sizeof(cls) for name, cls in ABI_TYPES.items()} or actual != self.identity['sdk_abi_sizes']:
             raise UnsupportedCall('QUANT_GROUP_ACTUAL_DSO_SDK_CTYPES_LAYOUT_DIFFERS')
+        read_metadata_state(self.lib.dcat_dqg_metadata_state_v1, self.identity['sdk_metadata_abi_sizes'])
 
     def _verify_mapped(self):
         rows = isolation.require_mode('group')
@@ -253,6 +291,8 @@ class QuantGroupNative:
         with isolation.managed('group', session_runtime=self):
             self._verify_mapped()
             value = snapshot(self._state())
+            value['metadata_diagnostics'] = read_metadata_state(self.lib.dcat_dqg_metadata_state_v1,
+                                                                self.identity['sdk_metadata_abi_sizes'])
             value['binding_diagnostics'] = dict(callback_error_count=self.callback_error_count,
                 callback_error_overflow=self.callback_error_overflow, errors=self.callback_errors)
             return value
@@ -269,7 +309,18 @@ class QuantGroupNative:
             for sequence in range(first, last + 1):
                 row = RawRecord()
                 self._checked('raw', sequence, C.byref(row))
-                rows.append(snapshot(row))
+                value = snapshot(row)
+                if row.kind == 1:
+                    captured = MetadataRecord()
+                    self._checked('metadata_parent', sequence, C.byref(captured))
+                    raw = snapshot(captured)
+                    if (captured.version != 1 or captured.size != C.sizeof(MetadataRecord)
+                            or captured.parent_token != sequence or captured.capture_complete != 1
+                            or captured.thread != row.parent.thread or captured.device != row.parent.device
+                            or any(raw[name]['result'] != value['parent'][name] for name in ('input', 'quant', 'scale'))):
+                        raise UnsupportedCall('QUANT_GROUP_METADATA_DIAGNOSTIC_PARENT_CHANGED')
+                    value['metadata_diagnostic'] = raw
+                rows.append(value)
             return rows
 
     def install(self, config, observed, finished):

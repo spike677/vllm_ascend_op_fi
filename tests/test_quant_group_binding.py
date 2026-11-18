@@ -13,6 +13,7 @@ from fault_injection import quant_group_native as group
 
 # Read from actual CANN8.5.1 SDK build a3, manifest SHA
 # 9c243c468fe42c12cc2af091dfb8642f4c9249f6b842ee2810e3306916654f0e.
+METADATA_MOCK_SIZES = {name: C.sizeof(kind) for name, kind in group.METADATA_ABI_TYPES.items()}
 SDK_A3_SIZES = dict(view=80, call=280, config=72, lease=392, event=360, binding=48, journal=104,
     plan=264, child=408, receipt=1032, state=160, public_input=104, completion=1368, runtime=416, raw=704)
 
@@ -122,10 +123,10 @@ class FakeLibrary:
         self.state = group.RuntimeState()
         self.remove_status = self.end_status = self.cancel_status = 0
         self.recover_calls = self.end_calls = 0
-        operations = dict(abi=self.abi, state=self.query, install=self.install,
+        operations = dict(abi=self.abi, state=self.query, metadata_state=self.metadata_state, install=self.install,
                           public_begin=self.begin, public_end=self.end, remove=self.remove, recover=self.recover,
                           cancel_empty=lambda *args: self.cancel_status)
-        for name in ('abi', 'state', 'raw', 'install', 'public_begin', 'public_end', 'pass', 'continue', 'seal', 'stop', 'drain', 'cancel_empty', 'recover', 'remove'):
+        for name in ('abi', 'state', 'raw', 'metadata_state', 'metadata', 'metadata_parent', 'install', 'public_begin', 'public_end', 'pass', 'continue', 'seal', 'stop', 'drain', 'cancel_empty', 'recover', 'remove'):
             setattr(self, 'dcat_dqg_' + name + '_v1', Function(operations.get(name, lambda *args: 0)))
     def abi(self, output):
         output = C.cast(output, C.POINTER(group.AbiSizes)).contents
@@ -134,6 +135,12 @@ class FakeLibrary:
         return 0
     def query(self, output):
         C.memmove(output, C.byref(self.state), C.sizeof(self.state))
+        return 0
+    def metadata_state(self, output):
+        value = C.cast(output, C.POINTER(group.MetadataState)).contents
+        value.snapshot_size, value.record_size = METADATA_MOCK_SIZES['snapshot'], METADATA_MOCK_SIZES['record']
+        value.dimensions, value.capacity = group.METADATA_DIMENSIONS, group.METADATA_CAPACITY
+        value.storage_bytes = value.capacity * value.record_size
         return 0
     def install(self, config, observed, finished):
         self.state.core.installed = 1
@@ -158,7 +165,7 @@ class QuantGroupBindingTests(unittest.TestCase):
         self.scanner = patch.object(isolation, 'mapped_native_modes', return_value=())
         self.scanner.start()
         self.lib = FakeLibrary()
-        self.runtime = group.QuantGroupNative(self.lib, dict(sdk_abi_sizes=SDK_A3_SIZES), _token=group._VERIFIED_LOAD)
+        self.runtime = group.QuantGroupNative(self.lib, dict(sdk_abi_sizes=SDK_A3_SIZES, sdk_metadata_abi_sizes=METADATA_MOCK_SIZES), _token=group._VERIFIED_LOAD)
         self.runtime._verify_mapped = Mock()
         self.config = group.Config(owner_hi=1, owner_lo=2, generation=1, thread=threading.get_native_id(), device=0,
                                    max_targets=8, max_calls=64, max_device_bytes=1024, max_host_bytes=4096)
@@ -174,9 +181,52 @@ class QuantGroupBindingTests(unittest.TestCase):
         wrong = dict(SDK_A3_SIZES, runtime=408)
         with self.assertRaisesRegex(UnsupportedCall, 'LAYOUT_DIFFERS'):
             group.QuantGroupNative(FakeLibrary(), dict(sdk_abi_sizes=wrong), _token=group._VERIFIED_LOAD)
+    def test_additive_metadata_layout_and_counts_must_match_actual_sdk(self):
+        for changed in ({'record': METADATA_MOCK_SIZES['record'] + 8}, {'state': 64}):
+            with self.subTest(changed=changed), self.assertRaisesRegex(UnsupportedCall, 'METADATA_DIAGNOSTIC_LAYOUT'):
+                group.QuantGroupNative(FakeLibrary(), dict(sdk_abi_sizes=SDK_A3_SIZES,
+                    sdk_metadata_abi_sizes={**METADATA_MOCK_SIZES, **changed}), _token=group._VERIFIED_LOAD)
+        def wrong_count(output):
+            self.lib.metadata_state(output)
+            value = C.cast(output, C.POINTER(group.MetadataState)).contents
+            value.total, value.retained, value.overflow = 2, 1, 0
+            return 0
+        self.lib.dcat_dqg_metadata_state_v1 = Function(wrong_count)
+        with self.assertRaisesRegex(UnsupportedCall, 'METADATA_DIAGNOSTIC_LAYOUT'):
+            self.runtime.query()
+
+    def test_raw_parent_includes_detached_current_gws_metadata_without_geometry_fill(self):
+        raw = group.RawRecord(kind=1)
+        raw.parent.token, raw.parent.thread, raw.parent.device = 3, self.config.thread, 0
+        captured = group.MetadataRecord(sequence=1, public_entry=1, parent_token=3,
+            thread=self.config.thread, device=0, ready=1, capture_complete=1)
+        captured.input.stage = 9
+        captured.input.counts[:] = [2, 2, 1]
+        captured.input.shape[:2] = [8, 2048]
+        captured.input.strides[:2] = [2048, 1]
+        captured.input.storage[0] = 16384
+        def read_raw(sequence, output):
+            C.memmove(output, C.byref(raw), C.sizeof(raw))
+            return 0
+        def read_metadata(sequence, output):
+            C.memmove(output, C.byref(captured), C.sizeof(captured))
+            return 0
+        self.lib.dcat_dqg_raw_v1 = Function(read_raw)
+        self.lib.dcat_dqg_metadata_parent_v1 = Function(read_metadata)
+        result = self.runtime.raw(3)
+        self.assertEqual(result['metadata_diagnostic']['input']['counts'], [2, 2, 1])
+        self.assertEqual(result['parent']['input']['rows'], 0)
+        result['metadata_diagnostic']['input']['shape'][0] = 900
+        self.assertEqual(self.runtime.raw(3)['metadata_diagnostic']['input']['shape'][0], 8)
+        for change in ('parent_token', 'thread', 'capture_complete'):
+            original = getattr(captured, change)
+            setattr(captured, change, original + 1)
+            with self.subTest(change=change), self.assertRaisesRegex(UnsupportedCall, 'DIAGNOSTIC_PARENT_CHANGED'):
+                self.runtime.raw(3)
+            setattr(captured, change, original)
     def test_callback_exception_returns_error_and_keeps_callable_alive(self):
         self.lib.state.core.installed = 0
-        other = group.QuantGroupNative(FakeLibrary(), dict(sdk_abi_sizes=SDK_A3_SIZES), _token=group._VERIFIED_LOAD)
+        other = group.QuantGroupNative(FakeLibrary(), dict(sdk_abi_sizes=SDK_A3_SIZES, sdk_metadata_abi_sizes=METADATA_MOCK_SIZES), _token=group._VERIFIED_LOAD)
         other._verify_mapped = Mock()
         def bad(_):
             raise RuntimeError('fixture callback failure')
@@ -194,7 +244,7 @@ class QuantGroupBindingTests(unittest.TestCase):
         self.assertEqual(other.callback_errors[0]['phase'], 'admission')
         self.assertIs(group._LIVE_OWNERS[other._registry_key], other)
     def test_second_owner_cannot_replace_existing_callback_retainer(self):
-        other = group.QuantGroupNative(self.lib, dict(sdk_abi_sizes=SDK_A3_SIZES), _token=group._VERIFIED_LOAD)
+        other = group.QuantGroupNative(self.lib, dict(sdk_abi_sizes=SDK_A3_SIZES, sdk_metadata_abi_sizes=METADATA_MOCK_SIZES), _token=group._VERIFIED_LOAD)
         other._verify_mapped = Mock()
         with self.assertRaisesRegex(UnsupportedCall, 'OWNER_ALREADY_PRESENT'):
             other.install(self.config, lambda call: 0, lambda done: 0)
@@ -203,7 +253,7 @@ class QuantGroupBindingTests(unittest.TestCase):
         class BrokenRepr(Exception):
             def __repr__(self):
                 raise RuntimeError('repr failed')
-        other = group.QuantGroupNative(FakeLibrary(), dict(sdk_abi_sizes=SDK_A3_SIZES), _token=group._VERIFIED_LOAD)
+        other = group.QuantGroupNative(FakeLibrary(), dict(sdk_abi_sizes=SDK_A3_SIZES, sdk_metadata_abi_sizes=METADATA_MOCK_SIZES), _token=group._VERIFIED_LOAD)
         other._verify_mapped = Mock()
         def bad(_):
             raise BrokenRepr()
@@ -212,7 +262,7 @@ class QuantGroupBindingTests(unittest.TestCase):
         self.assertEqual(other.callback_errors[0]['error'], '<exception representation failed>')
         self.assertIsNone(other._callback_phase)
     def test_callback_status_cannot_wrap_into_native_success(self):
-        other = group.QuantGroupNative(FakeLibrary(), dict(sdk_abi_sizes=SDK_A3_SIZES), _token=group._VERIFIED_LOAD)
+        other = group.QuantGroupNative(FakeLibrary(), dict(sdk_abi_sizes=SDK_A3_SIZES, sdk_metadata_abi_sizes=METADATA_MOCK_SIZES), _token=group._VERIFIED_LOAD)
         other._verify_mapped = Mock()
         other.install(self.config, lambda call: 2 ** 32, lambda done: None)
         self.assertEqual(other._admission(C.pointer(group.Call())), -15)
