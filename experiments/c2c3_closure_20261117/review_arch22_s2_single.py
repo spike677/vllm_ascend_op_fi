@@ -137,36 +137,127 @@ def raw_tensor(run,row,shape,dtype,helper,expected_path):
     return value
 
 
-def phase_values(run,request,context,helper,normal_signature,normal_capture):
-    phase=request['phase'];row=request['worker'];rid=request['mapping']['internal_request_id']
-    need(request['mapping']['source']=='ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR'
+def actual_integer_input(forward,metadata,name,values,dtype,device):
+    """Reconcile CPU row values with the actual root tensor's complete hash."""
+    need(type(values) is list and all(type(value) is int for value in values),
+         'S2_ACTUAL_INPUT_VALUES_NOT_INTEGER_ROWS')
+    packed=struct.pack('<'+('i' if dtype=='torch.int32' else 'q')*len(values),*values)
+    actual=forward['input']
+    need(type(actual) is list and len(actual)==2 and actual[0]==[]
+        and set(actual[1])=={'input_ids','positions','inputs_embeds','intermediate_tensors'}
+        and actual[1]['inputs_embeds'] is actual[1]['intermediate_tensors'] is None,
+        'S2_ACTUAL_ROOT_INPUT_BINDING_DIFFERS')
+    need(metadata['dtype']==dtype and metadata['device']==device
+        and metadata['shape']==[len(values)] and metadata['stride']==[1] and metadata['storage_offset']==0
+        and all(type(metadata[key]) is int and metadata[key]>0 for key in ('object_id','storage_identity'))
+        and actual[1][name]==dict(shape=[len(values)],dtype=dtype,finite=True,sha256=hashlib.sha256(packed).hexdigest()),
+        'S2_CPU_ROWS_TO_ACTUAL_ROOT_TENSOR_HASH_DIFFERS:'+name)
+
+
+def request_lineage(request,prompt,device):
+    """Read the two actual scheduler schemas, without inventing common keys."""
+    rid=request['mapping']['internal_request_id'];phase=request['phase'];row=request['worker']
+    need(request['completed'] is True and type(rid) is str and rid
+        and type(request['mapping']['request_state_object_id']) is int and request['mapping']['request_state_object_id']>0
+        and request['mapping']['source']=='ACTUAL_PUBLIC_ENQUEUE_AND_OUTPUT_PROCESSOR'
         and request['response']['request_id']==request['mapping']['external_request_id']
-        and row['request_id']==rid and row['phase']==phase,'S2_ACTUAL_REQUEST_MAPPING_DIFFERS')
+        and request['response']['prompt_token_ids']==prompt and row['request_id']==rid and row['phase']==phase,
+        'S2_ACTUAL_REQUEST_MAPPING_DIFFERS')
     forwards=row['forwards'];need(len(forwards)==2 and [x['decode'] for x in forwards]==[False,True],
         'S2_PREFILL_FIRST_DECODE_REQUIRED')
-    for forward in forwards:
-        calls=forward['calls'];need(len(calls)==28 and [c['module_path'] for c in calls]==list(LAYERS)
-            and forward['root_returned'] is True and forward['scheduler']['request_ids']==[rid],
-            'S2_COMPLETE_56_ACTUAL_CALLS_REQUIRED')
-        for call in calls:need(call['original_calls']==1 and call['original_returned'] is call['inputs_unchanged'] is True
-            and call['actual_operator']=='torch_npu.npu_fused_infer_attention_score','S2_ORIGINAL_API_NOT_EXACTLY_ONCE')
-    decode=forwards[1]['calls'];hits=[c for f in forwards for c in f['calls'] if c['native'] is not None]
-    need(len(hits)==1 and hits[0] is decode[0] and all(c['input_contract_matches'] is True for c in decode),
-         'S2_ONE_SCOPED_TARGET_WITH_27_OTHER_KERNEL_MATCHES_REQUIRED')
-    for call in decode:
+    prefill,decode=forwards;ps,ds=prefill['scheduler'],decode['scheduler']
+    need('request_ids' not in ps and 'internal_request_id' not in ds,'S2_SCHEDULER_SCHEMA_DOMAINS_CHANGED')
+    need(type(prompt) is list and len(prompt)==1024 and all(type(n) is int and n>=0 for n in prompt)
+        and ps['internal_request_id']==rid and ps['external_request_id'] is None
+        and ps['num_requests']==1 and ps['num_prompt_tokens']==ps['num_scheduled_tokens']==1024
+        and ps['num_computed_tokens']==0 and ps['token_ids']==prompt and ps['positions']==list(range(1024))
+        and ps['token_ids_sha256']==hashlib.sha256(json.dumps(prompt,separators=(',',':')).encode()).hexdigest()
+        and ps['token_count_evidence']['request_num_tokens']==ps['token_count_evidence']['batch_num_tokens_no_spec']==1024
+        and ps['token_count_evidence']['legacy_field_role']=='POST_SAMPLING_COUNTER_NOT_PREFILL_AUTHORITY',
+        'S2_FRESH_PREFILL_REQUEST_TOKEN_OR_POSITION_DIFFERS')
+    # batch_num_tokens_legacy is explicitly non-authoritative in the captured
+    # producer. It may contain a prior request's post-sampling count.
+    need(ps['attention_metadata_keys']==list(LAYERS) and set(ps['attention_metadata_evidence'])==set(LAYERS)
+        and all(value==dict(adapter='DENSE_EXPLICIT_LENGTHS_AND_CAUSAL',actual_seq_lengths_q=[1024],
+                seq_lens_list=[1024],causal=True) for value in ps['attention_metadata_evidence'].values()),
+        'S2_PREFILL_ALL_ACTUAL_METADATA_ROWS_DIFFERS')
+    pages=ps['block_ids']
+    need(ps['block_size']==16 and len(pages)==len(set(pages))==64
+        and all(type(page) is int and 0<=page<128 for page in pages)
+        and ps['slot_mapping']==[pages[position//16]*16+position%16 for position in ps['positions']],
+        'S2_PREFILL_ACTUAL_PAGE_SLOT_MAP_DIFFERS')
+    outputs=request['response']['outputs']
+    need(len(outputs)==1 and len(outputs[0]['tokens'])==2
+        and ds['request_ids']==ds['logical_ids']==[rid] and ds['row_request_indices']==[0]
+        and ds['request_count']==ds['token_row_count']==ds['scheduler_capacity']==1
+        and ds['counts']==[1] and ds['row_token_positions']==[1024] and ds['pure_decode'] is True
+        and ds['prefixes']==[dict(prompt=prompt,output=outputs[0]['tokens'][:1])]
+        and ds['input_ids']==outputs[0]['tokens'][:1], 'S2_PREFILL_TO_FIRST_DECODE_REQUEST_ROWS_DIFFERS')
+    for forward,metas,values in (
+            (prefill,ps['input_tensor_metadata'],dict(input_ids=ps['token_ids'],positions=ps['positions'])),
+            (decode,dict(input_ids=ds['actual_input_metadata'],positions=ds['actual_position_metadata']),
+                dict(input_ids=ds['input_ids'],positions=ds['row_token_positions']))):
+        need(forward['request_id']==rid and forward['phase']==phase and forward['root_returned'] is True,
+             'S2_ROOT_RETURN_REQUEST_OR_PHASE_DIFFERS')
+        for name,dtype in (('input_ids','torch.int32'),('positions','torch.int64')):
+            actual_integer_input(forward,metas[name],name,values[name],dtype,device)
+        calls=forward['calls']
+        need(len(calls)==28 and [call['module_path'] for call in calls]==list(LAYERS)
+            and len({call['module_object_id'] for call in calls})==28,'S2_COMPLETE_56_ACTUAL_CALLS_REQUIRED')
+        for index,call in enumerate(calls):
+            need(call['request_id']==rid and call['scheduler']==forward['scheduler'] and call['ordinal']==index
+                and call['occurrence']==0 and call['module_path'] in call['aliases']
+                and call['parent_path']==call['module_path'].rsplit('.',1)[0]
+                and type(call['module_object_id']) is int and call['module_object_id']>0
+                and call['original_calls']==1 and call['original_returned'] is call['inputs_unchanged'] is True
+                and call['actual_operator']=='torch_npu.npu_fused_infer_attention_score',
+                'S2_ACTUAL_CALL_REQUEST_PARENT_OR_ONCE_JOIN_DIFFERS')
+    need([call['module_object_id'] for call in prefill['calls']]==[call['module_object_id'] for call in decode['calls']]
+        and all(call['native'] is None for call in prefill['calls']),'S2_PREFILL_DECODE_MODULE_OR_NATIVE_SCOPE_DIFFERS')
+    return dict(internal_request_id=rid,prefill_tokens=1024,first_decode_position=1024,
+        prefill_page_count=64,observed_forwards=2,actual_calls=56,
+        actual_root_tensor_hashes_recomputed=True,prefill_legacy_counter_used_as_authority=False)
+
+
+def decode_cache_rows(prefill,scheduler,calls,*,device):
+    """Derive the actual consumer slot and join the returned writer storage."""
+    need(len(calls)==28,'S2_COMPLETE_28_ACTUAL_WRITER_CONSUMERS_REQUIRED')
+    for call in calls:
         need(call['metadata_binding']=='VERIFIED' and call['layout']=='TND' and call['sequence_lengths']==[1025]
-            and call['query']['shape']==[1,16,128] and call['scheduler']['request_ids']==[rid]
-            and call['scheduler']['row_token_positions']==[1024] and call['writer']['returned'] is True
+            and call['query']['shape']==[1,16,128] and call['scheduler']==scheduler and call['writer']['returned'] is True
             and call['writer']['module_path']==call['module_path'] and call['slots']==call['writer']['slots']==call['expected_slots']
-            and len(call['used_pages'][0])==len(set(call['used_pages'][0]))==65,
+            and len(call['used_pages'])==1 and len(call['used_pages'][0])==len(set(call['used_pages'][0]))==65
+            and all(type(page) is int and 0<=page<128 for page in call['used_pages'][0])
+            and call['used_pages'][0][:64]==prefill['block_ids']
+            and call['slots']==[call['used_pages'][0][scheduler['row_token_positions'][0]//16]*16
+                                +scheduler['row_token_positions'][0]%16],
             'S2_ACTUAL_WRITER_CONSUMER_OR_LOGICAL_ROWS_DIFFERS')
+        slot=call['writer']['slot_mapping']
+        need(slot['shape']==[1] and slot['stride']==[1] and slot['storage_offset']==0
+            and slot['dtype']=='torch.int32' and slot['device']==device
+            and type(slot['storage_identity']) is int and slot['storage_identity']>0,
+            'S2_ACTUAL_WRITER_SLOT_TENSOR_DIFFERS')
         for key in ('key','value'):
             actual=call[key];cache=call['live_'+key+'_cache'];writer=call['writer'][key+'_cache']
             need(actual['shape']==[128,16,1024] and cache['shape']==[128,16,8,128]
                 and actual['stride']==[16384,1024,1] and cache['stride']==[16384,1024,128,1]
+                and actual['dtype']=='torch.float16' and actual['device']==device
                 and all(actual[k]==cache[k] for k in ('storage_identity','storage_offset','dtype','device'))
                 and all(writer[k]==cache[k] for k in ('storage_identity','storage_offset','shape','stride','dtype','device')),
                 'S2_ACTUAL_FLAT_API_TO_LIVE_WRITER_CACHE_STORAGE_DIFFERS')
+    return dict(actual_consumers=len(calls),logical_page_count=65,logical_token_position=1024,
+                physical_slot_derived_from_actual_pages=True,returned_writer_storage_matched=True)
+
+
+def phase_values(run,request,context,helper,normal_signature,normal_capture,*,prompt_token_ids):
+    phase=request['phase'];row=request['worker'];rid=request['mapping']['internal_request_id']
+    device='npu:'+str(context['worker']['logical_device'])
+    lineage=request_lineage(request,prompt_token_ids,device)
+    forwards=row['forwards'];prefill=forwards[0]['scheduler'];scheduler=forwards[1]['scheduler']
+    decode=forwards[1]['calls'];hits=[c for f in forwards for c in f['calls'] if c['native'] is not None]
+    need(len(hits)==1 and hits[0] is decode[0] and all(c['input_contract_matches'] is True for c in decode),
+         'S2_ONE_SCOPED_TARGET_WITH_27_OTHER_KERNEL_MATCHES_REQUIRED')
+    lineage['writer_consumer']=decode_cache_rows(prefill,scheduler,decode,device=device)
     live=row['live_input'];sealed=live['evidence'];identity=live['identity'];call=hits[0];native=call['native']
     need(live['actual_original_calls']==1 and live['complete'] is True and live['closed'] is live['inflight'] is live['simulation'] is False
         and live['first_error'] is None and sealed['before']==sealed['after'] and sealed['request_id']==rid
@@ -200,7 +291,8 @@ def phase_values(run,request,context,helper,normal_signature,normal_capture):
     need(immediate[0]['sha256']==files[FIRST+'/output']['sha256'],'S2_FIRST_API_RETURN_DIFFERS_FROM_OBSERVED_LAYER_OUTPUT')
     for kind in ('key','value'):need(files[FIRST+'/'+kind]['sha256']==sealed['before']['logical_kv'][kind]['sha256'],
         'S2_COMPLETE_FIRST_KV_READ_BEFORE_AFTER_DIFFERS')
-    return dict(row=row,call=call,files=files,query=query,immediate=immediate,signature=sealed['before']['signature'],identity=identity)
+    return dict(row=row,call=call,files=files,query=query,immediate=immediate,signature=sealed['before']['signature'],
+                identity=identity,request_lineage=lineage)
 
 
 def native_values(run,value,context,runtime,helper,bundle,symbols):
@@ -230,7 +322,8 @@ def native_values(run,value,context,runtime,helper,bundle,symbols):
 
 def review(args):
     checks=N.Checks();report=dict(schema='demoncat.paged33.public_s2_single_review.v1',C2=False,C3=False,E5='NOT_ASSESSED',
-        public_qualification_granted=False,numerical_fault_observed=False,model_end_propagation_observed=False)
+        public_qualification_granted=False,numerical_fault_observed=False,model_end_propagation_observed=False,
+        reviewer_source_sha256=E.sha(__file__),original_results_modified=False)
     def perform():
         source=E.frozen_source(args.source,args.source_manifest_sha256,build_variant=E.S2_VARIANT)
         helper=E.helpers(source);bundle=E.build_bundle(args.build_root,source,helper,args.completion_sha256)
@@ -266,7 +359,8 @@ def review(args):
         need(len(hosts)==5 and len({x['token'] for x in hosts})==5,'S2_EXACT_FIVE_HOST_SCOPES_REQUIRED')
         values=[];native=[];symbols={}
         for request in data['requests']:
-            value=checks.run(request['phase']+'.public',lambda r=request:phase_values(args.run,r,context,helper,signature,normal_capture))
+            value=checks.run(request['phase']+'.public',lambda r=request:phase_values(args.run,r,context,helper,signature,normal_capture,
+                prompt_token_ids=data['prompt_token_ids']))
             if value is not None:
                 values.append(value);need(value['call']['native']['host'] in hosts,'S2_HOST_ORIGINAL_DIFFERS')
                 item=checks.run(request['phase']+'.native',lambda v=value:native_values(args.run,v,context,runtime,helper,bundle,symbols))
@@ -303,6 +397,7 @@ def review(args):
             denominator_per_request=56,decode_kernel_input_matching_targets=28,source_bound_normal_targets=1,
             other_matching_targets_without_per_site_proof=27,native=native,registered_symbols=list(symbols.values()),
             comparisons=comparisons,operator_effect=immediate,model_logits_effect=logits,
+            request_lineage=[dict(phase=value['row']['phase'],**value['request_lineage']) for value in values],
             operator_output_bytes_changed=True,numerical_fault_observed=immediate['numeric_changed_elements']>0,
             model_end_propagation_observed=logits['numeric_changed_elements']>0)
     checks.run('original_files_and_protocol',perform)

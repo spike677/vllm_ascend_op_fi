@@ -89,3 +89,11 @@ python3 -B "$CANDIDATE/experiments/c2c3_closure_20261117/diagnose_arch22_s2_prep
 ```
 
 入口在安装永久 runtime 禁止 audit hook 前只初始化 CPU NumPy 字节读取，不加载 Torch/Worker/Native 适配器。它使用旧 result 的 `normal_inputs` 和 `execution_contract`，显式报告候选 loader SHA、旧 source/报告 SHA 及无新包资格。该 CPU 重放不能转授 source102 normal 结论；新 source/package 仍须独立 normal 与 F/OFF。原失败、原正常结果和新诊断分别保留，不修改或重标签原件。
+
+## Source105 离线 reader 字段修正
+
+原 reader a1 SHA `24f11a6227a17637e112d41012ae00d6875981aca183372adc651c72de26a730` 保留。它把 prefill scheduler 当成 decode schema，在五阶段均读取不存在的 `request_ids`，尚未进入完整 Native/数值审核。修正版分别读取实际 prefill 的 `internal_request_id/token_ids/positions/block_ids/slot_mapping` 和 decode 的 `request_ids/row_request_indices/row_token_positions/prefixes`，不会给原件补字段。
+
+新校验连接真实 enqueue 映射、同阶段两个 root 返回、28+28 次原 API、prefill 提示词与首 decode token。CPU 整数值按实际 int32/int64 编码重算 hash，再与已记录完整 root tensor hash 对照；旧 `batch_num_tokens_legacy` 仍是诊断，不能作为当前 prefill 长度依据。64 个实际前缀页与 decode 的 65 页连接，当前写入 slot 从实际页号/位置重算，消费者 3D view 与 writer/4D cache 仍要求 storage、offset、shape、stride、dtype、device 一致。
+
+修正只影响离线 reader 和 CPU 合同，原 source105 result SHA `f87247ec8a78c8258489025216997c30deb3a61072603b90f0efd087147c2ecc` 的原件不可修改。新报告独立记录 reader SHA；完整原始 bins、注册 ELF、最终 POD/数组、R/L/OFF/F/OFF、公开恢复门槛均保留。仅本地元数据核对不能代替远端原件完整审核，不新增 C2/C3/E5 资格。
