@@ -132,6 +132,23 @@ class WorkerFaultRuntime:
                 return self._detach(context, payload)
             if action == 'query':
                 return self._query(context, payload)
+            if action == 'discover':
+                _check_shape(payload, _TICKET)
+                self._tenant(context, payload)
+                if self._leases or self._quarantined():
+                    raise Rejected('DISCOVERY_REQUIRES_IDLE_WORKER_OWNER_TABLE')
+                from .discovery import discover_worker
+                try:
+                    report = discover_worker(worker, context.model, context.worker)
+                except Exception as error:
+                    after = self._identity.read(worker)
+                    self._observe_context(after)
+                    return {'status': 'DISCOVERY_FAILED', 'reason': 'READ_ONLY_DISCOVERY_UNAVAILABLE',
+                            **_provider_error(error), 'qualification_granted': False}
+                after = self._identity.read(worker)
+                self._observe_context(after)
+                self._expect_worker(after, payload['worker'])
+                return {'status': 'DISCOVERY_SNAPSHOT', 'discovery': report}
             if isinstance(action, str) and action in _ACTIONS:
                 return self._dispatch(worker, context, action, payload)
             raise Rejected('UNSUPPORTED_ACTION')
