@@ -32,9 +32,9 @@ def setup(worker, prompts, build_sha, group_abi=False, capture_integer_routes=Fa
         from demoncat.runtime.vllm_ascend.worker_extension import serving_shared_scale_group_inventory, shared_scale_group_inventory
         from fault_injection.deployments import quant_group_inventory
         from fault_injection import quant_group_native, quant_native_isolation
-        from demoncat.runtime.vllm_ascend.worker_extension import quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes
+        from demoncat.runtime.vllm_ascend.worker_extension import quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes, quant_route_frames
         modules += (serving_shared_scale_group_inventory, shared_scale_group_inventory, quant_group_inventory,
-                    quant_group_native, quant_native_isolation, quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes)
+                    quant_group_native, quant_native_isolation, quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes, quant_route_frames)
         install = serving_shared_scale_group_inventory.install_shared_scale_group_inventory
     sources = []
     for module in modules:

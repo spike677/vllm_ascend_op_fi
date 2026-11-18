@@ -41,12 +41,12 @@ def actual(worker):
 def setup(worker, tokens, manifest_sha256):
     from demoncat.runtime.vllm_ascend.worker_extension import (
         serving_quant_group_c1, shared_scale_group_inventory, serving_shared_scale_group_inventory,
-        quant_row_provenance, quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes, serving_quant, host, config)
+        quant_row_provenance, quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes, quant_route_frames, serving_quant, host, config)
     from demoncat.runtime.vllm_ascend.worker_extension.providers import quant
     from fault_injection import quant_group_native, quant_native_isolation
     from fault_injection.deployments import quant_group_c1, quant_group_inventory
     modules = (serving_quant_group_c1, shared_scale_group_inventory, serving_shared_scale_group_inventory,
-        quant_row_provenance, quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes, serving_quant, host, config, quant,
+        quant_row_provenance, quant_source_rows, quant_mla_metadata_rows, quant_moe_rows, quant_token_routes, quant_route_frames, serving_quant, host, config, quant,
         quant_group_native, quant_native_isolation, quant_group_c1, quant_group_inventory)
     sources = []
     for module in modules:

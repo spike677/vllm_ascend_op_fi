@@ -64,6 +64,10 @@ def _resolve(module, qualname):
     value = module
     for name in qualname.split('.'):
         value = getattr(value, name)
+    if isinstance(value, types.MethodType) and isinstance(value.__self__, type):
+        value = value.__func__
+    if isinstance(value, property):
+        value = value.fget
     return value
 
 
@@ -173,6 +177,7 @@ class SourceBoundRows:
         self.embedding_attempts = 0
         self.moe = None
         self.routes = None
+        self.route_frames = None
 
     @classmethod
     def from_runtime(cls, graph, model, *, capture_integer_routes=False):
@@ -182,13 +187,15 @@ class SourceBoundRows:
         reviewed = dict(REVIEWED, **MOE_REVIEWED) if moe_enabled else REVIEWED
         if capture_integer_routes and moe_enabled:
             from .quant_token_routes import IntegerRouteObserver, REVIEWED as ROUTE_REVIEWED
-            reviewed = dict(reviewed, **ROUTE_REVIEWED)
+            from .quant_route_frames import RouteFrameObserver, REVIEWED as FRAME_REVIEWED
+            reviewed = dict(reviewed, **ROUTE_REVIEWED, **FRAME_REVIEWED)
         bindings, sources = source_bindings(reviewed)
         value = cls(graph, model, bindings, sources)
         if moe_enabled:
             value.moe = SharedMoERows(value)
             if capture_integer_routes:
                 value.routes = IntegerRouteObserver(value)
+                value.route_frames = RouteFrameObserver(value)
         # Freeze the actual installed implementation and its derived weights.
         # A later tensor replacement cannot become a new trusted constant.
         for _, module in model.named_modules():
@@ -217,6 +224,8 @@ class SourceBoundRows:
         self.pending, self.stack, self.rows, self.errors, self.operator_stack = {}, [], [], [], []
         if self.routes is not None:
             self.routes.reset()
+        if self.route_frames is not None:
+            self.route_frames.reset()
         self.alias_parents = {}
         input_ids_metadata = metadata(input_ids) if isinstance(input_ids, torch.Tensor) else None
         self.embedding_attempts = 0
@@ -251,6 +260,8 @@ class SourceBoundRows:
         require(not self.pending and not self.stack and not self.operator_stack, 'QUANT_ROW_BOUNDARIES_STILL_INFLIGHT')
         require(self.routes is None or not self.routes.live and not self.routes.helper_active,
                 'QUANT_ROUTE_OBSERVER_STILL_INFLIGHT')
+        require(self.route_frames is None or not self.route_frames.live,
+                'QUANT_ROUTE_FRAMES_STILL_INFLIGHT')
         self.ending = True
         while self.owned_modes:
             current = _get_current_dispatch_mode()
@@ -345,6 +356,9 @@ class SourceBoundRows:
                          and self.bindings[frame.f_code]['role'].startswith('route_') else None)
         try:
             binding = self.bindings[frame.f_code]
+            if (binding['role'].startswith('rchain_') and binding['role'] != 'rchain_model'
+                    and (self.route_frames is None or not self.route_frames.live)):
+                return
             # These global helpers run elsewhere too. Only the actual checked
             # embedding frame may attach them to a scheduler row producer.
             if (binding['role'].startswith('embedding_') and binding['role'] != 'embedding_origin'
@@ -376,6 +390,8 @@ class SourceBoundRows:
                     self._embedding_start(row)
                 if self.moe is not None and binding['role'].startswith('moe_'):
                     self.moe.called(row, frame)
+                if self.route_frames is not None:
+                    self.route_frames.called(row)
             else:
                 row = self.pending.get(id(frame))
                 require(row is not None and self.stack[-1] is row, 'QUANT_ROW_PROFILE_RETURN_ORDER_CHANGED')
@@ -389,6 +405,8 @@ class SourceBoundRows:
         finally:
             if event == 'return' and id(frame) in self.pending:
                 row = self.pending.pop(id(frame))
+                if self.route_frames is not None:
+                    self.route_frames.returned(row, frame.f_locals, result)
                 if row.get('mode') is not None:
                     try:
                         self._release_mode(row['mode'])
@@ -732,6 +750,8 @@ class SourceBoundRows:
             self.moe.before_operator(state)
         if self.routes is not None:
             self.routes.before_operator(state)
+        if self.route_frames is not None:
+            self.route_frames.before_operator(state)
         if name == 'vllm.mla_forward.default':
             bound = _arguments(func, args, kwargs)
             writes = [arg.name for arg in schema.arguments if arg.alias_info is not None and arg.alias_info.is_write]
@@ -762,6 +782,8 @@ class SourceBoundRows:
     def failed_operator(self, state, error):
         if self.routes is not None:
             self.routes.after_operator(state, error=error)
+        if self.route_frames is not None:
+            self.route_frames.after_operator(state, error=error)
         if state is not None and 'moe' in state and self.moe is not None:
             self.moe.after_operator(state)
         if state is not None and self.operator_stack and self.operator_stack[-1] is state:
@@ -775,6 +797,8 @@ class SourceBoundRows:
         self.operator_stack.pop()
         if self.routes is not None:
             self.routes.after_operator(state, output)
+        if self.route_frames is not None:
+            self.route_frames.after_operator(state, output)
         if 'moe' in state and self.moe is not None:
             self.moe.after_operator(state)
         if not self.active or self.errors:
@@ -999,6 +1023,7 @@ class SourceBoundRows:
                 frozen_model_owners=len(self.moe.owners) if self.moe is not None else 0,
                 routed_output_row_qualified=False),
             integer_routes=self.routes.report() if self.routes is not None else None,
+            routed_call_frames=self.route_frames.report() if self.route_frames is not None else None,
             inflight=len(self.pending), native_qualified=False,
             owned_nested_dispatch_modes=len(self.owned_modes), owned_profile_callbacks=int(not self.profile_released),
             owned_scheduler_input_refs=int(self.input_ids is not None),

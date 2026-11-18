@@ -148,10 +148,13 @@ lossless/effect/OFF and same-Worker health gates; none is granted here.
 ## Reproduce the read-only audit
 
 ```text
-python -B experiments/worker_core_v11_20261118/audit_quant_source87_routes.py --inventory <original-inventory.json.gz> --result <original-result.json> --out <new-summary.json>
+python -B experiments/worker_core_v11_20261118/audit_quant_source87_routes.py --source-root <frozen-source87-root> --inventory <original-inventory.json.gz> --result <original-result.json> --out <new-summary.json>
 ```
 
-The CLI rejects changed original hashes and writes only a new summary file.
+The explicit source root must contain the source87 runtime bytes recorded in
+setup, even when this reviewer runs from a newer checkout. Later observer
+changes must not relax any of the 13 original source checks. The CLI rejects
+changed original hashes and writes only a new summary file.
 It imports no framework or runtime provider. The actual 52 records passed;
 eight local corruption checks also rejected negative indices, wrong counts,
 wrong cumulative sums, duplicate experts, changed metadata, changed epochs,

@@ -93,6 +93,8 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
     def report(self):
         value = super().report()
         inventory = self.inventory.report()
+        frames = getattr(self.source_rows, 'route_frames', None)
+        live_frames = None if frames is None else frames.live
         value.update(schema='demoncat.shared_scale.group_serving_inventory.v1',
             actual_native_prepare_calls=inventory['actual_native_prepare_calls'],
             actual_native_execute_calls=inventory['actual_native_execute_calls'],
@@ -103,6 +105,9 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
                 else len(self.source_rows.routes.live),
             owned_integer_route_tensor_refs=0 if self.source_rows is None or self.source_rows.routes is None
                 else self.source_rows.routes.report()['live_tensor_refs'],
+            owned_routed_frame_parents=int(live_frames is not None),
+            owned_routed_frame_tensor_holds=0 if live_frames is None else len(live_frames['held']),
+            owned_routed_frame_payload_holds=0 if live_frames is None else len(live_frames['objects']),
             metadata_producers=self.metadata_rows.report() if self.metadata_rows is not None else None,
             owned_source_profile_callbacks=sum(int(value is not None and not value.profile_released)
                 for value in (self.source_rows, self.metadata_rows)),
