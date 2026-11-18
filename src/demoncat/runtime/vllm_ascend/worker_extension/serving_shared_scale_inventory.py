@@ -206,6 +206,7 @@ def remove_shared_scale_inventory(worker):
     require(not any(report[key] for key in ('owned_hooks', 'owned_method_patches', 'owned_api_patches', 'owned_row_dispatch_modes')),
             'SHARED_SCALE_INVENTORY_STILL_OWNS_HOOKS')
     require(not report.get('owned_source_profile_callbacks', 0) and not report.get('owned_early_dispatch_modes', 0)
+            and not report.get('owned_nested_dispatch_modes', 0) and not report.get('observer_cleanup_pending', False)
             and not report.get('owned_live_metadata_records', 0),
             'SHARED_SCALE_INVENTORY_STILL_OWNS_SOURCE_OBSERVERS')
     del worker._demoncat_shared_scale_inventory

@@ -8,6 +8,7 @@ import unittest
 from unittest.mock import patch
 
 import torch
+from torch.utils._python_dispatch import TorchDispatchMode, _get_current_dispatch_mode, _get_current_dispatch_mode_stack
 
 from demoncat.runtime.vllm_ascend.worker_extension.quant_row_provenance import RequestRowProvenance, metadata
 from demoncat.runtime.vllm_ascend.worker_extension.quant_source_rows import SourceBoundRows, source_bindings
@@ -164,9 +165,9 @@ class SourceRowsTests(unittest.TestCase):
         finally:
             sys.setprofile(None)
 
-    def opaque(self):
+    def opaque(self, model=None):
         global _current_model
-        self.model = _current_model = CpuOpaque()
+        self.model = _current_model = CpuOpaque() if model is None else model
         pin = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
         bindings, sources = source_bindings({__name__: (pin, {'cpu_mla_forward': 'mla_opaque'})})
         self.boundary = SourceBoundRows(self.graph, self.model, bindings, sources, simulation=True,
@@ -221,6 +222,133 @@ class SourceRowsTests(unittest.TestCase):
         self.assertEqual(len(_inside_queries), 1)
         self.assertFalse(_inside_queries[0]['verified'])
         self.assertTrue(self.graph.query(x)['verified'])
+
+    def test_foreign_nested_mode_retains_owner_until_foreign_removal_and_retry(self):
+        class ForeignMode(TorchDispatchMode):
+            def __torch_dispatch__(self, func, types, args=(), kwargs=None):
+                return func(*args, **(kwargs or {}))
+        foreign = ForeignMode()
+        class ForeignAtReturn(CpuOpaque):
+            def __getattribute__(self, name):
+                if name == 'raise_inside':
+                    foreign.__enter__()
+                    return False
+                return super().__getattribute__(name)
+        # Keep the reviewed CPU custom-op kernel unchanged: the new mode is
+        # installed by the actual model object's final property access.
+        self.opaque(ForeignAtReturn())
+        x = torch.ones(8, 4)
+        self.begin(x)
+        output = self.model(x)
+        owned = self.boundary.owned_modes[0]
+        self.assertIs(_get_current_dispatch_mode(), self.graph)
+        self.assertEqual((len(self.boundary.pending), len(self.boundary.stack)), (0, 0))
+        try:
+            with self.assertRaisesRegex(RuntimeError, 'NESTED_MODE_OWNER_CHANGED'):
+                self.graph.end()
+            self.assertTrue(self.graph.active and self.boundary.active)
+            self.assertTrue(self.graph.report()['cleanup_pending'])
+            self.assertEqual(self.boundary.report()['owned_nested_dispatch_modes'], 1)
+            self.assertFalse(self.graph.report()['complete'])
+            self.assertFalse(self.graph.query(output)['verified'])
+            self.assertIs(_get_current_dispatch_mode(), foreign)
+            self.assertIs(_get_current_dispatch_mode_stack()[-2], owned)
+            with self.assertRaisesRegex(RuntimeError, 'NESTED_MODE_OWNER_CHANGED'):
+                self.graph.end()
+            self.assertIs(_get_current_dispatch_mode(), foreign)
+        finally:
+            if _get_current_dispatch_mode() is foreign:
+                foreign.__exit__(None, None, None)  # Only the foreign owner removes itself.
+        report = self.graph.end()
+        self.assertFalse(report['active'] or self.boundary.active)
+        self.assertEqual(self.boundary.report()['owned_nested_dispatch_modes'], 0)
+        self.assertEqual(_get_current_dispatch_mode_stack(), [])
+        self.assertIsNone(sys.getprofile())
+        self.assertTrue(torch.equal(output, x + 1))
+
+    def test_nested_mode_exit_before_pop_retains_handle_and_same_owner_retries(self):
+        self.opaque()
+        x = torch.ones(8, 4)
+        self.begin(x)
+        real_mode = self.boundary._mode
+        def mode_with_failure():
+            mode = real_mode()
+            mode.__exit__ = lambda *args: (_ for _ in ()).throw(RuntimeError('TRANSIENT_NESTED_EXIT'))
+            return mode
+        with patch.object(self.boundary, '_mode', side_effect=mode_with_failure):
+            output = self.model(x)
+        mode = self.boundary.owned_modes[0]
+        with self.assertRaisesRegex(RuntimeError, 'TRANSIENT_NESTED_EXIT'):
+            self.graph.end()
+        self.assertTrue(self.graph.active and self.boundary.active)
+        self.assertIs(_get_current_dispatch_mode(), mode)
+        del mode.__exit__
+        self.graph.end()
+        self.assertEqual(_get_current_dispatch_mode_stack(), [])
+        self.assertIsNone(sys.getprofile())
+        self.assertTrue(torch.equal(output, x + 1))
+
+    def test_nested_mode_exit_after_pop_records_failure_without_double_exit(self):
+        self.opaque()
+        x = torch.ones(8, 4)
+        self.begin(x)
+        real_mode = self.boundary._mode
+        def mode_with_failure():
+            mode = real_mode()
+            original_exit = mode.__exit__
+            def pop_then_raise(*args):
+                original_exit(*args)
+                raise RuntimeError('AFTER_NESTED_POP')
+            mode.__exit__ = pop_then_raise
+            return mode
+        with patch.object(self.boundary, '_mode', side_effect=mode_with_failure):
+            self.model(x)
+        self.assertEqual(self.boundary.owned_modes, [])
+        self.assertTrue(any('AFTER_NESTED_POP' in error for error in self.boundary.errors))
+        self.assertFalse(self.graph.end()['complete'])
+        self.assertEqual(_get_current_dispatch_mode_stack(), [])
+        self.assertIsNone(sys.getprofile())
+
+    def test_metadata_release_failure_preserves_active_owner_after_profile_removal(self):
+        x = torch.ones(8, 4)
+        self.begin(x)
+        producer = NS(release=lambda: None)
+        self.boundary.metadata_producers = producer
+        with patch.object(producer, 'release', side_effect=RuntimeError('TRANSIENT_RELEASE')):
+            with self.assertRaisesRegex(RuntimeError, 'TRANSIENT_RELEASE'):
+                self.graph.end()
+        self.assertTrue(self.graph.active and self.boundary.active)
+        self.assertTrue(self.boundary.profile_released)
+        self.assertEqual(_get_current_dispatch_mode_stack(), [])
+        self.assertIsNone(sys.getprofile())
+        foreign = lambda *args: None
+        sys.setprofile(foreign)
+        try:
+            with self.assertRaisesRegex(RuntimeError, 'QUANT_ROW_PROFILE_OWNER_CHANGED'):
+                self.graph.end()
+            self.assertIs(sys.getprofile(), foreign)
+        finally:
+            sys.setprofile(None)
+        self.graph.end()
+        self.assertFalse(self.graph.active or self.boundary.active)
+
+    def test_outer_mode_after_pop_failure_retains_cleanup_owner_and_retries_once(self):
+        x = torch.ones(8, 4)
+        self.begin(x)
+        original_exit = self.graph.__exit__
+        def pop_then_raise(*args):
+            original_exit(*args)
+            raise RuntimeError('OUTER_AFTER_POP')
+        with patch.object(self.graph, '__exit__', side_effect=pop_then_raise):
+            with self.assertRaisesRegex(RuntimeError, 'OUTER_AFTER_POP'):
+                self.graph.end()
+        self.assertTrue(self.graph.active and self.graph.mode_released and self.boundary.active)
+        self.assertFalse(self.graph.query(x)['verified'])
+        self.assertEqual(_get_current_dispatch_mode_stack(), [])
+        self.assertIs(sys.getprofile(), self.boundary.callback)
+        self.graph.end()
+        self.assertFalse(self.graph.active or self.boundary.active)
+        self.assertIsNone(sys.getprofile())
 
 
 if __name__ == '__main__':

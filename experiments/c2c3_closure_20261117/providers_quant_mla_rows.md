@@ -83,3 +83,21 @@ per-target reference/lossless/current-input effect/OFF and same-Worker recovery.
 It must retain the other candidates as unverified and must keep functional
 effect acceptance separate from E5 statistics. Group `all_eligible` and a live
 C2-to-C3 transition still require the full original group contract.
+
+The cleanup review adds explicit ownership phases for the early profile,
+outer graph mode and nested opaque-call modes. A frame return only releases
+its tensor references; an independent ledger retains every nested mode until
+the actual dispatcher stack confirms removal. Cleanup refuses a foreign top
+mode or profile and leaves the Worker owner active. After the foreign owner
+removes itself, the original thread can retry without exiting an already
+removed mode twice. Reports expose retained nested modes and cleanup pending;
+unregister checks both before releasing the Worker owner.
+
+The focused command above now passes 110 CPU tests. The added regressions use
+actual dispatcher stacks, including a foreign mode installed from the pinned
+CPU kernel's model property access, exits that raise before or after popping,
+profile removal followed by a retry, foreign profile/thread refusal, and a
+metadata release failure. They verify no false zero-resource report, no
+foreign-mode pop, and ordinary same-process CPU operations after cleanup.
+This remains CPU observer lifecycle evidence, with no CANN execution or C1,
+C2 or C3 acceptance.

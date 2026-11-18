@@ -10,7 +10,9 @@ import threading
 import weakref
 
 import torch
-from torch.utils._python_dispatch import TorchDispatchMode, _get_current_dispatch_mode
+from torch.utils._python_dispatch import (
+    TorchDispatchMode, _get_current_dispatch_mode, _get_current_dispatch_mode_stack,
+)
 
 from .serving_context import require
 
@@ -32,6 +34,28 @@ def digest(value):
 def snapshot(value):
     """Detach every nested JSON value at the observation/public API boundary."""
     return json.loads(json.dumps(value, allow_nan=False))
+
+
+def exit_owned_mode(mode, refusal):
+    """Exit only the current owned mode and report an exit that popped then raised.
+
+    Callers retain the handle until the real stack confirms its removal. An
+    exception before removal is retryable; a foreign mode is never popped.
+    """
+    require(_get_current_dispatch_mode() is mode, refusal)
+    error = None
+    try:
+        mode.__exit__(None, None, None)
+    except BaseException as caught:
+        error = caught
+    removed = not any(value is mode for value in _get_current_dispatch_mode_stack())
+    require(removed or error is not None, refusal + ':EXIT_DID_NOT_REMOVE_MODE')
+    return removed, error
+
+
+def same_mode_stack(expected):
+    actual = _get_current_dispatch_mode_stack()
+    return len(actual) == len(expected) and all(a is b for a, b in zip(actual, expected))
 
 
 def metadata(tensor):
@@ -77,6 +101,9 @@ class RequestRowProvenance(TorchDispatchMode):
         self.boundaries = None
         self.watched_storages = []
         self.call_stack = []
+        self.ending = False
+        self.mode_released = True
+        self.base_modes = ()
 
     def begin(self, forward_id):
         require(not self.active and threading.get_ident() == self.thread, 'ONE_CURRENT_ROW_OBSERVER_REQUIRED')
@@ -87,8 +114,14 @@ class RequestRowProvenance(TorchDispatchMode):
         self.errors = []
         self.watched_storages = []
         self.call_stack = []
-        self.__enter__()
+        self.ending, self.mode_released = False, False
+        self.base_modes = tuple(_get_current_dispatch_mode_stack())
         self.active = True
+        try:
+            self.__enter__()
+        except BaseException:
+            self.mode_released = not any(value is self for value in _get_current_dispatch_mode_stack())
+            raise
 
     @staticmethod
     def storage_key(meta):
@@ -119,7 +152,7 @@ class RequestRowProvenance(TorchDispatchMode):
         return snapshot(node)
 
     def seed(self, tensor, proof):
-        require(self.active and not self.errors and not self.overflow and proof.get('verified') is True,
+        require(self.active and not self.ending and not self.errors and not self.overflow and proof.get('verified') is True,
                 'ACTUAL_VERIFIED_ROW_SEED_REQUIRED')
         rows = proof['actual_rows']
         ids = rows['request_ids']
@@ -128,7 +161,7 @@ class RequestRowProvenance(TorchDispatchMode):
         self._bind(tensor, rows=rows, parents=(), operator='ACTUAL_SCHEDULER_EMBEDDING_RMSNORM', evidence=proof)
 
     def register_broadcast_parameter(self, module, name, tensor, *, kind):
-        require(self.active and kind == '_parameters' and isinstance(tensor, torch.nn.Parameter)
+        require(self.active and not self.ending and kind == '_parameters' and isinstance(tensor, torch.nn.Parameter)
                 and not tensor.requires_grad and getattr(module, kind).get(name) is tensor,
                 'ACTUAL_FROZEN_MODEL_PARAMETER_OWNER_REQUIRED')
         meta = metadata(tensor)
@@ -146,7 +179,7 @@ class RequestRowProvenance(TorchDispatchMode):
 
     def query(self, tensor):
         healthy = self.boundaries is None or not self.boundaries.errors
-        record = self._lookup(tensor) if self.active and healthy and self._visible_context() and not self.errors and not self.overflow else None
+        record = self._lookup(tensor) if self.active and not self.ending and healthy and self._visible_context() and not self.errors and not self.overflow else None
         if record is None or record['node']['row_axis'] != 0:
             return dict(verified=False, reason='NO_COMPLETE_ACTUAL_ROW_PRESERVING_OPERATOR_CHAIN',
                 shape_is_not_request_row_proof=True, tensor=metadata(tensor))
@@ -156,7 +189,7 @@ class RequestRowProvenance(TorchDispatchMode):
 
     def projection(self, tensor, output, *, evidence):
         """Only called after exact Native-DQ and public owned-QMM chain checks."""
-        record = self._lookup(tensor) if self.active and self._visible_context() and not self.errors and not self.overflow else None
+        record = self._lookup(tensor) if self.active and not self.ending and self._visible_context() and not self.errors and not self.overflow else None
         if record is None or record['node']['row_axis'] != 0:
             return self.query(output)
         require(evidence.get('complete_native_dynamic_formals') is True and evidence.get('owned_public_qmm_chain') is True
@@ -316,10 +349,20 @@ class RequestRowProvenance(TorchDispatchMode):
 
     def end(self):
         require(self.active and threading.get_ident() == self.thread, 'CURRENT_ROW_OBSERVER_REQUIRED')
-        require(_get_current_dispatch_mode() is self, 'ROW_DISPATCH_MODE_OWNER_CHANGED')
+        require(not self.call_stack, 'ROW_OBSERVER_CALLS_STILL_INFLIGHT')
+        self.ending = True
+        # Torch temporarily removes this outer mode during the opaque call,
+        # then restores it above any nested modes left by a failed cleanup.
+        # Remove only our outer mode first so the retained nested owners can
+        # subsequently be inspected and retried without touching foreign ones.
+        if not self.mode_released:
+            removed, error = exit_owned_mode(self, 'ROW_DISPATCH_MODE_OWNER_CHANGED')
+            self.mode_released = removed
+            if error is not None:
+                raise error
         if self.boundaries is not None and self.boundaries.active:
             self.boundaries.end()
-        self.__exit__(None, None, None)
+        require(same_mode_stack(self.base_modes), 'ROW_DISPATCH_MODE_STACK_NOT_RESTORED')
         self.active = False
         return self.report()
 
@@ -328,8 +371,9 @@ class RequestRowProvenance(TorchDispatchMode):
         return snapshot(dict(schema='demoncat.quant.actual_row_provenance.v1', forward_id=self.forward_id,
             scope='ACTUAL_DECODE_THREAD_INCLUDING_READONLY_OBSERVER_READBACKS',
             actual_calls=self.total, retained_calls=len(self.events), missing_calls=self.overflow, errors=self.errors,
-            complete=not self.errors and not self.overflow and (boundary_report is None or boundary_report['complete'])
+            complete=not self.active and not self.errors and not self.overflow and (boundary_report is None or boundary_report['complete'])
                 and all(e['original_calls'] == 1 and e['status'] == 'OBSERVED' for e in self.events),
             events=self.events, nodes=self.nodes, active=self.active, native_qualified=False,
+            owned_dispatch_modes=int(not self.mode_released), cleanup_pending=self.active and self.ending,
             unknown_edges=[e['sequence'] for e in self.events if not e['row_preserving']],
             source_boundaries=boundary_report))

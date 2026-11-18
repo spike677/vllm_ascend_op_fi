@@ -10,9 +10,9 @@ import sys
 import threading
 
 import torch
-from torch.utils._python_dispatch import TorchDispatchMode, _get_current_dispatch_mode
+from torch.utils._python_dispatch import TorchDispatchMode, _get_current_dispatch_mode, _get_current_dispatch_mode_stack
 
-from .quant_row_provenance import metadata, snapshot, tensor_values
+from .quant_row_provenance import exit_owned_mode, metadata, snapshot, tensor_values
 from .quant_source_rows import source_bindings, _resolve, _same_extent
 from .serving_context import require
 
@@ -50,6 +50,8 @@ class MlaMetadataRows:
         self.scope = self.actual_positions = None
         self.total = self.overflow = 0
         self.released = False
+        self.profile_released = True
+        self.closing = False
 
     @classmethod
     def from_runtime(cls, runner):
@@ -76,14 +78,23 @@ class MlaMetadataRows:
         self.scope = self.actual_positions = None
         self.total = self.overflow = 0
         self.released = False
+        self.profile_released, self.closing = True, False
         parent = self
         class Observe(TorchDispatchMode):
             def __torch_dispatch__(self, func, types, args=(), kwargs=None):
                 return parent._operator(func, args, kwargs or {})
         self.mode = Observe()
-        self.mode.__enter__()
         self.active = True
-        sys.setprofile(self.callback)
+        try:
+            self.mode.__enter__()
+        except BaseException:
+            if not any(value is self.mode for value in _get_current_dispatch_mode_stack()):
+                self.mode = None
+            raise
+        try:
+            sys.setprofile(self.callback)
+        finally:
+            self.profile_released = sys.getprofile() is not self.callback
 
     def _write(self, tensors):
         changes = [_key(tensor) for tensor in tensors]
@@ -197,11 +208,20 @@ class MlaMetadataRows:
 
     def close(self, *, scope=None, actual_positions=None):
         require(self.active and not self.pending and threading.get_ident() == self.thread
-                and sys.getprofile() is self.callback and _get_current_dispatch_mode() is self.mode,
+                and sys.getprofile() is (None if self.profile_released else self.callback),
                 'EARLY_METADATA_OBSERVER_OWNER_OR_INFLIGHT_CHANGED')
-        sys.setprofile(None)
-        self.mode.__exit__(None, None, None)
-        self.mode = None
+        self.closing = True
+        if not self.profile_released:
+            sys.setprofile(None)
+            self.profile_released = sys.getprofile() is None
+            require(self.profile_released, 'EARLY_METADATA_PROFILE_NOT_RELEASED')
+        if self.mode is not None:
+            removed, error = exit_owned_mode(self.mode, 'EARLY_METADATA_OBSERVER_OWNER_OR_INFLIGHT_CHANGED')
+            if removed:
+                self.mode = None
+            if error is not None:
+                raise error
+        require(_get_current_dispatch_mode() is None, 'EARLY_METADATA_MODE_STACK_NOT_RESTORED')
         self.active = False
         if scope is not None:
             require(set(scope['request_ids']) == set(self.expected_ids) and isinstance(actual_positions, torch.Tensor),
@@ -253,6 +273,8 @@ class MlaMetadataRows:
 
     def report(self):
         return snapshot(dict(schema='demoncat.quant.early_mla_metadata.v1', active=self.active,
+            owned_profile_callbacks=int(not self.profile_released), owned_dispatch_modes=int(self.mode is not None),
+            cleanup_pending=self.active and self.closing,
             sources=self.sources, simulation=self.simulation, errors=self.errors, events=self.events,
             actual_calls=self.total, retained_calls=len(self.events), missing_calls=self.overflow,
             live_producer_records=0 if self.released else len(self.rows),

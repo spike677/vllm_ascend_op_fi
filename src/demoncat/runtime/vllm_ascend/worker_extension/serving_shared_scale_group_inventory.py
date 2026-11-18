@@ -90,9 +90,12 @@ class SharedScaleGroupInventorySession(SharedScaleInventorySession):
             group_owner_installed=False, legacy_library_loaded=False,
             source_row_adapter=dict(enabled=self.source_rows is not None, refusal=self.source_row_refusal),
             metadata_producers=self.metadata_rows.report() if self.metadata_rows is not None else None,
-            owned_source_profile_callbacks=sum(int(value is not None and value.active)
+            owned_source_profile_callbacks=sum(int(value is not None and not value.profile_released)
                 for value in (self.source_rows, self.metadata_rows)),
             owned_early_dispatch_modes=int(self.metadata_rows is not None and self.metadata_rows.mode is not None),
+            owned_nested_dispatch_modes=0 if self.source_rows is None else len(self.source_rows.owned_modes),
+            observer_cleanup_pending=any(value is not None and value.active for value in
+                (self.source_rows, self.metadata_rows)) or self.row_observer.active,
             owned_live_metadata_records=0 if self.metadata_rows is None else self.metadata_rows.report()['live_producer_records'],
             scope='ALL_GROUP_MODEL_PARENTS_AND_NATIVE_CHILDREN_IN_TWO_ACTUAL_B8_FIRST_DECODES')
         return value

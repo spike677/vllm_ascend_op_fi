@@ -2,10 +2,13 @@
 import hashlib
 from pathlib import Path
 import sys
+import threading
 from types import SimpleNamespace as NS
 import unittest
+from unittest.mock import patch
 
 import torch
+from torch.utils._python_dispatch import _get_current_dispatch_mode, _get_current_dispatch_mode_stack
 
 from demoncat.runtime.vllm_ascend.worker_extension.quant_mla_metadata_rows import MlaMetadataRows
 from demoncat.runtime.vllm_ascend.worker_extension.quant_source_rows import source_bindings
@@ -146,6 +149,67 @@ class EarlyMetadataTests(unittest.TestCase):
         self.assertEqual(len(report['boundaries']), 2)
         with self.assertRaisesRegex(RuntimeError, 'COMPLETE_METADATA_INTERVAL'):
             self.observer.consumer(output, self.graph)
+
+    def test_close_before_pop_failure_retains_mode_and_retries_after_profile_removal(self):
+        self.observer.begin(self.scope['request_ids'])
+        mode = self.observer.mode
+        with patch.object(type(mode), '__exit__', side_effect=RuntimeError('TRANSIENT_EXIT_FAILURE')):
+            with self.assertRaisesRegex(RuntimeError, 'TRANSIENT_EXIT_FAILURE'):
+                self.observer.close()
+        report = self.observer.report()
+        self.assertTrue(report['active'] and report['cleanup_pending'])
+        self.assertEqual((report['owned_profile_callbacks'], report['owned_dispatch_modes']), (0, 1))
+        self.assertIsNone(sys.getprofile())
+        self.assertIs(_get_current_dispatch_mode(), mode)
+        self.observer.close()
+        self.assertFalse(self.observer.active)
+        self.assertEqual(_get_current_dispatch_mode_stack(), [])
+        self.assertTrue(torch.equal(torch.ones(2) + 1, torch.full((2,), 2.0)))
+
+    def test_close_after_pop_failure_does_not_exit_the_removed_mode_twice(self):
+        self.observer.begin(self.scope['request_ids'])
+        mode = self.observer.mode
+        original_exit = type(mode).__exit__
+        def pop_then_raise(value, *args):
+            original_exit(value, *args)
+            raise RuntimeError('AFTER_POP_FAILURE')
+        with patch.object(type(mode), '__exit__', pop_then_raise):
+            with self.assertRaisesRegex(RuntimeError, 'AFTER_POP_FAILURE'):
+                self.observer.close()
+        self.assertTrue(self.observer.active)
+        self.assertIsNone(self.observer.mode)
+        self.assertEqual(_get_current_dispatch_mode_stack(), [])
+        self.observer.close()
+        self.assertFalse(self.observer.active)
+
+    def test_staged_close_refuses_foreign_profile_or_thread_then_original_owner_retries(self):
+        self.observer.begin(self.scope['request_ids'])
+        mode = self.observer.mode
+        with patch.object(type(mode), '__exit__', side_effect=RuntimeError('RETRY')):
+            with self.assertRaisesRegex(RuntimeError, 'RETRY'):
+                self.observer.close()
+        foreign = lambda *args: None
+        sys.setprofile(foreign)
+        try:
+            with self.assertRaisesRegex(RuntimeError, 'OWNER_OR_INFLIGHT_CHANGED'):
+                self.observer.close()
+            self.assertIs(sys.getprofile(), foreign)
+            self.assertIs(_get_current_dispatch_mode(), mode)
+        finally:
+            sys.setprofile(None)
+        errors = []
+        def foreign_thread():
+            try:
+                self.observer.close()
+            except RuntimeError as error:
+                errors.append(str(error))
+        thread = threading.Thread(target=foreign_thread)
+        thread.start()
+        thread.join()
+        self.assertEqual(len(errors), 1)
+        self.assertIn('OWNER_OR_INFLIGHT_CHANGED', errors[0])
+        self.observer.close()
+        self.assertEqual(_get_current_dispatch_mode_stack(), [])
 
 
 if __name__ == '__main__':

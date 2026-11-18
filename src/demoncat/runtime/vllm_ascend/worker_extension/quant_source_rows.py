@@ -13,9 +13,9 @@ import types
 import weakref
 
 import torch
-from torch.utils._python_dispatch import TorchDispatchMode, _get_current_dispatch_mode
+from torch.utils._python_dispatch import TorchDispatchMode, _get_current_dispatch_mode, _get_current_dispatch_mode_stack
 
-from .quant_row_provenance import digest, metadata, snapshot, tensor_values
+from .quant_row_provenance import digest, exit_owned_mode, metadata, snapshot, tensor_values
 from .serving_context import require
 
 
@@ -129,6 +129,9 @@ class SourceBoundRows:
         self.scope = None
         self.alias_parents = {}
         self.metadata_producers = None
+        self.owned_modes = []
+        self.profile_released = True
+        self.ending = False
 
     @classmethod
     def from_runtime(cls, graph, model):
@@ -154,12 +157,14 @@ class SourceBoundRows:
         return value
 
     def begin(self, scope):
-        require(not self.active and sys.getprofile() is None and self.graph.active,
+        require(not self.active and not self.owned_modes and sys.getprofile() is None
+                and self.graph.active and not self.graph.ending,
                 'EXCLUSIVE_QUANT_ROW_PROFILE_OWNER_REQUIRED')
         self.scope = snapshot(scope)
         self.thread = threading.get_ident()
         self.pending, self.stack, self.rows, self.errors, self.operator_stack = {}, [], [], [], []
         self.alias_parents = {}
+        self.profile_released, self.ending = True, False
         self.graph.watched_storages.extend(snapshot(item[2]) for item in self.constants.values())
         if self.metadata_producers is not None:
             self.graph.watched_storages.extend(self.metadata_producers.watched_storages())
@@ -168,7 +173,10 @@ class SourceBoundRows:
                     'QUANT_ROW_SOURCE_CHANGED_BEFORE_FORWARD:' + name)
         self._verify_bindings()
         self.active = True
-        sys.setprofile(self.callback)
+        try:
+            sys.setprofile(self.callback)
+        finally:
+            self.profile_released = sys.getprofile() is not self.callback
 
     def _verify_bindings(self):
         require(all(item['function'].__code__ is code and item['function'].__globals__ is vars(item['module'])
@@ -178,20 +186,35 @@ class SourceBoundRows:
                     for owner, name, function in self.impl_methods), 'QUANT_ROW_INSTALLED_IMPL_METHOD_CHANGED')
 
     def end(self):
-        require(self.active and threading.get_ident() == self.thread and sys.getprofile() is self.callback,
+        require(self.active and threading.get_ident() == self.thread
+                and sys.getprofile() is (None if self.profile_released else self.callback),
                 'QUANT_ROW_PROFILE_OWNER_CHANGED')
-        require(not self.pending and not self.operator_stack, 'QUANT_ROW_BOUNDARIES_STILL_INFLIGHT')
-        sys.setprofile(None)
-        self.active = False
+        require(not self.pending and not self.stack and not self.operator_stack, 'QUANT_ROW_BOUNDARIES_STILL_INFLIGHT')
+        self.ending = True
+        while self.owned_modes:
+            self._release_mode(self.owned_modes[-1])
+        if not self.profile_released:
+            sys.setprofile(None)
+            self.profile_released = sys.getprofile() is None
+            require(self.profile_released, 'QUANT_ROW_PROFILE_NOT_RELEASED')
         if self.metadata_producers is not None:
             self.metadata_producers.release()
+        self.active = False
         return self.report()
+
+    def _release_mode(self, mode):
+        require(self.owned_modes and self.owned_modes[-1] is mode, 'QUANT_ROW_NESTED_MODE_ORDER_CHANGED')
+        removed, error = exit_owned_mode(mode, 'QUANT_ROW_NESTED_MODE_OWNER_CHANGED')
+        if removed:
+            self.owned_modes.pop()
+        if error is not None:
+            raise error
 
     def _parent(self, role):
         return next((row for row in reversed(self.stack) if row['role'] == role), None)
 
     def permits_public_rows(self, operators):
-        if not self.active or self.errors:
+        if not self.active or self.ending or self.errors:
             return False
         for operator in operators:
             matches = [state for state in self.operator_stack if state['func'] is operator]
@@ -218,7 +241,7 @@ class SourceBoundRows:
 
     def _mode(self):
         current = _get_current_dispatch_mode()
-        if current is self.graph or any(row.get('mode') is current for row in self.stack if row.get('mode') is not None):
+        if current is self.graph or any(mode is current for mode in self.owned_modes):
             return None
         require(current is None, 'FOREIGN_MODE_INSIDE_OPAQUE_QUANT_BOUNDARY')
         graph = self.graph
@@ -226,7 +249,13 @@ class SourceBoundRows:
             def __torch_dispatch__(self, func, types, args=(), kwargs=None):
                 return graph.__torch_dispatch__(func, types, args, kwargs)
         mode = Observe()
-        mode.__enter__()
+        self.owned_modes.append(mode)
+        try:
+            mode.__enter__()
+        except BaseException:
+            if not any(value is mode for value in _get_current_dispatch_mode_stack()):
+                self.owned_modes.pop()
+            raise
         return mode
 
     def _profile(self, frame, event, result):
@@ -235,7 +264,7 @@ class SourceBoundRows:
         row = None
         try:
             binding = self.bindings[frame.f_code]
-            require(self.active and threading.get_ident() == self.thread and frame.f_globals is vars(binding['module'])
+            require(self.active and not self.ending and threading.get_ident() == self.thread and frame.f_globals is vars(binding['module'])
                     and _resolve(binding['module'], binding['qualname']) is binding['function']
                     and binding['function'].__code__ is frame.f_code,
                     'QUANT_ROW_BOUNDARY_CALLABLE_IDENTITY_CHANGED')
@@ -270,10 +299,12 @@ class SourceBoundRows:
             if event == 'return' and id(frame) in self.pending:
                 row = self.pending.pop(id(frame))
                 if row.get('mode') is not None:
-                    if _get_current_dispatch_mode() is row['mode']:
-                        row['mode'].__exit__(None, None, None)
-                    else:
-                        self.errors.append('QUANT_ROW_NESTED_MODE_OWNER_CHANGED')
+                    try:
+                        self._release_mode(row['mode'])
+                    except BaseException as error:
+                        self.errors.append(type(error).__name__ + ':' + str(error))
+                    # The independent ledger retains the owned handle even
+                    # when this Python frame has completed and been removed.
                 if self.stack and self.stack[-1] is row:
                     self.stack.pop()
                 # Tensor references only live through their actual source call.
@@ -565,4 +596,7 @@ class SourceBoundRows:
         return snapshot(dict(schema='demoncat.quant.source_bound_rows.v1', simulation=self.simulation,
             sources=self.sources, boundaries=rows, errors=self.errors, active=self.active,
             inflight=len(self.pending), native_qualified=False,
-            complete=not self.errors and not self.pending and all(row['status'] == 'OBSERVED' for row in rows)))
+            owned_nested_dispatch_modes=len(self.owned_modes), owned_profile_callbacks=int(not self.profile_released),
+            cleanup_pending=self.active and self.ending,
+            complete=not self.active and not self.owned_modes and not self.errors and not self.pending
+                and all(row['status'] == 'OBSERVED' for row in rows)))
