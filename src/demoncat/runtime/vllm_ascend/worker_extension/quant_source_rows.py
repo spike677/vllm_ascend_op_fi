@@ -170,11 +170,16 @@ class SourceBoundRows:
         self.ending = False
         self.input_ids = self.input_ids_metadata = None
         self.embedding_attempts = 0
+        self.moe = None
 
     @classmethod
     def from_runtime(cls, graph, model):
-        bindings, sources = source_bindings()
+        from .quant_moe_rows import SharedMoERows, REVIEWED as MOE_REVIEWED, has_runtime_owner
+        moe_enabled = has_runtime_owner(model)
+        bindings, sources = source_bindings(dict(REVIEWED, **MOE_REVIEWED) if moe_enabled else REVIEWED)
         value = cls(graph, model, bindings, sources)
+        if moe_enabled:
+            value.moe = SharedMoERows(value)
         # Freeze the actual installed implementation and its derived weights.
         # A later tensor replacement cannot become a new trusted constant.
         for _, module in model.named_modules():
@@ -262,9 +267,16 @@ class SourceBoundRows:
             return False
         for operator in operators:
             matches = [state for state in self.operator_stack if state['func'] is operator]
-            if len(matches) != 1 or matches[0]['expected_role'] != 'mla_opaque':
+            if len(matches) != 1:
                 return False
-            actual = [row for row in matches[0]['actual_boundaries'] if row['role'] == 'mla_opaque']
+            state = matches[0]
+            role = state['expected_role']
+            if role == 'moe_opaque':
+                if self.moe is None or not self.moe.permits(state):
+                    return False
+            elif role != 'mla_opaque':
+                return False
+            actual = [row for row in state['actual_boundaries'] if row['role'] == role]
             if len(actual) != 1 or actual[0]['status'] != 'INFLIGHT':
                 return False
         return True
@@ -333,10 +345,12 @@ class SourceBoundRows:
                 self.stack.append(row)
                 if row['parent_operator'] is not None:
                     row['parent_operator']['actual_boundaries'].append(row)
-                if binding['role'] == 'mla_opaque':
+                if binding['role'] in ('mla_opaque', 'moe_opaque'):
                     row['mode'] = self._mode()
                 if binding['role'] == 'embedding_origin':
                     self._embedding_start(row)
+                if self.moe is not None and binding['role'].startswith('moe_'):
+                    self.moe.called(row, frame)
             else:
                 row = self.pending.get(id(frame))
                 require(row is not None and self.stack[-1] is row, 'QUANT_ROW_PROFILE_RETURN_ORDER_CHANGED')
@@ -368,7 +382,9 @@ class SourceBoundRows:
 
     def _returned(self, row, values, result):
         original = row['input']
-        if row['role'].startswith('embedding_'):
+        if self.moe is not None and row['role'].startswith('moe_'):
+            self.moe.returned(row, values, result)
+        elif row['role'].startswith('embedding_'):
             self._embedding_return(row, result)
         elif row['role'] in ('no_gather', 'no_chunk'):
             name = 'x' if row['role'] == 'no_gather' else 'residual'
@@ -677,11 +693,15 @@ class SourceBoundRows:
         expected = {'vllm.mla_forward.default': 'mla_opaque',
             'vllm.maybe_all_gather_and_maybe_unpad.default': 'no_gather',
             'vllm.maybe_chunk_residual.default': 'no_chunk'}.get(name)
+        if name == 'vllm.moe_forward_shared.default' and self.moe is not None:
+            expected = 'moe_opaque'
         if name == 'vllm.maybe_pad_and_reduce.default' and self._parent('embedding_origin') is not None:
             expected = 'embedding_pad'
         if expected is not None:
             self._verify_bindings()
             state['expected_role'] = expected
+        if expected == 'moe_opaque':
+            self.moe.before_operator(state)
         if name == 'vllm.mla_forward.default':
             bound = _arguments(func, args, kwargs)
             writes = [arg.name for arg in schema.arguments if arg.alias_info is not None and arg.alias_info.is_write]
@@ -710,6 +730,8 @@ class SourceBoundRows:
         return state
 
     def failed_operator(self, state, error):
+        if state is not None and 'moe' in state and self.moe is not None:
+            self.moe.after_operator(state)
         if state is not None and self.operator_stack and self.operator_stack[-1] is state:
             self.operator_stack.pop()
         self.errors.append('ACTUAL_OPERATOR_FAILED:' + repr(error))
@@ -719,6 +741,8 @@ class SourceBoundRows:
             return set()
         require(self.operator_stack and self.operator_stack[-1] is state, 'QUANT_ROW_OPERATOR_RETURN_ORDER_CHANGED')
         self.operator_stack.pop()
+        if 'moe' in state and self.moe is not None:
+            self.moe.after_operator(state)
         if not self.active or self.errors:
             return set()
         try:
@@ -937,6 +961,9 @@ class SourceBoundRows:
                  ('input', 'snapshots', 'mode', 'parent_operator')} for row in self.rows]
         return snapshot(dict(schema='demoncat.quant.source_bound_rows.v1', simulation=self.simulation,
             sources=self.sources, boundaries=rows, errors=self.errors, active=self.active,
+            shared_moe_adapter=dict(enabled=self.moe is not None,
+                frozen_model_owners=len(self.moe.owners) if self.moe is not None else 0,
+                routed_output_row_qualified=False),
             inflight=len(self.pending), native_qualified=False,
             owned_nested_dispatch_modes=len(self.owned_modes), owned_profile_callbacks=int(not self.profile_released),
             owned_scheduler_input_refs=int(self.input_ids is not None),
