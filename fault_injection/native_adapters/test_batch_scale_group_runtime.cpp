@@ -27,6 +27,7 @@ struct Tensor {
     void* data{};aclDataType type{};uint64_t rank{};
     int64_t shape[12]{},strides[12]{};
     uint64_t storage_rank{UINT64_MAX},stride_rank{UINT64_MAX};int64_t storage[12]{};
+    int64_t offset{};aclFormat format{ACL_FORMAT_ND};
 };
 struct Executor {Tensor x{},q{},s{};uint64_t workspace{16};};
 Tensor* tensor(const aclTensor* t){return reinterpret_cast<Tensor*>(const_cast<aclTensor*>(t));}
@@ -41,8 +42,8 @@ int selected_mode=Reference;
 Config configured{};Key selected_target{{1,2,3,4}},other_target{{5,6,7,8}},rows_proof{{11,12,13,14}};
 aclError fake_device(int32_t* d){if(throw_device)throw std::bad_alloc();*d=0;return 0;}
 aclnnStatus fake_type(const aclTensor* t,aclDataType* out){*out=tensor(t)->type;return 0;}
-aclnnStatus fake_format(const aclTensor*,aclFormat* out){*out=ACL_FORMAT_ND;return 0;}
-aclnnStatus fake_offset(const aclTensor*,int64_t* out){*out=0;return 0;}
+aclnnStatus fake_format(const aclTensor* t,aclFormat* out){*out=tensor(t)->format;return 0;}
+aclnnStatus fake_offset(const aclTensor* t,int64_t* out){*out=tensor(t)->offset;return 0;}
 aclnnStatus fake_dimensions(const aclTensor* t,int64_t** out,uint64_t* n,unsigned kind) {
     ++getter_calls;const auto* value=tensor(t);
     *n=kind==1 && value->stride_rank!=UINT64_MAX?value->stride_rank:
@@ -118,6 +119,7 @@ struct Invocation {
     Tensor xx{x.data(),ACL_BF16,2,{2,4},{4,1}},qq{q.data(),ACL_INT8,2,{2,4},{4,1}},ss{s.data(),ACL_FLOAT,1,{2,0},{1,0}};
     uint64_t token{},workspace_bytes{};aclOpExecutor* executor{};Completion result{};
     std::vector<unsigned char> workspace;
+    void flat_storage() {xx.storage_rank=qq.storage_rank=1;xx.storage[0]=qq.storage[0]=8;}
     void begin() {
         PublicInput input{};input.thread=tid();input.device=0;input.input=view(reinterpret_cast<const aclTensor*>(&xx));
         input.input.descriptor=0;assert(dcat_dqg_public_begin_v1(&configured,&input,&token)==Ok);
@@ -261,10 +263,10 @@ void sdk_metadata_arrays_release_on_all_view_exits() {
     try{(void)view(input);}catch(const std::bad_alloc&){caught=true;}
     assert(caught && array_accounting::count()==alive);throw_getter_at=0;
 }
-void raw_metadata_keeps_rank_refusal_without_public_fill() {
+void raw_metadata_keeps_padding_refusal_without_public_fill() {
     install();selected_mode=0;Invocation call;
-    call.xx.storage_rank=1;call.xx.storage[0]=8;
-    call.qq.storage_rank=1;call.qq.storage[0]=8;
+    call.xx.storage_rank=1;call.xx.storage[0]=9;
+    call.qq.storage_rank=1;call.qq.storage[0]=9;
     const auto arrays=array_accounting::count();
     assert(!call.prepare() && !call.execute());
     MetadataState state{};assert(dcat_dqg_metadata_state_v1(&state)==Ok);
@@ -275,17 +277,100 @@ void raw_metadata_keeps_rank_refusal_without_public_fill() {
         && row.thread==tid() && row.device==0 && row.ready);
     assert(dcat_dqg_metadata_parent_v1(row.parent_token,&by_parent)==Ok && by_parent.sequence==row.sequence);
     const auto& x=row.input;
-    assert(x.stage==MetadataRank && x.called_mask==127 && !x.null_arrays && !x.truncated_arrays
+    assert(x.stage==MetadataStorageMismatch && x.called_mask==127 && !x.null_arrays && !x.truncated_arrays
         && x.counts[0]==2 && x.counts[1]==2 && x.counts[2]==1 && x.retained[2]==1
-        && x.shape[0]==2 && x.shape[1]==4 && x.strides[0]==4 && x.strides[1]==1 && x.storage[0]==8
+        && x.shape[0]==2 && x.shape[1]==4 && x.strides[0]==4 && x.strides[1]==1 && x.storage[0]==9
         && x.dtype==ACL_BF16 && x.format==ACL_FORMAT_ND && x.address==reinterpret_cast<uint64_t>(call.x.data())
-        && !x.result.rows && !x.result.columns && !x.result.bytes && x.result.dimensions==2);
-    assert(row.quant.stage==MetadataRank && row.scale.stage==MetadataComplete && row.scale.result.bytes==8);
-    RawRecord raw{};assert(dcat_dqg_raw_v1(row.parent_token,&raw)==Ok && same_view(raw.parent.input,x.result,true,true));
+        && x.result.rows==2 && x.result.columns==4 && !x.result.bytes && x.result.reserved && x.result.dimensions==2);
+    assert(row.quant.stage==MetadataStorageMismatch && row.scale.stage==MetadataComplete && row.scale.result.bytes==8);
+    RawRecord raw{};assert(dcat_dqg_raw_v1(row.parent_token,&raw)==Ok && !raw.parent.input.bytes && raw.parent.input.reserved);
     assert(real_prepares==1 && real_executes==1 && !engine.state().admitted_model_calls && !allocations_made
         && array_accounting::count()==arrays);
     const auto getters=getter_calls;
     assert(dcat_dqg_metadata_v1(1,&row)==Ok && getter_calls==getters); // No late descriptor reads.
+}
+void exact_flat_nd_storage_preserves_real_reference_effect_and_off() {
+    install();
+    for(int mode:{Reference,Lossless,Off}){selected_mode=mode;Invocation call;call.flat_storage();call.success();}
+    seal();selected_mode=Fault;Invocation fault;fault.flat_storage();
+    const auto prepares=real_prepares,executes=real_executes;
+    fault.success();
+    assert(real_prepares-prepares==2 && real_executes-executes==2 && fault.result.core.changed_quant_bytes
+        && fault.result.core.changed_scale_bytes && fault.result.core.input_unchanged && fault.result.core.released);
+    MetadataRecord row{};assert(dcat_dqg_metadata_parent_v1(fault.result.call.token,&row)==Ok);
+    assert(row.input.stage==MetadataComplete && row.input.counts[0]==2 && row.input.counts[1]==2 && row.input.counts[2]==1
+        && row.input.storage[0]==8 && row.input.result.bytes==16 && row.quant.result.bytes==8 && row.scale.result.bytes==8
+        && row.input.result.descriptor==reinterpret_cast<uint64_t>(&fault.xx));
+    const auto& receipt=fault.result.core;
+    assert(receipt.reference.plan.input.descriptor==reinterpret_cast<uint64_t>(&fault.xx)
+        && receipt.reference.plan.input.rows==2 && receipt.effect.plan.input.rows==1
+        && receipt.effect.plan.input.columns==8 && receipt.effect.plan.input.descriptor!=reinterpret_cast<uint64_t>(&fault.xx));
+    RawRecord raw{};assert(dcat_dqg_raw_v1(receipt.reference.prepare_enter,&raw)==Ok);
+    assert(raw.binding.role==CorrectReference && same_view(raw.native.input,receipt.reference.plan.input));
+    assert(dcat_dqg_raw_v1(receipt.effect.prepare_enter,&raw)==Ok && raw.binding.role==ModelEffect
+        && same_view(raw.native.input,receipt.effect.plan.input));
+    selected_mode=Off;Invocation off;off.flat_storage();off.success();stop_drain_recover();
+    assert(dcat_dqg_remove_v1(&configured,observe,finish)==Ok && allocations.empty() && descriptors.empty()
+        && !executor_handles && array_accounting::count()==0);
+}
+void exact_flat_nd_storage_rejects_unproved_layout_and_bad_spans() {
+    install();Invocation call;call.flat_storage();MetadataView captured{};const Tensor original=call.xx;
+    const auto* x=reinterpret_cast<const aclTensor*>(&call.xx);const auto alive=array_accounting::count();
+    assert(view(x,&captured).bytes==16 && captured.stage==MetadataComplete);
+    for(unsigned change=0;change<15;++change) {
+        call.xx=original;
+        switch(change) {
+        case 0:call.xx.storage[0]=9;break; // padding
+        case 1:call.xx.storage[0]=7;break; // short storage
+        case 2:call.xx.storage[0]=-8;break;
+        case 3:call.xx.offset=1;break;
+        case 4:call.xx.strides[0]=5;break;
+        case 5:call.xx.strides[1]=2;break;
+        case 6:call.xx.format=static_cast<aclFormat>(47);break;
+        case 7:call.xx.data=reinterpret_cast<void*>(reinterpret_cast<uint64_t>(original.data)+1);break;
+        case 8:call.xx.data=nullptr;break;
+        case 9:call.xx.data=reinterpret_cast<void*>(UINT64_MAX-1);break;
+        case 10:call.xx.type=ACL_FLOAT16;break; // No observed FP16 flat-storage profile.
+        case 11:call.xx.type=ACL_FLOAT;break;
+        case 12:call.xx.type=static_cast<aclDataType>(99);break;
+        case 13:call.xx.shape[0]=INT64_MAX;break;
+        case 14:call.xx.shape[1]=1048576;break;
+        }
+        const auto result=view(x,&captured);
+        assert(!result.bytes && captured.stage!=MetadataComplete && array_accounting::count()==alive);
+    }
+    call.xx=original;call.xx.storage_rank=UINT64_MAX;call.xx.type=ACL_FLOAT16;
+    assert(view(x,&captured).bytes==16); // Existing same-rank profile is unchanged.
+}
+void flat_storage_does_not_bypass_actual_workspace_contract() {
+    install();qualify();seal();selected_mode=Fault;Invocation call;call.flat_storage();call.begin();assert(!call.prepare());
+    call.workspace.resize(call.workspace_bytes);
+    const auto calls=real_executes;
+    assert(aclnnDynamicQuantV2(call.workspace.data(),call.workspace_bytes-1,call.executor,reinterpret_cast<aclrtStream>(71)));
+    assert(real_executes==calls && engine.state().pending_parent && journal.state().pending==2);
+    public_storage_live=false;assert(call.end(1)==Liveness && !late_copies);
+    assert(dcat_dqg_recover_v1(&configured)==Liveness && !allocations.empty());
+}
+void all_observed_b8_widths_extract_exact_flat_span_without_padding() {
+    install();const auto arrays=array_accounting::count();
+    for(const int64_t width:{2048,10944,2816}) {
+        const int64_t elements=8*width;
+        std::vector<uint16_t> x(static_cast<size_t>(elements));std::vector<int8_t> q(static_cast<size_t>(elements));
+        std::array<float,8> scale{};
+        Tensor input{x.data(),ACL_BF16,2,{8,width},{width,1}},quant{q.data(),ACL_INT8,2,{8,width},{width,1}},
+            scales{scale.data(),ACL_FLOAT,1,{8},{1}};
+        input.storage_rank=quant.storage_rank=1;input.storage[0]=quant.storage[0]=elements;
+        MetadataView captured{};
+        const auto iv=view(reinterpret_cast<const aclTensor*>(&input),&captured);
+        assert(iv.rows==8 && iv.columns==width && iv.bytes==uint64_t(elements)*2 && !iv.reserved
+            && captured.counts[0]==2 && captured.counts[1]==2 && captured.counts[2]==1
+            && captured.storage[0]==elements && captured.stage==MetadataComplete);
+        const auto qv=view(reinterpret_cast<const aclTensor*>(&quant),&captured);
+        const auto sv=view(reinterpret_cast<const aclTensor*>(&scales),&captured);
+        assert(qv.bytes==uint64_t(elements) && qv.columns==width && sv.bytes==32 && sv.dimensions==1
+            && !qv.reserved && !sv.reserved && array_accounting::count()==arrays);
+    }
+    assert(!real_prepares && !real_executes); // Metadata extraction, never a numerical oracle.
 }
 void raw_metadata_rank_arrays_partial_failures_and_truncation() {
     install();Invocation call;MetadataView captured{};const auto alive=array_accounting::count();
@@ -372,11 +457,15 @@ int main() {
     run("exception at completion revokes stack",throw_during_completion);
     run("C control ABI catches exceptions",control_abi_catches_exceptions);
     run("SDK metadata ownership on all exits",sdk_metadata_arrays_release_on_all_view_exits);
-    run("actual GWS raw storage rank without geometry fill",raw_metadata_keeps_rank_refusal_without_public_fill);
+    run("actual GWS raw padded storage refusal",raw_metadata_keeps_padding_refusal_without_public_fill);
     run("raw metadata ranks errors nulls and bounded arrays",raw_metadata_rank_arrays_partial_failures_and_truncation);
     run("raw metadata bounded retention",raw_metadata_budget_retains_counts_without_native_mutation);
+    run("exact flat ND storage actual children and OFF",exact_flat_nd_storage_preserves_real_reference_effect_and_off);
+    run("exact flat ND storage refuses changed geometry and dtype",exact_flat_nd_storage_rejects_unproved_layout_and_bad_spans);
+    run("exact flat storage keeps actual workspace contract",flat_storage_does_not_bypass_actual_workspace_contract);
+    run("all observed B8 widths retain exact flat span",all_observed_b8_widths_extract_exact_flat_span_without_padding);
     run("empty owner actual raw stream drain and exact callback removal",empty_owner_cancel_drains_and_removes_exact_callbacks);
     run("empty cancel retains live scope and pending executor",empty_cancel_refuses_live_scope_pending_executor_and_nonempty_group);
     run("empty cancel cannot release admitted target",empty_cancel_does_not_release_an_admitted_target);
-    std::cout<<"PASS 20 typed-shim CPU memory contracts; actual NPU calls=0; mocked Native functions; SDK status depends on build headers\n";
+    std::cout<<"PASS 24 typed-shim CPU memory contracts; actual NPU calls=0; mocked Native functions; SDK status depends on build headers\n";
 }

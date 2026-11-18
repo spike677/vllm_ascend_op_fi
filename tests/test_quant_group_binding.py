@@ -1,5 +1,9 @@
 """Explicit CPU doubles; these tests never load CANN or claim Native effects."""
 import ctypes as C
+import json
+import os
+from pathlib import Path
+import tempfile
 import threading
 from types import SimpleNamespace as NS
 import unittest
@@ -158,6 +162,59 @@ class FakeLibrary:
     def recover(self, *args):
         self.recover_calls += 1
         return 0
+
+
+class QuantGroupProfileTests(unittest.TestCase):
+    """Exact source profile, despite an unchanged ABI; all DSO calls mocked."""
+    def bundle(self, root, *, prior_source=False):
+        library = 'runtime/vendor/op_api/lib/libcust_opapi.so'
+        path = root / library
+        path.parent.mkdir(parents=True)
+        path.write_bytes(b'CPU reviewed DSO fixture - not executable')
+        files = {library: group._sha(path)}
+        sources = {}
+        for name in group.PRODUCTION_SOURCES:
+            data = (Path(group.__file__).parent / 'native_adapters' / name).read_bytes()
+            if prior_source and name == 'batch_scale_group_runtime.cpp':
+                data += b'\n// EXPLICIT_CPU_PRIOR_IMPLEMENTATION_PROFILE\n'
+            (root / name).write_bytes(data)
+            files[name] = sources['fault_injection/native_adapters/' + name] = group._sha(root / name)
+        real = root / 'real-opapi-fixture'
+        real.write_bytes(b'CPU actual-file-identity fixture')
+        manifest = dict(schema='demoncat.quant.group_deployment.v1', cann='8.5.1', actual_npu_calls=0,
+            legacy_c1_library_present=False, library=library, files=files, sources=sources,
+            actual_image_id='sha256:' + 'b'*64, source_commit='a'*40,
+            sdk_identity=dict(real_opapi=str(real), real_opapi_sha256=group._sha(real),
+                abi_sizes=SDK_A3_SIZES, metadata_abi_sizes=METADATA_MOCK_SIZES))
+        (root / 'build.json').write_text(json.dumps(manifest))
+        return group._sha(root / 'build.json'), real
+
+    def test_old_source_profile_refuses_before_cdll_even_with_same_abi_and_valid_manifest_hash(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            approved, _ = self.bundle(root, prior_source=True)
+            with patch.object(isolation, 'mapped_native_modes', return_value=()), patch.object(group.C, 'CDLL') as load:
+                with self.assertRaisesRegex(UnsupportedCall, 'SOURCE_DOES_NOT_MATCH_INSTALLED_BINDING:batch_scale_group_runtime.cpp'):
+                    group.QuantGroupNative.load(root, approved_build_sha256=approved)
+                load.assert_not_called()
+            self.assertFalse(quantization._LEASE.locked())
+
+    def test_matching_current_source_profile_uses_real_manifest_and_metadata_layout_checks(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            approved, real = self.bundle(root)
+            with patch.object(isolation, 'mapped_native_modes', return_value=()), \
+                    patch.dict(os.environ, {'DCAT_REAL_OPAPI': str(real), 'DCAT_DQ_GROUP_V1_ALLOWED': '1',
+                        'VLLM_SERVER_DEV_MODE': '1', 'DCAT_DQ_V2_ENABLE': '0'}), \
+                    patch.object(group.C, 'CDLL', return_value=FakeLibrary()) as load, \
+                    patch.object(group.QuantGroupNative, '_verify_mapped') as verified_mapping:
+                runtime = group.QuantGroupNative.load(root, approved_build_sha256=approved)
+                self.assertEqual(runtime.identity['build_sha256'], approved)
+                self.assertFalse(runtime.identity['actual_npu_acceptance'])
+                self.assertEqual(runtime.identity['sdk_metadata_abi_sizes'], METADATA_MOCK_SIZES)
+                load.assert_called_once_with(str((root / 'runtime/vendor/op_api/lib/libcust_opapi.so').resolve()), mode=C.RTLD_LOCAL)
+                verified_mapping.assert_called_once_with()
+            self.assertFalse(quantization._LEASE.locked())
 
 
 class QuantGroupBindingTests(unittest.TestCase):

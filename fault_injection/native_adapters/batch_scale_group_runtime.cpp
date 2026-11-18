@@ -203,12 +203,24 @@ View view(const aclTensor* tensor,MetadataView* captured=nullptr) {
     }
     const auto* shape=shape_owner.data;const auto* strides=strides_owner.data;const auto* storage=storage_owner.data;
     v.address=reinterpret_cast<uint64_t>(address);v.dtype=type;v.format=format;v.dimensions=static_cast<uint32_t>(count);
-    if(count<1 || count>2 || scount!=count || stored!=count || !shape || !strides || !storage)return finish(MetadataRank);
+    if(count<1 || count>2 || scount!=count || (stored!=count && !(count==2 && stored==1))
+       || !shape || !strides || !storage)return finish(MetadataRank);
     v.rows=shape[0];v.columns=count==2?shape[1]:0;v.stride0=strides[0];v.stride1=count==2?strides[1]:0;
-    if(!std::equal(shape,shape+count,storage)){v.reserved=1;return finish(MetadataStorageMismatch);}
+    if(stored==count && !std::equal(shape,shape+count,storage)){v.reserved=1;return finish(MetadataStorageMismatch);}
     const uint64_t element=type==ACL_INT8?1:(type==ACL_FLOAT16 || type==ACL_BF16)?2:type==ACL_FLOAT?4:0;
     if(v.rows<1 || v.rows>1048576 || (count==2 && (v.columns<1 || v.columns>1048576/v.rows)))return finish(MetadataExtent);
-    v.bytes=uint64_t(v.rows)*(count==2?uint64_t(v.columns):1)*element;return finish(v.bytes?MetadataComplete:MetadataExtent);
+    const auto elements=uint64_t(v.rows)*(count==2?uint64_t(v.columns):1);
+    if(stored!=count) {
+        // Source61's actual V2 BF16/int8 descriptors have view/stride rank 2
+        // and ND storage rank 1. Accept only the same exact contiguous span;
+        // preserve the real descriptor and the raw storage-rank diagnostic.
+        if(format!=ACL_FORMAT_ND || (type!=ACL_BF16 && type!=ACL_INT8) || v.offset!=0
+           || v.stride0!=v.columns || v.stride1!=1 || storage[0]<1 || uint64_t(storage[0])!=elements
+           || v.address%element || !span(v.address,elements*element)) {
+            v.reserved=1;return finish(MetadataStorageMismatch);
+        }
+    }
+    v.bytes=elements*element;return finish(v.bytes?MetadataComplete:MetadataExtent);
 }
 LiveWitness live_witness() {
     LiveWitness w{};

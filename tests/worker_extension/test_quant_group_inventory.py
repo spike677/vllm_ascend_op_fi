@@ -126,6 +126,34 @@ class GroupQuantInventoryTests(unittest.TestCase):
         self.assertTrue(all(any('FORMALS_DIFFER' in reason for reason in row['reasons'])
                             for row in self.observer.native_forwards[0]['candidates']))
 
+    def test_flat_storage_diagnostic_never_fills_missing_actual_native_geometry(self):
+        q, scale = self.native.quant(self.input)
+        parent = self.native.rows[0]['parent']
+        diagnostic = native.MetadataRecord(sequence=1, public_entry=1, parent_token=parent['token'],
+            thread=parent['thread'], device=0, ready=1, capture_complete=1)
+        for name in ('input', 'quant'):
+            value = getattr(diagnostic, name)
+            value.stage, value.called_mask = 12, 127
+            value.counts[:] = value.retained[:] = [2, 2, 1]
+            value.shape[:2], value.strides[:2], value.storage[0] = [8, 4], [4, 1], 32
+            for field, item in parent[name].items():
+                setattr(value.result, field, item)
+        self.native.rows[0]['metadata_diagnostic'] = native.snapshot(diagnostic)
+        proof = verify_public_group_call(self.native.rows, self.input, q, scale, threading.get_native_id(), expected_device=0)
+        self.assertTrue(proof['complete_formals'])
+        self.assertFalse(proof['fault_qualification'])
+        missing = copy.deepcopy(self.native.rows)
+        for row in missing:
+            value = (row['parent'] if row['kind'] == 1 else row['native'])['input']
+            for field in ('rows', 'columns', 'stride0', 'stride1', 'bytes'):
+                value[field] = 0
+        with self.assertRaisesRegex(RuntimeError, 'PUBLIC_NATIVE_FORMALS_DIFFER:input'):
+            verify_public_group_call(missing, self.input, q, scale, threading.get_native_id(), expected_device=0)
+        changed = copy.deepcopy(self.native.rows)
+        changed[2]['native']['workspace_required'] = 64
+        with self.assertRaisesRegex(RuntimeError, 'WORKSPACE_OR_STREAM_UNPROVEN'):
+            verify_public_group_call(changed, self.input, q, scale, threading.get_native_id(), expected_device=0)
+
     def test_missing_execute_keeps_candidates_and_raw_rows_before_failure(self):
         self.native.missing_execute = True
         with self.assertRaisesRegex(RuntimeError, 'EXECUTION_STILL_ACTIVE'):
