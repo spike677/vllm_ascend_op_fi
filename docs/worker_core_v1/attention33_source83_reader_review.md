@@ -56,3 +56,65 @@ need a new source freeze; the unchanged fresh Native normal build may be reused
 only through its existing exact-source/ABI checks. Full stock/private numeric
 equality has not been established by this CPU patch. F, C1/C2/C3 and E5 remain
 ungranted.
+
+## Normal repeats with actual page relocation
+
+The separate source83 partial numeric a3 report has SHA256
+`1329b1982c51c821a18ce6867dd4f21bd0f0626c83567f524af4ded5d8241e76`.
+It records exact stock/private payloads for all five same-phase pairs
+(435 payload pairs), while preserving the original thread/mapped-library
+failures. It is a partial CPU diagnosis, not an accepted bridge certificate.
+The unchanged ten-boundary metadata archive has SHA256
+`b26c19866e58c930b24c73996783ad7700d95e68ca0804a7538a9eb0b7c4a3f7`;
+its member hashes identify the boundaries used for the following diagnosis.
+These raw materials remain outside the repository.
+
+Within either arm, `baseline_repeat`, `measured` and `off_after` change
+respectively 64, 62 and 64 of the 65 effective physical page IDs. The last
+15 unused table entries do not change. The actual last-token slots are
+1008, 1040, 1008, 1040 and 1008 across the five phases. These are real page
+relocations, not raw-identical input replays or unused-tail noise. The query,
+immediate outputs and complete logical K/V hashes are unchanged in the
+metadata; the partial numeric report separately compares their saved bytes.
+
+The new reviewer retains `complete_first_input_signature_equal` and
+`raw_input_exact`; `exact` continues to mean raw signature plus query,
+immediate outputs and all 87 complete payloads are exact. Cross-arm
+same-phase comparisons always require that strict result, without any page
+normalization. A logical within-arm result cannot satisfy a cross-arm pair.
+
+Only within an arm, `logical_input_equivalent` and `normal_repeat_valid`
+provide a separate, narrowly scoped judgment. Each phase must independently
+rehash the complete 80-entry int32 table, join its first 65 entries to the
+observed used pages, prove those pages unique and within both actual caches,
+and bind the actual writer/consumer slot to the page containing position
+1024. The recorded 3D API K/V views must share the actual 4D cache storage,
+offset, stride, dtype and capacity, including the writer's retained cache
+objects. Both full logical K/V checkpoints must match, and the existing raw
+reader must rehash their complete matching later files. Before-API K/V is
+still hash-only; this change does not claim preserved before-API bins or
+prove the absence of intervening writes.
+
+The first-boundary snapshot's `consumer_returned=false` is its actual
+pre-call state. Completion is joined separately to the final independent
+audit row for the same module objects, arguments, caches, page map, slots,
+request and writer. A missing completion or a different audit boundary
+rejects the proof; the original pre-call flag is retained in the report.
+
+After those checks, only the first 65 table values and their corresponding
+full-table hash may differ in the comparison. The unused tail, mask, query,
+scalar/default semantics, tensor geometry and complete logical K/V signatures
+remain exact. The report keeps both table hashes, page lists, changed-page
+count and actual slots. Missing evidence, unknown actual inputs, duplicate or
+out-of-range pages, wrong slots or storage views, and different logical K/V
+fail. Exact output alone never substitutes for the input proof. Query,
+immediate outputs and all 87 payloads must also be exact for a normal repeat.
+
+CPU contracts exercise those refusals with actual synthetic files, including
+equal immediate outputs with a changed logical K/V byte, a missing later KV
+file, changed unused table entries and a legal relocation rejected by the
+strict cross-arm comparator. No Native mechanism, production capture, old
+result, library-identity gate or F authorization changes in this increment.
+The source83 thread and mapped-library gaps remain; a fresh complete pair
+must use the already reviewed dual-thread capture and actual production
+same-byte library mappings. C1/C2/C3 and E5 remain ungranted.

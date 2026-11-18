@@ -225,6 +225,98 @@ def check_actual_inputs(saved):
                 declaration_is_native_observation=False)
 
 
+def page_relocation_evidence(saved, validated, completed_boundary):
+    """Prove a per-request page map without changing the raw input signature.
+
+    ``validated`` is produced in this process by first_boundary, which reads
+    the actual query/output files and rehashes the complete later logical KV
+    files against both API checkpoints. It is never a flag read from result.
+    Only the 65 used page IDs and their full-table hash may be normalized.
+    """
+    check_actual_inputs(saved)
+    inputs, bound = saved['inputs'], saved['boundary']
+    # The first-boundary record is frozen before the call; its returned flag
+    # is normally false. Join the final independent audit row rather than
+    # rewriting that historical flag or using it as completion evidence.
+    need(type(bound['consumer_returned']) is bool and completed_boundary['consumer_returned'] is True
+         and all(completed_boundary[k] == bound[k] for k in ('module_path','module_object_id','impl_object_id',
+             'query','key','value','page_table','live_key_cache','live_value_cache','used_pages',
+             'slots','expected_slots','sequence_lengths','scheduler','writer')),
+         'REPEAT_FINAL_CONSUMER_BOUNDARY_NOT_JOINED')
+    table = inputs['block_table']['snapshot']; values = saved['block_table_values']
+    need(type(values) is list and len(values) == 1 and type(values[0]) is list
+         and len(values[0]) == 80 and all(type(n) is int for n in values[0]),
+         'REPEAT_COMPLETE_TYPED_PAGE_TABLE_REQUIRED')
+    raw = struct.pack('<80i', *values[0]); table_sha = hashlib.sha256(raw).hexdigest()
+    need(table['bytes'] == len(raw) == 320 and table['sha256'] == table_sha
+         and saved['inputs_after']['block_table']['sha256'] == table_sha
+         and table['metadata'] == bound['page_table'] and table['metadata']['storage_offset'] == 0,
+         'REPEAT_PAGE_TABLE_BYTES_OR_ACTUAL_VIEW_DIFFERS')
+    used = values[0][:65]
+    need(bound['used_pages'] == [used] and len(set(used)) == 65
+         and bound['sequence_lengths'] == [1025], 'REPEAT_EFFECTIVE_PAGES_AMBIGUOUS')
+    scheduler = bound['scheduler']
+    need(scheduler['counts'] == [1] and scheduler['pure_decode'] is True
+         and scheduler['row_token_positions'] == [1024]
+         and len(scheduler['request_ids']) == 1 and type(scheduler['request_ids'][0]) is str
+         and scheduler['request_ids'][0], 'REPEAT_ACTUAL_DECODE_POSITION_UNBOUND')
+    slot = used[64]*16
+    writer = bound['writer']
+    need(all(type(n) is int for n in bound['slots'])
+         and bound['slots'] == bound['expected_slots'] == writer['slots'] == [slot]
+         and writer['returned'] is True
+         and writer['module_path'] == bound['module_path'] == FIRST,
+         'REPEAT_CURRENT_WRITER_OR_CONSUMER_SLOT_DIFFERS')
+    logical = {}; capacity = []
+    for kind in ('key', 'value'):
+        flat, live = bound[kind], bound['live_'+kind+'_cache']
+        count = live['shape'][0]
+        need(type(count) is int and count >= 65 and all(0 <= n < count for n in values[0]),
+             'REPEAT_PAGE_ID_OUTSIDE_ACTUAL_CACHE:'+kind)
+        need(flat == inputs[kind]['metadata'] and writer[kind+'_cache'] == live
+             and flat['shape'] == [count,16,1024] and live['shape'] == [count,16,8,128]
+             and flat['stride'] == [16384,1024,1] and live['stride'] == [16384,1024,128,1]
+             and flat['storage_offset'] == live['storage_offset'] == 0
+             and type(flat['storage_identity']) is int and flat['storage_identity'] > 0
+             and flat['storage_identity'] == live['storage_identity']
+             and flat['storage_nbytes'] == live['storage_nbytes'] == count*16*1024*2
+             and flat['dtype'] == live['dtype'] == 'torch.float16'
+             and flat['device'] == live['device'] == inputs['query']['snapshot']['metadata']['device']
+             and flat['device'].split(':')[0] == 'npu', 'REPEAT_ACTUAL_3D_TO_4D_STORAGE_VIEW_DIFFERS:'+kind)
+        before, after = saved['logical_kv_before'][kind], saved['logical_kv_after'][kind]
+        verified = validated['summary']['logical_kv'][kind]
+        need(before['metadata'] == after['metadata'] == live
+             and all(before[k] == after[k] for k in ('version','shape','bytes','sha256','finite'))
+             and before['version'] == inputs[kind]['version']
+             and before['shape'] == [1025,8,128] and before['bytes'] == 2099200 and before['finite'] is True
+             and before['physical_pages'] == after['physical_pages'] == used
+             and before['readback'] == after['readback'] == 'ACTUAL_VALID_LOGICAL_PAGE_ORDER'
+             and before['operator_input_repacked'] is after['operator_input_repacked'] is False
+             and all(verified[k] == before[k] for k in ('shape','bytes','sha256'))
+             and verified['dtype'] == live['dtype'] and verified['matching_post_file_rehashed'] is True
+             and verified['pre_boundary_file_preserved'] is False and verified['post_consumer_file'],
+             'REPEAT_COMPLETE_LOGICAL_KV_PROOF_MISSING_OR_CHANGED:'+kind)
+        logical[kind] = {k:verified[k] for k in ('shape','dtype','bytes','sha256')}
+        capacity.append(count)
+    need(capacity[0] == capacity[1], 'REPEAT_KV_PAGE_CAPACITIES_DIFFER')
+    signature = validated['input_signature']
+    need(signature['block_table_values'] == values
+         and signature['block_table']['snapshot']['sha256'] == table_sha
+         and signature['logical_kv'] == logical, 'REPEAT_VERIFIED_INPUT_SIGNATURE_JOIN_DIFFERS')
+    normalized = json.loads(json.dumps(signature, allow_nan=False))
+    normalized['block_table_values'][0][:65] = list(range(65))
+    normalized['block_table']['snapshot']['sha256'] = 'PROVEN_USED_PAGE_RELOCATION_ONLY'
+    return dict(normalized_signature=normalized, summary=dict(
+        kind='SOURCE_BOUND_LOGICAL_PAGE_RELOCATION_CHECK', used_page_count=65, table_entries=80,
+        cache_pages=capacity[0], current_position=1024, writer_consumer_slot=slot,
+        used_pages=used, complete_table_sha256=table_sha, logical_kv=logical,
+        raw_input_signature_sha256=validated['input_sha256'],
+        normalized_input_signature_sha256=evidence.digest(normalized),
+        captured_boundary_consumer_returned=bound['consumer_returned'],final_consumer_returned=True,
+        full_logical_kv_post_files_rehashed=True, pre_boundary_kv_bytes_preserved=False,
+        allowed_difference_fields=['block_table_values[0][0:65]', 'block_table.snapshot.sha256']))
+
+
 def captured_thread_identity(saved):
     identity = saved.get('thread_identity')
     need(type(identity) is dict and set(identity) == {'python_thread_ident','native_tid','pid','source'}
@@ -401,19 +493,34 @@ def check_coexistence(document, source, bundle, pid):
                 selected_callsite_aclnn_owner_observed=False)
 
 
-def compare_pair(left, right, helper):
+def compare_pair(left, right, helper, *, allow_page_relocation=False):
     a,b = left['boundary'],right['boundary']
     payloads = helper.differences.compare(left['payloads'],right['payloads'],LAYERS)
     if a is None or b is None:
-        return dict(complete_first_input_signature_equal=None,query=None,immediate_outputs=None,
-                    all_complete_payloads=payloads,first_boundary_incomplete=True,exact=False)
+        return dict(complete_first_input_signature_equal=None,raw_input_exact=None,
+                    logical_input_equivalent=False,normal_repeat_valid=False,
+                    query=None,immediate_outputs=None,all_complete_payloads=payloads,
+                    first_boundary_incomplete=True,exact=False)
     need(len(a['outputs']) == len(b['outputs']), 'IMMEDIATE_OUTPUT_COUNT_DIFFERS')
     outputs = [helper.boundary.difference(helper.differences,x,y) for x,y in zip(a['outputs'],b['outputs'])]
     query = helper.boundary.difference(helper.differences,a['query'],b['query'])
     equal = a['input_signature'] == b['input_signature']
-    return dict(complete_first_input_signature_equal=equal, query=query, immediate_outputs=outputs,
-        all_complete_payloads=payloads, exact=equal and query['exact'] and all(row['exact'] for row in outputs)
-            and payloads['differing_payloads'] == 0)
+    numeric_exact = query['exact'] and all(row['exact'] for row in outputs) and payloads['differing_payloads'] == 0
+    result = dict(complete_first_input_signature_equal=equal,raw_input_exact=equal,query=query,
+        immediate_outputs=outputs,all_complete_payloads=payloads,exact=equal and numeric_exact,
+        comparison_scope='WITHIN_ARM_NORMAL_REPEAT' if allow_page_relocation else 'STRICT_CROSS_ARM_RAW_PAIR')
+    if allow_page_relocation:
+        ap,bp = a.get('page_relocation'),b.get('page_relocation')
+        equivalent = (ap is not None and bp is not None
+                      and ap['normalized_signature'] == bp['normalized_signature'])
+        result.update(logical_input_equivalent=equivalent,normal_repeat_valid=equivalent and numeric_exact,
+            repeated_raw_inputs_claimed_identical=equal,
+            repeat_kind=('RAW_INPUT_EXACT' if equal else 'ACTUAL_PAGE_RELOCATION') if equivalent else 'UNPROVEN',
+            page_relocation=dict(left=ap['summary'] if ap is not None else None,
+                right=bp['summary'] if bp is not None else None,
+                changed_used_pages=sum(x != y for x,y in zip(ap['summary']['used_pages'],bp['summary']['used_pages']))
+                    if ap is not None and bp is not None else None))
+    return result
 
 
 def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks, symbols):
@@ -470,7 +577,11 @@ def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks
         phase_summary['python_token_attributes'] = checks.run(path+'.actual_inputs',lambda:check_actual_inputs(saved))
         phase_summary['thread_identity'] = checks.run(path+'.thread_identity',lambda:captured_thread_identity(saved))
         boundary = checks.run(path+'.first_boundary',lambda:helper.boundary.first_boundary(run,phase,audit[FIRST],difference_reader=helper.differences))
-        if boundary is not None: phase_summary['first_boundary'] = boundary['summary']
+        if boundary is not None:
+            phase_summary['first_boundary'] = boundary['summary']
+            relocation = checks.run(path+'.page_relocation',lambda:page_relocation_evidence(saved,boundary,audit[FIRST]))
+            boundary['page_relocation'] = relocation
+            phase_summary['page_relocation'] = relocation['summary'] if relocation is not None else None
         if payloads is not None: values[name]['boundary'] = boundary
         identity = phase_summary['thread_identity']
         if identity is not None:
@@ -504,9 +615,11 @@ def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks
         summary['library_coexistence'] = checks.run(kind+'.libraries',lambda:check_coexistence(document,source,bundle,identities[0][0]))
     for name in PHASES[1:]:
         if PHASES[0] in values and name in values:
-            compared = checks.run(kind+'.repeat.'+name,lambda name=name:compare_pair(values[PHASES[0]],values[name],helper))
+            compared = checks.run(kind+'.repeat.'+name,lambda name=name:compare_pair(
+                values[PHASES[0]],values[name],helper,allow_page_relocation=True))
             summary['within_run'][name] = compared
-            checks.require(kind+'.repeat.'+name,compared is not None and compared['exact'],'WITHIN_ARM_NORMAL_REPEAT_DIFFERS')
+            checks.require(kind+'.repeat.'+name,compared is not None and compared['normal_repeat_valid'],
+                           'WITHIN_ARM_NORMAL_REPEAT_DIFFERS')
     checks.run(kind+'.post_clean_request',lambda:need(document['healthy_after_owned_observers_removed']['outputs'] == document['warm_healthy']['outputs']
         and document['healthy_after_owned_observers_removed']['prompt_token_ids'] == tokens,'POST_CLEAN_HEALTHY_GENERATION_DIFFERS'))
     summary['post_clean_scope'] = 'ORDINARY_REQUEST_TOKENS_TEXT_ONLY_NO_FULL_LOGITS_CAPTURE'
@@ -567,6 +680,8 @@ def review(args):
         'No stock private ABI equality assumed. Stock key, symbols and launch bytes are observed without decoding its POD.',
         'Selected ACLNN callsite owner and every possible runtime entrypoint are not independently observed.',
         'Mask is hash-only. Logical KV before the first API is hash-only; complete matching later logical KV bins are rehashed.',
+        'Cross-arm same-phase pairs require the complete raw input signature and all 87 payloads exact. No page normalization is applied.',
+        'Within-arm repeats may be actual physical page relocations, not raw-identical inputs. Only independently checked used page IDs and their table hash can differ; raw equality and logical equivalence are reported separately.',
         'Checkpoint equality does not exclude intervening writes. Supplied scalars and omitted public defaults remain distinguished.',
         'Python thread identifiers and Native OS TIDs are separate captured domains. Older results without an explicit pair remain unproven.',
         'Native typed arrays are fully decoded from final private arguments and matched to all host fields, including alignment bytes.',
