@@ -130,8 +130,10 @@ The [FIA input journal candidate](../../docs/worker_core_v1/fia_input_journal.md
 is default-off and not wired into a public provider. It records actual typed
 GWS arguments, container lifetime and execute pairing without a writer callback.
 Empty public windows and missing K/V member joins remain explicit failures or
-unobserved fields. SDK compilation and real input observation are required
-before it can supply new evidence; it grants no normal bridge or C2/C3/E5.
+unobserved fields. Source111 passed38 production-image Python/export contracts
+and26 real-SDK production-TU C++ contracts. Root independently rehashed the
+originals; see [the SDK/CPU result](FIA_INPUT_JOURNAL_SOURCE111_SDK_REVIEW.md).
+Real input observation is still required; this grants no normal bridge or C2/C3/E5.
 
 ## Ownership and execution
 
