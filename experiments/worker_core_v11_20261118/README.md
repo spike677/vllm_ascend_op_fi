@@ -99,8 +99,11 @@ separate pending gates. It adds no public fault or runtime loading authority.
 The [separate Fault33 group normal entry](../../docs/worker_core_v1/attention33_group_normal_preparation.md)
 stores bounded per-phase references to complete originals and records actual
 phase/index cost. Its package includes a gated fault branch, but this entry
-only permits normal/OFF; public group C2 wiring and resource admission remain
-separate. The merged TND28/group-normal build, reader and export regression
+only permits normal/OFF. The separate [all-target C2 candidate](../../docs/worker_core_v1/attention33_group_c2_preparation.md)
+now connects 28 isolated targets through the public Worker protocol and an
+independent original-file reader. Its final package still needs its own fresh
+normal pair and actual resource admission; CPU contracts confer no NPU scope.
+The merged TND28/group-normal build, reader and export regression
 ran 160 local tests: 159 passed, one Windows symlink-creation test was skipped.
 The earlier import typo in the test command was corrected and rerun; no
 product failure was suppressed. Production SDK/C++ checks remain required.
@@ -114,8 +117,21 @@ two additional SDK-generated fields. Kernel compilation did not start; see
 The later [group resource contract](../../docs/worker_core_v1/attention33_group_resources.md)
 retains 128 MiB defaults and defines 512 MiB only for the new bound group.
 Review found and fixed a live-memory underestimate: growing actual log
-prefixes now increase the reserved parse memory. Production per-F wiring and
-actual budget/normal acceptance remain pending; these helpers grant no F.
+prefixes now increase the reserved parse memory. Both the request entry and
+actual Native boundary now check the resource reserve before F. Actual
+budget/normal acceptance remains pending; these helpers grant no F.
+
+Frozen source110 (`823e4b59`) passed all 174 selected production-image CPU
+contracts, with zero skips. Its fresh TND28 SDK attempt uses the strict
+source-derived 65-field serializer check; source109's failure remains intact.
+Build completion and any later NPU acceptance are separate recorded outcomes.
+
+The [FIA input journal candidate](../../docs/worker_core_v1/fia_input_journal.md)
+is default-off and not wired into a public provider. It records actual typed
+GWS arguments, container lifetime and execute pairing without a writer callback.
+Empty public windows and missing K/V member joins remain explicit failures or
+unobserved fields. SDK compilation and real input observation are required
+before it can supply new evidence; it grants no normal bridge or C2/C3/E5.
 
 ## Ownership and execution
 

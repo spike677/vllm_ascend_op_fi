@@ -20,6 +20,15 @@ SPEC.loader.exec_module(bundle)
 
 
 class BundleTests(unittest.TestCase):
+    def test_fia_input_journal_sdk_source_closure_is_exported(self):
+        from experiments.worker_core_v11_20261118.fia_input_journal_build import SOURCES
+        payload = bundle._inventory(ROOT)
+        required = set(SOURCES) | {'tests/test_fia_input_journal.py',
+                                  'docs/worker_core_v1/fia_input_journal.md'}
+        self.assertFalse(required - payload.keys())
+        for name in required:
+            self.assertEqual(payload[name], (ROOT / name).read_bytes(), name)
+
     def test_new_attention_normal_and_index_sources_survive_export(self):
         payload = bundle._inventory(ROOT)
         required = {
