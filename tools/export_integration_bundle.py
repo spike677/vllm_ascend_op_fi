@@ -61,7 +61,7 @@ _SUPPORT = {
     _LEGACY + 'l4_metadata_lifecycle_proxy/' + name for name in ('libopapi_metadata_proxy.cpp', 'build.sh')
 } | {
     _LEGACY + 'fault26_readonly_trace_v1/' + name for name in (
-        'fault26_trace_shared.h', 'fault26_trace_preload.cpp', 'fault26_opapi_trace_proxy.cpp',
+        'fault26_trace_shared.h', 'fault26_inventory.h', 'fault26_trace_preload.cpp', 'fault26_opapi_trace_proxy.cpp',
         'fault26_qmm_underflow_api.h', 'fault26_qmm_output_underflow.cpp', 'build.sh',
         'build_fault26_qmm_output_underflow.sh')
 } | {

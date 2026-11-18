@@ -258,6 +258,27 @@ class BundleTests(unittest.TestCase):
 
 
 class ActualSourceRelocationTests(unittest.TestCase):
+    def test_every_existing_local_quoted_native_include_is_in_the_bundle(self):
+        import re
+
+        review = bundle.create_review(ROOT, 'cpu-local-header-closure-review')
+        names = {row['source_path'] for row in review['files']}
+        checked = 0
+        for name in sorted(names):
+            source = ROOT / name
+            if source.suffix not in {'.cpp', '.h', '.inc'}:
+                continue
+            for include in re.findall(r'^\s*#\s*include\s*"([^"]+)"',
+                                      source.read_text(encoding='utf-8'), re.M):
+                dependency = (source.parent / include).resolve()
+                # SDK/generated headers are separately supplied by native build
+                # recipes. Existing repository-local headers must survive export.
+                if dependency.is_file() and dependency.is_relative_to(ROOT.resolve()):
+                    relative = dependency.relative_to(ROOT.resolve()).as_posix()
+                    self.assertIn(relative, names, name + ' requires ' + relative)
+                    checked += 1
+        self.assertGreater(checked, 0)
+
     def test_actual_bundle_keeps_build_dependency_closure_and_imports_after_relocation(self):
         from fault_injection.native_build.recipes import recipes
 
