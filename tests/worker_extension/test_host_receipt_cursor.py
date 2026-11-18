@@ -328,6 +328,111 @@ class HostReceiptCursorTests(unittest.TestCase):
         self.assertTrue(client.stream_snapshot(fresh, cursor=client.receipt_cursor())['complete'])
         self.assertEqual(json.loads(fresh.getvalue()), client.snapshot())
 
+    def test_enable_index_memory_failure_retries_without_fabricated_rpc_uncertainty(self):
+        client = self.client()
+        checked = self.checked(client)
+        ledger = client._receipt_ledger
+        append = ledger.append
+        failed = False
+
+        def once(record):
+            nonlocal failed
+            if record['action'] == 'enable' and not failed:
+                failed = True
+                raise MemoryError('receipt index allocation failed')
+            return append(record)
+
+        with patch.object(ledger, 'append', side_effect=once):
+            result = client.enable()
+        self.assertEqual(result['status'], 'ACTION_COMPLETED')
+        self.assertFalse(result['control_complete'])
+        self.assertFalse(result['receipt_index_complete'])
+        self.assertIsNone(result['cursor'])
+        self.assertEqual(result['indexed_record_count'] + 1, result['original_record_count'])
+        self.assertEqual(result['ticket'], checked['ticket'])
+        self.assertFalse(client._uncertain)
+        self.assertEqual(client.snapshot()['response']['action'], 'enable')
+        self.assertEqual(result['first_evidence_error'],
+                         {'code': 'RECEIPT_INDEX_FAILED', 'error_type': 'MemoryError'})
+        self.assertEqual(client.recover()['status'], 'ACTION_COMPLETED')
+        self.assertEqual(client.unregister()['status'], 'ACTION_COMPLETED')
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+        self.assertEqual(self.actions(), ['prepare', 'register', 'check', 'enable', 'recover', 'unregister'])
+        snapshot = client.snapshot()
+        self.assertFalse(snapshot['ownership_retained'])
+        self.assertEqual(len(snapshot['history']), 8)
+        self.assertFalse(any(row['response']['status'] == 'RPC_UNCERTAIN' for row in snapshot['history']))
+        self.assertEqual(len(ledger._records), len(snapshot['history']))
+        sink = TrackingSink()
+        self.assertTrue(client.stream_snapshot(sink, cursor=client.receipt_cursor())['complete'])
+        self.assertEqual(json.loads(sink.getvalue()), snapshot)
+        self.assertEqual(client.status_receipt()['first_evidence_error'], result['first_evidence_error'])
+
+    def test_persistent_index_failure_keeps_originals_and_does_not_block_actual_release(self):
+        client = self.client()
+        self.checked(client)
+        ledger = client._receipt_ledger
+        initial = client.receipt_cursor()
+        initial_count = initial['next_sequence']
+        with patch.object(ledger, 'append', side_effect=MemoryError('persistent local index failure')):
+            for action in ('enable', 'recover', 'unregister', 'detach'):
+                with self.subTest(action=action):
+                    result = getattr(client, action)()
+                    self.assertEqual(result['status'], 'DETACHED' if action == 'detach' else 'ACTION_COMPLETED')
+                    self.assertFalse(result['receipt_index_complete'])
+                    self.assertFalse(result['control_complete'])
+                    self.assertIsNone(result['cursor'])
+                    self.assertFalse(client._uncertain)
+            self.assertFalse(result['ownership_retained'])
+            self.assertIsNone(result['ticket'])
+            self.assertIsNone(result['attachment'])
+            self.assertEqual(len(ledger._records), initial_count)
+            self.assertEqual(len(client.snapshot()['history']), initial_count + 4)
+            sink = TrackingSink()
+            with self.assertRaisesRegex(L.ReceiptLedgerError, 'RECEIPT_INDEX_FAILED'):
+                client.stream_snapshot(sink, cursor=initial)
+            self.assertEqual(sink.calls, [])
+        calls_before_read = len(self.executor.calls)
+        end = client.receipt_cursor()  # Rebuilds only the four retained, unindexed records.
+        batch = client.receipt_batch(initial)
+        self.assertEqual([row['record']['action'] for row in batch['records']],
+                         ['enable', 'recover', 'unregister', 'detach'])
+        self.assertEqual(batch['next_cursor'], end)
+        self.assertEqual(len(self.executor.calls), calls_before_read)
+        snapshot = client.snapshot()
+        sink = TrackingSink()
+        self.assertTrue(client.stream_snapshot(sink, cursor=end)['complete'])
+        self.assertEqual(json.loads(sink.getvalue()), snapshot)
+        self.assertFalse(snapshot['ownership_retained'])
+        self.assertEqual(len(ledger._records), len(snapshot['history']))
+
+    def test_detach_control_memory_failure_never_recreates_a_released_owner(self):
+        client = self.client()
+        self.checked(client)
+        ledger = client._receipt_ledger
+        with patch.object(ledger, 'control', side_effect=MemoryError('local control allocation failed')):
+            detached = client.detach()
+        self.assertEqual(detached['status'], 'DETACHED')
+        self.assertFalse(detached['control_complete'])
+        self.assertTrue(detached['receipt_index_complete'])
+        self.assertFalse(detached['ownership_retained'])
+        self.assertIsNone(detached['attachment'])
+        self.assertIsNone(detached['ticket'])
+        self.assertEqual(detached['first_evidence_error'],
+                         {'code': 'RECEIPT_CONTROL_FAILED', 'error_type': 'MemoryError'})
+        self.assertFalse(client._uncertain)
+        self.assertEqual(self.actions(), ['prepare', 'register', 'check', 'unregister'])
+        snapshot = client.snapshot()
+        self.assertEqual(snapshot['response']['status'], 'DETACHED')
+        self.assertEqual(len(snapshot['history']), 5)
+        self.assertFalse(snapshot['ownership_retained'])
+        self.assertEqual(snapshot['assessments']['Recovery']['status'], 'LEASE_RELEASE_CONFIRMED')
+        self.assertEqual(client.status_receipt()['status'], 'DETACHED')
+        sink = TrackingSink()
+        self.assertTrue(client.stream_snapshot(sink, cursor=client.receipt_cursor())['complete'])
+        self.assertEqual(json.loads(sink.getvalue()), snapshot)
+        self.assertEqual(client.status_receipt()['first_evidence_error'], detached['first_evidence_error'])
+
     def test_reentrant_sink_cannot_send_rpc_or_mutate_receipt_during_export(self):
         client = self.client()
         self.checked(client)
@@ -447,6 +552,48 @@ class ReceiptLedgerBoundsTests(unittest.TestCase):
             ledger.batch(ledger.cursor(0), rows, 1)
         with self.assertRaisesRegex(L.ReceiptLedgerError, 'INTERNAL_RECORD_CHANGED'):
             ledger.record_parts(ledger.cursor(0), rows)
+
+    def test_prefix_serialization_failure_cannot_commit_half_an_index_entry(self):
+        rows = [self.record_of_size(100)]
+        ledger = self.ledger([])
+        genesis = ledger.cursor()
+        encode = L.encoded
+
+        def fail_link(value):
+            if type(value) is dict and 'record_sha256' in value:
+                raise MemoryError('prefix allocation failed')
+            return encode(value)
+
+        with patch.object(L, 'encoded', side_effect=fail_link), self.assertRaises(MemoryError):
+            ledger.synchronize('owner-a', 'tenant-a', rows)
+        self.assertEqual(ledger._records, [])
+        self.assertEqual(ledger.cursor(), genesis)
+        ledger.synchronize('owner-a', 'tenant-a', rows)
+        raw = encode(rows[0])
+        link = dict(sequence=0, previous_sha256=genesis['prefix_sha256'],
+                    record_sha256=hashlib.sha256(raw).hexdigest(), bytes=len(raw))
+        self.assertEqual(ledger.cursor()['prefix_sha256'], hashlib.sha256(encode(link)).hexdigest())
+        self.assertEqual(ledger.batch(genesis, rows, 1)['records'][0]['record'], rows[0])
+
+    def test_after_commit_append_exception_retries_without_duplicate_or_new_prefix(self):
+        class AfterAppendFailure(list):
+            def append(self, value):
+                super().append(value)
+                if len(self) == 1:
+                    raise MemoryError('after atomic entry append')
+
+        rows = [self.record_of_size(100)]
+        ledger = self.ledger([])
+        genesis = ledger.cursor()
+        ledger._records = AfterAppendFailure()
+        with self.assertRaises(MemoryError):
+            ledger.synchronize('owner-a', 'tenant-a', rows)
+        self.assertEqual(len(ledger._records), 1)
+        committed = ledger.cursor()
+        ledger.synchronize('owner-a', 'tenant-a', rows)
+        self.assertEqual(len(ledger._records), 1)
+        self.assertEqual(ledger.cursor(), committed)
+        self.assertEqual(ledger.batch(genesis, rows, 1)['records'][0]['record'], rows[0])
 
 
 if __name__ == '__main__':

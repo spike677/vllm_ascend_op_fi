@@ -181,15 +181,30 @@ class WorkerFaultClient:
     def _record(self, action, reply):
         self._receipt_idle()
         self._history.append({'action': action, 'response': _copy(reply)})
-        if self._receipt_ledger is not None:
-            self._receipt_ledger.append(self._history[-1])
         return self._action_snapshot()
+
+    def _accepted_record(self, action, reply, *, uncertain=True):
+        # An accepted cursor-mode RPC is already authoritative. Local receipt
+        # failures must never become another RPC failure or a fictitious owner.
+        if self._receipt_mode == 'cursor':
+            return self._record(action, reply)
+        try:  # Preserve the default full-mode exception path as well as values.
+            return self._record(action, reply)
+        except BaseException as error:
+            return self._failure(action, error, uncertain=uncertain, response=reply)
 
     def _action_snapshot(self):
         if self._receipt_mode == 'full':
             return self._snapshot()
-        ledger = self._receipt_index()
-        return ledger.control(self._snapshot_fields(), record_error=True)
+        try:
+            ledger = self._receipt_index()
+        except Exception as error:
+            return self._receipt_ledger.incomplete_control(
+                self._snapshot_fields(), error, index_complete=False)
+        try:
+            return ledger.control(self._snapshot_fields(), record_error=True)
+        except Exception as error:
+            return ledger.incomplete_control(self._snapshot_fields(), error, index_complete=True)
 
     def _reject(self, action, reason):
         return self._record(action, {'status': 'HOST_REJECTED', 'reason': reason})
@@ -249,9 +264,9 @@ class WorkerFaultClient:
                 self._attachment = _copy(reply['ticket'])
             elif reply.get('status') != 'REJECTED':
                 raise HostContractError('INVALID_ATTACH_RESPONSE')
-            return self._record('attach', reply)
         except BaseException as error:
             return self._failure('attach', error, uncertain=True, response=reply)
+        return self._accepted_record('attach', reply)
 
     def attach(self):
         with self._lock:
@@ -334,9 +349,9 @@ class WorkerFaultClient:
         try:
             reply = self.host.invoke(self._worker, method, *args)
             self._accept(action, reply)
-            return self._record(action, reply)
         except BaseException as error:
             return self._failure(action, error, uncertain=True, response=reply)
+        return self._accepted_record(action, reply)
 
     def _action(self, action):
         with self._lock:
@@ -424,9 +439,9 @@ class WorkerFaultClient:
                     raise HostContractError('INVALID_DISCOVERY_RESPONSE')
                 if reply.get('status') == 'REJECTED' and reply.get('reason') in _SCOPE_FAILURES:
                     self._uncertain = True
-                return self._record('discover', reply)
             except BaseException as error:
                 return self._failure('discover', error, uncertain=self._lease is not None, response=reply)
+            return self._accepted_record('discover', reply, uncertain=self._lease is not None)
 
     def detach(self):
         """Explicit same-tenant cleanup, including a lost prepare response."""
@@ -473,9 +488,9 @@ class WorkerFaultClient:
                     self._uncertain = True
                 else:
                     raise HostContractError('INVALID_DETACH_RESPONSE')
-                return self._record('detach', reply)
             except BaseException as error:
                 return self._failure('detach', error, uncertain=True, response=reply)
+            return self._accepted_record('detach', reply)
 
     def _snapshot_fields(self):
         recovery = ('REQUIRED' if self._uncertain else 'LEASE_RELEASE_CONFIRMED' if self._released
@@ -506,7 +521,14 @@ class WorkerFaultClient:
     def _receipt_index(self):
         if self._receipt_mode != 'cursor' or self._receipt_ledger is None:
             raise ReceiptLedgerError('RECEIPT_CURSOR_MODE_REQUIRED')
-        self._receipt_ledger.check_scope(self.owner, self.tenant_id, self._history)
+        try:
+            self._receipt_ledger.synchronize(self.owner, self.tenant_id, self._history)
+        except BaseException as error:
+            code = error.code if isinstance(error, ReceiptLedgerError) else 'RECEIPT_INDEX_FAILED'
+            self._receipt_ledger.note_error(code, error_type=type(error).__name__)
+            if not isinstance(error, Exception):
+                raise
+            raise ReceiptLedgerError(code, error_type=type(error).__name__) from error
         return self._receipt_ledger
 
     def receipt_cursor(self):
@@ -600,9 +622,9 @@ class WorkerFaultClient:
         try:
             reply = self.host.invoke(self._worker, 'demoncat_census', action, _copy(payload))
             self._accept_census(action, reply)
-            return self._record('census_' + action, reply)
         except BaseException as error:
             return self._failure('census_' + action, error, uncertain=True, response=reply)
+        return self._accepted_record('census_' + action, reply)
 
     def census_query(self):
         with self._lock:

@@ -55,7 +55,9 @@ class ReceiptLedger:
         self.ledger_id = uuid.uuid4().hex
         seed = dict(schema=CURSOR_SCHEMA, ledger_id=self.ledger_id,
                     owner=owner, tenant_id=tenant)
-        self._prefixes = [hashlib.sha256(encoded(seed)).hexdigest()]
+        self._genesis = hashlib.sha256(encoded(seed)).hexdigest()
+        # Each entry commits bytes, digest AND its resulting prefix together.
+        # No second mutable list may lag after an allocation failure.
         self._records = []
         self.first_error = None
 
@@ -67,10 +69,10 @@ class ReceiptLedger:
         raw = encoded(record)
         digest = hashlib.sha256(raw).hexdigest()
         sequence = len(self._records)
-        link = dict(sequence=sequence, previous_sha256=self._prefixes[-1],
+        link = dict(sequence=sequence, previous_sha256=self._prefix(sequence),
                     record_sha256=digest, bytes=len(raw))
-        self._records.append((raw, digest))
-        self._prefixes.append(hashlib.sha256(encoded(link)).hexdigest())
+        entry = (raw, digest, hashlib.sha256(encoded(link)).hexdigest())
+        self._records.append(entry)
         if len(raw) > RECORD_BYTES:
             self.note_error('RECEIPT_RECORD_BATCH_BOUND', sequence=sequence, bytes=len(raw))
 
@@ -78,13 +80,26 @@ class ReceiptLedger:
         _need((owner, tenant) == (self.owner, self.tenant), 'RECEIPT_LEDGER_OWNER_CHANGED')
         _need(len(history) == len(self._records), 'RECEIPT_INTERNAL_HISTORY_CHANGED')
 
+    def synchronize(self, owner, tenant, history):
+        """Retry only the unindexed tail of this client's retained originals."""
+        _need((owner, tenant) == (self.owner, self.tenant), 'RECEIPT_LEDGER_OWNER_CHANGED')
+        _need(len(self._records) <= len(history), 'RECEIPT_INTERNAL_HISTORY_CHANGED')
+        while len(self._records) < len(history):
+            before = len(self._records)
+            self.append(history[before])
+            _need(len(self._records) == before + 1, 'RECEIPT_INDEX_APPEND_INCOMPLETE')
+        self.check_scope(owner, tenant, history)
+
+    def _prefix(self, sequence):
+        return self._genesis if sequence == 0 else self._records[sequence - 1][2]
+
     def cursor(self, sequence=None):
         sequence = len(self._records) if sequence is None else sequence
         _need(type(sequence) is int and 0 <= sequence <= len(self._records),
               'RECEIPT_CURSOR_SEQUENCE_INVALID')
         return dict(schema=CURSOR_SCHEMA, ledger_id=self.ledger_id, owner=self.owner,
                     tenant_id=self.tenant, next_sequence=sequence,
-                    prefix_sha256=self._prefixes[sequence])
+                    prefix_sha256=self._prefix(sequence))
 
     def validate(self, cursor):
         _need(type(cursor) is dict, 'RECEIPT_CURSOR_INVALID')
@@ -98,10 +113,10 @@ class ReceiptLedger:
         return sequence
 
     def metadata(self, sequence):
-        raw, digest = self._records[sequence]
+        raw, digest, prefix = self._records[sequence]
         return dict(sequence=sequence, bytes=len(raw), sha256=digest,
-                    previous_prefix_sha256=self._prefixes[sequence],
-                    prefix_sha256=self._prefixes[sequence + 1])
+                    previous_prefix_sha256=self._prefix(sequence),
+                    prefix_sha256=prefix)
 
     def last(self):
         return self.metadata(len(self._records) - 1) if self._records else None
@@ -139,16 +154,35 @@ class ReceiptLedger:
         return result
 
     def control(self, fields, *, record_error=False):
+        return self._control(fields, record_error=record_error)
+
+    def incomplete_control(self, fields, error, *, index_complete):
+        code = error.code if isinstance(error, ReceiptLedgerError) else 'RECEIPT_CONTROL_FAILED'
+        error_type = (error.details.get('error_type', type(error).__name__)
+                      if isinstance(error, ReceiptLedgerError) else type(error).__name__)
+        problem = dict(code=code, error_type=error_type)
+        self.note_error(**problem)
+        return self._control(fields, record_error=True, problem=problem,
+                             index_complete=index_complete)
+
+    def _control(self, fields, *, record_error, problem=None, index_complete=True):
         selected = ('status', 'config', 'mechanism', 'worker', 'owner', 'tenant_id',
                     'attachment', 'ticket', 'census_ticket', 'ownership_retained',
                     'provider_check', 'assessments', 'inner_framework_integration_verified')
         value = {key: fields[key] for key in selected}
-        value.update(schema='demoncat.worker_core.cursor_control.v1', cursor=self.cursor(),
-                     last_record=self.last(), history_included=False, rpc_response_included=False,
-                     control_complete=True, first_evidence_error=self.first_error,
+        receipt = dict(cursor=self.cursor() if index_complete else None,
+                       last_record=self.last() if index_complete else None,
+                       receipt_index_complete=index_complete,
+                       indexed_record_count=len(self._records),
+                       original_record_count=len(fields['history']))
+        value.update(schema='demoncat.worker_core.cursor_control.v1', **receipt,
+                     history_included=False, rpc_response_included=False,
+                     control_complete=problem is None, first_evidence_error=self.first_error,
                      response_header={key: fields['response'][key] for key in
                                       ('status', 'action', 'phase', 'recovery_required', 'reason', 'error_type')
                                       if key in fields['response']})
+        if problem is not None:
+            value['current_evidence_error'] = problem
         if encoded_size(value, CONTROL_BYTES) > CONTROL_BYTES:
             error = dict(code='RECEIPT_CONTROL_BYTE_BOUND')
             if record_error:
@@ -157,11 +191,13 @@ class ReceiptLedger:
             status = fields['status']
             value = dict(schema='demoncat.worker_core.cursor_control.v1',
                          status=status if type(status) is str and len(status) <= 128 else 'CONTROL_BOUND_EXCEEDED',
-                         cursor=self.cursor(), last_record=self.last(), owner=self.owner,
+                         **receipt, owner=fields['owner'],
                          tenant_id=self.tenant, ownership_retained=fields['ownership_retained'],
                          history_included=False, rpc_response_included=False, control_complete=False,
                          omitted_fields=list(selected) + ['response_header'],
                          first_evidence_error=self.first_error or error)
+            if problem is not None:
+                value['current_evidence_error'] = problem
         _need(encoded_size(value, CONTROL_BYTES) <= CONTROL_BYTES, 'RECEIPT_CONTROL_BYTE_BOUND')
         return json.loads(encoded(value))
 
@@ -169,7 +205,7 @@ class ReceiptLedger:
         sequence = self.validate(cursor)
         _need(sequence < len(self._records), 'RECEIPT_CURSOR_AT_TAIL')
         self.check_record(sequence, history)
-        raw, digest = self._records[sequence]
+        raw, digest, _ = self._records[sequence]
         return (raw[offset:offset + STREAM_CHUNK_BYTES] for offset in range(0, len(raw), STREAM_CHUNK_BYTES)), \
             len(raw), dict(kind='original_rpc', start_cursor=self.cursor(sequence),
                            end_cursor=self.cursor(sequence + 1), expected_sha256=digest)
@@ -194,7 +230,7 @@ class ReceiptLedger:
                 yield encoded(key) + b':'
                 if key == 'history':
                     yield b'['
-                    for index, (raw, _) in enumerate(self._records):
+                    for index, (raw, _, _) in enumerate(self._records):
                         if index:
                             yield b','
                         for offset in range(0, len(raw), STREAM_CHUNK_BYTES):

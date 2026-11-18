@@ -70,7 +70,7 @@ Only the existing Host action recording path appends receipts. The module
 does not read files or import a saved ledger, receipt, ticket or cursor to
 create Host/Worker state. A cursor is a read position, not a lease or proof.
 Wrong ledger/owner/tenant/schema/sequence/prefix and extra fields are rejected.
-A rejected read cursor does not append a record, alter recovery, or poison the
+A rejected read cursor does not append Host history, alter recovery, or poison the
 retained first size/stream error.
 A newly constructed client has a different ledger even for the same mechanism.
 The original one-attempt `prepare()` policy remains in force.
@@ -85,7 +85,40 @@ header or hash.
 Cached records are immutable bytes; returned cursors, controls, records and
 metadata are fresh copies. Reading a record compares the retained internal
 history entry with its cached bytes. Caller mutations cannot change later
-reads, tickets or prefixes. An internal history/owner change is rejected.
+reads, tickets or prefixes. Changes to indexed originals or owner are rejected.
+
+## Accepted RPCs and a failed local index
+
+The complete internal Host history remains the original receipt source. The
+cursor index is a retryable derivative: each entry commits its raw bytes,
+digest and resulting prefix together in one append. Prefix encoding/allocation
+failure cannot leave one of two index lists ahead of the other. A later retry
+uses the committed index length, so an exception reported after an entry was
+actually appended does not duplicate it or advance the prefix twice.
+
+Cursor-mode receipt processing occurs outside the catch path for a Worker RPC
+that was already received and accepted. A local index/control error does not
+create a second synthetic `RPC_UNCERTAIN` history entry, set the Host's
+`_uncertain` flag, or resurrect a released owner. The ordinary full-mode path
+keeps its previous behavior.
+
+An action whose original is retained but not indexed returns its actual RPC
+status and live ownership fields with `control_complete=false`,
+`receipt_index_complete=false`, `cursor=null`, `last_record=null`,
+`indexed_record_count`, `original_record_count`, and `current_evidence_error`.
+It does not describe the shorter index as a complete cursor at the new tail.
+If only control rendering failed after a complete index, the degraded result
+still has `control_complete=false` and records that distinct error.
+
+The next action or explicit cursor/batch/status/export read retries only the
+unindexed tail from this client's retained Host history. Reads send no Worker
+RPC and never accept external files as replacement history. While indexing
+still fails, cursor/export operations refuse rather than report completeness;
+existing recovery actions can keep recording their actual results. When the
+local failure clears, every retained original can be indexed and streamed,
+including the actions that completed during the failure. The first evidence
+error remains recorded after successful repair. Retrying evidence reads does
+not retry `enable`, `detach`, or any other Worker action.
 
 ## Streaming and failure handling
 
@@ -152,3 +185,10 @@ Group integration, complete 189-RPC independent review, current three-control
 timing, final write cost, and pre-F/per-F resource checks require a separate
 reviewed increment. This interface-only change supplies none of those
 permissions or measurements.
+
+The follow-up CPU contracts retain the independent review's two counterexamples:
+one `enable` index `MemoryError`, and a control `MemoryError` after actual
+`detach`. They also cover persistent indexing failure throughout actual
+`recover`/`unregister`/`detach`, then complete legacy export, plus failures before
+prefix commit and after entry commit. These are local evidence-failure tests;
+they do not establish operation under process-wide memory exhaustion.
