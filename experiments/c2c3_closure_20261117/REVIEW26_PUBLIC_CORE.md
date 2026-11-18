@@ -63,6 +63,9 @@ python3 -I -S -B "$REVIEW_SOURCE/experiments/c2c3_closure_20261117/review26_work
   --source-manifest-sha256 81e574bc2b7f5962f635c1635837b8a60ca0d7ba645838d2970f742c810af089 \
   --native-root /home/17-fault-c2c3-20261117/native26-fia-typed-group-a4 \
   --native-build-sha256 2a6e4b861fe0342cb4274614d6edeb187bb36e3c87acab9ecc99be6f0e01bbae \
+  --native-source-root /home/17-fault-c2c3-20261117/source59 \
+  --native-source-commit 112f2b56f0f29fcb50567b6d9f5b327c94efe673 \
+  --native-source-manifest-sha256 e6e142630331bd7951d48efd590d8fcb6224a1a4f3942ef96f7cc7040f70ab2f \
   --mechanism 26.fia_destination --expected-writers 30
 ```
 
@@ -71,6 +74,39 @@ new public attempt/source/build SHA pins; the old source54 direct experiment
 cannot be substituted. An unavailable or inconsistent original yields exit 2.
 Exit 0 reconciles saved evidence within these stated limits; it is not a new
 device run or permission to arm a fault.
+
+When an unchanged Native bundle is used with a newer Worker package, its actual
+compilation snapshot is independently pinned with all three options:
+
+```sh
+--native-source-root "$NATIVE_COMPILE_SOURCE" \
+--native-source-commit "$NATIVE_COMPILE_COMMIT" \
+--native-source-manifest-sha256 "$NATIVE_COMPILE_MANIFEST_SHA256"
+```
+
+Omitting all three keeps the byte-equivalent Worker snapshot default; it does
+not assert that the original compilation used that snapshot. Partial identity
+is refused. Explicit identity must also match the commit and the unique
+read-only `/source` mount in the original build receipt. Use the retained
+original source directory, not a later tree with coincidentally identical files.
+The Native snapshot's actual manifest bytes, commit and unique path set are
+checked independently. Every compile input must still match the build receipt,
+the saved Native manifest and the actual file SHA/length. Worker source and
+loaded-module checks continue to use the newer Worker snapshot. The output
+reports both identities explicitly; a passing build-status string cannot
+replace either provenance chain. This distinction does not authorize a new
+Native ABI or inherit a previous runtime qualification, and needs no new NPU
+execution when all original runtime and build evidence already exists.
+
+The original group builder did not record its source-manifest SHA. For those
+receipts the manifest pin is explicitly attributed to this review, while the
+receipt still binds the original commit, mount and compile-file hashes. A
+recorded manifest SHA, if present, must additionally agree. For the QMM bundle
+with manifest `b81b8b9bb1f0b5c0e56109775a987bf503b88a00adcfb873964a258e8bf4e03e`,
+the original source is `/home/17-fault-c2c3-20261117/source-a50`, commit
+`006916a9f9bd37549f0f21fc986ecace23e22e9b`, manifest
+`c87d33a804b46f16ed44536a24863966fd08f0c99b2a21135a367b47d4c714cf`.
+Source68 remains the separate Worker source for its new public attempt.
 
 CPU tests use synthetic saved files and a three-writer QMM fixture. They test
 the actual reader and isolated `python -I -S -B` CLI, including re-signed

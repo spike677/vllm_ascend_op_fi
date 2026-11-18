@@ -3,6 +3,7 @@ from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -95,6 +96,48 @@ class Fixture:
 
     def bind_build(self, value):
         return json.loads(json.dumps(value).replace(audit.BUILD_SHA, getattr(self, 'build_sha', audit.BUILD_SHA)))
+
+    def separate_native_snapshot(self):
+        """An old compile tree plus a newer Worker tree, only fixture bytes."""
+        self.native_source_root = self.root/'original-native-source'
+        shutil.copytree(self.source_root, self.native_source_root)
+        self.native_commit, self.native_source_sha = self.commit, self.source_sha
+        worker_manifest = review.read(self.source_root/'source_manifest.json')
+        self.commit = '2'*40
+        worker_manifest['base_commit'] = self.commit
+        for name in ('writer26_group_core.h', 'writer26_group_runtime.cpp'):
+            path = self.source_root/'fault_injection/native_adapters'/name
+            path.write_bytes(b'newer-worker-snapshot-native-source-not-used-for-this-build')
+            for record in worker_manifest['files']:
+                if record['path'] == path.relative_to(self.source_root).as_posix():
+                    record.update(sha256=review.file_sha(path), bytes=path.stat().st_size)
+        manifest = self.source_root/'source_manifest.json'
+        manifest.write_text(json.dumps(worker_manifest))
+        self.source_sha = review.file_sha(manifest)
+        receipt_path = self.native_root/'build-receipt.json'
+        receipt = review.read(receipt_path)
+        receipt.update(source_commit=self.native_commit,
+            command=['docker', 'run', '--network', 'none', '-v', self.native_source_root.as_posix()+':/source:ro'])
+        receipt_path.write_text(json.dumps(receipt))
+        build_path = self.native_root/'build.json'; build = review.read(build_path)
+        build['build_receipt_sha256'] = review.file_sha(receipt_path)
+        build_path.write_text(json.dumps(build))
+        previous, self.build_sha = self.build_sha, review.file_sha(build_path)
+        self.d['metadata_startup'] = json.loads(json.dumps(self.d['metadata_startup']).replace(previous, self.build_sha))
+        self.d.update(manifest_sha256=self.build_sha,
+            source_manifest=dict(base_commit=self.commit, sha256=self.source_sha))
+
+    def command(self, *, explicit_native=False):
+        self.save('probe/result.json', self.d)
+        result = [sys.executable, '-I', '-S', '-B', str(Path(review.__file__).resolve()),
+            '--evidence-root', str(self.root), '--result-sha256', review.file_sha(self.root/'probe/result.json'),
+            '--source-root', str(self.source_root), '--source-commit', self.commit,
+            '--source-manifest-sha256', self.source_sha, '--native-root', str(self.native_root),
+            '--native-build-sha256', self.build_sha, '--mechanism', '26.residual_stomp', '--expected-writers', '3']
+        if explicit_native:
+            result += ['--native-source-root', str(self.native_source_root), '--native-source-commit', self.native_commit,
+                       '--native-source-manifest-sha256', self.native_source_sha]
+        return result
 
     def save(self, name, value, *, absolute=False, **fields):
         path = self.root/name
@@ -408,6 +451,8 @@ class ProvenanceTests(unittest.TestCase):
         result = self.evaluate()
         self.assertTrue(result['consistent'], result['issues'])
         self.assertFalse(result['external_model_and_weight_files_rehashed'])
+        self.assertFalse(result['native_compile_receipt']['origin_checked'])
+        self.assertEqual(result['native_compile_source_snapshot']['identity_basis'], 'BYTE_EQUIVALENT_WORKER_SNAPSHOT_ONLY')
 
     def test_changed_installed_runtime_not_hidden_by_source_manifest(self):
         self.d['setup']['loaded_sources'][review.PREFIX+'runtime.py']['sha256'] = 'a'*64
@@ -454,6 +499,105 @@ class ProvenanceTests(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertTrue(payload['consistent'] and payload['read_only'])
         self.assertFalse(payload['public_qualification_granted'] or payload['c2'] or payload['c3'] or payload['e5'])
+        self.assertEqual(before, {str(p.relative_to(f.root)):review.file_sha(p) for p in f.root.rglob('*') if p.is_file()})
+
+
+class IndependentNativeSourceTests(unittest.TestCase):
+    def setUp(self):
+        self.folder = tempfile.TemporaryDirectory()
+        self.addCleanup(self.folder.cleanup)
+        self.fixture = Fixture(self.folder.name)
+        self.fixture.add_provenance()
+        self.fixture.separate_native_snapshot()
+        self.d = self.fixture.build()
+
+    def evaluate(self, *, explicit=True, **changes):
+        f = self.fixture
+        options = (dict(native_source_root=f.native_source_root, native_source_commit=f.native_commit,
+                        native_source_sha=f.native_source_sha) if explicit else {})
+        options.update(changes)
+        return review.provenance(self.d, f.collected[-1], f.source_root, f.native_root,
+            source_commit=f.commit, source_sha=f.source_sha, build_sha=f.build_sha, **options)
+
+    def reject(self, result, code):
+        self.assertFalse(result['consistent'], result)
+        self.assertIn(code, [value['code'] for value in result['issues']], result['issues'])
+
+    def test_old_native_new_worker_are_independently_pinned_and_all_bytes_checked(self):
+        self.reject(self.evaluate(explicit=False), 'NATIVE_COMPILE_SOURCE_BYTES')
+        result = self.evaluate()
+        self.assertTrue(result['consistent'], result['issues'])
+        self.assertEqual(result['worker_source_snapshot']['commit'], '2'*40)
+        self.assertEqual(result['native_compile_source_snapshot']['commit'], '1'*40)
+        self.assertTrue(result['native_compile_receipt']['origin_checked'])
+        self.assertFalse(result['native_and_worker_same_snapshot'])
+        self.assertEqual(result['native_compile_sources_rehashed'], 2)
+
+    def test_explicit_native_source_cannot_hide_worker_loaded_source_drift(self):
+        self.d['setup']['loaded_sources'][review.PREFIX+'runtime.py']['sha256'] = 'a'*64
+        self.reject(self.evaluate(), 'ACTUAL_LOADED_SOURCE_SHA')
+
+    def test_changed_compile_bytes_refuse_even_if_native_manifest_is_resigned(self):
+        f = self.fixture
+        path = f.native_source_root/'fault_injection/native_adapters/writer26_group_core.h'
+        path.write_bytes(b'changed actual native input')
+        manifest_path = f.native_source_root/'source_manifest.json'
+        manifest = review.read(manifest_path)
+        for row in manifest['files']:
+            if row['path'] == path.relative_to(f.native_source_root).as_posix():
+                row.update(sha256=review.file_sha(path), bytes=path.stat().st_size)
+        manifest_path.write_text(json.dumps(manifest))
+        self.reject(self.evaluate(native_source_sha=review.file_sha(manifest_path)), 'NATIVE_COMPILE_SOURCE_BYTES')
+
+    def test_later_same_byte_snapshot_cannot_replace_original_build_commit(self):
+        f = self.fixture
+        path = f.native_source_root/'source_manifest.json'
+        manifest = review.read(path); manifest['base_commit'] = '3'*40
+        path.write_text(json.dumps(manifest))
+        self.reject(self.evaluate(native_source_commit='3'*40, native_source_sha=review.file_sha(path)),
+                    'ACTUAL_NATIVE_BUILD_RECEIPT_COMMIT_AND_SOURCE_MOUNT')
+
+    def test_same_byte_copy_at_another_mount_is_not_original_compile_directory(self):
+        f = self.fixture
+        copied = f.root/'later-copy'; shutil.copytree(f.native_source_root, copied)
+        self.reject(self.evaluate(native_source_root=copied), 'ACTUAL_NATIVE_BUILD_RECEIPT_COMMIT_AND_SOURCE_MOUNT')
+
+    def test_duplicate_native_manifest_paths_and_bad_sha_refuse(self):
+        f = self.fixture
+        self.reject(self.evaluate(native_source_sha='a'*64), 'EXACT_NATIVE_COMPILE_SOURCE_SNAPSHOT')
+        path = f.native_source_root/'source_manifest.json'
+        value = review.read(path); value['files'].append(deepcopy(value['files'][0]))
+        path.write_text(json.dumps(value))
+        self.reject(self.evaluate(native_source_sha=review.file_sha(path)), 'NATIVE_SOURCE_MANIFEST_DUPLICATE_PATH')
+
+    def test_partial_explicit_native_identity_is_refused(self):
+        f = self.fixture
+        with self.assertRaisesRegex(ValueError, 'COMPLETE_NATIVE_COMPILE_SNAPSHOT_IDENTITY_REQUIRED'):
+            review.provenance(self.d, f.collected[-1], f.source_root, f.native_root,
+                source_commit=f.commit, source_sha=f.source_sha, build_sha=f.build_sha,
+                native_source_root=f.native_source_root)
+        result = subprocess.run(f.command()+['--native-source-root', str(f.native_source_root)],
+            capture_output=True, text=True, timeout=30)
+        self.assertEqual(result.returncode, 2)
+        self.assertIn('All three native-source options', result.stderr)
+
+    def test_mount_must_be_unique_readonly_and_without_hidden_submount(self):
+        source = self.fixture.native_source_root.as_posix()
+        for suffix in (['-v', source+':/source:rw'], ['-v', source+':/source'],
+                ['-v', source+':/source:ro', '-v', source+':/source:ro'],
+                ['-v', source+':/source:ro', '-v', source+':/source/subdir:ro'],
+                ['--mount', 'type=bind,source='+source+',target=/source,readonly']):
+            with self.subTest(suffix=suffix):
+                self.assertIsNone(review.native_source_mount(dict(command=['docker', 'run', *suffix])))
+
+    def test_isolated_cli_accepts_exact_actual_native_snapshot_without_mutating_evidence(self):
+        f = self.fixture
+        command = f.command(explicit_native=True)
+        before = {str(p.relative_to(f.root)):review.file_sha(p) for p in f.root.rglob('*') if p.is_file()}
+        result = subprocess.run(command, capture_output=True, text=True, timeout=30)
+        self.assertEqual(result.returncode, 0, result.stdout+result.stderr)
+        payload = json.loads(result.stdout)
+        self.assertTrue(payload['provenance']['native_compile_receipt']['origin_checked'])
         self.assertEqual(before, {str(p.relative_to(f.root)):review.file_sha(p) for p in f.root.rglob('*') if p.is_file()})
 
 

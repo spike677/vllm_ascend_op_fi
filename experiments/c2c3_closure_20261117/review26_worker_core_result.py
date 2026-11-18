@@ -502,9 +502,40 @@ def review_document(d, originals, *, mechanism, expected_count):
             'The ordinary post-unregister request checks same Worker, tokens and text; full logits are only captured during the preceding post-Native-release health request.'])
 
 
-def provenance(d, final, source_root, native_root, *, source_commit, source_sha, build_sha):
+def native_source_mount(receipt):
+    """Read the reviewed builder's original argv; never run Docker or a shell."""
+    command = receipt.get('command')
+    if (not isinstance(command, list) or command[:2] != ['docker', 'run']
+            or not all(isinstance(value, str) for value in command)
+            or any(value == '--mount' or value.startswith(('--mount=', '--volume=', '-v=')) for value in command)):
+        return None
+    sources = []
+    for index, value in enumerate(command):
+        if value not in ('-v', '--volume'):
+            continue
+        if index+1 == len(command):
+            return None
+        parts = command[index+1].rsplit(':', 2)
+        if len(parts) == 3 and (parts[1] == '/source' or parts[1].startswith('/source/')):
+            if parts[1] != '/source' or parts[2] != 'ro':
+                return None
+            sources.append(parts[0])
+        elif len(parts) == 2 and (parts[1] == '/source' or parts[1].startswith('/source/')):
+            return None
+    return sources[0] if len(sources) == 1 else None
+
+
+def provenance(d, final, source_root, native_root, *, source_commit, source_sha, build_sha,
+               native_source_root=None, native_source_commit=None, native_source_sha=None):
     b = helper('review_native26_single_source54.py')
     r = b.Review()
+    independent = (native_source_root, native_source_commit, native_source_sha)
+    explicit_native = any(value is not None for value in independent)
+    if explicit_native:
+        if any(value is None for value in independent):
+            raise ValueError('COMPLETE_NATIVE_COMPILE_SNAPSHOT_IDENTITY_REQUIRED')
+    else:
+        native_source_root, native_source_commit, native_source_sha = source_root, source_commit, source_sha
     manifest_path = under(source_root, 'source_manifest.json')
     manifest = read(manifest_path)
     r.check(file_sha(manifest_path) == source_sha and manifest['base_commit'] == source_commit
@@ -534,8 +565,25 @@ def provenance(d, final, source_root, native_root, *, source_commit, source_sha,
     r.check({'fault_injection/native_adapters/writer26_group_core.h',
         'fault_injection/native_adapters/writer26_group_runtime.cpp'}.issubset(build['sources']),
             'ACTUAL_NATIVE_CORE_INPUTS_REQUIRED')
+    native_manifest_path = under(native_source_root, 'source_manifest.json')
+    native_manifest = read(native_manifest_path)
+    r.check(b.valid_sha(native_source_sha) and re.fullmatch('[0-9a-f]{40}', native_source_commit) is not None
+        and file_sha(native_manifest_path) == native_source_sha
+        and native_manifest['base_commit'] == native_source_commit, 'EXACT_NATIVE_COMPILE_SOURCE_SNAPSHOT')
+    native_files = {value['path']:value for value in native_manifest['files']}
+    r.check(len(native_files) == len(native_manifest['files']), 'NATIVE_SOURCE_MANIFEST_DUPLICATE_PATH')
+    original_mount = native_source_mount(receipt)
+    if explicit_native:
+        r.check(receipt.get('source_commit') == native_source_commit and original_mount is not None
+            and Path(original_mount).is_absolute()
+            and Path(original_mount).resolve(strict=True) == Path(native_source_root).resolve(strict=True),
+            'ACTUAL_NATIVE_BUILD_RECEIPT_COMMIT_AND_SOURCE_MOUNT')
+        if 'source_manifest_sha256' in receipt:
+            r.check(receipt['source_manifest_sha256'] == native_source_sha, 'NATIVE_BUILD_RECORDED_SOURCE_MANIFEST_SHA')
     for name, expected in build['sources'].items():
-        r.check(b.valid_sha(expected) and file_sha(under(source_root, name)) == expected == files[name]['sha256'],
+        path = under(native_source_root, name)
+        r.check(b.valid_sha(expected) and file_sha(path) == expected == native_files[name]['sha256']
+            and path.stat().st_size == native_files[name]['bytes'],
                 'NATIVE_COMPILE_SOURCE_BYTES', name)
     r.check(all(not (Path(native_root)/name).exists() for name in (
         'libfault26_qmm_output_underflow_abi0.so', 'libfault26_fia_writer_proxy_abi0.so')), 'LEGACY_WRITER_DSO_ABSENT')
@@ -581,6 +629,15 @@ def provenance(d, final, source_root, native_root, *, source_commit, source_sha,
         r.check(typed.build_profile(b, build)['consistent'], 'CURRENT_TYPED_FIA_BUILD_PROFILE')
     return dict(**r.summary(), source_files_rehashed=len(d['sources']), native_files_rehashed=len(build['files'])+1,
         native_compile_sources_rehashed=len(build['sources']), external_model_and_weight_files_rehashed=False,
+        worker_source_snapshot=dict(commit=source_commit, manifest_sha256=source_sha),
+        native_compile_source_snapshot=dict(commit=native_source_commit, manifest_sha256=native_source_sha,
+            identity_basis=('ACTUAL_BUILD_RECEIPT_COMMIT_AND_SOURCE_MOUNT' if explicit_native else
+                            'BYTE_EQUIVALENT_WORKER_SNAPSHOT_ONLY'),
+            manifest_binding=('BUILD_RECEIPT' if explicit_native and 'source_manifest_sha256' in receipt else
+                              'EXPLICIT_REVIEW_MANIFEST_PIN')),
+        native_compile_receipt=dict(source_commit=receipt.get('source_commit'), source_mount=original_mount,
+                                    origin_checked=explicit_native),
+        native_and_worker_same_snapshot=(native_source_commit == source_commit and native_source_sha == source_sha),
         limit='Weight/config and external model source digests are original frozen-runtime receipts; those large/external files are not re-read by this CLI.')
 
 
@@ -600,6 +657,10 @@ def main(argv=None):
     p.add_argument('--source-manifest-sha256', required=True)
     p.add_argument('--native-root', type=Path, required=True)
     p.add_argument('--native-build-sha256', required=True)
+    p.add_argument('--native-source-root', type=Path,
+                   help='Actual Native compile snapshot; provide all three native-source options together')
+    p.add_argument('--native-source-commit')
+    p.add_argument('--native-source-manifest-sha256')
     p.add_argument('--mechanism', choices=tuple(SCOPES), required=True)
     p.add_argument('--expected-writers', type=int, required=True)
     args = p.parse_args(argv)
@@ -607,6 +668,12 @@ def main(argv=None):
             or any(not re.fullmatch('[0-9a-f]{64}', value) for value in (
                 args.result_sha256, args.source_manifest_sha256, args.native_build_sha256))):
         p.error('Exact SHA pins, source commit and bounded complete writer count required')
+    independent = (args.native_source_root, args.native_source_commit, args.native_source_manifest_sha256)
+    if any(value is not None for value in independent) and (
+            any(value is None for value in independent)
+            or not re.fullmatch('[0-9a-f]{40}', args.native_source_commit)
+            or not re.fullmatch('[0-9a-f]{64}', args.native_source_manifest_sha256)):
+        p.error('All three native-source options require an exact compile snapshot identity')
     sys.dont_write_bytecode = True
     sys.addaudithook(forbid_runtime)
     try:
@@ -618,7 +685,9 @@ def main(argv=None):
         final_ref = d['c1']['original_observations']['originals'][-1]
         final = originals.load(final_ref, absolute=True)
         proof = guard.section('source_and_build', provenance, d, final, args.source_root, args.native_root,
-            source_commit=args.source_commit, source_sha=args.source_manifest_sha256, build_sha=args.native_build_sha256)
+            source_commit=args.source_commit, source_sha=args.source_manifest_sha256, build_sha=args.native_build_sha256,
+            native_source_root=args.native_source_root, native_source_commit=args.native_source_commit,
+            native_source_sha=args.native_source_manifest_sha256)
         result['provenance'], result['provenance_schema'] = proof, guard.summary()
         result['consistent'] = bool(result['consistent'] and proof and proof['consistent'] and not guard.errors)
         result['public_protocol_reconciled'] = result['consistent']
