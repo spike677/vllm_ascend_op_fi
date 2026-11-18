@@ -165,3 +165,66 @@ partial import, startup refusal and immutable phase receipts. They use CPU
 ELF/memory/loader doubles; they are not a real Linux SDK loading result and do
 not upgrade the source113 56/0 result. Root must execute the device-free
 production-image command before interpreting actual lookup addresses.
+
+## Actual device-free visibility result, 2026-11-19
+
+The root ran diagnostic commit `bdff04217fb719050377c9a12119bbce7adf0b4b`
+in the fixed production image, retaining source113 and the source111 journal.
+Independent local review rehashed these four originals and checked every
+controller/result file reference, the log hash, the diagnostic source, the
+canonical profile digest and all 17 compile-source files:
+
+| Original | SHA-256 |
+| --- | --- |
+| `controller.json` | `45e5213d6c8e6036f5327e6aa732e875da323f06b6c114f10fa76cf10761a963` |
+| `result.json` | `8b81e2c26ca3fbb0135487dc48f7fb38ac858d16ff3195413309243aed3d0307` |
+| `01-before-import.json` | `d5a2a022121ff836b54ec44e37e16d0637b3defdf7c0c4a203afe5781bdc8671` |
+| `02-after-import.json` | `af24cfad385dfbae5a293d34912321837d350d594d717b0b1d7ccaadcb825f78` |
+
+The controller records exit 0, `devices=[]`, `runc`, network `none`, read-only
+inputs and removal of its owned container. The log SHA is
+`1516690ae8fe3eb1b6a89c6f78a7fe2a13096412fc933a229a230bf4e009fc94`;
+constructor `drvErr=4` / console-log discovery warnings remain in that log.
+This is not a claim of zero driver function calls.
+
+Both phases have 25 handles and a complete six-symbol matrix (150 entries).
+There are 14 unloaded handles before import and 13 afterward: torch_npu became
+loaded; the custom extension stayed unloaded. All three returned function
+owners' executable byte hashes match their files and pinned identities;
+41,363,579 executable bytes were charged per phase. There are no diagnostic
+errors. `torch_npu` reports `2.9.0.post1+gitee7ba04`, exact git commit
+`ee7ba047d3021288b2957294ffdcdb1e0d2cea65`. Its import source is unchanged.
+
+| Lookup scope, both phases | V3 pair | Four container functions |
+| --- | --- | --- |
+| `RTLD_DEFAULT` | journal | journal |
+| named `libcust_opapi.so` | original opapi | original nnopbase |
+| named `libopapi.so` | original opapi | original nnopbase |
+| named `libnnopbase.so` | explicit undefined-symbol errors | original nnopbase |
+
+The journal file is 398,688 bytes, SHA-256
+`def7285eb9346b2cd6c4500065dba6a635692e1e7a1d431064dbc86c62e6c41d`.
+These facts prove a lookup-visibility difference. They do not identify the
+actual model's cached resolver pointer, prove use of V3 rather than another
+typed branch, or change the prior 56-window/zero-Native outcome. The raw
+maps, addresses and phase objects remain outside Git; this section contains
+only the reproducible hashes and compact results.
+
+The next minimal hypothesis is an **absolute private-vendor path** whose
+`libcust_opapi.so` is a read-only symlink to the existing journal file. Same
+SHA alone is insufficient: a copied file can create a second link-map entry
+with an independent journal state. Before any deployment change, an optional
+NOLOAD-only diagnostic must compare the alias and the held canonical journal
+file's device/inode, six function addresses, bases and existing instance
+control-symbol addresses. A missing alias handle must remain missing.
+
+The original custom DSO is already loaded through the journal's absolute
+`DT_NEEDED` dependency. A new absolute alias therefore does not establish that
+a **bare-name** `libcust_opapi.so` lookup changes owner; its existing SONAME
+and cached resolver handles may continue to select the original. Both scopes
+must remain separately recorded. The existing canonical SDK/custom targets
+and exact one-call forwarding must stay intact. If the intended absolute
+lookup cannot reach the single held journal instance, or actual dispatch
+selects another route, stop this hypothesis. No SONAME rewrite, DSO copy,
+global dlsym interception, new ABI or NPU/F activation is authorized by this
+visibility result.
