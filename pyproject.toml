@@ -12,8 +12,8 @@ requires-python = ">=3.10"
 transformers = ["transformers==5.5.4"]
 
 [tool.setuptools.packages.find]
-include = ["fault_injection*", "native_execution_strategy*"]
-exclude = ["native_execution_strategy.tests*"]
+include = ["fault_injection*", "native_execution_strategy*", "engineering_closure*"]
+exclude = ["native_execution_strategy.tests*", "engineering_closure.engineering_tests*"]
 
 [tool.setuptools.package-data]
 fault_injection = ["native_adapters/*.cpp", "native_adapters/*.inc", "native_adapters/*.h", "native_adapters/*.py", "native_adapters/**/*.cpp", "native_adapters/**/*.h", "native_adapters/**/*.json", "native_build/*.sh", "native_build/*.cpp", "native_build/*.md"]

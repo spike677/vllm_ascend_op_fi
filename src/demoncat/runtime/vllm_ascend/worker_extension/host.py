@@ -18,7 +18,7 @@ _ATTACH = {'tenant_id', 'attach_nonce', 'worker'}
 _LEASE = _ATTACH | {'mechanism', 'implementation_version', 'owner', 'generation'}
 _RESTORE = {'disable', 'abort', 'recover', 'clean', 'unregister'}
 _METHODS = {'demoncat_attach', 'demoncat_fault_rpc', 'demoncat_fault_query',
-            'demoncat_detach', 'demoncat_discover'}
+            'demoncat_detach', 'demoncat_discover', 'demoncat_census'}
 _FAILURES = {'PROVIDER_ACTION_FAILED', 'NATIVE_STATE_UNAVAILABLE',
              'PROVIDER_STATE_UNAVAILABLE', 'RECOVERY_REQUIRED'}
 _SCOPE_FAILURES = {'WORKER_IDENTITY_MISMATCH', 'WORKER_IDENTITY_CHANGED_WITH_OWNED_RESOURCES',
@@ -153,6 +153,7 @@ class WorkerFaultClient:
         self.owner = 'worker-fault-' + uuid.uuid4().hex
         self.tenant_id = 'worker-client-' + uuid.uuid4().hex
         self._worker = self._attachment = self._lease = None
+        self._census = None
         self._capabilities = None
         self._settings = {}
         self._attach_started = self._prepare_started = False
@@ -233,6 +234,8 @@ class WorkerFaultClient:
 
     def prepare(self):
         with self._lock:
+            if self._census is not None:
+                return self._reject('prepare', 'CENSUS_CLEANUP_REQUIRED')
             if self._prepare_started or self._uncertain:
                 return self._reject('prepare', 'NEW_CLIENT_REQUIRED_AFTER_PREPARE_ATTEMPT')
             result = self._attach()
@@ -387,6 +390,15 @@ class WorkerFaultClient:
                 reply = self.host.invoke(self._worker, 'demoncat_detach', self._attachment)
                 status = reply.get('status')
                 if status in ('DETACHED', 'RECOVERY_REQUIRED'):
+                    census_recoveries = reply.get('census_recoveries', [])
+                    if not isinstance(census_recoveries, list) or len(census_recoveries) > 1:
+                        raise HostContractError('INVALID_CENSUS_DETACH_RECOVERY')
+                    if self._census is not None and not census_recoveries:
+                        raise HostContractError('CENSUS_DETACH_RECOVERY_MISSING')
+                    for row in census_recoveries:
+                        self._accept_census('cleanup', row)
+                    if status == 'DETACHED' and self._census is not None:
+                        raise HostContractError('CENSUS_DETACH_NOT_RELEASED')
                     recoveries = reply.get('recoveries')
                     if not isinstance(recoveries, list) or len(recoveries) > 1:
                         raise HostContractError('INVALID_DETACH_RECOVERY')
@@ -424,8 +436,8 @@ class WorkerFaultClient:
             schema='demoncat.worker_core.host_receipt.v1', status=response['status'],
             config=self.config.as_dict(), mechanism=self.config.mechanism,
             worker=self._worker, owner=self.owner, tenant_id=self.tenant_id,
-            attachment=self._attachment, ticket=self._lease,
-            ownership_retained=bool(self._attachment or self._lease or self._uncertain),
+            attachment=self._attachment, ticket=self._lease, census_ticket=self._census,
+            ownership_retained=bool(self._attachment or self._lease or self._census or self._uncertain),
             capability_enumeration=self._capabilities,
             provider_check='COMPLETED' if self._check_completed else 'NOT_ASSESSED',
             assessments={'C2': 'NOT_ASSESSED', 'C3': 'NOT_ASSESSED', 'E5': 'NOT_ASSESSED',
@@ -438,3 +450,69 @@ class WorkerFaultClient:
         """Copy the receipt ledger; this is not a fresh Worker readback."""
         with self._lock:
             return self._snapshot()
+
+    def _accept_census(self, action, reply):
+        status = reply.get('status')
+        if status in ('REJECTED', 'CENSUS_REJECTED'):
+            if reply.get('reason') in _SCOPE_FAILURES:
+                self._uncertain = True
+            return
+        if status not in ('CENSUS_SNAPSHOT', 'CENSUS_RELEASED', 'CENSUS_RECOVERY_REQUIRED'):
+            raise HostContractError('INVALID_CENSUS_RESPONSE')
+        ticket = reply.get('ticket')
+        if (not isinstance(ticket, dict) or set(ticket) != _ATTACH | {'owner', 'generation'}
+                or not self._attachment_matches({key: ticket[key] for key in _ATTACH})
+                or ticket['owner'] != self.owner or type(ticket['generation']) is not int
+                or ticket['generation'] < 1
+                or (self._census is not None and _canonical(ticket) != _canonical(self._census))
+                or reply.get('action') != action):
+            raise HostContractError('CENSUS_TICKET_MISMATCH')
+        self._census = _copy(ticket)
+        if status == 'CENSUS_RELEASED':
+            report = reply.get('census', {})
+            if (action != 'cleanup' or reply.get('recovery_required') is not False
+                    or report.get('releasable') is not True
+                    or report.get('resource_cleanup_confirmed') is not True
+                    or report.get('qualification_granted') is not False):
+                raise HostContractError('CENSUS_RELEASE_NOT_CONFIRMED')
+            self._census = None
+            self._uncertain = False
+        elif status == 'CENSUS_RECOVERY_REQUIRED' or reply.get('recovery_required') is True:
+            self._uncertain = True
+
+    def census_start(self, *, phase, expected, expected_max_seqs=1, max_events=10000):
+        """Observe one naturally enqueued request; never run a model here."""
+        with self._lock:
+            if self._census is not None or self._lease is not None or self._uncertain:
+                return self._reject('census_start', 'IDLE_OWNERSHIP_REQUIRED')
+            result = self._attach()
+            if self._attachment is None:
+                return result
+            settings = dict(phase=phase, expected=expected,
+                            expected_max_seqs=expected_max_seqs, max_events=max_events)
+            return self._census_action('start', dict(self._attachment, owner=self.owner, settings=settings))
+
+    def _census_action(self, action, payload=None):
+        if payload is None:
+            if self._census is None:
+                return self._reject('census_' + action, 'CENSUS_TICKET_REQUIRED')
+            payload = self._census
+        reply = None
+        try:
+            reply = self.host.invoke(self._worker, 'demoncat_census', action, _copy(payload))
+            self._accept_census(action, reply)
+            return self._record('census_' + action, reply)
+        except BaseException as error:
+            return self._failure('census_' + action, error, uncertain=True, response=reply)
+
+    def census_query(self):
+        with self._lock:
+            return self._census_action('query')
+
+    def census_stop(self):
+        with self._lock:
+            return self._census_action('stop')
+
+    def census_cleanup(self):
+        with self._lock:
+            return self._census_action('cleanup')

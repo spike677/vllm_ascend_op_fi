@@ -14,6 +14,7 @@ def main():
     parser.add_argument('--card', type=int, choices=(2, 5), default=2)
     parser.add_argument('--statistics', action='store_true')
     parser.add_argument('--c3', action='store_true')
+    parser.add_argument('--worker-core', action='store_true')
     parser.add_argument('--metadata-preflight', action='store_true')
     parser.add_argument('--mapped-libraries', type=Path)
     parser.add_argument('--out', type=Path, required=True)
@@ -41,6 +42,7 @@ def main():
             'export LD_LIBRARY_PATH=/native:$LD_LIBRARY_PATH\n'
             'export PYTHONPATH=/installed:/msprobe_packages:$PYTHONPATH\n'
             'exec python3 /probe.py' + (' --statistics' if args.statistics else '') + (' --c3' if args.c3 else '')
+            + (' --worker-core' if args.worker_core else '')
             + (' --metadata-preflight' if args.metadata_preflight else ''),
         review=dict(experiment_id=name, provider='20.buffer_substitute / exact-target-group-v3', model=args.model,
             cann='8.5.1', soc='Ascend910B4/A2; recheck actual Worker', physical_cards=[args.card], ranks=[0],
@@ -62,6 +64,8 @@ def main():
                 'release native owner and hooks, then compare a same-Worker healthy control. No C2/C3 proof is issued.',
             recovery_plan='No fault is armed. After two discovery requests, unregister all owned observers and native '
                 'callback, remove the binding, and compare healthy output in the same Worker. Retain any failure.')
+    if args.worker_core:
+        case['review']['worker_core'] = 'Unified FaultConfig/HostAdapter/client, structural discovery and one natural census before the unchanged provider group; no user target selectors.'
     for library in ('libopapi_nn.so', 'libopapi_math.so'):
         case['mounts'].append([str(native / library), '/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/' + library, 'ro'])
     if args.mapped_libraries:

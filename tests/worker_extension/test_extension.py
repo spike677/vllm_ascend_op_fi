@@ -117,7 +117,7 @@ class WorkerExtensionTest(unittest.TestCase):
     def test_only_namespaced_rpc_methods_and_live_worker_identity(self):
         self.assertEqual(
             sorted(name for name in vars(DemoncatWorkerExtension) if not name.startswith('__')),
-            ['demoncat_attach', 'demoncat_capabilities', 'demoncat_detach', 'demoncat_discover', 'demoncat_fault_query',
+            ['demoncat_attach', 'demoncat_capabilities', 'demoncat_census', 'demoncat_detach', 'demoncat_discover', 'demoncat_fault_query',
              'demoncat_fault_rpc', 'demoncat_worker_identity'],
         )
         before = self.worker.demoncat_worker_identity()
