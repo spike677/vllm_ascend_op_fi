@@ -8,7 +8,8 @@ Latest reviewed increments: source82 accepts **isolated C2 for
 26.fia_destination, 29/29 eligible targets**, and source84 accepts **isolated C2
 for39.output_proxy, 28/28 eligible targets**. Both are bounded CANN8.5.1/A2,
 TP1/card5 scopes; neither grants runtime authority from saved records.
-The current strictly accepted totals are C2 **8/17**, C3 **7/17**. The original
+The current strictly accepted totals are C2 **9/17**, C3 **8/17**, after the
+[source77 Torch-scope Fault17 decision](VISION17_SOURCE77_ACCEPTANCE.md). The original
 six scopes remain intact. Source89 completes26's new same-Worker isolated-to-C3
 transition:29 isolated F/OFF pairs, then58 every-match hits in two fresh requests.
 The independent reader reconciles81,345 checks with zero issues; see the
@@ -25,8 +26,8 @@ are still unproved; see the [source93 review](QUANT_SOURCE93_ROUTED_FRAMES_REVIE
 The source-bound reader and root rerun produce the identical summary hash.
 
 The independent source94 Fault33 S2 candidate has passed the real pinned
-SplitCore22,528-case CPU geometry matrix. Its new host/kernel build and its own
-normal bridge remain separate device acceptance work; no F gate is opened.
+SplitCore22,528-case CPU geometry matrix. Its new host/kernel/package build has completed successfully without a device.
+Its own normal bridge and F/OFF remain separate device acceptance work; no F gate is opened.
 The original source88 normal package and evidence remain unchanged.
 
 ## Ownership and execution
@@ -51,18 +52,21 @@ attempt/source scope. New milestone attempts are listed below; each uses a new s
 
 ## Work ledger
 
+The [current convergence decisions](CONVERGENCE_DECISIONS.md) are the controlling
+next-action ledger, including explicit stop conditions and separate E5/version tracks.
+
 | Mechanisms | Preserved evidence | Next concrete work |
 |---|---|---|
 |8,18,22|Bounded natural Worker C2/C3, including source66 public8/18 and source50 public22|Keep qualification; add uncontaminated E5/device payload and only genuinely new fused/model paths.|
 |20,39.matmul,41|Repaired Native builds or public group C2/C3|Keep original recovery proof; extend E5/actual new API or environment separately.|
-|26.residual,26.fia|QMM source68 remains C1 with variable adjacency; FIA source89 accepts29 isolated C2 targets and58 cumulative C3 hits|Keep the FIA scope; QMM still needs the complete dynamic-eligibility contract without dropping changing candidates. E5 remains separate.|
-|quant.batch_shared_scale|Public C1 source64;2 proven row mappings out of135|Classify the other133 through actual row transformations; unresolved lineage remains unverified; then coverage.|
+|26.residual,26.fia|QMM source68 remains C1 with variable adjacency; FIA source89 accepts29 isolated C2 targets and58 cumulative C3 hits|Keep the FIA scope. Retain the QMM static contract with a structural complete-set block; dynamic eligibility is a separately declared future scope. E5 remains separate.|
+|quant.batch_shared_scale|Public C1 source64; source93 proves10 request-row mappings out of135|Close actual Native routing/GMM/unpermute row semantics; no repeated frame inventory; then coverage.|
 |39.output|Source84 isolated C2 accepted for28/28 eligible pairs;113 projection calls retained|Cumulative C3 failure retained; do not bypass the finite-input guard or infer E5.|
 |28.fa.legal,28.fia.legal,28.fia.replay|Distinct standalone/kernel and historical model scopes|Public request-scoped execution adapters for real layouts/launches, no empty factory.|
 |33.paged|Source88 normal bridge has435 exact complete payload pairs and281 independent checks with0 issues|Next implement/validate actual F and OFF in this new scope; retain earlier67-element mismatch and no inherited fault qualification.|
-|15.alias|Healthy NZ constructed mechanism; observed natural VAE format30 does not match|Natural private-base/view/write/base-consumer chain or explicit non-applicability for the inspected path, not a global model claim.|
-|17.spatial|Natural Qwen3-VL MODEL_LOCAL census|Standard multimodal request identity and actual padding/consumer proof.|
-|25.reduce_scatter|Six bounded8.5.1/9.1 calibration cases have no replay sample|Review actual collective/backend evidence once; no repeated identical calibration or manufactured fault.|
+|15.alias|Healthy NZ constructed mechanism; observed natural VAE format30 does not match|Current natural VAE path closed as non-applicable. Reopen only for a different concrete qualifying chain; no global impossibility claim.|
+|17.spatial|Source77 actual standard Qwen3-VL Worker, Torch single projection, C2 1/1 and C3 2/2 accepted|Native/device, multi-projection and E5 remain separate; no rerun required to decide existing Torch evidence.|
+|25.reduce_scatter|Six bounded8.5.1/9.1 calibration cases have no replay sample|Current calibration path closed with NO_REPLAY_SAMPLE; no repeated identical calibration or manufactured fault.|
 
 Hardware/versions: current Worker evidence is exact8.5.1/A2. Other8.x/9.x
 Workers, A3 and yellow-zone wiring require separate evidence. E5 is independent
