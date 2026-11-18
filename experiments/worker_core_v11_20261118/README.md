@@ -197,3 +197,65 @@ Source75's fresh26 parent and group plus39 postwrite packages passed the actual
 8.5.1 SDK build and host-only contracts. The new33 arch22 normal route package
 also compiled successfully. These are build results only. They confer no
 device, stock/private-equivalence, C2/C3 or E5 qualification.
+
+## Source77 original-file review and source79 continuation
+
+Source77 (`c0045f283de5af99628da9631d19d3ee9769d66d`, manifest
+`11c609ce87f0f7dd8c97b1ae008fd512f514bae46a6cec77c4d2a5d8f534bcf3`)
+passed58 production-image CPU contracts before the new card2 attempts. These
+are new attempts; none changes an earlier source's qualification.
+
+Fault17 now has ten actual standard Qwen3-VL image requests, each with an
+observed encoder execution after the public idle MM/encoder cache resets.
+The [independent complete-original review](vision17_source77_original_review.json)
+reconciles1010 evidence checks and29 source checks, with no issues. It reads
+the19,426,871-byte original result on124, SHA256
+`36f17fa31ca8b4b3a04e114baaacdc1b54baefcb162129e1b41b408d586a361a`,
+not the earlier extraction used to develop the reviewer. One actual projection
+is covered: one C2 F and two C3 F requests. Padding is `[0,0,0]` in healthy
+requests and `[0,7,7]` in all three F requests. Input, weight and bias hashes
+stay fixed. The returned projection, exact-object first consumer and logits
+change in F, repeat exactly, and restore under OFF and cleanup health.
+All returned first tokens and texts remain equal.
+
+This is **single-projection Torch parameter-boundary evidence**. It does not
+prove ACLNN launch arguments, device payload, multiple targets, continuous
+generation or E5. The auditor checks saved host RPC history and runtime tensor
+hashes; it does not independently capture transport, reopen framework/model
+files or read complete tensors. Its false qualification fields deliberately
+prevent saved JSON from becoming a live admission capability. The six prior
+Native/standard-Worker accepted scopes are not inflated by this narrower result.
+
+Fault26 FIA source77 completed the17-request C2/C3 sequence with30 observed
+writers and29 eligible targets:29 once hits and58 every-match hits. The once
+phase is **same-request cumulative injection**, not29 isolated healthy-input
+replays. Recovery and post-unregister health were recorded. The original result
+SHA256 is `97444665296400698f9935bdb6cf2ce793a7fdedfb2874a7df61388d07ad577c`.
+The first independent review reconciles typed output bins and both actual
+source/build identities but retains21 unresolved checks: cross-request
+non-target counter changes and two custom-library getter joins per generation.
+No new C2/C3 qualification is issued while these checks remain unresolved.
+A separate bounded isolated-target stage is being implemented; it will have
+its own source, requests and evidence rather than relabel this cumulative run.
+
+Fault39.output's source77 first attempt refused because three stock library
+mapping identities were not proven. The second attempt read-only mounted those
+same image bytes at their original paths; all actual held-function bindings
+then passed the original strict checks. Its six C1 requests completed, but
+group preparation refused `POSTWRITE_INDEPENDENT_DISCOVERY_INCOMPLETE` before
+any new group F. Both attempts and cleanup receipts remain intact. The second
+result SHA256 is `b799f2e7bcffbd045e8e83b39cc38ad08dd57291731e294f157932b7281dea48`.
+The failed collection did not persist its in-memory complete discovery report;
+that evidence-retention gap must be repaired before diagnosing missing targets.
+It is not permission to remove unseen modules from the denominator.
+
+Source79 (`94b4cefd67cd5c55b80699ec4a413215b2f9a7a0`, manifest
+`122f50404c329b7ba69c22172d635a849fc8f0eca803021c02f7aace9073cac5`)
+passed its production-image CPU gate. It admits actual eval/no-grad model
+Parameters as broadcast only with unchanged owner/path/object/version/epoch
+proof, without changing `requires_grad` or treating inference as training.
+Its first card2 quant attempt executed no NPU calls because a new ATK process
+blocked the gate. A fresh card5 attempt uses the existing lock and gate.
+The new33 arch22 stock/private normal-only cases are prepared for the same
+card, serially after quant. Neither preparation nor a successful compile is
+stock/private equivalence or authorization to run F.
