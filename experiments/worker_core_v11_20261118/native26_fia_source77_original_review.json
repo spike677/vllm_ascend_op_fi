@@ -1,0 +1,337 @@
+{
+  "consistent": true,
+  "checks": 21876,
+  "issues": [],
+  "public_qualification_granted": false,
+  "c2": false,
+  "c3": false,
+  "e5": false,
+  "details": {
+    "c2": {
+      "collected_requests": 8,
+      "incomplete_requests": [],
+      "coverage": {
+        "projection_calls_per_request": 30,
+        "eligible_targets": 29,
+        "fault_requests": 1,
+        "per_target_native_outcomes": 5,
+        "ledger_calls": 60,
+        "recomputed_hits": 29,
+        "artifact_files_rehashed": 123
+      },
+      "outside_request_non_target_runs": [
+        {
+          "before_phase": "inventory_2",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "qualification_reference_all",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "qualification_lossless_all",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "qualification_off_all",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "group_fault",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "group_off",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "health",
+          "non_target_runs": 13
+        }
+      ],
+      "typed_fia": {
+        "checks": 7369,
+        "consistent": true,
+        "issues": [],
+        "typed_records": 625,
+        "full_output_bins_rehashed": 205,
+        "full_output_bytes_rehashed": 3070080,
+        "stock_targets": 30,
+        "initial_typed_records_outside_windows": 60,
+        "source_bound_descriptor_receipts_reconciled": true,
+        "residual_and_logits_tensor_bins_available": false,
+        "final_typed_state_boundary": "LAST_ACTUAL_HEALTH_REQUEST_AFTER",
+        "separate_post_cleanup_typed_state_available": false,
+        "public_qualification_granted": false,
+        "c2": false,
+        "c3": false,
+        "e5": false
+      },
+      "complete_originals_reconciled": true
+    },
+    "c3": {
+      "collected_requests": 9,
+      "incomplete_requests": [],
+      "coverage": {
+        "projection_calls_per_request": 30,
+        "eligible_targets": 29,
+        "fault_requests": 2,
+        "per_target_native_outcomes": 6,
+        "ledger_calls": 90,
+        "recomputed_hits": 58,
+        "artifact_files_rehashed": 153
+      },
+      "outside_request_non_target_runs": [
+        {
+          "before_phase": "inventory_2",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "qualification_reference_all",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "qualification_lossless_all",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "qualification_off_all",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "group_fault",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "group_fault_repeat",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "group_off",
+          "non_target_runs": 13
+        },
+        {
+          "before_phase": "health",
+          "non_target_runs": 13
+        }
+      ],
+      "typed_fia": {
+        "checks": 8384,
+        "consistent": true,
+        "issues": [],
+        "typed_records": 714,
+        "full_output_bins_rehashed": 234,
+        "full_output_bytes_rehashed": 3504384,
+        "stock_targets": 30,
+        "initial_typed_records_outside_windows": 685,
+        "source_bound_descriptor_receipts_reconciled": true,
+        "residual_and_logits_tensor_bins_available": false,
+        "final_typed_state_boundary": "LAST_ACTUAL_HEALTH_REQUEST_AFTER",
+        "separate_post_cleanup_typed_state_available": false,
+        "public_qualification_granted": false,
+        "c2": false,
+        "c3": false,
+        "e5": false
+      },
+      "complete_originals_reconciled": true
+    },
+    "transition": {
+      "rpc_generation": 1,
+      "native_generations": [
+        1,
+        2
+      ],
+      "same_saved_object_binding": true,
+      "proof_sha256": "d574849359c5fab4398c947b4057d316813c34f3d5ce1734d35372ffac95ec13",
+      "serializable_authority": false,
+      "live_authority_recreated": false,
+      "outside_request_native_boundary": {
+        "boundary": "C2_to_C3_generation_boundary",
+        "non_target_runs": 13,
+        "accounted": true,
+        "individual_non_target_operators_observed": false
+      }
+    }
+  },
+  "group_completion_reconciled": true,
+  "classification": "SAVED_STANDARD_WORKER_C2_C3_RECEIPTS",
+  "original_error": null,
+  "original_cleanup_error": null,
+  "blocked_run": null,
+  "aborted_request": null,
+  "originals_rehashed": 86,
+  "completed_original_requests": 17,
+  "limits": [
+    "Saved original reconciliation never recreates or grants live C2/C3 authority.",
+    "CPU topology mode does not validate Native ABI double effects or qualify an NPU Worker.",
+    "FIA stock/owned bytes are separately rehashed in natural mode; full residual/logits equality is a runtime receipt.",
+    "No E5 inference is made from runtime outcomes, proof records, or hit counts."
+  ],
+  "native_image_binding": {
+    "build_manifest_sha256": "dc6150607edf68e3868d5c7d5c976c1ce5458dbba44190e9daf6d85ae779cfa0",
+    "build_receipt_sha256": "692272ebcdc02ed9df2598282a7bcc1c633dad7071e64fa70249fd35df2d1e86",
+    "files": {
+      "libcust_opapi.so": "1d6783aca732a70dfb7a62706f6f8bf09acd0a8a42dd44b2b3c45e490c1c7c64",
+      "libdcat26_group_v2.so": "8804968522025518af5e220809fb8c96937ca0d1555f271d5f442783cb3de6ab",
+      "libfault26_fia_opapi_proxy.so": "7d99bd89add54446ceb2c9cef9ad563221adb0c39605ca553b326db4182c13c6",
+      "libfault26_readonly_trace_abi0.so": "9e165c0fb64362db0f9f5e3eace59fcfd2e2d9b01aa2a42414998089d87b0942",
+      "libopapi.so": "55e2ab8274080682aa04d924383201dc55133b52f270b822b5913ff3f4bafefc",
+      "libopapi_nn.so": "1babe2a881124740e2b4f217024902d8149560444a84b3d21b64e4d6f26090d3",
+      "metadata-array-cpu.json": "c3443c2957e02add75d75f2d90b80c1e0767f1de9a7eaa49467cee727067eee4",
+      "metadata-array-group-cpu.json": "9753cd755aee42c5d641b9f9b0c1fc30f67c441d8e73eb0a3d4e3f407a29c8c7",
+      "metadata-array-ownership.json": "1b1526d07e383f8bd1346506631c01feae0944c9871f5e9cc7dbb5ff6ce0b00b",
+      "real/libcust_opapi_real.so": "28765842049552da1a8723f0f733f326a1014c1b0441b2f384e0f0b9f71f38ca",
+      "real/libopapi_nn_real.so": "efcead9c6f8e776184ba0bca752abd6f6d0f586c2c5e17a92961d147b55c0dc0",
+      "real/libopapi_real.so": "234b7582c6c8866001dc8be727c2572e4fe5a4636ec1edd7c1ca143c83ee0996"
+    },
+    "bound_symbol_profile": "demoncat.writer26.cached_addresses.v1",
+    "files_rehashed": 12,
+    "parent_manifest_sha256": "979a00fda86dce9b054dcb76da5398d19031230937b97670566405924534c2c8",
+    "metadata_parent_receipt_sha256": "1b1526d07e383f8bd1346506631c01feae0944c9871f5e9cc7dbb5ff6ce0b00b",
+    "rebuilt_dependencies": [
+      "libcust_opapi.so"
+    ],
+    "complete_parent_bundle_rehashed": false
+  },
+  "provenance_by_run": {
+    "c2": {
+      "checks": 191,
+      "consistent": true,
+      "issues": [],
+      "source_files_rehashed": 35,
+      "native_files_rehashed": 13,
+      "native_compile_sources_rehashed": 24,
+      "external_model_and_weight_files_rehashed": false,
+      "worker_source_snapshot": {
+        "commit": "c0045f283de5af99628da9631d19d3ee9769d66d",
+        "manifest_sha256": "11c609ce87f0f7dd8c97b1ae008fd512f514bae46a6cec77c4d2a5d8f534bcf3"
+      },
+      "native_compile_source_snapshot": {
+        "commit": "f800a4884f22688737a4ab74a051f4f922ab4b03",
+        "manifest_sha256": "62b700a85663d0955dbc4d99b318786ba75f12c740b0fc46b82666dee5a5f04d",
+        "identity_basis": "ACTUAL_BUILD_RECEIPT_COMMIT_AND_SOURCE_MOUNT",
+        "manifest_binding": "EXPLICIT_REVIEW_MANIFEST_PIN"
+      },
+      "native_compile_receipt": {
+        "source_commit": "f800a4884f22688737a4ab74a051f4f922ab4b03",
+        "source_mount": "/home/17-fault-c2c3-20261117/source75",
+        "origin_checked": true
+      },
+      "native_and_worker_same_snapshot": false,
+      "limit": "Weight/config and external model source digests are original frozen-runtime receipts; those large/external files are not re-read by this CLI.",
+      "group_scope_source": {
+        "consistent": true,
+        "checks": 1,
+        "issues": [],
+        "public_qualification_granted": false,
+        "c2": false,
+        "c3": false,
+        "e5": false
+      }
+    },
+    "c3": {
+      "checks": 191,
+      "consistent": true,
+      "issues": [],
+      "source_files_rehashed": 35,
+      "native_files_rehashed": 13,
+      "native_compile_sources_rehashed": 24,
+      "external_model_and_weight_files_rehashed": false,
+      "worker_source_snapshot": {
+        "commit": "c0045f283de5af99628da9631d19d3ee9769d66d",
+        "manifest_sha256": "11c609ce87f0f7dd8c97b1ae008fd512f514bae46a6cec77c4d2a5d8f534bcf3"
+      },
+      "native_compile_source_snapshot": {
+        "commit": "f800a4884f22688737a4ab74a051f4f922ab4b03",
+        "manifest_sha256": "62b700a85663d0955dbc4d99b318786ba75f12c740b0fc46b82666dee5a5f04d",
+        "identity_basis": "ACTUAL_BUILD_RECEIPT_COMMIT_AND_SOURCE_MOUNT",
+        "manifest_binding": "EXPLICIT_REVIEW_MANIFEST_PIN"
+      },
+      "native_compile_receipt": {
+        "source_commit": "f800a4884f22688737a4ab74a051f4f922ab4b03",
+        "source_mount": "/home/17-fault-c2c3-20261117/source75",
+        "origin_checked": true
+      },
+      "native_and_worker_same_snapshot": false,
+      "limit": "Weight/config and external model source digests are original frozen-runtime receipts; those large/external files are not re-read by this CLI.",
+      "group_scope_source": {
+        "consistent": true,
+        "checks": 1,
+        "issues": [],
+        "public_qualification_granted": false,
+        "c2": false,
+        "c3": false,
+        "e5": false
+      }
+    }
+  },
+  "provenance": {
+    "checks": 191,
+    "consistent": true,
+    "issues": [],
+    "source_files_rehashed": 35,
+    "native_files_rehashed": 13,
+    "native_compile_sources_rehashed": 24,
+    "external_model_and_weight_files_rehashed": false,
+    "worker_source_snapshot": {
+      "commit": "c0045f283de5af99628da9631d19d3ee9769d66d",
+      "manifest_sha256": "11c609ce87f0f7dd8c97b1ae008fd512f514bae46a6cec77c4d2a5d8f534bcf3"
+    },
+    "native_compile_source_snapshot": {
+      "commit": "f800a4884f22688737a4ab74a051f4f922ab4b03",
+      "manifest_sha256": "62b700a85663d0955dbc4d99b318786ba75f12c740b0fc46b82666dee5a5f04d",
+      "identity_basis": "ACTUAL_BUILD_RECEIPT_COMMIT_AND_SOURCE_MOUNT",
+      "manifest_binding": "EXPLICIT_REVIEW_MANIFEST_PIN"
+    },
+    "native_compile_receipt": {
+      "source_commit": "f800a4884f22688737a4ab74a051f4f922ab4b03",
+      "source_mount": "/home/17-fault-c2c3-20261117/source75",
+      "origin_checked": true
+    },
+    "native_and_worker_same_snapshot": false,
+    "limit": "Weight/config and external model source digests are original frozen-runtime receipts; those large/external files are not re-read by this CLI.",
+    "group_scope_source": {
+      "consistent": true,
+      "checks": 1,
+      "issues": [],
+      "public_qualification_granted": false,
+      "c2": false,
+      "c3": false,
+      "e5": false
+    }
+  },
+  "original_driver_error": null,
+  "original_request_phases": [
+    "inventory_1",
+    "inventory_2",
+    "qualification_reference_all",
+    "qualification_lossless_all",
+    "qualification_off_all",
+    "group_fault",
+    "group_off",
+    "health",
+    "inventory_1",
+    "inventory_2",
+    "qualification_reference_all",
+    "qualification_lossless_all",
+    "qualification_off_all",
+    "group_fault",
+    "group_fault_repeat",
+    "group_off",
+    "health"
+  ],
+  "schema": "demoncat.writer26.worker_group.independent_originals.v1",
+  "reviewer_sha256": "5dfb6094f92acf3d445cd65a6ec2f645c585365352b6c21f1febebecf7689e8d",
+  "atomic_helpers": {
+    "review_native26_single_source54.py": "8151f93dca35ead3b32b98d66881e5bc23432884bf5af8c1c6694f1b59fb8b5d",
+    "review_native26_fia_single_source62.py": "e6f9e2885ed2b707e45d492d29ec4b56db0f3b267995eccdd267c1a8c6934393"
+  },
+  "independent_helpers": {
+    "group_review_common.py": "cac3e421c29b98f31faccec2911439e513141a1f2519134f7ef00054b81a6f1b",
+    "review26_group_native.py": "49eb7139ccb8c7a2ff9a776be1b76c7853befd2e1b943efd6ce886cac337ad8d",
+    "review26_c3_originals.py": "74a54b427525b013c52a721b45db1907f5f49635ed77bf4da9f4635e50358e4e",
+    "review26_environment_originals.py": "664767cbec7526192acceb74db823e9f5664bf522e60777df48555e3f2b9010f"
+  },
+  "read_only": true,
+  "runtime_executed": false
+}

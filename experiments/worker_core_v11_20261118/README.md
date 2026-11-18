@@ -238,6 +238,20 @@ No new C2/C3 qualification is issued while these checks remain unresolved.
 A separate bounded isolated-target stage is being implemented; it will have
 its own source, requests and evidence rather than relabel this cumulative run.
 
+The subsequent [complete-original re-review](native26_fia_source77_original_review.json)
+passes21,876 checks without issues. All20 earlier failures were traced to two
+auditor assumptions, not changed originals:16 boundaries each contain13 counted
+non-target cache runs, with every target/event/error field unchanged; and the
+custom getter belongs to the rebuilt group library, not the SDK metadata-array
+image list. The corrected reviewer rehashes the actual group build/receipt/files
+and binds all16 held-function edges. It preserves208 non-target runs as counted
+but individually unidentified. Both per-generation provenance checks and all439
+saved stock/owned FIA output bins pass. Full residual/logits comparisons remain
+runtime hash receipts; they are not independently rehashed arrays. The initial
+inconsistent audit remains on124. This closes original consistency for the
+cumulative once/every-match experiment, **not** the separate29 isolated-target
+replay requirement or E5.
+
 Fault39.output's source77 first attempt refused because three stock library
 mapping identities were not proven. The second attempt read-only mounted those
 same image bytes at their original paths; all actual held-function bindings
@@ -259,3 +273,24 @@ blocked the gate. A fresh card5 attempt uses the existing lock and gate.
 The new33 arch22 stock/private normal-only cases are prepared for the same
 card, serially after quant. Neither preparation nor a successful compile is
 stock/private equivalence or authorization to run F.
+
+The card5 quant attempt completed both healthy B8 decodes:270 actual projection
+and Native prepare/execute calls,16 proven request-row calls (8/135 per request),
+zero F and zero qualified Native targets. Result SHA256:
+`22aecf991748cd0da10efeb6ff5e2666482d88586132a17e45d6230bf954d9a0`;
+inventory SHA256:`d59e19e9c8c93c8e7cbec1c346f4600641d59e37c9ee7be0271c40cb52bc6bd8`.
+The next break is the actual `moe_forward_shared` mutable hidden-state boundary
+before layer1 shared experts. Its schema permits alias writes; the observer
+correctly invalidates the previous proof. Request rows cannot be carried across
+that boundary merely because the shape stays `[8,2048]`. A source-bound nested
+shared-input/consumer observation is still needed; expert-token permutations
+must remain distinct from request rows.
+
+For33, the preparer's missing `soc` review field initially caused a queue
+validation failure before device use. A new manifest supplies the independently
+observed `Ascend910B4/A2` field only, preserving the original source/commands and
+manifest digest. The preparer now has a regression against the actual queue
+contract on both cards. The source79/card5 stock arm completed all five phases.
+The private normal arm stopped with
+`ARCH22_FINAL_PUBLIC_ARGUMENT_GEOMETRY_DIFFERS`; actual host/POD/runtime evidence
+is retained for diagnosis. No numerical-equivalence or fault claim follows.
