@@ -6,6 +6,7 @@ import threading
 
 from .attention_native import MECHANISMS, FaNativeCall, FiaNativeCall, PagedNativeCall
 from .paged33_arch22_bridge import Arch22NormalNativeCall
+from .attention28_stock_census import StockTndPrefillCensus
 from .serving_context import require, require_serial_eager
 
 ATTRIBUTE = '_demoncat_attention_serving_bindings'
@@ -60,7 +61,8 @@ reported as Python observation, never a loaded Native provider or qualification.
     if not _simulation:
         require_serial_eager(runner, expected_max_seqs=1)
         require(_test_context is None, 'ATTENTION_CPU_SEAM_ON_REAL_WORKER')
-        require(native is None or type(native) in (FaNativeCall, FiaNativeCall, PagedNativeCall, Arch22NormalNativeCall),
+        require(native is None or type(native) in (FaNativeCall, FiaNativeCall, PagedNativeCall,
+                Arch22NormalNativeCall, StockTndPrefillCensus),
                 'ATTENTION_REVIEWED_NATIVE_ADAPTER_REQUIRED')
     else:
         require(type(_test_context) is dict, 'ATTENTION_EXPLICIT_CPU_CONTEXT_REQUIRED')
@@ -68,7 +70,8 @@ reported as Python observation, never a loaded Native provider or qualification.
         require(native.mechanism == mechanism, 'ATTENTION_NATIVE_MECHANISM_DIFFERS')
         state = native.state()
         require(state['native_loaded'] is True and not state['scope_active'] and not state['scope_owned']
-            and state['environment_owned'] == 0, 'ATTENTION_NATIVE_NOT_INERT')
+            and state['environment_owned'] == 0 and not state.get('pending_drains')
+            and not state.get('pending_references'), 'ATTENTION_NATIVE_NOT_INERT')
     require(type(provenance) is dict, 'ATTENTION_DEPLOYMENT_PROVENANCE_REQUIRED')
     canonical = json.dumps(provenance, allow_nan=False, sort_keys=True)
     bindings = getattr(worker, ATTRIBUTE, None)
@@ -93,7 +96,8 @@ def remove_attention_serving_binding(worker, mechanism):
         and binding.model is worker.model_runner.model and binding.pid == os.getpid()
         and binding.thread == threading.get_ident(), 'ATTENTION_BINDING_STILL_OWNED_OR_CHANGED')
     state = binding.native.state()
-    require(not state['scope_active'] and not state['scope_owned'] and state['environment_owned'] == 0,
+    require(not state['scope_active'] and not state['scope_owned'] and state['environment_owned'] == 0
+            and not state.get('pending_drains') and not state.get('pending_references'),
             'ATTENTION_NATIVE_RECOVERY_PENDING')
     del bindings[mechanism]
     return dict(status='SERVING_DEPLOYMENT_REMOVED', mechanism=mechanism, native_scope_active=False)

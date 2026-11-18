@@ -101,6 +101,7 @@ class AttentionServingProvider(Scope):
                             'ATTENTION_EXPLICIT_FRESH_REQUEST_REQUIRED')
                     phase = PHASES[self.index]
                     if phase.startswith('baseline'):
+                        require(not getattr(self.binding.native,'observer_only',False), 'ATTENTION_STOCK_CENSUS_OBSERVE_ONLY')
                         require(self.selection is not None, 'ATTENTION_NO_STABLE_MATCHING_ACTUAL_CALL')
                         require(self.binding.native.state()['native_loaded'], 'ATTENTION_MATCHING_NATIVE_DEPLOYMENT_REQUIRED')
                     if phase == 'fault':
@@ -181,11 +182,15 @@ class AttentionServingProvider(Scope):
         state = session.state() if session is not None and hasattr(session, 'handles') else dict(
             owned_hooks=0, owned_api_wrappers=0, inflight=0, needs_off=False, pending_request=None,
             completed_requests=0, failures=[])
-        resources = state['owned_hooks'] + state['owned_api_wrappers'] + int(native['scope_owned']) + native['environment_owned']
+        pending_native = native.get('pending_drains',0) + native.get('pending_references',0)
+        resources = state['owned_hooks'] + state['owned_api_wrappers'] + int(native['scope_owned']) + native['environment_owned'] + pending_native
+        actual_calls=[call for row in self.records for forward in row['forwards'] for call in forward['calls']]
+        observed_census=sum(call.get('native_census',{}).get('status') == 'OBSERVED_INTERCEPTED_STOCK_LAUNCHES'
+                            for call in actual_calls if call.get('native_census') is not None)
         result = dict(execution_boundary=self.execution_boundary, owner=owner, generation=generation,
             native_loaded=native['native_loaded'], native_registered=bool(resources) if self.execution_boundary == 'native' else False,
             registered=self._registered, enabled=bool(native['scope_active']), inflight=state['inflight'],
-            leases=int(native['scope_owned']) + native['environment_owned'], binding_reserved=self.binding_reserved,
+            leases=int(native['scope_owned']) + native['environment_owned'] + pending_native, binding_reserved=self.binding_reserved,
             replay_pending=bool(self.attempted and not self.stopped),
             replay_failed=bool(self.error or not self.stopped and session and getattr(session, 'last_error', None)),
             owned_hooks=state['owned_hooks'], owned_api_wrappers=state['owned_api_wrappers'],
@@ -196,6 +201,11 @@ class AttentionServingProvider(Scope):
                 selection=self.selection, requests=deepcopy(self.records), actual_requests_sha256=digest(self.records),
                 observed_call_count=sum(len(forward['calls']) for row in self.records for forward in row['forwards']),
                 qualified_targets=[], independent_native_denominator=False,
+                stock_launch_census=dict(observer_only=bool(native.get('observer_only')),
+                    actual_calls=len(actual_calls),observed_call_scopes=observed_census,
+                    unobserved_call_scopes=len(actual_calls)-observed_census,
+                    intercepted_call_denominator_complete=bool(actual_calls) and observed_census == len(actual_calls),
+                    all_runtime_entrypoints_covered=False,stock_pod_decoded=False,native_fault_qualified=False),
                 source=getattr(session, 'source', None), historical_qualification_inherited=False,
                 stock_private_bridge='NOT_ESTABLISHED', fault_admission='BLOCKED_STOCK_PRIVATE_BRIDGE_REQUIRED'),
             C1=False, C2=False, C3=False, E5='NOT_ASSESSED', public_qualification_granted=False)

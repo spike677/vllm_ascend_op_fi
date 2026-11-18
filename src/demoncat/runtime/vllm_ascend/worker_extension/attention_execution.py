@@ -309,7 +309,7 @@ class AttentionExecutionAdapter:
                    input_contract_matches=False, native=None, reasons=[], logical_role='attention_reader',
                    ordinal=len(self.current['calls']),
                    actual_callable=dict(object_id=id(original), type=type(original).__module__+'.'+type(original).__qualname__),
-                   native_original_call_count='UNOBSERVED_UNLESS_INDEPENDENT_LAUNCH_PRESENT')
+                   native_original_call_count='UNOBSERVED_UNLESS_INDEPENDENT_LAUNCH_PRESENT',native_census=None)
         self.current['calls'].append(row)
         try:
             self._owned()
@@ -332,6 +332,9 @@ class AttentionExecutionAdapter:
                 # Do not guess its semantic arguments or acquire Native scope.
                 row.update(input=complete((args, kwargs)), target_key=None)
                 row['reasons'].append(str(error))
+                if getattr(self.driver,'observer_only',False):
+                    row['native_census']=dict(status='UNOBSERVED_OR_INCOMPLETE',reasons=[str(error)],
+                        native_fault_qualified=False,fault_authorized=False)
                 output = once()
                 row.update(output=complete(output), inputs_unchanged=complete((args, kwargs)) == row['input'],
                            original_returned=True)
@@ -348,7 +351,19 @@ class AttentionExecutionAdapter:
             phase = self.current['phase']
             if selected:
                 require(row['input_contract_matches'], 'ATTENTION_SELECTED_ACTUAL_LAYOUT_CHANGED')
-            if selected and phase not in ('observe', 'observe_repeat', 'health'):
+            if getattr(self.driver,'observer_only',False) and phase in ('observe','observe_repeat'):
+                context=self._context()
+                require(context.model_instance is self.model and context.no_compile_layers.get(module.layer_name) is module,
+                        'ATTENTION_CENSUS_CONTEXT_OBJECT_CHANGED')
+                require(len(self.deployment.leases) == 1, 'ATTENTION_CENSUS_ACTUAL_OWNER_TICKET_REQUIRED')
+                owner,generation=next(iter(self.deployment.leases))
+                row['native_census_scope']=dict(owner=owner,generation=generation,worker_object_id=id(self.worker),
+                    runner_object_id=id(self.runner),model_object_id=id(self.model),rank=self.worker.rank,
+                    device_type=getattr(self.worker.device,'type',None),logical_device=getattr(self.worker.device,'index',None),
+                    phase=phase)
+                output,receipt=self.driver.observe(original,args,actual,row,context.attn_metadata[module.layer_name],once)
+                row['native_census']=receipt
+            elif selected and phase not in ('observe', 'observe_repeat', 'health'):
                 if phase == 'fault':self.needs_off = True
                 output, receipt = self.driver.execute(actual, row, phase, once)
                 row['native'] = receipt

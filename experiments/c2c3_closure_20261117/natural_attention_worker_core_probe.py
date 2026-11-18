@@ -57,7 +57,7 @@ def remove(worker, expected, mechanism):
     return remove_attention_serving_binding(worker, mechanism)
 
 
-def drive(llm, client, *, prompt, params, out, report):
+def drive(llm, client, *, prompt, params, out, report, expected_native_observer=False):
     folder = out/'worker_core_rpc';folder.mkdir(exist_ok=False)
     core = report.setdefault('worker_core', dict(receipts=[], qualification_granted=False))
     history_count, seen, pending = 0, [], []
@@ -108,7 +108,10 @@ def drive(llm, client, *, prompt, params, out, report):
             pending = []
         _, state = action('finish')
         if (state['owned_hooks'] or state['owned_api_wrappers'] or state['inflight'] or state['leases']
-                or state['native_loaded'] or state['C1'] or state['C2'] or state['C3']):
+                or state['native_loaded'] is not expected_native_observer
+                or bool(state['native_state'].get('observer_only')) is not expected_native_observer
+                or state['native_state'].get('pending_drains') or state['native_state'].get('pending_references')
+                or state['C1'] or state['C2'] or state['C3']):
             raise RuntimeError('ZERO_F_DISCOVERY_CLEANUP_OR_QUALIFICATION_CHANGED')
         report['final_cleanup'] = state
         action('disable');action('unregister');action('detach', expected='DETACHED')
