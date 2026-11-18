@@ -53,7 +53,7 @@ def make_cases(args, source, bundle, observer, contract, installed_pins):
                 installed_required_sources_sha256=evidence.digest(installed_pins),
                 build_fingerprint=bundle['summary'], observer_receipt_sha256=observer['sha256'],
                 observer_library_sha256=observer['receipt']['observer_library']['sha256'],
-                model=str(args.model), cann='8.5.1', physical_cards=[args.card], ranks=[0],
+                model=str(args.model), cann='8.5.1', soc='Ascend910B4/A2', physical_cards=[args.card], ranks=[0],
                 worker='Standard Qwen TP1 eager; actual 1024-token prefill and first KV1025 decode',
                 expected_hits='0 faults; 5 first-boundary captures and 5 x 87 complete payloads per arm; '
                               'private first 4 phases additionally observe all 28 native calls',

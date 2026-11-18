@@ -337,6 +337,22 @@ class NormalBridgeReaderContracts(unittest.TestCase):
         row['observer_library']['path']='/usr/lib/observer.so';write(folder/'result.json',row)
         with self.assertRaisesRegex(ValueError,'ALIAS_UNREVIEWED'):evidence.observer_bundle(self.folder/'observer',self.frozen)
 
+    def test_prepared_normal_cases_satisfy_actual_root_queue_contract(self):
+        from queue_contract import validate_cases
+        from pathlib import PurePosixPath
+        for card in (2, 5):
+            args=NS(source=PurePosixPath('/source'), installed=PurePosixPath('/installed'),
+                model=PurePosixPath('/model'), build_root=PurePosixPath('/build'),card=card,timeout=1800)
+            bundle=dict(completion_sha256='2'*64,completion={'arch22_public_schema_sha256':'3'*64},summary={'variant':evidence.VARIANT})
+            observer=dict(folder=PurePosixPath('/observer/attention-preflight'),alias='/output/cann851/attention-preflight',
+                sha256='4'*64,receipt={'observer_library':{'sha256':'5'*64}})
+            cases=prepare.make_cases(args,self.frozen,bundle,observer,{'exact_contract':'same'}, {})
+            self.assertEqual(validate_cases(cases,[card]),cases)
+            self.assertEqual({case['review']['soc'] for case in cases},{'Ascend910B4/A2'})
+            del cases[0]['review']['soc']
+            with self.assertRaisesRegex(ValueError,'REVIEW_MANIFEST_INCOMPLETE'):
+                validate_cases(cases,[card])
+
     def test_final_native_full_array_and_alignment_are_recomputed_without_adapter_status(self):
         event,resolved,host,bundle=pod_fixture(self.helper)
         decoded=review.final_private_pod(event,resolved,host,bundle,self.helper.abi)
