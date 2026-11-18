@@ -22,6 +22,48 @@ LAYERS = [f'model.layers.{i}.self_attn.attn' for i in range(28)]
 PHASES = ('baseline_before', 'baseline_repeat', 'measured', 'off_after', 'healthy_after')
 
 
+def initialize_cpu_byte_reader():
+    """Initialize only NumPy's CPU byte operations before the no-load audit.
+
+    The frozen readers import NumPy lazily. A cold import may initialize
+    ctypes, so doing that after prohibit_runtime rejects the reader itself.
+    This bounded setup neither imports a device framework nor calls a device.
+    The permanent audit hook is installed immediately afterwards by main.
+    """
+    frameworks = ('torch', 'torch_npu', 'vllm', 'vllm_ascend')
+    need(not any(name.split('.')[0] in frameworks for name in sys.modules),
+         'CPU_READER_DEVICE_FRAMEWORK_ALREADY_IMPORTED')
+    import numpy as np
+    module = Path(np.__file__).resolve(strict=True)
+    core = (sys.modules.get('numpy._core._multiarray_umath')
+            or sys.modules.get('numpy.core._multiarray_umath'))
+    need(core is not None and getattr(core, '__file__', None), 'CPU_NUMPY_CORE_SOURCE_MISSING')
+    core_path = Path(core.__file__).resolve(strict=True)
+    need(core_path.is_relative_to(module.parent) and core_path.suffix in ('.so', '.pyd')
+         and type(np.__version__) is str and np.__version__, 'CPU_NUMPY_SOURCE_OR_VERSION_UNBOUND')
+    half = np.frombuffer(struct.pack('<4e', 0.0, -0.0, 1.5, -2.0), dtype='<f2')
+    need(half.astype(np.float64).tolist() == [0.0, -0.0, 1.5, -2.0]
+         and np.signbit(half).tolist() == [False, True, False, True]
+         and np.isfinite(half).all(), 'CPU_NUMPY_FP16_OR_SIGNED_ZERO_SELFTEST')
+    bf = np.frombuffer(struct.pack('<4H', 0x3f80, 0xc000, 0x7f80, 0x7fc0), dtype='<u2')
+    decoded = (bf.astype('<u4') << 16).view('<f4')
+    need(decoded[:2].astype(np.float64).tolist() == [1.0, -2.0]
+         and np.isfinite(decoded).tolist() == [True, True, False, False]
+         and ((bf & 0x7f80) != 0x7f80).tolist() == [True, True, False, False],
+         'CPU_NUMPY_BF16_OR_NONFINITE_SELFTEST')
+    left = np.frombuffer(struct.pack('<2f', 1.0, -0.0), dtype='<f4').astype(np.float64)
+    right = np.frombuffer(struct.pack('<2f', 1.5, 0.0), dtype='<f4').astype(np.float64)
+    need(int(np.count_nonzero(left != right)) == 1 and float(np.abs(left-right).max(initial=0)) == 0.5,
+         'CPU_NUMPY_DIFFERENCE_SELFTEST')
+    need(not any(name.split('.')[0] in frameworks for name in sys.modules),
+         'CPU_READER_DEVICE_FRAMEWORK_IMPORTED')
+    return dict(purpose='CPU_RAW_BYTE_FINITE_AND_NUMERIC_DIFFERENCE_ONLY', version=np.__version__,
+        module_path=str(module), module_sha256=evidence.sha(module),
+        core_path=str(core_path), core_sha256=evidence.sha(core_path),
+        initialized_before_no_dynamic_load_audit=True, dtype_selftests=['float16','bfloat16','float32','float64'],
+        device_frameworks_imported=False, actual_npu_calls=0)
+
+
 class Checks:
     """Keep independent failures instead of stopping at the first bad phase."""
     def __init__(self): self.checks, self.issues = 0, []
@@ -183,7 +225,20 @@ def check_actual_inputs(saved):
                 declaration_is_native_observation=False)
 
 
-def one_launch(run, rows, token, pid, helper, *, kernel_sha=None, symbols=None):
+def captured_thread_identity(saved):
+    identity = saved.get('thread_identity')
+    need(type(identity) is dict and set(identity) == {'python_thread_ident','native_tid','pid','source'}
+         and identity.get('source') == 'CURRENT_THREAD_GET_IDENT_AND_GET_NATIVE_ID',
+         'BOUNDARY_NATIVE_THREAD_IDENTITY_NOT_CAPTURED')
+    need(all(type(identity.get(key)) is int and identity[key] > 0
+             for key in ('python_thread_ident','native_tid','pid'))
+         and type(saved.get('pid')) is int and type(saved.get('thread')) is int
+         and identity['pid'] == saved.get('pid') and identity['python_thread_ident'] == saved.get('thread'),
+         'BOUNDARY_THREAD_DOMAIN_OR_PID_CHANGED')
+    return dict(identity)
+
+
+def one_launch(run, rows, token, pid, helper, *, native_tid, kernel_sha=None, symbols=None):
     resolution = helper.boundary.scoped_runtime(run, rows, token, expected_pid=pid)
     need(len(resolution['launches']) == 1, 'EXACT_ONE_ACTUAL_KERNEL_PER_NORMAL_CALL_REQUIRED')
     launch = resolution['launches'][0]
@@ -191,6 +246,9 @@ def one_launch(run, rows, token, pid, helper, *, kernel_sha=None, symbols=None):
          'ACTUAL_NORMAL_ENTRY_PROFILE_DIFFERS')
     # A successful sync cannot mask another failed sync or capture overflow.
     scoped = [row for row in rows if row.get('call_id') == token]
+    need(type(pid) is int and pid > 0 and type(native_tid) is int and native_tid > 0
+         and all((row['pid'],row['tid']) == (pid,native_tid) for row in scoped),
+         'NATIVE_OWNER_THREAD_DIFFERS_FROM_ACTUAL_BOUNDARY')
     need(not any(row['event'] in ('capture_overflow','unbound_function') for row in scoped)
         and all(row.get('result') == 0 for row in scoped if row['event'] in ('device_sync','stream_sync')),
          'SCOPED_CAPTURE_OR_COMPLETION_FAILED')
@@ -267,6 +325,7 @@ def final_private_pod(raw_event, resolved, host, bundle, abi_helper):
 
 def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symbols):
     name = phase['phase']; calls = phase['finish']['capture']['native_calls']; prefix = name+'.native'
+    identity = captured_thread_identity(saved)
     need(len(calls) == 28 and {row['module_path'] for row in calls} == set(LAYERS)
         and len({row['call_id'] for row in calls}) == 28, 'COMPLETE_28_PRIVATE_NATIVE_CALLS_REQUIRED')
     folder = run/name/'native'; log = folder/'host.jsonl'; before = log.stat()
@@ -290,9 +349,8 @@ def native_phase(run, phase, audit, runtime, saved, helper, bundle, checks, symb
              'NATIVE_BOUNDARY_NONQUANT_QKV_REQUIRED')
         if path == FIRST: need(token == saved['native_call_id'], 'FIRST_BOUNDARY_NATIVE_TOKEN_DIFFERS')
         resolution = one_launch(run,runtime,token,saved['pid'],helper,
-            kernel_sha=bundle['completion']['kernel_binary_sha256'],symbols=symbols)
+            native_tid=identity['native_tid'],kernel_sha=bundle['completion']['kernel_binary_sha256'],symbols=symbols)
         launch = resolution['launches'][0]
-        need(launch['tid'] == saved['thread'], 'NATIVE_OWNER_THREAD_DIFFERS_FROM_ACTUAL_BOUNDARY')
         decoded = final_private_pod(runtime[launch['raw_line']-1],launch,host_map[token],bundle,helper.abi)
         recorded = call['native']
         need(all(recorded[key] == value for key,value in decoded.items())
@@ -410,12 +468,17 @@ def review_arm(run, expected_sha, kind, source, helper, bundle, observer, checks
         if saved is None or audit is None:
             checks.require(path+'.first_boundary',False,'COMPLETE_FIRST_BOUNDARY_OR_NATURAL_CENSUS_MISSING'); continue
         phase_summary['python_token_attributes'] = checks.run(path+'.actual_inputs',lambda:check_actual_inputs(saved))
+        phase_summary['thread_identity'] = checks.run(path+'.thread_identity',lambda:captured_thread_identity(saved))
         boundary = checks.run(path+'.first_boundary',lambda:helper.boundary.first_boundary(run,phase,audit[FIRST],difference_reader=helper.differences))
         if boundary is not None: phase_summary['first_boundary'] = boundary['summary']
         if payloads is not None: values[name]['boundary'] = boundary
-        identities.append(tuple(saved[key] for key in ('pid','thread','worker_object_id','model_object_id','rank')))
+        identity = phase_summary['thread_identity']
+        if identity is not None:
+            identities.append(tuple(saved[key] for key in ('pid','thread','worker_object_id','model_object_id','rank'))
+                              +(identity['native_tid'],))
         token = saved['native_call_id']
         resolution = checks.run(path+'.first_runtime', lambda:one_launch(run,runtime_rows,token,saved['pid'],helper,
+            native_tid=captured_thread_identity(saved)['native_tid'],
             kernel_sha=bundle['completion']['kernel_binary_sha256'] if kind == 'baseline' else None,symbols=symbols))
         phase_summary['new_offline_runtime_resolution'] = resolution
         phase_summary['original_runtime_observation'] = saved['runtime_observation']
@@ -505,6 +568,7 @@ def review(args):
         'Selected ACLNN callsite owner and every possible runtime entrypoint are not independently observed.',
         'Mask is hash-only. Logical KV before the first API is hash-only; complete matching later logical KV bins are rehashed.',
         'Checkpoint equality does not exclude intervening writes. Supplied scalars and omitted public defaults remain distinguished.',
+        'Python thread identifiers and Native OS TIDs are separate captured domains. Older results without an explicit pair remain unproven.',
         'Native typed arrays are fully decoded from final private arguments and matched to all host fields, including alignment bytes.',
         'Model/package identities and source-bound observer receipts are reconciled, not a cryptographic attestation of execution.',
         'No C1/C2/C3, E5 localization, raw-device fault payload or generic 8x/9x qualification is granted.'])
@@ -517,9 +581,12 @@ def main():
         parser.add_argument('--'+name,type=Path,required=True)
     for name in ('source-manifest-sha256','completion-sha256','observer-receipt-sha256','stock-sha256','baseline-sha256'):
         parser.add_argument('--'+name,required=True)
-    args = parser.parse_args(); sys.dont_write_bytecode = True; sys.addaudithook(evidence.prohibit_runtime)
+    args = parser.parse_args(); sys.dont_write_bytecode = True
     need(not args.out.exists(),'FRESH_REVIEW_OUTPUT_REQUIRED')
-    report = review(args); args.out.parent.mkdir(parents=True,exist_ok=True)
+    cpu_reader = initialize_cpu_byte_reader()
+    sys.addaudithook(evidence.prohibit_runtime)
+    report = review(args); report['cpu_byte_reader'] = cpu_reader
+    args.out.parent.mkdir(parents=True,exist_ok=True)
     with args.out.open('x',encoding='utf-8') as stream: json.dump(report,stream,indent=2,allow_nan=False); stream.write('\n')
     print(json.dumps(dict(status=report['status'],checks=report['checks'],issues=len(report['issues']),
         path=str(args.out),sha256=evidence.sha(args.out),fault_authorized=False)))

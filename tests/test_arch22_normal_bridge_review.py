@@ -171,7 +171,10 @@ def run_fixture(run, kind, frozen, helper, bundle, observer):
     saved['inputs_after']['atten_mask']=deepcopy(mask);saved['inputs_after']['atten_mask']['path']=None
     saved['subsequent_checks']={name:True for name in set(saved['inputs'])|{'logical_key','logical_value',
         'impl_key_same_object','impl_value_same_object','output_0','output_1'}}
-    saved['thread']=34
+    # Python ident is deliberately unlike OS gettid, as on the real Worker.
+    saved['thread']=281463120013952
+    saved['thread_identity']=dict(python_thread_ident=saved['thread'],native_tid=34,
+        pid=saved['pid'],source='CURRENT_THREAD_GET_IDENT_AND_GET_NATIVE_ID')
     tokens=[10]*1024;output=[dict(tokens=[11,12],text='fixture',finish_reason='length')]
     installed={'demoncat':{},'fault_injection':{}}
     for name,digest in frozen['pins'].items():
@@ -417,28 +420,53 @@ class NormalBridgeReaderContracts(unittest.TestCase):
     def test_raw_runtime_normal_key_joins_current_scope_and_rejects_old_fd_or_owner_conflict(self):
         fixture=boundary_fixtures.RuntimeResolutionTests('test_current_scope_resolves_29_identical_bindings_without_rewriting_gap')
         fixture.setUp();self.addCleanup(fixture.doCleanups)
-        result=review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper)
+        result=review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper,native_tid=34)
         self.assertEqual(result['launches'][0]['function_binding']['repeated_identical_history'],28)
         self.assertFalse(result['original_runtime_observation_rewritten'])
         fixture.rows[2]['handle']=88
-        with self.assertRaisesRegex(ValueError,'CONFLICTING_FUNCTION'):review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper)
+        with self.assertRaisesRegex(ValueError,'CONFLICTING_FUNCTION'):review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper,native_tid=34)
         fixture.rows[2]['handle']=80
         for row in fixture.rows:
             if 'tiling_key' in row:row['tiling_key']='5100000000010200103'
-        with self.assertRaisesRegex(ValueError,'NORMAL_ENTRY_PROFILE'):review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper)
+        with self.assertRaisesRegex(ValueError,'NORMAL_ENTRY_PROFILE'):review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper,native_tid=34)
 
     def test_failed_sync_is_not_masked_by_a_later_success(self):
         fixture=boundary_fixtures.RuntimeResolutionTests('test_missing_completion_sync_refused')
         fixture.setUp();self.addCleanup(fixture.doCleanups)
         fixture.rows[-3]['result']=9
         with self.assertRaisesRegex(ValueError,'SCOPED_CAPTURE_OR_COMPLETION_FAILED'):
-            review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper)
+            review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper,native_tid=34)
 
     def test_only_actual_aic_and_aiv_elf_symbols_can_reconcile_normal_entry(self):
         fixture=boundary_fixtures.RuntimeResolutionTests('test_missing_completion_sync_refused')
         fixture.setUp();self.addCleanup(fixture.doCleanups)
         with self.assertRaisesRegex(ValueError,'ELF_ENTRY_SYMBOL_MISSING'):
-            review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper,symbols={})
+            review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper,native_tid=34,symbols={})
+
+    def test_explicit_thread_domains_join_actual_begin_launch_end_and_cannot_be_guessed(self):
+        saved=dict(pid=12,thread=281463120013952)
+        with self.assertRaisesRegex(ValueError,'NATIVE_THREAD_IDENTITY_NOT_CAPTURED'):
+            review.captured_thread_identity(saved)
+        saved['thread_identity']=dict(python_thread_ident=saved['thread'],native_tid=34,pid=12,
+            source='CURRENT_THREAD_GET_IDENT_AND_GET_NATIVE_ID')
+        identity=review.captured_thread_identity(saved)
+        self.assertNotEqual(identity['python_thread_ident'],identity['native_tid'])
+        fixture=boundary_fixtures.RuntimeResolutionTests('test_missing_completion_sync_refused')
+        fixture.setUp();self.addCleanup(fixture.doCleanups)
+        result=review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper,native_tid=identity['native_tid'])
+        self.assertEqual(result['launches'][0]['tid'],34)
+        for wrong in (saved['thread'],35,True,None):
+            with self.subTest(tid=wrong),self.assertRaisesRegex(ValueError,'NATIVE_OWNER_THREAD_DIFFERS'):
+                review.one_launch(fixture.run,fixture.rows,fixture.token,12,self.helper,native_tid=wrong)
+        for event in ('begin','launch','end'):
+            rows=deepcopy(fixture.rows)
+            next(row for row in rows if row['event']==event and row['call_id']==fixture.token)['tid']=35
+            with self.subTest(event=event),self.assertRaises(ValueError):
+                review.one_launch(fixture.run,rows,fixture.token,12,self.helper,native_tid=34)
+        for key in ('pid','python_thread_ident'):
+            changed=deepcopy(saved);changed['thread_identity'][key]+=1
+            with self.subTest(field=key),self.assertRaisesRegex(ValueError,'THREAD_DOMAIN_OR_PID_CHANGED'):
+                review.captured_thread_identity(changed)
 
     def test_capture_cleanup_cannot_discard_native_scope_or_first_error(self):
         cleanup=dict(scope_cleared=True,local_streams_drained=True,owned_hooks=0,owned_api_wrappers=0,
@@ -549,6 +577,8 @@ class NormalBridgeReaderContracts(unittest.TestCase):
         self.assertEqual(checks.issues,[])
         self.assertEqual(arms['baseline']['summary']['private_native_replayed'],112)
         for phase in arms['baseline']['summary']['phase_summaries']:
+            self.assertEqual(phase['thread_identity']['native_tid'],34)
+            self.assertEqual(phase['thread_identity']['python_thread_ident'],281463120013952)
             self.assertEqual(phase['python_token_attributes']['omitted_python_token_defaults'],
                              dict(pre_tokens=2147483647,next_tokens=2147483647))
             if 'native_replay' in phase:

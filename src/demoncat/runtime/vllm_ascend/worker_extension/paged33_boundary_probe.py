@@ -188,12 +188,14 @@ class StockLaunchScope:
         self.observer, self.synchronize, self.runtime_dir = observer, synchronize, Path(runtime_dir)
         self.runtime_env = os.environ.get('DCAT_ATTN_OBSERVER_DIR')
         self.thread, self.pid = threading.get_ident(), os.getpid()
+        self.native_tid = threading.get_native_id()
         self.token = uuid.uuid4().hex
         self.active = self.inflight = self.used = False
         self.errors = []
 
     def _owner(self):
-        require(threading.get_ident() == self.thread and os.getpid() == self.pid
+        require(threading.get_ident() == self.thread and threading.get_native_id() == self.native_tid
+                and os.getpid() == self.pid
                 and self.observer.owner == self.thread and os.environ.get('DCAT_ATTN_OBSERVER_DIR') == self.runtime_env,
                 'BOUNDARY_SCOPE_OWNER_CHANGED')
 
@@ -263,11 +265,13 @@ class FirstDecodeBoundaryCapture:
         self.rank = worker.rank
         self.folder, self.synchronize = Path(folder), synchronize
         self.thread, self.pid = threading.get_ident(), os.getpid()
+        self.native_tid = threading.get_native_id()
         self.allow_cpu_test, self.refs, self.result, self.data = allow_cpu_test, None, None, None
         self.calls = 0; self.inflight = False
 
     def _owner(self):
-        require(threading.get_ident() == self.thread and os.getpid() == self.pid
+        require(threading.get_ident() == self.thread and threading.get_native_id() == self.native_tid
+                and os.getpid() == self.pid
                 and self.worker.model_runner is self.runner and self.runner.model is self.model and self.worker.rank == self.rank,
                 'BOUNDARY_WORKER_MODEL_OR_THREAD_CHANGED')
 
@@ -298,6 +302,9 @@ class FirstDecodeBoundaryCapture:
         self.data = dict(schema='demoncat.paged33.first_decode_boundary.v1', state='CAPTURING_INPUT',
             worker_object_id=id(self.worker), model_object_id=id(self.model), rank=self.worker.rank,
             pid=self.pid, thread=self.thread, boundary=json.loads(json.dumps(boundary)),
+            # `thread` remains the legacy Python-ident field. It is not gettid.
+            thread_identity=dict(python_thread_ident=self.thread, native_tid=self.native_tid,
+                pid=self.pid, source='CURRENT_THREAD_GET_IDENT_AND_GET_NATIVE_ID'),
             positional_count=len(args), supplied_argument_names=sorted(actual),
             original_callable=dict(object_id=id(original), type=type(original).__module__+'.'+type(original).__qualname__),
             inputs={}, outputs=[], errors=[], original_calls=0,

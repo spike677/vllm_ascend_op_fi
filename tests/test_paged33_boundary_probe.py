@@ -87,6 +87,9 @@ class BoundaryCaptureTests(unittest.TestCase):
         self.assertIs(result, self.returned)
         self.assertEqual(self.original_calls, 1)
         row = self.capture.finalize()
+        self.assertEqual(row['thread_identity'],dict(python_thread_ident=threading.get_ident(),
+            native_tid=threading.get_native_id(),pid=row['pid'],source='CURRENT_THREAD_GET_IDENT_AND_GET_NATIVE_ID'))
+        self.assertEqual(row['thread'],row['thread_identity']['python_thread_ident'])
         self.assertTrue(row['all_checked_values_unchanged'])
         self.assertEqual(row['inputs']['query']['snapshot']['sha256'], probe.sha(self.folder/'capture/query.bin'))
         self.assertEqual(row['block_table_values'], [[2, 0, 1]])
@@ -195,6 +198,18 @@ class BoundaryCaptureTests(unittest.TestCase):
             self.capture.release()
         self.worker.model_runner.model = model; self.capture.release()
 
+    def test_reused_python_ident_cannot_hide_a_different_native_thread(self):
+        self.start()
+        with patch.object(probe.threading,'get_native_id',return_value=self.capture.native_tid+1):
+            with self.assertRaisesRegex(RuntimeError,'WORKER_MODEL_OR_THREAD_CHANGED'):
+                self.capture.invoke_original(self.original,(),self.actual)
+            with self.assertRaisesRegex(RuntimeError,'WORKER_MODEL_OR_THREAD_CHANGED'):
+                self.capture.release()
+        self.assertEqual(self.original_calls,0)
+        self.assertIsNotNone(self.capture.refs)
+        self.capture.invoke_original(self.original,(),self.actual)
+        self.capture.finalize();self.capture.release()
+
     def test_stock_and_private_session_paths_capture_once_and_return_the_original(self):
         for private in (False, True):
             with self.subTest(private=private):
@@ -226,6 +241,17 @@ class BoundaryCaptureTests(unittest.TestCase):
 
 
 class ScopeRecoveryTests(unittest.TestCase):
+    def test_native_thread_change_refuses_stock_scope_before_begin(self):
+        observer=FakeObserver();scope=probe.StockLaunchScope(observer,lambda:None,Path('.'));calls=[]
+        with patch.object(probe.threading,'get_native_id',return_value=scope.native_tid+1):
+            with self.assertRaisesRegex(RuntimeError,'BOUNDARY_SCOPE_OWNER_CHANGED'):
+                scope.invoke(lambda:calls.append(1))
+            with self.assertRaisesRegex(RuntimeError,'BOUNDARY_SCOPE_OWNER_CHANGED'):
+                scope.close()
+        self.assertEqual(observer.begin_count,0);self.assertEqual(calls,[])
+        scope.invoke(lambda:calls.append(1));scope.close()
+        self.assertEqual(calls,[1])
+
     def test_stock_refuses_foreign_native_policy_before_original_call(self):
         scope = probe.StockLaunchScope(FakeObserver(), lambda: None, Path('.')); calls = []
         with patch.dict('os.environ', {'DCAT33_TND_MODE': 's2_256'}), self.assertRaisesRegex(RuntimeError, 'FOREIGN_NATIVE_POLICY'):
