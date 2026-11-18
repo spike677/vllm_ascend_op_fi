@@ -99,6 +99,19 @@ an arbitrary JSON under a runtime directory is excluded. Historical native
 strategy certificates are excluded with their evidence. Fresh explicit
 certificates and bound evidence remain required for those arming paths.
 
+The current MoE nested-mode recovery note and its real-stack CPU contracts are
+required with the public tensor serving provider. Typed FIA contracts also need
+`test_writer26_group_build.py` and its exact existing
+`providers26_build_group.py` helper. Only that named build helper is selected;
+no neighboring experiments or their execution history are collected. Importing
+the helper for CPU schema checks starts no container, compiler or device work.
+
+Root-owned deployment commands in the Core26/custom39 host notes refer to the
+full reviewed deployment snapshot. Their prepare/probe programs are not part of
+this source-only runtime/CPU-contract subset. The bundle carries the actual
+binding APIs and their contracts; it does not supply the unavailable inner host
+implementation or convert those example commands into a portable serving runner.
+
 ## Acceptance boundary
 
 The actual inner-framework Registry/Controller remains unavailable, so yellow-

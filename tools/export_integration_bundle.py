@@ -69,6 +69,8 @@ _TENSOR_SERVING_CONTRACTS = {
     'src/demoncat/runtime/vllm_ascend/worker_extension/serving_tensor_binding.py',
     'src/demoncat/runtime/vllm_ascend/worker_extension/serving_tensor_request.py',
     'docs/worker_core_v1/tensor_group_host_contract.md',
+    'docs/worker_core_v1/moe_nested_mode_recovery.md',
+    'tests/worker_extension/test_core_moe_mode_cleanup.py',
     'tests/test_serving_tensor_group.py', 'tests/test_serving_moe_group.py',
     'tests/test_rmsnorm_natural.py', 'tests/test_route8_index22.py',
     'tests/test_tensor_statistics_window.py', 'tests/test_natural_tensor_group.py',
@@ -79,9 +81,10 @@ _TENSOR_SERVING_CONTRACTS = {
 _WRITER26_PROVIDER = 'src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault26_core.py'
 _WRITER26_CONTRACTS = {'tests/worker_extension/'+name+'.py' for name in (
     'test_writer26_inventory', 'test_writer26_pending_consumer', 'test_writer26_group_experiment',
-    'test_writer26_fia_typed', 'test_writer26_public_return', 'test_collector_dispatch',
+    'test_writer26_fia_typed', 'test_writer26_public_return', 'test_writer26_group_build', 'test_collector_dispatch',
     'test_serving_session_lifecycle', 'test_call_binding', 'metadata_fixture')} | {
-    'docs/worker_core_v1/writer26_host_contract.md', 'docs/worker_core_v1/route_boundary_audit_37bbeb4f.md'}
+    'docs/worker_core_v1/writer26_host_contract.md', 'docs/worker_core_v1/route_boundary_audit_37bbeb4f.md',
+    'experiments/c2c3_closure_20261117/providers26_build_group.py'}
 # Current build inputs only: no whole legacy source tree or experiment history.
 _SUPPORT = {
     _LEGACY + 'l4_buffer_substitute_allhit_v1/' + name for name in (
@@ -333,6 +336,8 @@ def _sections(name):
         sections.add('integration_guide')
     if name in _TENSOR_SERVING_CONTRACTS and name.startswith('experiments/'):
         sections.add('integration_guide')
+    if name in _WRITER26_CONTRACTS and name.startswith('experiments/'):
+        sections.update(('integration_guide', 'native_build'))
     if name.endswith(('/environment.py', '/recipes.py', '/version_profile.py')):
         sections.add('compatibility_matrix')
     return sorted(sections)

@@ -246,11 +246,16 @@ class BundleTests(unittest.TestCase):
         included = {row['source_path'] for row in review['files']}
         self.assertTrue(names <= included)
         self.assertNotIn(raw.relative_to(self.source).as_posix(), included)
+        recovery = self.source/'docs/worker_core_v1/moe_nested_mode_recovery.md'
+        saved = recovery.read_bytes(); recovery.unlink()
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'missing-current-moe-recovery-contract')
+        recovery.write_bytes(saved)
         (self.source/'tests/test_route8_index22.py').unlink()
         with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
             bundle.create_review(self.source, 'incomplete-natural-tensor-fixture')
 
-    def test_writer26_core_requires_complete_reused_cpu_fixture_closure_without_experiments(self):
+    def test_writer26_core_requires_typed_fixture_and_exact_build_helper_without_history(self):
         path = self.source / bundle._WRITER26_PROVIDER
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(b'# reviewed Core writer bridge\n')
@@ -263,7 +268,14 @@ class BundleTests(unittest.TestCase):
             target.write_bytes((ROOT / name).read_bytes())
         review, _ = self.export()
         self.assertTrue(names <= {row['source_path'] for row in review['files']})
-        self.assertFalse(any(row['source_path'].startswith('experiments/') for row in review['files']))
+        self.assertEqual([row['source_path'] for row in review['files'] if row['source_path'].startswith('experiments/')],
+            ['experiments/c2c3_closure_20261117/providers26_build_group.py'])
+        for name in ('tests/worker_extension/test_writer26_group_build.py',
+                'experiments/c2c3_closure_20261117/providers26_build_group.py'):
+            path = self.source/name; saved = path.read_bytes(); path.unlink()
+            with self.subTest(missing=name), self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+                bundle.create_review(self.source, 'missing-typed-profile-helper')
+            path.write_bytes(saved)
         (self.source / 'tests/worker_extension/test_collector_dispatch.py').unlink()
         with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
             bundle.create_review(self.source, 'missing-typed-fia-public-observer-fixture')
@@ -420,6 +432,18 @@ class ActualSourceRelocationTests(unittest.TestCase):
                                     capture_output=True, text=True, timeout=60)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn('Ran 21 tests', result.stderr)
+            # The typed FIA test imports its exact build-profile fixture lazily.
+            # Run that contract as well as the real MoE cleanup negatives from
+            # relocated paths, with no checkout or actual container fallback.
+            contract_script = ('import os,sys,unittest; os.environ["TORCH_DEVICE_BACKEND_AUTOLOAD"]="0"; '
+                'sys.path[:0]=' + repr(contract_paths) + '; '
+                'suite=unittest.defaultTestLoader.loadTestsFromNames('
+                '["test_writer26_fia_typed", "test_writer26_group_build", "test_core_moe_mode_cleanup"]); '
+                'result=unittest.TextTestRunner().run(suite); '
+                'sys.exit(0 if result.wasSuccessful() else 1)')
+            result = subprocess.run([sys.executable, '-I', '-B', '-c', contract_script], cwd=folder,
+                                    capture_output=True, text=True, timeout=60)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
 
 if __name__ == '__main__':
