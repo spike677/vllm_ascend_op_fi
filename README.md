@@ -14,8 +14,12 @@
 [当前逐项矩阵](experiments/c2c3_closure_20261117/C2_C3_MATRIX.md) ·
 [本轮公共入口与新构建验证](experiments/c2c3_closure_20261117/CORE_PROVIDER_PROGRESS_20261118.md)。
 [后续单目标效果、原件复核与失败边界](experiments/c2c3_closure_20261117/WORKER_INCREMENT_20261118.md)：
-26 QMM/FIA 完成真实推理单目标效果及恢复，并通过限定范围的原件复核；
-39 输出变体完成140个 MODEL_LOCAL 独立目标回放复核，持续注入未通过，新增公共 Worker 单点入口另行验收。
+26 QMM/FIA 和39输出变体现已通过新的公共 Worker 单目标效果、OFF和原件独立复核；
+8/18的公共入口也已单独完成 C2/C3 复核。39此前140个 MODEL_LOCAL 独立回放及持续注入失败记录保留，不转移资格。
+[本轮交付报告](experiments/c2c3_closure_20261117/WORKER_CORE_DELIVERY_20261118.md) ·
+[可复现源码包清单](experiments/c2c3_closure_20261117/integration_bundle_delivery.json)：
+373个源码文件，最终包解压后的214条Core测试通过；三个分发包及installed-only测试已验证。
+新公共26/39入口的diagnostic采集尚未形成独立statistics/mix窗口，E5明确未验收。
 已有通过范围保留，新的原始统计、完整张量和 Native 库均留在124。
 目前严格限定验收为 C2 6/17、C3 6/17；公共 Core22、Core41 的原件独立复核已通过，
 覆盖、恢复与 msprobe 独立定位分别记账，不能由前两项推定 E5 通过。
