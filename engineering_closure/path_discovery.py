@@ -203,12 +203,14 @@ def normalize_execution_path(census, *, structure=None, context=None, module_ent
 
 @contextmanager
 def observe_execution_path(model, *, request_at_forward=None, worker_identity=None,
-                           runner=None, known_native_observers=None, max_events=10000):
+                           runner=None, known_native_observers=None, max_events=10000,
+                           capture=None):
     """Open a read-only observation scope in the existing workload owner thread.
 
     `known_native_observers` maps precise Torch dispatcher names to an open
     NativeObserver for the already configured read-only ABI. After exit the
-    yielded mapping contains the serializable path report.
+    yielded mapping contains the serializable path report. A supplied capture
+    mapping retains retryable cleanup even when entering or exiting fails.
     """
     if request_at_forward is not None and (not callable(request_at_forward) or not worker_identity):
         raise ValueError('LIVE_SCHEDULER_PROBE_REQUIRES_ACTUAL_WORKER_IDENTITY')
@@ -220,7 +222,7 @@ def observe_execution_path(model, *, request_at_forward=None, worker_identity=No
             raise ValueError('ACTUAL_WORKER_RUNNER_MODEL_REQUIRED')
     structure = inspect_structure(model, runner=runner)
     module_entries, requests, windows = [], [], []
-    capture = {}
+    capture = {} if capture is None else capture
     known_native_observers = known_native_observers or {}
     source_cache = {}
     prefix = uuid.uuid4().hex
@@ -257,18 +259,55 @@ def observe_execution_path(model, *, request_at_forward=None, worker_identity=No
     observer = NaturalTensorObserver(model, max_events=max_events, on_module_enter=module_enter,
                                      record_all_operators=True, operator_context=operation)
     handle = None
+    read_request = None
+    owner = threading.get_ident()
+    owned_handles = []
+    stopped = False
+
+    def inflight():
+        return bool(observer.stack or observer.mode is not None)
+
+    def stop():
+        nonlocal stopped
+        if threading.get_ident() != owner:
+            raise RuntimeError('PATH_OBSERVER_CLOSE_REQUIRES_OWNER_THREAD')
+        stopped = True
+        # An active forward must finish its existing module/dispatch stack.
+        if not inflight():
+            observer.closed = True
+
+    def hook_state(pairs):
+        present, foreign = 0, False
+        for item, callback in pairs:
+            hooks = item.hooks_dict_ref()
+            if hooks is not None and item.id in hooks:
+                present += 1
+                foreign = foreign or hooks[item.id] is not callback
+        return present, foreign
+
+    def state():
+        pairs = owned_handles or observer.handles
+        present, foreign = hook_state(pairs)
+        request_present, request_foreign = hook_state([(handle, read_request)]) if handle else (0, False)
+        return dict(inflight=inflight(), observer_hooks=present + request_present,
+                    foreign_hooks=foreign or request_foreign,
+                    metadata_scope_active=observer._metadata_token is not None,
+                    stop_requested=stopped, cleanup_complete=capture.get('cleanup_complete') is True)
+
     if request_at_forward is not None:
         from demoncat.runtime.vllm_ascend.worker_extension.serving_context import ContextRefused
 
         def read_request(module, args, kwargs):
+            if stopped:
+                if not inflight():
+                    observer.closed = True
+                return
             try:
                 request = request_at_forward(module, args, kwargs)
             except ContextRefused as error:
                 request = {'reason': error.code}
             requests.append(request)
 
-        # Scheduler diagnostics must happen before the model's dispatch mode.
-        handle = model.register_forward_pre_hook(read_request, with_kwargs=True)
     def finish(observer):
         census = observer.report()
         census['all_dispatch_details'] = not census['dropped_calls']
@@ -277,23 +316,49 @@ def observe_execution_path(model, *, request_at_forward=None, worker_identity=No
         capture['report'] = normalize_execution_path(census, structure=structure, context=context,
                                                     module_entries=module_entries, native_windows=windows)
 
+    def cleanup():
+        nonlocal handle
+        stop()
+        if inflight():
+            raise RuntimeError('PATH_OBSERVER_FORWARD_STILL_INFLIGHT')
+        if not owned_handles:
+            owned_handles.extend(observer.handles)
+        # NaturalTensorObserver.close is retryable and checks hook ownership.
+        # Keep the actual handles until removal is independently confirmed.
+        observer.close()
+        pending = [(item, callback) for item, callback in owned_handles
+                   if hook_state([(item, callback)])[0]]
+        if pending:
+            observer.handles[:] = pending
+            raise RuntimeError('PATH_OBSERVER_HOOK_REMOVAL_UNCONFIRMED')
+        if handle is not None:
+            if hook_state([(handle, read_request)])[1]:
+                raise RuntimeError('PATH_OBSERVER_REQUEST_HOOK_OWNERSHIP_CHANGED')
+            handle.remove()
+            if hook_state([(handle, read_request)])[0]:
+                raise RuntimeError('PATH_OBSERVER_REQUEST_HOOK_REMOVAL_UNCONFIRMED')
+            handle = None
+        capture['cleanup_complete'] = True
+        finish(observer)
+
+    capture.update(inflight=inflight, stop=stop, state=state, cleanup=cleanup,
+                   snapshot=lambda: finish(observer), cleanup_complete=False)
     try:
-        with observer:
-            capture['inflight'] = lambda: bool(observer.stack or observer.mode is not None)
-            yield capture
+        if read_request is not None:
+            # Scheduler diagnostics precede the model's dispatch mode.
+            handle = model.register_forward_pre_hook(read_request, with_kwargs=True)
+        observer.__enter__()
+        yield capture
     except BaseException as error:
         capture['workload_error'] = type(error).__name__
+        capture['workload_error_reason'] = str(error)
         try:
             finish(observer)
         except (AttributeError, KeyError, TypeError, ValueError) as report_error:
             capture['report_error'] = type(report_error).__name__
         raise
-    else:
-        finish(observer)
     finally:
-        capture.pop('inflight', None)
-        if handle is not None:
-            handle.remove()
+        cleanup()
 
 
 def discover_execution_path(model, workload, **options):
@@ -324,10 +389,19 @@ def worker_path_start(worker, *, phase, expected, expected_max_seqs=1, native_ob
     runner = worker.model_runner
     probe = worker_request_probe(runner, phase=phase, expected=expected, expected_max_seqs=expected_max_seqs)
     native = native_observer_factory(worker) if native_observer_factory else None
+    capture = {}
     cm = observe_execution_path(runner.model, request_at_forward=probe, worker_identity=identity['worker'],
-                                runner=runner, known_native_observers=native, max_events=max_events)
-    capture = cm.__enter__()
+                                runner=runner, known_native_observers=native, max_events=max_events,
+                                capture=capture)
     setattr(worker, _WORKER_CAPTURE, (cm, capture, threading.get_ident()))
+    try:
+        cm.__enter__()
+    except BaseException:
+        capture['exit_attempted'] = True
+        if 'cleanup' not in capture:
+            # All validation/structure reads precede installation of hooks.
+            delattr(worker, _WORKER_CAPTURE)
+        raise
     return {'status': 'READ_ONLY_PATH_OBSERVER_INSTALLED'}
 
 
@@ -338,8 +412,15 @@ def worker_path_finish(worker):
         raise RuntimeError('PATH_OBSERVER_CLOSE_REQUIRES_OWNER_THREAD')
     if capture['inflight']():
         raise RuntimeError('PATH_OBSERVER_FORWARD_STILL_INFLIGHT')
-    try:
+    if capture.get('exit_attempted'):
+        # A generator contextmanager is exhausted after a failing __exit__.
+        # Retrying it would silently report success without removing hooks.
+        capture['cleanup']()
+    else:
+        capture['exit_attempted'] = True
         cm.__exit__(None, None, None)
-    finally:
-        delattr(worker, _WORKER_CAPTURE)
-    return capture['report']
+    if capture.get('cleanup_complete') is not True:
+        raise RuntimeError('PATH_OBSERVER_CLEANUP_UNCONFIRMED')
+    report = capture['report']
+    delattr(worker, _WORKER_CAPTURE)
+    return report
