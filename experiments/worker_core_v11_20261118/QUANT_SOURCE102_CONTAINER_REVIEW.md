@@ -48,6 +48,14 @@ when run against the full original build directory on 124. Runtime caller PCs
 and function offsets are checked against the exact recorded executable
 profiles; this does not reread old process memory after it has exited.
 
+Root subsequently ran that full-build review on124, including actual DSO bytes
+and all19 CPU-case logs. The [additional summary](quant_source102_full_build_review.json)
+has SHA `64aed87b5bb3a5e4db55765a19d2871e294007a71b5bb1c67b52b9b987d145f3`;
+`actual_dso_bytes_rehashed=true`, `cpu_case_log_bytes_rehashed=19`.
+The DSO SHA is `641cd213b4b2d21fdc5cf3366e76d626a8d6c210185bb1f6e0ee936fd5ae050f`.
+The original metadata-only summary remains unchanged. This extra byte check
+does not grant row authority or fault qualification.
+
 The resident interposer/image pins are not unloaded. Zero scoped observer
 buffers is not a claim of zero process-wide host memory. SDK loading can run
 HAL constructors that probe device information; the build's explicit API call

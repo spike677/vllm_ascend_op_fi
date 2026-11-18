@@ -36,6 +36,12 @@ Its source102 same-package normal bridge now passes435 exact complete payload
 pairs. The following public single-site attempt failed during prepare with
 ContextRefused, before any protocol request or F. Its failed cleanup receipt
 is retained; entry and uncertain-prepare cleanup need repair before a new run.
+The repair now strictly translates the pinned observer receipt file into the
+reader build root and uses public detach when prepare returns no lease ticket.
+A no-device production-image regression reproduced the old refusal and then
+replayed all435 original pairs successfully with the repaired loader; log SHA
+`952a4d4e9a7bc32fc8cdea6c4dabcbe35760bcacf4afe9a46fd3b7b277733d22`.
+This is a loader regression, not a new package's normal/F acceptance.
 The original source88 normal package and evidence remain unchanged.
 
 Source99 completed the public Worker18 protocol and three native statistics
@@ -49,8 +55,10 @@ public8.5.1 container getters expose sizes, not members. The GWS-only proxy
 proposal is closed. A source102-runtime/source104-SDK zero-fault diagnostic
 observed1241 actual container API calls in one healthy B8 first-decode request,
 with104 source windows, exact token/text health recovery and no cleanup errors.
-Independent owner/member review is in progress. Observation alone grants no
-new request-row or C2/C3 qualification.
+The [independent original-file review](QUANT_SOURCE102_CONTAINER_REVIEW.md)
+reconciles607 complete lifetimes and130 current GMM2 member descriptors.
+Request-row proof remains10/135: actual named GWS slots and executor joins are
+not yet established. Observation alone grants no new C2/C3 qualification.
 
 ## Ownership and execution
 
