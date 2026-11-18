@@ -108,6 +108,9 @@ product failure was suppressed. Production SDK/C++ checks remain required.
 Frozen source109 (`17ee25b0`) passed all 160 selected tests with no skips in
 the actual production image. Its TND28 C++ geometry/scope contract compiled
 and executed successfully there; the full SDK build is tracked separately.
+Its host and schema compiler passed, but the post-compile validator rejected
+two additional SDK-generated fields. Kernel compilation did not start; see
+[the preserved source109 failure](ATTENTION28_SOURCE109_BUILD_REVIEW.md).
 The later [group resource contract](../../docs/worker_core_v1/attention33_group_resources.md)
 retains 128 MiB defaults and defines 512 MiB only for the new bound group.
 Review found and fixed a live-memory underestimate: growing actual log

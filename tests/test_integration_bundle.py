@@ -32,6 +32,7 @@ class BundleTests(unittest.TestCase):
             'experiments/worker_core_v11_20261118/check_tnd28_normal_materials.py',
             'tests/test_attention_runtime_log_index.py',
             'tests/test_tnd28_prefill_normal.py',
+            'tests/fixtures/tnd28_source109_public_layout.json',
         }
         self.assertFalse(required - payload.keys())
         for name in required:
