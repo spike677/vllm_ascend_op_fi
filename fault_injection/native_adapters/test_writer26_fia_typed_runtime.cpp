@@ -9,6 +9,7 @@
 namespace typed_fixture {
 struct Tensor {
     void* address{};int32_t format{47};int64_t offset{};
+    uint64_t storage_rank{3};
     std::array<int64_t,3> shape{{2,2,4}},storage{{2,2,4}},stride{{8,4,1}};
 };
 std::vector<Event> events;
@@ -27,19 +28,19 @@ aclnnStatus type(const aclTensor*,aclDataType* value){*value=ACL_BF16;return 0;}
 aclnnStatus format(const aclTensor* value,aclFormat* out){*out=static_cast<aclFormat>(tensor(value)->format);return 0;}
 aclnnStatus offset(const aclTensor* value,int64_t* out){*out=tensor(value)->offset;return 0;}
 aclnnStatus address(const aclTensor* value,void** out){*out=tensor(value)->address;return 0;}
-aclnnStatus array(const std::array<int64_t,3>& value,int64_t** out,uint64_t* rank) {
-    ++getter_calls;*rank=3;*out=new int64_t[3];std::copy(value.begin(),value.end(),*out);
+aclnnStatus array(const std::array<int64_t,3>& value,int64_t** out,uint64_t* rank,uint64_t count=3) {
+    ++getter_calls;*rank=count;*out=new int64_t[count];std::copy(value.begin(),value.begin()+count,*out);
     if(getter_calls==throw_getter_at)throw std::runtime_error("GETTER_AFTER_ALLOCATION");
     return getter_calls==fail_getter_at?71:0;
 }
 aclnnStatus shape(const aclTensor* value,int64_t** out,uint64_t* rank){return array(tensor(value)->shape,out,rank);}
-aclnnStatus storage(const aclTensor* value,int64_t** out,uint64_t* rank){return array(tensor(value)->storage,out,rank);}
+aclnnStatus storage(const aclTensor* value,int64_t** out,uint64_t* rank){return array(tensor(value)->storage,out,rank,tensor(value)->storage_rank);}
 aclnnStatus stride(const aclTensor* value,int64_t** out,uint64_t* rank){return array(tensor(value)->stride,out,rank);}
 aclTensor* create(const int64_t* dims,uint64_t rank,aclDataType dtype,const int64_t* strides,int64_t off,
     aclFormat fmt,const int64_t* physical,uint64_t storage_rank,void* raw) {
-    assert(rank==3 && storage_rank==3 && dtype==ACL_BF16 && static_cast<int>(fmt)==47 && !off);
-    auto* out=new Tensor{};out->address=raw;out->format=fmt;
-    std::copy(dims,dims+3,out->shape.begin());std::copy(physical,physical+3,out->storage.begin());std::copy(strides,strides+3,out->stride.begin());
+    assert(rank==3 && (storage_rank==3 || storage_rank==1) && dtype==ACL_BF16 && static_cast<int>(fmt)==47 && !off);
+    auto* out=new Tensor{};out->address=raw;out->format=fmt;out->storage_rank=storage_rank;out->storage.fill(0);
+    std::copy(dims,dims+3,out->shape.begin());std::copy(physical,physical+storage_rank,out->storage.begin());std::copy(strides,strides+3,out->stride.begin());
     owned.insert(out);++created;return reinterpret_cast<aclTensor*>(out);
 }
 aclnnStatus destroy(const aclTensor* value){assert(owned.erase(tensor(value))==1);delete tensor(value);++destroyed;return 0;}
@@ -88,8 +89,9 @@ struct Case {
     Tensor original{};Event event{};const aclTensor* effective{};
     aclOpExecutor* executor=reinterpret_cast<aclOpExecutor*>(456);
     aclrtStream stream=reinterpret_cast<aclrtStream>(123);
-    Case() {
+    Case(bool flat=false) {
         output.fill(1);residual.fill(3);original.address=output.data();
+        if(flat){original.storage_rank=1;original.storage={{16,0,0}};}
         owner=Config{};owner.mechanism=Fia;owner.owner_hi=101;owner.owner_lo=102;owner.generation=1;owner.thread=tid();
         owner.max_targets=4;owner.max_calls=16;owner.max_host_bytes=65536;owner.max_device_bytes=8192;
         assert(engine.open(owner)==Ok);admit=observer;complete=completion;
@@ -144,10 +146,12 @@ void arrays_zero() {
     assert(!arrays.active_captures && !arrays.active_getters && !arrays.live_arrays && !arrays.ownership_errors);
     assert(arrays.acquired_arrays==arrays.released_arrays);
 }
-void success() {
-    Case test;test.prepare();assert(fia.typed && created==1 && test.effective!=nullptr);
+void success(bool flat=false) {
+    Case test(flat);test.prepare();assert(fia.typed && created==1 && test.effective!=nullptr);
     assert(test.effective!=reinterpret_cast<const aclTensor*>(&test.original));
     assert(tensor(test.effective)->address==test.output.data() && tensor(test.effective)->format==47);
+    assert(tensor(test.effective)->storage_rank==test.original.storage_rank
+        && tensor(test.effective)->storage==test.original.storage);
     test.gws();test.complete_gws();test.execute();test.consumer();
     assert(writer_calls==1 && consumer_calls==1 && created==destroyed && owned.empty());
     assert(completed_snapshot.created && completed_snapshot.released && completed_snapshot.native_return_success);
@@ -156,6 +160,22 @@ void success() {
     assert(dcat26_group_stop_v2(&owner)==Ok && dcat26_group_drain_v2(&owner)==Ok);
     assert(dcat26_group_remove_v2(&owner,observer,completion)==Ok);
     assert(!engine.state().pending && !engine.state().host_bytes && !engine.state().device_bytes);arrays_zero();
+}
+void invalid_flat_geometry() {
+    Case test(true);const auto original=typed.front().original;assert(dcat26_fia_typed::ncl(original));
+    for(unsigned field=0;field<6;++field) {
+        auto changed=original;
+        switch(field) {
+            case 0:++changed.storage[0];break;
+            case 1:--changed.storage[0];break;
+            case 2:changed.storage_rank=2;break;
+            case 3:changed.storage[1]=1;break;
+            case 4:changed.offset=1;break;
+            default:++changed.strides[0];break;
+        }
+        assert(!dcat26_fia_typed::ncl(changed));
+    }
+    assert(!created && !writer_calls && !engine.state().pending);arrays_zero();
 }
 void changed_after(unsigned field) {
     Case test;test.prepare();test.gws();auto& value=typed.back().original;
@@ -204,10 +224,11 @@ void run(void (*test)()) {
 }
 int main() {
     using namespace typed_fixture;
-    run(success);run(changed_before_execute);run(callback_throw);run(wrong_call);run(nd_and_qmm_do_not_gain_ncl);
+    run([]{success();});run([]{success(true);});run(invalid_flat_geometry);
+    run(changed_before_execute);run(callback_throw);run(wrong_call);run(nd_and_qmm_do_not_gain_ncl);
     run(gws_binding_failure_keeps_unclassified_executor);
     run([]{getter_fail(false);});run([]{getter_fail(true);});
     run([]{changed_after(0);});run([]{changed_after(1);});run([]{changed_after(2);});run([]{changed_after(3);});
     run([]{changed_after(4);});run([]{changed_after(5);});run([]{changed_after(6);});run([]{changed_after(7);});
-    std::cout<<"{\"status\":\"PASS_CPU_TYPED_FIA_RUNTIME\",\"actual_npu_calls\":0,\"cases\":16}\n";
+    std::cout<<"{\"status\":\"PASS_CPU_TYPED_FIA_RUNTIME\",\"actual_npu_calls\":0,\"cases\":18}\n";
 }

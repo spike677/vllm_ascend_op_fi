@@ -233,6 +233,33 @@ class FiaTypedTests(unittest.TestCase):
         self.assertTrue(all(row['status']=='UNVERIFIED' for row in self.experiment.candidate_inventory))
         self.assertFalse(self.native.executes)
 
+    def test_actual_flat_storage_preserved_through_stock_reference_fault_and_recovery(self):
+        original_descriptor = descriptor
+        def flat_descriptor(tensor, **kwargs):
+            value = original_descriptor(tensor, **kwargs)
+            value['storage_rank'] = 1
+            value['storage'] = [tensor.numel()] + [0] * 7
+            return value
+        with patch(__name__ + '.descriptor', side_effect=flat_descriptor):
+            self.test_complete_two_stock_reference_lossless_fault_off_and_zero_host_bytes()
+        for outcome in self.experiment.outcomes:
+            snapshots = outcome['fia_typed_consumer_snapshot']
+            for phase in ('before', 'after', 'before_execute'):
+                self.assertEqual(snapshots[phase]['original']['storage_rank'], 1)
+                self.assertEqual(snapshots[phase]['effective']['storage'], snapshots[phase]['original']['storage'])
+
+    def test_flat_storage_padding_hidden_tail_offset_and_rank_are_refused(self):
+        value = descriptor(torch.ones(13, 9, 64, dtype=torch.bfloat16))
+        value['storage_rank'] = 1
+        value['storage'] = [7488] + [0] * 7
+        ncl(value)
+        changes = [('storage', [7489] + [0] * 7), ('storage', [7487] + [0] * 7),
+                   ('storage', [7488, 1] + [0] * 6), ('storage_rank', 2), ('offset', 1),
+                   ('storage_bytes', 14978), ('strides', [577, 64, 1] + [0] * 5)]
+        for key, changed in changes:
+            with self.subTest(key=key, changed=changed), self.assertRaises(RuntimeError):
+                ncl({**value, key: changed})
+
     def test_original_after_gws_identity_change_cannot_map_public_nd(self):
         self.native.after_mutator = lambda row: row['original'].__setitem__('descriptor', 99)
         self.inventory()
@@ -403,7 +430,7 @@ class FiaTypedWireTests(unittest.TestCase):
         self.assertEqual([C.sizeof(t) for t in (Descriptor, Record, TraceState, Snapshots, Abi)], [280,656,104,2048,48])
         from test_writer26_group_build import build
         valid = build.typed_profile(dict(fia_typed_abi=ABI),
-            dict(status='PASS_CPU_TYPED_FIA_RUNTIME', actual_npu_calls=0, cases=16))
+            dict(status='PASS_CPU_TYPED_FIA_RUNTIME', actual_npu_calls=0, cases=18))
         profile(valid)
         for key in ('native_format', 'old_reference_reusable', 'borrowed_original_read_scope'):
             with self.subTest(key=key), self.assertRaisesRegex(RuntimeError, 'FRESH_BUILD_PROFILE'):

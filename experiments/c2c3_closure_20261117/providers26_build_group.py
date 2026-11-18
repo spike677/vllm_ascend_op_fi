@@ -53,10 +53,10 @@ def require_typed_trace(symbols):
 def typed_profile(control, contract):
     expected = dict(version=3, inventory_version=2, descriptor=280, record=656, state=104, lease=912, snapshots=2048)
     if (control.get('fia_typed_abi') != expected or contract.get('status') != 'PASS_CPU_TYPED_FIA_RUNTIME'
-            or contract.get('actual_npu_calls') != 0 or contract.get('cases') != 16):
+            or contract.get('actual_npu_calls') != 0 or contract.get('cases') != 18):
         raise RuntimeError('TYPED_FIA_ACTUAL_SDK_AND_RUNTIME_CONTRACT_REQUIRED')
     return dict(schema='demoncat.writer26.fia_ncl_typed.v3', abi=expected, native_format=47, public_format=2,
-        dtype='bfloat16', dimensions=3, view_storage_equal=True, offset=0, contiguous=True,
+        dtype='bfloat16', dimensions=3, storage_layouts=['MATCHED_VIEW', 'EXACT_FLAT_SPAN'], offset=0, contiguous=True,
         borrowed_original_read_scope='ACTUAL_GWS_STACK_ONLY', effective_descriptor='GROUP_OWNED_ALL_SELECTED_MODES',
         stock_to_owned_reference_full_byte_comparison_required=True, old_reference_reusable=False,
         before_execute_complete_typed_readback_required=True, native_qualified=False)

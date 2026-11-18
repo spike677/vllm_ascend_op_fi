@@ -15,9 +15,13 @@ dimensions, strides, offset, element size and full byte spans. The public v1
 denominator is recorded first and is not filtered by typed eligibility. Unknown
 geometry and failed or incomplete observations remain refusals.
 
-The specialized admission accepts only complete BF16 NCL rank-three geometry,
-equal view/storage dimensions, strict contiguous strides, zero offset and the
-existing bounded span. The original descriptor is read only inside its real
+The specialized admission accepts only complete BF16 NCL rank-three views,
+strict contiguous strides, zero offset and the existing bounded span. Storage
+must match the three view dimensions or be one exact flat span with the same
+element and byte counts. Padding, extra trailing dimensions and other ranks
+are rejected. The owned descriptor preserves the actual original storage rank
+and dimensions; it never rebuilds storage from public shape.
+The original descriptor is read only inside its real
 GWS stack. Every selected typed mode, including Reference and OFF, owns its
 effective descriptor with actual tag 47; execute never re-reads the borrowed
 original. Lossless and fault use the unchanged Engine replacement address.
@@ -119,7 +123,8 @@ changes, consumer-time snapshot changes, and failed-lease cleanup. These are
 fixture contracts, not CANN numerical or natural inference acceptance. Existing
 QMM-only `c1_single_effects` remains QMM-only. All full candidate reasons and
 independent call records remain available; unknown paths are not discarded.
-The complete writer26 Python regression suite passed 108 tests, including the
+The complete writer26 Python regression suite passed 108 tests before the
+flat-storage extension, including the
 existing QMM and QMM-only single-site Core path.
 
 After root verifies the fresh SDK bundle and builds matching Python packages,
@@ -140,3 +145,24 @@ inventory and run the same strict gates. `max-targets` bounds the entire resolve
 plan; it does not choose a subset. Only root may approve/run those device cases.
 No C1, C2, C3, numerical Native acceptance or E5 conclusion follows from this
 code or its CPU tests.
+
+## Source58 natural inventory and exact flat storage
+
+The new source58/Native a3 standard SmolLM2 Worker completed two healthy
+inventories plus health,30 FIA calls per request, with exact model-output
+repeat and zero final Native/Python resources. All30 targets remained
+UNVERIFIED, with no injection: actual typed records have view[13,9,64],
+stride[576,64,1], storage[7488], offset0, dtype27/format47 and14976 bytes.
+The old rank-three-storage-only condition rejected this complete rank-one
+storage. Result SHA256396fd0dfd780c1b2500a67553bc2e99ccda60063ba51299050b960a429f0dfe1;
+inventory SHA2564ce41810380f4e26f6b15c691de0bf4a4d5f088a1b1d69b17a6aabc4f6a0268a.
+
+The follow-up permits that exact contiguous flat span in both Native and Python
+checks. The existing clone already passes the original storage array/rank to
+aclCreateTensor and verifies the complete result; no output or descriptor
+format is converted. Full two-stock-to-owned Reference equality still decides
+numerical admission. New CPU contracts cover flat storage through the actual
+Native runtime and Python consumer/recovery, plus oversized, undersized,
+hidden-tail, offset, rank and stride refusals. The build requires18 runtime
+cases and a fresh profile. Use fresh a4 directories in the commands above;
+a3 remains an immutable diagnostic build and cannot authorize this extension.

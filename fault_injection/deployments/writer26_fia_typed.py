@@ -52,7 +52,7 @@ class Abi(C.Structure):
 
 def profile(value):
     expected = dict(schema='demoncat.writer26.fia_ncl_typed.v3', abi=ABI, native_format=47, public_format=2,
-        dtype='bfloat16', dimensions=3, view_storage_equal=True, offset=0, contiguous=True,
+        dtype='bfloat16', dimensions=3, storage_layouts=['MATCHED_VIEW', 'EXACT_FLAT_SPAN'], offset=0, contiguous=True,
         borrowed_original_read_scope='ACTUAL_GWS_STACK_ONLY', effective_descriptor='GROUP_OWNED_ALL_SELECTED_MODES',
         stock_to_owned_reference_full_byte_comparison_required=True, old_reference_reusable=False,
         before_execute_complete_typed_readback_required=True, native_qualified=False)
@@ -62,15 +62,19 @@ def profile(value):
 def ncl(value):
     require(value['version'] == 2 and value['size'] == 280 and value['complete'] == value['contiguous'] == 1
         and value['dtype'] == 27 and value['format'] == 47 and value['reserved'] == value['offset'] == 0
-        and value['view_rank'] == value['storage_rank'] == value['stride_rank'] == 3 and value['element_bytes'] == 2
+        and value['view_rank'] == value['stride_rank'] == 3 and value['storage_rank'] in (1, 3)
+        and value['element_bytes'] == 2
         and 0 < value['descriptor'] < 2**64 and 0 < value['raw'] < 2**64,
         'FIA_COMPLETE_BF16_NCL_DESCRIPTOR_REQUIRED')
     step = 1
     for index in (2, 1, 0):
-        require(value['view'][index] == value['storage'][index] > 0 and value['strides'][index] == step,
+        require(value['view'][index] > 0 and value['strides'][index] == step
+                and (value['storage_rank'] == 1 or value['view'][index] == value['storage'][index]),
                 'FIA_NCL_VIEW_STORAGE_STRIDE_CHANGED')
         step *= value['view'][index]
-    require(all(len(value[key]) == 8 and not any(value[key][3:]) for key in ('view', 'storage', 'strides'))
+    require(value['storage_rank'] == 3 or value['storage'][0] == step, 'FIA_NCL_FLAT_STORAGE_SPAN_CHANGED')
+    require(all(len(value[key]) == 8 and not any(value[key][3:]) for key in ('view', 'strides'))
+        and len(value['storage']) == 8 and not any(value['storage'][value['storage_rank']:])
         and step * 2 == value['view_bytes'] == value['storage_bytes'] <= 8 * 1024 * 1024
         and value['raw'] + value['storage_bytes'] <= 2**64 - 1, 'FIA_NCL_FULL_STORAGE_SPAN_REQUIRED')
 

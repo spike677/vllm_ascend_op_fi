@@ -46,16 +46,23 @@ inline bool same_descriptor(const Descriptor& a,const Descriptor& b,bool address
 inline bool ncl(const Descriptor& value) {
     if(value.version!=kVersion || value.size!=sizeof(Descriptor) || value.complete!=1 || value.contiguous!=1
         || value.reserved || value.dtype!=static_cast<int32_t>(kBf16) || value.format!=static_cast<int32_t>(kNcl)
-        || value.view_rank!=3 || value.storage_rank!=3 || value.stride_rank!=3 || value.offset || value.element_bytes!=2
+        || value.view_rank!=3 || (value.storage_rank!=3 && value.storage_rank!=1)
+        || value.stride_rank!=3 || value.offset || value.element_bytes!=2
         || !value.descriptor || !value.raw || value.raw>std::numeric_limits<uint64_t>::max()-value.storage_bytes)return false;
     uint64_t elements=1;
     for(unsigned i=3;i>0;--i) {
         const auto dimension=value.view[i-1];
-        if(dimension<=0 || dimension!=value.storage[i-1] || value.strides[i-1]!=static_cast<int64_t>(elements)
+        if(dimension<=0 || (value.storage_rank==3 && dimension!=value.storage[i-1])
+            || value.strides[i-1]!=static_cast<int64_t>(elements)
             || static_cast<uint64_t>(dimension)>4*1024*1024/elements)return false;
         elements*=static_cast<uint64_t>(dimension);
     }
-    for(unsigned i=3;i<8;++i)if(value.view[i] || value.storage[i] || value.strides[i])return false;
+    // Actual source58 GWS uses rank-three NCL views over one exact flat span.
+    // Preserve its storage rank/array when cloning; no padding or offset is
+    // inferred from the public Tensor and no format tag is changed.
+    if(value.storage_rank==1 && value.storage[0]!=static_cast<int64_t>(elements))return false;
+    for(unsigned i=value.storage_rank;i<8;++i)if(value.storage[i])return false;
+    for(unsigned i=3;i<8;++i)if(value.view[i] || value.strides[i])return false;
     return value.view_bytes==elements*2 && value.storage_bytes==value.view_bytes;
 }
 inline bool path(const Record& value) {
