@@ -138,3 +138,18 @@ five loaded staged libraries pass the original strict identity check. No host
 or existing container library changed; new NPU workers still need their own
 mapping and actual function-pointer proof, especially for duplicate custom-library
 basenames. The unstaged no-device driver stub remains unverified.
+
+
+Source72 (`7646e878`, manifest SHA256
+`a976dba82911e87864ebc4f6039c7cd3a12d79b0644c5fd23349a29342d3db49`)
+passed100 production-image CPU contracts. Two fresh B8 healthy quant requests
+completed on124/card2. Each actual embedding producer and TP1 same-object
+communication return is now observed; clone and residual no-chunk edges are
+proven. The next AddRmsNormBias edge is still unresolved, so complete projection
+row proofs remain3/135 per request. All270 actual Native preparations/executions
+are bound; zero targets are qualified and no F is executed. Original result
+SHA256:`52d09b36e433b4ea6f14246e1bc29bc9eb7ccc2a1daba7ced1ef12f2bbaff1b4`;
+inventory:`ebba0a3a31d6161b61e293add84d5097eae1f19a6e998c43fd123e9d2057a469`.
+The owner was never installed, owned API/method hooks were removed, both
+scheduler tensor references cleared, and before/after healthy tokens match.
+These two attempts improve evidence coverage without granting C2/C3.
