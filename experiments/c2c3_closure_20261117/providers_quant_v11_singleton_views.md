@@ -71,6 +71,9 @@ the seven qualification/fault phases. The inventory entry enqueues two fresh
 B8 batches, captures each first decode, explicitly collects, and performs
 same-Worker health and complete observer cleanup. It never installs a fault
 owner or calls Native arm/admit. Expected faults and helpers are zero.
+It is a controlled observation entry using deployment RPCs, not an acceptance
+run of the public Worker Core V1.1 fault API. Its evidence cannot grant public
+RPC C2/C3; those require a later run through the matching public provider entry.
 
 Retain the entire independent Native/public inventory and row graph in the
 new attempt, including each of the expected 135 actual parents per decode
