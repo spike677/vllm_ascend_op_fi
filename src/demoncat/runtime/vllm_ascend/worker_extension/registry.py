@@ -39,6 +39,9 @@ def rpc_provider_capabilities():
         attachment='owned_python_hooks', execution='trusted_synchronous_tensor_replay_required',
         execution_boundary='python_hook', natural_model_verified=False) for name, ops in _TENSOR]
     for row in rows:
+        if row['mechanism'] in ('8.restore_offset', '18.api_half'):
+            row.update(execution='reviewed_natural_serving_group_real_enqueue_required',
+                       legacy_replay_fallback=False, historical_qualification_inherited=False)
         if row['mechanism'] == '22.wrong_row':
             row.update(execution='reviewed_fused_serving_group_real_enqueue_required',
                        variant_selection='actual_source_bound_fused_calls', legacy_lookup_fallback=False)
@@ -77,6 +80,9 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     if mechanism == '22.wrong_row':
         module = importlib.import_module(__package__ + '.providers.fault22')
         return module.Fault22ServingProvider(worker, model, identity)
+    if mechanism in ('8.restore_offset', '18.api_half'):
+        module = importlib.import_module(__package__ + '.providers.tensor_serving')
+        return module.TensorServingProvider(worker, model, identity, mechanism)
     if mechanism in {name for name, _ in _TENSOR}:
         module = importlib.import_module(__package__ + '.providers.tensor_modules')
         return module.TensorModuleProvider(worker, model, identity, mechanism)

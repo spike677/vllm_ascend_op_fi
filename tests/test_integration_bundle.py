@@ -229,6 +229,27 @@ class BundleTests(unittest.TestCase):
             bundle.export_bundle(self.source, review, self.output)
         self.assertEqual(self.output.read_bytes(), b'previous delivery')
 
+    def test_natural_tensor_public_route_requires_complete_source_only_fixture_and_probe_closure(self):
+        path = self.source / bundle._TENSOR_SERVING_PROVIDER
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('# reviewed common 8/18 public route\n', encoding='utf-8')
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'missing-natural-tensor-contract')
+        names = bundle._TENSOR_SERVING_CONTRACTS | {'tests/worker_extension/test_core_tensor_serving.py'}
+        for name in names:
+            target = self.source / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / name).read_bytes())
+        raw = self.source/'experiments/c2c3_closure_20261117/tensor-core-raw-receipt.json'
+        raw.write_text('{"accepted":true}', encoding='utf-8')
+        review, _ = self.export()
+        included = {row['source_path'] for row in review['files']}
+        self.assertTrue(names <= included)
+        self.assertNotIn(raw.relative_to(self.source).as_posix(), included)
+        (self.source/'tests/test_route8_index22.py').unlink()
+        with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
+            bundle.create_review(self.source, 'incomplete-natural-tensor-fixture')
+
     def test_changed_source_and_contract_payload_are_detected(self):
         review, _ = self.export()
         for suffix, error in (('/sources/fault_injection/integration.py', 'SOURCE_HASH_MISMATCH'),
@@ -356,6 +377,18 @@ class ActualSourceRelocationTests(unittest.TestCase):
                                     capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertEqual(result.stdout.strip(), 'relocated-imports-ok')
+            # Exercise both real public CPU protocols from the exported tree.
+            # Explicit paths exclude the checkout's fixtures and no NPU backend
+            # is auto-loaded in this source-only portability test.
+            test_paths = paths + [str(sources/'tests'), str(sources/'tests/worker_extension')]
+            script = ('import sys,unittest; sys.path[:0]=' + repr(test_paths) + '; '
+                'names=["test_core_tensor_serving.CoreTensorServingTests.test_public_protocol_actual_groups_original_proof_and_zero_resource_health",'
+                '"test_core_tensor_serving.CoreMoEServingTests.test_public_protocol_actual_groups_original_proof_and_zero_resource_health"]; '
+                'result=unittest.TextTestRunner().run(unittest.defaultTestLoader.loadTestsFromNames(names)); '
+                'sys.exit(not result.wasSuccessful())')
+            result = subprocess.run([sys.executable, '-I', '-B', '-c', script], cwd=sources,
+                capture_output=True, text=True, timeout=60, env=dict(os.environ, TORCH_DEVICE_BACKEND_AUTOLOAD='0'))
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
 
 if __name__ == '__main__':

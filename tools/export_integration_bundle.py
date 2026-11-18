@@ -61,6 +61,18 @@ _OUTPUT39_PROVIDER = 'src/demoncat/runtime/vllm_ascend/worker_extension/provider
 _OUTPUT39_CONTRACTS = {'tests/test_postwrite_providers.py',
     'tests/worker_extension/test_serving_session_lifecycle.py',
     'tests/worker_extension/test_call_binding.py', 'docs/worker_core_v1/output39_host_contract.md'}
+_TENSOR_SERVING_PROVIDER = 'src/demoncat/runtime/vllm_ascend/worker_extension/providers/tensor_serving.py'
+_TENSOR_SERVING_CONTRACTS = {
+    'src/demoncat/runtime/vllm_ascend/worker_extension/serving_tensor_binding.py',
+    'src/demoncat/runtime/vllm_ascend/worker_extension/serving_tensor_request.py',
+    'docs/worker_core_v1/tensor_group_host_contract.md',
+    'tests/test_serving_tensor_group.py', 'tests/test_serving_moe_group.py',
+    'tests/test_rmsnorm_natural.py', 'tests/test_route8_index22.py',
+    'tests/test_tensor_statistics_window.py', 'tests/test_natural_tensor_group.py',
+    'tests/test_tensor_worker_core_probe.py',
+    'experiments/c2c3_closure_20261117/natural_tensor_worker_core_probe.py',
+    'experiments/c2c3_closure_20261117/prepare_tensor_worker_core.py',
+}
 # Current build inputs only: no whole legacy source tree or experiment history.
 _SUPPORT = {
     _LEGACY + 'l4_buffer_substitute_allhit_v1/' + name for name in (
@@ -77,7 +89,7 @@ _SUPPORT = {
 } | {
     _LEGACY + 'fault26_fia_writer_proxy_v1/' + name for name in ('fault26_fia_writer_lossless.cpp', 'build.sh')
 }
-_EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | _KV41_CONTRACTS | _OUTPUT39_CONTRACTS | {
+_EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | _KV41_CONTRACTS | _OUTPUT39_CONTRACTS | _TENSOR_SERVING_CONTRACTS | {
     'fault39/tools/version_profile.py', 'fault39/tools/deployment_profile.py',
     'native_execution_strategy/native/build_requirements.txt',
     'fault39/tests/test_contracts.py', 'tests/test_integration_contract.py',
@@ -89,7 +101,7 @@ _EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | _KV41_CONTRA
     'docs/worker_core_v1/host_contract.md', 'docs/worker_core_v1/integration_bundle.md',
     'docs/worker_core_v1/rope22_host_contract.md',
 }
-_REQUIRED = (_EXACT - _CORE_DOCS - _ROPE_CONTRACTS - _KV41_CONTRACTS - _OUTPUT39_CONTRACTS) | {
+_REQUIRED = (_EXACT - _CORE_DOCS - _ROPE_CONTRACTS - _KV41_CONTRACTS - _OUTPUT39_CONTRACTS - _TENSOR_SERVING_CONTRACTS) | {
     'fault_injection/integration.py', 'fault_injection/lifecycle.py',
     'fault_injection/native_build/manager.py', 'fault_injection/native_build/recipes.py',
     'fault_injection/native_adapters/build_qmm.sh',
@@ -111,7 +123,9 @@ def _required(names):
             | (_KV41_CONTRACTS | {'tests/worker_extension/test_core_kv41.py'}
                if _KV41_PROVIDER in names else set())
             | (_OUTPUT39_CONTRACTS | {'tests/worker_extension/test_core_output39.py'}
-               if _OUTPUT39_PROVIDER in names else set()))
+               if _OUTPUT39_PROVIDER in names else set())
+            | (_TENSOR_SERVING_CONTRACTS | {'tests/worker_extension/test_core_tensor_serving.py'}
+               if _TENSOR_SERVING_PROVIDER in names else set()))
 
 
 class BundleError(ValueError):
@@ -304,6 +318,8 @@ def _sections(name):
     if name.endswith(('/integration.py', '/contracts.py', '/schema.py', '/host.py', '/config.py')) or name.endswith('_api.h'):
         sections.add('contracts')
     if name.startswith('docs/') or name in _DISTRIBUTIONS or name.startswith('tools/'):
+        sections.add('integration_guide')
+    if name in _TENSOR_SERVING_CONTRACTS and name.startswith('experiments/'):
         sections.add('integration_guide')
     if name.endswith(('/environment.py', '/recipes.py', '/version_profile.py')):
         sections.add('compatibility_matrix')

@@ -98,8 +98,13 @@ class RegistryTests(unittest.TestCase):
             loader.return_value.Fault20Provider.assert_called_once_with('worker', 'model', {'rank': 3})
             self.assertTrue(loader.call_args.args[0].endswith('.providers.fault20'))
         with patch('importlib.import_module') as loader:
-            resolve_provider('18.api_half', '1', 'worker', 'model', {})
-            loader.return_value.TensorModuleProvider.assert_called_once_with('worker', 'model', {}, '18.api_half')
+            resolve_provider('15.alias_detach', '1', 'worker', 'model', {})
+            loader.return_value.TensorModuleProvider.assert_called_once_with('worker', 'model', {}, '15.alias_detach')
+        for mechanism in ('18.api_half', '8.restore_offset'):
+            with patch('importlib.import_module') as loader:
+                resolve_provider(mechanism, '1', 'worker', 'model', {})
+                loader.return_value.TensorServingProvider.assert_called_once_with('worker', 'model', {}, mechanism)
+                self.assertTrue(loader.call_args.args[0].endswith('.providers.tensor_serving'))
 
 
 if __name__ == '__main__':
