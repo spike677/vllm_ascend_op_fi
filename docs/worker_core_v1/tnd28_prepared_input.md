@@ -80,6 +80,16 @@ The NNOPBASE owner must have reviewed production SHA
 The actual Contiguous owner is checked against the explicitly supplied,
 hashed production-library manifest. A same-file path alias is accepted only
 with the actual device/inode mapping equality; missing mappings remain errors.
+Only the two aliases actually recorded in Source123 are recognized:
+`/usr/local/Ascend/cann-8.5.1/lib64/libopapi_math.so` and `libnnopbase.so`
+map to their exact same-basename paths under
+`/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/`. The reader selects the
+canonical manifest entry only after the original mapped/file inode, device
+and executable-address checks pass, then rehashes its original bytes as before.
+Both observed and mapped paths are kept in the review. Other SDK versions,
+basenames or aliases do not receive this exception. The private opapi keeps
+its exact path. This corrects the post-run reader's lookup without rewriting
+the manifest, Native records or the initial Source124 rejection.
 
 Slice's unknown POD is not decoded. Its actual registered entry and launch
 must lie inside the observed original typed Contiguous execution on the same

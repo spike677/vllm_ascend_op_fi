@@ -42,6 +42,11 @@ STORAGE_FORMATS={'query':47,'key':47,'value':47,'output':47,'atten_mask':2}
 FORMAT_ENUM_SOURCES={
     'include/graph/types.h':'0582beb87dfc4aaf9019005150fd8a34ece1120fabbd2159abee2aecce51416a',
     'include/graph/c_types.h':'365ba1e3c0cee98494c322969a7ac80e7304139acc00e69c3dbf2cafd5d6d21d'}
+FUNCTION_PATH_ALIASES={
+    '/usr/local/Ascend/cann-8.5.1/lib64/libopapi_math.so':
+        '/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libopapi_math.so',
+    '/usr/local/Ascend/cann-8.5.1/lib64/libnnopbase.so':
+        '/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/libnnopbase.so'}
 
 
 def need(ok,why):
@@ -103,6 +108,20 @@ def function_identity(function):
         'ACTUAL_FUNCTION_MAPPED_FILE_IDENTITY')
     need(function['path'].startswith('/') and function['mapped_path'].startswith('/'),
         'ACTUAL_FUNCTION_OWNER_PATH_MISSING')
+
+
+def function_library_entry(function,entries):
+    function_identity(function)
+    observed=function['path'];mapped=function['mapped_path']
+    if observed==mapped:
+        via='EXACT_OBSERVED_PATH'
+    else:
+        need(FUNCTION_PATH_ALIASES.get(observed)==mapped,'UNREVIEWED_ACTUAL_FUNCTION_PATH_ALIAS')
+        via='OBSERVED_CANN851_ALIAS_WITH_MATCHED_FILE_IDENTITY'
+    need(mapped in entries and entries[mapped]['recorded_path']==mapped,
+        'ACTUAL_FUNCTION_CANONICAL_MANIFEST_ENTRY_MISSING')
+    return entries[mapped],dict(observed_path=observed,mapped_path=mapped,
+        manifest_recorded_path=mapped,matched_via=via)
 
 
 def false_lse(typed,public,output):
@@ -414,14 +433,14 @@ def main():
         seen={}
         for phase,data in typed.items():
             if 'function' not in data:continue
-            f=data['function'];r=entries[f['path']];path=Path(r['path'])
+            f=data['function'];r,binding=function_library_entry(f,entries);path=Path(r['path'])
             need(path.stat().st_size==r['bytes']==f['file_bytes'] and E.sha(path)==r['sha256'],'ACTUAL_FUNCTION_LIBRARY_BYTES:'+phase)
             if phase in ('prepare_enter','execute_enter'):
                 need(any(name.endswith('/libcust_opapi.so') and row['sha256']==r['sha256'] for name,row in files.items()),
                     'ACTUAL_INNER_FUNCTION_NOT_NEW_PRIVATE_OPAPI')
             if phase in ('workspace_enter','fia_execute_enter'):
                 need(r['sha256']==NNOPBASE_SHA,'ACTUAL_NNOPBASE_DIFFERS_FROM_PINNED_SERIALIZER_OWNER')
-            seen[f['path']]=dict(bytes=r['bytes'],sha256=r['sha256'])
+            seen[f['path']]=dict(binding,bytes=r['bytes'],sha256=r['sha256'])
         need(typed['workspace_enter']['function']['path']==typed['fia_execute_enter']['function']['path'],
             'ACTUAL_NNOPBASE_OWNER_CHANGED')
         public['_return']=returned

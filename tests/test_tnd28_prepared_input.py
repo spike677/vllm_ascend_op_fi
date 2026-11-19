@@ -231,6 +231,55 @@ class TypedReadbackContracts(unittest.TestCase):
         self.assertEqual(result.returncode,0,result.stderr)
 
 
+class FunctionLibraryAliasContracts(unittest.TestCase):
+    def fixture(self,name='libopapi_math.so'):
+        _,_,events=fixture();function=events[0]['data']['function']
+        observed='/usr/local/Ascend/cann-8.5.1/lib64/'+name
+        mapped='/usr/local/Ascend/cann-8.5.1/aarch64-linux/lib64/'+name
+        function.update(path=observed,mapped_path=mapped)
+        row=dict(recorded_path=mapped,path='/cpu-fixture/'+name,bytes=100,sha256='a'*64)
+        return function,{mapped:row}
+
+    def test_two_observed_sdk_aliases_bind_only_the_exact_canonical_entry(self):
+        for name in ('libopapi_math.so','libnnopbase.so'):
+            function,entries=self.fixture(name);row,binding=R.function_library_entry(function,entries)
+            self.assertIs(row,entries[function['mapped_path']])
+            self.assertEqual(binding['observed_path'],function['path'])
+            self.assertEqual(binding['mapped_path'],function['mapped_path'])
+            self.assertEqual(binding['manifest_recorded_path'],function['mapped_path'])
+            self.assertEqual(binding['matched_via'],'OBSERVED_CANN851_ALIAS_WITH_MATCHED_FILE_IDENTITY')
+
+    def test_unchanged_private_opapi_path_remains_an_exact_binding(self):
+        function,_=self.fixture();path='/native/op_api/lib/libcust_opapi.so'
+        function.update(path=path,mapped_path=path);row=dict(recorded_path=path,path='/cpu-fixture/private.so')
+        actual,binding=R.function_library_entry(function,{path:row})
+        self.assertIs(actual,row);self.assertEqual(binding['matched_via'],'EXACT_OBSERVED_PATH')
+
+    def test_unknown_path_different_basename_or_different_sdk_does_not_alias(self):
+        for kind in ('unknown_path','different_basename','different_sdk','unknown_library'):
+            function,entries=self.fixture()
+            if kind=='unknown_path':function['path']='/unknown/libopapi_math.so'
+            if kind=='different_basename':function['mapped_path']=function['mapped_path'].replace('libopapi_math.so','libnnopbase.so')
+            if kind=='different_sdk':function['path']=function['path'].replace('8.5.1','8.6.0')
+            if kind=='unknown_library':
+                function['path']=function['path'].replace('libopapi_math.so','libunknown.so')
+                function['mapped_path']=function['mapped_path'].replace('libopapi_math.so','libunknown.so')
+            with self.subTest(kind=kind),self.assertRaisesRegex(ValueError,'UNREVIEWED_ACTUAL_FUNCTION_PATH_ALIAS'):
+                R.function_library_entry(function,entries)
+
+    def test_alias_never_replaces_the_actual_inode_device_or_mapping_checks(self):
+        for key,value in (('mapped_file_identity_matches',False),('mapped_inode',6),
+                ('mapped_device',[1,3]),('address',0x9999)):
+            function,entries=self.fixture();function[key]=value
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'MAPPED_FILE_IDENTITY'):
+                R.function_library_entry(function,entries)
+
+    def test_observed_alias_entry_alone_cannot_replace_canonical_manifest(self):
+        function,entries=self.fixture();row=next(iter(entries.values()))
+        with self.assertRaisesRegex(ValueError,'CANONICAL_MANIFEST_ENTRY_MISSING'):
+            R.function_library_entry(function,{function['path']:row})
+
+
 class VendorLinkContracts(unittest.TestCase):
     def test_exact_packaged_alias_and_relative_target_are_accepted(self):
         R.vendor_link_rule('op_impl/ai_core/tbe/op_tiling/liboptiling.so',
