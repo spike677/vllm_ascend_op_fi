@@ -32,9 +32,16 @@
 - 原三安装单元、`FaultConfig` 三字段、HostAdapter、WorkerFaultClient 与 Runtime 所有权不变。
   源码交付工具要求一起包含公共实现、相关契约测试和本文，防止漏传新依赖。
 
-**仍待拆分的执行代码**：现有 TensorServingProvider、Source105和39单点 provider
-仍包含资格/验收阶段协议，不能把它们整套包装成普通产品调用。当前只完成共用动作、
-有界结果出口与路由收敛；普通请求执行与验收驱动的全面拆分尚未完成。
+**本轮进一步拆出的运行时**：39新增 `runtime_only` 单任务入口，通过真实公共 registry
+选择 `Output39TaskProvider`，普通作用域不创建目录、不运行完整 census。实际一次请求中
+最多16个投影候选的有界观察选出一个真实消费者目标；normal/F/OFF/health由外部真实调度
+请求驱动。旧39资格实验仍保留为显式历史入口。
+Batch新增普通W8A8投影路径，不等待routed GMM1；现Native ABI仍要求六个真实batch的
+normal/reference/lossless/calibration_off/F/OFF，不宣称已压缩为三个batch。
+详见[39单任务](output39_single_task_runtime.md)和[普通量化](quant_ordinary_projection.md)。
+
+**仍待拆分的执行代码**：现有 TensorServingProvider、Source105仍包含资格/验收阶段协议，
+不能把它们整套包装成普通产品调用。普通请求执行与验收驱动的全面拆分尚未完成。
 未改变现有正常资格检查，也未默认新增全目标 census 或采集。
 
 ## 当前逐项矩阵
@@ -53,13 +60,13 @@
 |25 reduce_scatter|不支持，已停止|无替代通信输出破坏|不适用|不适用|无本轮后续实现|
 |26 residual_stomp|选择已有Native单点路线|真实邻接、QMM writer和residual consumer|未接线验收|原单点通过；主项目待验|目标部署邻接不成立则明确不适用，不追135完整集合|
 |26 fia_destination|保留通过范围|实际FIA→当前请求残差→consumer|未接线验收|原范围通过；主项目待验|迁移时重新绑定，不继承裸地址|
-|Batch shared_scale|普通W8A8接线待完成|匹配Qwen普通投影，TP1/B8纯decode；Q/scale共同变化|未验|历史单点保留；新接线待验|完成普通投影，不等待routed GMM1|
+|Batch shared_scale|普通W8A8运行时已实现|匹配Qwen普通投影，TP1/B8首decode；Q/scale共同变化|CPU契约通过；新实机与主项目待验|历史单点保留；新入口待验|小型W8A8真实六batch验收，不等待routed GMM1|
 |28 FA legal|仅历史保留|旧FA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 FIA legal|仅历史保留|旧FIA限定范围|本轮不做|旧证据保留|退出当前关键路径|
-|28 denominator_replay|TND故障实现未完成|真实TND在线softmax分母重复累计|未验|未验|真实输入/launch绑定及fault kernel尚未完成；不以输出缩放替代|
+|28 denominator_replay|TND kernel/host候选已写；整条实现未完成|真实TND在线softmax分母重复累计|未验|未验|原物理核调度矩阵全部FD已拒；新完整KV-head调度构建中，实际prepared-input/launch绑定仍缺，不以输出缩放替代|
 |33 paged_decode|采用Source105单点|真实paged decode，受控S2策略扰动|原单点有内部/logits变化；主项目未验|原单点精确；主项目待验|普通运行/验收拆分与宿主接线；整组路线停止|
 |39 matmul_range|保留已验收范围|匹配Native MatMul有限输入/算术边界|未接线验收|原范围通过；主项目待验|宿主接线，不声称全部8.x/9.x|
-|39 output_proxy|独立单次，每请求≤1目标|finite检查、实际consumer与恢复|原单点通过；主项目未验|原单点通过；主项目待验|普通运行/验收拆分；累计C3不再必做|
+|39 output_proxy|新独立单任务运行时已接公共registry|finite检查、实际consumer、单次F及恢复|44项相关CPU通过；新实机执行中；主项目未验|原单点通过；新入口待验|核对新四请求normal/F/OFF/health；累计C3不再必做|
 |41 tail_column|保留已验收范围|实际live KV尾列写读，共用postwrite后端|未接线验收|原范围通过；主项目待验|宿主接线，保留cache语义|
 
 已有成果与准确版本见 [原范围决策](../../experiments/worker_core_v11_20261118/CONVERGENCE_DECISIONS.md)、

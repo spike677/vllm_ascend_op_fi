@@ -67,12 +67,6 @@ _KV41_CONTRACTS = {'tests/worker_extension/kv41_fixture.py',
                    'docs/worker_core_v1/kv41_host_contract.md'}
 _OUTPUT39_PROVIDER = 'src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault39_output.py'
 _OUTPUT39_CONTRACTS = {'tests/test_postwrite_providers.py',
-    'experiments/worker_core_v11_20261118/output39_single_task_probe.py',
-    'experiments/worker_core_v11_20261118/prepare_output39_single_task.py',
-    'experiments/c2c3_postwrite_20261117/natural41_probe.py',
-    'experiments/c2c3_postwrite_20261117/natural41_coverage_probe.py',
-    'experiments/c2c3_postwrite_20261117/model_identity.py',
-    'tests/test_output39_single_task_probe.py',
     'tests/worker_extension/test_output39_task.py',
     'docs/worker_core_v1/output39_single_task_runtime.md',
     'tests/test_postwrite_native_recovery.py',
@@ -103,6 +97,12 @@ _WRITER26_CONTRACTS = {'tests/worker_extension/'+name+'.py' for name in (
     'experiments/c2c3_closure_20261117/providers26_build_group.py'}
 _V11_ENDPOINTS = 'src/demoncat/runtime/vllm_ascend/worker_extension/endpoints.py'
 _V11_CONTRACTS = {'docs/contracts/execution_adapter_contract.md',
+    'experiments/worker_core_v11_20261118/output39_single_task_probe.py',
+    'experiments/worker_core_v11_20261118/prepare_output39_single_task.py',
+    'experiments/c2c3_postwrite_20261117/natural41_probe.py',
+    'experiments/c2c3_postwrite_20261117/natural41_coverage_probe.py',
+    'experiments/c2c3_postwrite_20261117/model_identity.py',
+    'tests/test_output39_single_task_probe.py',
     'docs/worker_extension/worker_endpoints.md', 'docs/worker_core_v1/attention_v11.md',
     'docs/worker_core_v1/writer26_complete_set_contract.md',
     'docs/worker_core_v1/writer26_isolated_contract.md',
