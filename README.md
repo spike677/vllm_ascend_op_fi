@@ -5,12 +5,17 @@
 本仓库保留原生实现和历史限定验收，并提供经过审查的独立集成包、CPU测试和统计证据。
 不公开模型权重、完整私有张量或 vendor 库。下文旧能力表属于历史运行范围，不自动授予新接口验收。
 
-## 黄区内源测试 RC1
+## 黄区测试部署 RC1.1 维护
 
-已冻结候选接口，首批部署适配测试为 **39 output_proxy、Batch 普通 W8A8、18 普通单任务**。
-交接入口：[openchamber 接线、安装与恢复](docs/worker_core_v1/yellow_rc1.md)。
-源码包、完整提交及校验值见 `releases/demoncatpfi-yellow-rc1-20261119/`；
-黄区五处真实接线均待 openchamber 完成，不宣称黄区已验收。28/33后续开发不阻塞本包。
+首批范围仍为 **39 output_proxy、Batch 普通 W8A8、18 普通单任务**。
+RC1.1 修复39阶段用完时的诊断，公共39入口拒绝历史C1绑定，并补齐四请求、
+真实内部ID、证据出口、环境与清理说明；不改OFF/health状态机。
+交接入口：[openchamber 接线、安装与恢复](docs/worker_core_v1/yellow_rc1.md)；
+发行目录：releases/demoncatpfi-yellow-rc1-1-20261119/。
+原RC1标签、包和SHA不覆盖。
+openchamber已报告黄区Qwen3-0.6B BF16/TP1/eager测试部署的18、39两轮独立任务通过；
+Batch因缺少动态W8A8权重和bundle待配置。黄区现役多卡支持及product_closed仍待实际验收。
+28/33等后续开发不进入本维护版本的完成声明。
 
 ## 当前统一接入
 

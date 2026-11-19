@@ -517,19 +517,19 @@ class ActualSourceRelocationTests(unittest.TestCase):
             result = subprocess.run([sys.executable, '-I', '-B', '-c', script], cwd=sources,
                 capture_output=True, text=True, timeout=60, env=dict(os.environ, TORCH_DEVICE_BACKEND_AUTOLOAD='0'))
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            # The new custom-op adapter must remain testable after relocation,
+            # The custom-op adapter and ordinary task remain testable after relocation,
             # with its explicit CPU registration/source fixtures in the bundle.
             contract_paths = paths + [str(sources / 'tests'), str(sources / 'tests/worker_extension')]
             contract_script = ('import os,sys,unittest; os.environ["TORCH_DEVICE_BACKEND_AUTOLOAD"]="0"; '
                 'sys.path[:0]=' + repr(contract_paths) + '; '
                 'suite=unittest.defaultTestLoader.loadTestsFromNames('
-                '["test_postwrite_custom_gemm", "test_core_output39_custom"]); '
+                '["test_postwrite_custom_gemm", "test_output39_task"]); '
                 'result=unittest.TextTestRunner().run(suite); '
                 'sys.exit(0 if result.wasSuccessful() else 1)')
             result = subprocess.run([sys.executable, '-I', '-B', '-c', contract_script], cwd=folder,
                                     capture_output=True, text=True, timeout=60)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn('Ran 21 tests', result.stderr)
+            self.assertIn('Ran 44 tests', result.stderr)
             # The typed FIA test imports its exact build-profile fixture lazily.
             # Run that contract as well as the real MoE cleanup negatives from
             # relocated paths, with no checkout or actual container fallback.
