@@ -123,15 +123,15 @@ def require(condition, message):
     if not condition:raise RuntimeError(message)
 
 
-def tnd28_input_launcher(python, source, evidence):
+def tnd28_input_launcher(python, source, evidence, sdk):
     """Keep fixed flags out of the upstream ExternalProject CMake cache value."""
     python = str(Path(python).resolve(strict=True))
     require(not any(c.isspace() for c in python), 'LAUNCHER_SHEBANG_INTERPRETER_PATH')
-    source, evidence = Path(source).resolve(strict=True), Path(evidence).resolve(strict=True)
+    source, evidence, sdk = (Path(p).resolve(strict=True) for p in (source, evidence, sdk))
     launcher = evidence / 'tnd28_input_launcher'
     require(';' not in str(launcher), 'CMAKE_SINGLE_LAUNCHER_PATH_REQUIRED')
     driver = str(HERE / 'tnd28_input_compile.py')
-    fixed = [driver, '--source', str(source), '--evidence', str(evidence),
+    fixed = [driver, '--source', str(source), '--evidence', str(evidence), '--sdk', str(sdk),
              '--variant', TND28_REPLAY_VARIANT, '--']
     code = ('#!' + python + '\nimport runpy, sys\n'
             'sys.argv = ' + repr(fixed) + ' + sys.argv[1:]\n'
@@ -587,10 +587,10 @@ class Builder:
         if self.variant == TND28_REPLAY_VARIANT:
             # The upstream ExternalProject forwards this cache value to child
             # CMake. A semicolon list leaked our -- flags into CMake itself.
-            launcher = tnd28_input_launcher(args.python, source, self.ev)
+            launcher = tnd28_input_launcher(args.python, source, self.ev, self.sdk)
             flags['CMAKE_CXX_COMPILER_LAUNCHER'] = str(launcher)
             self.report['tnd28_input_launcher'] = dict(path=str(launcher), sha256=sha(launcher),
-                driver_sha256=sha(HERE/'tnd28_input_compile.py'), single_cmake_cache_argument=True)
+                driver_sha256=sha(HERE/'tnd28_input_compile.py'), sdk=str(self.sdk), single_cmake_cache_argument=True)
         self.run('configure', ['cmake', '-S', source, '-B', build] + ['-D' + key + '=' + str(value) for key, value in flags.items()], env=self.env)
         cache = (build / 'CMakeCache.txt').read_text()
         require(re.search(r'^ENABLE_TEST:[^=\n]+=OFF$', cache, re.MULTILINE) is not None,

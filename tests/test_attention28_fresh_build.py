@@ -20,8 +20,9 @@ class FreshBuildTests(unittest.TestCase):
     def test_tnd_single_path_launcher_preserves_real_child_argv_once(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder); source = root / 'source'; source.mkdir()
+            sdk = root / 'exact sdk'; sdk.mkdir()
             evidence = root / 'evidence with spaces'; evidence.mkdir()
-            launcher = build.tnd28_input_launcher(sys.executable, source, evidence)
+            launcher = build.tnd28_input_launcher(sys.executable, source, evidence, sdk)
             self.assertNotIn(';', str(launcher))
             record = root / 'actual argv.json'
             compiler = root / 'record compiler.py'
@@ -33,7 +34,7 @@ class FreshBuildTests(unittest.TestCase):
             self.assertEqual(json.loads(record.read_text()), actual)
             self.assertFalse((evidence / 'tnd28_compiled_input_observer.json').exists())
             with self.assertRaises(FileExistsError):
-                build.tnd28_input_launcher(sys.executable, source, evidence)
+                build.tnd28_input_launcher(sys.executable, source, evidence, sdk)
 
     def test_alternate_sdk_requires_complete_exact_source_probe(self):
         from types import SimpleNamespace

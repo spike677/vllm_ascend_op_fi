@@ -95,7 +95,13 @@ TND新增[真实输入观察链](tnd28_prepared_input.md)只记录一个匹配�
 SplitCore检查，但嵌套CMake误拆编译launcher参数，在host包构建时失败，未执行NPU。
 失败completion SHA为`fa11d608d03270c42cbf70dbcc6fd104d65b0a56086618fbd7752837f6e4bec6`，
 原件保留。后继修复将固定参数放进单一可执行launcher；47项相关CPU通过，须新目录重建。
-独审发现的false-LSE占位关联、摘要与原RPC连接及首错保留问题也须修复后才进入正常实测。
+独审发现的false-LSE占位关联、摘要与原RPC连接及首错保留问题已修复并经独立CPU复审；
+它们尚不代表实际normal关联通过。Source120的后继observer-build-a2已越过CMake，
+在真实生成单元因SDK include路径缺失而失败，仍为0次NPU调用。失败原件保留。
+固定镜像的三份SDK头已逐字节核对；仅为该生成单元补入SDK的`include/aclnn`及`pkg_inc`，
+不使用opbase内部同名头替代。独立无设备编译预检通过；正式构建器现在记录原compiler
+单次调用、实际依赖闭包及对象哈希，并在完成时重核。须在新目录完成链接和实测，
+当前F gate仍拒绝，分母故障的当前输入授权及取消路径尚未完成。
 
 ## 每项通过及停止条件
 
@@ -128,4 +134,6 @@ Host/Runtime单点、实际请求模拟、恢复和源码交付闭包。CPU fixt
 Source117加载/normal通过但reference在admission前拒绝，仍为0F；Source118六阶段及健康实测通过，
 28只有无设备构建。普通量化frame修复的67项定向CPU通过；当前请求显示修复的97项组合通过。
 没有新增msprobe原始数据或完整张量发布。
+SDK接线、真实输入观察读取、构建入口及导出组合共89项，88通过、1项Windows符号链接
+权限跳过（104.571秒）；包含预期的RPC失败负例。此为CPU检查，不授予NPU或主项目资格。
 GitHub只提交实现、测试和本总结，既有原件和Native库不进入本次提交。
