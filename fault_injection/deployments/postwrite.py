@@ -504,20 +504,8 @@ class _ObserveDispatch(TorchDispatchMode):
             self._current_reviewed_consumers(candidate)
         self._coverage_projection(record, candidate=candidate)
         if p._coverage is None and self.phase in ('baseline', 'fault') and candidate.key == p._target:
-            if p._lease is not None:
-                raise PostwriteRefused('ONLY_ONE_TARGET_CALL_PER_REPLAY')
-            try:
-                p._lease = p.transport.open(tensor, p.owner, p.generation)
-            except BaseException as error:
-                if p.mechanism == '39.output_proxy':
-                    p._last_native_lease_receipt = deepcopy(getattr(error, 'postwrite_lease_receipt', None))
-                raise
-            p._remember_native_receipt(p._lease)
             mode = p.mutation_mode if self.phase == 'fault' else 0
-            try:
-                changed = p._lease.apply(mode, indices)
-            finally:
-                p._remember_native_receipt(p._lease)
+            changed = p._apply_single_return(tensor, indices, mode)
             p._last_intervention = dict(operator=operation, original_executed=True,
                 selected_elements=len(indices), changed_elements=changed, readback_exact=True,
                 boundary='post_operator_tensor_output' if p.mechanism.startswith('39.')
@@ -727,6 +715,26 @@ class PostwriteProvider:
         if self._lock.locked():
             raise PostwriteRefused('POSTWRITE_CONSUMER_WINDOW_ACTIVE')
         self._recover_owned_entries()
+
+    def _apply_single_return(self, tensor, indices, mode):
+        """Shared execution only: exact original storage, unchanged Native guard.
+
+        Admission belongs to the caller's live request. This routine neither
+        qualifies a target nor runs a model/census. Failed leases stay owned.
+        """
+        if self._lease is not None:
+            raise PostwriteRefused('ONLY_ONE_TARGET_CALL_PER_REPLAY')
+        try:
+            self._lease = self.transport.open(tensor, self.owner, self.generation)
+        except BaseException as error:
+            if self.mechanism == '39.output_proxy':
+                self._last_native_lease_receipt = deepcopy(getattr(error, 'postwrite_lease_receipt', None))
+            raise
+        self._remember_native_receipt(self._lease)
+        try:
+            return self._lease.apply(mode, indices)
+        finally:
+            self._remember_native_receipt(self._lease)
 
     def _recover_owned_entries(self):
         entries = list(self._group_leases.items())

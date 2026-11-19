@@ -30,10 +30,12 @@ class Output39ServingBinding:
     stage: str = 'c1'
     max_live_leases: int = 1
     leases: set = field(default_factory=set, compare=False, repr=False)
+    runtime_only: bool = False
 
 
 def install_fault39_output_serving_binding(worker, *, transport, prompt_token_ids,
-        evidence_dir, stage='c1', max_live_leases=1, _simulation=False, _native_readback=None):
+        evidence_dir=None, stage='c1', max_live_leases=1, _simulation=False, _native_readback=None,
+        runtime_only=False):
     """Bind an already initialized Worker. No model, hooks or Native leases run."""
     from fault_injection.deployments.postwrite import NativePostwriteLibrary
     require(not hasattr(worker, _ATTRIBUTE), 'SERVING_DEPLOYMENT_ALREADY_BOUND')
@@ -45,9 +47,14 @@ def install_fault39_output_serving_binding(worker, *, transport, prompt_token_id
     require(_simulation or type(transport) is NativePostwriteLibrary, 'OUTPUT39_VERIFIED_NATIVE_TRANSPORT_REQUIRED')
     require(isinstance(prompt_token_ids, (list, tuple)) and 2 <= len(prompt_token_ids) <= 4096
         and all(type(token) is int and token >= 0 for token in prompt_token_ids), 'OUTPUT39_FIXED_PROMPT_REQUIRED')
-    folder = Path(evidence_dir)
-    require(folder.is_absolute() and folder.resolve().is_relative_to(Path('/evidence')),
-            'PRIVATE_EVIDENCE_DIRECTORY_REQUIRED')
+    require(type(runtime_only) is bool and (not runtime_only or
+        stage == 'c1' and max_live_leases == 1 and evidence_dir is None),
+        'OUTPUT39_RUNTIME_SINGLE_TARGET_NO_DUMP_REQUIRED')
+    folder = None
+    if not runtime_only:
+        folder = Path(evidence_dir)
+        require(folder.is_absolute() and folder.resolve().is_relative_to(Path('/evidence')),
+                'PRIVATE_EVIDENCE_DIRECTORY_REQUIRED')
     runner, model = worker.model_runner, worker.model_runner.model
     require_serial_eager(runner, expected_max_seqs=1)
     require(not model.training, 'INFERENCE_MODEL_REQUIRED')
@@ -56,7 +63,7 @@ def install_fault39_output_serving_binding(worker, *, transport, prompt_token_id
             'OUTPUT39_REVIEWED_NATIVE_HASH_REQUIRED')
     binding = Output39ServingBinding(worker, runner, model, transport, tuple(prompt_token_ids), folder,
         os.getpid(), threading.get_ident(), sha, id(getattr(transport, 'lib', None)), _simulation, _native_readback,
-        stage, max_live_leases)
+        stage, max_live_leases, runtime_only=runtime_only)
     native = read_native_binding(binding)
     setattr(worker, _ATTRIBUTE, binding)
     return dict(status='SERVING_DEPLOYMENT_BOUND_NOT_QUALIFIED', mechanism='39.output_proxy',

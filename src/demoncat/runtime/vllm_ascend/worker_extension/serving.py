@@ -30,7 +30,7 @@ def complete_tensor(value):
 class ServingReplaySession:
     """The concrete reviewed factory accepted by Fault39Provider."""
     def __init__(self, worker, model, backend, native, owner, *, prompt_token_ids,
-                 evidence_dir, collector=None):
+                 evidence_dir, collector=None, persist_evidence=True):
         from vllm.model_executor.layers.logits_processor import LogitsProcessor
         self.worker, self.model, self.backend, self.native, self.owner = worker, model, backend, native, owner
         self.runner = worker.model_runner
@@ -48,10 +48,14 @@ class ServingReplaySession:
         require(isinstance(prompt_token_ids, list) and len(prompt_token_ids) > 1
                 and all(type(x) is int and x >= 0 for x in prompt_token_ids), 'FROZEN_PROMPT_REQUIRED')
         self.prompt = list(prompt_token_ids)
-        self.folder = Path(evidence_dir)
-        require(self.folder.is_absolute() and self.folder.resolve().is_relative_to(Path('/evidence')),
-                'PRIVATE_EVIDENCE_DIRECTORY_REQUIRED')
-        self.folder.mkdir(parents=True, exist_ok=False)
+        require(type(persist_evidence) is bool and (persist_evidence or collector is None),
+                'NO_IMPLICIT_COLLECTOR_IN_MEMORY_SESSION')
+        self.folder = None
+        if persist_evidence:
+            self.folder = Path(evidence_dir)
+            require(self.folder.is_absolute() and self.folder.resolve().is_relative_to(Path('/evidence')),
+                    'PRIVATE_EVIDENCE_DIRECTORY_REQUIRED')
+            self.folder.mkdir(parents=True, exist_ok=False)
         self.collector = collector
         self.handles = []
         self.installed = False
@@ -256,6 +260,8 @@ class ServingReplaySession:
         self._save()
 
     def _save(self):
+        if self.folder is None:
+            return
         value = dict(boundary=self.boundary_report, requests=self.rows,
                      qualification=self.backend.query()['qualification'], native_phases=self.backend.rows)
         (self.folder / 'serving_receipt.json').write_text(json.dumps(value, indent=2, allow_nan=False) + '\n')
@@ -266,7 +272,7 @@ class ServingReplaySession:
                     completed_requests=len(self.rows), expected_request_id=self.expected,
                     actual_request_ids=[row['actual_internal_request_id'] for row in self.rows],
                     complete_output_hashes=[row['model_output_sha256'] for row in self.rows],
-                    receipt=str(self.folder / 'serving_receipt.json'))
+                    receipt=str(self.folder / 'serving_receipt.json') if self.folder is not None else None)
 
 
 def install_fault39_serving_binding(worker, *, prompt_token_ids, evidence_dir, collect_statistics=False,
