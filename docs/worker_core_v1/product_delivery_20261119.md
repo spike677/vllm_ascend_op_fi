@@ -104,7 +104,12 @@ SplitCore检查，但嵌套CMake误拆编译launcher参数，在host包构建时
 已在固定镜像完整构建通过，controller exit=0且仅清理自有无设备容器。
 完成回执SHA为`58dfd1021a8a77267ab94e2a3b17d0a913c22365d4f0e7d2d84ba49473485181`，
 kernel SHA仍为`d99ce5e9435a3df59ff4432f53f997305638de40e4b306918f587faf8d96dd81`。
-这只证明构建与依赖闭包成立；尚待真实normal输入关联。当前F gate仍拒绝，
+Source123沿用完全相同Native字节，在卡5完成一个正常请求和解除绑定后的同Worker健康请求，
+controller退出0；这仍不是输入关联或F资格。原独立reader先因单RPC约18.8MB超过16MiB
+而拒绝，原报告保留。后继只读解析对该固定11条协议采用单条32MiB、总计128MiB，
+解析前核全部预算并继续验证原件SHA及精确字段关联；37项相关CPU检查通过。
+小原件另显示观察器的`GetStorageFormat()`为Q/K/V/output的47（SDK NCL），mask/LSE为2（ND），
+原reader统一按ND检查过窄，正在依据实际SDK做按角色核验。当前F gate仍拒绝，
 分母故障的当前输入授权及取消路径尚未完成。
 
 ## 每项通过及停止条件
