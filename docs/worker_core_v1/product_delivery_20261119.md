@@ -45,7 +45,9 @@ normal/reference/lossless/calibration_off/F/OFF，不宣称已压缩为三个bat
 18新增[普通单任务](rms18_ordinary_task.md)，公共registry按可信部署绑定选择新provider。
 normal只取首个实际RMS返回及其消费者，F仅该目标；之后RMS透传，无全层读回。
 OFF/health不安装RMS观察器，比较完整hidden/logits哈希；新任务必须建立新owner/provider。
-该运行时与旧十请求覆盖协议分开，69项CPU合同通过，新的NPU路线仍待验收。
+该运行时与旧十请求覆盖协议分开。Source126已完成蓝区四请求实测与独立原件复核，
+自动RMS返回14336个值减半，真实QKV消费者；OFF/health完整hidden/logits恢复，四轮token均576。
+[18独审](review_rms18_ordinary_source126.md)保留源与安装字节对应关系；黄区仍待接线。
 
 **仍待拆分的执行代码**：现有 TensorServingProvider、Source105仍包含资格/验收阶段协议，
 不能把它们整套包装成普通产品调用。普通请求执行与验收驱动的全面拆分尚未完成。
@@ -61,7 +63,7 @@ OFF/health不安装RMS观察器，比较完整hidden/logits哈希；新任务必
 |8 restore_offset|保留已验收范围|实际 MoE restore/routing/consumer|未接线验收|原范围通过；主项目待验|宿主接线与运行时/验收拆分|
 |15 alias_detach|当前部署不适用|真实共享存储→视图写→原base消费|无适用通路|原机制证据保留|不扫描/不造辅助模型；仅有新真实通路才重开|
 |17 spatial_padding|保留 Torch C2/C3|真实视觉模型图像请求，单投影Conv3d padding|未接线验收|原范围通过；主项目待验|接入已接受 Torch 边界，不要求新Native/E5|
-|18 api_half|普通单任务运行时与旧十请求协议已分开|首个实际 RMSNorm 返回 gain代理/consumer；共用缩放/效果出口|CPU契约通过；新路线NPU与主项目未验|CPU与原范围恢复；新路线待验|最小四请求实机验证及宿主接线|
+|18 api_half|普通单任务蓝区实测与独审通过|Qwen3-0.6B BF16 TP1 eager，首个实际RMS返回及consumer；gain代理|Source126有14336元素减半、hidden/logits变化、文本不变；黄区待验|同Worker OFF/health完整hidden/logits精确恢复，资源释放|openchamber实际宿主接线；不授多模型/全层资格|
 |20 buffer_substitute|保留已验收范围|匹配WeightNz/QMM ABI、live slot|未接线验收|原范围通过；主项目待验|宿主按实际部署选点，保留版本界限|
 |22 wrong_row|共用行/存储动作已接入|实际 fused RoPE index/consumer|CPU契约通过；主项目未验|原范围保留；主项目待验|接线和变更后对应实机检查|
 |25 reduce_scatter|不支持，已停止|无替代通信输出破坏|不适用|不适用|无本轮后续实现|

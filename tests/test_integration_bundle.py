@@ -20,6 +20,19 @@ SPEC.loader.exec_module(bundle)
 
 
 class BundleTests(unittest.TestCase):
+    def test_rc1_quant_build_recipe_has_complete_sources_in_payload(self):
+        from experiments.c2c3_closure_20261117.providers_quant_build_group import SOURCES
+        payload = bundle._inventory(ROOT)
+        required = set(SOURCES) | {
+            'experiments/c2c3_closure_20261117/providers_quant_build_group.py',
+            'tools/check_rc1_install.py', 'fault_injection/rc1_profile.py',
+            'tests/test_rc1_handoff.py', 'docs/worker_core_v1/yellow_rc1.md',
+            'docs/worker_core_v1/rc1_native_dependencies.md',
+        }
+        self.assertFalse(required - payload.keys())
+        for name in required:
+            self.assertEqual(payload[name], (ROOT / name).read_bytes(), name)
+
     def test_actual_common_actions_and_product_scope_survive_export(self):
         payload = bundle._inventory(ROOT)
         self.assertFalse(bundle._PRODUCT_CONTRACTS - payload.keys())

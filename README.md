@@ -5,6 +5,13 @@
 本仓库保留原生实现和历史限定验收，并提供经过审查的独立集成包、CPU测试和统计证据。
 不公开模型权重、完整私有张量或 vendor 库。下文旧能力表属于历史运行范围，不自动授予新接口验收。
 
+## 黄区内源测试 RC1
+
+已冻结候选接口，首批部署适配测试为 **39 output_proxy、Batch 普通 W8A8、18 普通单任务**。
+交接入口：[openchamber 接线、安装与恢复](docs/worker_core_v1/yellow_rc1.md)。
+源码包、完整提交及校验值见 `releases/demoncatpfi-yellow-rc1-20261119/`；
+黄区五处真实接线均待 openchamber 完成，不宣称黄区已验收。28/33后续开发不阻塞本包。
+
 ## 当前统一接入
 
 [2026-11-19 产品交付矩阵与实施状态](docs/worker_core_v1/product_delivery_20261119.md)：
@@ -18,7 +25,8 @@ Batch先接普通Qwen W8A8投影，不等待routed GMM1。旧全目标研究、�
 不授予主项目接线、累计C3、E5或跨版本资格。查询现在区分当前请求效果和历史F效果，
 新OFF/健康请求尚未执行时不会显示旧F数值。
 18新增[普通单次运行时](docs/worker_core_v1/rms18_ordinary_task.md)：自动绑定首个实际RMS返回及消费者，
-normal/F各观察一个目标，OFF/health透传；旧十请求覆盖实验保留。新路径已过CPU合同，尚待实机验收。
+normal/F各观察一个目标，OFF/health透传；旧十请求覆盖实验保留。Source126已完成实机及独立复核：
+14336个值减半，OFF/health完整hidden/logits恢复，首token不变；[限定结论](docs/worker_core_v1/review_rms18_ordinary_source126.md)。
 
 **实际主项目尚未接通。** 当前蓝区没有黄区现役Catalog／Controller／推理调度及结果界面源码。
 公共契约、包安装和CPU测试均不作为主项目验收。运行时与验收协议的拆分也尚未全部完成。

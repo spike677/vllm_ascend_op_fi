@@ -97,6 +97,14 @@ _WRITER26_CONTRACTS = {'tests/worker_extension/'+name+'.py' for name in (
     'experiments/c2c3_closure_20261117/providers26_build_group.py'}
 _V11_ENDPOINTS = 'src/demoncat/runtime/vllm_ascend/worker_extension/endpoints.py'
 _V11_CONTRACTS = {'docs/contracts/execution_adapter_contract.md',
+    'docs/worker_core_v1/yellow_rc1.md',
+    'docs/worker_core_v1/tnd28_source123_normal_review.md',
+    'docs/worker_core_v1/rc1_native_dependencies.md',
+    'docs/worker_core_v1/review_rms18_ordinary_source126.md',
+    'docs/worker_core_v1/review_rms18_ordinary_source126.json',
+    'tools/check_rc1_install.py', 'tests/test_rc1_handoff.py',
+    'tests/native_quant_group_mock_sdk/acl/acl.h',
+    'tests/native_quant_group_mock_sdk/aclnnop/aclnn_dynamic_quant_v2.h',
     'docs/worker_core_v1/review_quant_ordinary_source118.md',
     'docs/worker_core_v1/review_quant_ordinary_source118.json',
     'docs/worker_core_v1/tnd28_prepared_input.md',
@@ -696,8 +704,12 @@ and demoncat-fault39-core. Build/install them independently from sources/,
 sources/src/ and sources/fault39/ using your approved Python packaging tools.
 
 The inner-framework Registry/Controller implementation is unavailable here:
-INNER_FRAMEWORK_INTEGRATION_PENDING. Map the two existing HostContracts and
-Worker Core HostAdapter to your actual host. Serving owns Worker creation,
+INNER_FRAMEWORK_INTEGRATION_PENDING. RC1 starts at
+sources/docs/worker_core_v1/yellow_rc1.md, including native dependencies and
+openchamber's five actual wiring points. The single product surface is
+FaultConfig + WorkerFaultClient(HostAdapter(existing_executor)); the older
+HostContracts remain internal adapters, not alternative user interfaces.
+Serving owns Worker creation,
 startup and shutdown. Keep Worker RPC nonce/owner/generation, one-attempt rules,
 scope checks and owner retention on uncertain/failed recovery unchanged.
 

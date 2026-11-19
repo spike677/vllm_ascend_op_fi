@@ -43,13 +43,13 @@ continues to select the unchanged ten-request group validation path.
 
 CPU contracts cover the real public Host/Runtime and real torch operations;
 Worker metadata and scheduler are explicitly simulated. The changed ordinary
-route still needs blue-zone NPU normal/F/OFF/health validation. Yellow-zone main
-project source/wiring is unavailable and remains pending. Previous group NPU
-evidence is preserved but does not validate this new route. The minimal new
-device check is four same-prompt Qwen requests, automatic single target, one
-return-half effect plus consumer, exact full hidden/logits OFF and health,
-and zero owned hooks/modes/leases after finish. It is not a ten-request or
-all-target coverage re-run.
+route passed Source126 blue-zone normal/F/OFF/health validation and independent
+original-record review; see [the exact scope and pins](review_rms18_ordinary_source126.md).
+Yellow-zone main-project wiring remains pending. Four same-prompt Qwen requests
+showed one automatically selected return-half effect and actual consumer, exact
+full hidden/logits OFF and health, and zero owned hooks/modes/leases after finish.
+This is not a ten-request or all-target coverage re-run. Current Worker query
+validation fields do not inherit this prior blue-zone result.
 
 The separate acceptance-only entry is
 `experiments/worker_core_v11_20261118/prepare_rms18_single_task.py`.

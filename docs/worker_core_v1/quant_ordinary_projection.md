@@ -1,6 +1,7 @@
 # 普通 Qwen W8A8 的 batch_shared_scale 入口
 
-当前是可供主项目接线的 Worker 适配实现，**实际主项目接线及这个新入口的 NPU normal/F/OFF 尚未验收**。
+当前是可供主项目接线的 Worker 适配实现。**Source118已完成该新入口的六阶段NPU效果/OFF及独立复核；黄区实际主项目接线仍未验收**。
+当前结论见[独立原件总结](review_quant_ordinary_source118.md)；下文首轮失败、后继修复及准备步骤按历史顺序保留。
 不继承旧 source64 C1 或 routed/GMM 观察的资格。本轮不处理135全目标、GMM1、MoE/专家行、C2/C3。
 
 范围为普通 `qwen2`/`qwen3`、真实动态 W8A8、TP1/PP1/DP1、B8、eager、同步调度、无 prefix cache、
