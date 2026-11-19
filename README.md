@@ -1,4 +1,4 @@
-RC2测试部署准备：六能力子集与独立部署登记见 [RC2交付接口](docs/worker_core_v1/yellow_rc2.md)。Batch第二NPU作用域已补齐；具体冻结状态以releases发行清单为准，黄区组合尚待RC2实测回传登记。现役摸底和W4A8优先路线见[迁移清单](docs/worker_core_v1/rc3_inspect_migration_resources_20261119.md)。
+[RC2已冻结发行](releases/demoncatpfi-yellow-rc2-20261119/README.md)：六能力子集与独立部署登记见 [RC2交付接口](docs/worker_core_v1/yellow_rc2.md)。Batch第二NPU作用域已补齐；具体冻结状态以releases发行清单为准，黄区组合尚待RC2实测回传登记。现役摸底和W4A8优先路线见[迁移清单](docs/worker_core_v1/rc3_inspect_migration_resources_20261119.md)。
 
 # vLLM Ascend Operator Fault Injection
 

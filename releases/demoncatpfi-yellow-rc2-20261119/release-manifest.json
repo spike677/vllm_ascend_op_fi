@@ -1,0 +1,104 @@
+{
+  "schema": "demoncat.yellow_rc2.release.v1",
+  "release_id": "demoncatpfi-yellow-rc2-20261119",
+  "source_commit": "d07c72156e0fe4e3608dcee58cdb422b49834c66",
+  "delivery_commit": "The commit pointed to by the immutable release tag; not the source commit",
+  "source_files": 818,
+  "git_blob_source_match_count": 818,
+  "distributions": {
+    "demoncatpfi": "0.3.0",
+    "demoncat-worker-extension": "0.2.0",
+    "demoncat-fault39-core": "0.2.0"
+  },
+  "executable_candidates": [
+    "18.api_half",
+    "39.output_proxy",
+    "8.restore_offset",
+    "17.spatial_padding",
+    "22.wrong_row",
+    "quant.batch_shared_scale"
+  ],
+  "registration_sources": [
+    "BLUE_COMBINATION",
+    "YELLOW_TEST_DEPLOYMENT",
+    "YELLOW_DEDICATED_INSTANCE"
+  ],
+  "yellow_rc2_records": [],
+  "combination_scope": "Exact reviewed A2 / vLLM-Ascend 0.18 / CANN 8.5.1 / model-config / TP1 serial eager only; live checks still required",
+  "blue_runs": {
+    "18.api_half": "Source126",
+    "39.output_proxy": "Source116 plus RC1.1 maintenance",
+    "8.restore_offset": "16f40f1f/a5 two scopes",
+    "17.spatial_padding": "16f40f1f/a5 two scopes",
+    "22.wrong_row": "4c56701f/a1 two scopes",
+    "quant.batch_shared_scale": "32f87374/a1 and f83d25cb/a3 independent NPU scopes"
+  },
+  "non_executable": {
+    "15.alias_detach": "No natural private-view write/original-base consumer in current deployment",
+    "25.reduce_scatter": "Unsupported; no substitute",
+    "28.fa.legal_tiling": "Historical only",
+    "28.fia.legal_tiling": "Historical only",
+    "28.fia.denominator_replay": "Real TND fault/OFF not accepted",
+    "20.buffer_substitute": "Ordinary adapter pending",
+    "26.residual_stomp": "Ordinary adapter pending; actual allocator adjacency required",
+    "26.fia_destination": "Ordinary adapter pending; real FIA destination required",
+    "33.paged_decode": "Source105 retained; ordinary adapter pending",
+    "41.tail_column": "Ordinary adapter pending",
+    "39.matmul_range": "Historical native route; not ordinary RC2 scope"
+  },
+  "native_dependencies": "See docs/worker_core_v1/rc1_native_dependencies.md and yellow_rc2.md; no Native binaries included; new build identity required for changed stack",
+  "yellow_test_plan": {
+    "verify_with_operator_permit": [
+      "18.api_half",
+      "39.output_proxy",
+      "22.wrong_row"
+    ],
+    "blue_only": [
+      "8.restore_offset",
+      "17.spatial_padding"
+    ],
+    "pending_configuration": [
+      "quant.batch_shared_scale"
+    ]
+  },
+  "yellow_rc1_1_user_report": "Merged into yellow master; 18/39 each two scopes passed; RC2 registration not inferred",
+  "actual_main_project_integration": "OPENCHAMBER_ACCEPTANCE_REQUIRED",
+  "product_closed": false,
+  "no_new_raw_statistics": true,
+  "no_private_full_tensors": true,
+  "no_model_weights": true,
+  "no_native_binaries": true,
+  "freeze_policy": "Do not overwrite RC1/RC1.1/RC2 tags, source archives or checksums; follow-on changes use a new release",
+  "files": [
+    {
+      "path": "demoncatpfi-yellow-rc2-20261119.tar.gz",
+      "bytes": 2645997,
+      "sha256": "1a59219c0ec5e37204f208c12a2a9e6f42edcb491eee82353ccba6a0fae050d8"
+    },
+    {
+      "path": "install-summary.json",
+      "bytes": 51145,
+      "sha256": "bb388a9acd32977f3ac3ec0ed65e3a5744d62f70a4a255dcfec374b6ddaaff90"
+    },
+    {
+      "path": "source-review.json",
+      "bytes": 162028,
+      "sha256": "e1622a4bdc91f31576342e9d66e02f75e092f41738bb8fe8b8413fe553aecdea"
+    },
+    {
+      "path": "wheels/demoncat_fault39_core-0.2.0-py3-none-any.whl",
+      "bytes": 49094,
+      "sha256": "1e2e85160b983dcec38bde859c8a9ce5fbc649fc707062fde62fdae02701fc1a"
+    },
+    {
+      "path": "wheels/demoncat_worker_extension-0.2.0-py3-none-any.whl",
+      "bytes": 498358,
+      "sha256": "94d577b1f95de89825edd4a1e9fc0c59c19248a776e7a441b2b68ba5fa77adb1"
+    },
+    {
+      "path": "wheels/demoncatpfi-0.3.0-py3-none-any.whl",
+      "bytes": 824359,
+      "sha256": "57128ac1f310730b7cfd3be803f06f7a3807284b59e500a91a07db8eefe8783b"
+    }
+  ]
+}
