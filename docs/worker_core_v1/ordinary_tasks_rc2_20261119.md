@@ -24,7 +24,7 @@ RC1.1 已单独发布；这里的开发改动不回写 RC1.1 包。蓝区测试�
 TP1、真实 scheduler→embedding→RMSNorm→Q/scale→QMM 关系，继承六批协议。
 新模型名通过结构候选检查不等于适配验收，未知 producer/consumer 仍拒绝。
 
-## Fault8（124 a3 两作用域通过，新增门禁/大小边界待补验）
+## Fault8（124 a5 两作用域通过，门禁/大小边界已补验）
 
 部署侧调用 `install_restore8_task_binding`，用户只选 `FaultConfig(8,'restore_offset')`。
 不填层名。真实 normal forward 中，复用 `NaturalMoETrace/MoERestoreTrace` 核对
@@ -42,8 +42,7 @@ F 在同一调用的原始 I/P 上进行成组映射后调用一次真实算子�
 
 正常清理 finish→disable→unregister→detach→remove_tensor_serving_binding；失败先
 recover（必要时真实 OFF/health）或 abort，再 clean/unregister/detach/remove。
-故障已开始但未恢复时不能清掉所有权。a3 已验证同 Worker 两个独立作用域；新增准入和
-公共返回大小边界还需补验，不能把历史结果直接当作新门禁的实机结果。
+故障已开始但未恢复时不能清掉所有权。a5 已在新构建上验证同 Worker 两个独立作用域，包括默认部署准入和公共大小边界。
 
 共享普通请求实现新增 evidence 别名；失败前的原始异常先保存。成功 abort 释放且未实际
 注入时，历史失败保留为报告，不再误当活跃失败阻塞 clean。RMS 14 项回归通过。
@@ -55,17 +54,17 @@ recover（必要时真实 OFF/health）或 abort，再 clean/unregister/detach/r
 |18|既有四请求；维护公共结果/清理|既有 Source126；用户转述黄区两作用域通过；现役未验|
 |39 output_proxy|既有四请求；RC1.1 诊断与路由修复|既有 Source116；用户转述黄区两作用域通过；现役未验|
 |Batch|既有六批；结构而非模型名判定|既有 Source118；黄区缺 W8A8/bundle；现役未验|
-|8|新四请求，两个独立作用域|124 a3通过；黄区未验；新增门禁/大小边界待补验|
-|17|新四请求，两个独立作用域|124 a3通过；统一完成回调后的路线待补验；黄区未验|
+|8|新四请求，两个独立作用域|124 a5通过（新门禁/大小边界）；黄区未验|
+|17|新四请求，两个独立作用域|124 a5统一完成回调路线通过；黄区未验|
 |22|四请求代码与40项定向CPU检查完成|普通入口NPU未验，默认关闭|
 |20、26 两变体、33、41|历史机制保留，普通任务待接入|不可沿用历史机制结果宣称新普通入口通过|
 |28 denominator|正常关联与 opt-in Execute 借用已保留|F/OFF 未完成，关闭|
 
 定向检查：前提/结构/统计边界 56 项通过；CPU 构建身份与 39 52 项通过；8/RMS/MoE
 复用 20 项通过；公共路由与四种普通路径 75 项通过。都是 CPU 检查，部分选择有重叠，
-不能相加作为唯一测试数量。基线中的历史冻结 SHA 检查尚未重写或冒充当前验收。
+不能相加作为唯一测试数量。四项历史冻结 SHA 检查已显式列为历史审计，原 pin 不变；不冒充当前源码验收。
 
-## Fault17（124 a3 两作用域通过，接口统一修订中）
+## Fault17（124 a5 两作用域通过，接口已统一）
 
 `install_vision17_task_binding` 绑定已验证来源的 Qwen3-VL-2B、TP1 BF16、串行 eager，
 单图像、16×16 非重叠 patch Conv3d。不是纯文本 Qwen3-0.6B 的可用故障；没有视觉路径则拒绝。
@@ -88,8 +87,8 @@ normal 从实际 encoder 调用选择单一投影；F 只把原 Torch Conv3d 参
 但随后验收器回执超过 16 MiB，整体记失败，第二作用域未跑；不能算普通任务交付通过。
 改动收敛观察到一个实际 MoE producer/consumer 链，保持原始大小上限，准备独立重测。
 
-新增 CPU 定向检查：普通 8/17、共享 RMS 生命周期、路由及缓存控制 32 项通过；
-17 的实际 Conv/请求上下文加普通路径组合 35 项通过，两次选择有重叠。NPU 待新构建。
+早期 CPU 定向检查：普通 8/17、共享 RMS 生命周期、路由及缓存控制32项通过；
+17实际Conv/请求上下文组合35项通过，两次选择有重叠。后续新构建a5结果见下。
 
 ## 部署验收准入（RC2 新约束）
 
@@ -109,7 +108,7 @@ Batch 的新模型即使结构可兼容，也没有自动进入已验收集合�
 机制兼容/源码/ABI/本次调用检查，也不会把一次试验写成 accepted。结束后先释放 owner，
 再移除许可。CPU模拟 binding 仅接受纯CPU参数/缓冲，报告 CPU_FIXTURE_ONLY，不能借此
 取得NPU准入。7项新增准入测试与普通路由/8/17/22/RMS生命周期合计33项CPU通过；新门禁
-尚待124按实际组合补验。
+已由a5按实际组合补验（8默认门禁；17显式蓝区许可并核对全部13项部署字段）。
 
 ## 8/17 a3 原始结果与回执大小复核
 
@@ -138,7 +137,7 @@ a3逐份实际回执复核：单次provider_state最大565,122字节，evidence�
 字节数/SHA及payload_omitted；不截断成成功，不提高旧16MiB验收阈值。
 后续注入被阻止；实际abort/clean/unregister仍可释放资源。Host历史累计大小与该边界
 独立，长历史可使用已有cursor/stream接口。50项CPU定向检查通过，包括实际RPC超限
-后拒绝execute、清理可完成；NPU新增边界验收待下一次8/17回归。
+后拒绝execute、清理可完成；NPU新增边界已由a5的8/17回归验证。
 
 ## 17 统一宿主完成接口的修订
 
@@ -146,8 +145,9 @@ a3逐份实际回执复核：单次provider_state最大565,122字节，evidence�
 logits返回、回调计数退出后完成collect/close/校验。正常与失败路径仍要求实际encoder、
 上下层Torch参数、真实消费者以及OFF/health；缓存跳过不能代替正常encoder。
 CPU56项通过，含两个作用域、失败恢复、缓存跳过拒绝、只读query与第五请求拒绝。
-新路线NPU未完成前，17组合标记UNIFIED_RETURN_COMPLETION_NPU_PENDING，默认不可执行；
-蓝区新验收器显式安装限定机制的许可。公共宿主无需新增方法或故障特例。
+a5执行时17仍标记UNIFIED_RETURN_COMPLETION_NPU_PENDING，以显式蓝区许可验收。
+复核两个作用域通过、实际13项部署字段全部匹配后，才移除此组合的pending标记；
+公共宿主无需新增方法或故障特例。未知部署组合仍默认拒绝。
 
 ## Native身份诊断与Host透传
 
@@ -165,3 +165,40 @@ postwrite公开ABI本身不暴露编译器/SDK构建清单，不能从运行时C
 该限制仍保留，批准DSO字节、实际ABI/映射与来源构建回执须分别看。Batch现有bundle包含
 SDK清单，因此可直接核对其SDK/ctypes布局。新增6项诊断用例与相关组合共114项CPU通过；
 新错误透传不宣称完成新的NPU或黄区安装验收。
+
+## 8/17 a5 新构建最终复核
+
+源提交 `16f40f1f25b9f5d5d516ce266deb2bbd01ee79b2`，源码清单
+`bcc6759f1a1c9f8a25a825a6379d2e4b0193aadcb69fc7fc76627c0af30956fe`。
+[审查总结与原始回执SHA](../../experiments/worker_core_v11_20261118/ordinary8_17_a5_20261119_summary.json)。
+新三包经无设备容器安装后，124卡5执行；不是沿用a3授予新接口验收。
+
+两项均完成同Worker两个独立任务，每任务normal/F/OFF/health四请求。每个F只命中一次，
+OFF/health精确恢复，hooks/leases/inflight均0，绑定移除。8实际MoE输出仍为
+26,592/28,672元素变化、max_abs_diff=2.859619140625；17实际padding与输出身份同a3。
+两项logits变化，首token未变；不宣称连续生成或业务准确率验收。
+
+| 大小（实际wire序列化字节） | 8 | 17 |
+|---|---:|---:|
+| 最大单次provider_state |565309|150543|
+| 最大evidence |282111|75138|
+| 检查到的单次state |30|30|
+| 超过512KiB证据/2MiB state |0|0|
+
+17真实RPC中query为8次、collect_replay为0次；证据由真实logits返回回调完成，query只读。
+8默认准入实际通过。17实测时默认拒绝、显式蓝区许可放行，13项实际部署条件全部匹配；
+验收后只更新此精确组合的记录。没有为新模型、TP2或新CANN组合自动授予资格。
+
+a4曾在首次普通绑定前被准入拒绝，未执行故障；发现TorchVersion字符串子类与严格类型
+比较不匹配，修复规范化并添加回归。a4原失败保留，a5成功不改写它。
+当前只是蓝区声明范围通过，黄区主项目接线/RC1.1回归仍待openchamber。
+
+## 黄区准备与剩余事项
+
+见[openchamber准备清单](openchamber_rc2_preparation.md)：8需要DeepSeek-V2-Lite-W8A8，
+17需要Qwen3-VL-2B及图像，Batch需要Qwen3-0.6B动态W8A8和匹配bundle；均TP1串行eager。
+纯文本dense Qwen3-0.6B不能替代MoE/视觉验收。该文档用于用户转交，未声称已联系黄区。
+
+8/17本轮闭环完成后继续22；22及20/26两变体/33/41未通过的普通路线保持默认关闭。
+Batch仍保留已有六批实验协议，尚未承诺与四请求路线完全统一；RC2冻结前须完成Host层
+封装或明确评审接口差异，不能要求黄区猜测逐能力的私有调用。RC2尚未冻结。

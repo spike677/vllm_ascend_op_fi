@@ -1,0 +1,866 @@
+{
+  "schema": "demoncat.ordinary_task.blue_summary.v2",
+  "source_commit": "16f40f1f25b9f5d5d516ce266deb2bbd01ee79b2",
+  "source_manifest_sha256": "bcc6759f1a1c9f8a25a825a6379d2e4b0193aadcb69fc7fc76627c0af30956fe",
+  "archive_sha256": "a26391fa63b91b808d4098f20df3cb342ff748c9d2c7b89492b8d656747e167c",
+  "machine": "124",
+  "physical_card": 5,
+  "execution": "TP1 BF16 serial eager; real vLLM scheduler",
+  "main_project_integration": "NOT_VERIFIED",
+  "product_closed": false,
+  "new_statistics": false,
+  "cases": [
+    {
+      "mechanism": "8.restore_offset",
+      "status": "BLUE_ZONE_PUBLIC_MOE8_SINGLE_TASK_ACCEPTED_NOT_MAIN_PROJECT",
+      "raw_receipt": {
+        "path": "/home/17-fault-c2c3-20261117/product-ordinary8-17-20261119-card5-a5/restore8-single-task-four-requests/probe/result.json",
+        "bytes": 1199103,
+        "sha256": "36d6c1c601ab6d5e2dee148ed33da0a3d2c4261d3f3184c8349aa6ea44a72d17"
+      },
+      "deployment_acceptance_at_run": {
+        "acceptance_granted": false,
+        "accepted": true,
+        "actual": {
+          "cann": [
+            "8.5.1"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "pp": 1,
+          "torch": "2.9.0+cpu",
+          "torch_npu": "2.9.0.post1+gitee7ba04",
+          "tp": 1,
+          "vllm": "0.18.0",
+          "vllm_ascend": "0.18.0"
+        },
+        "can_prepare": true,
+        "checks": [
+          {
+            "actual": "2.9.0+cpu",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": "2.9.0+cpu",
+            "field": "accepted_combination.torch",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": "2.9.0.post1+gitee7ba04",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": "2.9.0.post1+gitee7ba04",
+            "field": "accepted_combination.torch_npu",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": "0.18.0",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": "0.18.0",
+            "field": "accepted_combination.vllm",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": "0.18.0",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": "0.18.0",
+            "field": "accepted_combination.vllm_ascend",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": [
+              "8.5.1"
+            ],
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": [
+              "8.5.1"
+            ],
+            "field": "accepted_combination.cann",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": "torch.bfloat16",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": "torch.bfloat16",
+            "field": "accepted_combination.dtype",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": 1,
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": 1,
+            "field": "accepted_combination.tp",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": 1,
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": 1,
+            "field": "accepted_combination.pp",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": 1,
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": 1,
+            "field": "accepted_combination.dp",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": true,
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": true,
+            "field": "accepted_combination.eager",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+            "field": "accepted_combination.model_config_sha256",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+            "field": "accepted_combination.model_class",
+            "layer": "deployment_identity",
+            "status": "matched"
+          },
+          {
+            "actual": true,
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+            "expected": true,
+            "field": "accepted_combination.live_config_matches_file",
+            "layer": "deployment_identity",
+            "status": "matched"
+          }
+        ],
+        "expected": {
+          "cann": [
+            "8.5.1"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "pp": 1,
+          "torch": "2.9.0+cpu",
+          "torch_npu": "2.9.0.post1+gitee7ba04",
+          "tp": 1,
+          "vllm": "0.18.0",
+          "vllm_ascend": "0.18.0"
+        },
+        "explicit_blue_attempt": null,
+        "live_call_qualification": "PENDING",
+        "mode": "DEFAULT",
+        "pending_revalidation": null,
+        "reviewed_combination": "721b1240/ordinary8-a3",
+        "schema": "demoncat.deployment_acceptance.v1",
+        "status": "ACCEPTED_DEPLOYMENT",
+        "structural_compatibility": "CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE"
+      },
+      "tasks": [
+        {
+          "scope": 0,
+          "status": "BLUE_ZONE_PUBLIC_MOE8_SINGLE_TASK_ACCEPTED_NOT_MAIN_PROJECT",
+          "checks": {
+            "actual_consumer": {
+              "actual_native_input_consumer": true,
+              "operator": "npu.npu_moe_token_unpermute.default",
+              "returned": true
+            },
+            "exact_health_hidden_logits": true,
+            "exact_off_hidden_logits": true,
+            "fault_text_differs": false,
+            "fault_tokens_differ": false,
+            "generated_text_change_required": false,
+            "health_tokens_match": true,
+            "normal_fault_hidden_differ": true,
+            "normal_fault_logits_differ": true,
+            "normal_fault_observed_returns": [
+              1,
+              1
+            ],
+            "off_health_moe_observers": [
+              0,
+              0
+            ],
+            "off_tokens_match": true,
+            "selected_path": "model.layers.1.mlp.experts",
+            "typed_effect": {
+              "after_nonfinite": 0,
+              "before_nonfinite": 0,
+              "causal_attribution": "REQUIRES_ADAPTER_REQUEST_PHASE_POSITION_BINDING",
+              "changed_elements": 26592,
+              "dtype": "torch.bfloat16",
+              "elements": 28672,
+              "finite_difference_overflow": 0,
+              "finite_pair_elements": 28672,
+              "finite_to_nan": 0,
+              "finite_to_negative_inf": 0,
+              "finite_to_positive_inf": 0,
+              "max_abs_diff_finite": 2.859619140625,
+              "nonfinite_to_finite": 0,
+              "qualification_granted": false,
+              "samples": [
+                {
+                  "after": 0.048095703125,
+                  "before": 0.5859375,
+                  "flat_index": 0
+                },
+                {
+                  "after": -0.03173828125,
+                  "before": 0.0703125,
+                  "flat_index": 1
+                },
+                {
+                  "after": 0.024169921875,
+                  "before": -0.04638671875,
+                  "flat_index": 2
+                },
+                {
+                  "after": -0.01458740234375,
+                  "before": 0.109375,
+                  "flat_index": 3
+                }
+              ],
+              "schema": "demoncat.effect.numeric_change.v1",
+              "shape": [
+                14,
+                2048
+              ]
+            }
+          },
+          "resource_cleanup": {
+            "inflight": 0,
+            "leases": 0,
+            "numerical_recovery_separate": true,
+            "owned_hooks": 0
+          },
+          "binding_removal": [
+            {
+              "mechanism": "8.restore_offset",
+              "status": "SERVING_DEPLOYMENT_REMOVED"
+            }
+          ],
+          "ownership_retained": false,
+          "request_ids": [
+            "0-8d65aee5",
+            "1-b791e358",
+            "2-a629c384",
+            "3-a30e9cd2"
+          ]
+        },
+        {
+          "scope": 1,
+          "status": "BLUE_ZONE_PUBLIC_MOE8_SINGLE_TASK_ACCEPTED_NOT_MAIN_PROJECT",
+          "checks": {
+            "actual_consumer": {
+              "actual_native_input_consumer": true,
+              "operator": "npu.npu_moe_token_unpermute.default",
+              "returned": true
+            },
+            "exact_health_hidden_logits": true,
+            "exact_off_hidden_logits": true,
+            "fault_text_differs": false,
+            "fault_tokens_differ": false,
+            "generated_text_change_required": false,
+            "health_tokens_match": true,
+            "normal_fault_hidden_differ": true,
+            "normal_fault_logits_differ": true,
+            "normal_fault_observed_returns": [
+              1,
+              1
+            ],
+            "off_health_moe_observers": [
+              0,
+              0
+            ],
+            "off_tokens_match": true,
+            "selected_path": "model.layers.1.mlp.experts",
+            "typed_effect": {
+              "after_nonfinite": 0,
+              "before_nonfinite": 0,
+              "causal_attribution": "REQUIRES_ADAPTER_REQUEST_PHASE_POSITION_BINDING",
+              "changed_elements": 26592,
+              "dtype": "torch.bfloat16",
+              "elements": 28672,
+              "finite_difference_overflow": 0,
+              "finite_pair_elements": 28672,
+              "finite_to_nan": 0,
+              "finite_to_negative_inf": 0,
+              "finite_to_positive_inf": 0,
+              "max_abs_diff_finite": 2.859619140625,
+              "nonfinite_to_finite": 0,
+              "qualification_granted": false,
+              "samples": [
+                {
+                  "after": 0.048095703125,
+                  "before": 0.5859375,
+                  "flat_index": 0
+                },
+                {
+                  "after": -0.03173828125,
+                  "before": 0.0703125,
+                  "flat_index": 1
+                },
+                {
+                  "after": 0.024169921875,
+                  "before": -0.04638671875,
+                  "flat_index": 2
+                },
+                {
+                  "after": -0.01458740234375,
+                  "before": 0.109375,
+                  "flat_index": 3
+                }
+              ],
+              "schema": "demoncat.effect.numeric_change.v1",
+              "shape": [
+                14,
+                2048
+              ]
+            }
+          },
+          "resource_cleanup": {
+            "inflight": 0,
+            "leases": 0,
+            "numerical_recovery_separate": true,
+            "owned_hooks": 0
+          },
+          "binding_removal": [
+            {
+              "mechanism": "8.restore_offset",
+              "status": "SERVING_DEPLOYMENT_REMOVED"
+            }
+          ],
+          "ownership_retained": false,
+          "request_ids": [
+            "4-87bc8290",
+            "5-88e4702f",
+            "6-81fdfae9",
+            "7-bec5b3bf"
+          ]
+        }
+      ],
+      "wire_limits": {
+        "state_bytes": 2097152,
+        "evidence_bytes": 524288,
+        "state_count": 30,
+        "max_state_bytes": 565309,
+        "max_evidence_bytes": 282111,
+        "over_limit_states": 0
+      }
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "status": "PUBLIC_ORDINARY_VISION17_TWO_TASKS_ACCEPTED_TORCH_PARAMETER_ONLY",
+      "raw_receipt": {
+        "path": "/home/17-fault-c2c3-20261117/product-ordinary8-17-20261119-card5-a5/vision17-ordinary-two-tasks/probe/result.json",
+        "bytes": 10896228,
+        "sha256": "184b8f0130de558f7c5ea2f7de0351e2453cc19cfd4af5158816ecfad2b7c15f"
+      },
+      "deployment_acceptance_at_run": {
+        "schema": "demoncat.deployment_acceptance.v1",
+        "status": "IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT",
+        "accepted": false,
+        "can_prepare": false,
+        "mode": "DEFAULT",
+        "explicit_blue_attempt": null,
+        "reviewed_combination": "721b1240/ordinary17-a3",
+        "pending_revalidation": "UNIFIED_RETURN_COMPLETION_NPU_PENDING",
+        "expected": {
+          "torch": "2.9.0+cpu",
+          "torch_npu": "2.9.0.post1+gitee7ba04",
+          "vllm": "0.18.0",
+          "vllm_ascend": "0.18.0",
+          "cann": [
+            "8.5.1"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 1,
+          "pp": 1,
+          "dp": 1,
+          "eager": true,
+          "model_config_sha256": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b",
+          "model_class": "vllm.model_executor.models.qwen3_vl.Qwen3VLForConditionalGeneration",
+          "live_config_matches_file": true
+        },
+        "actual": {
+          "torch": "2.9.0+cpu",
+          "torch_npu": "2.9.0.post1+gitee7ba04",
+          "vllm": "0.18.0",
+          "vllm_ascend": "0.18.0",
+          "cann": [
+            "8.5.1"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 1,
+          "pp": 1,
+          "dp": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_vl.Qwen3VLForConditionalGeneration",
+          "model_config_sha256": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b",
+          "live_config_matches_file": true
+        },
+        "checks": [
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.torch",
+            "expected": "2.9.0+cpu",
+            "actual": "2.9.0+cpu",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.torch_npu",
+            "expected": "2.9.0.post1+gitee7ba04",
+            "actual": "2.9.0.post1+gitee7ba04",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.vllm",
+            "expected": "0.18.0",
+            "actual": "0.18.0",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.vllm_ascend",
+            "expected": "0.18.0",
+            "actual": "0.18.0",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.cann",
+            "expected": [
+              "8.5.1"
+            ],
+            "actual": [
+              "8.5.1"
+            ],
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.dtype",
+            "expected": "torch.bfloat16",
+            "actual": "torch.bfloat16",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.tp",
+            "expected": 1,
+            "actual": 1,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.pp",
+            "expected": 1,
+            "actual": 1,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.dp",
+            "expected": 1,
+            "actual": 1,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.eager",
+            "expected": true,
+            "actual": true,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.model_config_sha256",
+            "expected": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b",
+            "actual": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.model_class",
+            "expected": "vllm.model_executor.models.qwen3_vl.Qwen3VLForConditionalGeneration",
+            "actual": "vllm.model_executor.models.qwen3_vl.Qwen3VLForConditionalGeneration",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.live_config_matches_file",
+            "expected": true,
+            "actual": true,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          }
+        ],
+        "acceptance_granted": false,
+        "structural_compatibility": "CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE",
+        "live_call_qualification": "PENDING"
+      },
+      "tasks": [
+        {
+          "scope": 0,
+          "evidence": {
+            "complete": true,
+            "failures": [],
+            "first_error": null,
+            "last_fault_effect": {
+              "aclnn_launch_arguments": false,
+              "baseline": {
+                "dtype": "torch.bfloat16",
+                "sha256": "3120c7e1f19165725e7c51cfb2aef76f277ca8eefded20ce2c592c3db2317b70",
+                "shape": [
+                  3536,
+                  1024,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              "comparison": "MATCHED_COMPLETE_INPUT_WEIGHT_BIAS_AND_FIRST_CONSUMER",
+              "complete_output_changed": true,
+              "fault": {
+                "dtype": "torch.bfloat16",
+                "sha256": "d539ffb67cd068310adf775f81ff088c58d83123fc257f4930740beb17fe77b7",
+                "shape": [
+                  3536,
+                  1024,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              "first_consumer_changed": true,
+              "logits_changed": true,
+              "native_calls": 1,
+              "position": {
+                "ordinal": 0,
+                "path": "patch_embed.proj"
+              }
+            },
+            "matched_off_and_health_confirmed": true,
+            "selection": "FIRST_ACTUAL_SINGLE_PROJECTION"
+          },
+          "cleanup": {
+            "owned_hooks": 0,
+            "leases": 0,
+            "inflight": 0
+          },
+          "tokens_changed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "phases": [
+            "normal",
+            "fault",
+            "off",
+            "health"
+          ],
+          "fault_injections": [
+            0,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "scope": 1,
+          "evidence": {
+            "complete": true,
+            "failures": [],
+            "first_error": null,
+            "last_fault_effect": {
+              "aclnn_launch_arguments": false,
+              "baseline": {
+                "dtype": "torch.bfloat16",
+                "sha256": "3120c7e1f19165725e7c51cfb2aef76f277ca8eefded20ce2c592c3db2317b70",
+                "shape": [
+                  3536,
+                  1024,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              "comparison": "MATCHED_COMPLETE_INPUT_WEIGHT_BIAS_AND_FIRST_CONSUMER",
+              "complete_output_changed": true,
+              "fault": {
+                "dtype": "torch.bfloat16",
+                "sha256": "d539ffb67cd068310adf775f81ff088c58d83123fc257f4930740beb17fe77b7",
+                "shape": [
+                  3536,
+                  1024,
+                  1,
+                  1,
+                  1
+                ]
+              },
+              "first_consumer_changed": true,
+              "logits_changed": true,
+              "native_calls": 1,
+              "position": {
+                "ordinal": 0,
+                "path": "patch_embed.proj"
+              }
+            },
+            "matched_off_and_health_confirmed": true,
+            "selection": "FIRST_ACTUAL_SINGLE_PROJECTION"
+          },
+          "cleanup": {
+            "owned_hooks": 0,
+            "leases": 0,
+            "inflight": 0
+          },
+          "tokens_changed": [
+            false,
+            false,
+            false,
+            false
+          ],
+          "phases": [
+            "normal",
+            "fault",
+            "off",
+            "health"
+          ],
+          "fault_injections": [
+            0,
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "wire_limits": {
+        "state_bytes": 2097152,
+        "evidence_bytes": 524288,
+        "state_count": 30,
+        "max_state_bytes": 150543,
+        "max_evidence_bytes": 75138,
+        "over_limit_states": 0
+      },
+      "rpc_actions": {
+        "attach": 2,
+        "prepare": 2,
+        "register": 2,
+        "check": 2,
+        "enable": 2,
+        "advance": 8,
+        "query": 8,
+        "finish": 2,
+        "disable": 2,
+        "unregister": 2,
+        "detach": 2
+      },
+      "binding_still_owned": false,
+      "blue_acceptance": {
+        "schema": "demoncat.deployment_acceptance.v1",
+        "status": "IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT",
+        "accepted": false,
+        "can_prepare": true,
+        "mode": "BLUE_ACCEPTANCE_ONLY",
+        "explicit_blue_attempt": "ordinary17-unified-query",
+        "reviewed_combination": "721b1240/ordinary17-a3",
+        "pending_revalidation": "UNIFIED_RETURN_COMPLETION_NPU_PENDING",
+        "expected": {
+          "torch": "2.9.0+cpu",
+          "torch_npu": "2.9.0.post1+gitee7ba04",
+          "vllm": "0.18.0",
+          "vllm_ascend": "0.18.0",
+          "cann": [
+            "8.5.1"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 1,
+          "pp": 1,
+          "dp": 1,
+          "eager": true,
+          "model_config_sha256": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b",
+          "model_class": "vllm.model_executor.models.qwen3_vl.Qwen3VLForConditionalGeneration",
+          "live_config_matches_file": true
+        },
+        "actual": {
+          "torch": "2.9.0+cpu",
+          "torch_npu": "2.9.0.post1+gitee7ba04",
+          "vllm": "0.18.0",
+          "vllm_ascend": "0.18.0",
+          "cann": [
+            "8.5.1"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 1,
+          "pp": 1,
+          "dp": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_vl.Qwen3VLForConditionalGeneration",
+          "model_config_sha256": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b",
+          "live_config_matches_file": true
+        },
+        "checks": [
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.torch",
+            "expected": "2.9.0+cpu",
+            "actual": "2.9.0+cpu",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.torch_npu",
+            "expected": "2.9.0.post1+gitee7ba04",
+            "actual": "2.9.0.post1+gitee7ba04",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.vllm",
+            "expected": "0.18.0",
+            "actual": "0.18.0",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.vllm_ascend",
+            "expected": "0.18.0",
+            "actual": "0.18.0",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.cann",
+            "expected": [
+              "8.5.1"
+            ],
+            "actual": [
+              "8.5.1"
+            ],
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.dtype",
+            "expected": "torch.bfloat16",
+            "actual": "torch.bfloat16",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.tp",
+            "expected": 1,
+            "actual": 1,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.pp",
+            "expected": 1,
+            "actual": 1,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.dp",
+            "expected": 1,
+            "actual": 1,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.eager",
+            "expected": true,
+            "actual": true,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.model_config_sha256",
+            "expected": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b",
+            "actual": "bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.model_class",
+            "expected": "vllm.model_executor.models.qwen3_vl.Qwen3VLForConditionalGeneration",
+            "actual": "vllm.model_executor.models.qwen3_vl.Qwen3VLForConditionalGeneration",
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          },
+          {
+            "layer": "deployment_identity",
+            "field": "accepted_combination.live_config_matches_file",
+            "expected": true,
+            "actual": true,
+            "status": "matched",
+            "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+          }
+        ],
+        "acceptance_granted": false,
+        "structural_compatibility": "CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE",
+        "live_call_qualification": "PENDING"
+      }
+    }
+  ],
+  "controller": {
+    "path": "/home/17-fault-c2c3-20261117/product-ordinary8-17-20261119-card5-a5/controller.json",
+    "bytes": 119871,
+    "sha256": "38487c4c918b9aa57cba71952a96a98f449a13abd9a04892986486a342706d21"
+  },
+  "controller_status": "CASES_COMPLETED_REQUIRES_QUALIFICATION_REVIEW",
+  "limitations": [
+    "8 selects one actual MoE chain, not all targets",
+    "17 Torch Conv3d padding only; no ACLNN payload or native ABI claim",
+    "17 ran under explicit blue permit while acceptance pending; all 13 actual deployment checks matched",
+    "No yellow main-project or production qualification",
+    "Read-only stale allocation review is not exclusive device reservation"
+  ]
+}
