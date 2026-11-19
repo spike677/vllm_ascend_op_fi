@@ -138,3 +138,60 @@ recovery. Do not fall back to all-target research, reset spent flags or repeat a
 fault to chase text changes. An actual failure stays a failure, with owner kept
 until the existing recovery path succeeds. Once this one deployment passes,
 the remaining external blocker is the unavailable inner main-project source.
+
+### Independent four-request acceptance driver
+
+`experiments/worker_core_v11_20261118/output39_single_task_probe.py` is the
+blue-zone validation entry, and `prepare_output39_single_task.py` only writes
+one queue case. Neither is imported by the runtime/provider. The case fixes the
+reviewed image `sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0`
+and `/home/gyl/models/Qwen3-0.6B`; root selects an existing reviewed postwrite DSO
+and rechecks its bytes. The recorded build key is explicitly root-provided
+reviewed-build identity, not a newly performed build audit.
+
+Normal must identify the actual `vllm.unquantized_gemm.default` return and a
+supported consumer within 16 observed projections, with an original Native
+mode-0 receipt. Otherwise F is never enqueued. Nominal execution enqueues
+normal/F/OFF/health exactly once each, using the same prompt and distinct actual
+scheduler ids. It separately checks the Native mode-1 finite-to-positive-Inf
+effect, actual consumer, exact span restoration, OFF/health hidden-plus-logits
+hashes, generated tokens/text and owned-resource cleanup. Text or logits need
+not change for the local consumer effect to be observed. A failed request keeps
+its actual mapping and first error; recovery may add only OFF and health, never
+another F. The maximum is six real requests, not a reduced cumulative protocol.
+
+The default case has a 480-second soft deadline and a 600-second queue limit,
+including at most 120 seconds for recovery. Source/installed module identity,
+Native SHA and model artifacts are checked before F. A refused boundary remains
+failed, with retained ownership reported when recovery is uncertain. Results
+and the complete bounded Host receipt are private metadata; no full census,
+statistics or tensor dump is requested. Each metadata file has a 16-MiB limit.
+
+Root deploys a fresh source bundle containing the runtime registry routing and
+this driver, installs matching modules, and prepares a fresh case file. These
+paths and hashes are deployment parameters, not end-user fault configuration:
+
+```bash
+PYTHONPATH="$SOURCE:$SOURCE/src" python3 -B -m experiments.worker_core_v11_20261118.prepare_output39_single_task \
+  --source "$SOURCE" --installed "$INSTALLED" --library "$REVIEWED_POSTWRITE_SO" \
+  --sha256 "$DSO_SHA256" --build-fingerprint "$REVIEWED_BUILD_KEY" \
+  --source-manifest-sha256 "$SOURCE_MANIFEST_SHA256" \
+  --card 5 --timeout 600 --out "$CASES"
+
+python3 "$SOURCE/experiments/c2c3_closure_20261117/run_queue_124.py" \
+  --cases "$CASES" --attempt "$FRESH_ATTEMPT" --cards 5
+```
+
+Only root runs the second command after the existing per-case resource lock and
+device gates permit it. The preparer adds no duplicate collector mount, does
+not execute a subprocess and never claims an NPU result. The existing queue
+owns the temporary container/Worker lifetime. Its cleanup report is separate
+from the in-Worker resources checked above.
+
+Eight additional CPU contracts test the actual public driver ordering, original
+Native receipt checks using an explicit ABI double, incomplete request mapping,
+lost advance reply, no F retry, before-F rejection, primary error preservation,
+queue bounds and source/installed mismatch. Run them with
+`python -B -m unittest test_output39_single_task_probe -v` under the same
+`PYTHONPATH` as above. CPU success is named `CPU_OUTPUT39_TASK_DRIVER_CONTRACT_ONLY`;
+it does not grant NPU, main-project, C1/C2/C3 or E5 acceptance.
