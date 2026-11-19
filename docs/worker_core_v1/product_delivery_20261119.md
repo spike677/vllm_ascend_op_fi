@@ -60,7 +60,7 @@ normal/reference/lossless/calibration_off/F/OFF，不宣称已压缩为三个bat
 |25 reduce_scatter|不支持，已停止|无替代通信输出破坏|不适用|不适用|无本轮后续实现|
 |26 residual_stomp|选择已有Native单点路线|真实邻接、QMM writer和residual consumer|未接线验收|原单点通过；主项目待验|目标部署邻接不成立则明确不适用，不追135完整集合|
 |26 fia_destination|保留通过范围|实际FIA→当前请求残差→consumer|未接线验收|原范围通过；主项目待验|迁移时重新绑定，不继承裸地址|
-|Batch shared_scale|普通W8A8运行时已实现|匹配Qwen普通投影，TP1/B8首decode；Q/scale共同变化|CPU契约通过；首轮在模型元数据加载处拒绝，0F；主项目待验|历史单点保留；新入口待验|适配固定loader的完整逐层描述后验收，不等待routed GMM1|
+|Batch shared_scale|普通W8A8运行时已实现|匹配Qwen普通投影，TP1/B8首decode；Q/scale共同变化|Source117模型加载和normal自动选点通过；reference调用栈校验拒绝，0F；主项目待验|历史单点保留；新入口待验|已修复真实dispatcher frame绑定并通过CPU正负例，待新attempt；不等待routed GMM1|
 |28 FA legal|仅历史保留|旧FA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 FIA legal|仅历史保留|旧FIA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 denominator_replay|TND kernel/host已构建；整条实现未完成|真实TND在线softmax分母重复累计|未验|未验|原物理核调度全部FD已拒；新22项矩阵、SDK及10个实际key构建通过，prepared-input绑定和正常对照待完成，F关闭|
@@ -106,5 +106,6 @@ Windows不允许创建源码符号链接而跳过（非NPU测试）。另13项�
 Host/Runtime单点、实际请求模拟、恢复和源码交付闭包。CPU fixture明确标为CPU，
 不作为124或实际主项目验收。后续新增65项39/量化合同全部通过；源码包29项中28通过、
 1项Windows符号链接权限跳过。Source116已有上述39 NPU实测；量化首轮加载失败0F，
+Source117加载/normal通过但reference在admission前拒绝，仍为0F；
 28只有无设备构建。没有新增msprobe原始数据或完整张量发布。
 GitHub只提交实现、测试和本总结，既有原件和Native库不进入本次提交。
