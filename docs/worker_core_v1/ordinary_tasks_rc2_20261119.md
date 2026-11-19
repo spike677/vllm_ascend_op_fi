@@ -27,7 +27,7 @@ capture/collect。query只读，不能运行模型或推进阶段。
 真实logits返回后完成收集/Native回收。两者均没有隐藏模型调用。
 
 Batch保留Native所需的六个真实批次normal/reference/lossless/calibration_off/fault/off，
-其余当前四请求路线为normal/fault/off/health。统一宿主动作不等于抹掉机制必需的校准阶段。
+冻结RC2的其余路线为normal/fault/off/health；后继开发线41为两次normal、lossless、fault、off、health六请求。统一宿主动作不等于抹掉机制必需的校准阶段。
 正常完成finish→disable（适用时）→unregister→detach→移除binding；失败保留首错，
 recover/abort后按实际状态完成OFF/健康或保留所有权，不能以卸载/重启冒充恢复。
 
@@ -41,7 +41,8 @@ recover/abort后按实际状态完成OFF/健康或保留所有权，不能以卸
 |17|124 a5统一回调、两个独立任务各4请求；单视觉投影Torch padding|本轮仅蓝区验收，不要求黄区准备|
 |22|124 a1、两个独立任务各4请求；首个source-bound fused RoPE|未验|
 |Batch|124 a1/a3两个独立作用域，每次六B8批及前后健康；单动态W8A8投影|黄区待配置，不要求本轮准备|
-|20、26两变体、33 Source105、41|历史机制保留，普通任务仍待接入/验收|默认不可执行|
+|41（RC2后继开发）|124 a3同一Worker两个独立owner；真实KV尾列单点、OFF和unhooked health通过|未登记；不进入冻结RC2/登记专用RC2.1|
+|20、26两变体、33 Source105|历史机制保留，普通任务仍待接入/验收|默认不可执行|
 |28 denominator|真实TND F/OFF未完成|关闭；legal变体仅历史保留|
 
 15当前部署不适用，25不支持。所有通过项只授予对应版本/模型/形状/调度组合，不代表新模型、
@@ -161,3 +162,7 @@ a3正常/F/OFF机制及输入与a1一致：Q 5565/8192、scale 7/8改变，最�
 a1/a3属于两个实际独立Worker/owner，各自完成同Worker OFF/health；不宣称两owner在同一个Worker中完成。旧a1原件不补造新增14字段或许可日志。新总结工具对于缺失旧字段保持不可观测，实际两作用域资格依据各自原始证据的人工复核。无新msprobe/E5、无全目标或长生成质量结论。
 
 RC2新增[部署授权与登记](deployment_acceptance_rc2.md)，黄色来源与蓝色记录隔离；[最新黄区清单](openchamber_rc2_preparation.md)只要求18/39/22。此前本页黄区权重准备描述由此覆盖。
+
+## 41 后继开发线补齐
+
+[普通任务及124独立审查](kv41_ordinary_task.md)：两个作用域各一次F、16个真实KV尾列元素改变、hidden传播、OFF/health精确恢复、资源清零；生成token/text未变，logits未采集，E5未新增。

@@ -28,7 +28,8 @@ Batch因缺少动态W8A8权重和bundle待配置。黄区现役多卡支持及pr
 39 postwrite与Batch bundle接入统一身份诊断；普通证据512KiB、单次state2MiB上限明确。
 [RMS及历史检查关闭记录](docs/worker_core_v1/merged_plan_baseline_20261119.md)与
 [openchamber模型准备](docs/worker_core_v1/openchamber_rc2_preparation.md)已补齐。
-RC2尚未冻结，20/26两变体/33/41普通路线及28 TND仍待完成，不宣称17项全通过或黄区现役支持。
+RC2六项子集已冻结；后继开发线41普通单点已完成124两个作用域，见[41验收边界](docs/worker_core_v1/kv41_ordinary_task.md)。20/26两变体/33普通路线及28 TND仍待完成，不宣称17项全通过或黄区现役支持。
+黄区master保持RC1.1，通过独立RC2验收并审查登记后直接升级RC2.1，转交[RC2清单](releases/RC2-HANDOFF-20261119.md)。
 
 ## 当前统一接入
 

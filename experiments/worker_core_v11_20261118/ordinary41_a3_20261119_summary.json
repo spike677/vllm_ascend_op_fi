@@ -1,0 +1,250 @@
+{
+  "schema": "demoncat.ordinary41.independent_review.v1",
+  "consistent": true,
+  "checks": 124,
+  "issues": [],
+  "source_commit": "105fb2c10abfcacc35c40fe098450c04e02a5981",
+  "source_manifest_sha256": "2e723e2cb8513bd01e690cb9f2972dbf4015c8986476c75b3dd7a89f2e86f87d",
+  "native_sha256": "8876f2b99e70a9df8201b6ae0ace2cc4be8702afcf6703f9b72d1dda3bc26622",
+  "build_fingerprint": "c62b223b0359b9be007f4d2b6f1eb3436f31157960b8e853a5cca72e51ae67fa",
+  "same_worker_two_owners": true,
+  "scopes": [
+    {
+      "scope": 0,
+      "owner": "worker-fault-be3ec5062ffe4ae6beb8eaa7d8300640",
+      "native_owner": 7042195432663875168,
+      "selected_module": "model.layers.0.self_attn.attn",
+      "actual_calls_per_request": [
+        28,
+        28,
+        28,
+        28,
+        28,
+        null
+      ],
+      "fault_hits": 1,
+      "changed_cache_elements": 16,
+      "original_selected_consumer_calls": 1,
+      "normal_hidden_sha256": "cc0ecd83f69576537e41ffdc35ac4fbe4f08b573ea37bb2645e9bb8af64445ae",
+      "fault_hidden_sha256": "de4c1a97f949a4fa3a33a7d9747735766f0d53e35013c5e2cc95ecda7fdbefd9",
+      "off_hidden_sha256": "cc0ecd83f69576537e41ffdc35ac4fbe4f08b573ea37bb2645e9bb8af64445ae",
+      "health_hidden_sha256": "cc0ecd83f69576537e41ffdc35ac4fbe4f08b573ea37bb2645e9bb8af64445ae",
+      "generated_tokens": {
+        "normal": [
+          576,
+          4226
+        ],
+        "normal_repeat": [
+          576,
+          4226
+        ],
+        "lossless": [
+          576,
+          4226
+        ],
+        "fault": [
+          576,
+          4226
+        ],
+        "off": [
+          576,
+          4226
+        ],
+        "health": [
+          576,
+          4226
+        ]
+      },
+      "tokens_changed": false,
+      "text_changed": false,
+      "source": "BLUE_COMBINATION",
+      "permit": {
+        "accepted_record_created": false,
+        "attempt": "ordinary41-20261119-a3-scope0",
+        "operator": "blue-harness",
+        "permit_id": "8b6e9e88f291094af13adb1bfbc46dcc",
+        "pid": 1,
+        "source": "BLUE_COMBINATION",
+        "source_manifest_sha256": "2e723e2cb8513bd01e690cb9f2972dbf4015c8986476c75b3dd7a89f2e86f87d",
+        "thread": 281458276700256
+      },
+      "deployment": {
+        "cann": [
+          "8.5.1"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+        "model_config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        "pp": 1,
+        "torch": "2.9.0+cpu",
+        "torch_npu": "2.9.0.post1+gitee7ba04",
+        "tp": 1,
+        "vllm": "0.18.0",
+        "vllm_ascend": "0.18.0"
+      },
+      "resources": {
+        "owned_hooks": 0,
+        "leases": 0,
+        "inflight": 0,
+        "api_links": 0
+      },
+      "limitations": {
+        "logits": "NOT_CAPTURED",
+        "msprobe_E5": "NOT_ASSESSED",
+        "FIA_native_launch_metadata_verified": false,
+        "FIA_tiling_fault_claim": false
+      }
+    },
+    {
+      "scope": 1,
+      "owner": "worker-fault-c1ae7dceaf374fb6b02ffe1b8e4e7371",
+      "native_owner": 5398957250432853947,
+      "selected_module": "model.layers.0.self_attn.attn",
+      "actual_calls_per_request": [
+        28,
+        28,
+        28,
+        28,
+        28,
+        null
+      ],
+      "fault_hits": 1,
+      "changed_cache_elements": 16,
+      "original_selected_consumer_calls": 1,
+      "normal_hidden_sha256": "cc0ecd83f69576537e41ffdc35ac4fbe4f08b573ea37bb2645e9bb8af64445ae",
+      "fault_hidden_sha256": "de4c1a97f949a4fa3a33a7d9747735766f0d53e35013c5e2cc95ecda7fdbefd9",
+      "off_hidden_sha256": "cc0ecd83f69576537e41ffdc35ac4fbe4f08b573ea37bb2645e9bb8af64445ae",
+      "health_hidden_sha256": "cc0ecd83f69576537e41ffdc35ac4fbe4f08b573ea37bb2645e9bb8af64445ae",
+      "generated_tokens": {
+        "normal": [
+          576,
+          4226
+        ],
+        "normal_repeat": [
+          576,
+          4226
+        ],
+        "lossless": [
+          576,
+          4226
+        ],
+        "fault": [
+          576,
+          4226
+        ],
+        "off": [
+          576,
+          4226
+        ],
+        "health": [
+          576,
+          4226
+        ]
+      },
+      "tokens_changed": false,
+      "text_changed": false,
+      "source": "BLUE_COMBINATION",
+      "permit": {
+        "accepted_record_created": false,
+        "attempt": "ordinary41-20261119-a3-scope1",
+        "operator": "blue-harness",
+        "permit_id": "e61cd5fdee8d3f24f8e8fa8cef2ffc69",
+        "pid": 1,
+        "source": "BLUE_COMBINATION",
+        "source_manifest_sha256": "2e723e2cb8513bd01e690cb9f2972dbf4015c8986476c75b3dd7a89f2e86f87d",
+        "thread": 281458276700256
+      },
+      "deployment": {
+        "cann": [
+          "8.5.1"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+        "model_config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        "pp": 1,
+        "torch": "2.9.0+cpu",
+        "torch_npu": "2.9.0.post1+gitee7ba04",
+        "tp": 1,
+        "vllm": "0.18.0",
+        "vllm_ascend": "0.18.0"
+      },
+      "resources": {
+        "owned_hooks": 0,
+        "leases": 0,
+        "inflight": 0,
+        "api_links": 0
+      },
+      "limitations": {
+        "logits": "NOT_CAPTURED",
+        "msprobe_E5": "NOT_ASSESSED",
+        "FIA_native_launch_metadata_verified": false,
+        "FIA_tiling_fault_claim": false
+      }
+    }
+  ],
+  "originals": {
+    "result.json": {
+      "bytes": 324601,
+      "sha256": "e29abad9ca811ce06844d5823d7031761f595ffba45311c0d31a1f5ccddae61e"
+    },
+    "scope0-host.json": {
+      "bytes": 1892737,
+      "sha256": "688ea0cc9e7aba739981b58b1c0af9f5c1ead4adaa0bad8a1a8ac24076cc9157"
+    },
+    "scope1-host.json": {
+      "bytes": 1893793,
+      "sha256": "aa8d10b76a52d827626ed4c8331d9037909abac097606c24292d6b789c1ed93d"
+    },
+    "controller.json": {
+      "bytes": 57389,
+      "sha256": "75ed91bc7014fe3d7fda1d9e21ab2615324dd6c5b6e14c89b375a76788e54180"
+    }
+  },
+  "runtime_acceptance_granted": false,
+  "originals_modified": false,
+  "raw_statistics_submitted": false,
+  "verdict": "ACCEPT_BLUE_DECLARED_ORDINARY_KV41_SCOPE",
+  "reviewer_sha256": "ab908c89b808f908749e83ddd3e07e0b70ef8696a0da2c201ed231e80851a8e8",
+  "mutation_tests": [
+    {
+      "mutation": "owner_reuse",
+      "rejected": true
+    },
+    {
+      "mutation": "missing_phase",
+      "rejected": true
+    },
+    {
+      "mutation": "health_not_exact",
+      "rejected": true
+    },
+    {
+      "mutation": "no_native_effect",
+      "rejected": true
+    },
+    {
+      "mutation": "consumer_twice",
+      "rejected": true
+    },
+    {
+      "mutation": "wrong_tail",
+      "rejected": true
+    },
+    {
+      "mutation": "resources_left",
+      "rejected": true
+    },
+    {
+      "mutation": "device_busy",
+      "rejected": true
+    }
+  ]
+}

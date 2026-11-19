@@ -21,7 +21,7 @@ class DeploymentAcceptanceTests(unittest.TestCase):
             self.assertEqual(a.deployment_acceptance_report('22.wrong_row',self.worker,self.model)['status'],'IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT')
             self.assertEqual(a.deployment_acceptance_report('20.buffer_substitute',self.worker,self.model,implemented=False)['status'],'NOT_IMPLEMENTED')
     def test_reviewed_routes_only_accept_exact_deployment(self):
-        for key,source in {'8.restore_offset':'16f40f1f/','17.spatial_padding':'16f40f1f/',
+        for key,source in {'41.tail_column':'105fb2c1/','8.restore_offset':'16f40f1f/','17.spatial_padding':'16f40f1f/',
                            '22.wrong_row':'4c56701f/','quant.batch_shared_scale':'32f87374/'}.items():
             actual=self.actual(key)
             with self.subTest(key=key),patch.object(a,'observe_deployment',return_value=actual):
