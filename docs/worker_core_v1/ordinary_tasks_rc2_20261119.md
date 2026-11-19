@@ -219,3 +219,16 @@ Q/K、hidden、logits变化，首token/文本未变；OFF/health逐字节恢复�
 不声称整数溢出、全部层或连续生成验收。没有新增msprobe采集或E5结论。
 实测使用限定blue许可；之后将实际配置SHA/模型类与13项环境条件加入已验组合。
 其他模型、TP或CANN组合仍默认关闭。CPU准备48项通过；记录晋级另跑准入与普通任务回归。
+
+## Batch 宿主接口统一修订（新路线待实机复核）
+
+普通QuantProjectionServingSession现在在真实首个decode的模型pre-hook处启动观察，
+须先核对实际prefill结果、八个当前请求、各自已提交的一个生成token、forward计数及Native空闲。
+真实logits返回后收集证据并完成Native回收；query仍只读。宿主流程改为
+`advance_batch(actual_ids) → wait_for_completion → query`，不再显式step、capture或collect。
+没有增加模型调用，六批normal/reference/lossless/calibration_off/fault/off顺序保持不变。
+
+56项CPU检查通过，含实际CPU前向/Host/Runtime、失效参数拒绝、丢失回执、失败drain保留所有权、
+真实OFF恢复和query只读。Source118历史结果保留，新回调路线标记
+`AUTOMATIC_DECODE_COMPLETION_NPU_PENDING`并默认关闭；只能由限定蓝区许可复核。
+该记录优先于上文对旧接口剩余差异的描述，尚不表示新NPU验收通过。

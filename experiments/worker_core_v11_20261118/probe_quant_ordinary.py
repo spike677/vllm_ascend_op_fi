@@ -22,10 +22,10 @@ PROMPTS = ('Explain why the sky looks blue.', 'Name the capital city of France.'
     'What is the result of seven multiplied by nine?', 'Describe a forest in spring.',
     'Translate good morning into Spanish.', 'Give one reason to read books.')
 PREFIX = 'demoncat.runtime.vllm_ascend.worker_extension.'
-MODULES = tuple(PREFIX + name for name in ('serving_quant_projection', 'serving_quant', 'quant_row_provenance',
+MODULES = tuple(PREFIX + name for name in ('deployment_acceptance','ordinary_admission','ordinary_evidence','serving_quant_projection', 'serving_quant', 'quant_row_provenance',
     'call_binding', 'batch_context', 'serving', 'serving_context', 'serving20_qmm', 'providers.quant',
     'providers._scope', 'host', 'host_receipt_ledger', 'runtime', 'config', 'identity', 'registry')) + (
-    'fault_injection.quant_group_native', 'fault_injection.quant_native_isolation',
+    'fault_injection.prerequisites', 'fault_injection.quant_group_native', 'fault_injection.quant_native_isolation',
     'fault_injection.deployments.quant_group_c1', 'fault_injection.deployments.quant_group_inventory',
     'fault_injection.effect_summary', 'fault_injection.quantization')
 
@@ -104,7 +104,7 @@ def actual(worker):
     return worker
 
 
-def setup(worker, expected_identity, build_sha256, pins):
+def setup(worker, expected_identity, build_sha256, pins, source_manifest_sha256):
     # Verify what this actual Worker loaded, not just files in a package folder.
     for pin in pins:
         module = importlib.import_module(pin['module'])
@@ -117,12 +117,29 @@ def setup(worker, expected_identity, build_sha256, pins):
     if identity.get('worker') != expected_identity or identity.get('quarantined') is not False:
         raise RuntimeError('PUBLIC_CORE_AND_ACTUAL_BINDING_WORKER_DIFFER')
     binding = install_quant_projection_binding(worker, root='/quant', build_sha256=build_sha256)
-    return dict(binding=binding, worker=identity, loaded_sources=pins)
+    from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report, require_ordinary_route
+    from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import install_blue_acceptance_permit, remove_blue_acceptance_permit
+    default=ordinary_route_report('quant.batch_shared_scale',worker,worker.model_runner.model)
+    try:
+        if not default['deployment_acceptance']['accepted']:
+            install_blue_acceptance_permit(worker,mechanisms=['quant.batch_shared_scale'],
+                attempt='ordinary-quant-unified',source_manifest_sha256=source_manifest_sha256)
+        blue=require_ordinary_route('quant.batch_shared_scale',worker,worker.model_runner.model)
+    except BaseException:
+        from demoncat.runtime.vllm_ascend.worker_extension.serving_quant import remove_quant_binding
+        remove_quant_binding(worker)
+        if hasattr(worker,'_demoncat_blue_acceptance_permit'):remove_blue_acceptance_permit(worker)
+        raise
+    return dict(binding=binding, worker=identity, loaded_sources=pins,default_acceptance=default,blue_acceptance=blue)
 
 
 def remove(worker):
     from demoncat.runtime.vllm_ascend.worker_extension.serving_quant import remove_quant_binding
-    return remove_quant_binding(actual(worker))
+    from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import remove_blue_acceptance_permit
+    worker=actual(worker)
+    result=remove_quant_binding(worker)
+    if hasattr(worker,'_demoncat_blue_acceptance_permit'):remove_blue_acceptance_permit(worker)
+    return result
 
 
 def rpc(llm, method, *args):
@@ -168,16 +185,11 @@ def one_batch(llm, client, phase, prompts, params, *, seen, record, save, map_re
     state = checked(client.advance_batch(ids))
     if state['serving']['next_phase'] != phase:
         raise RuntimeError('PROVIDER_AND_ACTUAL_REQUEST_PHASE_DIFFER')
-    partial = llm.llm_engine.step()  # Actual normal scheduler prefill.
-    if any(value.finished for value in partial) or not llm.llm_engine.has_unfinished_requests():
-        raise RuntimeError('ONE_COMPLETE_PREFILL_STEP_REQUIRED')
-    checked(client.begin_decode_capture())
-    outputs = llm.wait_for_completion(use_tqdm=False)  # Actual first pure decode.
+    outputs = llm.wait_for_completion(use_tqdm=False)  # Normal scheduler prefill + first decode.
     if (len(outputs) != 8 or len({value.request_id for value in outputs}) != 8
             or {value.request_id for value in outputs} != {row['external_request_id'] for row in mapping}):
         raise RuntimeError('ACTUAL_COMPLETED_B8_MAPPING_CHANGED')
     record['output_tokens'] = {value.request_id: list(value.outputs[0].token_ids) for value in outputs}
-    checked(client.collect_replay())
     state = checked(client.query(), 'QUERY_OK')
     record.update(completed=True, serving=state['serving'], native=state['native'])
     return state
@@ -252,7 +264,7 @@ def main(argv=None):
         report['healthy_before'] = [list(value.outputs[0].token_ids) for value in llm.generate(prompts, params, use_tqdm=False)]
         def prepare(identity, config):
             nonlocal bound
-            value = rpc(llm, setup, identity, args.build_sha256, report['installed_sources'])
+            value = rpc(llm, setup, identity, args.build_sha256, report['installed_sources'],args.source_manifest_sha256)
             bound = True
             report['deployment'] = value
             return {'prepare': {}, 'register': {}}

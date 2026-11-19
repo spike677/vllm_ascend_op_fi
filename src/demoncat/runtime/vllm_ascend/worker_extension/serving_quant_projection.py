@@ -236,6 +236,10 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
             self.state()
             require(self.expected is not None and self.active is None and (self.error is None or self.recovery_only),
                     'UNOWNED_OR_REENTRANT_QUANT_FORWARD')
+            # Bind to the actual first decode after the scheduler committed its
+            # prefill token. No host step/capture RPC or hidden model execution.
+            if self.runner.with_prefill is False and not self.capture_started:
+                self.begin_decode_capture()
             self.root_running = True
             if self.expected is not None and self.runner.with_prefill is True:
                 for request_id, expected in self.expected.items():
@@ -254,7 +258,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
             self.actual = actual
             self.forward_count += 1
             if self.runner.with_prefill is False:
-                require(self.capture_started, 'DECODE_WITHOUT_HOST_CAPTURE_ADVANCE')
+                require(self.capture_started, 'DECODE_WITHOUT_ACTUAL_CAPTURE')
                 rows = serving.snapshot_first_decode(self.runner, self.model, actual, context, self.expected)
                 ids, _, _ = self._read(actual['input_ids'])
                 positions, _, _ = self._read(actual['positions'])
@@ -562,6 +566,10 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
         first_error = self.error
         try:
             super().logits(module, args, kwargs, output)
+            # The real model/Native calls have returned. Finish evidence here;
+            # query remains read-only and cannot manufacture completion.
+            if self.decode_result is not None and self.expected is not None:
+                self.collect()
         finally:
             if first_error is not None:
                 self.error = first_error
@@ -707,6 +715,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
             recovery_only=self.recovery_only, failed_batches=self.failed_batches,
             stage=('RECOVERED' if self.recovered else 'RECOVERY_OFF' if self.recovery_only or self.phase_name() == 'off'
                    else 'SINGLE_FAULT_READY' if self.phase_name() == 'fault' else 'CURRENT_SCOPE_CALIBRATION'),
+            host_protocol='ADVANCE_BATCH_WAIT_QUERY',
             next_phase=self.phase_name(), next_action='COLLECT' if self.decode_result is not None and self.expected is not None else
                 ('FINISH' if self.recovered else 'ENQUEUE_MATCHED_B8_BATCH'),
             calibration=dict(required_real_batches=6, ordinary_execution_after_current_scope_calibration=True,

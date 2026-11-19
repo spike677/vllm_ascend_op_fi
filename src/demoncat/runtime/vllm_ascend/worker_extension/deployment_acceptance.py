@@ -17,7 +17,7 @@ from .prerequisites import expectation, assessment
 
 _BLUE = '_demoncat_blue_acceptance_permit'
 # 8/17 a5 reviewed: two independent scopes, actual four-request recovery.
-_PENDING_REVALIDATION={}
+_PENDING_REVALIDATION={'quant.batch_shared_scale':'AUTOMATIC_DECODE_COMPLETION_NPU_PENDING'}
 _COMMON = dict(torch='2.9.0+cpu', torch_npu='2.9.0.post1+gitee7ba04',
     vllm='0.18.0', vllm_ascend='0.18.0', cann=['8.5.1'], dtype='torch.bfloat16',
     tp=1, pp=1, dp=1, eager=True)

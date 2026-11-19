@@ -47,6 +47,10 @@ class OrdinaryQuantTests(unittest.TestCase):
         fixture.session.close(abort=True)
         self.addCleanup(fixture.doCleanups)
         self.fixture = fixture
+        from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import install_blue_acceptance_permit, remove_blue_acceptance_permit
+        install_blue_acceptance_permit(fixture.worker,mechanisms=['quant.batch_shared_scale'],
+            attempt='explicit-cpu-native-double-contract',source_manifest_sha256='c'*64)
+        self.addCleanup(remove_blue_acceptance_permit,fixture.worker)
         self.binding = CpuBothOutputs()
         self.worker, self.model, self.runner, self.api = fixture.worker, fixture.model, fixture.runner, fixture.api
         self.runner.vllm_config.model_config.hf_config.model_type = 'qwen3'
@@ -83,7 +87,7 @@ class OrdinaryQuantTests(unittest.TestCase):
     def dispatch(self, action, settings=None):
         return self.provider.dispatch(action, settings or {}, owner='ordinary-owner', generation=4)
 
-    def phase(self, *, collect=True, after_advance=None):
+    def phase(self, *, after_advance=None):
         index = self.batch_number
         self.batch_number += 1
         ids = ['ordinary-%d-%d' % (index, value) for value in range(8)]
@@ -98,13 +102,10 @@ class OrdinaryQuantTests(unittest.TestCase):
         self.runner.input_batch = NS(req_ids=ids)
         for value in ids:
             self.runner.requests[value].output_token_ids = [3]
-        self.dispatch('advance', {'capture_decode': True})
         self.runner.with_prefill = False
         with torch.inference_mode():
             hidden = self.model(input_ids=torch.tensor([3]*8), positions=torch.tensor([2]*8))
             self.model.processor(self.model.head, hidden)
-        if collect:
-            self.dispatch('advance', {'collect': True})
 
     def calibrated(self):
         for _ in range(4):
@@ -284,13 +285,13 @@ class OrdinaryQuantTests(unittest.TestCase):
     def test_actual_dispatch_event_must_still_be_pending(self):
         self.refuse_actual_dispatch(lambda graph, context: graph.dispatch_frames[-1]['event'].update(status='OBSERVED'))
 
-    def test_query_is_readonly_and_collect_is_explicit(self):
-        self.phase(collect=False)
+    def test_query_is_readonly_after_actual_logits_auto_completion(self):
+        self.phase()
         before = copy.deepcopy(self.session.report())
         for _ in range(3):
             self.provider.query(owner='ordinary-owner', generation=4)
         self.assertEqual(before, self.session.report())
-        self.assertEqual(len(self.session.rows), 0)
+        self.assertEqual(len(self.session.rows), 1)
         self.dispatch('advance', {'collect': True})
         self.assertEqual(len(self.session.rows), 1)
 
@@ -395,14 +396,14 @@ class OrdinaryQuantTests(unittest.TestCase):
         self.assertEqual(next_client.detach()['status'], 'DETACHED')
         self.assertIn('fault', old_session.phase_attempts)
 
-    def test_actual_host_query_keeps_normal_uncollected(self):
+    def test_actual_host_query_keeps_auto_completed_normal(self):
         self.host_client()
-        self.phase(collect=False)
+        self.phase()
         before = self.session.report()
         with patch.object(self.session, 'collect', side_effect=AssertionError('QUERY_IS_NOT_AN_ACTION')):
             state = self.dispatch('query')
         self.assertEqual(state['serving'], before)
-        self.assertEqual(self.session.rows, [])
+        self.assertEqual(len(self.session.rows), 1)
         self.dispatch('advance', {'collect': True})
 
     def test_actual_host_failed_effect_recover_runs_off_and_retains_first_failure(self):
@@ -430,7 +431,7 @@ class OrdinaryQuantTests(unittest.TestCase):
     def test_actual_host_lost_fault_collect_reply_recovers_only_to_off(self):
         client = self.host_client()
         self.calibrated()
-        self.phase(collect=False)
+        self.phase()
         self.executor.drop_action = 'advance'
         result = client.collect_replay()
         self.assertTrue(result['ownership_retained'])

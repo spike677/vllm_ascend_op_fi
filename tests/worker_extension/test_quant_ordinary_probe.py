@@ -209,9 +209,9 @@ class BatchSchedulingContracts(unittest.TestCase):
         return probe.one_batch(self.llm, self.client, 'normal', [], object(), seen=set(), record=self.record,
             save=lambda: self.saves.append(copy.deepcopy(self.record)), map_requests=lambda _: self.mapping)
 
-    def test_real_enqueue_prefill_capture_wait_collect_query_order(self):
+    def test_real_enqueue_wait_query_without_host_capture_or_collect(self):
         self.run_batch()
-        self.assertEqual(self.events, ['reset', 'enqueue', 'advance', 'actual_prefill', 'capture', 'actual_decode', 'collect', 'query'])
+        self.assertEqual(self.events, ['reset', 'enqueue', 'advance', 'actual_decode', 'query'])
         self.assertFalse(self.saves[0]['completed'])
         self.assertIsNone(self.saves[0]['mapping'])
         self.assertEqual(self.saves[1]['mapping'], self.mapping)
@@ -314,6 +314,10 @@ class ActualPublicRuntimeHarness(unittest.TestCase):
                 fixture.runner.input_batch = NS(req_ids=ids)
                 return ids
             def wait_for_completion(self, **kwargs):
+                self.llm_engine.step()
+                starting_phase=fixture.session.phase_name()
+                if owner.fail_after_fault and owner.fail_drain and starting_phase=='fault':
+                    fixture.binding.drain_result=False
                 owner.scheduled.append('decode')
                 fixture.runner.with_prefill = False
                 with torch.inference_mode():
@@ -323,7 +327,7 @@ class ActualPublicRuntimeHarness(unittest.TestCase):
                 outputs = [NS(request_id=value.external_req_id, outputs=[NS(token_ids=[3, 4])])
                            for value in self.llm_engine.output_processor.request_states.values()]
                 self.llm_engine.output_processor.request_states.clear()
-                if owner.fail_after_fault and fixture.session.phase_name() == 'fault':
+                if owner.fail_after_fault and starting_phase == 'fault':
                     if owner.fail_drain:
                         fixture.binding.drain_result = False
                     raise RuntimeError('PRIMARY_AFTER_ACTUAL_FAULT')
@@ -332,7 +336,7 @@ class ActualPublicRuntimeHarness(unittest.TestCase):
         self.llm = CpuLLM()
         self.enterContext(patch.object(sys.modules['vllm'], 'LLM', create=True, return_value=self.llm))
         self.enterContext(patch.object(sys.modules['vllm'], 'SamplingParams', create=True, side_effect=lambda **kwargs: NS(**kwargs)))
-        def setup(worker, identity, build, pins):
+        def setup(worker, identity, build, pins, source_manifest_sha256):
             self.assertIs(worker, fixture.worker)
             return {'worker': worker.demoncat_worker_identity(), 'binding': {'status': 'EXPLICIT_CPU_DEPLOYMENT_DOUBLE'}}
         def remove(worker):
@@ -380,7 +384,7 @@ class ActualPublicRuntimeHarness(unittest.TestCase):
         self.fail_after_fault = self.fail_drain = True
         code, result, host = self.run_probe()
         self.assertEqual(code, 2)
-        self.assertIn('PRIMARY_AFTER_ACTUAL_FAULT', result['error'])
+        self.assertIn('ACTUAL_NATIVE_DRAIN_PENDING', result['error'])
         self.assertTrue(host['ownership_retained'])
         self.assertNotIn('cleanup_off', result)
         self.assertEqual(self.removals, [])
