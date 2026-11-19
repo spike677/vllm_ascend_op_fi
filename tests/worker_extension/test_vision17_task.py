@@ -12,7 +12,13 @@ class Vision17TaskTests(unittest.TestCase):
     setUp=group_fixture.Vision17GroupTests.setUp
     ok=group_fixture.Vision17GroupTests.ok
     start=group_fixture.Vision17GroupTests.start
-    request=group_fixture.Vision17GroupTests.request
+    def request(self,*,encode=True,collect=True):
+        result=group_fixture.Vision17GroupTests.request(self,encode=encode,collect=False)
+        if collect:
+            reply=self.client.query()
+            self.assertEqual(reply['status'],'QUERY_OK')
+            self.assertFalse(reply['response']['provider_state']['serving']['pending_request'])
+        return result
 
     def bind(self,actual,config):
         install_vision17_task_binding(self.worker,prompt_token_ids=[1,2,3],image_sha256='a'*64,
@@ -58,15 +64,16 @@ class Vision17TaskTests(unittest.TestCase):
     def test_no_actual_padding_cannot_be_rescued_by_admission(self):
         self.start();self.request()
         with patch.object(self.provider.engine,'admit',return_value=False):
-            with self.assertRaises(AssertionError):self.request()
+            with self.assertRaisesRegex(RuntimeError,'ACTUAL_FINAL_PADDING'):self.request()
         self.assertIn('ACTUAL_FINAL_PADDING',self.provider.error)
         self.assertNotEqual(self.client.unregister()['status'],'ACTION_COMPLETED')
         self.ok(self.client.recover());self.request();self.request()
         self.assertTrue(self.provider.recovered)
 
     def test_cached_encoder_cannot_be_claimed_as_fault(self):
-        self.start();self.request();self.request(encode=False,collect=False)
-        self.assertNotEqual(self.client.collect_replay()['status'],'ACTION_COMPLETED')
+        self.start();self.request()
+        with self.assertRaisesRegex(RuntimeError,'EACH_REQUEST_REQUIRES_ACTUAL_ENCODER'):
+            self.request(encode=False,collect=False)
         self.assertFalse(self.provider.fault_admitted)
         self.ok(self.client.recover());self.request();self.request()
         self.assertTrue(self.provider.recovered)
@@ -80,12 +87,13 @@ class Vision17TaskTests(unittest.TestCase):
         self.assertTrue(self.provider.recovered)
         self.assertTrue(self.provider.first_error)
 
-    def test_query_never_collects_and_fifth_request_refuses(self):
+    def test_return_hook_completes_query_is_read_only_and_fifth_refuses(self):
         self.start();self.request(collect=False)
         count=self.model.calls
-        self.assertEqual(self.client.query()['response']['provider_state']['evidence']['actual_requests'],[])
+        first=self.client.query()['response']['provider_state']
+        self.assertEqual(len(first['evidence']['actual_requests']),1)
+        self.assertEqual(self.client.query()['response']['provider_state'],first)
         self.assertEqual(count,self.model.calls)
-        self.ok(self.client.collect_replay())
         for _ in range(3):self.request()
         result=self.client.advance('fifth')
         self.assertNotEqual(result['status'],'ACTION_COMPLETED')

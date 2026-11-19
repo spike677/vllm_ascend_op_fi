@@ -8,5 +8,3 @@ def call_signature(row):
 
 def output_identity(row):
     return {key:row[key] for key in ('encoder_output','hidden','logits')}
-
-

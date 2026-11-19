@@ -24,7 +24,7 @@ MODULES=('fault_injection.vision17_request','fault_injection.vision17_worker','f
     'fault_injection.vision17_trace','fault_injection.vision17_padding','fault_injection.vision17_observation',
     'fault_injection.conv3d_natural','fault_injection._scoped_dispatch','fault_injection.tensor_callable')+tuple(
     'demoncat.runtime.vllm_ascend.worker_extension.'+name for name in
-    ('providers.vision17_task','ordinary_admission','prerequisites','runtime','registry','host','config'))
+    ('providers.vision17_task','deployment_acceptance','ordinary_evidence','ordinary_admission','prerequisites','runtime','registry','host','config'))
 
 def source_identity(expected):
     import hashlib
@@ -59,11 +59,17 @@ def setup(worker,expected,prompt,image_sha,weight_sha,pins):
     environment_sha=hashlib.sha256(json.dumps(environment,sort_keys=True).encode()).hexdigest()
     result=install_vision17_task_binding(worker,prompt_token_ids=prompt,image_sha256=image_sha,
         weights_sha256=weight_sha,environment_sha256=environment_sha)
+    from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import install_blue_acceptance_permit
+    install_blue_acceptance_permit(worker,mechanisms=['17.spatial_padding'],attempt='ordinary17-unified-query',
+        source_manifest_sha256=hashlib.sha256(json.dumps(pins,sort_keys=True).encode()).hexdigest())
     try:
         provider=create_worker_provider('17.spatial_padding','1',worker,worker.model_runner.model,expected)
         if type(provider) is not Vision17TaskProvider:raise RuntimeError('PUBLIC_VISION17_ORDINARY_ROUTE_NOT_INTEGRATED')
     except BaseException:
-        remove_vision17_task_binding(worker);raise
+        remove_vision17_task_binding(worker)
+        from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import remove_blue_acceptance_permit
+        remove_blue_acceptance_permit(worker)
+        raise
     return dict(result,environment=environment,environment_sha256=environment_sha)
 
 
@@ -71,7 +77,10 @@ def remove_binding(worker,expected):
     from demoncat.runtime.vllm_ascend.worker_extension.providers.vision17_task import remove_vision17_task_binding
     worker=actual(worker)
     if worker.demoncat_worker_identity().get('worker')!=expected:raise RuntimeError('VISION17_CLEANUP_WORKER_CHANGED')
-    return remove_vision17_task_binding(worker)
+    result=remove_vision17_task_binding(worker)
+    from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import remove_blue_acceptance_permit
+    remove_blue_acceptance_permit(worker)
+    return result
 
 
 def main():
@@ -121,7 +130,7 @@ def main():
         action('advance',pending[0]);output=llm.wait_for_completion(use_tqdm=False)
         if len(output)!=1 or output[0].request_id!=mapping['external_request_id']:
             raise RuntimeError('ACTUAL_MM_OUTPUT_MAPPING_CHANGED')
-        action('collect_replay')
+        action('query',expected_status='QUERY_OK')
         report['requests'].append(dict(phase=phase,mapping=mapping,prompt_token_ids=tokens,
             output_token_ids=list(output[0].outputs[0].token_ids),text=output[0].outputs[0].text))
         pending=[];save()

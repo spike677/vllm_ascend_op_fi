@@ -16,6 +16,7 @@ import threading
 from .prerequisites import expectation, assessment
 
 _BLUE = '_demoncat_blue_acceptance_permit'
+_PENDING_REVALIDATION={'17.spatial_padding':'UNIFIED_RETURN_COMPLETION_NPU_PENDING'}
 _COMMON = dict(torch='2.9.0+cpu', torch_npu='2.9.0.post1+gitee7ba04',
     vllm='0.18.0', vllm_ascend='0.18.0', cann=['8.5.1'], dtype='torch.bfloat16',
     tp=1, pp=1, dp=1, eager=True)
@@ -134,7 +135,7 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
     checks=([expectation('deployment_identity','accepted_combination.'+k,v,
         (actual or {}).get(k), 'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT') for k,v in expected.items()]
         if expected else [])
-    accepted=bool(expected and actual and all(c['status']=='matched' for c in checks))
+    accepted=bool(expected and actual and mechanism not in _PENDING_REVALIDATION and all(c['status']=='matched' for c in checks))
     permit=getattr(worker,_BLUE,None)
     blue=(type(permit) is BlueAcceptancePermit and permit.worker is worker and permit.model is model
         and worker.model_runner.model is model and mechanism in permit.mechanisms
@@ -147,6 +148,7 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
         mode='CPU_FIXTURE_ONLY' if cpu else 'BLUE_ACCEPTANCE_ONLY' if blue else 'DEFAULT',
         explicit_blue_attempt=permit.attempt if blue else None,
         reviewed_combination=record[2] if record else None,
+        pending_revalidation=_PENDING_REVALIDATION.get(mechanism),
         expected=expected,actual=actual,checks=checks,acceptance_granted=False,
         structural_compatibility='CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE',
         live_call_qualification='PENDING')

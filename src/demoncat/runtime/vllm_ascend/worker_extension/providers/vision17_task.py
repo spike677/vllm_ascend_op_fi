@@ -156,6 +156,24 @@ class _ActualProjection:
         self.current_request=None
 
 
+from fault_injection.vision17_request import ActualVision17Request
+
+class _OrdinaryRequest(ActualVision17Request):
+    def _logits_post(self,module,args,kwargs,output):
+        # The actual return hook completes observations after its callback
+        # counter has unwound. Query remains a read-only operation.
+        try:
+            super()._logits_post(module,args,kwargs,output)
+            if self.current is not None and self.current.get('logits_returned'):
+                self.engine.provider._collect()
+        except BaseException as error:
+            self._failed(error)
+            provider=self.engine.provider
+            provider.first_error=provider.first_error or repr(error)
+            provider.error=provider.error or repr(error)
+            raise
+
+
 class Vision17TaskProvider(Scope):
     execution_boundary='python_hook'
     def __init__(self,worker,model,identity):
@@ -215,20 +233,19 @@ class Vision17TaskProvider(Scope):
                 if settings=={'collect':True} and type(settings['collect']) is bool:self._collect()
                 else:
                     require(self.phase!='complete','VISION17_TASK_PHASES_EXHAUSTED')
-                    require(set(settings)=={'request_id'} and self.pending is None,'VISION17_EXPLICIT_COLLECTION_REQUIRED')
+                    require(set(settings)=={'request_id'} and self.pending is None,'VISION17_PREVIOUS_REQUEST_NOT_CLOSED')
                     rid=settings['request_id']
                     require(isinstance(rid,str) and 0<len(rid)<=256 and rid not in self.seen and len(self.seen)<8,
                         'VISION17_BOUNDED_FRESH_REQUEST_REQUIRED')
                     self.seen.add(rid)
                     require(not self._hooks(),'VISION17_PREVIOUS_HOOKS_REMAIN')
-                    from fault_injection.vision17_request import ActualVision17Request
                     phase=self.phase
                     if phase=='fault':
                         require(self.engine.normal is not None and not self.fault_started,'VISION17_ONE_FAULT_ATTEMPT_REQUIRED')
                         self.fault_started=True
                     self.pending=(rid,phase)
                     b=self.binding
-                    self.session=ActualVision17Request(self.worker,engine=self.engine,phase=phase,
+                    self.session=_OrdinaryRequest(self.worker,engine=self.engine,phase=phase,
                         arm='baseline' if phase=='normal' else 'fault' if phase=='fault' else None,
                         prompt=b.prompt,simulation=b.simulation,_processor=b.processor)
                     self.session.start();self.session.expect(rid)

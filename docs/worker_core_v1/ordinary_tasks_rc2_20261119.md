@@ -69,8 +69,9 @@ recover（必要时真实 OFF/health）或 abort，再 clean/unregister/detach/r
 
 `install_vision17_task_binding` 绑定已验证来源的 Qwen3-VL-2B、TP1 BF16、串行 eager，
 单图像、16×16 非重叠 patch Conv3d。不是纯文本 Qwen3-0.6B 的可用故障；没有视觉路径则拒绝。
-四个请求按到达次序 normal/fault/off/health；每次 `advance(internal_id)` 后真实等待完成，再
-`collect_replay()` 收集该次结果（此名称是既有 Host API；不会执行重放）。query 不代替 collect。
+四个请求按到达次序 normal/fault/off/health；统一流程为 `advance(internal_id)` →
+调度器真实等待完成 → `query()`。实际logits返回回调自动完成本次证据与资源收集；
+query仍只读，不运行模型、不推进阶段。宿主不再为17调用collect_replay。
 
 normal 从实际 encoder 调用选择单一投影；F 只把原 Torch Conv3d 参数 padding 从 [0,0,0]
 变为 [0,7,7]，原算子执行一次。上下层独立 observer 检查其余参数/完整输入不变、真实输出与
@@ -138,3 +139,12 @@ a3逐份实际回执复核：单次provider_state最大565,122字节，evidence�
 后续注入被阻止；实际abort/clean/unregister仍可释放资源。Host历史累计大小与该边界
 独立，长历史可使用已有cursor/stream接口。50项CPU定向检查通过，包括实际RPC超限
 后拒绝execute、清理可完成；NPU新增边界验收待下一次8/17回归。
+
+## 17 统一宿主完成接口的修订
+
+旧a3机制/恢复结果保留，但本次接口行为单独补验：普通ActualVision17Request在真实
+logits返回、回调计数退出后完成collect/close/校验。正常与失败路径仍要求实际encoder、
+上下层Torch参数、真实消费者以及OFF/health；缓存跳过不能代替正常encoder。
+CPU56项通过，含两个作用域、失败恢复、缓存跳过拒绝、只读query与第五请求拒绝。
+新路线NPU未完成前，17组合标记UNIFIED_RETURN_COMPLETION_NPU_PENDING，默认不可执行；
+蓝区新验收器显式安装限定机制的许可。公共宿主无需新增方法或故障特例。
