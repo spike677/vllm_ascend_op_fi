@@ -39,6 +39,17 @@ def configure(builder,source_in,base):
 
 def cpu_checks(builder,base):
     ev=builder.ev;here=base.HERE
+    observer=ev/'tnd28_input_observation_contract'
+    builder.run('tnd28_input_observation_compile',['g++','-std=c++17','-Wall','-Wextra','-Werror','-pedantic',
+        '-Wno-misleading-indentation','-pthread',here/'test_tnd28_input_observation.cpp','-ldl','-o',observer],env=builder.env)
+    builder.run('tnd28_input_observation_contract',[observer],env=builder.env)
+    base.require((ev/'tnd28_input_observation_contract.log').read_text().strip()==
+        'PASS_CPU_TND28_TYPED_INPUT_OBSERVATION_NO_DEVICE_NO_F','TND28_TYPED_OBSERVER_CPU_CONTRACT')
+    serializer=builder.deps/'opbase/src/nnopbase/individual_op/executor/indv_args.cpp'
+    base.require(base.sha(serializer)=='b54c905c4cda0d049892b3ade7edd0aa51dce3452caf2dcf233722e892288fa5',
+        'TND28_ACTUAL_DYNAMIC_LIST_SERIALIZER_SOURCE_CHANGED')
+    builder.report.update(tnd28_input_cpu_contract_log_sha256=base.sha(ev/'tnd28_input_observation_contract.log'),
+        tnd28_input_serializer_sha256=base.sha(serializer))
     binary=ev/'tnd28_replay_contract';program=here/'test_tnd28_denominator_contract.cpp'
     builder.run('tnd28_replay_contract_compile',['g++','-std=c++17','-Wall','-Wextra','-Werror','-pedantic',
         '-pthread',program,'-o',binary],env=builder.env)
@@ -71,6 +82,15 @@ def cpu_checks(builder,base):
 
 def finish_check(builder,base):
     ev=builder.ev;report=builder.report
+    observation=json.loads((ev/'tnd28_compiled_input_observer.json').read_bytes())
+    base.require(observation['variant']==builder.variant and observation['observer_only'] is True
+        and observation['header_sha256']==base.sha(base.HERE/'tnd28_input_observation.h')
+        and observation['launcher_sha256']==base.sha(base.HERE/'tnd28_input_compile.py')
+        and observation['patched_sha256']==base.sha(observation['unit'])
+        and observation['header_sha256']==base.sha(observation['header'])
+        and observation['fault_authorized'] is False,'TND28_COMPILED_INPUT_SOURCE_BINDING_REQUIRED')
+    report['tnd28_compiled_input_observer']=observation
+    report['tnd28_compiled_input_observer_receipt_sha256']=base.sha(ev/'tnd28_compiled_input_observer.json')
     base.require(all(report.get(name) is False for name in base.TND28_DENIED)
         and report.get('tnd28_source_closure_reconstructed') is True
         and report.get('tnd28_host_header_compiled_with_actual_sdk') is True

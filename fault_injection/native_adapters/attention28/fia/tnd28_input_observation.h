@@ -1,0 +1,221 @@
+#ifndef DEMONCAT_TND28_INPUT_OBSERVATION_H
+#define DEMONCAT_TND28_INPUT_OBSERVATION_H
+// Included only in the source-pinned, freshly compiled FIA inner API unit.
+// No symbol interposition, extra prepare/execute, device read, or F permission.
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+#include "opdev/common_types.h"
+#include "opdev/op_executor.h"
+#endif
+#include <cstdint>
+#include <cstring>
+#include <cstdlib>
+#include <dlfcn.h>
+#include <fcntl.h>
+#include <fstream>
+#include <limits>
+#include <set>
+#include <sstream>
+#include <iomanip>
+#include <initializer_list>
+#include <stdexcept>
+#include <string>
+#include <vector>
+#include <sys/stat.h>
+#include <sys/syscall.h>
+#include <sys/sysmacros.h>
+#include <time.h>
+#include <unistd.h>
+
+extern "C" int dcat_attention_observer_scope_matches_v1(const char*) __attribute__((weak));
+namespace tnd28_input {
+inline uint64_t Ptr(const void* p){return reinterpret_cast<uint64_t>(p);}
+inline uint64_t Now(){timespec t{};if(clock_gettime(CLOCK_MONOTONIC,&t))throw std::runtime_error("clock");return uint64_t(t.tv_sec)*1000000000ULL+t.tv_nsec;}
+inline std::string Env(const char* n){const auto p=std::getenv(n);return p?p:"";}
+inline bool Hex(const std::string& s,size_t n){return s.size()==n && s.find_first_not_of("0123456789abcdef")==std::string::npos;}
+inline bool Decimal(const std::string& s){return !s.empty() && s.size()<=20 && s[0]!='0' && s.find_first_not_of("0123456789")==std::string::npos;}
+inline void Need(bool b,const char* s){if(!b)throw std::runtime_error(s);}
+inline std::string Quote(const std::string& s){std::ostringstream o;o<<'"';for(unsigned char c:s){if(c=='"'||c=='\\')o<<'\\'<<c;else if(c<32)o<<"\\u"<<std::hex<<std::setw(4)<<std::setfill('0')<<unsigned(c)<<std::dec;else o<<c;}o<<'"';return o.str();}
+inline std::string ProcessStart(){std::ifstream f("/proc/self/stat");std::string line,word;Need(bool(std::getline(f,line)),"process stat read");const auto end=line.rfind(')');Need(end!=std::string::npos,"process stat format");std::istringstream s(line.substr(end+1));for(unsigned i=3;i<=22;++i)Need(bool(s>>word),"process stat field");return word;}
+template<class V> std::string Array(const V& v){Need(v.size()<=64,"array bound");std::ostringstream o;o<<'[';size_t i=0;for(const auto& item:v){if(i++)o<<',';o<<item;}o<<']';return o.str();}
+inline std::string Tensor(const aclTensor* t){
+    if(!t)return "null";
+    std::vector<int64_t> shape,storage,strides;
+    const auto& a=t->GetViewShape();const auto& b=t->GetStorageShape();const auto& c=t->GetViewStrides();
+    Need(a.GetDimNum()<=8 && b.GetDimNum()<=8 && c.size()<=8,"tensor rank");
+    for(size_t i=0;i<a.GetDimNum();++i)shape.push_back(a.GetDim(i));
+    for(size_t i=0;i<b.GetDimNum();++i)storage.push_back(b.GetDim(i));
+    for(size_t i=0;i<c.size();++i)strides.push_back(c[i]);
+    std::ostringstream o;o<<"{\"descriptor\":"<<Ptr(t)<<",\"storage_address\":"<<Ptr(t->GetStorageAddr())
+      <<",\"data_address\":"<<Ptr(t->GetData())<<",\"offset\":"<<t->GetViewOffset()
+      <<",\"native_storage_offset\":"<<t->GetStorageOffset()
+      <<",\"dtype\":"<<int(t->GetDataType())<<",\"format\":"<<int(t->GetStorageFormat())
+      <<",\"shape\":"<<Array(shape)<<",\"stride\":"<<Array(strides)<<",\"storage_shape\":"<<Array(storage)<<'}';return o.str();
+}
+inline std::string Tensors(const aclTensorList* list){
+    if(!list)return "null";Need(list->Size()<=8,"tensor list bound");std::ostringstream o;
+    o<<"{\"object\":"<<Ptr(list)<<",\"members\":[";
+    for(size_t i=0;i<list->Size();++i){if(i)o<<',';o<<Tensor((*list)[i]);}o<<"]}";return o.str();
+}
+inline std::string Integers(const aclIntArray* list){
+    if(!list)return "null";Need(list->Size()<=8,"integer list bound");std::vector<int64_t> v;
+    for(size_t i=0;i<list->Size();++i)v.push_back((*list)[i]);
+    return "{\"object\":"+std::to_string(Ptr(list))+",\"values\":"+Array(v)+'}';
+}
+template<class F> std::string Function(F f){
+    const auto p=reinterpret_cast<const void*>(f);Dl_info d{};
+    Need(p && dladdr(p,&d) && d.dli_fbase && d.dli_fname,"actual function owner unavailable");
+    uint64_t begin=0,end=0,inode=0,deviceMajor=0,deviceMinor=0;std::string permissions,mappedPath;
+    std::ifstream maps("/proc/self/maps");std::string line;size_t lines=0;
+    while(std::getline(maps,line)){
+        Need(++lines<=65536&&line.size()<=8192,"maps bound");std::istringstream in(line);
+        std::string range,offset,dev;uint64_t ino=0;in>>range>>permissions>>offset>>dev>>ino;
+        const auto dash=range.find('-'),colon=dev.find(':');if(dash==std::string::npos||colon==std::string::npos)continue;
+        const auto lo=std::stoull(range.substr(0,dash),nullptr,16),hi=std::stoull(range.substr(dash+1),nullptr,16);
+        if(Ptr(p)<lo||Ptr(p)>=hi)continue;
+        begin=lo;end=hi;inode=ino;deviceMajor=std::stoull(dev.substr(0,colon),nullptr,16);deviceMinor=std::stoull(dev.substr(colon+1),nullptr,16);
+        std::getline(in,mappedPath);const auto nonspace=mappedPath.find_first_not_of(' ');mappedPath=nonspace==std::string::npos?"":mappedPath.substr(nonspace);break;
+    }
+    struct stat st{};const bool exists=stat(d.dli_fname,&st)==0;
+    const bool same=exists&&begin&&permissions.find('x')!=std::string::npos&&inode==uint64_t(st.st_ino)
+        &&deviceMajor==major(st.st_dev)&&deviceMinor==minor(st.st_dev)&&S_ISREG(st.st_mode);
+    return "{\"address\":"+std::to_string(Ptr(p))+",\"base\":"+std::to_string(Ptr(d.dli_fbase))+
+      ",\"path\":"+Quote(d.dli_fname)+",\"symbol\":"+Quote(d.dli_sname?d.dli_sname:"")+
+      ",\"mapped_path\":"+Quote(mappedPath)+",\"mapped_begin\":"+std::to_string(begin)+",\"mapped_end\":"+std::to_string(end)+
+      ",\"mapped_inode\":"+std::to_string(inode)+",\"mapped_device\":["+std::to_string(deviceMajor)+','+std::to_string(deviceMinor)+"]"+
+      ",\"file_inode\":"+std::to_string(exists?st.st_ino:0)+",\"file_bytes\":"+std::to_string(exists?st.st_size:0)+
+      ",\"file_device\":["+std::to_string(exists?major(st.st_dev):0)+','+std::to_string(exists?minor(st.st_dev):0)+"]"+
+      ",\"mapped_file_identity_matches\":"+(same?"true":"false")+'}';
+}
+struct Scope{std::string token,owner,generation,module,request,input,path,start;uint64_t pid=0,tid=0;};
+inline bool Current(Scope& s){
+    if(Env("DCAT28_INPUT_MODE")!="observe")return false;
+    s.token=Env("DCAT28_INPUT_TOKEN");s.pid=getpid();s.tid=syscall(SYS_gettid);
+    if(!Hex(s.token,32) || Env("DCAT28_INPUT_PID")!=std::to_string(s.pid)
+      || Env("DCAT28_INPUT_TID")!=std::to_string(s.tid) || !dcat_attention_observer_scope_matches_v1
+      || dcat_attention_observer_scope_matches_v1(s.token.c_str())!=1)return false;
+    s.owner=Env("DCAT28_INPUT_OWNER");s.generation=Env("DCAT28_INPUT_GENERATION");s.module=Env("DCAT28_INPUT_MODULE");
+    s.request=Env("DCAT28_INPUT_REQUEST");s.input=Env("DCAT28_INPUT_HASH");s.path=Env("DCAT28_INPUT_LOG");s.start=Env("DCAT28_INPUT_START");
+    Need(Hex(s.owner,32)&&Decimal(s.generation)&&Decimal(s.module)&&Hex(s.request,64)&&Hex(s.input,64)&&Decimal(s.start),"input owner identity");
+    Need(s.start==ProcessStart(),"input process lifetime changed");
+    Need(s.path.rfind("/evidence/",0)==0&&s.path.size()<4096&&s.path.find("/../")==std::string::npos
+      &&s.path.find("/./")==std::string::npos&&s.path.find_first_of("\r\n")==std::string::npos,"input log path");
+    return true;
+}
+inline bool Same(const Scope& a,const Scope& b){return a.token==b.token&&a.owner==b.owner&&a.generation==b.generation
+    &&a.module==b.module&&a.request==b.request&&a.input==b.input&&a.path==b.path&&a.start==b.start&&a.pid==b.pid&&a.tid==b.tid;}
+struct Pending{Scope scope;uint64_t executor=0,child=0,child_bytes=0;std::vector<uint64_t> offsets;bool valid=false;};
+inline Pending& Live(){static thread_local Pending value;return value;}
+inline std::set<std::string>& Seen(){static thread_local std::set<std::string> value;return value;}
+struct Log{
+    Scope scope;bool active=false;uint32_t count=0;std::string first_error;
+    void Fail(const std::string& reason) noexcept {try{if(first_error.empty())first_error=reason;}catch(...) {}}
+    template<class F> void Record(const char* phase,F body) noexcept {
+        if(!active)return;
+        try{
+            Scope current;Need(Current(current)&&Same(scope,current),"current input scope changed");Need(++count<=24,"event budget");
+            std::ostringstream o;o<<std::setprecision(17)<<"{\"schema\":\"demoncat.tnd28.compiled_input.v1\",\"phase\":"<<Quote(phase)
+              <<",\"token\":"<<Quote(scope.token)<<",\"owner\":"<<Quote(scope.owner)<<",\"generation\":"<<scope.generation
+              <<",\"module_object_id\":"<<scope.module<<",\"request_sha256\":"<<Quote(scope.request)
+              <<",\"input_sha256\":"<<Quote(scope.input)<<",\"process_start_ticks\":"<<Quote(scope.start)
+              <<",\"pid\":"<<scope.pid<<",\"tid\":"<<scope.tid<<",\"monotonic_ns\":"<<Now()
+              <<",\"first_error\":"<<Quote(first_error)<<",\"fault_authorized\":false,\"data\":"<<body()<<"}\n";
+            const auto text=o.str();Need(text.size()<=65536,"event byte bound");
+#ifdef DCAT_TND28_INPUT_CPU_FIXTURE
+            tnd28_test_lines.push_back(text);
+#else
+            const int fd=open(scope.path.c_str(),O_WRONLY|O_APPEND|O_CREAT|O_NOFOLLOW|O_CLOEXEC,0600);
+            Need(fd>=0,"input log open");struct stat st{};
+            if(fstat(fd,&st)||!S_ISREG(st.st_mode)||st.st_nlink!=1||st.st_size<0||uint64_t(st.st_size)+text.size()>1048576){close(fd);throw std::runtime_error("input log bound or identity");}
+            const auto n=write(fd,text.data(),text.size());const int closed=close(fd);
+            Need(n==static_cast<ssize_t>(text.size())&&!closed,"input log write");
+#endif
+        }catch(const std::exception& e){Fail(e.what());}catch(...){Fail("observer exception");}
+    }
+};
+struct Prepare:Log{
+    const aclTensor* value=nullptr;bool ran=false;bool child_ok=false;bool returned=false;
+    Pending pending;
+    template<class F> Prepare(F function,const aclTensor* q,const aclTensorList* k,const aclTensorList* v,
+      const aclTensor* mask,const aclIntArray* sq,const aclIntArray* sk,const aclTensor* out,
+      const aclTensor* lse,std::initializer_list<const void*> optional,std::initializer_list<int64_t> scalars,
+      double scale,const char* layout,bool softmax){
+        try{active=Current(scope);if(!active)return;
+            Need(!Live().executor&&Seen().size()<4&&Seen().insert(scope.token).second,"pending or repeated input scope");
+            pending.scope=scope;
+            Record("prepare_enter",[&]{
+                Need(v&&v->Size()==1,"single actual V member required");value=(*v)[0];std::vector<uint64_t> pointers;
+                for(auto p:optional)pointers.push_back(Ptr(p));
+                Need(layout&&std::strlen(layout)<=8,"layout bound");
+                return "{\"function\":"+Function(function)+",\"query\":"+Tensor(q)+",\"key\":"+Tensors(k)+",\"value\":"+Tensors(v)
+                  +",\"mask\":"+Tensor(mask)+",\"seq_q\":"+Integers(sq)+",\"seq_kv\":"+Integers(sk)
+                  +",\"output\":"+Tensor(out)+",\"lse\":"+Tensor(lse)+",\"optionals\":"+Array(pointers)
+                  +",\"scalars\":"+Array(scalars)+",\"scale\":"+([&]{std::ostringstream o;o<<std::setprecision(17)<<scale;return o.str();})()
+                  +",\"layout\":"+Quote(layout)+",\"softmax_lse\":"+(softmax?"true":"false")+'}';});
+        }catch(const std::exception& e){Fail(e.what());}catch(...){Fail("prepare entry exception");}
+    }
+    template<class F> aclnnStatus Contiguous(F f,const aclTensorList* list,uint64_t* bytes,aclOpExecutor** executor){
+        Record("contiguous_prepare_enter",[&]{Need(list&&list->Size()==1&&(*list)[0]==value,"actual noncontiguous list is not original V");
+          return "{\"function\":"+Function(f)+",\"inputs\":"+Tensors(list)+'}';});
+        const auto status=f(list,bytes,executor); // unchanged original arguments, once
+        Record("contiguous_prepare_return",[&]{Need(bytes&&executor,"prepare outputs absent");pending.child=Ptr(*executor);pending.child_bytes=*bytes;
+          if(!status&&*executor){const auto& offsets=(*executor)->GetWorkspaceOffsets();Need(offsets.size()<=8,"offset bound");
+            pending.offsets.assign(offsets.begin(),offsets.end());child_ok=pending.offsets.size()==1;}
+          return "{\"status\":"+std::to_string(status)+",\"original_calls\":1,\"executor\":"+std::to_string(pending.child)
+            +",\"workspace_bytes\":"+std::to_string(pending.child_bytes)+",\"workspace_offsets\":"+Array(pending.offsets)+'}';});
+        return status;
+    }
+    template<class F> aclnnStatus Workspace(F f,void* executor,uint64_t* bytes){
+        Record("workspace_enter",[&]{return "{\"function\":"+Function(f)+",\"executor\":"+std::to_string(Ptr(executor))+'}';});
+        const auto status=f(executor,bytes);ran=true;
+        Record("workspace_return",[&]{Need(bytes,"workspace output absent");pending.executor=Ptr(executor);
+          pending.valid=!status&&child_ok&&first_error.empty();Live()=pending;
+          return "{\"status\":"+std::to_string(status)+",\"original_calls\":1,\"executor\":"+std::to_string(pending.executor)
+            +",\"fia_workspace_bytes\":"+std::to_string(*bytes)+",\"typed_copy_descriptor_join\":"+(pending.valid?"true":"false")+'}';});
+        return status;
+    }
+    aclnnStatus Return(aclnnStatus status,uint64_t* bytes,aclOpExecutor** executor){
+        returned=true;Record("prepare_return",[&]{Need(bytes&&executor,"original prepare outputs absent");
+          return "{\"status\":"+std::to_string(status)+",\"original_returns\":1,\"executor\":"+std::to_string(Ptr(*executor))
+              +",\"total_workspace_bytes\":"+std::to_string(*bytes)+'}';});return status;
+    }
+    ~Prepare(){Record("prepare_exit",[&]{return std::string("{\"workspace_called\":")+(ran?"true":"false")
+      +",\"original_returned\":"+(returned?"true":"false")+'}';});}
+};
+struct Execute:Log{
+    Pending pending;uint64_t parent=0,child_workspace=0,child_stream=0;bool child_returned=false,ran=false,returned=false;
+    template<class F> Execute(F function,aclOpExecutor* executor){
+        try{active=Current(scope);if(!active)return;pending=Live();parent=Ptr(executor);
+          Record("execute_enter",[&]{Need(pending.executor==parent&&pending.valid&&Same(pending.scope,scope),"current prepared executor unavailable");
+            return "{\"function\":"+Function(function)+",\"executor\":"+std::to_string(parent)+'}';});
+        }catch(const std::exception& e){Fail(e.what());}catch(...){Fail("execute entry exception");}
+    }
+    template<class F> aclnnStatus Contiguous(F f,void* workspace,uint64_t bytes,aclOpExecutor* executor,aclrtStream stream){
+        Record("contiguous_execute_enter",[&]{Need(Ptr(executor)==pending.child&&bytes==pending.child_bytes&&workspace,"current child executor differs");
+          const auto& offsets=executor->GetWorkspaceOffsets();std::vector<uint64_t> current(offsets.begin(),offsets.end());
+          Need(current==pending.offsets,"live workspace offsets changed");child_workspace=Ptr(workspace);child_stream=Ptr(stream);
+          Need(current.size()==1&&current[0]<=bytes&&4194304<=bytes-current[0]
+            &&child_workspace<=std::numeric_limits<uint64_t>::max()-bytes,"prepared V span outside actual child workspace");
+          return "{\"function\":"+Function(f)+",\"executor\":"+std::to_string(Ptr(executor))+",\"workspace\":"+std::to_string(child_workspace)
+            +",\"workspace_bytes\":"+std::to_string(bytes)+",\"stream\":"+std::to_string(child_stream)
+            +",\"workspace_offsets\":"+Array(current)+",\"prepared_v_address\":"+std::to_string(child_workspace+current[0])+'}';});
+        const auto status=f(workspace,bytes,executor,stream);
+        Record("contiguous_execute_return",[&]{child_returned=status==0;return "{\"status\":"+std::to_string(status)+",\"original_calls\":1}";});return status;
+    }
+    template<class F> aclnnStatus Run(F f,void* executor,aclrtStream stream,void* workspace,uint64_t bytes){
+        Record("fia_execute_enter",[&]{Need(Ptr(executor)==parent&&child_returned&&Ptr(stream)==child_stream
+          &&Ptr(workspace)<=std::numeric_limits<uint64_t>::max()-bytes&&Ptr(workspace)+bytes==child_workspace,"actual parent/child workspace or stream differs");
+          return "{\"function\":"+Function(f)+",\"executor\":"+std::to_string(parent)+",\"workspace\":"+std::to_string(Ptr(workspace))
+            +",\"workspace_bytes\":"+std::to_string(bytes)+",\"stream\":"+std::to_string(Ptr(stream))+'}';});
+        const auto status=f(executor,stream,workspace,bytes);ran=true;
+        Record("fia_execute_return",[&]{return "{\"status\":"+std::to_string(status)+",\"original_calls\":1}";});
+        if(!status&&active&&Live().executor==parent&&Same(Live().scope,scope))Live()=Pending{};
+        return status;
+    }
+    aclnnStatus Return(aclnnStatus status){returned=true;
+        Record("execute_return",[&]{return "{\"status\":"+std::to_string(status)+",\"original_returns\":1}";});return status;
+    }
+    ~Execute(){Record("execute_exit",[&]{return std::string("{\"fia_called\":")+(ran?"true":"false")
+      +",\"original_returned\":"+(returned?"true":"false")+'}';});}
+};
+} // namespace tnd28_input
+#endif

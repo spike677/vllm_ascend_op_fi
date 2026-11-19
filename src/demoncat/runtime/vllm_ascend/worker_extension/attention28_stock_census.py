@@ -99,7 +99,8 @@ class StockTndPrefillCensus:
     simulation=False
     observer_only=True
 
-    def __init__(self, *, mechanism, observer_receipt, observer_receipt_sha256, evidence_dir, input_journal=None):
+    def __init__(self, *, mechanism, observer_receipt, observer_receipt_sha256, evidence_dir, input_journal=None,
+                 prepared_input_capture=None):
         require(mechanism in MECHANISMS, 'TND_STOCK_CENSUS_FIA_MECHANISM_REQUIRED')
         require(sha(observer_receipt) == observer_receipt_sha256, 'TND_CENSUS_OBSERVER_RECEIPT_CHANGED')
         receipt=json.loads(Path(observer_receipt).read_bytes()); library=receipt['observer_library']
@@ -123,6 +124,11 @@ class StockTndPrefillCensus:
         self.calls,self.failures,self.refs=[],[],None
         self.pending_drain=False;self.first_error=None
         self.input_journal=input_journal;self._journal_current=None;self._journal_requests={}
+        self.prepared_input_capture=prepared_input_capture
+        if prepared_input_capture is not None:
+            from .attention28_prepared_input import PreparedInputCapture
+            require(type(prepared_input_capture) is PreparedInputCapture and input_journal is None,
+                    'TND_INPUT_EXACT_SINGLE_CAPTURE_NO_EXTERNAL_JOURNAL')
         if input_journal is not None:self._validate_journal()
         self._check();self.folder.mkdir(parents=True)
 
@@ -204,6 +210,7 @@ class StockTndPrefillCensus:
                 if self.scope.state()['active']:self.scope.observer.synchronize()
                 self.pending_drain=False
             self._journal_leave()
+            if getattr(self,'prepared_input_capture',None) is not None:self.prepared_input_capture.stop()
             self.scope.stop()
             require(not self.scope.state()['owned'] and not self.pending_drain, 'TND_CENSUS_CLEANUP_UNCONFIRMED')
             self.refs=None
@@ -224,6 +231,11 @@ class StockTndPrefillCensus:
             target_key=row['target_key'],thread_identity=dict(self.identity),fault_authorized=False,native_fault_qualified=False,
             input_substitutions=0,operator_arguments_modified=False,reasons=[])
         row['native_census']=record  # Keep incomplete capture visible on any exception.
+        capture=getattr(self,'prepared_input_capture',None)
+        if capture is not None and capture.used:
+            record.update(status='UNOBSERVED_OUTSIDE_SINGLE_PREPARED_INPUT_WINDOW',
+                reasons=['SINGLE_ACTUAL_TARGET_DIAGNOSTIC_ONLY_FULL_CALL_INVENTORY_RETAINED'])
+            output=once();self.calls.append(record);return output,record
         try:
             import torch
             require(self.simulation or type(original) is torch._ops.OpOverloadPacket,
@@ -243,9 +255,11 @@ class StockTndPrefillCensus:
             self._synchronize()
             with self.scope.scope(token):
                 try:
+                    if capture is not None:record['prepared_input_capture']=capture.enter(token,row,actual,record['api'])
                     self._journal_enter(token,row,actual,record)
                     try:
                         output=once();self.refs=(actual,output)
+                        if capture is not None:capture.returned(output)
                     except BaseException as original_error:
                         current=getattr(self,'_journal_current',None)
                         if current is not None:current['original_error']=repr(original_error)

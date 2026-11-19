@@ -1,0 +1,195 @@
+# TND28: one normal prepared-input connection
+
+This increment observes one actual matched object during one standard Qwen3
+2048-token prefill, retaining all 28 natural calls. It then disables the public
+observation, unregisters/detaches and runs one ordinary token-health request.
+It does not run a second full census, control policy, replay, C2, C3 or E5.
+The existing source113 zero journal remains zero; visibility is not a hit.
+
+The a2 candidate built successfully with completion SHA
+`93f5159839db7899c4725c182790566bd9364437f4cb734135f7ef51c49aa3b3`.
+This observer changes its compiled inner API and needs a separate fresh build.
+It does not change kernel recurrence, SplitCore, physical core attributes or
+the control/replay key policy. No old normal result authorizes the new package.
+
+## Exact boundary and remaining limit
+
+The actual a2-generated `aclnnInner_fused_infer_attention_score.cpp` SHA is
+`d35f8b60d1ad50d97b7cf0d2050be5c23fd0d53eba77a58c053c184d96af4fe2`.
+Its normal IntArray API, not the separate Tensor API, is patched before the
+original compiler runs. Any other bytes fail closed. It directly wraps the
+existing cached typed calls and original arguments once:
+
+1. Actual Q/K/V/mask, lengths, optional pointers and scalar attributes.
+2. `aclnnContiguousGetWorkspaceSize` with the actual noncontiguous list. Its V
+   descriptor must be the exact original descriptor, not a clone by value.
+3. The actual child executor and `GetWorkspaceOffsets()` while that child is
+   alive, followed by `NnopbaseRunForWorkspace` and the true GWS return.
+4. `aclnnContiguous` with the actual allocated child workspace, child executor,
+   current offsets and stream, followed by its real return.
+5. `NnopbaseRunWithWorkspace` and the real API return. No child descriptor is
+   dereferenced after its execute returned.
+
+Python holds the actual input and returned tensor objects until the existing
+scope synchronization and owned cleanup finish. PID, process start ticks,
+Python ident, native TID, request, module object, owner/generation and token are
+distinct recorded fields. Query neither samples nor releases them. Partial
+environment installation and failed removal retain a per-entry ledger and
+strong references for retry; a foreign value/model/thread cannot release them.
+
+The independent stdlib reader checks all 14 records, raw begin/launch/end,
+fresh/cached binder history including conflicts, and both registered ELFs and
+entry code bytes. It decodes only the fresh FIA entry ABI and the source-pinned
+opbase ListTensorDesc (`indv_args.cpp` SHA
+`b54c905c4cda0d049892b3ade7edd0aa51dce3452caf2dcf233722e892288fa5`).
+It joins actual public Q/K/mask/output pointers, the prepared V address from
+the current child workspace/offset, and the actual FIA dynamic-list bytes.
+The NNOPBASE owner must have reviewed production SHA
+`6dc3b4fcfcf57b10be0018e89f4edbc079f02b4bb0aaadb109df350939fd4c99`.
+The actual Contiguous owner is checked against the explicitly supplied,
+hashed production-library manifest. A same-file path alias is accepted only
+with the actual device/inode mapping equality; missing mappings remain errors.
+
+Slice's unknown POD is not decoded. Its actual registered entry and launch
+must lie inside the observed original typed Contiguous execution on the same
+stream. This is source-bound copy/consumer lineage, not a byte readback of
+prepared V or proof of arbitrary runtime entrypoints. The selected normal FIA
+key is read from the actual launch; no expected-key claim replaces observation.
+The reader retains any original capture gap and separately resolves raw binder
+history. It does not claim a stock/private numerical normal bridge.
+
+**Host tiling precedes Slice execution.** Completed launch observations cannot
+authorize that earlier tiling decision. `dcat_tnd28_denominator_current_input_v1`
+is still undefined and replay remains refused. This normal observer is a
+prerequisite implementation, not completion of the requested TND fault.
+
+## Root-only build, prepare, run and read
+
+Freeze the new source plus the closure below, rebuild the installed wheels and
+observer from that source, then run the existing device-free controller with a
+fresh output (never modify a2):
+
+```sh
+python3 "$SOURCE/experiments/c2c3_closure_20261117/build_tnd33_124.py" \
+  --source "$SOURCE" --interfaces "$REVIEWED_CANN851_INTERFACES" \
+  --strategy tnd28-denominator-replay --out "$R/tnd28-input-observer-build-a1"
+```
+
+The new builder first runs the original 22-row actual SplitCore checks and
+new fake-SDK typed-call/lifetime contract without a device. SDK host compilation
+uses `tnd28_input_compile.py` only for the exact generated unit. The completion
+contains `tnd28_compiled_input_observer` and its artifact SHA, all original
+vendor files, source hashes and kernel keys. A missing compiler receipt stops
+the build; no unpatched API can be relabeled as observed.
+
+Use the same reviewed Qwen3-0.6B model `/home/gyl/models/Qwen3-0.6B`.
+The production-library manifest is a small immutable file with schema
+`demoncat.tnd28.library_bytes.v1` and `files` entries containing
+`recorded_path`, actual staged `path`, `bytes`, and `sha256`. It must cover the
+original production CANN owners used by Contiguous and NNOPBASE; those files
+are mounted at their original paths, read-only. Existing staged identical
+production files may be reused after SHA verification. This is an expected
+bytes manifest, not proof that a library or function actually executed.
+
+```sh
+python3 "$SOURCE/experiments/worker_core_v11_20261118/prepare_tnd28_prepared_input.py" \
+  --source "$SOURCE" --source-manifest-sha256 "$SOURCE_SHA" \
+  --installed "$INSTALLED" --observer "$OBSERVER_BUILD" \
+  --model /home/gyl/models/Qwen3-0.6B \
+  --build-root "$NEW_BUILD_RUN" --build-sha256 "$NEW_COMPLETION_SHA" \
+  --vendor "$NEW_VENDOR" --libraries "$PRODUCTION_LIBRARIES_JSON" \
+  --libraries-sha256 "$PRODUCTION_LIBRARIES_SHA" \
+  --card 5 --timeout 900 --out "$R/tnd28-one-normal-cases.json"
+```
+
+This outputs one existing-controller case plus
+`tnd28-one-normal-cases-expected-libraries.json`. The latter also pins the exact
+new private opapi at `/native/op_api/lib/libcust_opapi.so`. Eight CPU maximum,
+one card, 48 GiB memory, no timeout above 1800 seconds. Root uses the existing
+exclusive resource gate and serial queue; preparation starts no process or NPU.
+The case command runs `natural_tnd28_prepared_input_probe.py` with source at
+`/repo`, installed code `/installed`, build `/native-run`, vendor `/native`,
+model `/model` and owned result `/evidence/probe`. The unchanged Norm library
+is loaded first with the already reviewed `paged33_loading` coexistence helper;
+the private directory is never added to the global library search path.
+
+After normal completion, read originals on the host CPU. `TOKEN` is the one
+recorded public window token, not a chosen layer name. The reader reopens all
+original RPC files and verifies the final legacy Host receipt and token-health
+scope; a probe success flag is not proof.
+
+```sh
+python3 "$SOURCE/experiments/c2c3_closure_20261117/review_tnd28_prepared_input.py" \
+  --run "$PROBE" --result "$PROBE/result.json" \
+  --public "$PROBE/prepared_input/$TOKEN.public.json" \
+  --returned "$PROBE/prepared_input/$TOKEN.return.json" \
+  --native "$PROBE/prepared_input/$TOKEN.jsonl" \
+  --build "$NEW_BUILD_RUN/evidence/completion.json" --build-sha256 "$NEW_COMPLETION_SHA" \
+  --vendor "$NEW_VENDOR" --source "$SOURCE" --source-manifest-sha256 "$SOURCE_SHA" \
+  --libraries "$R/tnd28-one-normal-cases-expected-libraries.json" \
+  --libraries-sha256 "$EXPECTED_LIBRARIES_SHA" --out "$R/tnd28-one-normal-review-a1.json"
+```
+
+Empty/missing events, a cached route that never enters the new inner API,
+different descriptor or offset, unknown auxiliary launch, changed mapping,
+incomplete original return or retained resources stops this scope. Preserve
+all original errors. No long census retry is implied.
+
+## Next single-target F implementation
+
+After this real normal connection passes, the minimum remaining Native ABI
+must split **prepare plan** from **execute admission**. Immediately before host
+GWS, actual typed public arguments and the returned Contiguous child/offsets
+can bind a pending key plan to one live owner/token/parent. This is not a claim
+that the future copy already ran. After Contiguous returned, immediately before
+`NnopbaseRunWithWorkspace`, current allocated child workspace/offset, parent,
+stream and held public objects are available to finalize admission. Rejecting
+there also needs an actual source-reviewed executor-abort/release path and a
+retryable owner record; silently abandoning a prepared executor is not allowed.
+
+That new ABI must consume a live current-input binding and newly demonstrated
+same-package native-normal and M128-control output proofs for this one actual
+target. A saved report or source110/source105 result cannot mint it. Unknown
+route, stale request, changed input, incomplete copy or unprovable safe abort
+must stop before the replay launch. The later actual launch/POD/ELF and numerical
+readback corroborate execution; they never backdate admission. The true sum
+recurrence is already in the candidate kernel, but executable current-input
+F admission and this rejection lifetime are still unfinished.
+
+## Export and CPU validation
+
+Add the new header, compiler launcher, C++ test, public capture module, normal
+probe/preparer, independent reader, two Python tests and this document to the
+root export. Preserve existing `launch.py`, `attention28_census_raw.py`,
+`arch22_normal_bridge_evidence.py`, `queue_contract.py`, stock-census/common
+probe closure, `fia_input_journal.py`/container/metadata helpers and loading
+coexistence sources. `prepare_tnd28_prepared_input.EXTRA` is the additional
+runtime/source list. No registry, exporter, Host, Runtime or shared controller
+is modified by this increment. Raw source downloads and runtime originals are
+private material and are not committed.
+
+Short local tests (CPU only):
+
+```sh
+PYTHONPATH=src:fault39/src:.:tests:tests/worker_extension \
+TORCH_DEVICE_BACKEND_AUTOLOAD=0 python -B -m unittest \
+  test_tnd28_prepared_input test_attention28_prepared_input \
+  test_attention28_stock_census test_tnd28_denominator test_tnd28_prefill_normal \
+  test_tnd28_prefill_build test_attention28_fresh_build test_fia_binary_registration -q
+```
+
+This command plus `test_attention28_stock_census_review` passed **127 CPU tests,
+0 skips**, in 30.857 seconds on the local Windows Python environment. The
+actual a2 generated source was independently SHA-checked and patched in memory;
+the separate Tensor API body stayed unchanged. These results do not include
+execution of the new C++ header or the new SDK package.
+
+The native fake-SDK test is automatically compiled by the next builder, or
+can be run in its device-free Linux CPU image with:
+
+```sh
+g++ -std=c++17 -Wall -Wextra -Werror -pedantic -Wno-misleading-indentation \
+  -pthread "$SOURCE/fault_injection/native_adapters/attention28/fia/test_tnd28_input_observation.cpp" \
+  -ldl -o /tmp/tnd28-input-cpu-contract
+/tmp/tnd28-input-cpu-contract
+```

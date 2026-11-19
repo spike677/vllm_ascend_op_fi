@@ -156,7 +156,22 @@ Local validation after the scheduling correction: 69 CPU Python contracts passed
 normal/build and shared builder/registration contracts). All 16 retained actual source hashes matched; the patch
 applied to the seven actual source files, and removing the new denominator and
 causal insertions restored every other vector/kernel byte exactly. Raw cached
-sources and model/runtime artifacts are not committed. C++ matrix/SDK execution
-of the revised eight-core policy is still pending root's new device-free build;
-no local C++ compiler was available. The first build's original-schedule CPU
-refusal is retained above and is not converted into a pass.
+sources and model/runtime artifacts are not committed. Root's a2 device-free
+build has now completed: completion SHA
+`93f5159839db7899c4725c182790566bd9364437f4cb734135f7ef51c49aa3b3`,
+registration SHA `ca068750afcc3484fea16bf62a012cb2a9484b1149e2a5512833be746e82f637`.
+Its actual 22-row SplitCore matrix and SDK host/kernel build passed; the ten
+compiled keys include control `109000000030400003` and replay
+`119000000030400003`. The kernel SHA is
+`d99ce5e9435a3df59ff4432f53f997305638de40e4b306918f587faf8d96dd81`.
+The measured public serializer has 63 semantic fields and two actual PH padding
+fields. No NPU call, new normal bridge or F permission follows. The first
+build's original-schedule refusal is retained, not converted into a pass.
+
+The subsequently added [compiled-input normal observation](tnd28_prepared_input.md)
+is not present in a2. It requires a fresh host/opapi build, new completion and
+artifact identities, and a real normal observation. Its new C++ observer has
+not been compiled on this Windows host; the next device-free builder compiles
+and executes the dedicated fake-SDK contract before SDK compilation. Actual
+replay input admission, safe rejection lifetime and main-project binding remain
+unfinished implementation work.

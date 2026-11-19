@@ -565,6 +565,10 @@ class Builder:
             'CUSTOM_ASCEND_CANN_PACKAGE_PATH': self.sdk, 'Python3_EXECUTABLE': args.python,
             'HI_PYTHON': args.python, 'ASCEND_PYTHON_EXECUTABLE': args.python,
             'CMAKE_BUILD_TYPE': 'Release', 'CMAKE_INSTALL_PREFIX': source / 'build_out'}
+        if self.variant == TND28_REPLAY_VARIANT:
+            flags['CMAKE_CXX_COMPILER_LAUNCHER'] = ';'.join(str(x) for x in (
+                args.python,HERE/'tnd28_input_compile.py','--source',source,
+                '--evidence',self.ev,'--variant',self.variant,'--'))
         self.run('configure', ['cmake', '-S', source, '-B', build] + ['-D' + key + '=' + str(value) for key, value in flags.items()], env=self.env)
         cache = (build / 'CMakeCache.txt').read_text()
         require(re.search(r'^ENABLE_TEST:[^=\n]+=OFF$', cache, re.MULTILINE) is not None,
