@@ -1,9 +1,9 @@
 # Output39 ordinary single-task execution
 
 This implementation separates the ordinary `39.output_proxy` task from the
-retained six-stage / complete-set experiments. It is ready for integration
-review, with CPU contracts only. The inner main project is unavailable here;
-neither main-project wiring nor this new NPU request sequence is accepted yet.
+retained six-stage / complete-set experiments. Source116 passed the actual blue-zone four-request sequence and independent
+review; see [the original-record summary](output39_source116_single_task_review.md).
+The inner main project is unavailable here and its wiring remains unverified.
 Historical C1/C2 and failed cumulative C3 records are unchanged.
 
 | Item | Current result / boundary |
@@ -17,7 +17,7 @@ Historical C1/C2 and failed cumulative C3 records are unchanged.
 | Recovery | Exact owned Native restoration and zero leases, plus separately matched OFF/health hidden+logits hashes |
 | Collection | No default dump, files, msprobe, global profiler, full target inventory or control-RPC model forward |
 | Open deployment boundary | Serial eager TP1, one fresh request, bounded exclusive contiguous ND BF16 return ≤1 MiB; existing build/source-specific custom operator checks remain |
-| Main project / NPU | Implementation ready; actual wiring and new sequence not verified; all C1/C2/C3/E5 flags remain false |
+| Main project / NPU | Source116 blue-zone single-task sequence accepted; yellow wiring unverified; all C1/C2/C3/E5 flags remain false |
 
 ## Execution and unchanged guards
 
@@ -94,7 +94,7 @@ The single-return open/apply implementation was extracted into
 implementation. Existing Native recovery is reused. No Native source, ABI,
 finite guard, shared Runtime or historical experiment protocol was changed.
 
-## CPU validation and minimal 124 check
+## Historical CPU validation and the now-completed Source116 check
 
 The focused command is:
 

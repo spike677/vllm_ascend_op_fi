@@ -20,9 +20,9 @@ _SCOPES = {
     '17.spatial_padding': ('ACCEPTED_SCOPE_RETAINED',
         ['actual visual model/image request', 'accepted Torch Conv3d padding boundary'],
         'Wire the accepted single-projection Torch path; Native/E5 are not prerequisites.'),
-    '18.api_half': ('ACCEPTED_SCOPE_RETAINED',
-        ['actual source-bound RMSNorm return and consumer'],
-        'Wire the existing serving return action and bounded effect summary.'),
+    '18.api_half': ('ORDINARY_SINGLE_TARGET_SCOPE_ACCEPTED',
+        ['actual source-bound RMSNorm return and consumer', 'TP1 serial eager fresh prefill'],
+        'Source126 Qwen3-0.6B BF16 normal/F/OFF/health passed; actual yellow host wiring remains pending.'),
     '20.buffer_substitute': ('ACCEPTED_SCOPE_RETAINED',
         ['matched WeightNz/QMM ABI', 'live semantic input slot and consumer'],
         'Wire the accepted Native single target without extending its deployment bounds.'),
@@ -47,7 +47,7 @@ _SCOPES = {
         'Retain; no expansion in this delivery.'),
     '28.fia.denominator_replay': ('TND_FAULT_IMPLEMENTATION_INCOMPLETE',
         ['actual main-project TND FIA', 'real online-softmax denominator replay'],
-        'Validate the source-bound denominator kernel candidate and implement actual prepared-input/launch binding before allowing F.'),
+        'Source123 normal input/launch join passed; current Execute admission/cancellation and normal/control/F/OFF remain incomplete. F stays closed.'),
     '33.paged_decode': ('SOURCE105_SINGLE_SITE_ACCEPTED',
         ['Source105 matched paged-decode single site', 'controlled S2 strategy perturbation'],
         'Wire that single site; do not resume the 28-target group experiment.'),
@@ -68,8 +68,11 @@ def describe_delivery(mechanism):
     """Machine-readable scope, not a claim about a caller's current model."""
     state, requirements, next_step = _SCOPES[mechanism]
     selected = state not in ('UNSUPPORTED', 'HISTORICAL_ONLY')
+    from .rc1_profile import RC_ID, test_candidate
     return deepcopy(dict(
         revision=REVISION, state=state, selected_for_current_delivery=selected,
+        rc_id=RC_ID, rc1_test_candidate=test_candidate(mechanism),
+        rc1_candidate_grants_live_admission=False,
         declaration_only=True, deployment_requirements=requirements,
         live_deployment_status='NOT_EVALUATED',
         main_project_status=INTEGRATION_STATUS,

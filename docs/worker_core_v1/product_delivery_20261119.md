@@ -45,7 +45,9 @@ normal/reference/lossless/calibration_off/F/OFF，不宣称已压缩为三个bat
 18新增[普通单任务](rms18_ordinary_task.md)，公共registry按可信部署绑定选择新provider。
 normal只取首个实际RMS返回及其消费者，F仅该目标；之后RMS透传，无全层读回。
 OFF/health不安装RMS观察器，比较完整hidden/logits哈希；新任务必须建立新owner/provider。
-该运行时与旧十请求覆盖协议分开，69项CPU合同通过，新的NPU路线仍待验收。
+该运行时与旧十请求覆盖协议分开。Source126已完成蓝区四请求实测与独立原件复核，
+自动RMS返回14336个值减半，真实QKV消费者；OFF/health完整hidden/logits恢复，四轮token均576。
+[18独审](review_rms18_ordinary_source126.md)保留源与安装字节对应关系；黄区仍待接线。
 
 **仍待拆分的执行代码**：现有 TensorServingProvider、Source105仍包含资格/验收阶段协议，
 不能把它们整套包装成普通产品调用。普通请求执行与验收驱动的全面拆分尚未完成。
@@ -61,7 +63,7 @@ OFF/health不安装RMS观察器，比较完整hidden/logits哈希；新任务必
 |8 restore_offset|保留已验收范围|实际 MoE restore/routing/consumer|未接线验收|原范围通过；主项目待验|宿主接线与运行时/验收拆分|
 |15 alias_detach|当前部署不适用|真实共享存储→视图写→原base消费|无适用通路|原机制证据保留|不扫描/不造辅助模型；仅有新真实通路才重开|
 |17 spatial_padding|保留 Torch C2/C3|真实视觉模型图像请求，单投影Conv3d padding|未接线验收|原范围通过；主项目待验|接入已接受 Torch 边界，不要求新Native/E5|
-|18 api_half|普通单任务运行时与旧十请求协议已分开|首个实际 RMSNorm 返回 gain代理/consumer；共用缩放/效果出口|CPU契约通过；新路线NPU与主项目未验|CPU与原范围恢复；新路线待验|最小四请求实机验证及宿主接线|
+|18 api_half|普通单任务蓝区实测与独审通过|Qwen3-0.6B BF16 TP1 eager，首个实际RMS返回及consumer；gain代理|Source126有14336元素减半、hidden/logits变化、文本不变；黄区待验|同Worker OFF/health完整hidden/logits精确恢复，资源释放|openchamber实际宿主接线；不授多模型/全层资格|
 |20 buffer_substitute|保留已验收范围|匹配WeightNz/QMM ABI、live slot|未接线验收|原范围通过；主项目待验|宿主按实际部署选点，保留版本界限|
 |22 wrong_row|共用行/存储动作已接入|实际 fused RoPE index/consumer|CPU契约通过；主项目未验|原范围保留；主项目待验|接线和变更后对应实机检查|
 |25 reduce_scatter|不支持，已停止|无替代通信输出破坏|不适用|不适用|无本轮后续实现|
@@ -70,7 +72,7 @@ OFF/health不安装RMS观察器，比较完整hidden/logits哈希；新任务必
 |Batch shared_scale|普通W8A8新入口单点实测及原件复核通过|Qwen3-0.6B W8A8，TP1/B8首decode，自动qkv投影；六个当前作用域batch|Source118的Q有5565/8192元素变化、scale有7/8变化，实际QMM消费；主项目待验|同Worker OFF的Q/scale及完整hidden/logits哈希精确恢复，前后健康请求一致|实际宿主接线；既有Native ABI仍需作用域校准，不等待routed GMM1|
 |28 FA legal|仅历史保留|旧FA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 FIA legal|仅历史保留|旧FIA限定范围|本轮不做|旧证据保留|退出当前关键路径|
-|28 denominator_replay|TND kernel/host已构建；整条实现未完成|真实TND在线softmax分母重复累计|未验|未验|原物理核调度全部FD已拒；新22项矩阵、SDK及10个实际key构建通过，prepared-input绑定和正常对照待完成，F关闭|
+|28 denominator_replay|TND kernel/host已构建；实际正常输入关联独审通过；整条实现未完成|真实TND在线softmax分母重复累计|F未验|F/OFF未验|Source123当前对象/typed输入/实际launch关联通过；当前Execute借用、取消和故障准入仍待接通，F关闭|
 |33 paged_decode|采用Source105单点|真实paged decode，受控S2策略扰动|原单点有内部/logits变化；主项目未验|原单点精确；主项目待验|普通运行/验收拆分与宿主接线；整组路线停止|
 |39 matmul_range|保留已验收范围|匹配Native MatMul有限输入/算术边界|未接线验收|原范围通过；主项目待验|宿主接线，不声称全部8.x/9.x|
 |39 output_proxy|新独立单任务运行时已接公共registry并实测|finite检查、实际consumer、单次F及恢复|Source116实际1元素变Inf，SwiGLU消费，首token变化；主项目未验|同Worker OFF/health完整hidden/logits哈希恢复一致，资源归零|实际宿主接线；累计C3不再必做|
@@ -109,12 +111,15 @@ SplitCore检查，但嵌套CMake误拆编译launcher参数，在host包构建时
 完成回执SHA为`58dfd1021a8a77267ab94e2a3b17d0a913c22365d4f0e7d2d84ba49473485181`，
 kernel SHA仍为`d99ce5e9435a3df59ff4432f53f997305638de40e4b306918f587faf8d96dd81`。
 Source123沿用完全相同Native字节，在卡5完成一个正常请求和解除绑定后的同Worker健康请求，
-controller退出0；这仍不是输入关联或F资格。原独立reader先因单RPC约18.8MB超过16MiB
+controller退出0；单凭该退出状态不是输入关联或F资格。原独立reader先因单RPC约18.8MB超过16MiB
 而拒绝，原报告保留。后继只读解析对该固定11条协议采用单条32MiB、总计128MiB，
 解析前核全部预算并继续验证原件SHA及精确字段关联；37项相关CPU检查通过。
 小原件另显示观察器的`GetStorageFormat()`为Q/K/V/output的47（SDK NCL），mask/LSE为2（ND），
-原reader统一按ND检查过窄，正在依据实际SDK做按角色核验。当前F gate仍拒绝，
-分母故障的当前输入授权及取消路径尚未完成。
+原reader统一按ND检查过窄，后继依据实际SDK做按角色核验，并核对实际安装链接及
+K/V描述符逻辑shape。Source127离线reader对同一批原件完整复核通过，详见
+[Source123正常关联总结](tnd28_source123_normal_review.md)。11条RPC、Host、14条typed事件、
+当前public对象及实际launch已对应；未执行F，未证明stock/private数值相等或M128对照。
+当前F gate仍拒绝，分母故障的当前输入授权及取消路径尚未完成。
 
 ## 每项通过及停止条件
 
@@ -145,7 +150,7 @@ Host/Runtime单点、实际请求模拟、恢复和源码交付闭包。CPU fixt
 不作为124或实际主项目验收。后续新增65项39/量化合同全部通过；源码包29项中28通过、
 1项Windows符号链接权限跳过。Source116已有上述39 NPU实测；量化首轮加载失败0F，
 Source117加载/normal通过但reference在admission前拒绝，仍为0F；Source118六阶段及健康实测通过，
-28只有无设备构建。普通量化frame修复的67项定向CPU通过；当前请求显示修复的97项组合通过。
+28完成上述正常输入关联，尚无F验收。普通量化frame修复的67项定向CPU通过；当前请求显示修复的97项组合通过。
 没有新增msprobe原始数据或完整张量发布。
 SDK接线、真实输入观察读取、构建入口及导出组合共89项，88通过、1项Windows符号链接
 权限跳过（104.571秒）；包含预期的RPC失败负例。此为CPU检查，不授予NPU或主项目资格。

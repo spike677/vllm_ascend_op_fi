@@ -1,5 +1,8 @@
 # Worker Core source integration bundle
 
+RC1用户从[统一openchamber接线说明](yellow_rc1.md)开始；本页说明可复现导出和三发行单元布局。
+后文2026-11-18检查是历史打包记录，当前RC1使用自己的冻结清单与安装回执。
+
 `tools/export_integration_bundle.py` exports a source-only handoff from an
 explicitly selected reviewed source tree. It preserves the three existing
 Python distributions and the existing NativeBuildManager, HostContracts,

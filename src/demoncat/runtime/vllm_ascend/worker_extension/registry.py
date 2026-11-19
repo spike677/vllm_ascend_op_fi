@@ -50,7 +50,8 @@ def rpc_provider_capabilities():
         if row['mechanism'] == '18.api_half':
             row.update(execution='typed_ordinary_single_target_or_explicit_validation_group',
                        ordinary_binding='install_rms18_task_binding', ordinary_scope='one_actual_rms_return',
-                       ordinary_npu_validation='PENDING', default_census=False)
+                       ordinary_npu_validation='SOURCE126_BLUE_ZONE_DECLARED_SCOPE_ACCEPTED',
+                       current_worker_qualification_inherited=False, default_census=False)
         if row['mechanism'] == '17.spatial_padding':
             row.update(optional_two_healthy_mm_census=True,
                        observation_binding='_demoncat_vision17_observation_binding',
