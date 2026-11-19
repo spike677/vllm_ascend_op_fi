@@ -260,6 +260,10 @@ class WorkerFaultRuntime:
     def _fresh(lease):
         try:
             state = lease.provider.query(owner=lease.native_owner, generation=lease.generation)
+            if isinstance(state,dict):
+                from .ordinary_evidence import bound_state
+                state=bound_state(state,ordinary=getattr(lease.provider,'ordinary_only',False))
+                if state.get('evidence_limit_error'):lease.recovery_required=True
             if not isinstance(state, dict):
                 return None
             boundary = getattr(lease.provider, 'execution_boundary', 'native')
@@ -479,6 +483,8 @@ class WorkerFaultRuntime:
                                             generation=lease.generation)
             if not isinstance(reply, dict):
                 raise TypeError('Provider action must return a dictionary')
+            from .ordinary_evidence import bound_state
+            reply = bound_state(reply,ordinary=getattr(lease.provider,'ordinary_only',False))
             reply = json.loads(_json(reply))
         except BaseException as error:
             if action == 'prepare' and isinstance(error, NativePreloadNotAttached):
@@ -500,6 +506,8 @@ class WorkerFaultRuntime:
             verified = self._quiet(state) and state['registered'] is True
         elif action in ('execute', 'enable', 'advance', 'finish', 'disable', 'abort', 'recover'):
             verified = self._quiet(state)
+        if state is not None and state.get('evidence_limit_error') and action not in _RESTORE:
+            verified = False
         if state is not None and state.get('replay_failed', False):
             verified = False
         if action in ('finish', 'disable', 'abort', 'clean', 'unregister') and lease.replay_pending:
