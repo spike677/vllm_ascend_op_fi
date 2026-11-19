@@ -60,18 +60,23 @@ normal/reference/lossless/calibration_off/F/OFF，不宣称已压缩为三个bat
 |25 reduce_scatter|不支持，已停止|无替代通信输出破坏|不适用|不适用|无本轮后续实现|
 |26 residual_stomp|选择已有Native单点路线|真实邻接、QMM writer和residual consumer|未接线验收|原单点通过；主项目待验|目标部署邻接不成立则明确不适用，不追135完整集合|
 |26 fia_destination|保留通过范围|实际FIA→当前请求残差→consumer|未接线验收|原范围通过；主项目待验|迁移时重新绑定，不继承裸地址|
-|Batch shared_scale|普通W8A8运行时已实现|匹配Qwen普通投影，TP1/B8首decode；Q/scale共同变化|CPU契约通过；新实机与主项目待验|历史单点保留；新入口待验|小型W8A8真实六batch验收，不等待routed GMM1|
+|Batch shared_scale|普通W8A8运行时已实现|匹配Qwen普通投影，TP1/B8首decode；Q/scale共同变化|CPU契约通过；首轮在模型元数据加载处拒绝，0F；主项目待验|历史单点保留；新入口待验|适配固定loader的完整逐层描述后验收，不等待routed GMM1|
 |28 FA legal|仅历史保留|旧FA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 FIA legal|仅历史保留|旧FIA限定范围|本轮不做|旧证据保留|退出当前关键路径|
-|28 denominator_replay|TND kernel/host候选已写；整条实现未完成|真实TND在线softmax分母重复累计|未验|未验|原物理核调度矩阵全部FD已拒；新完整KV-head调度构建中，实际prepared-input/launch绑定仍缺，不以输出缩放替代|
+|28 denominator_replay|TND kernel/host已构建；整条实现未完成|真实TND在线softmax分母重复累计|未验|未验|原物理核调度全部FD已拒；新22项矩阵、SDK及10个实际key构建通过，prepared-input绑定和正常对照待完成，F关闭|
 |33 paged_decode|采用Source105单点|真实paged decode，受控S2策略扰动|原单点有内部/logits变化；主项目未验|原单点精确；主项目待验|普通运行/验收拆分与宿主接线；整组路线停止|
 |39 matmul_range|保留已验收范围|匹配Native MatMul有限输入/算术边界|未接线验收|原范围通过；主项目待验|宿主接线，不声称全部8.x/9.x|
-|39 output_proxy|新独立单任务运行时已接公共registry|finite检查、实际consumer、单次F及恢复|44项相关CPU通过；新实机执行中；主项目未验|原单点通过；新入口待验|核对新四请求normal/F/OFF/health；累计C3不再必做|
+|39 output_proxy|新独立单任务运行时已接公共registry并实测|finite检查、实际consumer、单次F及恢复|Source116实际1元素变Inf，SwiGLU消费，首token变化；主项目未验|同Worker OFF/health完整hidden/logits哈希恢复一致，资源归零|实际宿主接线；累计C3不再必做|
 |41 tail_column|保留已验收范围|实际live KV尾列写读，共用postwrite后端|未接线验收|原范围通过；主项目待验|宿主接线，保留cache语义|
 
 已有成果与准确版本见 [原范围决策](../../experiments/worker_core_v11_20261118/CONVERGENCE_DECISIONS.md)、
 [33 Source105](../../experiments/worker_core_v11_20261118/ATTENTION33_SOURCE105_SINGLE_ACCEPTANCE.md)。
 39原累计失败、33外部stop部分原件、28 source113零Native输入观察均保留，未升级为成功。
+
+39新入口的[独立原件复核](output39_source116_single_task_review.md)记录：自动观察3个实际投影后
+选择首层`gate_up_proj`，单元素`0.96484375 → +Inf`；首token `576/" The" → 0/"!"`，
+OFF与health均恢复`576/" The"`。仅验证单请求首token，不授C1/C2/C3/E5或主项目资格。
+Source114首个normal的`__class__`闭包误拒仍保留为0F失败；新限定修复没有放宽Native有限值检查。
 
 ## 每项通过及停止条件
 
@@ -99,5 +104,7 @@ Windows不允许创建源码符号链接而跳过（非NPU测试）。另13项�
 
 先执行受影响的公共动作、RMS/RoPE/alias、能力查询与路由拒绝测试，再检查
 Host/Runtime单点、实际请求模拟、恢复和源码交付闭包。CPU fixture明确标为CPU，
-不作为124或实际主项目验收。本轮没有新增NPU执行、msprobe原始数据或完整张量。
+不作为124或实际主项目验收。后续新增65项39/量化合同全部通过；源码包29项中28通过、
+1项Windows符号链接权限跳过。Source116已有上述39 NPU实测；量化首轮加载失败0F，
+28只有无设备构建。没有新增msprobe原始数据或完整张量发布。
 GitHub只提交实现、测试和本总结，既有原件和Native库不进入本次提交。

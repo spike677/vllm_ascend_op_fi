@@ -57,7 +57,7 @@ _SCOPES = {
     '39.output_proxy': ('SINGLE_REQUEST_SCOPE_ACCEPTED',
         ['independent task scope', 'at most one target per request',
          'finite-before guard, actual consumer and recovery'],
-        'Validate the new four-request runtime through the public registry; wire the actual host and never reset an attempted object.'),
+        'Source116 public four-request runtime passed on Qwen3-0.6B; wire the actual host and never reset an attempted object.'),
     '41.tail_column': ('ACCEPTED_SCOPE_RETAINED',
         ['actual live KV/cache tail, writer and consumer'],
         'Reuse the accepted scope and shared Native postwrite backend.'),
