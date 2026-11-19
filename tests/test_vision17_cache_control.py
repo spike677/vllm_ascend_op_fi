@@ -32,7 +32,7 @@ class CacheControlTests(unittest.TestCase):
     def test_wrong_phase_cannot_reset(self):
         llm = PublicLLM()
         with self.assertRaisesRegex(RuntimeError, 'IDLE_DECLARED'):
-            reset_idle_mm_cache(llm, 'fault')
+            reset_idle_mm_cache(llm, 'undeclared_phase')
         self.assertEqual(llm.calls, 0)
     def test_changed_public_return_is_not_acknowledged(self):
         llm = PublicLLM(); llm.result = True

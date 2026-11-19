@@ -185,6 +185,9 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     if version != '1':
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
     require_ordinary_route(mechanism,worker,model)
+    if mechanism=='17.spatial_padding':
+        from .providers.vision17_task import Vision17TaskProvider
+        return Vision17TaskProvider(worker,model,identity)
     provider=create_research_provider(mechanism,version,worker,model,identity)
     if mechanism=='quant.batch_shared_scale':
         provider.ordinary_only=True

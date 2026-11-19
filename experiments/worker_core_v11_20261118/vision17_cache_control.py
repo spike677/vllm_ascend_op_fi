@@ -5,6 +5,7 @@ from pathlib import Path
 
 
 IDLE_PHASES = frozenset((
+    'normal', 'fault', 'off', 'health',
     'healthy_0', 'healthy_1', 'native_baseline', 'baseline', 'baseline_repeat',
     'lossless', 'c2_fault', 'c2_off', 'c3_fault_0', 'c3_fault_1', 'c3_off',
     'cleanup_healthy', 'recovery_off', 'recovery_health',

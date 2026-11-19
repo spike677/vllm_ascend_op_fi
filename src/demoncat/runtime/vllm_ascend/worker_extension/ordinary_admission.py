@@ -6,7 +6,7 @@ available for direct research use, outside this public route.
 """
 from .prerequisites import assessment, expectation, _MISSING
 
-ORDINARY = {'8.restore_offset','18.api_half','39.output_proxy','quant.batch_shared_scale'}
+ORDINARY = {'17.spatial_padding','8.restore_offset','18.api_half','39.output_proxy','quant.batch_shared_scale'}
 NON_EXECUTABLE = {
     '15.alias_detach': 'FAULT15_CURRENT_DEPLOYMENT_NO_PRIVATE_VIEW_WRITE_CHAIN',
     '25.reduce_scatter': 'FAULT25_UNSUPPORTED_NO_SUBSTITUTE',
@@ -32,6 +32,13 @@ def ordinary_route_report(mechanism, worker=None, model=None):
                 if binding is not None:
                     actual=(type(binding) is TensorServingBinding and binding.runtime_only is True
                             and binding.worker is worker and binding.model is model)
+            elif mechanism=='17.spatial_padding':
+                from .providers.vision17_task import Vision17TaskBinding, ATTRIBUTE
+                binding=getattr(worker,ATTRIBUTE,None)
+                if binding is not None:
+                    actual=(type(binding) is Vision17TaskBinding and binding.worker is worker and binding.model is model
+                        and not hasattr(worker,'_demoncat_vision17_group_binding')
+                        and not hasattr(worker,'_demoncat_vision17_observation_binding'))
             elif mechanism=='39.output_proxy':
                 from .serving39_output import Output39ServingBinding, _ATTRIBUTE
                 binding=getattr(worker,_ATTRIBUTE,None)
@@ -46,7 +53,8 @@ def ordinary_route_report(mechanism, worker=None, model=None):
                 if hasattr(worker,'_dcat_quant_binding'):
                     actual=(marker is model and model is not None)
         checks.append(expectation('deployment_identity','typed_ordinary_binding',True,actual,
-                      {'8.restore_offset':'MOE8_ORDINARY_BINDING_REQUIRED',
+                      {'17.spatial_padding':'VISION17_ORDINARY_BINDING_REQUIRED',
+                       '8.restore_offset':'MOE8_ORDINARY_BINDING_REQUIRED',
                        '18.api_half':'RMS18_ORDINARY_BINDING_REQUIRED',
                        '39.output_proxy':'OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED',
                        'quant.batch_shared_scale':'QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED'}[mechanism]))
