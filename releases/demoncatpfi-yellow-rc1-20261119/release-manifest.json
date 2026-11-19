@@ -1,0 +1,1242 @@
+{
+  "schema": "demoncat.yellow_rc1.release.v1",
+  "release_id": "demoncatpfi-yellow-rc1-20261119",
+  "source_commit": "a315d89c962c93eacd61546bb9188a3fdbe424a2",
+  "freeze_policy": "IMMUTABLE_AFTER_PUBLICATION_NEW_RC_FOR_CHANGES",
+  "delivery_commit": "See the annotated release tag; distinct from source_commit",
+  "source_files": 773,
+  "implementation_version": "1",
+  "distributions": {
+    "demoncatpfi": "0.2.0",
+    "demoncat-worker-extension": "0.1.0",
+    "demoncat-fault39-core": "0.1.0"
+  },
+  "files": [
+    {
+      "path": "demoncatpfi-yellow-rc1-20261119.tar.gz",
+      "bytes": 2551260,
+      "sha256": "694f9007f79018242744b1ffad96ff38d63f40006b0cb31dc448ef4e4e74a702"
+    },
+    {
+      "path": "install-summary.json",
+      "bytes": 48076,
+      "sha256": "b50b6964284479474dd08510df00718af101d40c898d9e292b0841373204fe24"
+    },
+    {
+      "path": "source-review.json",
+      "bytes": 153150,
+      "sha256": "4e7d97803a5d758d466b76da791cf2dd09e15cdf77625fd42930be68842cb7bf"
+    },
+    {
+      "path": "wheels/demoncat_fault39_core-0.1.0-py3-none-any.whl",
+      "bytes": 49096,
+      "sha256": "973f042f32875f29209f3cc2f927b6daa69869312e2b618edd75767a22212f59"
+    },
+    {
+      "path": "wheels/demoncat_worker_extension-0.1.0-py3-none-any.whl",
+      "bytes": 466417,
+      "sha256": "1d5c140974626d454b8e6647cd0f68fa07bba5c200882b083b921e13674d9bc4"
+    },
+    {
+      "path": "wheels/demoncatpfi-0.2.0-py3-none-any.whl",
+      "bytes": 812841,
+      "sha256": "62d491173e246f3ae09d9e6e330c1cf4292616bee2b0368b7317aeb17af811b4"
+    }
+  ],
+  "capabilities": [
+    {
+      "mechanism": "8.restore_offset",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "8.restore_offset",
+        "implementation_version": "1",
+        "operators": [
+          "torch_npu.npu_moe_token_unpermute"
+        ],
+        "attachment": "owned_python_hooks",
+        "execution": "reviewed_natural_serving_group_real_enqueue_required",
+        "execution_boundary": "python_hook",
+        "natural_model_verified": false,
+        "legacy_replay_fallback": false,
+        "historical_qualification_inherited": false,
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ACCEPTED_SCOPE_RETAINED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "actual MoE restore indices, routing weights and consumer"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Wire the existing accepted serving mapping into the actual host."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ACCEPTED_SCOPE_RETAINED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "actual MoE restore indices, routing weights and consumer"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Wire the existing accepted serving mapping into the actual host."
+      },
+      "mechanism_boundary": "MoE restore indices/top-k mapping",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "RETAINED_SCOPE_FOLLOWUP_ADAPTATION"
+    },
+    {
+      "mechanism": "15.alias_detach",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "15.alias_detach",
+        "implementation_version": "1",
+        "operators": [
+          "aten.as_strided",
+          "aten.copy_",
+          "base_consumer"
+        ],
+        "attachment": "owned_python_hooks",
+        "execution": "trusted_synchronous_tensor_replay_required",
+        "execution_boundary": "python_hook",
+        "natural_model_verified": false,
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "NO_APPLICABLE_TARGET_IN_CURRENT_DEPLOYMENT",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "live shared storage",
+            "real subsequent view write and original-base consumer"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Use only a discovered real write/read path; do not construct a substitute model."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "NO_APPLICABLE_TARGET_IN_CURRENT_DEPLOYMENT",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "live shared storage",
+          "real subsequent view write and original-base consumer"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Use only a discovered real write/read path; do not construct a substitute model."
+      },
+      "mechanism_boundary": "as_strided view construction",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "NO_APPLICABLE_CURRENT_DEPLOYMENT"
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "17.spatial_padding",
+        "implementation_version": "1",
+        "operators": [
+          "torch.nn.Conv3d"
+        ],
+        "attachment": "owned_python_hooks",
+        "execution": "trusted_synchronous_tensor_replay_required",
+        "execution_boundary": "python_hook",
+        "natural_model_verified": false,
+        "optional_two_healthy_mm_census": true,
+        "observation_binding": "_demoncat_vision17_observation_binding",
+        "group_binding": "_demoncat_vision17_group_binding",
+        "group_scope": "actual_single_projection_fresh_mm_requests",
+        "group_native_qualification": false,
+        "census_grants_fault_admission": false,
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ACCEPTED_SCOPE_RETAINED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "actual visual model/image request",
+            "accepted Torch Conv3d padding boundary"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Wire the accepted single-projection Torch path; Native/E5 are not prerequisites."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ACCEPTED_SCOPE_RETAINED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "actual visual model/image request",
+          "accepted Torch Conv3d padding boundary"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Wire the accepted single-projection Torch path; Native/E5 are not prerequisites."
+      },
+      "mechanism_boundary": "Functional.conv3d padding argument",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "RETAINED_SCOPE_FOLLOWUP_ADAPTATION"
+    },
+    {
+      "mechanism": "18.api_half",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "18.api_half",
+        "implementation_version": "1",
+        "operators": [
+          "torch.nn.RMSNorm"
+        ],
+        "attachment": "owned_python_hooks",
+        "execution": "typed_ordinary_single_target_or_explicit_validation_group",
+        "execution_boundary": "python_hook",
+        "natural_model_verified": false,
+        "legacy_replay_fallback": false,
+        "historical_qualification_inherited": false,
+        "ordinary_binding": "install_rms18_task_binding",
+        "ordinary_scope": "one_actual_rms_return",
+        "ordinary_npu_validation": "SOURCE126_BLUE_ZONE_DECLARED_SCOPE_ACCEPTED",
+        "current_worker_qualification_inherited": false,
+        "default_census": false,
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ORDINARY_SINGLE_TARGET_SCOPE_ACCEPTED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": true,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "actual source-bound RMSNorm return and consumer",
+            "TP1 serial eager fresh prefill"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Source126 Qwen3-0.6B BF16 normal/F/OFF/health passed; actual yellow host wiring remains pending."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ORDINARY_SINGLE_TARGET_SCOPE_ACCEPTED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": true,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "actual source-bound RMSNorm return and consumer",
+          "TP1 serial eager fresh prefill"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Source126 Qwen3-0.6B BF16 normal/F/OFF/health passed; actual yellow host wiring remains pending."
+      },
+      "mechanism_boundary": "RMSNorm module return gain proxy",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "READY_FOR_YELLOW_DEPLOYMENT_TEST"
+    },
+    {
+      "mechanism": "20.buffer_substitute",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "20.buffer_substitute",
+        "implementation_version": "1",
+        "operators": [
+          "aclnnMatmulWeightNz",
+          "aclnnQuantMatmulWeightNz"
+        ],
+        "attachment": "process_preload",
+        "execution": "trusted_single_worker_replay",
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ACCEPTED_SCOPE_RETAINED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "matched WeightNz/QMM ABI",
+            "live semantic input slot and consumer"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Wire the accepted Native single target without extending its deployment bounds."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ACCEPTED_SCOPE_RETAINED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "matched WeightNz/QMM ABI",
+          "live semantic input slot and consumer"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Wire the accepted Native single target without extending its deployment bounds."
+      },
+      "mechanism_boundary": "CANN executor semantic slot",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "RETAINED_SCOPE_FOLLOWUP_ADAPTATION"
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "22.wrong_row",
+        "implementation_version": "1",
+        "operators": [
+          "vllm::npu_rotary_embedding.positions",
+          "RoPE_consumer"
+        ],
+        "attachment": "owned_python_hooks",
+        "execution": "reviewed_fused_serving_group_real_enqueue_required",
+        "execution_boundary": "python_hook",
+        "natural_model_verified": false,
+        "variant_selection": "actual_source_bound_fused_calls",
+        "legacy_lookup_fallback": false,
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ACCEPTED_SCOPE_RETAINED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "actual fused RoPE position/index/consumer mapping"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Reuse the accepted actual-call mapping with the common row/storage actions."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ACCEPTED_SCOPE_RETAINED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "actual fused RoPE position/index/consumer mapping"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Reuse the accepted actual-call mapping with the common row/storage actions."
+      },
+      "mechanism_boundary": "IndexSelect returned row proxy",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "RETAINED_SCOPE_FOLLOWUP_ADAPTATION"
+    },
+    {
+      "mechanism": "25.reduce_scatter",
+      "implementation_version": "1",
+      "rpc_available": false,
+      "entrypoint": null,
+      "route": null,
+      "status": "UNSUPPORTED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "UNSUPPORTED",
+        "selected_for_current_delivery": false,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Stopped; no communication-output corruption substitute."
+      },
+      "mechanism_boundary": "collective reduction",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "UNSUPPORTED"
+    },
+    {
+      "mechanism": "26.residual_stomp",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "26.residual_stomp",
+        "implementation_version": "1",
+        "operators": [
+          "aclnnQuantMatmulWeightNz"
+        ],
+        "attachment": "reviewed_process_preload",
+        "execution": "trusted_serial_fresh_prefill_live_residual_required",
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ACCEPTED_SCOPE_RETAINED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "matched Native QMM",
+            "live allocator adjacency",
+            "exact residual consumer/recovery"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Prefer the accepted Native single target; report inapplicable if adjacency is absent."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ACCEPTED_SCOPE_RETAINED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "matched Native QMM",
+          "live allocator adjacency",
+          "exact residual consumer/recovery"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Prefer the accepted Native single target; report inapplicable if adjacency is absent."
+      },
+      "mechanism_boundary": "native output allocation",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "RETAINED_SCOPE_FOLLOWUP_ADAPTATION"
+    },
+    {
+      "mechanism": "26.fia_destination",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "26.fia_destination",
+        "implementation_version": "1",
+        "operators": [
+          "aclnnFusedInferAttentionScoreV3"
+        ],
+        "attachment": "reviewed_process_preload",
+        "execution": "trusted_serial_fresh_prefill_deployment_required",
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ACCEPTED_SCOPE_RETAINED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "actual FIA writer",
+            "current-request live residual destination/consumer"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Rebind live objects in the actual deployment; reuse accepted lifecycle and output."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ACCEPTED_SCOPE_RETAINED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "actual FIA writer",
+          "current-request live residual destination/consumer"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Rebind live objects in the actual deployment; reuse accepted lifecycle and output."
+      },
+      "mechanism_boundary": "FIA output destination proxy",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "RETAINED_SCOPE_FOLLOWUP_ADAPTATION"
+    },
+    {
+      "mechanism": "quant.batch_shared_scale",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "quant.batch_shared_scale",
+        "implementation_version": "1",
+        "operators": [
+          "aclnnDynamicQuantV2"
+        ],
+        "attachment": "reviewed_v2_only_vendor",
+        "execution": "trusted_first_b8_decode_embedding_norm_lineage_required",
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ORDINARY_W8A8_SINGLE_SITE_ACCEPTED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": true,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "matched Qwen W8A8 ordinary projection",
+            "TP1 B8 pure decode",
+            "real dynamic quantization with jointly updated Q and scale"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Source118 ordinary Qwen3-0.6B TP1/B8 first-decode Q/scale effect and same-Worker OFF passed; actual host wiring remains pending."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ORDINARY_W8A8_SINGLE_SITE_ACCEPTED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": true,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "matched Qwen W8A8 ordinary projection",
+          "TP1 B8 pure decode",
+          "real dynamic quantization with jointly updated Q and scale"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Source118 ordinary Qwen3-0.6B TP1/B8 first-decode Q/scale effect and same-Worker OFF passed; actual host wiring remains pending."
+      },
+      "mechanism_boundary": "native quantization reduction",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "READY_FOR_YELLOW_DEPLOYMENT_TEST"
+    },
+    {
+      "mechanism": "28.fa.legal_tiling",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "28.fa.legal_tiling",
+        "implementation_version": "1",
+        "operators": [
+          "torch_npu.npu_fusion_attention_v3"
+        ],
+        "attachment": "owner_scoped_actual_model_module_api",
+        "execution": "trusted_actual_attention_census_and_matched_native_baseline",
+        "natural_model_verified": false,
+        "fault_execution_ready": false,
+        "fault_admission": "new_actual_stock_private_bridge_required",
+        "executable_stages": [
+          "actual_call_observation",
+          "matched_native_baseline"
+        ],
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "HISTORICAL_ONLY",
+          "selected_for_current_delivery": false,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "previous pinned FA scope"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Retain; no expansion in this delivery."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "HISTORICAL_ONLY",
+        "selected_for_current_delivery": false,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "previous pinned FA scope"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Retain; no expansion in this delivery."
+      },
+      "mechanism_boundary": "FA S1S2 host policy",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "HISTORICAL_ONLY"
+    },
+    {
+      "mechanism": "28.fia.legal_tiling",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "28.fia.legal_tiling",
+        "implementation_version": "1",
+        "operators": [
+          "torch_npu.npu_fused_infer_attention_score"
+        ],
+        "attachment": "owner_scoped_actual_model_module_api",
+        "execution": "trusted_actual_attention_census_and_matched_native_baseline",
+        "natural_model_verified": false,
+        "fault_execution_ready": false,
+        "fault_admission": "new_actual_stock_private_bridge_required",
+        "executable_stages": [
+          "actual_call_observation",
+          "matched_native_baseline"
+        ],
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "HISTORICAL_ONLY",
+          "selected_for_current_delivery": false,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "previous pinned FIA scope"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Retain; no expansion in this delivery."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "HISTORICAL_ONLY",
+        "selected_for_current_delivery": false,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "previous pinned FIA scope"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Retain; no expansion in this delivery."
+      },
+      "mechanism_boundary": "FIA host M/S2 selection",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "HISTORICAL_ONLY"
+    },
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "28.fia.denominator_replay",
+        "implementation_version": "1",
+        "operators": [
+          "torch_npu.npu_fused_infer_attention_score"
+        ],
+        "attachment": "owner_scoped_actual_model_module_api",
+        "execution": "trusted_actual_attention_census_and_matched_native_baseline",
+        "natural_model_verified": false,
+        "fault_execution_ready": false,
+        "fault_admission": "new_actual_stock_private_bridge_required",
+        "executable_stages": [
+          "actual_call_observation",
+          "matched_native_baseline"
+        ],
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "TND_FAULT_IMPLEMENTATION_INCOMPLETE",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "actual main-project TND FIA",
+            "real online-softmax denominator replay"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Source123 normal input/launch join passed; current Execute admission/cancellation and normal/control/F/OFF remain incomplete. F stays closed."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "TND_FAULT_IMPLEMENTATION_INCOMPLETE",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "actual main-project TND FIA",
+          "real online-softmax denominator replay"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Source123 normal input/launch join passed; current Execute admission/cancellation and normal/control/F/OFF remain incomplete. F stays closed."
+      },
+      "mechanism_boundary": "FIA native online softmax",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "IMPLEMENTATION_INCOMPLETE_DEFAULT_REFUSED"
+    },
+    {
+      "mechanism": "33.paged_decode",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "33.paged_decode",
+        "implementation_version": "1",
+        "operators": [
+          "torch_npu.npu_fused_infer_attention_score"
+        ],
+        "attachment": "owner_scoped_actual_model_module_api",
+        "execution": "trusted_actual_attention_census_and_matched_native_baseline",
+        "natural_model_verified": false,
+        "fault_execution_ready": true,
+        "fault_admission": "CURRENT_LIVE_SINGLE_SITE_NORMAL_CONTROLS_REQUIRED",
+        "executable_stages": [
+          "actual_call_observation",
+          "matched_native_baseline",
+          "single_site_fault",
+          "recovery_off"
+        ],
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "SOURCE105_SINGLE_SITE_ACCEPTED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "Source105 matched paged-decode single site",
+            "controlled S2 strategy perturbation"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Wire that single site; do not resume the 28-target group experiment."
+        },
+        "execution_scope": "SOURCE105_SINGLE_SITE_ONLY"
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "SOURCE105_SINGLE_SITE_ACCEPTED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "Source105 matched paged-decode single site",
+          "controlled S2 strategy perturbation"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Wire that single site; do not resume the 28-target group experiment."
+      },
+      "mechanism_boundary": "paged IFA SInner selection",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "RETAINED_SCOPE_FOLLOWUP_ADAPTATION"
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "39.matmul_range",
+        "implementation_version": "1",
+        "operators": [
+          "aclnnMatmul"
+        ],
+        "attachment": "process_preload",
+        "execution": "trusted_single_worker_scheduler_replay",
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ACCEPTED_SCOPE_RETAINED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "matched Native MatMul arithmetic and finite input bounds"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Wire the accepted single target; no blanket CANN-version claim."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ACCEPTED_SCOPE_RETAINED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "matched Native MatMul arithmetic and finite input bounds"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Wire the accepted single target; no blanket CANN-version claim."
+      },
+      "mechanism_boundary": "native matmul arithmetic",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "RETAINED_SCOPE_FOLLOWUP_ADAPTATION"
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "39.output_proxy",
+        "implementation_version": "1",
+        "operators": [
+          "aten.mm",
+          "aten.matmul",
+          "aten.linear"
+        ],
+        "attachment": "reviewed_public_acl_native_span",
+        "execution": "trusted_single_site_fresh_prefill_real_enqueue",
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "SINGLE_REQUEST_SCOPE_ACCEPTED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": true,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "independent task scope",
+            "at most one target per request",
+            "finite-before guard, actual consumer and recovery"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Source116 public four-request runtime passed on Qwen3-0.6B; wire the actual host and never reset an attempted object."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "SINGLE_REQUEST_SCOPE_ACCEPTED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": true,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "independent task scope",
+          "at most one target per request",
+          "finite-before guard, actual consumer and recovery"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Source116 public four-request runtime passed on Qwen3-0.6B; wire the actual host and never reset an attempted object."
+      },
+      "mechanism_boundary": "native matmul output",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "READY_FOR_YELLOW_DEPLOYMENT_TEST"
+    },
+    {
+      "mechanism": "41.tail_column",
+      "implementation_version": "1",
+      "rpc_available": true,
+      "entrypoint": "demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension",
+      "route": {
+        "mechanism": "41.tail_column",
+        "implementation_version": "1",
+        "operators": [
+          "torch_npu.npu_fused_infer_attention_score"
+        ],
+        "attachment": "reviewed_public_acl_native_span",
+        "execution": "trusted_first_decode_live_kv_group_real_enqueue_required",
+        "current_delivery": {
+          "revision": "product-integration-20261119",
+          "state": "ACCEPTED_SCOPE_RETAINED",
+          "selected_for_current_delivery": true,
+          "rc_id": "demoncatpfi-yellow-rc1-20261119",
+          "rc1_test_candidate": false,
+          "rc1_candidate_grants_live_admission": false,
+          "declaration_only": true,
+          "deployment_requirements": [
+            "actual live KV/cache tail, writer and consumer"
+          ],
+          "live_deployment_status": "NOT_EVALUATED",
+          "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+          "actual_project_effect": "NOT_VERIFIED",
+          "actual_project_off": "NOT_VERIFIED",
+          "historical_acceptance_inherited": false,
+          "product_closed": false,
+          "next_step": "Reuse the accepted scope and shared Native postwrite backend."
+        }
+      },
+      "status": "DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED",
+      "current_delivery": {
+        "revision": "product-integration-20261119",
+        "state": "ACCEPTED_SCOPE_RETAINED",
+        "selected_for_current_delivery": true,
+        "rc_id": "demoncatpfi-yellow-rc1-20261119",
+        "rc1_test_candidate": false,
+        "rc1_candidate_grants_live_admission": false,
+        "declaration_only": true,
+        "deployment_requirements": [
+          "actual live KV/cache tail, writer and consumer"
+        ],
+        "live_deployment_status": "NOT_EVALUATED",
+        "main_project_status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+        "actual_project_effect": "NOT_VERIFIED",
+        "actual_project_off": "NOT_VERIFIED",
+        "historical_acceptance_inherited": false,
+        "product_closed": false,
+        "next_step": "Reuse the accepted scope and shared Native postwrite backend."
+      },
+      "mechanism_boundary": "cached tail/state",
+      "target_selection": "actual_objects_and_calls",
+      "qualification_required": true,
+      "qualification_granted": false,
+      "diagnostic_limits": [
+        "A catalog or structural candidate is not an observed eligible call.",
+        "A registered factory is not proof that its deployment matches this Worker.",
+        "C1, C2, C3, Recovery and E5 remain independently reported."
+      ],
+      "rc1_classification": "RETAINED_SCOPE_FOLLOWUP_ADAPTATION"
+    }
+  ],
+  "native_dependencies": {
+    "acquisition": "BUILD_FROM_INCLUDED_RECIPE_IN_MATCHED_YELLOW_ENVIRONMENT",
+    "output39": {
+      "recipe": "postwrite.output.acl.v1",
+      "reference_library_sha256": "9261d0867f822c90d0d179457e41bc9a2b132bc39e643b61fe5d47a3fd81424f",
+      "reference_build_key": "05e6a510efa3a8ac8f4a7c3f77056af2027137a3d90440cc36ec31f90af1ccbf"
+    },
+    "quant": {
+      "recipe": "experiments/c2c3_closure_20261117/providers_quant_build_group.py",
+      "reference_build_source": "46cd8ad153ad07ce1057cfcbac73d7d9fb76e226",
+      "reference_build_manifest_sha256": "b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac",
+      "reference_library_sha256": "6eb6c19cff6006bc9cd0b1072504dc5d6b7db3a0d7b393af7c88f4db1c8bd2fd"
+    },
+    "rms18": {
+      "additional_fault_native_library_required": false
+    }
+  },
+  "blue_zone_reference_runs": {
+    "39.output_proxy": "Source116",
+    "quant.batch_shared_scale": "Source118",
+    "18.api_half": "Source126"
+  },
+  "install_scope": "LINUX_AARCH64_PY311_NO_DEVICE_PACKAGE_INSTALL_ONLY",
+  "yellow_handoff": {
+    "owner": "openchamber",
+    "direct_blue_yellow_connection": false,
+    "status": "INNER_FRAMEWORK_INTEGRATION_PENDING",
+    "wiring": {
+      "catalog": "PENDING_YELLOW_IMPLEMENTATION",
+      "controller": "PENDING_YELLOW_IMPLEMENTATION",
+      "worker_executor": "PENDING_YELLOW_IMPLEMENTATION",
+      "scheduler": "PENDING_YELLOW_IMPLEMENTATION",
+      "result_display": "PENDING_YELLOW_IMPLEMENTATION"
+    },
+    "actual_yellow_requests": 0
+  },
+  "blue_development_excluded": [
+    "069e6579 public TND ledger and later ExecuteBorrow",
+    "ordinary-paged33-20261119 unfinished acceptance"
+  ],
+  "no_new_raw_statistics": true,
+  "no_private_full_tensors": true,
+  "no_model_weights": true,
+  "no_native_binaries": true,
+  "source_git_blob_match_count": 773
+}
