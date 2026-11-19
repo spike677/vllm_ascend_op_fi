@@ -1,0 +1,62 @@
+{
+  "time": "2026-11-19T13:02:59.029039+00:00",
+  "image": "quay.io/ascend/vllm-ascend:v0.26.0rc1",
+  "arm64_digest": "sha256:7265a3a08bba26b9376a4d577015ac8d459675fb3c1eec89aef6d9a19ac219d9",
+  "compressed_layer_bytes": 6718398624,
+  "layers": 17,
+  "config_digest": "sha256:c9c9432b69767cf1855efad44f20eaa8ab02520ae05b75c936e67ea4e7eb2702",
+  "architecture": "arm64",
+  "os": "linux",
+  "labels": {
+    "org.opencontainers.image.version": "22.04"
+  },
+  "environment": [
+    "ASCEND_TOOLKIT_HOME=/usr/local/Ascend/cann-9.1.0",
+    "ASCEND_TOOLKIT_LATEST_HOME=/usr/local/Ascend/ascend-toolkit/latest",
+    "PYTHONPATH=/usr/local/Ascend/ascend-toolkit/latest/python/site-packages:/usr/local/Ascend/ascend-toolkit/latest/opp/built-in/op_impl/ai_core/tbe:/usr/local/Ascend/cann-9.1.0/python/site-packages:/usr/local/Ascend/cann-9.1.0/opp/built-in/op_impl/ai_core/tbe:",
+    "ASCEND_AICPU_PATH=/usr/local/Ascend/cann-9.1.0",
+    "ASCEND_OPP_PATH=/usr/local/Ascend/cann-9.1.0/opp",
+    "ASCEND_HOME_PATH=/usr/local/Ascend/cann-9.1.0",
+    "SOC_VERSION=ascend910b1"
+  ],
+  "uncompressed_layer_bytes": null,
+  "uncompressed_size_status": "NOT_PRESENT_IN_OCI_MANIFEST_OR_CONFIG",
+  "pull_executed": false,
+  "quay_tag_metadata": {
+    "tags": [
+      {
+        "name": "v0.26.0rc1",
+        "reversion": false,
+        "start_ts": 1788470557,
+        "manifest_digest": "sha256:243bf20fad2f4f6de56aa1b041bcdfdbe5bb9d485f3190f40f1c5d0f418fc469",
+        "is_manifest_list": true,
+        "size": null,
+        "last_modified": "Thu, 03 Sep 2026 21:22:37 -0000",
+        "is_sparse": false,
+        "child_manifest_count": 2,
+        "present_child_count": 2,
+        "child_manifests_presence": {
+          "sha256:672cc399efdf4d64800de042a62796e3a5b7269300dedb1c7c0543e33b9dfb84": true,
+          "sha256:7265a3a08bba26b9376a4d577015ac8d459675fb3c1eec89aef6d9a19ac219d9": true
+        }
+      }
+    ],
+    "page": 1,
+    "has_additional": false
+  },
+  "docker_root": "/home/docker-system\n",
+  "filesystem": "TARGET SOURCE                     FSTYPE\n/home  /dev/mapper/openeuler-home ext4\n",
+  "space": "Filesystem                     1B-blocks         Used   Available Use% Mounted on\n/dev/mapper/openeuler-home 1099911233536 977786290176 66181107712  94% /home\n",
+  "schema": "demoncat.rc2.v026.prepull_gate.v1",
+  "driver": {
+    "version": "25.5.0.b060",
+    "firmware": "7.8.0.5.201",
+    "hardware": "Ascend910B4"
+  },
+  "driver_compatibility": "UNVERIFIED_FOR_EXACT_A2_DRIVER_AND_CANN_9_1_0",
+  "projected_free_bytes": null,
+  "reserve_required_bytes": 16106127360,
+  "decision": "STOP_BEFORE_PULL_PENDING_UNCOMPRESSED_SIZE_AND_DRIVER_COMPATIBILITY",
+  "host_modified": false,
+  "existing_v018_untouched": true
+}
