@@ -106,8 +106,8 @@ After known parent release, never retry destruction through the retired
 address, even if later reporting fails. Unknown C++ unwind, foreign owner,
 failed drain or uncertain reset keeps the first error and pending owner; no
 new F or healthy/released assertion is allowed. Pointer records do not retain
-allocator storage: implementation must hold the actual workspace allocation
-through drain/cancellation, or refuse before F if that lifetime is unproven.
+allocator storage: drain/cancellation must finish within the actual original
+Execute invocation's borrowed workspace lifetime, or F must be refused.
 Public input/output strong references do not by themselves own that workspace.
 
 ## Minimal implementation in the existing Attention path
@@ -147,3 +147,43 @@ OFF/health recovery. Actual new normal/control and numerical F/OFF remain
 device evidence requirements. Immediate Attention effect and downstream
 hidden/logits propagation are reported separately; tokens alone are not a
 numerical test. This is one target only: C2, C3 and E5 stay ungranted.
+
+## Current public-input component and Execute borrow
+
+`attention28_replay_binding.ReplayInputBinding` now reads the existing
+`AttentionExecutionAdapter`'s actual synchronous API-call ledger. The ledger
+holds the original callable, positional/keyword argument objects and current
+call row; it is not supplied by RPC. The plan holds the actual Worker,
+deployment reservation, discovered module, metadata, request and Q/K/V/mask
+objects, and re-reads their values and geometry before use. Equal-value clones,
+changed inference tensors, another call, owner or thread do not satisfy it.
+Returned summaries are copies; a serialized/copy/replayed plan is not authority.
+Local public-reference release is explicitly not a Native abort receipt. Its
+F method still refuses because the two-stage Native bridge is not bound.
+
+The Native bridge needs a **borrow within the original synchronous Execute
+invocation**, not a new cross-request allocator owner. The real API caller
+supplies a valid workspace span for that call. The generated shim may borrow
+that span with its exact parent executor, stream, PID/native thread and plan,
+provided it completes same-stream drain before returning or unwinding from the
+borrow. It must neither infer allocation ownership from an address nor claim
+that public tensor references own the workspace. The installed torch_npu
+headers declare `unsafe_empty_workspace` and `RunOpApiV1/V2/V3` but do not expose
+their bodies; no caller error-path allocation lifetime beyond this invocation
+has been proven or is needed for a successfully drained borrow.
+
+On rejected post-copy admission, cancellation is performed while that borrow
+is live: drain, detach the consumed child, verify null/zero child and absent
+ViewCopy, reset the parent, then record reset return/readback. Steps are never
+repeated after their actual completion. A failed drain or unknown parent reset
+at the end of this call is terminal uncertainty for this attempt. Preserve the
+first error and diagnostic identities, prohibit further F, and erase every
+operational raw pointer when leaving the invocation. An outside cleanup RPC
+must not retry operations on that old workspace or executor address or claim
+zero Native resources. This restriction does not require keeping the allocator
+alive across requests; it prevents falsely asserting that it was kept alive.
+
+The next Native increment must be called by these existing generated Prepare/
+Execute wrappers and the existing Attention driver, with no alternate Worker
+or controller. Its CPU contracts do not replace new-package normal/control,
+actual prepared-copy/launch, failure/drain and numerical F/OFF device evidence.

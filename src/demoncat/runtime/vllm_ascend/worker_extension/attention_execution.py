@@ -75,6 +75,7 @@ class AttentionExecutionAdapter:
         self.expected = self.current = None
         self.root_active = self.callbacks = 0
         self.stack, self.parents, self.writers = [], [], {}
+        self.live_api_calls = []
         self.installed, self.target, self.needs_off = False, None, False
         self.last_error = None
         self.binding = ForwardBinding(self.model)
@@ -320,6 +321,8 @@ class AttentionExecutionAdapter:
                    actual_callable=dict(object_id=id(original), type=type(original).__module__+'.'+type(original).__qualname__),
                    native_original_call_count='UNOBSERVED_UNLESS_INDEPENDENT_LAUNCH_PRESENT',native_census=None)
         self.current['calls'].append(row)
+        live_call = (row, original, args, kwargs)
+        self.live_api_calls.append(live_call)
         try:
             self._owned()
             require(len(self.current['calls']) <= self.deployment.max_calls and self.stack,
@@ -389,6 +392,13 @@ class AttentionExecutionAdapter:
             raise
         finally:
             self.callbacks -= 1
+            if self.live_api_calls and self.live_api_calls[-1] is live_call:
+                self.live_api_calls.pop()
+            else:
+                # An altered live argument owner cannot be silently forgotten
+                # by cleanup. Retain the ledger; preserve an earlier failure.
+                self._fail(RuntimeError('ATTENTION_LIVE_API_CALL_OWNER_CHANGED'))
+                self.live_api_calls.append(live_call)
 
     def collect(self):
         self._owned()
@@ -404,7 +414,8 @@ class AttentionExecutionAdapter:
 
     def close(self):
         global _ACTIVE
-        require(threading.get_ident() == self.thread and not self.root_active and not self.callbacks,
+        require(threading.get_ident() == self.thread and not self.root_active and not self.callbacks
+                and not self.live_api_calls,
                 'ATTENTION_INFLIGHT_OR_FOREIGN_CLOSE')
         self.guard()
         require(not self.needs_off, 'ATTENTION_ACTUAL_OFF_REQUEST_REQUIRED')
@@ -437,6 +448,6 @@ class AttentionExecutionAdapter:
     def state(self):
         self._owned()
         return dict(owned_hooks=len(self.handles), owned_api_wrappers=len(self.patches),
-            inflight=int(bool(self.root_active or self.callbacks)), needs_off=self.needs_off,
+            inflight=int(bool(self.root_active or self.callbacks or self.live_api_calls)), needs_off=self.needs_off,
             pending_request=self.expected, completed_requests=len(self.rows), failures=deepcopy(self.failures),
             failed_requests=deepcopy(self.failed_requests))
