@@ -1,10 +1,13 @@
 # TND28 prepared executor: cancellation and the next single-target change
 
-Read-only source/ELF review, 2026-11-19. This document adds no executable gate,
-does not enable F, and does not qualify a normal run. The previous denominator
-candidate completed its a2 SDK build; the new compiled-input observer requires
-its own successful build and actual normal connection. Its build failures and
-source113's zero journal remain failures, not evidence of execution.
+Source/ELF review and development status, 2026-11-19. Source123's one normal
+request and health completed; the source127 independent reader reconciled its
+14 typed events and actual Slice/FIA launches without F authority (report SHA
+`e0684e5479b74ddadf47ea64d32a25ea1211429510f5aa718bbd46f40ec3d942`).
+That is a prepared-input connection, not a stock/control numerical comparison.
+The new opt-in Execute-borrow code below is a later development increment and
+has not been SDK-built or device-tested. Earlier failed builds, reader refusals
+and source113's zero journal remain unchanged. This work is outside RC1.
 
 ## Exact evidence and types
 
@@ -49,6 +52,13 @@ neither was loaded or executed. They are from the fixed production image:
 * `libopapi.so`, 37,858,936 bytes, SHA
   `b3890625d3e0cc11ef32460083698ecaa8f702b5edd0169ea617e2e6bb76270c`:
   `aclnnContiguous` at `0xda1458` calls CommonOpExecutorRun at `0xda14d4`.
+  This is an earlier inspected entry, not Source123's actual selected callee.
+* Source123 actually used `libopapi_math.so`, 12,724,232 bytes, SHA
+  `41491a387787f74a02af9c6aeefc220fe713b2c430334c48e3c4211e764026d4`.
+  Its `aclnnContiguous` at `0x8c3758` calls CommonOpExecutorRun through the PLT
+  at `0x8c37d4`, retains the status in w21 across its guard destructor, then
+  returns that status at `0x8c380c`. The exception path only destroys the guard
+  and resumes unwinding; it does not establish that the child returned.
 * `libnnopbase.so`, 4,000,424 bytes, SHA
   `6dc3b4fcfcf57b10be0018e89f4edbc079f02b4bb0aaadb109df350939fd4c99`:
   CommonOpExecutorRun is at `0x1c9f08`. Its nonrepeat path invokes the deleting
@@ -60,6 +70,8 @@ neither was loaded or executed. They are from the fixed production image:
   `NnopbaseGetViewCopyExecutor` are actual exports. The child setter writes
   null/zero without dereferencing a null child. Parent reset then clears args
   and marks the pool slot idle; it does not free the parent allocation.
+  Actual exports also include `aclOpExecutor::GetMagicNumber` at `0x1bca60`
+  and `aclOpExecutor::IsRepeatable() const` at `0x1bc470`.
 
 Source and ELF both show that parent reset may inspect/delete the child and
 then clear the parent even when child cleanup reports an error. Therefore a
@@ -187,3 +199,71 @@ The next Native increment must be called by these existing generated Prepare/
 Execute wrappers and the existing Attention driver, with no alternate Worker
 or controller. Its CPU contracts do not replace new-package normal/control,
 actual prepared-copy/launch, failure/drain and numerical F/OFF device evidence.
+
+## Opt-in executable borrow increment (development only)
+
+`tnd28_execute_borrow.h` now calls the real SDK `GetUnCont`/`GetViewCopy`,
+`GetMagicNumber`/`IsRepeatable`, `aclrtSynchronizeStream`, child setter and
+public executor destructor. The generated Execute wrapper supplies its actual
+parent, full workspace span and stream. Normal execution drains before parent
+run and again after its return; readback must confirm the original parent path
+cleared both child fields. A pre-parent refusal can cancel the still-live child
+through its parent, or detach an already consumed child before parent reset.
+Failed drain, unknown unwind or uncertain reset is terminal for this attempt.
+Every operational pointer is erased on leaving Execute; no cleanup RPC can
+retry an old pointer. First errors and completed cancellation steps remain in
+the receipt. Original functions remain once-only with their original arguments.
+
+The private API exports only a bounded, read-only same-thread return query:
+`dcat_tnd28_execute_borrow_query_v1(token, buffer, capacity)`. The existing
+`PreparedInputCapture` opt-in uses `RTLD_NOLOAD`, the exact library hash/symbol
+and current mapping identity. It joins that live return to the public plan;
+it does not read a saved log to mint cleanup or F authority. It retains owner
+and public references on an uncertain query or Native outcome. Local cleanup
+before original API entry releases references without querying a nonexistent
+Execute. The ordinary observer mode remains the default.
+
+Full public value reads happen before entering the Native observation scope.
+Inside that scope the plan checks only actual object, storage/view metadata and
+scalar identity, and says so in `last_check_read_input_values=false`. This
+avoids introducing a `.cpu()`/contiguous transfer kernel into the supposedly
+original launch window. The existing census reads full input values again
+outside the scope. Neither metadata-only check is a numerical-input permission
+for F; the versioned live Native admission is still pending.
+
+The fresh builder runs `test_tnd28_execute_borrow.cpp` before SDK compilation.
+Its fourteen CPU cases cover normal return, before/after-copy cancellation,
+returned errors, failed drain, before/after detach failures, reset uncertainty,
+post-reset readback failure, unknown unwind, foreign thread, repeatable child,
+workspace geometry and post-parent failure. They are CPU seams, not device
+evidence; this increment has not run that C++ executable locally. Python
+contracts exercise the real Attention wrapper, bounded live query seam,
+same-object plan, uncertainty retention and safe query retry without another
+original invocation.
+
+When the combined candidate is ready, root uses its existing device-free
+controller, with a new source snapshot and fresh output directory:
+
+```sh
+python3 SOURCE/experiments/c2c3_closure_20261117/build_tnd33_124.py \
+  --source SOURCE --interfaces EXACT_SDK_INTERFACE_JSON \
+  --out FRESH_BUILD_ROOT --strategy tnd28-denominator-replay
+```
+
+The existing `prepare_tnd28_prepared_input.py` accepts its unchanged required
+source/build/model/observer/library arguments plus `--execute-borrow`. It emits
+`tnd28-one-prepared-input-borrow-normal`: one selected actual TND call under the
+borrow guard, the other 27 natural calls retained, then existing public cleanup
+and ordinary health. No new controller, Worker, shape, kernel or F mode is
+introduced. New closure members are `tnd28_execute_borrow.h`, its C++ test,
+`attention28_replay_binding.py` and the two new Python contract modules. The
+actual generated-unit `.d` must include the borrow header; both CPU fixture
+macros are rejected in a production compile.
+
+This is **not yet the complete replay admission**. Before requesting the next
+SDK/device window, add a versioned public-to-typed Prepare plan and post-copy
+Execute admission, with new-package live normal/control comparisons in the
+same Worker. The current `current_input_v1` remains unimplemented and F stays
+closed. Do not use the Source123 report, an environment mode or a future launch
+to authorize an earlier GWS. Stock/private normal, M128 control, qualification
+OFF, one F, recovery OFF and health retain separate observations and gates.

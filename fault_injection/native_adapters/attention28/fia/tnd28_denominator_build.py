@@ -39,6 +39,14 @@ def configure(builder,source_in,base):
 
 def cpu_checks(builder,base):
     ev=builder.ev;here=base.HERE
+    borrow=ev/'tnd28_execute_borrow_contract'
+    builder.run('tnd28_execute_borrow_compile',['g++','-std=c++17','-Wall','-Wextra','-Werror','-pedantic',
+        '-pthread',here/'test_tnd28_execute_borrow.cpp','-o',borrow],env=builder.env)
+    builder.run('tnd28_execute_borrow_contract',[borrow],env=builder.env)
+    base.require((ev/'tnd28_execute_borrow_contract.log').read_text().strip()==
+        'PASS_CPU_TND28_EXECUTE_BORROW_NO_DEVICE_NO_F','TND28_EXECUTE_BORROW_CPU_CONTRACT')
+    builder.report['tnd28_execute_borrow_header_sha256']=base.sha(here/'tnd28_execute_borrow.h')
+    builder.report['tnd28_execute_borrow_cpu_log_sha256']=base.sha(ev/'tnd28_execute_borrow_contract.log')
     observer=ev/'tnd28_input_observation_contract'
     builder.run('tnd28_input_observation_compile',['g++','-std=c++17','-Wall','-Wextra','-Werror','-pedantic',
         '-Wno-misleading-indentation','-pthread',here/'test_tnd28_input_observation.cpp','-ldl','-o',observer],env=builder.env)
@@ -82,6 +90,18 @@ def cpu_checks(builder,base):
 
 def finish_check(builder,base):
     ev=builder.ev;report=builder.report
+    private=builder.vendor/'op_api/lib/libcust_opapi.so'
+    builder.run('tnd28_execute_borrow_exports',['nm','-D','--defined-only',private],env=builder.env)
+    exports=(ev/'tnd28_execute_borrow_exports.log').read_text().splitlines()
+    query=[line.split() for line in exports if line.split() and
+        line.split()[-1].split('@',1)[0]=='dcat_tnd28_execute_borrow_query_v1']
+    base.require(len(query)==1 and len(query[0])==3 and query[0][1]=='T','TND28_LIVE_BORROW_QUERY_NOT_EXPORTED')
+    report['tnd28_execute_borrow_query']=dict(symbol='dcat_tnd28_execute_borrow_query_v1',
+        library_sha256=base.sha(private),exports_sha256=base.sha(ev/'tnd28_execute_borrow_exports.log'),
+        read_only=True,fault_authorized=False)
+    base.require(report['tnd28_execute_borrow_header_sha256']==base.sha(base.HERE/'tnd28_execute_borrow.h')
+        and report['tnd28_execute_borrow_cpu_log_sha256']==base.sha(ev/'tnd28_execute_borrow_contract.log'),
+        'TND28_EXECUTE_BORROW_BUILD_EVIDENCE_CHANGED')
     spec=importlib.util.spec_from_file_location('tnd28_actual_input_compile',base.HERE/'tnd28_input_compile.py')
     compiler=importlib.util.module_from_spec(spec);spec.loader.exec_module(compiler)
     report['tnd28_actual_input_compilation']=compiler.verify_compile_receipt(ev,builder.source,builder.sdk)
@@ -91,6 +111,8 @@ def finish_check(builder,base):
         and observation['launcher_sha256']==base.sha(base.HERE/'tnd28_input_compile.py')
         and observation['patched_sha256']==base.sha(observation['unit'])
         and observation['header_sha256']==base.sha(observation['header'])
+        and observation['execute_borrow_header_sha256']==base.sha(base.HERE/'tnd28_execute_borrow.h')
+        and observation['execute_borrow_header_sha256']==base.sha(observation['execute_borrow_header'])
         and observation['fault_authorized'] is False,'TND28_COMPILED_INPUT_SOURCE_BINDING_REQUIRED')
     report['tnd28_compiled_input_observer']=observation
     report['tnd28_compiled_input_observer_receipt_sha256']=base.sha(ev/'tnd28_compiled_input_observer.json')

@@ -32,7 +32,8 @@ def setup(worker,expected,tokens,provenance,settings):
     worker=common.actual(worker)
     need(worker.demoncat_worker_identity().get('worker')==expected,'ACTUAL_WORKER_IDENTITY_CHANGED')
     capture=PreparedInputCapture(worker,build_completion=settings['build'],build_sha256=settings['build_sha256'],
-        evidence_dir=settings['input_folder'])
+        evidence_dir=settings['input_folder'],execute_borrow_library=settings.get('execute_borrow_library'),
+        execute_borrow_sha256=settings.get('execute_borrow_sha256'))
     native=StockTndPrefillCensus(mechanism=MECHANISM,observer_receipt=settings['observer'],
         observer_receipt_sha256=settings['observer_sha256'],evidence_dir=settings['calls'],prepared_input_capture=capture)
     install_attention_serving_binding(worker,MECHANISM,prompt_token_ids=tokens,provenance=provenance,native=native)
@@ -176,6 +177,10 @@ def run(args,bundle):
         need(words,'ACTUAL_TOKENIZER_REQUIRED');tokens=(words*((2048+len(words)-1)//len(words)))[:2048]
         settings=dict(build=str(args.build),build_sha256=args.build_sha256,input_folder=str(args.out/'prepared_input'),
             observer=str(args.observer_receipt),observer_sha256=args.observer_receipt_sha256,calls=str(args.out/'native_calls'))
+        if getattr(args,'execute_borrow',False):
+            library=args.vendor/'op_api/lib/libcust_opapi.so'
+            settings.update(execute_borrow_library=str(library),execute_borrow_sha256=common.sha(library))
+        report['execute_borrow_guard_requested']=bool(getattr(args,'execute_borrow',False))
         provenance=dict(model=report['model'],standard_worker=True,probe_sha256=report['probe_sha256'],
             source_manifest_sha256=args.source_manifest_sha256,build_sha256=args.build_sha256,observer_only=True)
         def deploy(expected,config):
@@ -197,6 +202,7 @@ def main():
     for name in ('model','out','build','vendor','source','observer-receipt'):p.add_argument('--'+name,type=Path,required=True)
     for name in ('build-sha256','source-manifest-sha256','observer-receipt-sha256'):p.add_argument('--'+name,required=True)
     p.add_argument('--memory',type=float,default=.25);p.add_argument('--child',action='store_true',help=argparse.SUPPRESS)
+    p.add_argument('--execute-borrow',action='store_true',help='Single-target normal live-input/Execute-borrow guard; still no F')
     args=p.parse_args();need(args.out.resolve().is_relative_to('/evidence') and 0<args.memory<=.5,'OWNED_EVIDENCE_BOUNDED_MEMORY')
     return run(args,bootstrap(args))
 

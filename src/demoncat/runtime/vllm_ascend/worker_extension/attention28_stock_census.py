@@ -253,6 +253,8 @@ class StockTndPrefillCensus:
         primary=None
         try:
             self._synchronize()
+            if capture is not None and getattr(capture,'borrow_query',None) is not None:
+                capture.prepare_plan(row)  # All value reads precede the original Native window.
             with self.scope.scope(token):
                 try:
                     if capture is not None:record['prepared_input_capture']=capture.enter(token,row,actual,record['api'])

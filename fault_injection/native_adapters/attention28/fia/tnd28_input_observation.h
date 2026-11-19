@@ -5,6 +5,8 @@
 #ifndef DCAT_TND28_INPUT_CPU_FIXTURE
 #include "opdev/common_types.h"
 #include "opdev/op_executor.h"
+#include "tnd28_execute_borrow.h"
+#include <memory>
 #endif
 #include <cstdint>
 #include <cstring>
@@ -105,6 +107,10 @@ inline bool Same(const Scope& a,const Scope& b){return a.token==b.token&&a.owner
     &&a.module==b.module&&a.request==b.request&&a.input==b.input&&a.path==b.path&&a.start==b.start&&a.pid==b.pid&&a.tid==b.tid;}
 struct Pending{Scope scope;uint64_t executor=0,child=0,child_bytes=0;std::vector<uint64_t> offsets;bool valid=false;};
 inline Pending& Live(){static thread_local Pending value;return value;}
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+struct BorrowReturn {Scope scope;std::string receipt;};
+inline BorrowReturn& LastBorrowReturn(){static thread_local BorrowReturn value;return value;}
+#endif
 inline std::set<std::string>& Seen(){static thread_local std::set<std::string> value;return value;}
 struct Log{
     Scope scope;bool active=false;uint32_t count=0;std::string first_error;
@@ -183,10 +189,39 @@ struct Prepare:Log{
 };
 struct Execute:Log{
     Pending pending;uint64_t parent=0,child_workspace=0,child_stream=0;bool child_returned=false,ran=false,returned=false;
-    template<class F> Execute(F function,aclOpExecutor* executor){
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+    std::unique_ptr<tnd28_execute_borrow::ExecuteBorrow> borrow;
+    bool borrow_requested=false;
+    std::string BorrowRecord(){
+        if(!borrow)return "null";const auto r=borrow->Snapshot();
+        return "{\"schema\":\"demoncat.tnd28.execute_borrow.v1\",\"first_error\":"+std::to_string(r.first_error)
+          +",\"pid\":"+std::to_string(r.pid)+",\"tid\":"+std::to_string(r.tid)
+          +",\"child_started\":"+std::to_string(r.child_started)+",\"child_consumed\":"+std::to_string(r.child_consumed)
+          +",\"parent_started\":"+std::to_string(r.parent_started)+",\"parent_returned\":"+std::to_string(r.parent_returned)
+          +",\"drained\":"+std::to_string(r.drained)+",\"detached\":"+std::to_string(r.detached)
+          +",\"reset_attempted\":"+std::to_string(r.reset_attempted)+",\"reset_returned\":"+std::to_string(r.reset_returned)
+          +",\"cancelled\":"+std::to_string(r.cancelled)+",\"complete\":"+std::to_string(r.complete)
+          +",\"terminal_uncertain\":"+std::to_string(r.terminal_uncertain)+",\"left\":"+std::to_string(r.left)
+          +",\"child_status\":"+std::to_string(r.child_status)+",\"parent_status\":"+std::to_string(r.parent_status)
+          +",\"drain_status\":"+std::to_string(r.drain_status)+",\"detach_status\":"+std::to_string(r.detach_status)
+          +",\"reset_status\":"+std::to_string(r.reset_status)+",\"fault_authorized\":false}";
+    }
+#else
+    std::string BorrowRecord(){return "null";}
+#endif
+    template<class F> Execute(F function,aclOpExecutor* executor,void* workspace=nullptr,uint64_t bytes=0,aclrtStream stream=nullptr){
         try{active=Current(scope);if(!active)return;pending=Live();parent=Ptr(executor);
           Record("execute_enter",[&]{Need(pending.executor==parent&&pending.valid&&Same(pending.scope,scope),"current prepared executor unavailable");
             return "{\"function\":"+Function(function)+",\"executor\":"+std::to_string(parent)+'}';});
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+          borrow_requested=Env("DCAT28_INPUT_EXECUTE_BORROW")=="normal_guard";
+          if(borrow_requested){
+            Need(first_error.empty(),"borrow requires actual prepared input scope");
+            borrow.reset(new tnd28_execute_borrow::ExecuteBorrow(executor,workspace,bytes,stream));
+          }
+#else
+          (void)workspace;(void)bytes;(void)stream;
+#endif
         }catch(const std::exception& e){Fail(e.what());}catch(...){Fail("execute entry exception");}
     }
     template<class F> aclnnStatus Contiguous(F f,void* workspace,uint64_t bytes,aclOpExecutor* executor,aclrtStream stream){
@@ -198,7 +233,17 @@ struct Execute:Log{
           return "{\"function\":"+Function(f)+",\"executor\":"+std::to_string(Ptr(executor))+",\"workspace\":"+std::to_string(child_workspace)
             +",\"workspace_bytes\":"+std::to_string(bytes)+",\"stream\":"+std::to_string(child_stream)
             +",\"workspace_offsets\":"+Array(current)+",\"prepared_v_address\":"+std::to_string(child_workspace+current[0])+'}';});
-        const auto status=f(workspace,bytes,executor,stream);
+        aclnnStatus status;
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+        if(borrow_requested&&!borrow){Fail("execute borrow not constructed");return ACLNN_ERR_PARAM_INVALID;}
+        if(borrow&&(!first_error.empty()||!borrow->BeforeChild(executor,workspace,bytes,stream))){
+          borrow->CancelBeforeParent();Fail("execute borrow child admission refused");return ACLNN_ERR_PARAM_INVALID;}
+        try{status=f(workspace,bytes,executor,stream);}
+        catch(...){if(borrow)borrow->OriginalThrew();throw;}
+        if(borrow){borrow->AfterChild(status);if(status)borrow->CancelBeforeParent();}
+#else
+        status=f(workspace,bytes,executor,stream);
+#endif
         Record("contiguous_execute_return",[&]{child_returned=status==0;return "{\"status\":"+std::to_string(status)+",\"original_calls\":1}";});return status;
     }
     template<class F> aclnnStatus Run(F f,void* executor,aclrtStream stream,void* workspace,uint64_t bytes){
@@ -206,16 +251,51 @@ struct Execute:Log{
           &&Ptr(workspace)<=std::numeric_limits<uint64_t>::max()-bytes&&Ptr(workspace)+bytes==child_workspace,"actual parent/child workspace or stream differs");
           return "{\"function\":"+Function(f)+",\"executor\":"+std::to_string(parent)+",\"workspace\":"+std::to_string(Ptr(workspace))
             +",\"workspace_bytes\":"+std::to_string(bytes)+",\"stream\":"+std::to_string(Ptr(stream))+'}';});
-        const auto status=f(executor,stream,workspace,bytes);ran=true;
+        aclnnStatus status;
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+        if(borrow_requested&&!borrow){Fail("execute borrow not constructed");return ACLNN_ERR_PARAM_INVALID;}
+        if(borrow&&(!first_error.empty()||!borrow->BeforeParent(static_cast<aclOpExecutor*>(executor),workspace,bytes,stream))){
+          borrow->CancelBeforeParent();Fail("execute borrow parent admission refused");return ACLNN_ERR_PARAM_INVALID;}
+        try{status=f(executor,stream,workspace,bytes);ran=true;}
+        catch(...){if(borrow)borrow->OriginalThrew();throw;}
+        const bool borrow_complete=!borrow||borrow->AfterParent(status);
+#else
+        status=f(executor,stream,workspace,bytes);ran=true;
+#endif
         Record("fia_execute_return",[&]{return "{\"status\":"+std::to_string(status)+",\"original_calls\":1}";});
         if(!status&&active&&Live().executor==parent&&Same(Live().scope,scope))Live()=Pending{};
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+        if(!borrow_complete){Fail("execute borrow drain or parent reset unconfirmed");return status?status:ACLNN_ERR_PARAM_INVALID;}
+#endif
         return status;
     }
     aclnnStatus Return(aclnnStatus status){returned=true;
         Record("execute_return",[&]{return "{\"status\":"+std::to_string(status)+",\"original_returns\":1}";});return status;
     }
-    ~Execute(){Record("execute_exit",[&]{return std::string("{\"fia_called\":")+(ran?"true":"false")
-      +",\"original_returned\":"+(returned?"true":"false")+'}';});}
+    ~Execute(){
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+      if(borrow){borrow->Leave();try{LastBorrowReturn()={scope,BorrowRecord()};}catch(...){Fail("borrow receipt publication failed");}}
+      if(borrow_requested&&Live().executor==parent&&Same(Live().scope,scope))Live()=Pending{};
+#endif
+      Record("execute_exit",[&]{return std::string("{\"fia_called\":")+(ran?"true":"false")
+      +",\"original_returned\":"+(returned?"true":"false")+",\"execute_borrow\":"+BorrowRecord()+'}';});}
 };
 } // namespace tnd28_input
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+extern "C" __attribute__((visibility("default"))) int dcat_tnd28_execute_borrow_query_v1(
+    const char* token,char* output,size_t capacity) noexcept {
+    try{
+        const auto& row=tnd28_input::LastBorrowReturn();
+        if(!token||!output||capacity>4096||capacity<2||std::strlen(token)!=32||row.scope.token!=token
+          ||row.scope.pid!=static_cast<uint64_t>(getpid())||row.scope.tid!=static_cast<uint64_t>(syscall(SYS_gettid))
+          ||row.scope.start!=tnd28_input::ProcessStart()||row.receipt.empty())return -1;
+        const auto text="{\"token\":"+tnd28_input::Quote(row.scope.token)+",\"owner\":"+tnd28_input::Quote(row.scope.owner)
+          +",\"generation\":"+row.scope.generation+",\"module_object_id\":"+row.scope.module
+          +",\"request_sha256\":"+tnd28_input::Quote(row.scope.request)+",\"input_sha256\":"+tnd28_input::Quote(row.scope.input)
+          +",\"borrow\":"+row.receipt+",\"function\":"+tnd28_input::Function(&dcat_tnd28_execute_borrow_query_v1)+'}';
+        if(text.size()+1>capacity)return -2;
+        std::memcpy(output,text.c_str(),text.size()+1);return 0;
+    }catch(...){return -3;}
+}
+#endif
 #endif

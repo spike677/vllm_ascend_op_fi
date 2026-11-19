@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import threading
+import ctypes
 
 from .serving_context import require
 
@@ -24,9 +25,35 @@ def identity():
     return dict(pid=os.getpid(),native_tid=threading.get_native_id(),python_thread_ident=threading.get_ident(),process_start_ticks=start)
 
 
+def _open_borrow_query(path,expected):
+    """Use only an already loaded, source-pinned private API's read-only query."""
+    from .paged33_loading import symbol_owner
+    path=Path(path).resolve(strict=True)
+    require(path.name=='libcust_opapi.so' and 0<path.stat().st_size<=32*1024**2
+        and hashlib.sha256(path.read_bytes()).hexdigest()==expected,'TND_BORROW_EXISTING_PRIVATE_LIBRARY_CHANGED')
+    require(hasattr(os,'RTLD_NOLOAD'),'TND_BORROW_NOLOAD_REQUIRED')
+    library=ctypes.CDLL(str(path),mode=os.RTLD_NOLOAD|os.RTLD_LOCAL|os.RTLD_NOW)
+    name='dcat_tnd28_execute_borrow_query_v1';symbol=symbol_owner(library,name)
+    require(symbol['path']==str(path) and symbol['sha256']==expected,'TND_BORROW_QUERY_SYMBOL_OWNER_CHANGED')
+    query=getattr(library,name);query.argtypes=[ctypes.c_char_p,ctypes.c_void_p,ctypes.c_size_t];query.restype=ctypes.c_int
+    def current(token):
+        # The result comes from this thread's actual Execute return, not a log.
+        require(library._handle,'TND_BORROW_LOADED_LIBRARY_HANDLE_MISSING')
+        out=ctypes.create_string_buffer(4096)
+        require(query(token.encode(),out,len(out))==0,'TND_BORROW_LIVE_RETURN_UNAVAILABLE')
+        value=json.loads(out.value);owner=value['function']
+        require(owner['address']==symbol['address'] and owner['mapped_file_identity_matches'] is True
+            and Path(owner['path']).resolve(strict=True)==path
+            and owner['file_bytes']==path.stat().st_size
+            and hashlib.sha256(path.read_bytes()).hexdigest()==expected,'TND_BORROW_QUERY_MAPPED_LIBRARY_CHANGED')
+        return value
+    return current
+
+
 class PreparedInputCapture:
     """One natural matched object, one original invocation; not F authority."""
-    def __init__(self,worker,*,build_completion,build_sha256,evidence_dir):
+    def __init__(self,worker,*,build_completion,build_sha256,evidence_dir,
+                 execute_borrow_library=None,execute_borrow_sha256=None):
         path=Path(build_completion).resolve(strict=True)
         before=path.stat();require(0<before.st_size<=4*1024**2,'TND_INPUT_BUILD_IDENTITY_OR_BOUND')
         raw=path.read_bytes();after=path.stat()
@@ -45,11 +72,33 @@ class PreparedInputCapture:
         require(not any(k.startswith(PREFIX) for k in os.environ),'TND_INPUT_FOREIGN_OBSERVER_ENVIRONMENT')
         self.root.mkdir(parents=True);self.build_sha256=build_sha256
         self.used=False;self.active=None;self.refs=None;self.first_error=None;self.receipt=None
+        self.replay_binding=self.live_plan=None;self.borrow_query=None
+        require((execute_borrow_library is None)==(execute_borrow_sha256 is None),'TND_BORROW_EXACT_LIBRARY_PAIR_REQUIRED')
+        if execute_borrow_library is not None:
+            require(self.build.get('tnd28_execute_borrow_header_sha256')==observation.get('execute_borrow_header_sha256')
+                and isinstance(observation.get('execute_borrow_header_sha256'),str)
+                and len(observation['execute_borrow_header_sha256'])==64,'TND_BORROW_FRESH_COMPILED_HEADER_REQUIRED')
+            proof=self.build.get('tnd28_execute_borrow_query',{})
+            require(proof.get('symbol')=='dcat_tnd28_execute_borrow_query_v1'
+                and proof.get('library_sha256')==execute_borrow_sha256 and proof.get('read_only') is True
+                and proof.get('fault_authorized') is False,'TND_BORROW_COMPILED_QUERY_IDENTITY_REQUIRED')
+            self.borrow_query=_open_borrow_query(execute_borrow_library,execute_borrow_sha256)
 
     def _check(self):
         require(identity()==self.owner and self.worker.model_runner is self.runner and self.runner.model is self.model,
             'TND_INPUT_WORKER_OR_THREAD_IDENTITY_CHANGED')
         require(not any(k.startswith('DCAT28_TND_') for k in os.environ),'TND_INPUT_NORMAL_WINDOW_HAS_FOREIGN_POLICY')
+
+    def prepare_plan(self,row):
+        """Called by the current adapter before its Native observer scope."""
+        if self.borrow_query is None:return
+        self._check();require(self.replay_binding is None,'TND_BORROW_SINGLE_PLAN_REQUIRED')
+        from . import attention_execution
+        from .attention28_replay_binding import ReplayInputBinding
+        self.replay_binding=ReplayInputBinding(attention_execution._ACTIVE)
+        try:self.live_plan=self.replay_binding.begin(row)
+        except BaseException as error:
+            self.first_error=self.first_error or repr(error);raise
 
     def enter(self,token,row,actual,api):
         self._check();require(not self.used and self.active is None,'TND_INPUT_SINGLE_CURRENT_CALL_ONLY')
@@ -72,6 +121,7 @@ class PreparedInputCapture:
             MODULE=str(row['module_object_id']),REQUEST=packet['request_sha256'],HASH=packet['input_sha256'],
             PID=str(self.owner['pid']),TID=str(self.owner['native_tid']),START=self.owner['process_start_ticks'],
             LOG=str(self.root/(token+'.jsonl')))
+        if self.borrow_query is not None:values['EXECUTE_BORROW']='normal_guard'
         self.refs=tuple(actual[name] for name in ('query','key','value','atten_mask'))
         self.used=True;self.active={};desired={PREFIX+k:v for k,v in values.items()}
         self.receipt=dict(packet,public_artifact=str(self.root/(token+'.public.json')),native_artifact=values['LOG'],
@@ -79,6 +129,10 @@ class PreparedInputCapture:
         # Preserve identity before original native execution; an empty journal
         # remains an empty journal and cannot be promoted to a hit.
         try:
+            if self.borrow_query is not None:
+                require(self.live_plan is not None,'TND_BORROW_PRE_SCOPE_LIVE_PLAN_REQUIRED')
+                self.replay_binding.check_current(self.live_plan,read_values=False)
+                self.receipt['live_public_plan']=self.replay_binding.snapshot()
             with Path(self.receipt['public_artifact']).open('x',encoding='utf-8') as stream:
                 json.dump(packet,stream,indent=2,allow_nan=False);stream.write('\n')
             for key,value in desired.items():
@@ -92,6 +146,11 @@ class PreparedInputCapture:
     def returned(self,output):
         self._check();require(self.active is not None and self.refs is not None,'TND_INPUT_NO_LIVE_RETURN_SCOPE')
         require(type(output) is tuple and len(output)==2,'TND_INPUT_ORIGINAL_RETURN_CONTAINER')
+        if self.live_plan is not None:
+            self.replay_binding.check_current(self.live_plan,read_values=False)
+            self.receipt['execute_borrow']=self._borrow_return()
+            require(self.receipt['execute_borrow']['borrow']['first_error']==0,
+                    'TND_BORROW_ORIGINAL_CALL_OR_CLEANUP_FAILED')
         from fault_injection.fia_input_journal import public_tensor_metadata
         self.refs+=output
         row=dict(schema='demoncat.tnd28.public_return.v1',token=self.receipt['token'],identity=self.owner,
@@ -102,10 +161,35 @@ class PreparedInputCapture:
         with path.open('x',encoding='utf-8') as stream:json.dump(row,stream,indent=2,allow_nan=False);stream.write('\n')
         self.receipt['returned_artifact']=str(path)
 
+    def _borrow_return(self):
+        row=self.borrow_query(self.receipt['token'])
+        require(all(row.get(k)==self.receipt[k] for k in ('token','owner','generation','module_object_id',
+            'request_sha256','input_sha256')),'TND_BORROW_ACTUAL_PLAN_RETURN_CHANGED')
+        state=row['borrow']
+        require(state.get('schema')=='demoncat.tnd28.execute_borrow.v1'
+            and state['pid']==self.owner['pid'] and state['tid']==self.owner['native_tid']
+            and state['left']==1 and state['complete']==1 and state['drained']==1
+            and state['terminal_uncertain']==0 and state['fault_authorized'] is False,
+            'TND_BORROW_TERMINAL_UNCERTAIN_OR_NOT_DRAINED')
+        return row
+
     def stop(self):
         self._check()
-        if self.active is None:return
+        if self.active is None:
+            if self.replay_binding is not None and self.replay_binding.active is not None:
+                plan=self.replay_binding.active
+                require(plan.row['original_calls']==0,'TND_BORROW_ORIGINAL_WITHOUT_SCOPE_UNCERTAIN')
+                self.replay_binding.close_public(plan);self.live_plan=None
+            return
         try:
+            if self.live_plan is None and self.replay_binding is not None:
+                self.live_plan=self.replay_binding.active
+            if self.live_plan is not None:
+                # Only the real compiled return can confirm an entered Execute
+                # borrow; missing/uncertain state never triggers a pointer retry.
+                if self.live_plan.row['original_calls']:
+                    self.receipt['execute_borrow']=self._borrow_return()
+                self.replay_binding.close_public(self.live_plan);self.live_plan=None
             # Retire each owned entry only after readback. Foreign values leave
             # the remaining ledger and public tensor references available.
             for key,value in list(self.active.items()):

@@ -16,6 +16,7 @@ from .attention28_stock_census import capture_inputs, validate_tnd_prefill
 from .attention_execution import AttentionExecutionAdapter, bind_actual_api
 from .serving_attention import AttentionDeployment, ATTRIBUTE
 from .serving_context import require
+from .paged33_boundary_probe import scalar_snapshot
 
 
 MECHANISM = '28.fia.denominator_replay'
@@ -36,6 +37,9 @@ class _Plan:
         self.ordinal = row['ordinal']
         self.live_call = owner.session.live_api_calls[-1]
         self.before = None
+        self.public_metadata = None
+        self.scalars = None
+        self.last_check_read_values = False
         self.error = None
         self.closed = False
 
@@ -143,6 +147,10 @@ references: this class has no Native resource and cannot report Native abort.
             require(all(a is b for a, b in zip(self._current(row), (current, module, context, metadata))),
                     'TND_REPLAY_CONTEXT_CHANGED_DURING_CAPTURE')
             plan.before = before
+            from fault_injection.fia_input_journal import public_tensor_metadata
+            plan.public_metadata = {name: public_tensor_metadata(actual[name]) for name in TENSORS}
+            plan.scalars = {name: scalar_snapshot(value) for name, value in actual.items() if name not in TENSORS}
+            plan.last_check_read_values = True
             self.target = module
             return plan
         except BaseException as error:
@@ -154,8 +162,12 @@ references: this class has no Native resource and cannot report Native abort.
         self.first_error = self.first_error or message
         plan.error = plan.error or message
 
-    def check_current(self, plan):
-        """Re-read actual values, including inference tensors without _version."""
+    def check_current(self, plan, *, read_values=True):
+        """Read values outside Native scopes; inside, check only objects/metadata.
+
+        The latter is explicitly not a current numerical-input proof. Device
+        copies for a value readback must not masquerade as original launches.
+        """
         self._owner()
         require(type(plan) is _Plan and self.active is plan and plan.owner is self
                 and not plan.closed and plan.before is not None and plan.error is None,
@@ -173,15 +185,21 @@ references: this class has no Native resource and cannot report Native abort.
             actual = bind_actual_api(args, kwargs)
             require(all(actual[name] is plan.actual[name] for name in TENSORS),
                     'TND_REPLAY_ACTUAL_INPUT_OBJECT_CHANGED')
-            after = capture_inputs(plan.original, plan.args, actual, metadata)
-            require(after == plan.before, 'TND_REPLAY_CURRENT_INPUT_CHANGED')
+            from fault_injection.fia_input_journal import public_tensor_metadata
+            require({name: public_tensor_metadata(actual[name]) for name in TENSORS} == plan.public_metadata
+                and {name: scalar_snapshot(value) for name, value in actual.items() if name not in TENSORS} == plan.scalars,
+                'TND_REPLAY_CURRENT_INPUT_CHANGED')
+            if read_values:
+                after = capture_inputs(plan.original, plan.args, actual, metadata)
+                require(after == plan.before, 'TND_REPLAY_CURRENT_INPUT_CHANGED')
+            plan.last_check_read_values = read_values
             return self.snapshot()
         except BaseException as error:
             self._error(plan, error)
             raise
 
     def authorize_fault(self, plan):
-        self.check_current(plan)
+        self.check_current(plan, read_values=False)
         raise RuntimeError('TND_REPLAY_NATIVE_TWO_STAGE_ADMISSION_UNBOUND')
 
     def close_public(self, plan):
@@ -202,6 +220,7 @@ references: this class has no Native resource and cannot report Native abort.
             owner=self.ticket[0], generation=self.ticket[1], target_object_id=id(self.target) if self.target else None,
             active_token=plan.token if plan else None, request_id=plan.request if plan else None,
             phase=plan.phase if plan else None, input=plan.before if plan else None,
+            last_check_read_input_values=plan.last_check_read_values if plan else False,
             public_objects_held=len(TENSORS) if plan else 0, closed_count=self.closed_count,
             first_error=self.first_error, native_prepared_bound=False, native_abort_performed=False,
             workspace_lifetime='REQUIRES_ACTUAL_SYNCHRONOUS_EXECUTE_WINDOW',

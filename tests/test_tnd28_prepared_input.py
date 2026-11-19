@@ -450,7 +450,7 @@ class CompilerHookContracts(unittest.TestCase):
         self.assertFalse(check)
         self.assertEqual(argv,[self.argv[0],'-I',str(self.sdk.resolve()/'include/aclnn'),'-I',str(self.sdk.resolve()/'pkg_inc'),*self.argv[1:]])
         self.obj.write_bytes(b'CPU object fixture; never a compiled SDK operator')
-        paths=[self.unit,self.unit.with_name(C.HEADER),*(self.sdk/name for name in C.SDK_HEADERS),*self.transitive]
+        paths=[self.unit,self.unit.with_name(C.HEADER),self.unit.with_name(C.BORROW_HEADER),*(self.sdk/name for name in C.SDK_HEADERS),*self.transitive]
         if change is not None:paths=change(paths)
         escape=lambda p:p.as_posix().replace(' ','\\ ')
         self.dep.write_text(escape(Path(C.option(self.argv,'-MT')))+': '+ ' \\\n '.join(escape(p) for p in paths)+'\n')
@@ -465,7 +465,8 @@ class CompilerHookContracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'REENTRY_BYTES_CHANGED'):C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
 
     def test_unknown_source_wrong_variant_and_fixture_compile_cannot_build(self):
-        for variant,argv in (('tnd_prefill_normal_bridge',self.argv),(C.VARIANT,self.argv+['-DDCAT_TND28_INPUT_CPU_FIXTURE'])):
+        for variant,argv in (('tnd_prefill_normal_bridge',self.argv),(C.VARIANT,self.argv+['-DDCAT_TND28_INPUT_CPU_FIXTURE']),
+                            (C.VARIANT,self.argv+['-DDCAT_TND28_BORROW_CPU_FIXTURE'])):
             with self.assertRaises(ValueError):C.prepare_unit(self.source,self.ev,argv,variant=variant,sdk=self.sdk)
         self.unit.write_bytes(self.unit.read_bytes()+b'\n')
         with self.assertRaisesRegex(ValueError,'UNREVIEWED_GENERATED'):C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
@@ -485,7 +486,7 @@ class CompilerHookContracts(unittest.TestCase):
             self.assertEqual(C.run_compiler(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk),0)
         compiler.assert_called_once()
         result=C.verify_compile_receipt(self.ev,self.source,self.sdk)
-        self.assertEqual(result['compiler_calls'],1);self.assertEqual(result['dependency_count'],8)
+        self.assertEqual(result['compiler_calls'],1);self.assertEqual(result['dependency_count'],9)
         self.assertEqual(result['sdk_headers'],C.sdk_headers(self.sdk))
         self.transitive[0].write_bytes(b'changed container ABI after compilation')
         with self.assertRaisesRegex(ValueError,'DEPENDENCY_CLOSURE_CHANGED'):
