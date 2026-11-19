@@ -17,6 +17,17 @@ openchamber已报告黄区Qwen3-0.6B BF16/TP1/eager测试部署的18、39两轮�
 Batch因缺少动态W8A8权重和bundle待配置。黄区现役多卡支持及product_closed仍待实际验收。
 28/33等后续开发不进入本维护版本的完成声明。
 
+## RC2 普通入口调整与124复核
+
+[当前范围、准入及实测总结](docs/worker_core_v1/ordinary_tasks_rc2_20261119.md)：
+8、17、22均完成新普通路线的两个独立作用域；Batch完成统一回调后的六批及前后健康复核。
+宿主使用advance（Batch为advance_batch）→等待→query，无17/Batch专用capture/collect步骤。
+实现、结构兼容和精确部署验收分开；未验组合默认不可执行，研究入口不能由用户配置打开。
+39 postwrite与Batch bundle接入统一身份诊断；普通证据512KiB、单次state2MiB上限明确。
+[RMS及历史检查关闭记录](docs/worker_core_v1/merged_plan_baseline_20261119.md)与
+[openchamber模型准备](docs/worker_core_v1/openchamber_rc2_preparation.md)已补齐。
+RC2尚未冻结，20/26两变体/33/41普通路线及28 TND仍待完成，不宣称17项全通过或黄区现役支持。
+
 ## 当前统一接入
 
 [2026-11-19 产品交付矩阵与实施状态](docs/worker_core_v1/product_delivery_20261119.md)：

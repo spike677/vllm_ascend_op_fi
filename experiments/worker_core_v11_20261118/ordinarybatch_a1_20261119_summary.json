@@ -1,0 +1,1161 @@
+{
+  "schema": "demoncat.ordinary_task.blue_summary.v2",
+  "source_commit": "32f87374cec5028a99fb5794aad2717f35969b8d",
+  "source_manifest_sha256": "d0c02dde6002ca45e4401e8a2961a757267d5f4339dd77f1e0e5efa34e300096",
+  "archive_sha256": "2d94ba6898f29746001a1d9215c96caf706e0f966efa625dc77a5ee8b6e26750",
+  "native_build_sha256": "b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac",
+  "machine": "124",
+  "physical_card": 5,
+  "status": "BLUE_ZONE_ORDINARY_QUANT_FUNCTION_AND_OFF_EVIDENCE_READY_FOR_REVIEW",
+  "main_project_integration": false,
+  "product_closed": false,
+  "new_statistics": false,
+  "default_acceptance_at_run": {
+    "schema": "demoncat.deployment_acceptance.v1",
+    "status": "IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT",
+    "accepted": false,
+    "can_prepare": false,
+    "mode": "DEFAULT",
+    "explicit_blue_attempt": null,
+    "reviewed_combination": "Source118",
+    "pending_revalidation": "AUTOMATIC_DECODE_COMPLETION_NPU_PENDING",
+    "expected": {
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "vllm": "0.18.0",
+      "vllm_ascend": "0.18.0",
+      "cann": [
+        "8.5.1"
+      ],
+      "dtype": "torch.bfloat16",
+      "tp": 1,
+      "pp": 1,
+      "dp": 1,
+      "eager": true,
+      "model_config_sha256": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+      "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+      "live_config_matches_file": true
+    },
+    "actual": {
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "vllm": "0.18.0",
+      "vllm_ascend": "0.18.0",
+      "cann": [
+        "8.5.1"
+      ],
+      "dtype": "torch.bfloat16",
+      "tp": 1,
+      "pp": 1,
+      "dp": 1,
+      "eager": true,
+      "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+      "model_config_sha256": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+      "live_config_matches_file": true
+    },
+    "checks": [
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.torch",
+        "expected": "2.9.0+cpu",
+        "actual": "2.9.0+cpu",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.torch_npu",
+        "expected": "2.9.0.post1+gitee7ba04",
+        "actual": "2.9.0.post1+gitee7ba04",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.vllm",
+        "expected": "0.18.0",
+        "actual": "0.18.0",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.vllm_ascend",
+        "expected": "0.18.0",
+        "actual": "0.18.0",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.cann",
+        "expected": [
+          "8.5.1"
+        ],
+        "actual": [
+          "8.5.1"
+        ],
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.dtype",
+        "expected": "torch.bfloat16",
+        "actual": "torch.bfloat16",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.tp",
+        "expected": 1,
+        "actual": 1,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.pp",
+        "expected": 1,
+        "actual": 1,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.dp",
+        "expected": 1,
+        "actual": 1,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.eager",
+        "expected": true,
+        "actual": true,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.model_config_sha256",
+        "expected": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+        "actual": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.model_class",
+        "expected": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+        "actual": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.live_config_matches_file",
+        "expected": true,
+        "actual": true,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      }
+    ],
+    "acceptance_granted": false,
+    "structural_compatibility": "CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE",
+    "live_call_qualification": "PENDING"
+  },
+  "blue_acceptance_at_run": {
+    "schema": "demoncat.deployment_acceptance.v1",
+    "status": "IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT",
+    "accepted": false,
+    "can_prepare": true,
+    "mode": "BLUE_ACCEPTANCE_ONLY",
+    "explicit_blue_attempt": "ordinary-quant-unified",
+    "reviewed_combination": "Source118",
+    "pending_revalidation": "AUTOMATIC_DECODE_COMPLETION_NPU_PENDING",
+    "expected": {
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "vllm": "0.18.0",
+      "vllm_ascend": "0.18.0",
+      "cann": [
+        "8.5.1"
+      ],
+      "dtype": "torch.bfloat16",
+      "tp": 1,
+      "pp": 1,
+      "dp": 1,
+      "eager": true,
+      "model_config_sha256": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+      "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+      "live_config_matches_file": true
+    },
+    "actual": {
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "vllm": "0.18.0",
+      "vllm_ascend": "0.18.0",
+      "cann": [
+        "8.5.1"
+      ],
+      "dtype": "torch.bfloat16",
+      "tp": 1,
+      "pp": 1,
+      "dp": 1,
+      "eager": true,
+      "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+      "model_config_sha256": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+      "live_config_matches_file": true
+    },
+    "checks": [
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.torch",
+        "expected": "2.9.0+cpu",
+        "actual": "2.9.0+cpu",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.torch_npu",
+        "expected": "2.9.0.post1+gitee7ba04",
+        "actual": "2.9.0.post1+gitee7ba04",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.vllm",
+        "expected": "0.18.0",
+        "actual": "0.18.0",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.vllm_ascend",
+        "expected": "0.18.0",
+        "actual": "0.18.0",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.cann",
+        "expected": [
+          "8.5.1"
+        ],
+        "actual": [
+          "8.5.1"
+        ],
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.dtype",
+        "expected": "torch.bfloat16",
+        "actual": "torch.bfloat16",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.tp",
+        "expected": 1,
+        "actual": 1,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.pp",
+        "expected": 1,
+        "actual": 1,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.dp",
+        "expected": 1,
+        "actual": 1,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.eager",
+        "expected": true,
+        "actual": true,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.model_config_sha256",
+        "expected": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+        "actual": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.model_class",
+        "expected": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+        "actual": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      },
+      {
+        "layer": "deployment_identity",
+        "field": "accepted_combination.live_config_matches_file",
+        "expected": true,
+        "actual": true,
+        "status": "matched",
+        "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      }
+    ],
+    "acceptance_granted": false,
+    "structural_compatibility": "CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE",
+    "live_call_qualification": "PENDING"
+  },
+  "phases": [
+    "normal",
+    "reference",
+    "lossless",
+    "calibration_off",
+    "fault",
+    "off"
+  ],
+  "raw_receipts": [
+    {
+      "path": "/home/17-fault-c2c3-20261117/product-ordinarybatch-20261119-card5-a1/quant-qwen06-ordinary-six-batches/result.json",
+      "bytes": 358720,
+      "sha256": "862e7cd24c961f5c44eda71767cb9a65cfa1e12879c8077eb3da92bc0fab5e5b"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/product-ordinarybatch-20261119-card5-a1/quant-qwen06-ordinary-six-batches/host-core-receipts.json",
+      "bytes": 6547337,
+      "sha256": "55a8fedc6f2911fb69fc7f731108924647838521e66250c6f6238749f68128aa"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/product-ordinarybatch-20261119-card5-a1/controller.json",
+      "bytes": 111040,
+      "sha256": "ffcc434224cb417cd1d6bf907bd50ca8d779c487f6a153b8e73e79be8540773e"
+    }
+  ],
+  "phase_receipts": [
+    {
+      "path": "/home/17-fault-c2c3-20261117/product-ordinarybatch-20261119-card5-a1/quant-qwen06-ordinary-six-batches/phase-normal.json",
+      "bytes": 20874,
+      "sha256": "632563ee8e5f7094cc31fc2b39db2d525385d506e7e2bd277538faa195901b21"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/product-ordinarybatch-20261119-card5-a1/quant-qwen06-ordinary-six-batches/phase-reference.json",
+      "bytes": 65789,
+      "sha256": "127e9cef8ee5d08364b5ab0c06afa862e3027d7f3900ae75d0d256884e4beb2a"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/product-ordinarybatch-20261119-card5-a1/quant-qwen06-ordinary-six-batches/phase-lossless.json",
+      "bytes": 110650,
+      "sha256": "84091028ff02a4ad871817ed61cfde0665fafec894942e43ad7d36e9d7294037"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/product-ordinarybatch-20261119-card5-a1/quant-qwen06-ordinary-six-batches/phase-calibration_off.json",
+      "bytes": 155527,
+      "sha256": "88f2882e1ba7ab20f29efa8abaa3dde5fa862441261d2299d1a23c82c177d690"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/product-ordinarybatch-20261119-card5-a1/quant-qwen06-ordinary-six-batches/phase-fault.json",
+      "bytes": 228232,
+      "sha256": "ee8b022d733f1ef3f360824b52182e29fc92747e2a6314aa2357a0731ce940f6"
+    },
+    {
+      "path": "/home/17-fault-c2c3-20261117/product-ordinarybatch-20261119-card5-a1/quant-qwen06-ordinary-six-batches/phase-off.json",
+      "bytes": 234308,
+      "sha256": "510bbd7f6382282093c05058038e89d22f251c6a61c899b2e34991654ab8f3da"
+    }
+  ],
+  "host_actions": {
+    "attach": 1,
+    "prepare": 1,
+    "register": 1,
+    "check": 1,
+    "enable": 1,
+    "advance": 6,
+    "query": 6,
+    "finish": 1,
+    "unregister": 1,
+    "detach": 1
+  },
+  "host_protocol": "ADVANCE_BATCH_WAIT_QUERY",
+  "fault_effect": {
+    "comparison": "MATCHED_CURRENT_INPUT_NORMAL_VS_FAULT_WITH_NATIVE_CURRENT_REFERENCE",
+    "forward": "40-b37d023e",
+    "input_sha256": "c6ffe3e48520360d285fed42728bf662a39f8082619955271933e27ea8ecfd05",
+    "native_changed_quant_bytes": 5565,
+    "native_changed_scale_bytes": 21,
+    "phase": "decode",
+    "quant": {
+      "after_nonfinite": 0,
+      "before_nonfinite": 0,
+      "causal_attribution": "REQUIRES_ADAPTER_REQUEST_PHASE_POSITION_BINDING",
+      "changed_elements": 5565,
+      "dtype": "torch.int8",
+      "elements": 8192,
+      "finite_difference_overflow": 0,
+      "finite_pair_elements": 8192,
+      "finite_to_nan": 0,
+      "finite_to_negative_inf": 0,
+      "finite_to_positive_inf": 0,
+      "max_abs_diff_finite": 58,
+      "nonfinite_to_finite": 0,
+      "qualification_granted": false,
+      "samples": [
+        {
+          "after": -4,
+          "before": -5,
+          "flat_index": 0
+        },
+        {
+          "after": 69,
+          "before": 84,
+          "flat_index": 1
+        },
+        {
+          "after": -55,
+          "before": -67,
+          "flat_index": 2
+        },
+        {
+          "after": 46,
+          "before": 55,
+          "flat_index": 3
+        }
+      ],
+      "schema": "demoncat.effect.numeric_change.v1",
+      "shape": [
+        8,
+        1024
+      ]
+    },
+    "request_ids": [
+      "40-b37d023e",
+      "41-a681177c",
+      "42-bdbb0b7e",
+      "43-b8d29e93",
+      "44-9f0d8bc0",
+      "45-9b11384e",
+      "46-b62528c5",
+      "47-be709a06"
+    ],
+    "scale": {
+      "after_nonfinite": 0,
+      "before_nonfinite": 0,
+      "causal_attribution": "REQUIRES_ADAPTER_REQUEST_PHASE_POSITION_BINDING",
+      "changed_elements": 7,
+      "dtype": "torch.float32",
+      "elements": 8,
+      "finite_difference_overflow": 0,
+      "finite_pair_elements": 8,
+      "finite_to_nan": 0,
+      "finite_to_negative_inf": 0,
+      "finite_to_positive_inf": 0,
+      "max_abs_diff_finite": 0.009165847674012184,
+      "nonfinite_to_finite": 0,
+      "qualification_granted": false,
+      "samples": [
+        {
+          "after": 0.020054135471582413,
+          "before": 0.016609253361821175,
+          "flat_index": 0
+        },
+        {
+          "after": 0.020054135471582413,
+          "before": 0.016609253361821175,
+          "flat_index": 1
+        },
+        {
+          "after": 0.020054135471582413,
+          "before": 0.016609253361821175,
+          "flat_index": 3
+        },
+        {
+          "after": 0.020054135471582413,
+          "before": 0.010888287797570229,
+          "flat_index": 4
+        }
+      ],
+      "schema": "demoncat.effect.numeric_change.v1",
+      "shape": [
+        8
+      ]
+    },
+    "semantic_position": "model.layers.0.self_attn.qkv_proj"
+  },
+  "callback_counts": {
+    "admitted": 4,
+    "completed": 588,
+    "observed": 588,
+    "passthrough": 584
+  },
+  "selected_path": "model.layers.0.self_attn.qkv_proj",
+  "source_manifest": [
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/deployment_acceptance.py",
+      "sha256": "170594cf7f0a4cf5920dbc3722de155b49fb8ebebb72444d5b302edcf0675c51"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/ordinary_admission.py",
+      "sha256": "98ac0d863d424b15d981516039e1a15584e8278cb12bf5d4f804ba94f7a6a767"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.ordinary_evidence",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/ordinary_evidence.py",
+      "sha256": "86b6f4481b140f1f386f3276f6eb11f52bdd3a751fcd9c4c8ba1ea3a57cee699"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.serving_quant_projection",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving_quant_projection.py",
+      "sha256": "1694b28d6aed8dba908e1900c779ce7e0ec7069e4b4d02d8493cd7c024789f10"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.serving_quant",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving_quant.py",
+      "sha256": "bae4c8cf64eecd1628781f9a4b824cd4fe0a5063e6f4ea7facd570b347d7ec71"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.quant_row_provenance",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/quant_row_provenance.py",
+      "sha256": "889c38343616066ecd2f572ec10e3adaecfd8e04481830cbc9aa5c3b1f813e21"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.call_binding",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/call_binding.py",
+      "sha256": "000e3d11f666c9cf4a897487c486eb9b5ccebe03807d12fdc572442c07340adb"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.batch_context",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/batch_context.py",
+      "sha256": "e1dc36947b4cceaafdb423e3935e4fe2e4ea9ae9a5ab14e81730183f09ec044e"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.serving",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving.py",
+      "sha256": "951f7f4f08e55ce179795b36e414f24bb8e4f54c33ac6c52b1475cb498e642e3"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.serving_context",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving_context.py",
+      "sha256": "5695a3a5dc5c9a143388fd3b6c72b07a4a5af634d9acb0cb8913389cb9f8c2dc"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.serving20_qmm",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/serving20_qmm.py",
+      "sha256": "6fdd6bd510b75a849175d3d5e2539d3b91d4f631b18e2e61a739ccb6836a6eb1"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.providers.quant",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/providers/quant.py",
+      "sha256": "6a2610d34ddc771c1ffd2d13b449c2438984f68615a0e26d5310f51bb08843c6"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.providers._scope",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/providers/_scope.py",
+      "sha256": "8618e6788086c2d5bd961b45a7247e1b27149a625b93a88931c21d48ff215898"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.host",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/host.py",
+      "sha256": "980ada593fcdb3d30a348d74c59dfa7bf15774d58167a1777889dec1e3c73896"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.host_receipt_ledger",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/host_receipt_ledger.py",
+      "sha256": "77e343bc99974eabc21ea79384d08f9a04b082e68e6aae91202d96acf28519c9"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.runtime",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/runtime.py",
+      "sha256": "16403f2459a10e012bab1f8274fe534959477dd1682649c35d7c4111bc27ca77"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.config",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/config.py",
+      "sha256": "fb59fe21877dddc64322b23ff520960d7b10a39280350edf18a495984a6afccf"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.identity",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/identity.py",
+      "sha256": "0af0136c9ada160391c95f2adc7ff1f08b11bdd9327f7e496108141516b9112f"
+    },
+    {
+      "module": "demoncat.runtime.vllm_ascend.worker_extension.registry",
+      "path": "/installed/demoncat/runtime/vllm_ascend/worker_extension/registry.py",
+      "sha256": "4539aa8bbc7d02e30f9171030b537e1974489148e6393f1179dd877ef7f7b5fb"
+    },
+    {
+      "module": "fault_injection.prerequisites",
+      "path": "/installed/fault_injection/prerequisites.py",
+      "sha256": "1dcc82bffe9f07bbbedc59d50cf8968e9d2ff9f7833634e02c5998d015bf18d5"
+    },
+    {
+      "module": "fault_injection.quant_group_native",
+      "path": "/installed/fault_injection/quant_group_native.py",
+      "sha256": "3ab3ba6c9868b4f316b413968dca31fa4725590e57480d8ca283c800d422cf83"
+    },
+    {
+      "module": "fault_injection.quant_native_isolation",
+      "path": "/installed/fault_injection/quant_native_isolation.py",
+      "sha256": "0d6199b9491c7f67b0eef0c2c1127de33e53d82ee1a43dddacf45c7bcc175cd9"
+    },
+    {
+      "module": "fault_injection.deployments.quant_group_c1",
+      "path": "/installed/fault_injection/deployments/quant_group_c1.py",
+      "sha256": "5dfe31aaca8d44d077536acc57f9593407290f2d30d600601cdb263b5921ca75"
+    },
+    {
+      "module": "fault_injection.deployments.quant_group_inventory",
+      "path": "/installed/fault_injection/deployments/quant_group_inventory.py",
+      "sha256": "712153e2449a80286371cd91b182115fd0d3e5f33e115a0b941eab583bf1c583"
+    },
+    {
+      "module": "fault_injection.effect_summary",
+      "path": "/installed/fault_injection/effect_summary.py",
+      "sha256": "95f7474baaf7c74205268926492c9ce4d78544f375e72f2facfa8634562eace3"
+    },
+    {
+      "module": "fault_injection.quantization",
+      "path": "/installed/fault_injection/quantization.py",
+      "sha256": "19b8712901ee73085a83061427a404cac0d84ae44a9b4b5b712f8192c013dad0"
+    }
+  ],
+  "row_checks": [
+    {
+      "phase": "normal",
+      "prefill_logits_sha256": "f0c546e19dacf3851969dd9ef03c1edef117ad0feff93294a7dfb3974457649c",
+      "decode_hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "decode_logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "decode_top1": [
+        4226,
+        4226,
+        15,
+        729,
+        374,
+        525,
+        15216,
+        374
+      ],
+      "consumer": {
+        "method_source_sha256": "02b61d1806ee82430175c978d32729607bdc31aa2673cccbc4dc63be4f130f54",
+        "module": 281465080033744,
+        "original_calls": 1,
+        "qmm_output": {
+          "device": "npu:0",
+          "dtype": "torch.bfloat16",
+          "inference_version_unavailable": true,
+          "object_id": 281461560071216,
+          "offset": 0,
+          "shape": [
+            8,
+            4096
+          ],
+          "storage_address": 20623362887680,
+          "storage_bytes": 65536,
+          "storage_identity": 187666422155216,
+          "stride": [
+            4096,
+            1
+          ],
+          "version": null
+        }
+      },
+      "output_tokens_changed": false,
+      "logical_request_tokens": [
+        [
+          576,
+          4226
+        ],
+        [
+          576,
+          4226
+        ],
+        [
+          220,
+          15
+        ],
+        [
+          576,
+          729
+        ],
+        [
+          3555,
+          374
+        ],
+        [
+          3555,
+          525
+        ],
+        [
+          330,
+          15216
+        ],
+        [
+          8429,
+          374
+        ]
+      ],
+      "changed_logical_requests": []
+    },
+    {
+      "phase": "reference",
+      "prefill_logits_sha256": "f0c546e19dacf3851969dd9ef03c1edef117ad0feff93294a7dfb3974457649c",
+      "decode_hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "decode_logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "decode_top1": [
+        4226,
+        4226,
+        15,
+        729,
+        374,
+        525,
+        15216,
+        374
+      ],
+      "consumer": {
+        "method_source_sha256": "02b61d1806ee82430175c978d32729607bdc31aa2673cccbc4dc63be4f130f54",
+        "module": 281465080033744,
+        "original_calls": 1,
+        "qmm_output": {
+          "device": "npu:0",
+          "dtype": "torch.bfloat16",
+          "inference_version_unavailable": true,
+          "object_id": 281461560989776,
+          "offset": 0,
+          "shape": [
+            8,
+            4096
+          ],
+          "storage_address": 20623362887680,
+          "storage_bytes": 65536,
+          "storage_identity": 187666420205856,
+          "stride": [
+            4096,
+            1
+          ],
+          "version": null
+        }
+      },
+      "output_tokens_changed": false,
+      "logical_request_tokens": [
+        [
+          576,
+          4226
+        ],
+        [
+          576,
+          4226
+        ],
+        [
+          220,
+          15
+        ],
+        [
+          576,
+          729
+        ],
+        [
+          3555,
+          374
+        ],
+        [
+          3555,
+          525
+        ],
+        [
+          330,
+          15216
+        ],
+        [
+          8429,
+          374
+        ]
+      ],
+      "changed_logical_requests": []
+    },
+    {
+      "phase": "lossless",
+      "prefill_logits_sha256": "f0c546e19dacf3851969dd9ef03c1edef117ad0feff93294a7dfb3974457649c",
+      "decode_hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "decode_logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "decode_top1": [
+        4226,
+        4226,
+        15,
+        729,
+        374,
+        525,
+        15216,
+        374
+      ],
+      "consumer": {
+        "method_source_sha256": "02b61d1806ee82430175c978d32729607bdc31aa2673cccbc4dc63be4f130f54",
+        "module": 281465080033744,
+        "original_calls": 1,
+        "qmm_output": {
+          "device": "npu:0",
+          "dtype": "torch.bfloat16",
+          "inference_version_unavailable": true,
+          "object_id": 281461560081296,
+          "offset": 0,
+          "shape": [
+            8,
+            4096
+          ],
+          "storage_address": 20623362887680,
+          "storage_bytes": 65536,
+          "storage_identity": 187666427285648,
+          "stride": [
+            4096,
+            1
+          ],
+          "version": null
+        }
+      },
+      "output_tokens_changed": false,
+      "logical_request_tokens": [
+        [
+          576,
+          4226
+        ],
+        [
+          576,
+          4226
+        ],
+        [
+          220,
+          15
+        ],
+        [
+          576,
+          729
+        ],
+        [
+          3555,
+          374
+        ],
+        [
+          3555,
+          525
+        ],
+        [
+          330,
+          15216
+        ],
+        [
+          8429,
+          374
+        ]
+      ],
+      "changed_logical_requests": []
+    },
+    {
+      "phase": "calibration_off",
+      "prefill_logits_sha256": "f0c546e19dacf3851969dd9ef03c1edef117ad0feff93294a7dfb3974457649c",
+      "decode_hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "decode_logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "decode_top1": [
+        4226,
+        4226,
+        15,
+        729,
+        374,
+        525,
+        15216,
+        374
+      ],
+      "consumer": {
+        "method_source_sha256": "02b61d1806ee82430175c978d32729607bdc31aa2673cccbc4dc63be4f130f54",
+        "module": 281465080033744,
+        "original_calls": 1,
+        "qmm_output": {
+          "device": "npu:0",
+          "dtype": "torch.bfloat16",
+          "inference_version_unavailable": true,
+          "object_id": 281461218816080,
+          "offset": 0,
+          "shape": [
+            8,
+            4096
+          ],
+          "storage_address": 20623362887680,
+          "storage_bytes": 65536,
+          "storage_identity": 187666416156000,
+          "stride": [
+            4096,
+            1
+          ],
+          "version": null
+        }
+      },
+      "output_tokens_changed": false,
+      "logical_request_tokens": [
+        [
+          576,
+          4226
+        ],
+        [
+          576,
+          4226
+        ],
+        [
+          220,
+          15
+        ],
+        [
+          576,
+          729
+        ],
+        [
+          3555,
+          374
+        ],
+        [
+          3555,
+          525
+        ],
+        [
+          330,
+          15216
+        ],
+        [
+          8429,
+          374
+        ]
+      ],
+      "changed_logical_requests": []
+    },
+    {
+      "phase": "fault",
+      "prefill_logits_sha256": "f0c546e19dacf3851969dd9ef03c1edef117ad0feff93294a7dfb3974457649c",
+      "decode_hidden_sha256": "2209e5e478edef2b2be176818062983fdd02df3f775fb14c3e7d31ee6a674a55",
+      "decode_logits_sha256": "17834e9814a08d89c9847f5f44e81b47112022090840b178279bf6938d728250",
+      "decode_top1": [
+        4226,
+        4226,
+        15,
+        729,
+        374,
+        525,
+        15216,
+        653
+      ],
+      "consumer": {
+        "method_source_sha256": "02b61d1806ee82430175c978d32729607bdc31aa2673cccbc4dc63be4f130f54",
+        "module": 281465080033744,
+        "original_calls": 1,
+        "qmm_output": {
+          "device": "npu:0",
+          "dtype": "torch.bfloat16",
+          "inference_version_unavailable": true,
+          "object_id": 281461556527856,
+          "offset": 0,
+          "shape": [
+            8,
+            4096
+          ],
+          "storage_address": 20623362887680,
+          "storage_bytes": 65536,
+          "storage_identity": 187666417524464,
+          "stride": [
+            4096,
+            1
+          ],
+          "version": null
+        }
+      },
+      "output_tokens_changed": true,
+      "logical_request_tokens": [
+        [
+          576,
+          4226
+        ],
+        [
+          576,
+          4226
+        ],
+        [
+          220,
+          15
+        ],
+        [
+          576,
+          729
+        ],
+        [
+          3555,
+          374
+        ],
+        [
+          3555,
+          525
+        ],
+        [
+          330,
+          15216
+        ],
+        [
+          8429,
+          653
+        ]
+      ],
+      "changed_logical_requests": [
+        7
+      ]
+    },
+    {
+      "phase": "off",
+      "prefill_logits_sha256": "f0c546e19dacf3851969dd9ef03c1edef117ad0feff93294a7dfb3974457649c",
+      "decode_hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "decode_logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "decode_top1": [
+        4226,
+        4226,
+        15,
+        729,
+        374,
+        525,
+        15216,
+        374
+      ],
+      "consumer": {
+        "method_source_sha256": "02b61d1806ee82430175c978d32729607bdc31aa2673cccbc4dc63be4f130f54",
+        "module": 281465080033744,
+        "original_calls": 1,
+        "qmm_output": {
+          "device": "npu:0",
+          "dtype": "torch.bfloat16",
+          "inference_version_unavailable": true,
+          "object_id": 281461209682704,
+          "offset": 0,
+          "shape": [
+            8,
+            4096
+          ],
+          "storage_address": 20623362887680,
+          "storage_bytes": 65536,
+          "storage_identity": 187666412556752,
+          "stride": [
+            4096,
+            1
+          ],
+          "version": null
+        }
+      },
+      "output_tokens_changed": false,
+      "logical_request_tokens": [
+        [
+          576,
+          4226
+        ],
+        [
+          576,
+          4226
+        ],
+        [
+          220,
+          15
+        ],
+        [
+          576,
+          729
+        ],
+        [
+          3555,
+          374
+        ],
+        [
+          3555,
+          525
+        ],
+        [
+          330,
+          15216
+        ],
+        [
+          8429,
+          374
+        ]
+      ],
+      "changed_logical_requests": []
+    }
+  ],
+  "resources": {
+    "installed": false,
+    "native_registered": false,
+    "owned_hooks": 0,
+    "owned_api_patches": 0,
+    "owned_method_patches": 0,
+    "owned_normal_readback_bytes": 0,
+    "owned_row_modes": 0,
+    "recovery_proven": true,
+    "actual_fault_hits": 1
+  },
+  "ownership_retained": false,
+  "same_worker": true,
+  "healthy_outputs_equal": true,
+  "controller_cleanup": {
+    "status": "OWNED_CONTAINER_REMOVED",
+    "state_before_cleanup": {
+      "Status": "exited",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 0,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-11-19T12:01:29.724374976Z",
+      "FinishedAt": "2026-11-19T12:06:45.147156493Z"
+    },
+    "final_state": {
+      "Status": "exited",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 0,
+      "ExitCode": 0,
+      "Error": "",
+      "StartedAt": "2026-11-19T12:01:29.724374976Z",
+      "FinishedAt": "2026-11-19T12:06:45.147156493Z"
+    },
+    "recovery_proven": false,
+    "note": "Container cleanup does not prove same-process OFF recovery."
+  },
+  "limits": {
+    "max_provider_state_bytes": 113163,
+    "max_evidence_bytes": 111197,
+    "provider_state_limit": 2097152,
+    "evidence_limit": 524288,
+    "states": 18
+  },
+  "limitations": [
+    "One actual W8A8 projection; not all targets or new model families",
+    "Six real batches are still required by unchanged Native calibration ABI",
+    "One NPU task scope in this regression; independent new owner lifecycle covered by CPU tests only",
+    "Two generated tokens per request; not long generation quality",
+    "E5/msprobe not assessed; no new statistics uploaded",
+    "No yellow main-project or production qualification"
+  ],
+  "token_comparison": "Aligned by actual enqueue request_ids and internal-to-external mapping, never JSON object key ordering"
+}

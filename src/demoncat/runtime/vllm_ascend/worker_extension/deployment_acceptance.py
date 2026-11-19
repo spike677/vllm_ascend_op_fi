@@ -16,8 +16,8 @@ import threading
 from .prerequisites import expectation, assessment
 
 _BLUE = '_demoncat_blue_acceptance_permit'
-# 8/17 a5 reviewed: two independent scopes, actual four-request recovery.
-_PENDING_REVALIDATION={'quant.batch_shared_scale':'AUTOMATIC_DECODE_COMPLETION_NPU_PENDING'}
+# Reviewed ordinary runs are referenced per combination below.
+_PENDING_REVALIDATION={}
 _COMMON = dict(torch='2.9.0+cpu', torch_npu='2.9.0.post1+gitee7ba04',
     vllm='0.18.0', vllm_ascend='0.18.0', cann=['8.5.1'], dtype='torch.bfloat16',
     tp=1, pp=1, dp=1, eager=True)
@@ -35,7 +35,7 @@ _CONFIGS = {
     '39.output_proxy': ('660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd',
         'vllm.model_executor.models.qwen3.Qwen3ForCausalLM', 'Source116'),
     'quant.batch_shared_scale': ('bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816',
-        'vllm.model_executor.models.qwen3.Qwen3ForCausalLM', 'Source118'),
+        'vllm.model_executor.models.qwen3.Qwen3ForCausalLM', '32f87374/ordinarybatch-a1'),
 }
 
 

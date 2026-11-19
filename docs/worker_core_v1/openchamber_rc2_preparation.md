@@ -30,3 +30,7 @@ advance(internal_id)→真实等待完成→query，不要求collect_replay；�
 RC2按能力声明部署组合。入口实现或结构兼容不代表验收，不匹配的组合默认不可执行。
 蓝区显式试验许可不是黄区用户配置；不能将另一镜像/模型的历史身份填到新构建上。
 黄区主项目接线与product_closed继续由openchamber实际验收确认。
+
+Batch普通入口已补验统一宿主动作：advance_batch(actual_ids)→等待完成→query，宿主无需手工
+step/capture/collect；六个实际校准/故障/OFF批次仍保留。本轮一个蓝区NPU任务作用域通过，
+黄区仍需独立验收，不能将该结果套用其他镜像或模型。

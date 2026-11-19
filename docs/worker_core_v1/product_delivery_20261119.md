@@ -9,6 +9,14 @@
 也没有把独立 HF 路径、实验 runner 或模拟 Host 标为主项目。TND28 还有故障实现工作，
 不是只欠主项目验收。
 
+## 最新普通任务状态
+
+[RC2准入、普通协议与124新构建复核](ordinary_tasks_rc2_20261119.md)是当前执行资格入口。
+8/17 a5和22 a1各通过两个独立作用域；Batch a1通过统一回调六批及健康复核。
+未验部署默认关闭；历史机制通过/工厂存在不授予普通任务资格。
+20、26两变体、33、41的普通路线仍待改造；下文原机制结论只在原范围内保留。
+RC1.1保持冻结，RC2尚未打包发行。黄区主项目/现役结论不能由蓝区替代。
+
 ## 本次实际代码变化
 
 - `fault_injection/actions.py` 抽取实际缩放、独立存储转换、行写入。
@@ -29,7 +37,8 @@
 - `delivery_scope.py` 是静态交付说明，并在 catalog、能力查询和 Worker manifest 中统一返回。
   `live_deployment_status=NOT_EVALUATED` 明确区别于实际 Worker admission。
   历史清单仍有17条，公共工厂16条；**工厂数不是支持数**。25在创建 provider 前明确拒绝。
-- 当前公共39只接受 `c1 / max_live_leases=1`，33拒绝整组 Native driver，
+- 当前公共39 output_proxy只接受runtime_only普通任务，历史C1绑定被拒绝；
+  33的普通路线仍待接入，旧研究限定单点且拒绝整组Native driver，
   继续复用 Source105 单点实现。旧组实现仍供历史研究/测试直接引用，当前公共入口不自动升级。
   下一独立任务使用新 Runtime/provider 作用域；没有重置 `_fault_attempted` 或删掉正常门禁。
 - 原三安装单元、`FaultConfig` 三字段、HostAdapter、WorkerFaultClient 与 Runtime 所有权不变。
@@ -60,16 +69,16 @@ OFF/health不安装RMS观察器，比较完整hidden/logits哈希；新任务必
 
 | 能力 | 本轮状态 | 实现边界／适用部署 | 实际项目效果 | OFF恢复 | 具体阻塞及下一改动 |
 |---|---|---|---|---|---|
-|8 restore_offset|保留已验收范围|实际 MoE restore/routing/consumer|未接线验收|原范围通过；主项目待验|宿主接线与运行时/验收拆分|
+|8 restore_offset|普通任务124 a5通过|DeepSeek-V2-Lite-W8A8 TP1，单实际MoE unpermute|两个独立任务；26592/28672元素与logits变化，首token未变|同Worker OFF/health精确恢复、资源释放|黄区MoE测试部署与宿主验收；非全目标|
 |15 alias_detach|当前部署不适用|真实共享存储→视图写→原base消费|无适用通路|原机制证据保留|不扫描/不造辅助模型；仅有新真实通路才重开|
-|17 spatial_padding|保留 Torch C2/C3|真实视觉模型图像请求，单投影Conv3d padding|未接线验收|原范围通过；主项目待验|接入已接受 Torch 边界，不要求新Native/E5|
+|17 spatial_padding|普通任务124 a5统一完成回调通过|Qwen3-VL-2B TP1/BF16，单实际Conv3d Torch padding|两个独立任务，输出/consumer/logits改变，首token未变|同Worker OFF/health精确恢复、资源释放|黄区视觉部署；不授Native ABI/E5/全目标资格|
 |18 api_half|普通单任务蓝区实测与独审通过|Qwen3-0.6B BF16 TP1 eager，首个实际RMS返回及consumer；gain代理|Source126有14336元素减半、hidden/logits变化、文本不变；黄区待验|同Worker OFF/health完整hidden/logits精确恢复，资源释放|openchamber实际宿主接线；不授多模型/全层资格|
 |20 buffer_substitute|保留已验收范围|匹配WeightNz/QMM ABI、live slot|未接线验收|原范围通过；主项目待验|宿主按实际部署选点，保留版本界限|
-|22 wrong_row|共用行/存储动作已接入|实际 fused RoPE index/consumer|CPU契约通过；主项目未验|原范围保留；主项目待验|接线和变更后对应实机检查|
+|22 wrong_row|普通任务124 a1通过|Qwen3-0.6B TP1/BF16，首实际fused RoPE行13→0|两个独立任务；Q/K及logits变化、非目标行不变|同Worker OFF/health精确恢复、资源释放|黄区接线；非整数溢出、非全部层|
 |25 reduce_scatter|不支持，已停止|无替代通信输出破坏|不适用|不适用|无本轮后续实现|
 |26 residual_stomp|选择已有Native单点路线|真实邻接、QMM writer和residual consumer|未接线验收|原单点通过；主项目待验|目标部署邻接不成立则明确不适用，不追135完整集合|
 |26 fia_destination|保留通过范围|实际FIA→当前请求残差→consumer|未接线验收|原范围通过；主项目待验|迁移时重新绑定，不继承裸地址|
-|Batch shared_scale|普通W8A8新入口单点实测及原件复核通过|Qwen3-0.6B W8A8，TP1/B8首decode，自动qkv投影；六个当前作用域batch|Source118的Q有5565/8192元素变化、scale有7/8变化，实际QMM消费；主项目待验|同Worker OFF的Q/scale及完整hidden/logits哈希精确恢复，前后健康请求一致|实际宿主接线；既有Native ABI仍需作用域校准，不等待routed GMM1|
+|Batch shared_scale|Source118保留；新统一Host回调124 a1通过|Qwen3-0.6B动态W8A8 TP1/B8首decode、单qkv投影、六批|Q改变5565/8192、scale改变7/8；逻辑请求7第二token改变|同Worker OFF完整hidden/logits恢复，前后健康一致|黄区动态W8A8/bundle及宿主验收；本轮单NPU任务作用域|
 |28 FA legal|仅历史保留|旧FA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 FIA legal|仅历史保留|旧FIA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 denominator_replay|TND kernel/host已构建；实际正常输入关联独审通过；整条实现未完成|真实TND在线softmax分母重复累计|F未验|F/OFF未验|Source123当前对象/typed输入/实际launch关联通过；当前Execute借用、取消和故障准入仍待接通，F关闭|
