@@ -49,14 +49,16 @@ def online_scalar(scores,values,*,replay=False):
 
 
 def validate_split(row):
-    cores=row['aic'];m=row['m'];s2=row['s2']
-    require(all(type(x) is int for x in (cores,m,s2)) and 16<=cores<=26 and (m,s2)==(128,128),
+    cores=row['aic'];schedule=row['scheduling_cores'];m=row['m'];s2=row['s2']
+    require(all(type(x) is int for x in (cores,schedule,m,s2)) and 16<=cores<=26
+        and schedule in (8,cores) and (m,s2)==(128,128),
             'TND28_SPLIT_EXACT_SCOPE')
     used=row['usedCoreNum']
     require(type(used) is int and 0<used<=cores and type(row['numOfFdHead']) is int
         and row['numOfFdHead']==0 and type(row['usedVecNumOfFd']) is int
         and row['usedVecNumOfFd']==0 and type(row['maxS2SplitNum']) is int
         and 0<=row['maxS2SplitNum']<=1,'TND28_SPLITKV_REFUSED')
+    require(schedule==8 and used==8,'TND28_EIGHT_WHOLE_HEAD_SCHEDULE_REQUIRED')
     for name in ARRAYS:
         size=cores*2 if name in ARRAYS[-2:] else cores
         require(type(row[name]) is list and len(row[name])==size
@@ -64,7 +66,7 @@ def validate_split(row):
     spans=[];previous=0
     for i in range(used):
         head,flat_tile,block=(row[n][i] for n in ARRAYS[:3])
-        require(head<=8 and flat_tile<32 and block==0 and (head<8 or flat_tile==0),
+        require(head==i+1 and flat_tile==0 and block==0,
                 'TND28_PARTIAL_OR_NONCANONICAL_REDUCTION')
         end=head*32+flat_tile
         require(previous<end<=256,'TND28_SPLIT_EMPTY_OVERLAP_OR_OUTSIDE')
@@ -90,21 +92,25 @@ def validate_split(row):
                 covered+=sum(b-a for a,b in intervals)
                 replayed_rows+=query>=128
     require(covered==16*2048*2049//2 and replayed_rows==16*(2048-128),'TND28_CAUSAL_PAIR_COUNT')
-    return dict(aic=cores,used_cores=used,complete_row_reductions=256,
+    return dict(aic=cores,scheduling_cores=schedule,used_cores=used,complete_row_reductions=256,
         covered_unmasked_pairs=covered,replay_eligible_rows=replayed_rows,
         actual_worker_platform_observed=False,npu_executed=False,qualification_granted=False)
 
 
 def validate_matrix(rows):
-    summaries=[];seen=set();refused=[]
+    summaries=[];seen=set();refused=[];unselected=[]
     for row in rows:
-        cores=row['aic']
-        require(cores in range(16,27) and cores not in seen,'TND28_DUPLICATE_OR_UNEXPECTED_CORE_PROFILE')
-        seen.add(cores)
+        cores=row['aic'];schedule=row['scheduling_cores'];identity=(cores,schedule)
+        require(type(cores) is int and type(schedule) is int and cores in range(16,27)
+            and schedule in (cores,8) and identity not in seen,'TND28_DUPLICATE_OR_UNEXPECTED_CORE_PROFILE')
+        seen.add(identity)
         try: summaries.append(validate_split(row))
-        except ValueError as e: refused.append(dict(aic=cores,reason=str(e)))
-    require(seen==set(range(16,27)),'TND28_MATRIX_INCOMPLETE')
-    return dict(schema='demoncat.attention28.tnd_denominator_cpu_matrix.v1',cases=len(seen),
+        except ValueError as e:
+            item=dict(aic=cores,scheduling_cores=schedule,reason=str(e))
+            (unselected if schedule==cores else refused).append(item)
+    require(seen=={(c,s) for c in range(16,27) for s in (c,8)},'TND28_MATRIX_INCOMPLETE')
+    return dict(schema='demoncat.attention28.tnd_denominator_cpu_matrix.v2',cases=len(seen),
         supported_core_profiles=[r['aic'] for r in summaries],refused_profiles=refused,profiles=summaries,
+        original_platform_schedule_refusals=unselected,selected_scheduling_cores=8,
         status='CPU_SPLIT_PROFILES_RECORDED_NOT_NATIVE_ACCEPTANCE',
         npu_executed=False,qualification_granted=False)

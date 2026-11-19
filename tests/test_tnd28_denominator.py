@@ -22,6 +22,7 @@ def fixture():
     d[h]=d[h].replace('class X {};','class X {\n    bool splitKVFlag_ = false;\n};')
     d[c]+='\n    CalcMBaseSize();\n}\n    softmaxWithBrcbFlag_ = (mBaseSize_ <= M_BASE_SIZE_128);\n'
     d[c]+='    if ((SetNumBlocks(numBlocks_) != ge::GRAPH_SUCCESS) ||\n'
+    d[c]+='    SplitResult res {aicNum_, cvRatio_ };\n    SplitCore(aicNum_, baseInfo, splitParam, res);\n'
     d[recipe.ROUTE]+='\nFIA_EXTERN_C ge::graphStatus TilingFusedInferAttentionScoreV3(gert::TilingContext *context)'
     d[recipe.TRAIT]='    static constexpr bool enableTree = ENABLE_TREE;'
     d[recipe.KERNEL]='using namespace matmul;\n    info.actualSingleProcessSInnerSizeAlign =\n        AttentionCommon::Align((uint32_t)info.actualSingleProcessSInnerSize, (uint32_t)AttentionCommon::BYTE_BLOCK);'
@@ -40,11 +41,19 @@ def fixture():
 
 
 def split_fixture(cores=16):
-    r=dict(aic=cores,m=128,s2=128,usedCoreNum=cores,numOfFdHead=0,usedVecNumOfFd=0,maxS2SplitNum=0)
+    r=dict(aic=cores,scheduling_cores=8,m=128,s2=128,usedCoreNum=8,numOfFdHead=0,usedVecNumOfFd=0,maxS2SplitNum=0)
     r.update({n:[0]*(2*cores if n in geometry.ARRAYS[-2:] else cores) for n in geometry.ARRAYS})
-    for i in range(cores):
-        end=256*(i+1)//cores;r['bN2End'][i],r['gS1End'][i]=divmod(end,32)
+    for i in range(8):r['bN2End'][i]=i+1
     return r
+
+
+def matrix_fixture():
+    """Synthetic full rows. Platform FD mirrors the retained a1 failure class."""
+    rows=[]
+    for cores in range(16,27):
+        platform=split_fixture(cores);platform.update(scheduling_cores=cores,numOfFdHead=8)
+        rows.extend((platform,split_fixture(cores)))
+    return rows
 
 
 class TndDenominatorAlgebra(unittest.TestCase):
@@ -97,12 +106,29 @@ class TndDenominatorAlgebra(unittest.TestCase):
         self.assertEqual(r['covered_unmasked_pairs'],33570816)
         self.assertEqual(r['replay_eligible_rows'],30720)
         self.assertFalse(r['qualification_granted'])
-        rows=[split_fixture(c) for c in range(16,27)]
-        rows[3]['numOfFdHead']=1
+        rows=matrix_fixture()
+        rows[7]['numOfFdHead']=1
         result=geometry.validate_matrix(rows)
-        self.assertEqual(result['refused_profiles'],[dict(aic=19,reason='TND28_SPLITKV_REFUSED')])
+        self.assertEqual(result['refused_profiles'],[dict(aic=19,scheduling_cores=8,reason='TND28_SPLITKV_REFUSED')])
         self.assertNotIn(19,result['supported_core_profiles'])
         self.assertEqual(len(result['supported_core_profiles']),10)
+        self.assertEqual(len(result['original_platform_schedule_refusals']),11)
+        self.assertEqual(result['cases'],22)
+
+    def test_platform_fd_is_retained_and_eight_scheduling_cannot_be_faked_by_clearing_count(self):
+        # These first original endpoints are from the actual a1 16-core result.
+        row=split_fixture();row.update(scheduling_cores=16,usedCoreNum=16,
+            numOfFdHead=8,usedVecNumOfFd=32,maxS2SplitNum=2)
+        row['bN2End']=[0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8]
+        row['gS1End']=[22,0]*8;row['s2End']=[4,0]*8
+        with self.assertRaisesRegex(ValueError,'SPLITKV'):geometry.validate_split(row)
+        row.update(scheduling_cores=8,usedCoreNum=8,numOfFdHead=0,usedVecNumOfFd=0,maxS2SplitNum=0)
+        with self.assertRaisesRegex(ValueError,'PARTIAL_OR_NONCANONICAL'):geometry.validate_split(row)
+        for field,value in (('scheduling_cores',16),('usedCoreNum',16),('aic',8)):
+            row=split_fixture();row[field]=value
+            with self.subTest(field=field),self.assertRaises(ValueError):geometry.validate_split(row)
+        row=split_fixture();row['bN2End'][0]=0;row['gS1End'][0]=16
+        with self.assertRaisesRegex(ValueError,'PARTIAL_OR_NONCANONICAL'):geometry.validate_split(row)
 
     def test_partial_missing_fd_unused_and_repeated_core_rows_refuse(self):
         variants=[('numOfFdHead',1),('numOfFdHead',False),('usedVecNumOfFd',1),('usedVecNumOfFd',False),
@@ -142,12 +168,24 @@ class TndDenominatorSource(unittest.TestCase):
         host=changed[recipe.normal.PATHS[1]]
         self.assertIn('tnd28_denominator::Select',host)
         self.assertIn('tnd28_denominator::ExtendKey(tnd28Replay_, tilingKey_, tilingData_)',host)
+        self.assertIn('SplitResult res {aicNum_, cvRatio_ };',host)
+        self.assertIn('SplitCore(tnd28_denominator::SchedulingCores(tnd28Replay_, aicNum_), baseInfo, splitParam, res);',host)
+        self.assertNotIn('aicNum_ =',host)
+        self.assertNotIn('usedCoreNum_ = 8',host)
         self.assertNotIn('set_numOfFdHead',host)
         self.assertIn('!tnd28_denominator::UseRoute(context)',changed[recipe.ROUTE])
         contract=Path(recipe.__file__).with_name('tnd28_denominator_contract.h').read_text()
         self.assertIn('TND28_REPLAY_ACTUAL_PREPARED_INPUT_BINDING_MISSING',contract)
         self.assertIn('!dcat_tnd28_denominator_current_input_v1',contract)
         self.assertIn('consumed.insert(s.token).second',contract)
+
+    def test_matrix_runs_original_physical_and_selected_schedules_without_editing_original_split(self):
+        from fault_injection.native_adapters.attention28.fia import compile_tnd28_denominator_matrix as matrix
+        self.assertIn('for(unsigned splitCores: {cores,8U})',matrix.PROGRAM)
+        self.assertIn('SplitResult r(cores,2);SplitCore(splitCores,b,p,r);',matrix.PROGRAM)
+        self.assertNotIn('split_core.cpp',recipe.PATHS)
+        self.assertEqual(recipe.SOURCE_SHA['attention/common/op_host/split_core.cpp'],
+            '55c43a3f96f36aa51ed6a8f634a76fd6ebff7044330f965a283509424219cd02')
 
     def test_tnd_width_is_separate_and_every_other_kernel_byte_unchanged(self):
         original=fixture();changed=recipe.patched(original)

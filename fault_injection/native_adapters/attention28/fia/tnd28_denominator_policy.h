@@ -27,6 +27,16 @@ inline State Select(const optiling::FiaTilingInfo& i,gert::TilingContext* c,
     Consume(s.scope);s.selected=true;
     return s;
 }
+inline uint32_t SchedulingCores(const State& s,uint32_t physical) {
+    if (!s.selected) return physical;
+    RequireInput(s.scope);
+    if (physical!=s.aic || physical<16 || physical>26)
+        throw std::runtime_error("TND28_REPLAY_PHYSICAL_CORE_IDENTITY_CHANGED");
+    // Eight equal KV-head workloads go through the ORIGINAL splitter. Its
+    // result still has physical-sized storage. No endpoints or FD flags are
+    // manufactured here; RequireSplit must verify one whole head per core.
+    return 8;
+}
 inline void RequireSplit(const State& s,optiling::FusedInferAttentionScoreTilingData& d) {
     if (!s.selected) return;
     RequireInput(s.scope);
@@ -87,6 +97,7 @@ inline void Capture(const State& s,const optiling::FiaTilingInfo& i,gert::Tiling
         <<",\"native_m\":"<<s.nativeM<<",\"native_s2\":"<<s.nativeS2
         <<",\"selected_m\":"<<m<<",\"selected_s2\":"<<s2<<",\"s2_loops\":"<<loops
         <<",\"aic\":"<<s.aic<<",\"aiv\":"<<s.aiv<<",\"used_cores\":"<<used
+        <<",\"scheduling_cores\":8,\"split_policy\":\"ORIGINAL_SPLIT_CORE_EIGHT_WHOLE_KV_HEADS\""
         <<",\"flash_decode\":false,\"complete_per_row_reduction\":true,\"causal_coordinate_order\":\"S1G\""
         <<",\"denominator_replay\":"<<p.replay<<",\"current_input_gate_required\":"<<p.replay
         <<",\"tiling_key\":"<<Quote(std::to_string(c->GetTilingKey()))<<",\"block_dim\":"<<c->GetBlockDim()

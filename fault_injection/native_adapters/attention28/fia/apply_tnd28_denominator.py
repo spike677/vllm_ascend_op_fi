@@ -80,6 +80,8 @@ def patched(original):
         '        sInnerLoopTimes_ = (s2Size + sInnerSize_ - 1U) / sInnerSize_;\n'
         '        sInnerSizeTail_ = s2Size - (sInnerLoopTimes_ - 1U) * sInnerSize_;\n'
         '        sInnerSizeAlign_ = Align(sInnerSize_, BYTE_BLOCK);\n    }\n}')
+    result[host]=base.once(result[host],'    SplitCore(aicNum_, baseInfo, splitParam, res);',
+        '    SplitCore(tnd28_denominator::SchedulingCores(tnd28Replay_, aicNum_), baseInfo, splitParam, res);')
     result[host]=base.once(result[host],'    if ((SetNumBlocks(numBlocks_) != ge::GRAPH_SUCCESS) ||',
         '    tilingKey_ = tnd28_denominator::ExtendKey(tnd28Replay_, tilingKey_, tilingData_);\n'
         '    if ((SetNumBlocks(numBlocks_) != ge::GRAPH_SUCCESS) ||')
@@ -154,6 +156,8 @@ def receipt(raw,final,projection,fields):
                    page_attention=False,api_block_size=128,m=128,s2_base=128,sparse_mode=3),
         kernel_source_modified=True,denominator_recurrence_modified=True,numerator_or_output_path_changed=False,
         actual_split_core_modified=False,selection_before_original_split=True,normal_only=False,
+        selected_scheduling_cores=8,physical_core_count_unchanged=True,
+        split_policy='ORIGINAL_SPLIT_CORE_EIGHT_WHOLE_KV_HEADS',
         fault_execution_ready=False,loading_allowed=False,stock_private_exact_proven=False,
         public_prepared_pointer_stride_join=False,actual_worker_platform_observed=False,c1=False,c2=False,c3=False,
         files=[dict(path=p,before_sha256=sha(raw[p]) if p in raw else None,after_sha256=sha(b),bytes=len(b))

@@ -54,7 +54,9 @@ def cpu_checks(builder,base):
     builder.run('actual_tnd28_replay_split_matrix',[builder.args.python,here/'compile_tnd28_denominator_matrix.py',
         '--source',builder.source,'--out',ev/'tnd28_replay_matrix'],env=builder.env)
     matrix=json.loads((ev/'tnd28_replay_matrix/receipt.json').read_bytes())
-    base.require(matrix.get('supported_core_profiles') and matrix.get('cases')==11
+    base.require(matrix.get('supported_core_profiles')==list(range(16,27)) and matrix.get('cases')==22
+        and matrix.get('selected_scheduling_cores')==8
+        and len(matrix.get('original_platform_schedule_refusals',[]))==11
         and matrix.get('source_execution')=='PINNED_ORIGINAL_SPLIT_CORE_CPU'
         and matrix.get('npu_executed') is False and matrix.get('qualification_granted') is False,
         'TND28_REPLAY_NO_COMPLETE_NATIVE_SPLIT_PROFILE')

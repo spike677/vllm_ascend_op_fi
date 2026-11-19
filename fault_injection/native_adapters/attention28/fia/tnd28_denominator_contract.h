@@ -68,10 +68,10 @@ inline void RequireInput(const Scope& s) {
 // endpoints. The matrices retain all original FD arrays; no FD flag is edited.
 inline bool CompleteReduction(uint32_t cores,uint32_t used,uint32_t fd,
     const uint32_t* heads,const uint32_t* rows,const uint32_t* blocks) {
-    if (!heads || !rows || !blocks || cores<16 || cores>26 || !used || used>cores || fd) return false;
+    if (!heads || !rows || !blocks || cores<16 || cores>26 || used!=8 || fd) return false;
     uint32_t previous=0;
     for (uint32_t i=0;i<used;++i) {
-        if (heads[i]>8 || rows[i]>=32 || blocks[i]!=0 || (heads[i]==8 && rows[i]!=0)) return false;
+        if (heads[i]!=i+1 || rows[i]!=0 || blocks[i]!=0) return false;
         const uint32_t end=heads[i]*32+rows[i];
         if (end<=previous || end>256) return false;
         previous=end;

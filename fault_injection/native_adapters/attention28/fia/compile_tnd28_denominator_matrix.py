@@ -23,19 +23,20 @@ void array(const char* n,const std::vector<uint32_t>& v){
  std::cout<<",\""<<n<<"\":[";
  for(size_t i=0;i<v.size();++i){if(i)std::cout<<',';std::cout<<v[i];}std::cout<<']';
 }
-int main(){for(unsigned cores=16;cores<=26;++cores){
+int main(){for(unsigned cores=16;cores<=26;++cores){for(unsigned splitCores: {cores,8U}){
  BaseInfo b;b.bSize=1;b.n2Size=8;b.gSize=2;b.s1Size=b.s2Size=2048;
  b.isS1G=true;b.isAccumSeqS1=b.isAccumSeqS2=true;
  b.actualSeqS1Size={2048};b.actualSeqS2Size={2048};b.actualLenQDims=b.actualLenKvDims=1;
  b.attenMaskFlag=true;b.sparseMode=3;b.preToken=INT_MAX;b.nextToken=0;
  SplitParam p;p.mBaseSize=p.s2BaseSize=128;p.gS1BaseSizeOfFd=8;
- SplitResult r(cores,2);SplitCore(cores,b,p,r);
- std::cout<<"{\"aic\":"<<cores<<",\"m\":128,\"s2\":128,\"usedCoreNum\":"<<r.usedCoreNum
+ SplitResult r(cores,2);SplitCore(splitCores,b,p,r);
+ std::cout<<"{\"aic\":"<<cores<<",\"scheduling_cores\":"<<splitCores
+  <<",\"m\":128,\"s2\":128,\"usedCoreNum\":"<<r.usedCoreNum
   <<",\"numOfFdHead\":"<<r.numOfFdHead<<",\"usedVecNumOfFd\":"<<r.usedVecNumOfFd
   <<",\"maxS2SplitNum\":"<<r.maxS2SplitNum;
  ARRAY_LINES
  std::cout<<"}\n";
-}}
+}}}
 '''
 
 

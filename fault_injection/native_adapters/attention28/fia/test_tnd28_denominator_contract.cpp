@@ -33,11 +33,15 @@ int main(){
     env("DCAT28_TND_PHASE","control");assert(refused([&]{CurrentScope();}));env("DCAT28_TND_PHASE","fault");
     env("DCAT28_TND_OBJECT","122");assert(refused([&]{RequireInput(s);}));env("DCAT28_TND_OBJECT","121");
     uint32_t h[26]{},r[26]{},b[26]{};
-    for(unsigned i=0;i<16;++i){unsigned end=(i+1)*16;h[i]=end/32;r[i]=end%32;}
-    assert(CompleteReduction(16,16,0,h,r,b));
-    b[2]=1;assert(!CompleteReduction(16,16,0,h,r,b));b[2]=0;
-    assert(!CompleteReduction(16,16,1,h,r,b));
-    r[4]=r[3];h[4]=h[3];assert(!CompleteReduction(16,16,0,h,r,b));
+    for(unsigned i=0;i<8;++i)h[i]=i+1;
+    for(unsigned physical=16;physical<=26;++physical)assert(CompleteReduction(physical,8,0,h,r,b));
+    assert(!CompleteReduction(16,16,0,h,r,b));
+    assert(!CompleteReduction(8,8,0,h,r,b));
+    b[2]=1;assert(!CompleteReduction(16,8,0,h,r,b));b[2]=0;
+    assert(!CompleteReduction(16,8,1,h,r,b));
+    h[8]=1;assert(!CompleteReduction(16,8,0,h,r,b));h[8]=0;
+    h[0]=0;r[0]=16;assert(!CompleteReduction(16,8,0,h,r,b));h[0]=1;r[0]=0;
+    r[4]=r[3];h[4]=h[3];assert(!CompleteReduction(16,8,0,h,r,b));
     for(uint32_t flat=0;flat<4096;flat+=128){
         const uint32_t last=(flat+127)/2;
         for(uint32_t k=0;k<16;++k){

@@ -2,7 +2,7 @@
 
 This increment implements the missing **TND kernel arithmetic and source-bound
 host selection** for `28.fia.denominator_replay`. It is not a working main-project
-fault entry yet. No SDK build, Native input binding, NPU effect, C1/C2/C3 or E5
+fault entry yet. No successful SDK build, Native input binding, NPU effect, C1/C2/C3 or E5
 qualification is claimed by this commit. FA, legal tiling and group execution are
 outside this increment.
 
@@ -53,6 +53,24 @@ must belong to one core, all 256 `(KV head, M tile)` reductions must be covered,
 and every FD producer/consumer array must be zero. A partial S2 assignment is
 refused; no FD count or array is cleared to make it pass.
 
+The first device-free build (`tnd28-denominator-build-a1`) compiled the CPU
+contracts and executed the original splitter. All 11 physical scheduling
+profiles 16..26 produced real split-KV/FD work, so the build stopped before SDK
+compilation. Its matrix SHA is
+`ab36cf4824ca295a43aca16bd7b2dc00119a782d624730cfdae1e896f728d86c`;
+that refusal remains an original result, not a validator error.
+
+The revised control and replay both pass **8 scheduling cores** to the original
+splitter for the eight equal KV-head workloads. `aicNum_`, `aivNum_`, platform
+identity and physical-sized `SplitResult` storage remain unchanged. The original
+`AssignByBatch` can allocate one whole head to each scheduling core. Admission
+requires its actual result to contain exactly eight endpoints `(1..8,0,0)`,
+256 complete query-tile reductions and zero FD producer/consumer entries;
+anything else is refused. No endpoint is authored by the adapter. Original
+`SetSplitOutput`, `FillTiling`, `CalcNumBlocks(usedCoreNum_)` and workspace
+calculation consume this result normally. This is a changed scheduling policy
+for this candidate, and still requires a fresh stock/control normal bridge.
+
 The host requires the current observer token, PID/native TID/start identity,
 owner/generation, actual module object, request hash and input hash. A UUID is
 consumed once even if subsequent tiling fails. Foreign thread/unscoped calls do
@@ -79,15 +97,17 @@ After that choice is integrated, the root command is:
 python3 "$SOURCE/experiments/c2c3_closure_20261117/build_tnd33_124.py" \
   --source "$SOURCE" --interfaces "$REVIEWED_CANN851_INTERFACES" \
   --strategy tnd28-denominator-replay \
-  --out /home/17-fault-c2c3-20261117/tnd28-denominator-build-a1
+  --out /home/17-fault-c2c3-20261117/tnd28-denominator-build-a2
 ```
 
 The controller runs the source recipe and the existing `build_fresh.py`. Before
 SDK configuration, the builder compiles the SDK-independent owner/replay
 contracts, a real missing-weak-symbol negative executable, and executes the
-**unchanged** pinned `SplitCore` for all 11 AIC profiles 16..26. It preserves the
-complete arrays and per-profile refusals. No supported profile stops the build
-before SDK compilation. For a matrix-only early check in the same device-free
+**unchanged** pinned `SplitCore` twice for all 11 AIC profiles 16..26: the original
+physical schedule and the selected eight-core schedule (22 complete rows).
+It preserves the original schedule's full arrays and refusals separately.
+Every selected profile must pass the strict whole-head check before SDK
+compilation. For a matrix-only early check in the same device-free
 image, against the source checkout produced by the recipe:
 
 ```sh
@@ -132,9 +152,11 @@ variant; old normal behavior and defaults remain unchanged.
    propagation and same-Worker recovery separately. Unchanged generated text
    does not erase an internal numerical effect. No C2/C3/E5 claim follows.
 
-Local validation: 67 CPU Python contracts passed (new replay plus old TND
+Local validation after the scheduling correction: 69 CPU Python contracts passed (new replay plus old TND
 normal/build and shared builder/registration contracts). All 16 retained actual source hashes matched; the patch
 applied to the seven actual source files, and removing the new denominator and
 causal insertions restored every other vector/kernel byte exactly. Raw cached
 sources and model/runtime artifacts are not committed. C++ matrix/SDK execution
-is still pending root's device-free build; no local C++ compiler was available.
+of the revised eight-core policy is still pending root's new device-free build;
+no local C++ compiler was available. The first build's original-schedule CPU
+refusal is retained above and is not converted into a pass.
